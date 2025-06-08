@@ -68,15 +68,9 @@ const ProjectsList = ({
       ${isCompressed ? 'w-[20%]' : 'w-[25%]'} 
       bg-soabra-projects-bg glass backdrop-blur-xl transition-all duration-500 ease-in-out h-full border-x border-white/20 rounded-3xl
     `}>
-      <div className="p-4 pt-2 h-full px-0 mx-0 py-0">
+      <div className="p-4 pt-2 h-full mx-0 my-[25px] py-[30px] px-[5px]">
         {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-soabra-text-primary mb-2 tracking-wide">المشاريع</h2>
-          <div className="text-base text-soabra-text-secondary font-medium">
-            {projects.length} مشروع نشط
-          </div>
-          <div className="mt-4 h-px bg-gradient-to-r from-transparent via-soabra-primary-blue/30 to-transparent rounded-full" />
-        </div>
+        
 
         {/* Projects List */}
         <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent">
