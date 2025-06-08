@@ -13,7 +13,7 @@ const CalendarColumn = ({
       <div className="absolute inset-0 calendar-gradient opacity-30 pointer-events-none rounded-3xl" />
       
       <div className="p-4 pt-2 h-full relative z-10 rounded-lg my-[150px] px-[10px] py-[150px]">
-        <div className="glass rounded-3xl p-2 h-full backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500 px-0 py-0 mx-[10px] my-[15px]">
+        <div className="glass rounded-3xl p-2 h-full backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500 py-0 my-[15px] px-0 mx-0">
           <MainCalendar />
         </div>
       </div>
