@@ -64,7 +64,7 @@ const ProjectsList = ({
     phase: 'التخطيط',
     phaseColor: '#F59E0B'
   }];
-  return <div className="bg-[e3e3e3] rounded-lg mx-0 px-0">
+  return <div className="bg-[e3e3e3] rounded-lg mx-0 px-0 py-[16px] my-[47px] bg-stone-200">
       <div className="p-4 pt-2 h-full py-[28px] px-0 mx-[2px] rounded-lg bg-[e3e3e3]">
         {/* Header */}
         <div className="text-center mb-6">
@@ -80,7 +80,7 @@ const ProjectsList = ({
           {projects.map((project, index) => <div key={project.id} onClick={() => onProjectSelect(project)} style={{
           animationDelay: `${index * 0.1}s`,
           animation: 'slideInRight 0.6s ease-out both'
-        }} className="group bg-soabra-card-bg glass rounded-3xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm px-[80px] mx-[35px] py-0">
+        }} className="group bg-soabra-card-bg glass rounded-3xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm px-[80px] mx-[35px] py-0 my-0 bg-stone-50">
               {/* Project Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1 ml-4">
