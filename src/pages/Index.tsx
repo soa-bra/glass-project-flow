@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
+import HeaderBar from '@/components/HeaderBar';
 import ProjectsList from '@/components/ProjectsList';
 import CalendarColumn from '@/components/CalendarColumn';
 import ProjectDashboard from '@/components/ProjectDashboard';
@@ -38,33 +39,39 @@ const Index = () => {
         <div className="absolute top-1/2 left-1/4 w-48 h-48 bg-gradient-to-br from-soabra-success/10 to-soabra-warning/10 rounded-full blur-2xl animate-pulse delay-500" />
       </div>
 
-      {/* Main Layout Container - Three Column Layout */}
-      <div className="flex h-screen w-full relative z-10">
-        {/* Sidebar - Right side, expanded */}
-        <div className="transform transition-all duration-500 ease-in-out hover:scale-[1.01]">
-          <Sidebar />
-        </div>
+      {/* Main Layout Container */}
+      <div className="flex flex-col h-screen w-full relative z-10">
+        {/* Header Bar */}
+        <HeaderBar />
         
-        {/* Projects Column - Middle */}
-        <div className="transform transition-all duration-300 ease-in-out">
-          <ProjectsList 
-            onProjectSelect={handleProjectSelect}
-            isCompressed={isDashboardOpen}
-          />
+        {/* Main Content - Three Column Layout */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Sidebar - Right side */}
+          <div className="transform transition-all duration-500 ease-in-out hover:scale-[1.01]">
+            <Sidebar />
+          </div>
+          
+          {/* Projects Column - Middle */}
+          <div className="transform transition-all duration-300 ease-in-out">
+            <ProjectsList 
+              onProjectSelect={handleProjectSelect}
+              isCompressed={isDashboardOpen}
+            />
+          </div>
+          
+          {/* Calendar Column - Left side */}
+          <div className="transform transition-all duration-300 ease-in-out">
+            <CalendarColumn isCompressed={isDashboardOpen} />
+          </div>
+          
+          {/* Project Dashboard Panel - Slide overlay */}
+          {isDashboardOpen && selectedProject && (
+            <ProjectDashboard 
+              project={selectedProject}
+              onClose={handleCloseDashboard}
+            />
+          )}
         </div>
-        
-        {/* Calendar Column - Left side, largest */}
-        <div className="transform transition-all duration-300 ease-in-out">
-          <CalendarColumn isCompressed={isDashboardOpen} />
-        </div>
-        
-        {/* Project Dashboard Panel - Slide overlay */}
-        {isDashboardOpen && selectedProject && (
-          <ProjectDashboard 
-            project={selectedProject}
-            onClose={handleCloseDashboard}
-          />
-        )}
       </div>
     </div>
   );

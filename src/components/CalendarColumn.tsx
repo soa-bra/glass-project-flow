@@ -14,7 +14,7 @@ const CalendarColumn = ({ isCompressed }: CalendarColumnProps) => {
       {/* Background Gradient Overlay */}
       <div className="absolute inset-0 calendar-gradient opacity-30 pointer-events-none rounded-2xl" />
       
-      <div className="p-6 h-full relative z-10">
+      <div className="p-4 pt-2 h-full relative z-10">
         <div className="glass rounded-3xl p-2 h-full backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500">
           <MainCalendar />
         </div>
