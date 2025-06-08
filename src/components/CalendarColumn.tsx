@@ -9,10 +9,15 @@ const CalendarColumn = ({ isCompressed }: CalendarColumnProps) => {
   return (
     <div className={`
       ${isCompressed ? 'w-[45%]' : 'w-[55%]'} 
-      transition-all duration-300 h-full
+      transition-all duration-500 ease-in-out h-full relative
     `}>
-      <div className="p-4 h-full">
-        <MainCalendar />
+      {/* Background Gradient Overlay */}
+      <div className="absolute inset-0 calendar-gradient opacity-30 pointer-events-none rounded-2xl" />
+      
+      <div className="p-6 h-full relative z-10">
+        <div className="glass rounded-3xl p-2 h-full backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500">
+          <MainCalendar />
+        </div>
       </div>
     </div>
   );

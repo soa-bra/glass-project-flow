@@ -76,77 +76,95 @@ const ProjectsList = ({ onProjectSelect, isCompressed }: ProjectsListProps) => {
   return (
     <div className={`
       ${isCompressed ? 'w-[20%]' : 'w-[25%]'} 
-      bg-soabra-projects-bg transition-all duration-300 h-full border-x border-gray-200
+      bg-soabra-projects-bg glass backdrop-blur-xl transition-all duration-500 ease-in-out h-full border-x border-white/20
     `}>
-      <div className="p-4 h-full">
+      <div className="p-6 h-full">
         {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-semibold text-soabra-text-primary">المشاريع</h2>
-          <div className="text-sm text-soabra-text-secondary mt-1">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-soabra-text-primary mb-2 tracking-wide">المشاريع</h2>
+          <div className="text-base text-soabra-text-secondary font-medium">
             {projects.length} مشروع نشط
           </div>
+          <div className="mt-4 h-px bg-gradient-to-r from-transparent via-soabra-primary-blue/30 to-transparent" />
         </div>
 
         {/* Projects List */}
-        <div className="space-y-3 max-h-[calc(100vh-140px)] overflow-y-auto">
-          {projects.map((project) => (
+        <div className="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent">
+          {projects.map((project, index) => (
             <div
               key={project.id}
               onClick={() => onProjectSelect(project)}
-              className="bg-soabra-card-bg rounded-lg p-4 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] border border-gray-100"
+              className="group bg-soabra-card-bg glass rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm"
+              style={{
+                animationDelay: `${index * 0.1}s`,
+                animation: 'slideInRight 0.6s ease-out both'
+              }}
             >
               {/* Project Header */}
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1 ml-3">
-                  <h3 className="font-medium text-soabra-text-primary leading-tight text-sm mb-1">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1 ml-4">
+                  <h3 className="font-bold text-soabra-text-primary leading-tight text-base mb-2 group-hover:text-soabra-primary-blue transition-colors duration-300">
                     {project.title}
                   </h3>
-                  <p className="text-xs text-soabra-text-secondary">
+                  <p className="text-sm text-soabra-text-secondary font-medium">
                     {project.assignee}
                   </p>
                 </div>
                 
                 {/* Project Color Circle */}
                 <div 
-                  className="w-4 h-4 rounded-full flex-shrink-0"
+                  className="w-5 h-5 rounded-full flex-shrink-0 ring-2 ring-white/50 shadow-lg group-hover:scale-110 transition-transform duration-300"
                   style={{ backgroundColor: project.phaseColor }}
                 />
               </div>
 
               {/* Project Details */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-4">
                 {/* Phase Badge */}
                 <span 
-                  className="text-xs px-2 py-1 rounded-full text-white font-medium"
+                  className="text-sm px-3 py-2 rounded-xl text-white font-bold shadow-md group-hover:shadow-lg transition-all duration-300"
                   style={{ backgroundColor: project.phaseColor }}
                 >
                   {project.phase}
                 </span>
 
                 {/* Value */}
-                <div className="text-sm font-semibold text-soabra-text-primary">
+                <div className="text-lg font-bold text-soabra-text-primary group-hover:scale-110 transition-transform duration-300">
                   {project.value}
                 </div>
               </div>
 
               {/* Status Indicator */}
-              <div className="mt-3 flex justify-end">
+              <div className="flex justify-between items-center">
                 <div className={`
-                  w-2 h-2 rounded-full
+                  w-3 h-3 rounded-full shadow-sm animate-pulse
                   ${project.status === 'success' ? 'bg-soabra-status-success' : ''}
                   ${project.status === 'warning' ? 'bg-soabra-status-warning' : ''}
                   ${project.status === 'error' ? 'bg-soabra-status-error' : ''}
                   ${project.status === 'neutral' ? 'bg-soabra-status-neutral' : ''}
                 `} />
+                
+                {/* Progress Bar */}
+                <div className="flex-1 mr-3 bg-white/20 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-500 group-hover:animate-pulse"
+                    style={{ 
+                      backgroundColor: project.phaseColor,
+                      width: `${Math.random() * 60 + 40}%`
+                    }}
+                  />
+                </div>
               </div>
             </div>
           ))}
         </div>
 
         {/* Add Project Button */}
-        <div className="mt-4">
-          <button className="w-full bg-soabra-primary-blue text-white text-sm py-3 rounded-lg hover:bg-soabra-primary-blue-hover transition-colors">
-            إضافة مشروع جديد
+        <div className="mt-6">
+          <button className="group w-full bg-gradient-to-l from-soabra-primary-blue to-soabra-primary-blue-hover text-white text-base font-bold py-4 rounded-2xl hover:shadow-2xl hover:shadow-soabra-primary-blue/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-95">
+            <span className="group-hover:scale-110 transition-transform duration-300 inline-block">
+              إضافة مشروع جديد +
+            </span>
           </button>
         </div>
       </div>

@@ -12,16 +12,17 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-60 bg-soabra-sidebar-bg border-l border-gray-200 z-sidebar h-full">
-      <nav className="flex flex-col py-6 px-4 gap-2">
+    <aside className="w-60 bg-soabra-sidebar-bg border-l border-gray-200/50 z-sidebar h-full glass backdrop-blur-xl">
+      <nav className="flex flex-col py-8 px-6 gap-3">
         {/* Logo/Title Section */}
-        <div className="mb-8 px-2">
-          <h1 className="text-heading-main text-center">
+        <div className="mb-10 px-2 text-center group">
+          <h1 className="text-2xl font-bold bg-gradient-to-l from-soabra-primary-blue to-soabra-success bg-clip-text text-transparent leading-tight transition-all duration-300 group-hover:scale-105">
             نظام إدارة المشاريع
           </h1>
-          <div className="text-center text-soabra-text-secondary text-sm mt-1">
+          <div className="text-soabra-text-secondary text-sm mt-2 font-medium tracking-wide">
             SoaBra
           </div>
+          <div className="mt-4 h-px bg-gradient-to-r from-transparent via-soabra-primary-blue/30 to-transparent" />
         </div>
 
         {/* Menu Items */}
@@ -31,18 +32,38 @@ const Sidebar = () => {
             <button
               key={index}
               className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-right w-full
+                group flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 text-right w-full font-medium text-base
                 ${item.active 
-                  ? 'bg-soabra-primary-blue text-white shadow-lg' 
-                  : 'hover:bg-white/20 text-soabra-text-primary hover:text-soabra-primary-blue'
+                  ? 'bg-gradient-to-l from-soabra-primary-blue to-soabra-primary-blue-hover text-white shadow-xl shadow-soabra-primary-blue/25 scale-105' 
+                  : 'hover:bg-white/30 text-soabra-text-primary hover:text-soabra-primary-blue hover:scale-102 hover:shadow-lg'
                 }
+                transform hover:-translate-y-1 active:scale-95
               `}
+              style={{
+                animationDelay: `${index * 0.1}s`,
+                animation: 'fadeInUp 0.6s ease-out both'
+              }}
             >
-              <IconComponent className="w-5 h-5 flex-shrink-0" />
-              <span className="text-sm font-medium">{item.label}</span>
+              <IconComponent className={`w-6 h-6 flex-shrink-0 transition-all duration-300 ${
+                item.active ? 'drop-shadow-sm' : 'group-hover:scale-110 group-hover:drop-shadow-sm'
+              }`} />
+              <span className="text-[15px] font-semibold tracking-wide">{item.label}</span>
+              {item.active && (
+                <div className="mr-auto w-2 h-2 bg-white rounded-full shadow-sm animate-pulse" />
+              )}
             </button>
           );
         })}
+
+        {/* Bottom Decoration */}
+        <div className="mt-auto pt-6">
+          <div className="px-2">
+            <div className="h-px bg-gradient-to-r from-transparent via-soabra-primary-blue/20 to-transparent mb-4" />
+            <div className="text-center text-xs text-soabra-text-secondary/70 font-medium">
+              الإصدار 2.1.0
+            </div>
+          </div>
+        </div>
       </nav>
     </aside>
   );
