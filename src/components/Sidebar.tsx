@@ -74,10 +74,10 @@ const Sidebar = () => {
                 animation: 'fadeInUp 0.6s ease-out both'
               }}
               className={`
-                flex items-center gap-6 px-4 py-4 text-right rounded-3xl transition-all duration-300 group
+                flex items-center gap-6 px-4 py-4 text-right transition-all duration-300 group
                 ${item.active 
-                  ? 'bg-white/20 text-[#3e494c] font-medium' 
-                  : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light'
+                  ? 'bg-white/20 text-[#3e494c] font-medium rounded-full' 
+                  : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light rounded-3xl'
                 }
                 ${isCollapsed ? 'justify-center' : ''}
               `}
