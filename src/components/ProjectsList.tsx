@@ -64,19 +64,19 @@ const ProjectsList = ({
     phase: 'التخطيط',
     phaseColor: '#F59E0B'
   }];
-  return <div className="bg-[e3e3e3] rounded-lg mx-0 px-0 py-0 my-[35px] bg-zinc-200">
-      <div className="p-4 pt-2 h-full px-0 rounded-lg mx-0 my-0 py-0 bg-[soabra-primary-blue]">
+  return <div className="bg-[e3e3e3] rounded-lg bg-zinc-200 py-px my-[36px] mx-[4px] px-[10px]">
+      <div className="p-4 pt-2 h-full px-0 rounded-lg mx-0 bg-[soabra-primary-blue] my-0 py-0">
         {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-soabra-text-primary mb-2 tracking-wide">المشاريع</h2>
-          <div className="text-base text-soabra-text-secondary font-medium">
+        <div className="text-center mb-6 my-0 py-0">
+          <h2 className="text-2xl font-bold text-soabra-text-primary mb-2 tracking-wide text-right px-[29px] my-0 py-0">المشاريع</h2>
+          <div className="text-base text-soabra-text-secondary font-medium py-0">
             {projects.length} مشروع نشط
           </div>
           
         </div>
 
         {/* Projects List */}
-        <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent px-0 py-[40px] my-0">
+        <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent px-0 my-0 py-0">
           {projects.map((project, index) => <div key={project.id} onClick={() => onProjectSelect(project)} style={{
           animationDelay: `${index * 0.1}s`,
           animation: 'slideInRight 0.6s ease-out both'
@@ -135,7 +135,7 @@ const ProjectsList = ({
         </div>
 
         {/* Add Project Button */}
-        <div className="mt-6 py-0 rounded-full my-[25px] px-[4px]">
+        <div className="mt-6 py-0 rounded-full my-0 px-0">
           <button className="group w-full bg-gradient-to-l from-soabra-primary-blue to-soabra-primary-blue-hover text-white text-base font-bold py-4 hover:shadow-2xl hover:shadow-soabra-primary-blue/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-95 rounded-full mx-0">
             <span className="group-hover:scale-110 transition-transform duration-300 inline-block">
               إضافة مشروع جديد +

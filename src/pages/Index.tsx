@@ -24,7 +24,7 @@ const Index = () => {
     setIsDashboardOpen(false);
     setSelectedProject(null);
   };
-  return <div className="min-h-screen w-full bg-soabra-solid-bg font-arabic" dir="rtl">
+  return <div dir="rtl" className="min-h-screen w-full bg-soabra-solid-bg font-arabic my-[27px]">
       {/* Floating Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-20 right-20 w-64 h-64 bg-gradient-to-br from-soabra-primary-blue/10 to-soabra-calendar-start/20 rounded-full blur-3xl animate-pulse" />
@@ -33,19 +33,19 @@ const Index = () => {
       </div>
 
       {/* Main Layout Container */}
-      <div className="flex flex-col h-screen w-full relative z-10">
+      <div className="flex flex-col h-screen w-full relative z-10 my-[99px]">
         {/* Header Bar */}
         <HeaderBar />
         
         {/* Main Content - Three Column Layout */}
-        <div className="flex flex-1 overflow-hidden px-[2px] py-0">
+        <div className="flex flex-1 overflow-hidden px-[5px] py-0 my-0">
           {/* Sidebar - Right side */}
           <div className="transform transition-all duration-500 ease-in-out hover:scale-[1.01] py-0 my-0 px-0">
             <Sidebar />
           </div>
           
           {/* Projects Column - Middle */}
-          <div className="transform transition-all duration-300 ease-in-out bg-[e3e3e3] rounded-3xl px-0 mx-[10px] py-px my-[160px] bg-zinc-200">
+          <div className="transform transition-all duration-300 ease-in-out bg-[e3e3e3] rounded-3xl px-0 mx-[10px] bg-zinc-200 py-0 my-0">
             <ProjectsList onProjectSelect={handleProjectSelect} isCompressed={isDashboardOpen} />
           </div>
           
