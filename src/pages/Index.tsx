@@ -45,7 +45,7 @@ const Index = () => {
           </div>
           
           {/* Projects Column - Middle */}
-          <div className="transform transition-all duration-300 ease-in-out py-[174px] my-0 mx-0 px-0">
+          <div className="transform transition-all duration-300 ease-in-out rounded-lg bg-gray-950 bg-[e3e3e3] px-px py-[85px] my-[172px] mx-0">
             <ProjectsList onProjectSelect={handleProjectSelect} isCompressed={isDashboardOpen} />
           </div>
           
