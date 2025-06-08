@@ -36,7 +36,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className={`bg-soabra-solid-bg border-l border-gray-200/50 z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-60'}`}>
+    <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-60'}`}>
       <nav className="flex flex-col gap-6 py-[203px] my-[36px] mx-0 px-[15px]">
         {/* Logo/Title Section */}
         {!isCollapsed}
