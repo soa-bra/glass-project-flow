@@ -64,8 +64,8 @@ const ProjectsList = ({
     phase: 'التخطيط',
     phaseColor: '#F59E0B'
   }];
-  return <div className="bg-[e3e3e3] rounded-lg mx-0 px-0 py-[16px] my-[47px] bg-stone-200">
-      <div className="p-4 pt-2 h-full px-0 mx-[2px] rounded-lg bg-[e3e3e3] py-[50px]">
+  return <div className="bg-[e3e3e3] rounded-lg mx-0 px-0 bg-stone-200 py-0 my-[35px]">
+      <div className="p-4 pt-2 h-full px-0 rounded-lg bg-[e3e3e3] mx-0 py-0 my-0">
         {/* Header */}
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-soabra-text-primary mb-2 tracking-wide">المشاريع</h2>
