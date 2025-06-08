@@ -7,15 +7,21 @@ const HeaderBar = () => {
       <div className="flex items-center justify-between h-full px-6">
         {/* Navigation Icons - Left Side */}
         <div className="flex items-center gap-3">
-          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors">
-            <ArrowLeft className="w-5 h-5 text-soabra-text-primary" />
+          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <ArrowLeft className="w-5 h-5 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+            </div>
           </button>
-          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors">
-            <ArrowRight className="w-5 h-5 text-soabra-text-primary" />
+          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <ArrowRight className="w-5 h-5 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+            </div>
           </button>
           <div className="w-px h-6 bg-gray-300 mx-2" />
-          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors">
-            <Menu className="w-5 h-5 text-soabra-text-primary" />
+          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <Menu className="w-5 h-5 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+            </div>
           </button>
         </div>
 
@@ -24,14 +30,20 @@ const HeaderBar = () => {
 
         {/* Logo and Action Icons - Right Side */}
         <div className="flex items-center gap-4">
-          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors">
-            <Search className="w-5 h-5 text-soabra-text-primary" />
+          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <Search className="w-5 h-5 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+            </div>
           </button>
-          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors">
-            <Bell className="w-5 h-5 text-soabra-text-primary" />
+          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <Bell className="w-5 h-5 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+            </div>
           </button>
-          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors">
-            <CircleUser className="w-5 h-5 text-soabra-text-primary" />
+          <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <CircleUser className="w-5 h-5 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+            </div>
           </button>
           
           {/* Logo/Brand */}
