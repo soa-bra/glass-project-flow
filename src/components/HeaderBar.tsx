@@ -1,9 +1,6 @@
-
 import { ArrowLeft, ArrowRight, Bell, CircleUser, Menu, Search } from 'lucide-react';
-
 const HeaderBar = () => {
-  return (
-    <header className="fixed top-0 right-0 left-0 h-[60px] bg-soabra-sidebar-bg z-header border-b border-gray-200">
+  return <header className="fixed top-0 right-0 left-0 h-[60px] bg-soabra-sidebar-bg z-header border-b border-gray-200 px-[14px] py-[54px]">
       <div className="flex items-center justify-between h-full px-6">
         {/* Navigation Icons - Left Side */}
         <div className="flex items-center gap-3">
@@ -57,8 +54,6 @@ const HeaderBar = () => {
           </div>
         </div>
       </div>
-    </header>
-  );
+    </header>;
 };
-
 export default HeaderBar;

@@ -1,10 +1,8 @@
 import { Project } from '@/pages/Index';
-
 interface ProjectsListProps {
   onProjectSelect: (project: Project) => void;
   isCompressed: boolean;
 }
-
 const ProjectsList = ({
   onProjectSelect,
   isCompressed
@@ -66,12 +64,11 @@ const ProjectsList = ({
     phase: 'التخطيط',
     phaseColor: '#F59E0B'
   }];
-  return (
-    <div className={`
+  return <div className={`
       ${isCompressed ? 'w-[20%]' : 'w-[25%]'} 
       bg-soabra-projects-bg glass backdrop-blur-xl transition-all duration-500 ease-in-out h-full border-x border-white/20 rounded-3xl
     `}>
-      <div className="p-4 pt-2 h-full px-0 py-0 mx-0">
+      <div className="p-4 pt-2 h-full px-0 mx-0 py-0">
         {/* Header */}
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-soabra-text-primary mb-2 tracking-wide">المشاريع</h2>
@@ -83,16 +80,10 @@ const ProjectsList = ({
 
         {/* Projects List */}
         <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent">
-          {projects.map((project, index) => (
-            <div 
-              key={project.id} 
-              onClick={() => onProjectSelect(project)} 
-              className="group bg-soabra-card-bg glass rounded-3xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm" 
-              style={{
-                animationDelay: `${index * 0.1}s`,
-                animation: 'slideInRight 0.6s ease-out both'
-              }}
-            >
+          {projects.map((project, index) => <div key={project.id} onClick={() => onProjectSelect(project)} className="group bg-soabra-card-bg glass rounded-3xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm" style={{
+          animationDelay: `${index * 0.1}s`,
+          animation: 'slideInRight 0.6s ease-out both'
+        }}>
               {/* Project Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1 ml-4">
@@ -105,23 +96,17 @@ const ProjectsList = ({
                 </div>
                 
                 {/* Project Color Circle */}
-                <div 
-                  className="w-5 h-5 rounded-full flex-shrink-0 ring-2 ring-white/50 shadow-lg group-hover:scale-110 transition-transform duration-300" 
-                  style={{
-                    backgroundColor: project.phaseColor
-                  }} 
-                />
+                <div className="w-5 h-5 rounded-full flex-shrink-0 ring-2 ring-white/50 shadow-lg group-hover:scale-110 transition-transform duration-300" style={{
+              backgroundColor: project.phaseColor
+            }} />
               </div>
 
               {/* Project Details */}
               <div className="flex items-center justify-between mb-4">
                 {/* Phase Badge */}
-                <span 
-                  className="text-sm px-3 py-2 rounded-2xl text-white font-bold shadow-md group-hover:shadow-lg transition-all duration-300" 
-                  style={{
-                    backgroundColor: project.phaseColor
-                  }}
-                >
+                <span className="text-sm px-3 py-2 rounded-2xl text-white font-bold shadow-md group-hover:shadow-lg transition-all duration-300" style={{
+              backgroundColor: project.phaseColor
+            }}>
                   {project.phase}
                 </span>
 
@@ -143,17 +128,13 @@ const ProjectsList = ({
                 
                 {/* Progress Bar */}
                 <div className="flex-1 mr-3 bg-white/20 rounded-full h-2 overflow-hidden">
-                  <div 
-                    className="h-full rounded-full transition-all duration-500 group-hover:animate-pulse" 
-                    style={{
-                      backgroundColor: project.phaseColor,
-                      width: `${Math.random() * 60 + 40}%`
-                    }} 
-                  />
+                  <div className="h-full rounded-full transition-all duration-500 group-hover:animate-pulse" style={{
+                backgroundColor: project.phaseColor,
+                width: `${Math.random() * 60 + 40}%`
+              }} />
                 </div>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
 
         {/* Add Project Button */}
@@ -165,8 +146,6 @@ const ProjectsList = ({
           </button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ProjectsList;

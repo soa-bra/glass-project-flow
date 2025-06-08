@@ -1,11 +1,9 @@
-
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsList from '@/components/ProjectsList';
 import CalendarColumn from '@/components/CalendarColumn';
 import ProjectDashboard from '@/components/ProjectDashboard';
-
 export interface Project {
   id: string;
   title: string;
@@ -15,23 +13,18 @@ export interface Project {
   phase: string;
   phaseColor: string;
 }
-
 const Index = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
-
   const handleProjectSelect = (project: Project) => {
     setSelectedProject(project);
     setIsDashboardOpen(true);
   };
-
   const handleCloseDashboard = () => {
     setIsDashboardOpen(false);
     setSelectedProject(null);
   };
-
-  return (
-    <div className="min-h-screen w-full bg-soabra-solid-bg font-arabic" dir="rtl">
+  return <div className="min-h-screen w-full bg-soabra-solid-bg font-arabic" dir="rtl">
       {/* Floating Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-20 right-20 w-64 h-64 bg-gradient-to-br from-soabra-primary-blue/10 to-soabra-calendar-start/20 rounded-full blur-3xl animate-pulse" />
@@ -52,29 +45,19 @@ const Index = () => {
           </div>
           
           {/* Projects Column - Middle */}
-          <div className="transform transition-all duration-300 ease-in-out">
-            <ProjectsList 
-              onProjectSelect={handleProjectSelect}
-              isCompressed={isDashboardOpen}
-            />
+          <div className="transform transition-all duration-300 ease-in-out py-[168px]">
+            <ProjectsList onProjectSelect={handleProjectSelect} isCompressed={isDashboardOpen} />
           </div>
           
           {/* Calendar Column - Left side */}
-          <div className="transform transition-all duration-300 ease-in-out">
+          <div className="transform transition-all duration-300 ease-in-out py-0 my-[7px] mx-0 px-[5px]">
             <CalendarColumn isCompressed={isDashboardOpen} />
           </div>
           
           {/* Project Dashboard Panel - Slide overlay */}
-          {isDashboardOpen && selectedProject && (
-            <ProjectDashboard 
-              project={selectedProject}
-              onClose={handleCloseDashboard}
-            />
-          )}
+          {isDashboardOpen && selectedProject && <ProjectDashboard project={selectedProject} onClose={handleCloseDashboard} />}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
