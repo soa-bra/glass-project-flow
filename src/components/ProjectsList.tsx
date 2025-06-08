@@ -53,52 +53,101 @@ const ProjectsList = ({ onProjectSelect, isCompressed }: ProjectsListProps) => {
       phase: 'دراسة',
       phaseColor: '#6B7280'
     },
+    {
+      id: '6',
+      title: 'تطوير تطبيق الجوال',
+      assignee: 'نورا حسن',
+      value: '22K',
+      status: 'success',
+      phase: 'التطوير',
+      phaseColor: '#A855F7'
+    },
+    {
+      id: '7',
+      title: 'برنامج التدريب الصيفي',
+      assignee: 'خالد العتيبي',
+      value: '30K',
+      status: 'warning',
+      phase: 'التخطيط',
+      phaseColor: '#F59E0B'
+    }
   ];
 
   return (
     <div className={`
       ${isCompressed ? 'w-[20%]' : 'w-[25%]'} 
-      bg-soabra-projects-bg border-l border-gray-200 z-projects transition-all duration-300 h-full
+      bg-soabra-projects-bg transition-all duration-300 h-full border-x border-gray-200
     `}>
-      <div className="p-6">
-        <h2 className="text-heading-sub mb-6 text-center">المشاريع</h2>
-        <div className="space-y-4 max-h-[calc(100vh-120px)] overflow-y-auto">
+      <div className="p-4 h-full">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-semibold text-soabra-text-primary">المشاريع</h2>
+          <div className="text-sm text-soabra-text-secondary mt-1">
+            {projects.length} مشروع نشط
+          </div>
+        </div>
+
+        {/* Projects List */}
+        <div className="space-y-3 max-h-[calc(100vh-140px)] overflow-y-auto">
           {projects.map((project) => (
             <div
               key={project.id}
               onClick={() => onProjectSelect(project)}
-              className="project-card rounded-lg p-4 cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] z-project-cards"
+              className="bg-soabra-card-bg rounded-lg p-4 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] border border-gray-100"
             >
-              {/* Project Title */}
-              <h3 className="text-lg font-medium text-soabra-text-primary mb-2 leading-tight">
-                {project.title}
-              </h3>
-              
-              {/* Assignee */}
-              <p className="text-sm text-soabra-text-secondary mb-3">
-                المكلف: {project.assignee}
-              </p>
-              
-              {/* Bottom Row: Value Badge + Status Dot */}
-              <div className="flex items-center justify-between">
-                {/* Value Badge */}
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-semibold text-purple-700">
-                    {project.value}
-                  </span>
+              {/* Project Header */}
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1 ml-3">
+                  <h3 className="font-medium text-soabra-text-primary leading-tight text-sm mb-1">
+                    {project.title}
+                  </h3>
+                  <p className="text-xs text-soabra-text-secondary">
+                    {project.assignee}
+                  </p>
                 </div>
                 
-                {/* Status Dot */}
+                {/* Project Color Circle */}
+                <div 
+                  className="w-4 h-4 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: project.phaseColor }}
+                />
+              </div>
+
+              {/* Project Details */}
+              <div className="flex items-center justify-between">
+                {/* Phase Badge */}
+                <span 
+                  className="text-xs px-2 py-1 rounded-full text-white font-medium"
+                  style={{ backgroundColor: project.phaseColor }}
+                >
+                  {project.phase}
+                </span>
+
+                {/* Value */}
+                <div className="text-sm font-semibold text-soabra-text-primary">
+                  {project.value}
+                </div>
+              </div>
+
+              {/* Status Indicator */}
+              <div className="mt-3 flex justify-end">
                 <div className={`
-                  w-3 h-3 rounded-full
-                  ${project.status === 'success' ? 'status-dot-success' : ''}
-                  ${project.status === 'warning' ? 'status-dot-warning' : ''}
-                  ${project.status === 'error' ? 'status-dot-error' : ''}
-                  ${project.status === 'neutral' ? 'status-dot-neutral' : ''}
+                  w-2 h-2 rounded-full
+                  ${project.status === 'success' ? 'bg-soabra-status-success' : ''}
+                  ${project.status === 'warning' ? 'bg-soabra-status-warning' : ''}
+                  ${project.status === 'error' ? 'bg-soabra-status-error' : ''}
+                  ${project.status === 'neutral' ? 'bg-soabra-status-neutral' : ''}
                 `} />
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Add Project Button */}
+        <div className="mt-4">
+          <button className="w-full bg-soabra-primary-blue text-white text-sm py-3 rounded-lg hover:bg-soabra-primary-blue-hover transition-colors">
+            إضافة مشروع جديد
+          </button>
         </div>
       </div>
     </div>
