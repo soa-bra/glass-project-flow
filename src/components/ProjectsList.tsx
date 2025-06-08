@@ -80,9 +80,9 @@ const ProjectsList = ({
           {projects.map((project, index) => <div key={project.id} onClick={() => onProjectSelect(project)} style={{
           animationDelay: `${index * 0.1}s`,
           animation: 'slideInRight 0.6s ease-out both'
-        }} className="group bg-soabra-card-bg glass rounded-3xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm py-0 my-0 bg-stone-50 px-[15px] mx-[20px]">
+        }} className="group bg-soabra-card-bg glass rounded-3xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm bg-stone-50 px-[15px] mx-[20px] my-[15px] py-[5px]">
               {/* Project Header */}
-              <div className="flex items-start justify-between mb-4 my-[13px] mx-[14px] px-[3px]">
+              <div className="flex items-start justify-between mb-4 mx-0 px-0 my-[10px]">
                 <div className="flex-1 ml-4">
                   <h3 className="font-bold text-soabra-text-primary leading-tight text-base mb-2 group-hover:text-soabra-primary-blue transition-colors duration-300">
                     {project.title}
@@ -114,7 +114,7 @@ const ProjectsList = ({
               </div>
 
               {/* Status Indicator */}
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center my-[10px]">
                 <div className={`
                   w-3 h-3 rounded-full shadow-sm animate-pulse
                   ${project.status === 'success' ? 'bg-soabra-status-success' : ''}
