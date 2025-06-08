@@ -1,7 +1,10 @@
+
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+
   const menuItems = [{
     icon: Home,
     label: 'الرئيسية',
@@ -27,58 +30,83 @@ const Sidebar = () => {
     label: 'الأرشيف',
     active: false
   }];
+
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
-  return <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-60'}`}>
-      <nav className="flex flex-col gap-6 py-[203px] my-[36px] mx-0 px-[15px]">
-        {/* Logo/Title Section */}
-        {!isCollapsed}
 
+  return (
+    <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-60'}`}>
+      <nav className="flex flex-col gap-4 py-6 px-4">
         {/* Menu Title Section with Toggle */}
-        <div className="text-center mb-8 rounded-full py-[6px] my-[3px] mx-0 px-[7px]">
+        <div className="text-center mb-4 rounded-full py-2 px-2">
           <div className="flex items-center justify-between">
-            {!isCollapsed && <h2 className="text-soabra-text-primary text-right text-2xl font-medium flex-1 px-[20px]">
+            {!isCollapsed && (
+              <h2 className="text-soabra-text-primary text-right text-2xl font-medium flex-1 px-4">
                 القائمة
-              </h2>}
-            <button onClick={toggleSidebar} className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 border-[#3e494c]/50 hover:bg-white/10">
-              {isCollapsed ? <ChevronLeft className="w-5 h-5 text-[#3e494c]" /> : <ChevronRight className="w-5 h-5 text-[#3e494c]" />}
+              </h2>
+            )}
+            <button 
+              onClick={toggleSidebar} 
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 border-[#3e494c]/50 hover:bg-white/10"
+            >
+              {isCollapsed ? (
+                <ChevronLeft className="w-5 h-5 text-[#3e494c]" />
+              ) : (
+                <ChevronRight className="w-5 h-5 text-[#3e494c]" />
+              )}
             </button>
           </div>
-          {!isCollapsed}
         </div>
 
         {/* Menu Items */}
         {menuItems.map((item, index) => {
-        const IconComponent = item.icon;
-        return <button key={index} style={{
-          animationDelay: `${index * 0.1}s`,
-          animation: 'fadeInUp 0.6s ease-out both'
-        }} className={`
-                flex items-center gap-6 px-4 py-4 text-right transition-all duration-300 group
-                ${item.active ? 'bg-white/20 text-[#3e494c] font-medium rounded-full' : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light rounded-3xl'}
+          const IconComponent = item.icon;
+          return (
+            <button
+              key={index}
+              style={{
+                animationDelay: `${index * 0.1}s`,
+                animation: 'fadeInUp 0.6s ease-out both'
+              }}
+              className={`
+                flex items-center gap-4 px-3 py-3 text-right transition-all duration-300 group
+                ${item.active 
+                  ? 'bg-white/20 text-[#3e494c] font-medium rounded-full' 
+                  : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light rounded-3xl'
+                }
                 ${isCollapsed ? 'justify-center' : ''}
-              `}>
-              {/* Circle around icon with border - now fully rounded when active */}
-              <div className={`w-14 h-14 flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50 ${item.active ? 'rounded-full bg-white/30' : 'rounded-full'}`}>
-                <IconComponent className={`w-6 h-6 transition-all duration-300 ${item.active ? 'text-[#3e494c]' : 'group-hover:scale-110'}`} />
+              `}
+            >
+              {/* Circle around icon with border */}
+              <div className={`w-12 h-12 flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50 ${item.active ? 'rounded-full bg-white/30' : 'rounded-full'}`}>
+                <IconComponent className={`w-5 h-5 transition-all duration-300 ${item.active ? 'text-[#3e494c]' : 'group-hover:scale-110'}`} />
               </div>
-              {!isCollapsed && <>
-                  <span className="tracking-wide flex-1 text-xl font-light">{item.label}</span>
-                  {item.active && <div className="w-2 h-2 bg-[#3e494c] rounded-full animate-pulse" />}
-                </>}
-            </button>;
-      })}
+              {!isCollapsed && (
+                <>
+                  <span className="tracking-wide flex-1 text-lg font-light">{item.label}</span>
+                  {item.active && (
+                    <div className="w-2 h-2 bg-[#3e494c] rounded-full animate-pulse" />
+                  )}
+                </>
+              )}
+            </button>
+          );
+        })}
 
         {/* Bottom Decoration */}
-        {!isCollapsed && <div className="mt-auto pt-6">
+        {!isCollapsed && (
+          <div className="mt-auto pt-4">
             <div className="px-2">
               <div className="text-center text-xs text-soabra-text-secondary/70 font-medium">
                 الإصدار 2.1.0
               </div>
             </div>
-          </div>}
+          </div>
+        )}
       </nav>
-    </aside>;
+    </aside>
+  );
 };
+
 export default Sidebar;
