@@ -80,12 +80,12 @@ const ProjectsList = ({
 
         {/* Projects List */}
         <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent">
-          {projects.map((project, index) => <div key={project.id} onClick={() => onProjectSelect(project)} className="group bg-soabra-card-bg glass rounded-3xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm" style={{
+          {projects.map((project, index) => <div key={project.id} onClick={() => onProjectSelect(project)} className="group bg-soabra-card-bg glass rounded-3xl p-6 pb-8 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm min-h-[140px]" style={{
           animationDelay: `${index * 0.1}s`,
           animation: 'slideInRight 0.6s ease-out both'
         }}>
               {/* Project Header */}
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start justify-between mb-5">
                 <div className="flex-1 ml-4">
                   <h3 className="font-bold text-soabra-text-primary leading-tight text-base mb-2 group-hover:text-soabra-primary-blue transition-colors duration-300">
                     {project.title}
@@ -102,7 +102,7 @@ const ProjectsList = ({
               </div>
 
               {/* Project Details */}
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-5">
                 {/* Phase Badge */}
                 <span className="text-sm px-3 py-2 rounded-2xl text-white font-bold shadow-md group-hover:shadow-lg transition-all duration-300" style={{
               backgroundColor: project.phaseColor
