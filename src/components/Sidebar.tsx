@@ -1,3 +1,4 @@
+
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive } from 'lucide-react';
 const Sidebar = () => {
   const menuItems = [{
@@ -54,17 +55,14 @@ const Sidebar = () => {
           animation: 'fadeInUp 0.6s ease-out both'
         }} className={`
                 flex items-center gap-6 px-4 py-4 text-right rounded-3xl transition-all duration-300 group
-                ${item.active ? 'bg-white/20 text-[#3e494c] font-medium shadow-sm' : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light'}
+                ${item.active ? 'bg-white/20 text-[#3e494c] font-medium' : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light'}
               `}>
               {/* Circle around icon with border only */}
-              <div className={`
-                w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2
-                ${item.active ? 'border-[#3e494c]/50 shadow-md' : 'border-white/30 group-hover:border-white/50 group-hover:shadow-sm'}
-              `}>
-                <IconComponent className={`w-6 h-6 transition-all duration-300 ${item.active ? 'text-[#3e494c] drop-shadow-sm' : 'group-hover:scale-110 group-hover:drop-shadow-sm'}`} />
+              <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+                <IconComponent className={`w-6 h-6 transition-all duration-300 ${item.active ? 'text-[#3e494c]' : 'group-hover:scale-110'}`} />
               </div>
               <span className="tracking-wide flex-1 text-xl font-normal">{item.label}</span>
-              {item.active && <div className="w-2 h-2 bg-[#3e494c] rounded-full shadow-sm animate-pulse" />}
+              {item.active && <div className="w-2 h-2 bg-[#3e494c] rounded-full animate-pulse" />}
             </button>;
       })}
 
