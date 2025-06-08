@@ -65,7 +65,7 @@ const ProjectsList = ({
     phaseColor: '#F59E0B'
   }];
   return <div className="bg-[e3e3e3] rounded-lg mx-0 px-0 bg-stone-200 py-0 my-[35px]">
-      <div className="p-4 pt-2 h-full px-0 rounded-lg bg-[e3e3e3] mx-0 py-0 my-0">
+      <div className="p-4 pt-2 h-full px-0 rounded-lg bg-[e3e3e3] mx-0 my-0 py-0">
         {/* Header */}
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-soabra-text-primary mb-2 tracking-wide">المشاريع</h2>
@@ -76,7 +76,7 @@ const ProjectsList = ({
         </div>
 
         {/* Projects List */}
-        <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent px-0 py-[43px] my-[14px]">
+        <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent px-0 py-[40px] my-0">
           {projects.map((project, index) => <div key={project.id} onClick={() => onProjectSelect(project)} style={{
           animationDelay: `${index * 0.1}s`,
           animation: 'slideInRight 0.6s ease-out both'
