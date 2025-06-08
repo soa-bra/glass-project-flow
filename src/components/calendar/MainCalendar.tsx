@@ -86,7 +86,7 @@ const MainCalendar = () => {
     });
   };
   const today = new Date();
-  return <div className="shadow-sm border h-full rounded-3xl bg-transparent mx-0 py-0 my-[165px] px-0">
+  return <div className="shadow-sm border h-full rounded-3xl bg-transparent">
       {/* Calendar Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-100">
         <button onClick={() => navigateMonth('next')} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
@@ -103,16 +103,16 @@ const MainCalendar = () => {
       </div>
 
       {/* Calendar Grid */}
-      <div className="p-6 my-0 px-[10px] mx-0">
+      <div className="p-6">
         {/* Week Days Header */}
         <div className="grid grid-cols-7 gap-2 mb-4">
-          {weekDays.map(day => <div key={day} className="text-center text-sm font-medium text-soabra-text-secondary py-0 px-0">
+          {weekDays.map(day => <div key={day} className="text-center text-sm font-medium text-soabra-text-secondary">
               {day}
             </div>)}
         </div>
 
         {/* Calendar Days Grid */}
-        <div className="grid grid-cols-7 gap-2 mx-0 px-0">
+        <div className="grid grid-cols-7 gap-2">
           {calendarDays.map((day, index) => {
           const isCurrentMonth = day.getMonth() === currentDate.getMonth();
           const isToday = day.toDateString() === today.toDateString();
