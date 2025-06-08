@@ -30,7 +30,15 @@ const Sidebar = () => {
 
   return (
     <aside className="w-60 bg-soabra-sidebar-bg border-l border-gray-200/50 z-sidebar h-full glass backdrop-blur-xl rounded-3xl">
-      <nav className="flex flex-col py-8 px-6 gap-3">
+      <nav className="flex flex-col py-8 px-6 gap-6">
+        {/* Menu Title Section */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-soabra-text-primary mb-4">
+            القائمة
+          </h2>
+          <div className="h-px bg-gradient-to-r from-transparent via-soabra-primary-blue/30 to-transparent rounded-full" />
+        </div>
+
         {/* Logo/Title Section */}
         <div className="mb-10 px-2 text-center group">
           <h1 className="text-2xl font-bold bg-gradient-to-l from-soabra-primary-blue to-soabra-success bg-clip-text text-transparent leading-tight transition-all duration-300 group-hover:scale-105">
@@ -53,23 +61,32 @@ const Sidebar = () => {
                 animation: 'fadeInUp 0.6s ease-out both'
               }} 
               className={`
-                flex items-center gap-4 px-4 py-3 text-right rounded-3xl transition-all duration-300 group
+                flex items-center gap-6 px-4 py-4 text-right rounded-3xl transition-all duration-300 group
                 ${item.active 
                   ? 'bg-white/20 text-[#3e494c] font-medium shadow-sm' 
                   : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light'
                 }
               `}
             >
-              <IconComponent 
-                className={`w-6 h-6 flex-shrink-0 transition-all duration-300 ${
-                  item.active 
-                    ? 'text-[#3e494c] drop-shadow-sm' 
-                    : 'group-hover:scale-110 group-hover:drop-shadow-sm'
-                }`} 
-              />
-              <span className="tracking-wide text-lg">{item.label}</span>
+              {/* Circle around icon with large margins */}
+              <div className={`
+                w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0
+                ${item.active 
+                  ? 'bg-white/30 shadow-md' 
+                  : 'bg-white/10 group-hover:bg-white/20 group-hover:shadow-sm'
+                }
+              `}>
+                <IconComponent 
+                  className={`w-6 h-6 transition-all duration-300 ${
+                    item.active 
+                      ? 'text-[#3e494c] drop-shadow-sm' 
+                      : 'group-hover:scale-110 group-hover:drop-shadow-sm'
+                  }`} 
+                />
+              </div>
+              <span className="tracking-wide text-lg flex-1">{item.label}</span>
               {item.active && (
-                <div className="mr-auto w-2 h-2 bg-[#3e494c] rounded-full shadow-sm animate-pulse" />
+                <div className="w-2 h-2 bg-[#3e494c] rounded-full shadow-sm animate-pulse" />
               )}
             </button>
           );
