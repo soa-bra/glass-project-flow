@@ -38,14 +38,14 @@ const Index = () => {
         <HeaderBar />
         
         {/* Main Content - Three Column Layout */}
-        <div className="flex flex-1 overflow-hidden px-[2px]">
+        <div className="flex flex-1 overflow-hidden px-0">
           {/* Sidebar - Right side */}
           <div className="transform transition-all duration-500 ease-in-out hover:scale-[1.01] py-0 my-0 px-0">
             <Sidebar />
           </div>
           
           {/* Projects Column - Middle */}
-          <div className="transform transition-all duration-300 ease-in-out py-[174px] my-0 mx-0 px-0">
+          <div className="transform transition-all duration-300 ease-in-out px-[31px] py-[174px] my-0 mx-0">
             <ProjectsList onProjectSelect={handleProjectSelect} isCompressed={isDashboardOpen} />
           </div>
           
