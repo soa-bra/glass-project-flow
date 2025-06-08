@@ -1,4 +1,3 @@
-
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive } from 'lucide-react';
 const Sidebar = () => {
   const menuItems = [{
@@ -41,7 +40,7 @@ const Sidebar = () => {
 
         {/* Menu Title Section */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-soabra-text-primary mb-4">
+          <h2 className="text-soabra-text-primary mb-4 text-right text-2xl font-medium">
             القائمة
           </h2>
           <div className="h-px bg-gradient-to-r from-transparent via-soabra-primary-blue/30 to-transparent rounded-full" />
