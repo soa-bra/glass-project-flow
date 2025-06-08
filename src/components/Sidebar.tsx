@@ -68,10 +68,10 @@ const Sidebar = () => {
                 flex items-center gap-6 px-4 py-4 text-right rounded-3xl transition-all duration-300 group
                 ${item.active ? 'bg-white/20 text-[#3e494c] font-medium' : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light'}
               `}>
-              {/* Rectangular border around icon for active state */}
+              {/* Circular border around icon for active state */}
               <div className={`w-14 h-14 flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
                 item.active 
-                  ? 'bg-white/10 border-2 border-[#3e494c] rounded-lg' 
+                  ? 'bg-white/10 border-2 border-[#3e494c] rounded-full' 
                   : 'rounded-full border-2 border-[#3e494c]/50'
               }`}>
                 <IconComponent className={`w-6 h-6 transition-all duration-300 ${item.active ? 'text-[#3e494c]' : 'group-hover:scale-110'}`} />
