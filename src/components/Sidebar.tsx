@@ -1,4 +1,5 @@
 
+
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive } from 'lucide-react';
 const Sidebar = () => {
   const menuItems = [{
@@ -58,7 +59,7 @@ const Sidebar = () => {
                 ${item.active ? 'bg-white/20 text-[#3e494c] font-medium' : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light'}
               `}>
               {/* Circle around icon with border only */}
-              <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <div className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
                 <IconComponent className={`w-6 h-6 transition-all duration-300 ${item.active ? 'text-[#3e494c]' : 'group-hover:scale-110'}`} />
               </div>
               <span className="tracking-wide flex-1 text-xl font-normal">{item.label}</span>
@@ -78,3 +79,4 @@ const Sidebar = () => {
     </aside>;
 };
 export default Sidebar;
+
