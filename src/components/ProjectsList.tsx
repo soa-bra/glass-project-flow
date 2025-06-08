@@ -80,9 +80,9 @@ const ProjectsList = ({
           {projects.map((project, index) => <div key={project.id} onClick={() => onProjectSelect(project)} style={{
           animationDelay: `${index * 0.1}s`,
           animation: 'slideInRight 0.6s ease-out both'
-        }} className="group bg-soabra-card-bg glass rounded-3xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm px-[80px] mx-[35px] py-0 my-0 bg-stone-50">
+        }} className="group bg-soabra-card-bg glass rounded-3xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm py-0 my-0 bg-stone-50 px-[15px] mx-[20px]">
               {/* Project Header */}
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start justify-between mb-4 my-[13px] mx-[14px] px-[3px]">
                 <div className="flex-1 ml-4">
                   <h3 className="font-bold text-soabra-text-primary leading-tight text-base mb-2 group-hover:text-soabra-primary-blue transition-colors duration-300">
                     {project.title}
@@ -135,8 +135,8 @@ const ProjectsList = ({
         </div>
 
         {/* Add Project Button */}
-        <div className="mt-6 py-0 my-[40px] rounded-full px-0">
-          <button className="group w-full bg-gradient-to-l from-soabra-primary-blue to-soabra-primary-blue-hover text-white text-base font-bold py-4 hover:shadow-2xl hover:shadow-soabra-primary-blue/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-95 rounded-full">
+        <div className="mt-6 py-0 rounded-full my-[25px] px-[4px]">
+          <button className="group w-full bg-gradient-to-l from-soabra-primary-blue to-soabra-primary-blue-hover text-white text-base font-bold py-4 hover:shadow-2xl hover:shadow-soabra-primary-blue/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-95 rounded-full mx-0">
             <span className="group-hover:scale-110 transition-transform duration-300 inline-block">
               إضافة مشروع جديد +
             </span>
