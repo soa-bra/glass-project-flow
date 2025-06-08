@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -18,7 +19,32 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'arabic': ['IBM Plex Sans Arabic', 'sans-serif'],
+			},
 			colors: {
+				// SoaBra Custom Colors
+				'soabra': {
+					'solid-bg': '#CCD4D7',
+					'sidebar-bg': '#CCD4D7',
+					'projects-bg': '#E3E3E3',
+					'card-bg': '#F2F2F2',
+					'calendar-start': '#E8F2FE',
+					'calendar-mid': '#F9DBF8',
+					'calendar-end': '#DAD4FC',
+					'primary-blue': '#0099FF',
+					'primary-blue-hover': '#0077CC',
+					'success': '#34D399',
+					'warning': '#FBBF24',
+					'error': '#EF4444',
+					'secondary': '#6B7280',
+					'status-success': '#5DDC82',
+					'status-warning': '#ECFF8C',
+					'status-error': '#F23D3D',
+					'status-neutral': '#EDEDEE',
+					'text-primary': '#060606',
+					'text-secondary': '#4B5563',
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -84,11 +110,46 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'slide-in-right': {
+					'0%': {
+						transform: 'translateX(100%)',
+						opacity: '0'
+					},
+					'100%': {
+						transform: 'translateX(0)',
+						opacity: '1'
+					}
+				},
+				'slide-out-right': {
+					'0%': {
+						transform: 'translateX(0)',
+						opacity: '1'
+					},
+					'100%': {
+						transform: 'translateX(100%)',
+						opacity: '0'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'slide-in-right': 'slide-in-right 300ms ease-out',
+				'slide-out-right': 'slide-out-right 300ms ease-out'
+			},
+			spacing: {
+				'18': '4.5rem',
+				'88': '22rem'
+			},
+			zIndex: {
+				'header': '1000',
+				'sidebar': '1000',
+				'projects': '900',
+				'calendar': '900',
+				'project-cards': '800',
+				'dashboard-panel': '950',
+				'modal': '1100'
 			}
 		}
 	},
