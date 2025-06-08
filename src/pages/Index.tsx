@@ -4,6 +4,7 @@ import Sidebar from '@/components/Sidebar';
 import ProjectsList from '@/components/ProjectsList';
 import CalendarColumn from '@/components/CalendarColumn';
 import ProjectDashboard from '@/components/ProjectDashboard';
+import HeaderBar from '@/components/HeaderBar';
 
 export interface Project {
   id: string;
@@ -31,8 +32,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen w-full bg-soabra-solid-bg font-arabic" dir="rtl">
+      {/* Header Bar */}
+      <HeaderBar />
+      
       {/* Main Layout Container - Three Column Layout */}
-      <div className="flex h-screen w-full">
+      <div className="flex h-[calc(100vh-60px)] w-full mt-[60px]">
         {/* Sidebar - Right side, expanded */}
         <Sidebar />
         
