@@ -31,7 +31,7 @@ const Sidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
   return <aside className={`bg-soabra-sidebar-bg border-l border-gray-200/50 z-sidebar h-full glass backdrop-blur-xl rounded-3xl transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-60'}`}>
-      <nav className="flex flex-col px-6 gap-6 py-[195px]">
+      <nav className="flex flex-col gap-6 py-[195px] px-[14px] my-[13px] mx-0">
         {/* Logo/Title Section */}
         {!isCollapsed}
 
