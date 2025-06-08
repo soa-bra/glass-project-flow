@@ -29,7 +29,7 @@ const Sidebar = () => {
   }];
 
   return (
-    <aside className="w-60 bg-soabra-sidebar-bg border-l border-gray-200/50 z-sidebar h-full glass backdrop-blur-xl">
+    <aside className="w-60 bg-soabra-sidebar-bg border-l border-gray-200/50 z-sidebar h-full glass backdrop-blur-xl rounded-3xl">
       <nav className="flex flex-col py-8 px-6 gap-3">
         {/* Logo/Title Section */}
         <div className="mb-10 px-2 text-center group">
@@ -39,7 +39,7 @@ const Sidebar = () => {
           <div className="text-soabra-text-secondary text-sm mt-2 font-medium tracking-wide">
             SoaBra
           </div>
-          <div className="mt-4 h-px bg-gradient-to-r from-transparent via-soabra-primary-blue/30 to-transparent" />
+          <div className="mt-4 h-px bg-gradient-to-r from-transparent via-soabra-primary-blue/30 to-transparent rounded-full" />
         </div>
 
         {/* Menu Items */}
@@ -53,7 +53,7 @@ const Sidebar = () => {
                 animation: 'fadeInUp 0.6s ease-out both'
               }} 
               className={`
-                flex items-center gap-4 px-4 py-3 text-right rounded-lg transition-all duration-300 group
+                flex items-center gap-4 px-4 py-3 text-right rounded-3xl transition-all duration-300 group
                 ${item.active 
                   ? 'bg-white/20 text-[#3e494c] font-medium shadow-sm' 
                   : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light'
