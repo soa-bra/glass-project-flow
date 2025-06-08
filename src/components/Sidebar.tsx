@@ -44,7 +44,7 @@ const Sidebar = () => {
         return <button key={index} style={{
           animationDelay: `${index * 0.1}s`,
           animation: 'fadeInUp 0.6s ease-out both'
-        }} className="-bottom-0 font-normal text-[3e494c] bg-[dde5e7]">
+        }} className="-bottom-0 text-[3e494c] font-extralight text-right rounded-lg bg-[3e494c]">
               <IconComponent className={`w-6 h-6 flex-shrink-0 transition-all duration-300 ${item.active ? 'drop-shadow-sm' : 'group-hover:scale-110 group-hover:drop-shadow-sm'}`} />
               <span className="tracking-wide font-light text-lg">{item.label}</span>
               {item.active && <div className="mr-auto w-2 h-2 bg-white rounded-full shadow-sm animate-pulse" />}
