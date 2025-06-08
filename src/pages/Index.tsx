@@ -50,7 +50,7 @@ const Index = () => {
           </div>
           
           {/* Calendar Column - Left side */}
-          <div className="transform transition-all duration-300 ease-in-out py-0 my-[7px] mx-0 px-[5px]">
+          <div className="transform transition-all duration-300 ease-in-out py-0 mx-0 my-[5px] px-[5px]">
             <CalendarColumn isCompressed={isDashboardOpen} />
           </div>
           
