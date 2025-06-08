@@ -38,9 +38,9 @@ const Index = () => {
         <HeaderBar />
         
         {/* Main Content - Three Column Layout */}
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden px-0">
           {/* Sidebar - Right side */}
-          <div className="transform transition-all duration-500 ease-in-out hover:scale-[1.01]">
+          <div className="transform transition-all duration-500 ease-in-out hover:scale-[1.01] py-0 my-0 px-0">
             <Sidebar />
           </div>
           
