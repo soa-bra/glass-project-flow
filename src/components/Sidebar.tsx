@@ -1,4 +1,6 @@
+
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive } from 'lucide-react';
+
 const Sidebar = () => {
   const menuItems = [{
     icon: Home,
@@ -25,7 +27,9 @@ const Sidebar = () => {
     label: 'الأرشيف',
     active: false
   }];
-  return <aside className="w-60 bg-soabra-sidebar-bg border-l border-gray-200/50 z-sidebar h-full glass backdrop-blur-xl">
+
+  return (
+    <aside className="w-60 bg-soabra-sidebar-bg border-l border-gray-200/50 z-sidebar h-full glass backdrop-blur-xl">
       <nav className="flex flex-col py-8 px-6 gap-3">
         {/* Logo/Title Section */}
         <div className="mb-10 px-2 text-center group">
@@ -40,27 +44,48 @@ const Sidebar = () => {
 
         {/* Menu Items */}
         {menuItems.map((item, index) => {
-        const IconComponent = item.icon;
-        return <button key={index} style={{
-          animationDelay: `${index * 0.1}s`,
-          animation: 'fadeInUp 0.6s ease-out both'
-        }} className="-bottom-0 text-[3e494c] font-extralight text-right rounded-lg bg-[3e494c]">
-              <IconComponent className={`w-6 h-6 flex-shrink-0 transition-all duration-300 ${item.active ? 'drop-shadow-sm' : 'group-hover:scale-110 group-hover:drop-shadow-sm'}`} />
-              <span className="tracking-wide font-light text-lg">{item.label}</span>
-              {item.active && <div className="mr-auto w-2 h-2 bg-white rounded-full shadow-sm animate-pulse" />}
-            </button>;
-      })}
+          const IconComponent = item.icon;
+          return (
+            <button 
+              key={index} 
+              style={{
+                animationDelay: `${index * 0.1}s`,
+                animation: 'fadeInUp 0.6s ease-out both'
+              }} 
+              className={`
+                flex items-center gap-4 px-4 py-3 text-right rounded-lg transition-all duration-300 group
+                ${item.active 
+                  ? 'bg-white/20 text-[#3e494c] font-medium shadow-sm' 
+                  : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light'
+                }
+              `}
+            >
+              <IconComponent 
+                className={`w-6 h-6 flex-shrink-0 transition-all duration-300 ${
+                  item.active 
+                    ? 'text-[#3e494c] drop-shadow-sm' 
+                    : 'group-hover:scale-110 group-hover:drop-shadow-sm'
+                }`} 
+              />
+              <span className="tracking-wide text-lg">{item.label}</span>
+              {item.active && (
+                <div className="mr-auto w-2 h-2 bg-[#3e494c] rounded-full shadow-sm animate-pulse" />
+              )}
+            </button>
+          );
+        })}
 
         {/* Bottom Decoration */}
         <div className="mt-auto pt-6">
           <div className="px-2">
-            
             <div className="text-center text-xs text-soabra-text-secondary/70 font-medium">
               الإصدار 2.1.0
             </div>
           </div>
         </div>
       </nav>
-    </aside>;
+    </aside>
+  );
 };
+
 export default Sidebar;
