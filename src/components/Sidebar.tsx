@@ -25,17 +25,25 @@ const Sidebar = () => {
     label: 'الأرشيف',
     active: false
   }];
-  return <aside className="w-60 bg-soabra-sidebar-bg border-l border-gray-200/50 z-sidebar h-full glass backdrop-blur-xl rounded-3xl py-[148px]">
-      <nav className="flex flex-col px-6 gap-6 py-[48px]">
+  return <aside className="w-60 bg-soabra-sidebar-bg border-l border-gray-200/50 z-sidebar h-full glass backdrop-blur-xl rounded-3xl">
+      <nav className="flex flex-col py-8 px-6 gap-6">
         {/* Logo/Title Section */}
-        
+        <div className="mb-6 px-2 text-center group">
+          <h1 className="text-2xl font-bold bg-gradient-to-l from-soabra-primary-blue to-soabra-success bg-clip-text text-transparent leading-tight transition-all duration-300 group-hover:scale-105">
+            نظام إدارة المشاريع
+          </h1>
+          <div className="text-soabra-text-secondary text-sm mt-2 font-medium tracking-wide">
+            SoaBra
+          </div>
+          <div className="mt-4 h-px bg-gradient-to-r from-transparent via-soabra-primary-blue/30 to-transparent rounded-full" />
+        </div>
 
         {/* Menu Title Section */}
-        <div className="text-center mb-8 py-0">
-          <h2 className="text-soabra-text-primary mb-4 text-right text-2xl font-medium py-0">
+        <div className="text-center mb-8 my-0 py-[5px] px-[7px]">
+          <h2 className="text-soabra-text-primary mb-4 text-right text-2xl font-medium">
             القائمة
           </h2>
-          
+          <div className="h-px bg-gradient-to-r from-transparent via-soabra-primary-blue/30 to-transparent rounded-full" />
         </div>
 
         {/* Menu Items */}
