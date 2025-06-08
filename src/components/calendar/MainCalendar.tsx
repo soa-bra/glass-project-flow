@@ -86,7 +86,7 @@ const MainCalendar = () => {
     });
   };
   const today = new Date();
-  return <div className="shadow-sm border h-full rounded-3xl mx-0 px-[225px] py-[8px] my-[169px] bg-transparent">
+  return <div className="shadow-sm border h-full rounded-3xl py-[8px] my-[169px] bg-transparent px-[227px] mx-[4px]">
       {/* Calendar Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-100">
         <button onClick={() => navigateMonth('next')} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
