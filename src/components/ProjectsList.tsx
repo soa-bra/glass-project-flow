@@ -57,12 +57,12 @@ const ProjectsList = ({ onProjectSelect, isCompressed }: ProjectsListProps) => {
 
   return (
     <div className={`
-      ${isCompressed ? 'w-[15%]' : 'w-1/5'} 
-      bg-soabra-projects-bg border-l border-gray-200 z-projects transition-all duration-300
+      ${isCompressed ? 'w-[20%]' : 'w-[25%]'} 
+      bg-soabra-projects-bg border-l border-gray-200 z-projects transition-all duration-300 h-full
     `}>
-      <div className="p-4">
-        <h2 className="text-heading-sub mb-4">المشاريع</h2>
-        <div className="space-y-3 max-h-[calc(100vh-140px)] overflow-y-auto">
+      <div className="p-6">
+        <h2 className="text-heading-sub mb-6 text-center">المشاريع</h2>
+        <div className="space-y-4 max-h-[calc(100vh-120px)] overflow-y-auto">
           {projects.map((project) => (
             <div
               key={project.id}

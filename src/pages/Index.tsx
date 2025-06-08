@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import HeaderBar from '@/components/HeaderBar';
 import Sidebar from '@/components/Sidebar';
 import ProjectsList from '@/components/ProjectsList';
 import CalendarColumn from '@/components/CalendarColumn';
@@ -32,21 +31,18 @@ const Index = () => {
 
   return (
     <div className="min-h-screen w-full bg-soabra-solid-bg font-arabic" dir="rtl">
-      {/* Header Bar - Fixed */}
-      <HeaderBar />
-      
-      {/* Main Layout Container */}
-      <div className="flex h-[calc(100vh-60px)] w-full">
-        {/* Sidebar - Fixed */}
+      {/* Main Layout Container - Three Column Layout */}
+      <div className="flex h-screen w-full">
+        {/* Sidebar - Right side, expanded */}
         <Sidebar />
         
-        {/* Projects Column - Scrollable */}
+        {/* Projects Column - Middle */}
         <ProjectsList 
           onProjectSelect={handleProjectSelect}
           isCompressed={isDashboardOpen}
         />
         
-        {/* Calendar Column - Fixed */}
+        {/* Calendar Column - Left side, largest */}
         <CalendarColumn isCompressed={isDashboardOpen} />
         
         {/* Project Dashboard Panel - Slide overlay */}
