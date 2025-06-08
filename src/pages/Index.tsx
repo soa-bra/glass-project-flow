@@ -1,9 +1,11 @@
+
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsList from '@/components/ProjectsList';
 import CalendarColumn from '@/components/CalendarColumn';
 import ProjectDashboard from '@/components/ProjectDashboard';
+
 export interface Project {
   id: string;
   title: string;
@@ -13,17 +15,21 @@ export interface Project {
   phase: string;
   phaseColor: string;
 }
+
 const Index = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+
   const handleProjectSelect = (project: Project) => {
     setSelectedProject(project);
     setIsDashboardOpen(true);
   };
+
   const handleCloseDashboard = () => {
     setIsDashboardOpen(false);
     setSelectedProject(null);
   };
+
   return <div className="min-h-screen w-full bg-soabra-solid-bg font-arabic" dir="rtl">
       {/* Floating Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
@@ -60,4 +66,5 @@ const Index = () => {
       </div>
     </div>;
 };
+
 export default Index;
