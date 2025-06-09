@@ -60,7 +60,7 @@ const Index = () => {
 
           {/* Calendar Column - placeholder for now */}
           <div className="flex-1">
-            <CalendarColumn />
+            <CalendarColumn isCompressed={isDashboardOpen} />
           </div>
         </div>
       </div>
