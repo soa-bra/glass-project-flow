@@ -31,7 +31,7 @@ const Sidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
   return <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-700 ease-out ${isCollapsed ? 'w-20' : 'w-60'}`}>
-      <nav className="flex flex-col gap-2 px-0 mx-[15px] my-[80px] py-[3px]">
+      <nav className="flex flex-col gap-2 px-0 mx-[15px] my-[3px] py-0">
         {/* Menu Title Section with Toggle */}
         <div className="text-center mb-2 rounded-full px-[8px] my-[27px] py-[40px]">
           <div className="flex items-center justify-between">
