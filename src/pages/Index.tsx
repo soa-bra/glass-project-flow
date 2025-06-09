@@ -4,7 +4,6 @@ import HeaderBar from '@/components/HeaderBar';
 import ProjectsList from '@/components/ProjectsList';
 import CalendarColumn from '@/components/CalendarColumn';
 import ProjectDashboard from '@/components/ProjectDashboard';
-
 export interface Project {
   id: string;
   title: string;
@@ -14,76 +13,53 @@ export interface Project {
   phase: string;
   phaseColor: string;
 }
-
 const Index = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
-
   const handleProjectSelect = (project: Project) => {
     setSelectedProject(project);
     setIsDashboardOpen(true);
   };
-
   const handleCloseDashboard = () => {
     setIsDashboardOpen(false);
     setSelectedProject(null);
   };
+  return <div dir="rtl" className="min-h-screen w-full bg-soabra-solid-bg font-arabic py-[140px]">
+      {/* Floating Background Effects */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-20 right-20 w-64 h-64 bg-gradient-to-br from-soabra-primary-blue/10 to-soabra-calendar-start/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-32 left-32 w-96 h-96 bg-gradient-to-br from-soabra-calendar-mid/15 to-soabra-calendar-end/20 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/4 w-48 h-48 bg-gradient-to-br from-soabra-success/10 to-soabra-warning/10 rounded-full blur-2xl animate-pulse delay-500" />
+      </div>
 
-  return (
-    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic">
-      {/* Header */}
-      <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-1000">
+      {/* Main Layout Container */}
+      <div className="flex flex-col h-screen w-full relative z-10 py-0">
+        {/* Header Bar */}
         <HeaderBar />
-      </div>
-
-      <div className="flex h-screen pt-[60px]">
-        {/* Sidebar */}
-        <div
-          className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-1000 transition-width duration-300"
-          style={{ width: selectedProject ? '80px' : '80px' }}
-        >
-          <Sidebar collapsible />
-        </div>
-
-        {/* Main Columns */}
-        <div className="flex flex-1 overflow-hidden">
-          {/* Projects List - scrollable only */}
-          <div
-            className="absolute top-[60px] right-[80px] bottom-0 bg-[#E3E3E3] z-900 overflow-y-auto p-4"
-            style={{ width: '20%' }}
-          >
-            <ProjectsList
-              onProjectSelect={handleProjectSelect}
-              isCompressed={isDashboardOpen}
-            />
+        
+        {/* Main Content - Three Column Layout */}
+        <div className="flex flex-1 overflow-hidden gap-4 p-4 my-0 py-[33px] px-[20px]">
+          {/* Sidebar - Right side (25% width) */}
+          <div className="w-1/4 min-w-[300px]">
+            <Sidebar />
           </div>
-
-          {/* Calendar - fixed/hide when dashboard open */}
-          {!isDashboardOpen && (
-            <div
-              className="absolute top-[60px] right-[calc(80px+20%)] bottom-0 bg-gradient-to-br from-soabra-calendar-start to-soabra-calendar-end z-900 p-4"
-              style={{ width: '20%' }}
-            >
-              <CalendarColumn />
-            </div>
-          )}
-
-          {/* Dashboard Panel */}
-          {isDashboardOpen && selectedProject && (
-            <div
-              className="absolute top-[60px] right-[calc(80px+20%)] bottom-0 bg-soabra-glass-bg z-950 p-4 overflow-y-auto"
-              style={{ width: '50%' }}
-            >
-              <ProjectDashboard
-                project={selectedProject}
-                onClose={handleCloseDashboard}
-              />
-            </div>
-          )}
+          
+          {/* Projects Column - Middle (35% width) */}
+          <div className={`${isDashboardOpen ? 'w-[30%]' : 'w-[40%]'} transition-all duration-500`}>
+            <ProjectsList onProjectSelect={handleProjectSelect} isCompressed={isDashboardOpen} />
+          </div>
+          
+          {/* Calendar Column - Left side (40% width when no dashboard, 30% when dashboard open) */}
+          <div className={`${isDashboardOpen ? 'w-[30%]' : 'w-[35%]'} transition-all duration-500`}>
+            <CalendarColumn isCompressed={isDashboardOpen} />
+          </div>
+          
+          {/* Project Dashboard Panel - Slide overlay (takes 40% when open) */}
+          {isDashboardOpen && selectedProject && <div className="w-[10%] transition-all duration-500">
+              <ProjectDashboard project={selectedProject} onClose={handleCloseDashboard} />
+            </div>}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;

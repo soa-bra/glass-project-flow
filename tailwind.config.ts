@@ -23,15 +23,15 @@ export default {
 				'arabic': ['IBM Plex Sans Arabic', 'sans-serif'],
 			},
 			colors: {
-				// SoaBra Custom Colors - Updated to match specifications
+				// SoaBra Custom Colors
 				'soabra': {
-					'header-bg': '#CAD4D7',
-					'sidebar-bg': '#CAD4D7', 
+					'solid-bg': '#CCD4D7',
+					'sidebar-bg': '#CCD4D7',
 					'projects-bg': '#E3E3E3',
 					'card-bg': '#F2F2F2',
-					'calendar-gradient-start': '#E8F2FE',
-					'calendar-gradient-mid': '#F9DBF8',
-					'calendar-gradient-end': '#DAD4FC',
+					'calendar-start': '#E8F2FE',
+					'calendar-mid': '#F9DBF8',
+					'calendar-end': '#DAD4FC',
 					'primary-blue': '#0099FF',
 					'primary-blue-hover': '#0077CC',
 					'success': '#34D399',
@@ -42,7 +42,7 @@ export default {
 					'status-warning': '#ECFF8C',
 					'status-error': '#F23D3D',
 					'status-neutral': '#EDEDEE',
-					'text-primary': '#2a3437',
+					'text-primary': '#060606',
 					'text-secondary': '#4B5563',
 				},
 				border: 'hsl(var(--border))',
