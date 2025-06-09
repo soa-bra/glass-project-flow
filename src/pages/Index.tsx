@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
@@ -33,16 +34,19 @@ const Index: React.FC = () => {
   };
 
   return (
-    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic">
+    <div dir="rtl" className="relative min-h-screen w-full font-arabic"
+         style={{
+           background: 'linear-gradient(135deg, #E8F2FE 0%, #F9DBF8 35%, #DAD4FC 70%, #E8F2FE 100%)',
+         }}>
       {/* Header */}
-      <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
+      <div className="fixed top-0 inset-x-0 bg-white/30 backdrop-blur-xl border-b border-white/20 z-header">
         <HeaderBar />
       </div>
 
       <div className="flex h-screen pt-[60px]">
         {/* Sidebar - 10% width */}
         <div 
-          className={`fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-300 ${
+          className={`fixed top-[60px] right-0 h-[calc(100vh-60px)] z-sidebar transition-all duration-300 ${
             isDashboardOpen ? 'w-[60px]' : 'w-[10%]'
           }`}
         >
@@ -51,9 +55,9 @@ const Index: React.FC = () => {
 
         {/* Projects Column - 30% width */}
         <div 
-          className={`fixed top-[60px] h-[85vh] w-[30%] z-projects transition-all duration-300 ${
+          className={`fixed top-[60px] h-[calc(100vh-60px)] w-[30%] z-projects transition-all duration-300 ${
             isDashboardOpen ? 'right-[60px]' : 'right-[10%]'
-          } mr-5`}
+          } p-4`}
         >
           <ProjectsList 
             onProjectSelect={handleProjectSelect} 
@@ -64,7 +68,7 @@ const Index: React.FC = () => {
 
         {/* Calendar Column - 60% width (hidden when dashboard is open) */}
         <div 
-          className={`fixed top-[60px] h-[90vh] w-[60%] left-[10%] z-calendar transition-all duration-300 ${
+          className={`fixed top-[60px] h-[calc(100vh-60px)] w-[60%] left-0 z-calendar transition-all duration-300 p-4 ${
             isDashboardOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'
           }`}
         >
@@ -74,7 +78,7 @@ const Index: React.FC = () => {
         {/* Project Dashboard Panel - 60% width (shown when project is selected) */}
         {isDashboardOpen && selectedProject && (
           <div 
-            className={`fixed top-[60px] h-[90vh] w-[60%] left-[10%] z-dashboard-panel transition-all duration-300 ${
+            className={`fixed top-[60px] h-[calc(100vh-60px)] w-[60%] left-0 z-dashboard-panel transition-all duration-300 p-4 ${
               isDashboardOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
             }`}
           >
