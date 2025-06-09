@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
@@ -32,24 +33,24 @@ const Index = () => {
   return (
     <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic">
       {/* Header */}
-      <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-1000">
+      <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
       </div>
 
       <div className="flex h-screen pt-[60px]">
         {/* Sidebar */}
         <div
-          className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-1000 transition-width duration-300"
+          className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-width duration-300"
           style={{ width: selectedProject ? '80px' : '80px' }}
         >
-          <Sidebar collapsible />
+          <Sidebar />
         </div>
 
         {/* Main Columns */}
         <div className="flex flex-1 overflow-hidden">
           {/* Projects List - scrollable only */}
           <div
-            className="absolute top-[60px] right-[80px] bottom-0 bg-[#E3E3E3] z-900 overflow-y-auto p-4"
+            className="absolute top-[60px] right-[80px] bottom-0 bg-[#E3E3E3] z-projects overflow-y-auto p-4"
             style={{ width: '20%' }}
           >
             <ProjectsList
@@ -61,18 +62,18 @@ const Index = () => {
           {/* Calendar - fixed/hide when dashboard open */}
           {!isDashboardOpen && (
             <div
-              className="absolute top-[60px] right-[calc(80px+20%)] bottom-0 bg-gradient-to-br from-soabra-calendar-start to-soabra-calendar-end z-900 p-4"
-              style={{ width: '20%' }}
+              className="absolute top-[60px] right-[calc(80px+20%)] bottom-0 bg-gradient-to-br from-soabra-calendar-start to-soabra-calendar-end z-calendar p-4"
+              style={{ width: '70%' }}
             >
-              <CalendarColumn />
+              <CalendarColumn isCompressed={false} />
             </div>
           )}
 
           {/* Dashboard Panel */}
           {isDashboardOpen && selectedProject && (
             <div
-              className="absolute top-[60px] right-[calc(80px+20%)] bottom-0 bg-soabra-glass-bg z-950 p-4 overflow-y-auto"
-              style={{ width: '50%' }}
+              className="absolute top-[60px] right-[calc(80px+20%)] bottom-0 bg-gradient-to-br from-soabra-calendar-start to-soabra-calendar-end z-dashboard-panel p-4 overflow-y-auto animate-slide-in-right"
+              style={{ width: '70%' }}
             >
               <ProjectDashboard
                 project={selectedProject}

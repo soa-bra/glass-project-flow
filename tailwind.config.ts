@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -32,6 +31,7 @@ export default {
 					'calendar-start': '#E8F2FE',
 					'calendar-mid': '#F9DBF8',
 					'calendar-end': '#DAD4FC',
+					'glass-bg': 'rgba(255, 255, 255, 0.45)',
 					'primary-blue': '#0099FF',
 					'primary-blue-hover': '#0077CC',
 					'success': '#34D399',
