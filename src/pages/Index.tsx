@@ -16,7 +16,7 @@ const Index = () => {
 
         {/* Main Content Area - responsive to sidebar changes */}
         <div className="flex-1 transition-all duration-500 ease-in-out ml-[80px] p-6 py-0 mx-[240px] px-[26px] my-[2px]">
-          <div className="glass rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform my-0 py-[26px] mx-[81px] px-0">
+          <div className="glass rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform mx-[81px] px-0 my-[15px] py-[45px]">
             <h1 className="text-3xl font-bold text-soabra-text-primary mb-4 animate-fade-in">
               مرحباً بك في SoaBra
             </h1>
