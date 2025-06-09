@@ -1,11 +1,11 @@
-
+import React from 'react';
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SidebarProps {
   isCollapsed?: boolean;
 }
 
-const Sidebar = ({ isCollapsed = false }: SidebarProps) => {
+const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
   const menuItems = [
     {
       icon: Home,
