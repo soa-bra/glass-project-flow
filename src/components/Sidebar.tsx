@@ -1,4 +1,3 @@
-
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 interface SidebarProps {
@@ -42,7 +41,7 @@ const Sidebar = ({
     onToggle?.(isCollapsed);
   }, [isCollapsed, onToggle]);
   return <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out ${isCollapsed ? 'w-20' : 'w-60'}`}>
-      <nav className="flex flex-col gap-2 my-0 px-0 py-[18px] mx-[10px]">
+      <nav className="flex flex-col gap-2 my-0 mx-[10px] py-[10px] px-[15px]">
         {/* Menu Title Section with Toggle */}
         <div className="text-center mb-2 rounded-full py-[31px] px-0 my-[34px]">
           <div className={`flex items-center rounded-lg px-[3px] mx-[5px] my-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
@@ -77,8 +76,8 @@ const Sidebar = ({
                 ${item.active ? 'bg-white/20 border-[#3e494c]/40' : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/50 group-hover:bg-white/5'}
                 group-hover:scale-105 group-active:scale-95
               `} style={{
-                margin: isCollapsed ? '0 auto' : '0'
-              }}>
+            margin: isCollapsed ? '0 auto' : '0'
+          }}>
                 <IconComponent className={`
                   w-4 h-4 transition-all duration-300 ease-out
                   ${item.active ? 'text-[#3e494c]' : 'group-hover:text-[#3e494c]'}
