@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -31,7 +32,7 @@ export default {
 					'calendar-start': '#E8F2FE',
 					'calendar-mid': '#F9DBF8',
 					'calendar-end': '#DAD4FC',
-					'glass-bg': 'rgba(255, 255, 255, 0.45)',
+					'glass-bg': 'rgba(255, 255, 255, 0.40)',
 					'primary-blue': '#0099FF',
 					'primary-blue-hover': '#0077CC',
 					'success': '#34D399',
@@ -130,13 +131,35 @@ export default {
 						transform: 'translateX(100%)',
 						opacity: '0'
 					}
+				},
+				'slide-out-left': {
+					'0%': {
+						transform: 'translateX(0)',
+						opacity: '1'
+					},
+					'100%': {
+						transform: 'translateX(-100%)',
+						opacity: '0'
+					}
+				},
+				'fade-in-up': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(30px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'slide-in-right': 'slide-in-right 300ms ease-out',
-				'slide-out-right': 'slide-out-right 300ms ease-out'
+				'slide-out-right': 'slide-out-right 300ms ease-out',
+				'slide-out-left': 'slide-out-left 300ms ease-out',
+				'fade-in-up': 'fade-in-up 0.6s ease-out'
 			},
 			spacing: {
 				'18': '4.5rem',
@@ -150,6 +173,17 @@ export default {
 				'project-cards': '800',
 				'dashboard-panel': '950',
 				'modal': '1100'
+			},
+			width: {
+				'10p': '10%',
+				'30p': '30%',
+				'60p': '60%',
+				'85p': '85%',
+				'90p': '90%'
+			},
+			height: {
+				'85vh': '85vh',
+				'90vh': '90vh'
 			}
 		}
 	},
