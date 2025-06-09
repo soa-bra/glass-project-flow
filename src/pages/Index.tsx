@@ -1,11 +1,9 @@
-
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsList from '@/components/ProjectsList';
 import CalendarColumn from '@/components/CalendarColumn';
 import ProjectDashboard from '@/components/ProjectDashboard';
-
 export interface Project {
   id: string;
   title: string;
@@ -15,23 +13,18 @@ export interface Project {
   phase: string;
   phaseColor: string;
 }
-
 const Index = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
-
   const handleProjectSelect = (project: Project) => {
     setSelectedProject(project);
     setIsDashboardOpen(true);
   };
-
   const handleCloseDashboard = () => {
     setIsDashboardOpen(false);
     setSelectedProject(null);
   };
-
-  return (
-    <div dir="rtl" className="min-h-screen w-full bg-soabra-solid-bg font-arabic">
+  return <div dir="rtl" className="min-h-screen w-full bg-soabra-solid-bg font-arabic py-[140px]">
       {/* Floating Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-20 right-20 w-64 h-64 bg-gradient-to-br from-soabra-primary-blue/10 to-soabra-calendar-start/20 rounded-full blur-3xl animate-pulse" />
@@ -40,12 +33,12 @@ const Index = () => {
       </div>
 
       {/* Main Layout Container */}
-      <div className="flex flex-col h-screen w-full relative z-10">
+      <div className="flex flex-col h-screen w-full relative z-10 py-0">
         {/* Header Bar */}
         <HeaderBar />
         
         {/* Main Content - Three Column Layout */}
-        <div className="flex flex-1 overflow-hidden gap-4 p-4">
+        <div className="flex flex-1 overflow-hidden gap-4 p-4 my-0 py-[33px] px-[20px]">
           {/* Sidebar - Right side (25% width) */}
           <div className="w-1/4 min-w-[300px]">
             <Sidebar />
@@ -62,15 +55,11 @@ const Index = () => {
           </div>
           
           {/* Project Dashboard Panel - Slide overlay (takes 40% when open) */}
-          {isDashboardOpen && selectedProject && (
-            <div className="w-[10%] transition-all duration-500">
+          {isDashboardOpen && selectedProject && <div className="w-[10%] transition-all duration-500">
               <ProjectDashboard project={selectedProject} onClose={handleCloseDashboard} />
-            </div>
-          )}
+            </div>}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
