@@ -25,73 +25,73 @@ const ProjectDashboard = ({ project, onClose }: ProjectDashboardProps) => {
   ];
 
   return (
-    <div className="w-full h-full bg-white/90 backdrop-blur-sm rounded-lg m-4 shadow-lg border border-white/50 overflow-hidden">
+    <div className="w-full h-full bg-white/95 backdrop-blur-sm rounded-2xl m-6 shadow-2xl border border-white/70 overflow-hidden">
       <div className="p-6 h-full overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200/50">
+        {/* Enhanced Header */}
+        <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200/60">
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-4 mb-4">
               <div 
-                className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
+                className="w-6 h-6 rounded-full border-3 border-white shadow-lg"
                 style={{ backgroundColor: project.phaseColor }}
               />
-              <h1 className="text-2xl font-bold text-soabra-text-primary">
+              <h1 className="text-3xl font-bold text-gray-800">
                 {project.title}
               </h1>
             </div>
             
-            <div className="flex items-center gap-6 mb-3">
+            <div className="flex items-center gap-8 mb-4">
               <div className="flex items-center gap-2">
                 <span 
-                  className="text-sm px-3 py-1 rounded-full text-white font-medium shadow-sm"
+                  className="text-sm px-4 py-2 rounded-full text-white font-bold shadow-lg"
                   style={{ backgroundColor: project.phaseColor }}
                 >
                   {project.phase}
                 </span>
               </div>
               
-              <div className="flex items-center gap-2 text-sm text-soabra-text-secondary">
-                <Users className="w-4 h-4" />
-                <span>المدير: {project.assignee}</span>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Users className="w-5 h-5" />
+                <span className="font-medium">المدير: {project.assignee}</span>
               </div>
               
-              <div className="flex items-center gap-2 text-sm text-soabra-text-secondary">
-                <DollarSign className="w-4 h-4" />
-                <span>الميزانية: {parseInt(project.value).toLocaleString()} ر.س</span>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <DollarSign className="w-5 h-5" />
+                <span className="font-medium">الميزانية: {parseInt(project.value).toLocaleString()} ر.س</span>
               </div>
             </div>
             
-            <p className="text-sm text-soabra-text-secondary">
+            <p className="text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-gray-100 p-3 rounded-xl">
               تطوير الواجهة الإلكترونية الداخلي لإدارة عمليات سوبرا الشامل
             </p>
           </div>
           
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors group"
+            className="p-3 hover:bg-gray-100 rounded-xl transition-colors group"
           >
-            <X className="w-6 h-6 text-soabra-text-secondary group-hover:text-soabra-error transition-colors" />
+            <X className="w-6 h-6 text-gray-500 group-hover:text-red-500 transition-colors" />
           </button>
         </div>
         
-        {/* Progress Bar - 7 Phases */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 p-4 bg-gray-50/50 rounded-lg">
+        {/* Enhanced Progress Bar */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl shadow-lg">
             {[1, 2, 3, 4, 5, 6, 7].map((phase, index) => (
               <div key={phase} className="flex items-center">
                 <div className={`
-                  w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300
+                  w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-500
                   ${index < 3 
-                    ? 'bg-soabra-primary-blue text-white shadow-md' 
-                    : 'bg-white border-2 border-gray-200 text-soabra-text-secondary'
+                    ? 'bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg scale-110' 
+                    : 'bg-white border-3 border-gray-300 text-gray-500 shadow-md'
                   }
                 `}>
                   {phase}
                 </div>
                 {index < 6 && (
                   <div className={`
-                    w-8 h-1.5 mx-2 rounded-full transition-all duration-300
-                    ${index < 2 ? 'bg-soabra-primary-blue' : 'bg-gray-200'}
+                    w-10 h-2 mx-3 rounded-full transition-all duration-500
+                    ${index < 2 ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gray-300'}
                   `} />
                 )}
               </div>
@@ -99,33 +99,33 @@ const ProjectDashboard = ({ project, onClose }: ProjectDashboardProps) => {
           </div>
         </div>
         
-        {/* Quick Actions Panel */}
-        <div className="mb-6 p-4 bg-gradient-to-r from-gray-50/50 to-blue-50/30 rounded-lg border border-gray-200/30">
+        {/* Enhanced Quick Actions */}
+        <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 rounded-2xl shadow-lg">
           <div className="flex gap-4 justify-center">
-            <button className="px-6 py-3 bg-soabra-primary-blue text-white rounded-lg hover:bg-soabra-primary-blue-hover transition-all duration-300 text-sm font-medium shadow-md hover:shadow-lg hover:-translate-y-0.5">
+            <button className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:shadow-xl transition-all duration-300 text-sm font-bold hover:scale-105">
               إضافة مهمة
             </button>
-            <button className="px-6 py-3 bg-soabra-warning text-white rounded-lg hover:opacity-90 transition-all duration-300 text-sm font-medium shadow-md hover:shadow-lg hover:-translate-y-0.5">
+            <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-xl transition-all duration-300 text-sm font-bold hover:scale-105">
               توليد ذكي
             </button>
-            <button className="px-6 py-3 bg-soabra-success text-white rounded-lg hover:opacity-90 transition-all duration-300 text-sm font-medium shadow-md hover:shadow-lg hover:-translate-y-0.5">
+            <button className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:shadow-xl transition-all duration-300 text-sm font-bold hover:scale-105">
               تعديل المشروع
             </button>
           </div>
         </div>
         
-        {/* Tabs Bar */}
-        <div className="mb-6">
-          <div className="flex gap-1 bg-gray-100/80 rounded-lg p-1">
+        {/* Enhanced Tabs */}
+        <div className="mb-8">
+          <div className="flex gap-2 bg-gray-100/80 rounded-2xl p-2">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`
-                  flex items-center gap-2 px-4 py-3 rounded-md text-sm transition-all duration-300 flex-1 justify-center
+                  flex items-center gap-2 px-6 py-4 rounded-xl text-sm transition-all duration-300 flex-1 justify-center font-bold
                   ${activeTab === tab.id 
-                    ? 'bg-soabra-primary-blue text-white font-medium shadow-md' 
-                    : 'text-soabra-text-secondary hover:bg-white/70 hover:text-soabra-text-primary'
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg scale-105' 
+                    : 'text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-md'
                   }
                 `}
               >
@@ -138,7 +138,7 @@ const ProjectDashboard = ({ project, onClose }: ProjectDashboardProps) => {
         
         {/* Dashboard Content */}
         {activeTab === 'dashboard' && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Financial Card */}
             <FinancialCard />
             
@@ -148,8 +148,8 @@ const ProjectDashboard = ({ project, onClose }: ProjectDashboardProps) => {
             {/* Analytics Card */}
             <AnalyticsCard />
             
-            {/* KPI Cards Grid */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* Enhanced KPI Cards Grid */}
+            <div className="grid grid-cols-2 gap-6">
               <KPICard
                 icon="👥"
                 value="12"
@@ -176,16 +176,16 @@ const ProjectDashboard = ({ project, onClose }: ProjectDashboardProps) => {
         
         {/* Other tab contents */}
         {activeTab !== 'dashboard' && (
-          <div className="bg-white/80 rounded-lg p-8 text-center border border-gray-200/30 shadow-sm">
-            <div className="flex flex-col items-center gap-4">
+          <div className="bg-white/90 rounded-2xl p-12 text-center shadow-xl border border-gray-200/50">
+            <div className="flex flex-col items-center gap-6">
               {tabs.find(t => t.id === activeTab)?.icon && (
-                <div className="w-16 h-16 rounded-full bg-gray-100/80 flex items-center justify-center">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
                   {React.createElement(tabs.find(t => t.id === activeTab)!.icon, { 
-                    className: "w-8 h-8 text-soabra-text-secondary" 
+                    className: "w-10 h-10 text-purple-600" 
                   })}
                 </div>
               )}
-              <p className="text-soabra-text-secondary text-lg">
+              <p className="text-gray-600 text-xl font-medium">
                 محتوى تبويب {tabs.find(t => t.id === activeTab)?.label} قيد التطوير...
               </p>
             </div>
