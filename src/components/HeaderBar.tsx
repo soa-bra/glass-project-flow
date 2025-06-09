@@ -1,8 +1,6 @@
-
 import { ArrowLeft, ArrowRight, Bell, CircleUser, Menu, Search, RefreshCcw, Settings } from 'lucide-react';
-
 const HeaderBar = () => {
-  return <header className="fixed top-0 right-0 left-0 h-[60px] bg-soabra-sidebar-bg z-header py-[55px] px-[10px] my-0">
+  return <header className="fixed top-0 right-0 left-0 h-[60px] bg-soabra-sidebar-bg z-header py-[55px] my-0 px-[25px]">
       <div className="flex items-center justify-between h-full px-[20px]">
         {/* Logo/Brand - Left Side aligned with sidebar menu */}
         <div className="text-right ml-4">
@@ -48,5 +46,4 @@ const HeaderBar = () => {
       </div>
     </header>;
 };
-
 export default HeaderBar;

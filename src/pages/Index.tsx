@@ -39,17 +39,7 @@ const Index = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex gap-5 p-5 mr-[110px] py-0 my-0 px-0 mx-0">
-          {/* Projects List Column */}
-          <div className="w-[30%] h-[calc(100vh-140px)] py-[6px] mx-0 px-[104px] my-0">
-            <ProjectsList onProjectSelect={handleProjectSelect} isCompressed={isDashboardOpen} />
-          </div>
-
-          {/* Calendar Column - placeholder for now */}
-          <div className="flex-1 px-0 mx-[42px]">
-            <CalendarColumn isCompressed={isDashboardOpen} />
-          </div>
-        </div>
+        
       </div>
 
       {/* Project Dashboard Panel */}
