@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, RefreshCcw, Plus, ArrowUpDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RefreshCcw, Plus, ArrowUpDown, Calendar as CalendarIcon } from 'lucide-react';
 
 interface CalendarColumnProps {
   isCompressed: boolean;
@@ -12,13 +12,14 @@ const CalendarColumn = ({ isCompressed }: CalendarColumnProps) => {
 
   const currentMonth = currentDate.toLocaleDateString('ar-SA', { month: 'long', year: 'numeric' });
 
-  // Sample events with more vibrant colors
+  // Sample events
   const events = [
-    { date: 8, title: 'اجتماع المراجعة', type: 'meeting', color: '#FF6B6B' },
-    { date: 12, title: 'تسليم المرحلة', type: 'deadline', color: '#4ECDC4' },
-    { date: 15, title: 'ورشة التصميم', type: 'workshop', color: '#45B7D1' },
-    { date: 20, title: 'مراجعة العميل', type: 'meeting', color: '#96CEB4' },
-    { date: 25, title: 'إطلاق المشروع', type: 'milestone', color: '#FFEAA7' },
+    { date: 8, title: 'Long Event', type: 'long', color: '#F23D3D' },
+    { date: 9, title: 'Long Event', type: 'long', color: '#5DDC82' },
+    { date: 10, title: 'Long Event', type: 'extended', color: '#FBBF24' },
+    { date: 15, title: 'Long Event', type: 'long', color: '#0099FF' },
+    { date: 20, title: 'Long Event', type: 'extended', color: '#F23D3D' },
+    { date: 25, title: 'Long Event', type: 'long', color: '#A855F7' }
   ];
 
   // Generate calendar days
@@ -62,28 +63,33 @@ const CalendarColumn = ({ isCompressed }: CalendarColumnProps) => {
 
   return (
     <div 
-      className="h-full rounded-3xl shadow-2xl border border-white/30 overflow-hidden backdrop-blur-xl"
+      className="h-full rounded-t-2xl shadow-lg border border-gray-100 overflow-hidden z-calendar"
       style={{
-        background: 'rgba(255, 255, 255, 0.25)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+        background: 'linear-gradient(135deg, #E8F2FE 0%, #F9DBF8 50%, #DAD4FC 100%)',
+        borderBottomLeftRadius: '0',
+        borderBottomRightRadius: '0'
       }}
     >
       <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-white/20 bg-white/20 backdrop-blur-sm">
+        <div className="p-6 border-b border-white/20 bg-white/30 backdrop-blur-sm">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-3xl font-bold text-gray-800">التقويم</h2>
-            <div className="flex items-center gap-3">
-              <button className="p-3 hover:bg-white/30 rounded-2xl transition-all duration-300 group border border-white/20">
-                <RefreshCcw className="w-5 h-5 text-gray-700 group-hover:rotate-180 transition-transform duration-500" />
+            <h2 className="text-2xl font-bold text-soabra-text-primary">التقويم</h2>
+            <div className="flex items-center gap-2">
+              <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+                  <RefreshCcw className="w-5 h-5 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+                </div>
               </button>
-              <button className="p-3 hover:bg-white/30 rounded-2xl transition-all duration-300 group border border-white/20">
-                <ArrowUpDown className="w-5 h-5 text-gray-700 group-hover:scale-110 transition-transform duration-300" />
+              <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+                  <ArrowUpDown className="w-5 h-5 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+                </div>
               </button>
-              <button className="p-3 hover:bg-white/30 rounded-2xl transition-all duration-300 group border border-white/20">
-                <Plus className="w-5 h-5 text-gray-700 group-hover:scale-110 transition-transform duration-300" />
+              <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+                  <Plus className="w-5 h-5 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+                </div>
               </button>
             </div>
           </div>
@@ -94,10 +100,10 @@ const CalendarColumn = ({ isCompressed }: CalendarColumnProps) => {
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
-                className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${
+                className={`px-4 py-2 rounded-lg text-sm transition-all ${
                   viewMode === mode
-                    ? 'bg-white/40 text-gray-800 border border-white/50 shadow-lg'
-                    : 'text-gray-600 hover:bg-white/20 border border-white/20'
+                    ? 'bg-white/40 text-soabra-text-primary border border-white/50'
+                    : 'text-soabra-text-secondary hover:bg-white/20'
                 }`}
               >
                 {mode === 'month' ? 'شهر' : mode === 'week' ? 'أسبوع' : 'يوم'}
@@ -107,34 +113,44 @@ const CalendarColumn = ({ isCompressed }: CalendarColumnProps) => {
         </div>
 
         {/* Calendar Content */}
-        <div className="flex-1 p-6">
-          {/* Month Navigation */}
-          <div className="flex items-center justify-between mb-8">
-            <button
-              onClick={() => navigateMonth('prev')}
-              className="p-4 hover:bg-white/30 rounded-2xl transition-all duration-300 border border-white/20"
-            >
-              <ChevronRight className="w-6 h-6 text-gray-700" />
-            </button>
-            
-            <h3 className="text-2xl font-bold text-gray-800">
-              {currentMonth}
-            </h3>
-            
-            <button
-              onClick={() => navigateMonth('next')}
-              className="p-4 hover:bg-white/30 rounded-2xl transition-all duration-300 border border-white/20"
-            >
-              <ChevronLeft className="w-6 h-6 text-gray-700" />
-            </button>
-          </div>
+        <div className="flex-1 p-4">
+          {/* Glass Inner Card */}
+          <div 
+            className="h-full rounded-lg p-4"
+            style={{
+              background: 'rgba(255, 255, 255, 0.40)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              boxShadow: '0 4px 10px rgba(0, 0, 0, 0.05)'
+            }}
+          >
+            {/* Month Navigation */}
+            <div className="flex items-center justify-between mb-6">
+              <button
+                onClick={() => navigateMonth('prev')}
+                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              >
+                <ChevronRight className="w-5 h-5 text-soabra-text-primary" />
+              </button>
+              
+              <h3 className="text-xl font-medium text-soabra-text-primary">
+                {currentMonth}
+              </h3>
+              
+              <button
+                onClick={() => navigateMonth('next')}
+                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5 text-soabra-text-primary" />
+              </button>
+            </div>
 
-          {/* Calendar Grid */}
-          <div className="bg-white/20 rounded-3xl p-6 backdrop-blur-sm border border-white/30">
-            <div className="grid grid-cols-7 gap-3">
+            {/* Calendar Grid */}
+            <div className="grid grid-cols-7 gap-1">
               {/* Day Headers */}
               {['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map((day) => (
-                <div key={day} className="text-center text-sm font-bold text-gray-700 p-3">
+                <div key={day} className="text-center text-sm font-medium text-soabra-text-secondary p-2">
                   {day}
                 </div>
               ))}
@@ -149,40 +165,27 @@ const CalendarColumn = ({ isCompressed }: CalendarColumnProps) => {
                   <div
                     key={index}
                     className={`
-                      relative h-12 w-12 mx-auto flex items-center justify-center text-sm rounded-2xl transition-all duration-300 cursor-pointer
-                      ${isTodayDate ? 'bg-blue-500 text-white font-bold shadow-lg scale-110' : ''}
-                      ${isCurrentMonth ? 'text-gray-800 hover:bg-white/40 border border-white/20' : 'text-gray-400'}
-                      ${event && !isTodayDate ? 'border-2' : ''}
+                      relative h-[30px] w-[30px] mx-auto flex items-center justify-center text-sm rounded-md transition-colors cursor-pointer
+                      ${isTodayDate ? 'bg-soabra-primary-blue text-white font-semibold' : ''}
+                      ${isCurrentMonth ? 'text-soabra-text-primary hover:bg-white/20' : 'text-soabra-text-secondary/50'}
                     `}
-                    style={event && !isTodayDate ? { borderColor: event.color } : {}}
                   >
                     {date.getDate()}
                     {event && !isTodayDate && (
                       <div
-                        className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white"
-                        style={{ backgroundColor: event.color }}
+                        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-full"
+                        style={{ backgroundColor: event.type === 'extended' ? '#008080' : '#DAA520' }}
+                      />
+                    )}
+                    {event && event.type === 'extended' && (
+                      <div
+                        className="absolute inset-x-0 bottom-1 h-0.5 rounded"
+                        style={{ backgroundColor: '#FFB6C1' }}
                       />
                     )}
                   </div>
                 );
               })}
-            </div>
-          </div>
-
-          {/* Events Legend */}
-          <div className="mt-6 bg-white/20 rounded-2xl p-4 backdrop-blur-sm border border-white/30">
-            <h4 className="text-lg font-bold text-gray-800 mb-3">الأحداث القادمة</h4>
-            <div className="space-y-2">
-              {events.slice(0, 3).map((event, index) => (
-                <div key={index} className="flex items-center gap-3 p-2 rounded-xl bg-white/20">
-                  <div
-                    className="w-4 h-4 rounded-full border-2 border-white"
-                    style={{ backgroundColor: event.color }}
-                  />
-                  <span className="text-sm font-medium text-gray-700">{event.title}</span>
-                  <span className="text-xs text-gray-500 mr-auto">{event.date} من الشهر</span>
-                </div>
-              ))}
             </div>
           </div>
         </div>

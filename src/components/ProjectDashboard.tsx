@@ -1,7 +1,5 @@
-
 import { useState } from 'react';
 import { Project } from '@/pages/Index';
-import { X } from 'lucide-react';
 import FinancialCard from './dashboard/FinancialCard';
 import ProjectCalendarCard from './dashboard/ProjectCalendarCard';
 import AnalyticsCard from './dashboard/AnalyticsCard';
@@ -37,89 +35,69 @@ const ProjectDashboard = ({ project, onClose }: ProjectDashboardProps) => {
 
   return (
     <div 
-      className="h-full rounded-3xl shadow-2xl border border-white/30 overflow-hidden backdrop-blur-xl"
+      className="h-full rounded-t-2xl shadow-lg border border-gray-100 overflow-hidden"
       style={{
-        background: 'rgba(255, 255, 255, 0.25)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+        background: 'linear-gradient(135deg, #E8F2FE 0%, #F9DBF8 50%, #DAD4FC 100%)',
+        borderBottomLeftRadius: '0',
+        borderBottomRightRadius: '0'
       }}
     >
       <div className="p-6 h-full overflow-y-auto">
         {/* Header */}
-        <div className="flex items-start justify-between mb-8">
-          <div className="flex-1">
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-medium mb-2" style={{ color: '#4B0082' }}>
               {project.title}
             </h1>
-            <div className="flex items-center gap-4 mb-4 flex-wrap">
-              <div 
-                className="px-4 py-2 rounded-2xl text-white font-medium shadow-lg"
-                style={{ 
-                  backgroundColor: project.phaseColor,
-                  boxShadow: `0 4px 15px ${project.phaseColor}40`
-                }}
+            <div className="flex items-center gap-4 mb-2">
+              <span 
+                className="text-sm px-3 py-1 rounded-full text-white"
+                style={{ backgroundColor: project.phaseColor }}
               >
                 {project.phase}
-              </div>
-              <div className="bg-white/60 rounded-2xl px-4 py-2 border border-white/40 backdrop-blur-sm">
-                <span className="text-gray-800 font-bold">
-                  {parseInt(project.value).toLocaleString()} ريال سعودي
-                </span>
-              </div>
-              <div className="bg-white/60 rounded-2xl px-4 py-2 border border-white/40 backdrop-blur-sm">
-                <span className="text-gray-700 font-medium">
-                  مدير المشروع: {project.assignee}
-                </span>
-              </div>
+              </span>
+              <span className="text-sm text-soabra-text-secondary">
+                {project.value} ريال سعودي
+              </span>
+              <span className="text-sm text-soabra-text-secondary">
+                مدير المشروع: {project.assignee}
+              </span>
             </div>
-            <p className="text-gray-600 text-lg leading-relaxed max-w-3xl">
+            <p className="text-sm text-soabra-text-secondary">
               {project.description}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-4 hover:bg-white/30 rounded-2xl transition-all duration-300 border border-white/20 ml-4"
+            className="text-2xl hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+            style={{ color: '#1e3a8a' }}
           >
-            <X className="w-6 h-6 text-gray-700" />
+            ×
           </button>
         </div>
 
         {/* Progress Bar (7 phases) */}
-        <div className="mb-8 p-6 rounded-3xl border border-white/30"
-             style={{
-               background: 'rgba(255, 255, 255, 0.4)',
-               backdropFilter: 'blur(15px)',
-               WebkitBackdropFilter: 'blur(15px)',
-             }}>
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">تقدم المشروع</h3>
-          <div className="flex items-center gap-3 mb-4">
+        <div className="mb-6 p-4 glass rounded-lg">
+          <h3 className="text-lg font-medium text-soabra-text-primary mb-3">تقدم المشروع</h3>
+          <div className="flex items-center gap-2">
             {phases.map((phase, index) => (
               <div key={index} className="flex items-center flex-1">
                 <div
-                  className={`h-4 rounded-full flex-1 transition-all duration-500 ${
+                  className={`h-3 rounded-full flex-1 transition-all duration-300 ${
                     phase.completed 
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg' 
-                      : 'bg-white/40 backdrop-blur-sm border border-white/30'
+                      ? 'bg-soabra-primary-blue' 
+                      : 'bg-white/30 backdrop-blur-sm border border-white/20'
                   }`}
-                  style={phase.completed ? { 
-                    boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' 
-                  } : {}}
                 />
                 {index < phases.length - 1 && (
-                  <div className="w-3 h-1 bg-white/30 mx-2 rounded-full" />
+                  <div className="w-2 h-0.5 bg-white/20 mx-1" />
                 )}
               </div>
             ))}
           </div>
-          <div className="flex justify-between text-sm">
+          <div className="flex justify-between mt-2 text-xs text-soabra-text-secondary">
             {phases.map((phase, index) => (
-              <span 
-                key={index} 
-                className={`font-medium ${
-                  phase.completed ? 'text-blue-600' : 'text-gray-500'
-                }`}
-              >
+              <span key={index} className={phase.completed ? 'text-soabra-primary-blue font-medium' : ''}>
                 {phase.name}
               </span>
             ))}
@@ -127,59 +105,45 @@ const ProjectDashboard = ({ project, onClose }: ProjectDashboardProps) => {
         </div>
         
         {/* Quick Actions Panel */}
-        <div className="mb-8 p-6 rounded-3xl border border-white/30"
-             style={{
-               background: 'rgba(255, 255, 255, 0.4)',
-               backdropFilter: 'blur(15px)',
-               WebkitBackdropFilter: 'blur(15px)',
-             }}>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <button 
-              className="px-6 py-3 text-white rounded-2xl hover:scale-105 transition-all duration-300 font-medium shadow-lg"
-              style={{ 
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)'
-              }}
-            >
+        <div className="mb-6 p-4 glass rounded-lg">
+          <div className="flex gap-4 justify-center">
+            <button className="px-4 py-2 text-white rounded-md hover:opacity-90 transition-opacity text-sm"
+                    style={{ backgroundColor: '#0099FF' }}>
               إضافة مهمة
             </button>
-            <button 
-              className="px-6 py-3 text-white rounded-2xl hover:scale-105 transition-all duration-300 font-medium shadow-lg"
-              style={{ 
-                background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                boxShadow: '0 4px 15px rgba(240, 147, 251, 0.4)'
-              }}
-            >
+            <button className="px-4 py-2 text-white rounded-md hover:opacity-90 transition-opacity text-sm"
+                    style={{ backgroundColor: '#FBBF24' }}>
               توليد ذكي
             </button>
-            <button 
-              className="px-6 py-3 text-white rounded-2xl hover:scale-105 transition-all duration-300 font-medium shadow-lg"
-              style={{ 
-                background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                boxShadow: '0 4px 15px rgba(79, 172, 254, 0.4)'
-              }}
-            >
+            <button className="px-4 py-2 text-white rounded-md hover:opacity-90 transition-opacity text-sm"
+                    style={{ backgroundColor: '#00C853' }}>
               تعديل المشروع
             </button>
           </div>
         </div>
         
         {/* Tabs Bar */}
-        <div className="mb-8">
-          <div className="flex gap-2 bg-white/20 rounded-2xl p-2 backdrop-blur-sm border border-white/30">
+        <div className="mb-6">
+          <div className="flex gap-1 bg-white/10 rounded-lg p-1">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`
-                  px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 relative
+                  px-4 py-2 rounded-md text-sm transition-all relative
                   ${activeTab === tab.id 
-                    ? 'text-blue-600 bg-white/60 shadow-lg border border-white/50' 
-                    : 'text-gray-600 hover:bg-white/20'
+                    ? 'text-soabra-primary-blue font-medium' 
+                    : 'text-soabra-text-secondary hover:bg-white/10'
                   }
                 `}
               >
                 {tab.label}
+                {activeTab === tab.id && (
+                  <div 
+                    className="absolute bottom-0 left-0 right-0 h-[3px] rounded-t-full"
+                    style={{ backgroundColor: '#87CEEB' }}
+                  />
+                )}
               </button>
             ))}
           </div>
@@ -188,17 +152,17 @@ const ProjectDashboard = ({ project, onClose }: ProjectDashboardProps) => {
         {/* Dashboard Content */}
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
-            {/* Financial Card */}
+            {/* Financial Card - Always present */}
             <FinancialCard />
             
-            {/* Project Calendar Card */}
+            {/* Project Calendar Card - Always present */}
             <ProjectCalendarCard />
             
-            {/* Analytics Card */}
+            {/* Analytics Card - AI determined */}
             <AnalyticsCard />
             
             {/* KPI Cards Grid */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4">
               <KPICard
                 icon="👥"
                 value="12"
@@ -225,15 +189,8 @@ const ProjectDashboard = ({ project, onClose }: ProjectDashboardProps) => {
         
         {/* Other tab contents */}
         {activeTab !== 'dashboard' && (
-          <div 
-            className="rounded-3xl p-8 text-center border border-white/30"
-            style={{
-              background: 'rgba(255, 255, 255, 0.4)',
-              backdropFilter: 'blur(15px)',
-              WebkitBackdropFilter: 'blur(15px)',
-            }}
-          >
-            <p className="text-gray-600 text-lg">
+          <div className="glass rounded-lg p-6 text-center">
+            <p className="text-soabra-text-secondary">
               محتوى تبويب {tabs.find(t => t.id === activeTab)?.label} قيد التطوير...
             </p>
           </div>
