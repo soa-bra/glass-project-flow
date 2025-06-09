@@ -74,7 +74,7 @@ const ProjectsList = ({
   };
   const getRandomDays = () => Math.floor(Math.random() * 30) + 1;
   const getRandomTasks = () => Math.floor(Math.random() * 20) + 1;
-  return <div className="h-full bg-soabra-projects-bg rounded-2xl shadow-lg border border-gray-100 overflow-hidden z-projects glass">
+  return <div className="h-full bg-soabra-projects-bg rounded-2xl shadow-lg border border-gray-100 overflow-hidden z-projects glass my-[99px] px-0 mx-[6px]">
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-gray-200 bg-white/60 backdrop-blur-sm">

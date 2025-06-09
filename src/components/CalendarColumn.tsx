@@ -1,16 +1,14 @@
-
 import MainCalendar from './calendar/MainCalendar';
-
 interface CalendarColumnProps {
   isCompressed: boolean;
 }
-
-const CalendarColumn = ({ isCompressed }: CalendarColumnProps) => {
-  return (
-    <div className="h-full bg-white rounded-t-2xl shadow-lg border border-gray-100 overflow-hidden">
+const CalendarColumn = ({
+  isCompressed
+}: CalendarColumnProps) => {
+  return <div className="h-full rounded-t-2xl shadow-lg border border-gray-100 overflow-hidden bg-violet-50 py-[17px] my-[57px] px-0">
       {/* Calendar Header */}
-      <div className="p-6 border-b border-gray-100 bg-white rounded-t-2xl">
-        <div className="flex items-center justify-between">
+      <div className="p-6 border-b border-gray-100 bg-white rounded-t-2xl my-[46px] py-[22px] px-[64px]">
+        <div className="flex items-center justify-between my-0 py-0">
           <h2 className="text-2xl font-bold text-soabra-text-primary">التقويم</h2>
           <div className="flex items-center gap-4">
             <div className="flex gap-2">
@@ -40,13 +38,11 @@ const CalendarColumn = ({ isCompressed }: CalendarColumnProps) => {
       </div>
 
       {/* Glass Calendar Container */}
-      <div className="p-3">
-        <div className="glass rounded-xl p-4 h-[calc(100vh-200px)]">
+      <div className="p-3 py-0 my-0">
+        <div className="glass rounded-xl p-4 h-[calc(100vh-200px)] px-[27px] py-[76px] my-[5px]">
           <MainCalendar />
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default CalendarColumn;
