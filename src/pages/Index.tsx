@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
@@ -14,8 +13,6 @@ export interface Project {
   status: 'success' | 'warning' | 'error' | 'neutral';
   phase: string;
   phaseColor: string;
-  daysLeft: number;
-  tasksCount: number;
 }
 
 const Index = () => {
@@ -33,57 +30,57 @@ const Index = () => {
   };
 
   return (
-    <div dir="rtl" className="min-h-screen w-full bg-soabra-header-bg font-arabic overflow-hidden">
-      {/* Fixed Header Bar */}
-      <HeaderBar />
-      
-      {/* Main Layout Container - Fixed positioning for all elements */}
-      <div className="flex h-screen w-full pt-[60px]">
-        {/* Fixed Sidebar - Right side */}
-        <div className="fixed top-[60px] right-0 bottom-0 z-sidebar">
-          <Sidebar />
-        </div>
-        
-        {/* Projects Column - Fixed with scroll only in content */}
-        <div 
-          className={`fixed top-[60px] bottom-0 w-[30%] transition-all duration-300 z-projects ${
-            isDashboardOpen ? 'opacity-50' : 'opacity-100'
-          }`}
-          style={{ right: '80px' }}
+    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic">
+      {/* Header */}
+      <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-1000">
+        <HeaderBar />
+      </div>
+
+      <div className="flex h-screen pt-[60px]">
+        {/* Sidebar */}
+        <div
+          className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-1000 transition-width duration-300"
+          style={{ width: selectedProject ? '80px' : '80px' }}
         >
-          <ProjectsList 
-            onProjectSelect={handleProjectSelect} 
-            isCompressed={isDashboardOpen} 
-          />
+          <Sidebar collapsible />
         </div>
-        
-        {/* Calendar Column - Fixed, slides out when dashboard opens */}
-        <div 
-          className={`fixed top-[60px] bottom-0 left-0 transition-all duration-300 z-calendar ${
-            isDashboardOpen 
-              ? 'translate-x-full opacity-0' 
-              : 'translate-x-0 opacity-100'
-          }`}
-          style={{ 
-            right: 'calc(80px + 30%)',
-            width: 'calc(70% - 80px)',
-            marginRight: '10%'
-          }}
-        >
-          <CalendarColumn isCompressed={isDashboardOpen} />
-        </div>
-        
-        {/* Project Dashboard Panel - Slides in from right */}
-        {isDashboardOpen && selectedProject && (
-          <div 
-            className="fixed top-[60px] bottom-0 right-[calc(80px+30%)] w-[70%] z-dashboard-panel animate-slide-in-right"
+
+        {/* Main Columns */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Projects List - scrollable only */}
+          <div
+            className="absolute top-[60px] right-[80px] bottom-0 bg-[#E3E3E3] z-900 overflow-y-auto p-4"
+            style={{ width: '20%' }}
           >
-            <ProjectDashboard 
-              project={selectedProject} 
-              onClose={handleCloseDashboard} 
+            <ProjectsList
+              onProjectSelect={handleProjectSelect}
+              isCompressed={isDashboardOpen}
             />
           </div>
-        )}
+
+          {/* Calendar - fixed/hide when dashboard open */}
+          {!isDashboardOpen && (
+            <div
+              className="absolute top-[60px] right-[calc(80px+20%)] bottom-0 bg-gradient-to-br from-soabra-calendar-start to-soabra-calendar-end z-900 p-4"
+              style={{ width: '20%' }}
+            >
+              <CalendarColumn />
+            </div>
+          )}
+
+          {/* Dashboard Panel */}
+          {isDashboardOpen && selectedProject && (
+            <div
+              className="absolute top-[60px] right-[calc(80px+20%)] bottom-0 bg-soabra-glass-bg z-950 p-4 overflow-y-auto"
+              style={{ width: '50%' }}
+            >
+              <ProjectDashboard
+                project={selectedProject}
+                onClose={handleCloseDashboard}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
