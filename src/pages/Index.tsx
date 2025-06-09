@@ -2,15 +2,15 @@ import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import { useState } from 'react';
 const Index = () => {
-  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic px-0 mx-[5px]">
+  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic px-0 mx-0">
       {/* Header */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[60px] px-[240px] mx-0">
+      <div className="flex h-screen pt-[60px] px-[240px] mx-0 my-[100px] py-0">
         {/* Sidebar with dynamic width support */}
-        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out my-[55px] px-[5px] py-px">
+        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out my-[55px] px-[5px] py-0">
           <Sidebar />
         </div>
 
