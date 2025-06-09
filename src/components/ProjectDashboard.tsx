@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { X, BarChart3, Calendar, DollarSign, Users, Settings, FileText, User } from 'lucide-react';
 import { Project } from '@/types/project';
 import FinancialCard from './dashboard/FinancialCard';
