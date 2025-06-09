@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -150,6 +151,18 @@ export default {
 				'project-cards': '800',
 				'dashboard-panel': '950',
 				'modal': '1100'
+			},
+			// Add support for CSS variables in spacing
+			width: {
+				'sidebar-expanded': 'var(--sidebar-width-expanded)',
+				'sidebar-collapsed': 'var(--sidebar-width-collapsed)',
+			},
+			margin: {
+				'sidebar': 'var(--sidebar-margin)',
+				'content': 'var(--content-margin)',
+			},
+			height: {
+				'header': 'var(--header-height)',
 			}
 		}
 	},
