@@ -22,7 +22,7 @@ const Index = () => {
 
         {/* Main Content Area - Moves with sidebar, content inside can scroll */}
         <div className={`fixed top-[137px] w-[24%] h-[calc(100vh-137px)] transition-all duration-500 ease-in-out px-0 ${isSidebarCollapsed ? 'mr-[115px]' : 'mr-[255px]'}`}>
-          <div className="glass rounded-t-3xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col px-[7px] mx-[10px]">
+          <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col px-[7px] mx-[10px]">
             <ScrollArea className="w-full h-full">
               <div className="p-8 text-center py-[35px] px-[5px]">
                 <h1 className="text-3xl font-bold text-soabra-text-primary mb-4 animate-fade-in">
