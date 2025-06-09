@@ -1,6 +1,4 @@
-
 import { Badge } from '@/components/ui/badge';
-
 interface ProjectCardProps {
   id: string;
   title: string;
@@ -15,14 +13,12 @@ interface ProjectCardProps {
   hasOverdueTasks?: boolean;
   onProjectSelect?: (projectId: string) => void;
 }
-
 const statusColors = {
   success: '#5DDC82',
-  warning: '#ECFF8C', 
+  warning: '#ECFF8C',
   error: '#F23D3D',
   info: '#9DCBFF'
 };
-
 const ProjectCard = ({
   id,
   title,
@@ -40,23 +36,15 @@ const ProjectCard = ({
   const handleClick = () => {
     onProjectSelect?.(id);
   };
-
-  return (
-    <div 
-      onClick={handleClick}
-      className="relative w-[90%] h-20 bg-soabra-card-bg rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 flex items-center gap-3 cursor-pointer transition-all duration-300 hover:bg-white/25 hover:shadow-[0_4px_16px_rgba(0,0,0,0.1)] active:ring-1 active:ring-soabra-primary-blue group project-card"
-      style={{
-        backgroundImage: `
+  return <div onClick={handleClick} style={{
+    backgroundImage: `
           radial-gradient(circle at 2px 2px, rgba(0,0,0,0.015) 1px, transparent 0),
           linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%)
         `,
-        backgroundSize: '24px 24px, 12px 12px'
-      }}
-    >
+    backgroundSize: '24px 24px, 12px 12px'
+  }} className="relative w-[90%] h-20 bg-soabra-card-bg rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 flex items-center gap-3 cursor-pointer transition-all duration-300 hover:bg-white/25 hover:shadow-[0_4px_16px_rgba(0,0,0,0.1)] active:ring-1 active:ring-soabra-primary-blue group project-card py-0 my-0 px-[10px]">
       {/* مثلث المهام المتأخرة */}
-      {hasOverdueTasks && (
-        <div className="absolute top-0 left-0 w-0 h-0 border-t-[10px] border-t-[#F23D3D] border-r-[10px] border-r-transparent rounded-tl-xl"></div>
-      )}
+      {hasOverdueTasks && <div className="absolute top-0 left-0 w-0 h-0 border-t-[10px] border-t-[#F23D3D] border-r-[10px] border-r-transparent rounded-tl-xl"></div>}
 
       {/* دائرة العد التنازلي */}
       <div className="w-14 h-14 rounded-full border-2 border-[#7d8a8c] flex flex-col items-center justify-center bg-white/10 flex-shrink-0">
@@ -84,38 +72,24 @@ const ProjectCard = ({
       <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {/* نقطة حالة المشروع */}
-          <div 
-            className="w-6 h-6 rounded-full"
-            style={{ backgroundColor: statusColors[status] }}
-          ></div>
+          <div className="w-6 h-6 rounded-full" style={{
+          backgroundColor: statusColors[status]
+        }}></div>
 
           {/* شارات المعلومات */}
           <div className="flex items-center gap-1">
-            <Badge 
-              variant="outline" 
-              className="h-[34px] min-w-[70px] px-2 bg-white/30 backdrop-blur-sm border-white/40 text-xs text-soabra-text-secondary font-arabic"
-            >
+            <Badge variant="outline" className="h-[34px] min-w-[70px] px-2 bg-white/30 backdrop-blur-sm border-white/40 text-xs text-soabra-text-secondary font-arabic">
               {date}
             </Badge>
-            <Badge 
-              variant="outline" 
-              className="h-[34px] min-w-[110px] px-2 bg-white/30 backdrop-blur-sm border-white/40 text-xs text-soabra-text-secondary font-arabic"
-            >
+            <Badge variant="outline" className="h-[34px] min-w-[110px] px-2 bg-white/30 backdrop-blur-sm border-white/40 text-xs text-soabra-text-secondary font-arabic">
               {owner}
             </Badge>
-            <Badge 
-              variant="outline" 
-              className={`h-[34px] min-w-[70px] px-2 bg-white/30 backdrop-blur-sm border-white/40 text-xs font-arabic ${
-                isOverBudget ? 'text-[#EF4444]' : 'text-soabra-text-secondary'
-              }`}
-            >
+            <Badge variant="outline" className={`h-[34px] min-w-[70px] px-2 bg-white/30 backdrop-blur-sm border-white/40 text-xs font-arabic ${isOverBudget ? 'text-[#EF4444]' : 'text-soabra-text-secondary'}`}>
               {value}
             </Badge>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ProjectCard;
