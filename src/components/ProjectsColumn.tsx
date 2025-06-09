@@ -70,7 +70,7 @@ interface ProjectsColumnProps {
 const ProjectsColumn = ({
   onProjectSelect
 }: ProjectsColumnProps) => {
-  return <div className="w-full h-full flex flex-col mx-0 px-0 py-[12px] my-0">
+  return <div className="w-full h-full flex flex-col py-[12px] my-0 mx-[5px] px-[14px]">
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
@@ -83,7 +83,7 @@ const ProjectsColumn = ({
       </div>
 
       {/* قائمة المشاريع */}
-      <div className="flex-1 space-y-4 overflow-y-auto mx-[34px] px-[5px]">
+      <div className="flex-1 space-y-4 overflow-y-auto mx-0 px-px">
         {mockProjects.map(project => <ProjectCard key={project.id} {...project} onProjectSelect={onProjectSelect} />)}
       </div>
     </div>;
