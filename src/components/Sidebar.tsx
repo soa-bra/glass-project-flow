@@ -75,7 +75,7 @@ const Sidebar = () => {
                     <span className="tracking-wide text-base transition-all duration-200 group-hover:font-medium">
                       {item.label}
                     </span>
-                    {item.active && <div className="w-2 h-2 bg-[#3e494c] rounded-full ml-2 transition-all duration-300 group-hover:scale-110 mx-[65px]" />}
+                    {item.active && <div className="w-2 h-2 bg-[#3e494c] rounded-full ml-2 transition-all duration-300 group-hover:scale-110 mx-[70px] px-0" />}
                   </>}
               </div>
             </button>;
