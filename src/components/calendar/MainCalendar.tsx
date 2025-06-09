@@ -103,7 +103,7 @@ const MainCalendar = () => {
       </div>
 
       {/* Calendar Grid */}
-      <div className="p-6">
+      <div className="p-6 py-[43px]">
         {/* Week Days Header */}
         <div className="grid grid-cols-7 gap-2 mb-4">
           {weekDays.map(day => <div key={day} className="text-center text-sm font-medium text-soabra-text-secondary">
