@@ -42,9 +42,9 @@ const ProjectCard = ({
           linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%)
         `,
     backgroundSize: '24px 24px, 12px 12px'
-  }} className="relative w-[90%] h-20 bg-soabra-card-bg rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 flex items-center gap-3 cursor-pointer transition-all duration-300 hover:bg-white/25 hover:shadow-[0_4px_16px_rgba(0,0,0,0.1)] active:ring-1 active:ring-soabra-primary-blue group project-card my-[15px] py-[80px] mx-[25px] px-[10px]">
+  }} className="relative w-[90%] h-20 bg-soabra-card-bg rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 flex items-center gap-3 cursor-pointer transition-all duration-300 hover:bg-white/25 hover:shadow-[0_4px_16px_rgba(0,0,0,0.1)] active:ring-1 active:ring-soabra-primary-blue group project-card py-0 my-0 px-[10px]">
       {/* مثلث المهام المتأخرة */}
-      {hasOverdueTasks && <div className="absolute top-0 left-0 w-0 h-0 border-t-[10px] border-t-[#F23D3D] border-r-[10px] border-r-transparent rounded-tl-xl px-[5px] mx-[49px] my-[24px] py-0"></div>}
+      {hasOverdueTasks && <div className="absolute top-0 left-0 w-0 h-0 border-t-[10px] border-t-[#F23D3D] border-r-[10px] border-r-transparent rounded-tl-xl"></div>}
 
       {/* دائرة العد التنازلي */}
       <div className="w-14 h-14 rounded-full border-2 border-[#7d8a8c] flex flex-col items-center justify-center bg-white/10 flex-shrink-0">
@@ -53,7 +53,7 @@ const ProjectCard = ({
       </div>
 
       {/* محتوى النص */}
-      <div className="flex-1 flex flex-col justify-center gap-1 min-w-0 mx-0 my-0 py-0">
+      <div className="flex-1 flex flex-col justify-center gap-1 min-w-0 mx-3">
         <h3 className="text-lg font-medium text-[#2A3437] truncate font-arabic">
           {title}
         </h3>
