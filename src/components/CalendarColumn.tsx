@@ -12,8 +12,8 @@ const CalendarColumn = ({
       {/* Background Gradient Overlay */}
       <div className="absolute inset-0 calendar-gradient opacity-30 pointer-events-none rounded-3xl" />
       
-      <div className="p-[20px] h-full relative z-10 rounded-lg mx-0 px-[11px]">
-        <div className="glass rounded-3xl h-full backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500 py-[15px] my-[130px] px-[113px] mx-0">
+      <div className="p-[20px] h-full relative z-10 rounded-lg mx-0 px-[10px]">
+        <div className="glass rounded-3xl h-full backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500 py-[15px] my-[130px] mx-0 px-[96px]">
           <MainCalendar />
         </div>
       </div>
