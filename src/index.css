@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -261,6 +262,10 @@
     line-height: 1.5;
     letter-spacing: 0.01em;
     font-weight: 500;
+  }
+
+  .glass-badge {
+    @apply px-3 h-[34px] rounded-full bg-white/40 backdrop-blur-sm text-[14px] text-[#444] flex items-center justify-center;
   }
 }
 

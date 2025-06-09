@@ -1,6 +1,4 @@
 
-import { Badge } from '@/components/ui/badge';
-
 interface ProjectCardProps {
   id: string;
   title: string;
@@ -14,6 +12,8 @@ interface ProjectCardProps {
   isOverBudget?: boolean;
   hasOverdueTasks?: boolean;
   onProjectSelect?: (projectId: string) => void;
+  isSelected?: boolean;
+  isOtherSelected?: boolean;
 }
 
 const statusColors = {
@@ -27,15 +27,14 @@ const ProjectCard = ({
   id,
   title,
   description,
-  daysLeft,
   tasksCount,
   status,
   date,
   owner,
   value,
-  isOverBudget = false,
-  hasOverdueTasks = false,
-  onProjectSelect
+  onProjectSelect,
+  isSelected = false,
+  isOtherSelected = false
 }: ProjectCardProps) => {
   const handleClick = () => {
     onProjectSelect?.(id);
@@ -43,80 +42,54 @@ const ProjectCard = ({
 
   return (
     <div 
-      onClick={handleClick} 
-      className="relative w-full h-[120px] bg-white/40 backdrop-blur-[20px] rounded-xl border border-white/25 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-4 cursor-pointer transition-all duration-300 hover:bg-white/50 hover:shadow-[0_16px_48px_rgba(0,0,0,0.15)] active:ring-1 active:ring-soabra-primary-blue group project-card"
+      onClick={handleClick}
+      className={`w-[90%] h-[80px] bg-[#F2F2F2] rounded-xl shadow-sm mx-auto my-2 px-3 py-2 flex flex-col justify-between cursor-pointer transition-all duration-300 ${
+        isSelected 
+          ? 'ring-2 ring-[#0099FF]/70' 
+          : 'hover:bg-white/25'
+      } ${
+        isOtherSelected ? 'opacity-50' : 'opacity-100'
+      }`}
     >
-      {/* الصف العلوي - العنوان والوصف مع دائرة المهام */}
-      <div className="flex items-start justify-between mb-2">
+      {/* الصف العلوي */}
+      <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-soabra-text-primary font-arabic leading-tight mb-1">
+          <h3 className="text-[18px] font-medium text-[#2A3437] font-arabic truncate">
             {title}
           </h3>
-          <p className="text-sm text-soabra-primary-blue font-arabic leading-relaxed">
+          <p className="text-[14px] text-[#007B8C] font-arabic leading-4 truncate">
             {description}
           </p>
         </div>
-        
-        {/* دائرة عدد المهام */}
-        <div className="w-10 h-10 rounded-full bg-soabra-text-secondary/20 flex flex-col items-center justify-center flex-shrink-0 ml-3">
-          <span className="text-xs font-bold text-soabra-text-primary leading-none">
+
+        {/* عدد المهام */}
+        <div className="w-[64px] h-[64px] bg-[#C5D1D6] rounded-full flex flex-col items-center justify-center shrink-0">
+          <span className="text-[14px] font-bold text-[#2A3437] leading-none">
             {tasksCount.toString().padStart(2, '0')}
           </span>
-          <span className="text-[10px] font-medium text-soabra-text-primary leading-none">
+          <span className="text-[12px] text-[#2A3437] leading-none">
             مهام
           </span>
         </div>
       </div>
 
-      {/* الصف السفلي - العد التنازلي ونقطة الحالة والمعلومات */}
-      <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
-        {/* دائرة العد التنازلي */}
-        <div className="w-12 h-12 rounded-full border-2 border-soabra-text-secondary/40 flex flex-col items-center justify-center bg-white/20 flex-shrink-0">
-          <span className="text-sm font-bold text-soabra-text-primary leading-none">
-            {daysLeft}
-          </span>
-          <span className="text-[10px] font-medium text-soabra-text-primary leading-none">
-            يوم
-          </span>
-        </div>
+      {/* الصف السفلي */}
+      <div className="flex items-center justify-between mt-1">
+        {/* حالة المشروع */}
+        <div 
+          className="w-[36px] h-[36px] rounded-full shrink-0" 
+          style={{backgroundColor: statusColors[status]}}
+        ></div>
 
-        {/* المنطقة المتوسطة - نقطة الحالة */}
-        <div className="flex-1 flex justify-center">
-          <div 
-            className="w-6 h-6 rounded-full flex-shrink-0" 
-            style={{backgroundColor: statusColors[status]}}
-          ></div>
-        </div>
+        {/* التاريخ */}
+        <span className="glass-badge">{date}</span>
 
-        {/* المعلومات على اليمين */}
-        <div className="flex items-center gap-1 flex-shrink-0">
-          <Badge 
-            variant="outline" 
-            className="h-6 px-2 bg-white/30 backdrop-blur-sm border-white/40 text-[10px] text-soabra-text-secondary font-arabic"
-          >
-            {date}
-          </Badge>
-          <Badge 
-            variant="outline" 
-            className="h-6 px-2 bg-white/30 backdrop-blur-sm border-white/40 text-[10px] text-soabra-text-secondary font-arabic"
-          >
-            {owner}
-          </Badge>
-          <Badge 
-            variant="outline" 
-            className={`h-6 px-2 bg-white/30 backdrop-blur-sm border-white/40 text-[10px] font-arabic ${
-              isOverBudget ? 'text-soabra-error' : 'text-soabra-text-secondary'
-            }`}
-          >
-            {value}
-          </Badge>
-        </div>
+        {/* المكلف */}
+        <span className="glass-badge w-[110px] justify-center">{owner}</span>
+
+        {/* القيمة */}
+        <span className="glass-badge">{value}</span>
       </div>
-
-      {/* مثلث المهام المتأخرة */}
-      {hasOverdueTasks && (
-        <div className="absolute top-0 left-0 w-0 h-0 border-t-[12px] border-t-soabra-status-error border-r-[12px] border-r-transparent rounded-tl-xl"></div>
-      )}
     </div>
   );
 };
