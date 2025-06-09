@@ -2,13 +2,13 @@ import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import { useState } from 'react';
 const Index = () => {
-  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic">
+  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic px-0 mx-[3px]">
       {/* Header */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[60px] px-0 py-[50px]">
+      <div className="flex h-screen pt-[60px] py-[50px] mx-0 px-[60px]">
         {/* Sidebar with dynamic width support */}
         <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out my-[50px] px-0 mx-[8px]">
           <Sidebar />
@@ -17,8 +17,8 @@ const Index = () => {
         {/* Main Content Area - positioned to occupy 30% of interface width with alignment to toggle icon */}
         <div style={{
         paddingTop: '77px'
-      }} className="w-[30%] h-full transition-all duration-500 ease-in-out mr-[280px] p-6 flex items-start px-0 my-[70px] py-px">
-          <div className="glass rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col justify-start mx-[20px] px-0 py-[35px]">
+      }} className="w-[30%] h-full transition-all duration-500 ease-in-out mr-[280px] p-6 flex items-start py-0 my-[60px] px-0 mx-[190px]">
+          <div className="glass rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col justify-start px-[7px] mx-[10px] py-[35px]">
             <h1 className="text-3xl font-bold text-soabra-text-primary mb-4 animate-fade-in">
               مرحباً بك في SoaBra
             </h1>
