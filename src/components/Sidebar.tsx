@@ -1,7 +1,13 @@
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
-const Sidebar = () => {
+import { useState, useEffect } from 'react';
+
+interface SidebarProps {
+  onToggle?: (collapsed: boolean) => void;
+}
+
+const Sidebar = ({ onToggle }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  
   const menuItems = [{
     icon: Home,
     label: 'الرئيسية',
@@ -27,9 +33,17 @@ const Sidebar = () => {
     label: 'الأرشيف',
     active: false
   }];
+  
   const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+    onToggle?.(newCollapsedState);
   };
+
+  useEffect(() => {
+    onToggle?.(isCollapsed);
+  }, [isCollapsed, onToggle]);
+
   return <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out ${isCollapsed ? 'w-20' : 'w-60'}`}>
       <nav className="flex flex-col gap-2 py-0 my-0 px-0 mx-[15px]">
         {/* Menu Title Section with Toggle */}
@@ -99,4 +113,5 @@ const Sidebar = () => {
       </nav>
     </aside>;
 };
+
 export default Sidebar;
