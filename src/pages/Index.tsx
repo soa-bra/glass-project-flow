@@ -10,7 +10,7 @@ const Index = () => {
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[60px] overflow-hidden">
+      <div className="flex h-screen pt-[60px] overflow-hidden px-0 mx-0">
         {/* Sidebar - Fixed and no scroll */}
         <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out my-[50px] px-0 mx-[8px]">
           <Sidebar onToggle={setIsSidebarCollapsed} />
@@ -18,7 +18,7 @@ const Index = () => {
 
         {/* Main Content Area - Moves with sidebar, content inside can scroll */}
         <div className={`fixed top-[137px] w-[30%] h-[calc(100vh-137px)] transition-all duration-500 ease-in-out px-0 ${isSidebarCollapsed ? 'mr-[105px]' : 'mr-[285px]'}`}>
-          <div className="glass rounded-t-3xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col px-[7px] mx-[10px]">
+          <div className="glass rounded-t-3xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col px-0 mx-0">
             <ScrollArea className="w-full h-full">
               <div className="p-8 text-center py-[35px] px-[5px]">
                 <h1 className="text-3xl font-bold text-soabra-text-primary mb-4 animate-fade-in">
