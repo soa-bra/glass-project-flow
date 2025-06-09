@@ -1,8 +1,11 @@
+
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import { useState } from 'react';
+
 const Index = () => {
-  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic px-0 mx-px">
+  return (
+    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic px-0 mx-px">
       {/* Header */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
@@ -14,20 +17,22 @@ const Index = () => {
           <Sidebar />
         </div>
 
-        {/* Main Content Area - responsive to sidebar changes */}
-        <div className="flex-1 transition-all duration-500 ease-in-out ml-[80px] p-6 py-0 mx-[240px] px-[26px] my-[2px]">
+        {/* Main Content Area - aligned with sidebar */}
+        <div className="flex-1 transition-all duration-500 ease-in-out mr-[280px] p-6 py-0 px-[26px] my-[2px]">
           <div className="glass rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform mx-[81px] px-0 my-[15px] py-[45px]">
             <h1 className="text-3xl font-bold text-soabra-text-primary mb-4 animate-fade-in">
               مرحباً بك في SoaBra
             </h1>
             <p className="text-lg text-soabra-text-secondary animate-fade-in" style={{
-            animationDelay: '0.2s'
-          }}>
+              animationDelay: '0.2s'
+            }}>
               نظام إدارة المشاريع جاهز للاستخدام
             </p>
           </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
