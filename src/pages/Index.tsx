@@ -1,6 +1,7 @@
 
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
+import { useState } from 'react';
 
 const Index = () => {
   return (
@@ -11,18 +12,18 @@ const Index = () => {
       </div>
 
       <div className="flex h-screen pt-[60px] px-[240px] mx-0">
-        {/* Sidebar */}
-        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-width duration-300 my-[51px] py-0 px-[6px] w-[80px]">
+        {/* Sidebar with dynamic width support */}
+        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out my-[51px] py-0 px-[6px]">
           <Sidebar />
         </div>
 
-        {/* Main Content Area - Empty and ready for future content */}
-        <div className="flex-1 ml-[80px] p-6">
-          <div className="glass rounded-3xl p-8 text-center">
-            <h1 className="text-3xl font-bold text-soabra-text-primary mb-4">
+        {/* Main Content Area - responsive to sidebar changes */}
+        <div className="flex-1 transition-all duration-500 ease-in-out ml-[80px] p-6">
+          <div className="glass rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform">
+            <h1 className="text-3xl font-bold text-soabra-text-primary mb-4 animate-fade-in">
               مرحباً بك في SoaBra
             </h1>
-            <p className="text-lg text-soabra-text-secondary">
+            <p className="text-lg text-soabra-text-secondary animate-fade-in" style={{ animationDelay: '0.2s' }}>
               نظام إدارة المشاريع جاهز للاستخدام
             </p>
           </div>
