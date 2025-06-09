@@ -1,9 +1,11 @@
+
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsList from '@/components/ProjectsList';
 import CalendarColumn from '@/components/CalendarColumn';
 import ProjectDashboard from '@/components/ProjectDashboard';
+
 export interface Project {
   id: string;
   title: string;
@@ -13,18 +15,23 @@ export interface Project {
   phase: string;
   phaseColor: string;
 }
+
 const Index = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+
   const handleProjectSelect = (project: Project) => {
     setSelectedProject(project);
     setIsDashboardOpen(true);
   };
+
   const handleCloseDashboard = () => {
     setIsDashboardOpen(false);
     setSelectedProject(null);
   };
-  return <div dir="rtl" className="min-h-screen w-full bg-soabra-solid-bg font-arabic my-[27px]">
+
+  return (
+    <div dir="rtl" className="min-h-screen w-full bg-soabra-solid-bg font-arabic">
       {/* Floating Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-20 right-20 w-64 h-64 bg-gradient-to-br from-soabra-primary-blue/10 to-soabra-calendar-start/20 rounded-full blur-3xl animate-pulse" />
@@ -33,31 +40,37 @@ const Index = () => {
       </div>
 
       {/* Main Layout Container */}
-      <div className="flex flex-col h-screen w-full relative z-10 my-[99px]">
+      <div className="flex flex-col h-screen w-full relative z-10">
         {/* Header Bar */}
         <HeaderBar />
         
         {/* Main Content - Three Column Layout */}
-        <div className="flex flex-1 overflow-hidden py-0 my-0 px-[5px]">
-          {/* Sidebar - Right side */}
-          <div className="transform transition-all duration-500 ease-in-out hover:scale-[1.01] py-0 my-0 px-0">
+        <div className="flex flex-1 overflow-hidden gap-4 p-4">
+          {/* Sidebar - Right side (25% width) */}
+          <div className="w-1/4 min-w-[300px]">
             <Sidebar />
           </div>
           
-          {/* Projects Column - Middle */}
-          <div className="transform transition-all duration-300 ease-in-out bg-[e3e3e3] rounded-3xl px-0 bg-zinc-200 py-0 my-0 mx-[10px]">
+          {/* Projects Column - Middle (35% width) */}
+          <div className={`${isDashboardOpen ? 'w-[30%]' : 'w-[40%]'} transition-all duration-500`}>
             <ProjectsList onProjectSelect={handleProjectSelect} isCompressed={isDashboardOpen} />
           </div>
           
-          {/* Calendar Column - Left side */}
-          <div className="transform transition-all duration-300 ease-in-out py-0 my-[6px] px-[5px] mx-px">
+          {/* Calendar Column - Left side (40% width when no dashboard, 30% when dashboard open) */}
+          <div className={`${isDashboardOpen ? 'w-[30%]' : 'w-[35%]'} transition-all duration-500`}>
             <CalendarColumn isCompressed={isDashboardOpen} />
           </div>
           
-          {/* Project Dashboard Panel - Slide overlay */}
-          {isDashboardOpen && selectedProject && <ProjectDashboard project={selectedProject} onClose={handleCloseDashboard} />}
+          {/* Project Dashboard Panel - Slide overlay (takes 40% when open) */}
+          {isDashboardOpen && selectedProject && (
+            <div className="w-[10%] transition-all duration-500">
+              <ProjectDashboard project={selectedProject} onClose={handleCloseDashboard} />
+            </div>
+          )}
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
