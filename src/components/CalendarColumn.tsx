@@ -1,4 +1,3 @@
-
 import MainCalendar from './calendar/MainCalendar';
 interface CalendarColumnProps {
   isCompressed: boolean;
@@ -14,7 +13,7 @@ const CalendarColumn = ({
       <div className="absolute inset-0 calendar-gradient opacity-30 pointer-events-none rounded-3xl" />
       
       <div className="p-[20px] h-full relative z-10 rounded-lg">
-        <div className="glass rounded-3xl h-full backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500">
+        <div className="glass rounded-3xl h-full backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500 px-0 my-[30px]">
           <MainCalendar />
         </div>
       </div>
