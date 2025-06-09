@@ -79,17 +79,24 @@ const Sidebar = () => {
                 hover:translate-y-[-2px] hover:shadow-md active:translate-y-0 active:scale-95
               `}
             >
-              {/* Icon container - perfect circle */}
+              {/* Icon container - perfect circle with centered icon */}
               <div className={`
-                w-10 h-10 flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 rounded-full
-                ${item.active 
-                  ? 'bg-white/30 border-2 border-[#3e494c]/50' 
-                  : 'border-2 border-transparent group-hover:border-[#3e494c]/30 group-hover:bg-white/10'
-                }
-                group-hover:scale-105 group-active:scale-95
+                relative flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0
+                ${isCollapsed ? 'w-10 h-10' : 'w-10 h-10'}
               `}>
+                {/* Perfect circular background for active state */}
+                <div className={`
+                  absolute inset-0 rounded-full transition-all duration-300 ease-out
+                  ${item.active 
+                    ? 'bg-white/30 border-2 border-[#3e494c]/50 scale-100' 
+                    : 'border-2 border-transparent group-hover:border-[#3e494c]/30 group-hover:bg-white/10 scale-95 group-hover:scale-100'
+                  }
+                  group-hover:scale-105 group-active:scale-95
+                `} />
+                
+                {/* Centered icon */}
                 <IconComponent className={`
-                  w-5 h-5 transition-all duration-300 ease-out
+                  relative z-10 w-5 h-5 transition-all duration-300 ease-out
                   ${item.active ? 'text-[#3e494c]' : 'group-hover:text-[#3e494c]'}
                 `} />
               </div>
