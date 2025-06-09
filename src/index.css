@@ -35,10 +35,10 @@
     --text-secondary: #4B5563;
     
     /* Enhanced Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.40);
+    --glass-bg: rgba(255, 255, 255, 0.45);
     --glass-border: rgba(255, 255, 255, 0.25);
-    --glass-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    --glass-shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --glass-shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.15);
     
     /* Standard shadcn variables */
     --background: 0 0% 100%;
@@ -128,8 +128,8 @@
 @layer components {
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
     position: relative;
@@ -151,7 +151,6 @@
     box-shadow: var(--glass-shadow-hover);
     transform: translateY(-2px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0.9;
   }
   
   .calendar-gradient {
@@ -177,13 +176,6 @@
   .btn-primary:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 8px 25px rgba(0, 153, 255, 0.4);
-  }
-
-  /* Focus States */
-  .focus-ring:focus {
-    outline: none;
-    border: 2px solid #0099FF;
-    box-shadow: 0 0 0 2px rgba(0, 153, 255, 0.4);
   }
 
   /* Custom Scrollbar */
@@ -274,17 +266,6 @@
     }
   }
 
-  @keyframes slideOutLeft {
-    from {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    to {
-      opacity: 0;
-      transform: translateX(-100%);
-    }
-  }
-
   @keyframes float {
     0%, 100% {
       transform: translateY(0px);
@@ -347,15 +328,6 @@
   .transition-bounce {
     transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
-
-  /* Slide Animations */
-  .slide-in-right {
-    animation: slideInRight 300ms ease-out;
-  }
-
-  .slide-out-left {
-    animation: slideOutLeft 300ms ease-out;
-  }
 }
 
 /* Particle Effects */
@@ -374,39 +346,4 @@
     pointer-events: none;
     animation: float 6s ease-in-out infinite;
   }
-}
-
-/* Custom Z-Index Layers */
-.z-header { z-index: 1000; }
-.z-sidebar { z-index: 1000; }
-.z-projects { z-index: 900; }
-.z-calendar { z-index: 900; }
-.z-dashboard-panel { z-index: 950; }
-.z-modal { z-index: 1100; }
-
-/* Minimum padding rule */
-.min-padding {
-  padding: 15px;
-}
-
-/* Column gaps */
-.column-gap {
-  gap: 20px;
-}
-
-/* RTL Layout Fixes */
-[dir="rtl"] .flex {
-  flex-direction: row-reverse;
-}
-
-[dir="rtl"] .justify-between {
-  justify-content: space-between;
-}
-
-[dir="rtl"] .text-right {
-  text-align: right;
-}
-
-[dir="rtl"] .text-left {
-  text-align: left;
 }
