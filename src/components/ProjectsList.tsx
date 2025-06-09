@@ -64,8 +64,8 @@ const ProjectsList = ({
     phase: 'التخطيط',
     phaseColor: '#F59E0B'
   }];
-  return <div className="bg-[e3e3e3] rounded-lg bg-zinc-200 py-px my-[36px] px-[10px] mx-[27px]">
-      <div className="p-4 pt-2 h-full px-0 rounded-lg mx-0 bg-[soabra-primary-blue] my-0 py-0">
+  return <div className="bg-[e3e3e3] rounded-lg bg-zinc-200 py-px my-[36px] px-[10px] mx-0">
+      <div className="p-4 pt-2 h-full px-0 rounded-lg bg-[soabra-primary-blue] my-0 py-0 mx-[2px]">
         {/* Header */}
         <div className="text-center mb-6 my-0 py-0">
           <h2 className="text-2xl font-bold text-soabra-text-primary mb-2 tracking-wide text-right px-[29px] my-0 py-0">المشاريع</h2>
@@ -76,7 +76,7 @@ const ProjectsList = ({
         </div>
 
         {/* Projects List */}
-        <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent my-0 py-0 px-[30px] mx-[37px]">
+        <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent my-0 py-0 px-0 mx-0">
           {projects.map((project, index) => <div key={project.id} onClick={() => onProjectSelect(project)} style={{
           animationDelay: `${index * 0.1}s`,
           animation: 'slideInRight 0.6s ease-out both'
