@@ -1,22 +1,18 @@
-
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useState } from 'react';
-
 const Index = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-
-  return (
-    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden">
+  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden">
       {/* Header - Fixed and no scroll */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[60px] overflow-hidden">
+      <div className="flex h-screen pt-[60px] overflow-hidden mx-0">
         {/* Sidebar - Fixed and no scroll */}
-        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out my-[50px] px-0 mx-[8px]">
+        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out my-[50px] mx-[18px] px-px">
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
 
@@ -71,8 +67,6 @@ const Index = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
