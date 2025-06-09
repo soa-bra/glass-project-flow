@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 const Index = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  
+
   return (
     <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden">
       {/* Header - Fixed and no scroll */}
@@ -14,24 +14,26 @@ const Index = () => {
       </div>
 
       <div className="flex h-screen pt-[60px] overflow-hidden">
-        {/* Sidebar - Fixed with improved margins */}
-        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out p-5">
+        {/* Sidebar - Fixed and no scroll */}
+        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out my-[50px] px-0 mx-[8px]">
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
 
-        {/* Main Content Area - Enhanced spacing */}
-        <div className={`fixed top-[80px] w-[30%] h-[calc(100vh-100px)] transition-all duration-500 ease-in-out ${
-          isSidebarCollapsed ? 'mr-[calc(5%+40px)]' : 'mr-[calc(15%+40px)]'
-        }`}>
-          <div className="glass rounded-t-3xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col">
+        {/* Main Content Area - Moves with sidebar, content inside can scroll */}
+        <div 
+          className={`fixed top-[137px] w-[30%] h-[calc(100vh-137px)] transition-all duration-500 ease-in-out px-0 mx-[190px] ${
+            isSidebarCollapsed ? 'mr-[100px]' : 'mr-[280px]'
+          }`}
+        >
+          <div className="glass rounded-t-3xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col px-[7px] mx-[10px]">
             <ScrollArea className="w-full h-full">
-              <div className="p-10 text-center">
+              <div className="p-8 text-center py-[35px]">
                 <h1 className="text-3xl font-bold text-soabra-text-primary mb-4 animate-fade-in">
                   مرحباً بك في SoaBra
                 </h1>
                 <p className="text-lg text-soabra-text-secondary animate-fade-in mb-8" style={{
-                animationDelay: '0.2s'
-              }}>
+                  animationDelay: '0.2s'
+                }}>
                   نظام إدارة المشاريع جاهز للاستخدام
                 </p>
                 
