@@ -1,7 +1,5 @@
-
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Clock, Filter } from 'lucide-react';
-
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 interface CalendarEvent {
   id: string;
   title: string;
@@ -10,44 +8,48 @@ interface CalendarEvent {
   color: string;
   type: 'single' | 'multi-start' | 'multi-continue' | 'multi-end';
 }
-
 const MainCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  // Sample events with multi-day support
+  // Sample events with different colors
   const events: CalendarEvent[] = [{
     id: '1',
     title: 'تطوير الموقع الإلكتروني',
     startDate: new Date(2024, 11, 5),
-    endDate: new Date(2024, 11, 8),
-    color: '#8B5CF6',
-    type: 'multi-start'
+    endDate: new Date(2024, 11, 5),
+    color: '#0099FF',
+    type: 'single'
   }, {
     id: '2',
-    title: 'حملة التعريف بسوبرا',
-    startDate: new Date(2024, 11, 10),
-    endDate: new Date(2024, 11, 15),
-    color: '#EC4899',
+    title: 'حملة التعريف بسوءها',
+    startDate: new Date(2024, 11, 8),
+    endDate: new Date(2024, 11, 10),
+    color: '#34D399',
     type: 'multi-start'
   }, {
     id: '3',
     title: 'المؤتمرات الثقافية',
-    startDate: new Date(2024, 11, 18),
-    endDate: new Date(2024, 11, 22),
-    color: '#06B6D4',
+    startDate: new Date(2024, 11, 15),
+    endDate: new Date(2024, 11, 17),
+    color: '#EF4444',
     type: 'multi-start'
   }, {
     id: '4',
     title: 'ورشة التصميم',
-    startDate: new Date(2024, 11, 25),
-    endDate: new Date(2024, 11, 25),
-    color: '#F59E0B',
+    startDate: new Date(2024, 11, 22),
+    endDate: new Date(2024, 11, 22),
+    color: '#A855F7',
     type: 'single'
+  }, {
+    id: '5',
+    title: 'اجتماع المراجعة',
+    startDate: new Date(2024, 11, 28),
+    endDate: new Date(2024, 11, 30),
+    color: '#F59E0B',
+    type: 'multi-start'
   }];
-
   const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
   const weekDays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-
   const generateCalendarDays = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -56,6 +58,7 @@ const MainCalendar = () => {
     const startDate = new Date(firstDay);
     const endDate = new Date(lastDay);
 
+    // Adjust for week start (Sunday = 0)
     startDate.setDate(startDate.getDate() - startDate.getDay());
     endDate.setDate(endDate.getDate() + (6 - endDate.getDay()));
     const days = [];
@@ -66,9 +69,7 @@ const MainCalendar = () => {
     }
     return days;
   };
-
   const calendarDays = generateCalendarDays();
-
   const navigateMonth = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentDate);
     if (direction === 'prev') {
@@ -78,171 +79,89 @@ const MainCalendar = () => {
     }
     setCurrentDate(newDate);
   };
-
-  const getEventForDate = (date: Date) => {
-    return events.find(event => {
-      const eventStart = new Date(event.startDate);
-      const eventEnd = new Date(event.endDate);
-      eventStart.setHours(0, 0, 0, 0);
-      eventEnd.setHours(23, 59, 59, 999);
-      const checkDate = new Date(date);
-      checkDate.setHours(12, 0, 0, 0);
-      
-      return checkDate >= eventStart && checkDate <= eventEnd;
+  const getEventsForDate = (date: Date) => {
+    return events.filter(event => {
+      const eventDate = new Date(event.startDate);
+      return eventDate.toDateString() === date.toDateString();
     });
   };
-
-  const getEventPosition = (event: CalendarEvent, date: Date) => {
-    const eventStart = new Date(event.startDate);
-    const eventEnd = new Date(event.endDate);
-    const checkDate = new Date(date);
-    
-    eventStart.setHours(0, 0, 0, 0);
-    eventEnd.setHours(0, 0, 0, 0);
-    checkDate.setHours(0, 0, 0, 0);
-    
-    if (checkDate.getTime() === eventStart.getTime()) {
-      return 'start';
-    } else if (checkDate.getTime() === eventEnd.getTime()) {
-      return 'end';
-    } else if (checkDate > eventStart && checkDate < eventEnd) {
-      return 'middle';
-    }
-    return null;
-  };
-
   const today = new Date();
-
-  return (
-    <div className="h-full flex flex-col bg-white/90 backdrop-blur-sm rounded-xl m-6 shadow-xl border border-white/60">
+  return <div className="h-full flex flex-col bg-white my-0 py-[222px]">
       {/* Calendar Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200/50 bg-gradient-to-r from-purple-50/80 to-pink-50/80 rounded-t-xl">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800">
-              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-            </h2>
-          </div>
-        </div>
+      <div className="flex items-center justify-between p-6 border-b border-gray-100 py-[12px] my-0">
+        <button onClick={() => navigateMonth('next')} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <ChevronLeft className="w-5 h-5 text-soabra-text-primary" />
+        </button>
         
-        <div className="flex items-center gap-2">
-          <button className="p-2 hover:bg-white/60 rounded-lg transition-colors group">
-            <Filter className="w-5 h-5 text-gray-600 group-hover:text-purple-600 transition-colors" />
-          </button>
-          <button 
-            onClick={() => navigateMonth('prev')} 
-            className="p-2 hover:bg-white/60 rounded-lg transition-colors group"
-          >
-            <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-purple-600 transition-colors" />
-          </button>
-          <button 
-            onClick={() => navigateMonth('next')} 
-            className="p-2 hover:bg-white/60 rounded-lg transition-colors group"
-          >
-            <ChevronLeft className="w-5 h-5 text-gray-600 group-hover:text-purple-600 transition-colors" />
-          </button>
-        </div>
+        <h2 className="text-2xl font-bold text-soabra-text-primary py-0 px-[240px]">
+          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+        </h2>
+        
+        <button onClick={() => navigateMonth('prev')} className="p-2 hover:bg-gray-100 rounded-lg transition-colors px-[202px] py-0 my-0 mx-[30px]">
+          <ChevronRight className="w-5 h-5 text-soabra-text-primary" />
+        </button>
       </div>
 
       {/* Calendar Grid */}
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-6 py-0">
         {/* Week Days Header */}
         <div className="grid grid-cols-7 gap-2 mb-4">
-          {weekDays.map(day => (
-            <div key={day} className="text-center text-sm font-semibold text-gray-600 py-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg">
+          {weekDays.map(day => <div key={day} className="text-center text-sm font-semibold text-soabra-text-secondary py-2">
               {day}
-            </div>
-          ))}
+            </div>)}
         </div>
 
         {/* Calendar Days Grid */}
         <div className="grid grid-cols-7 gap-2">
           {calendarDays.map((day, index) => {
-            const isCurrentMonth = day.getMonth() === currentDate.getMonth();
-            const isToday = day.toDateString() === today.toDateString();
-            const dayEvent = getEventForDate(day);
-            const eventPosition = dayEvent ? getEventPosition(dayEvent, day) : null;
-
-            return (
-              <div 
-                key={index} 
-                className={`
-                  min-h-[100px] p-3 border border-gray-200/40 rounded-xl transition-all duration-200 relative group
-                  ${isCurrentMonth ? 'bg-white/90 hover:bg-white/95' : 'bg-gray-50/60'}
-                  ${isToday ? 'ring-2 ring-purple-400 ring-opacity-50 bg-purple-50/80' : ''}
-                  cursor-pointer hover:shadow-md hover:border-purple-300/50
-                `}
-              >
+          const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+          const isToday = day.toDateString() === today.toDateString();
+          const dayEvents = getEventsForDate(day);
+          return <div key={index} className={`
+                  min-h-[100px] p-3 border border-gray-100 rounded-xl transition-all duration-200 relative
+                  ${isCurrentMonth ? 'bg-white hover:bg-gray-50' : 'bg-gray-50'}
+                  ${isToday ? 'ring-2 ring-soabra-primary-blue ring-opacity-50 bg-blue-50' : ''}
+                  cursor-pointer hover:shadow-md
+                `}>
                 {/* Day Number */}
                 <div className={`
-                  text-sm font-bold mb-2 flex items-center justify-between
-                  ${isCurrentMonth ? 'text-gray-800' : 'text-gray-400'}
-                  ${isToday ? 'text-purple-600' : ''}
+                  text-sm font-bold mb-2
+                  ${isCurrentMonth ? 'text-soabra-text-primary' : 'text-soabra-text-secondary'}
+                  ${isToday ? 'text-soabra-primary-blue' : ''}
                 `}>
-                  <span>{day.getDate()}</span>
-                  {dayEvent && (
-                    <Clock className="w-3 h-3 text-gray-500" />
-                  )}
+                  {day.getDate()}
                 </div>
 
-                {/* Extended Event Bar */}
-                {dayEvent && eventPosition && (
-                  <div className="absolute bottom-2 left-1 right-1 h-6 flex items-center">
-                    <div 
-                      className={`
-                        h-4 text-white text-xs font-medium flex items-center px-2 text-center
-                        ${eventPosition === 'start' ? 'rounded-r-md rounded-l-full' : ''}
-                        ${eventPosition === 'end' ? 'rounded-l-md rounded-r-full' : ''}
-                        ${eventPosition === 'middle' ? 'rounded-none' : ''}
-                        ${eventPosition === 'start' || eventPosition === 'end' ? 'w-full' : 'w-full'}
-                      `}
-                      style={{ backgroundColor: dayEvent.color }}
-                    >
-                      {eventPosition === 'start' && (
-                        <span className="truncate text-xs">{dayEvent.title}</span>
-                      )}
-                      {eventPosition === 'middle' && (
-                        <div className="w-full h-full opacity-80" />
-                      )}
-                      {eventPosition === 'end' && (
-                        <span className="truncate text-xs">انتهاء</span>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                {/* Events */}
+                <div className="space-y-1">
+                  {dayEvents.slice(0, 2).map((event, eventIndex) => <div key={eventIndex} className="text-xs px-2 py-1 rounded-lg text-white truncate font-medium" style={{
+                backgroundColor: event.color
+              }} title={event.title}>
+                      {event.title}
+                    </div>)}
+                  {dayEvents.length > 2 && <div className="text-xs text-soabra-text-secondary font-medium">
+                      +{dayEvents.length - 2} أخرى
+                    </div>}
+                </div>
+              </div>;
+        })}
         </div>
       </div>
 
-      {/* Enhanced Legend */}
-      <div className="p-6 border-t border-gray-200/50 bg-gradient-to-r from-purple-50/50 to-pink-50/50 rounded-b-xl">
-        <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-            <Calendar className="w-3 h-3 text-white" />
-          </div>
-          المشاريع النشطة
-        </h3>
-        <div className="grid grid-cols-2 gap-4">
-          {events.map(event => (
-            <div key={event.id} className="flex items-center gap-3 group">
-              <div 
-                className="w-4 h-4 rounded-full flex-shrink-0 border-2 border-white shadow-sm" 
-                style={{ backgroundColor: event.color }} 
-              />
-              <span className="text-xs text-gray-600 truncate group-hover:text-gray-800 transition-colors">
+      {/* Legend */}
+      <div className="p-6 border-t border-gray-100 bg-gray-50 py-0">
+        <h3 className="text-sm font-bold text-soabra-text-primary mb-3">المشاريع النشطة</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {events.slice(0, 4).map(event => <div key={event.id} className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full flex-shrink-0" style={{
+            backgroundColor: event.color
+          }} />
+              <span className="text-xs text-soabra-text-secondary truncate">
                 {event.title}
               </span>
-            </div>
-          ))}
+            </div>)}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default MainCalendar;
