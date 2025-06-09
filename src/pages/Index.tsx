@@ -22,28 +22,28 @@ const Index = () => {
   };
 
   return (
-    <div dir="rtl" className="relative min-h-screen w-full bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100 font-arabic overflow-hidden">
+    <div dir="rtl" className="relative min-h-screen w-full bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 font-arabic overflow-hidden">
       {/* Header */}
-      <div className="fixed top-0 inset-x-0 bg-white/80 backdrop-blur-sm z-header border-b border-gray-200/30">
+      <div className="fixed top-0 inset-x-0 bg-white shadow-lg z-header border-b border-gray-200">
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[60px]">
-        {/* Sidebar */}
-        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-white/80 backdrop-blur-sm z-sidebar w-[10%] min-w-[80px] border-l border-gray-200/30">
+      <div className="flex h-screen pt-[70px] p-2">
+        {/* Sidebar - 20% width */}
+        <div className="w-[20%] h-[calc(100vh-80px)] bg-white rounded-2xl shadow-xl border border-gray-200 ml-2">
           <Sidebar />
         </div>
 
-        {/* Projects Column */}
-        <div className="fixed top-[60px] right-[10%] w-[30%] h-[calc(100vh-60px)] z-projects bg-white/60 backdrop-blur-sm border-l border-gray-200/30">
+        {/* Projects Column - 30% width */}
+        <div className="w-[30%] h-[calc(100vh-80px)] bg-white rounded-2xl shadow-xl border border-gray-200 mx-2">
           <ProjectsList 
             onProjectSelect={handleProjectSelect}
             isCompressed={showDashboard}
           />
         </div>
 
-        {/* Calendar/Dashboard Column with gradient background */}
-        <div className="fixed top-[60px] left-0 w-[60%] h-[calc(100vh-60px)] z-calendar bg-gradient-to-br from-pink-200/30 via-purple-200/30 to-blue-200/30">
+        {/* Calendar/Dashboard Column - 50% width */}
+        <div className="w-[50%] h-[calc(100vh-80px)] bg-white rounded-2xl shadow-xl border border-gray-200 ml-2 overflow-hidden">
           {/* Calendar */}
           <div className={`
             absolute inset-0 transition-all duration-500 ease-in-out

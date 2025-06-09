@@ -1,6 +1,6 @@
 
 import { Project } from '@/types/project';
-import { RotateCcw, Plus, ArrowUpDown, Building, Users, Calendar } from 'lucide-react';
+import { RotateCcw, Plus, ArrowUpDown, Building, Users, Calendar, Clock, TrendingUp } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface ProjectsListProps {
@@ -20,7 +20,7 @@ const ProjectsList = ({
       value: '15000',
       status: 'success',
       phase: 'التطوير',
-      phaseColor: '#0099FF'
+      phaseColor: '#3B82F6'
     },
     {
       id: '2',
@@ -29,7 +29,7 @@ const ProjectsList = ({
       value: '8000',
       status: 'warning',
       phase: 'التخطيط',
-      phaseColor: '#FBBF24'
+      phaseColor: '#F59E0B'
     },
     {
       id: '3',
@@ -38,7 +38,7 @@ const ProjectsList = ({
       value: '12000',
       status: 'success',
       phase: 'النشر',
-      phaseColor: '#34D399'
+      phaseColor: '#10B981'
     },
     {
       id: '4',
@@ -65,130 +65,149 @@ const ProjectsList = ({
       value: '22000',
       status: 'success',
       phase: 'التطوير',
-      phaseColor: '#A855F7'
+      phaseColor: '#8B5CF6'
     }
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'success':
-        return '#5DDC82';
+        return '#10B981';
       case 'warning':
-        return '#ECFF8C';
+        return '#F59E0B';
       case 'error':
-        return '#F23D3D';
+        return '#EF4444';
       case 'neutral':
-        return '#EDEDEE';
+        return '#6B7280';
       default:
-        return '#EDEDEE';
+        return '#6B7280';
     }
   };
 
   const getRandomDays = () => Math.floor(Math.random() * 30) + 1;
   const getRandomTasks = () => Math.floor(Math.random() * 20) + 1;
+  const getRandomProgress = () => Math.floor(Math.random() * 100);
 
   return (
     <div className={`
-      h-full bg-white/80 backdrop-blur-sm overflow-hidden transition-all duration-300
-      ${isCompressed ? 'opacity-70 scale-98' : 'opacity-100 scale-100'}
+      h-full bg-gradient-to-b from-gray-50 to-white rounded-2xl overflow-hidden transition-all duration-300
+      ${isCompressed ? 'opacity-80 scale-98' : 'opacity-100 scale-100'}
     `}>
       <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="p-6 border-b border-gray-200/50 bg-white/60 backdrop-blur-sm">
+        {/* Enhanced Header */}
+        <div className="p-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-soabra-text-primary flex items-center gap-2">
-              <Building className="w-6 h-6 text-soabra-primary-blue" />
+            <h2 className="text-2xl font-bold flex items-center gap-3">
+              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                <Building className="w-5 h-5" />
+              </div>
               المشاريع
             </h2>
             <div className="flex items-center gap-2">
-              <button className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors group">
-                <RotateCcw className="w-5 h-5 text-soabra-text-secondary group-hover:text-soabra-primary-blue group-hover:rotate-180 transition-all duration-300" />
+              <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+                <RotateCcw className="w-5 h-5 group-hover:rotate-180 transition-all duration-300" />
               </button>
-              <button className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors group">
-                <ArrowUpDown className="w-5 h-5 text-soabra-text-secondary group-hover:text-soabra-primary-blue transition-all duration-300" />
+              <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+                <ArrowUpDown className="w-5 h-5 group-hover:scale-110 transition-all duration-300" />
               </button>
-              <button className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors group">
-                <Plus className="w-5 h-5 text-soabra-text-secondary group-hover:text-soabra-success transition-all duration-300" />
+              <button className="p-2 hover:bg-white/20 rounded-lg transition-colors group">
+                <Plus className="w-5 h-5 group-hover:scale-110 transition-all duration-300" />
               </button>
             </div>
           </div>
-          <div className="text-sm text-soabra-text-secondary flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            {projects.length} مشروع نشط
+          
+          {/* Stats Row */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-white/10 rounded-xl p-3 text-center">
+              <div className="text-2xl font-bold">{projects.length}</div>
+              <div className="text-xs opacity-80">مشروع نشط</div>
+            </div>
+            <div className="bg-white/10 rounded-xl p-3 text-center">
+              <div className="text-2xl font-bold">4</div>
+              <div className="text-xs opacity-80">في الموعد</div>
+            </div>
+            <div className="bg-white/10 rounded-xl p-3 text-center">
+              <div className="text-2xl font-bold">2</div>
+              <div className="text-xs opacity-80">متأخر</div>
+            </div>
           </div>
         </div>
 
-        {/* Projects List with Scroll */}
+        {/* Enhanced Projects List */}
         <ScrollArea className="flex-1">
-          <div className="p-4 space-y-3">
+          <div className="p-4 space-y-4">
             {projects.map(project => {
               const daysLeft = getRandomDays();
               const tasksCount = getRandomTasks();
+              const progress = getRandomProgress();
               
               return (
                 <div
                   key={project.id}
                   onClick={() => onProjectSelect(project)}
-                  className="group relative h-[130px] w-full bg-white rounded-xl p-4 cursor-pointer shadow-sm border border-gray-200/50 hover:shadow-md hover:border-soabra-primary-blue/30 hover:-translate-y-1 transition-all duration-300"
+                  className="group relative bg-white rounded-xl p-5 cursor-pointer shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-300 hover:-translate-y-1 transition-all duration-300"
                 >
-                  {/* Project Status Indicator */}
-                  <div 
-                    className="absolute top-0 right-0 w-full h-1 rounded-t-xl"
-                    style={{ backgroundColor: project.phaseColor }}
-                  />
+                  {/* Progress bar at top */}
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gray-100 rounded-t-xl overflow-hidden">
+                    <div 
+                      className="h-full transition-all duration-1000 ease-out"
+                      style={{ 
+                        width: `${progress}%`,
+                        backgroundColor: project.phaseColor 
+                      }}
+                    />
+                  </div>
                   
-                  {/* Header Row */}
-                  <div className="flex items-start justify-between mb-3">
+                  {/* Header with title and status */}
+                  <div className="flex items-start justify-between mb-4 pt-2">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-soabra-text-primary truncate mb-1 group-hover:text-soabra-primary-blue transition-colors">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
                         {project.title}
                       </h3>
-                      <p className="text-sm text-soabra-text-secondary truncate">
-                        تطوير وتنفيذ حلول رقمية متقدمة
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 mr-4">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-soabra-primary-blue/10 to-soabra-primary-blue/20 flex items-center justify-center border border-soabra-primary-blue/20">
-                        <Calendar className="w-4 h-4 text-soabra-primary-blue" />
-                      </div>
-                      <span className="text-xs font-medium text-soabra-text-primary">{daysLeft} يوم</span>
-                    </div>
-                  </div>
-
-                  {/* Content Row */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1">
-                        <Users className="w-4 h-4 text-soabra-text-secondary" />
-                        <span className="text-sm font-medium text-soabra-text-secondary">{project.assignee}</span>
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Users className="w-4 h-4" />
+                        <span>{project.assignee}</span>
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-soabra-text-primary">
-                        {parseInt(project.value).toLocaleString()} ر.س
-                      </span>
+                    <div className="flex flex-col items-end gap-2">
                       <div 
-                        className="w-3 h-3 rounded-full border border-white"
+                        className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
                         style={{ backgroundColor: getStatusColor(project.status) }}
                       />
+                      <span className="text-sm font-bold text-gray-800">
+                        {parseInt(project.value).toLocaleString()} ر.س
+                      </span>
                     </div>
                   </div>
 
-                  {/* Footer Row */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span 
-                        className="text-xs px-2 py-1 rounded-full text-white font-medium"
-                        style={{ backgroundColor: project.phaseColor }}
-                      >
-                        {project.phase}
-                      </span>
+                  {/* Stats row */}
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <Calendar className="w-3 h-3" />
+                      <span>{daysLeft} يوم</span>
                     </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <CheckSquare className="w-3 h-3" />
+                      <span>{tasksCount} مهمة</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <TrendingUp className="w-3 h-3" />
+                      <span>{progress}%</span>
+                    </div>
+                  </div>
+
+                  {/* Phase badge */}
+                  <div className="flex items-center justify-between">
+                    <span 
+                      className="text-xs px-3 py-1 rounded-full text-white font-medium shadow-sm"
+                      style={{ backgroundColor: project.phaseColor }}
+                    >
+                      {project.phase}
+                    </span>
                     
-                    <div className="flex items-center gap-1 text-soabra-text-secondary">
-                      <span className="text-xs">{tasksCount} مهمة</span>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="text-xs text-blue-600 font-medium">عرض التفاصيل ←</div>
                     </div>
                   </div>
                 </div>
