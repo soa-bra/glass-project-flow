@@ -16,9 +16,16 @@ const Index = () => {
           <Sidebar />
         </div>
 
-        {/* Main Content Area - Empty for now */}
-        <div className="flex-1 ml-[80px]">
-          {/* Content area ready for future components */}
+        {/* Main Content Area - Empty and ready for future content */}
+        <div className="flex-1 ml-[80px] p-6">
+          <div className="glass rounded-3xl p-8 text-center">
+            <h1 className="text-3xl font-bold text-soabra-text-primary mb-4">
+              مرحباً بك في SoaBra
+            </h1>
+            <p className="text-lg text-soabra-text-secondary">
+              نظام إدارة المشاريع جاهز للاستخدام
+            </p>
+          </div>
         </div>
       </div>
     </div>
