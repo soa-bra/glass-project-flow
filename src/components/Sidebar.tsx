@@ -44,7 +44,7 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
     onToggle?.(isCollapsed);
   }, [isCollapsed, onToggle]);
 
-  return <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out ${isCollapsed ? 'w-20' : 'w-60'}`}>
+  return <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out ${isCollapsed ? 'w-[5%]' : 'w-[15%]'}`}>
       <nav className="flex flex-col gap-2 py-0 my-0 px-0 mx-[15px]">
         {/* Menu Title Section with Toggle */}
         <div className="text-center mb-2 rounded-full py-[31px] px-[5px] my-[20px]">
