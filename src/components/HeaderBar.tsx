@@ -3,8 +3,8 @@ const HeaderBar = () => {
   return <header className="fixed top-0 right-0 left-0 h-[60px] bg-soabra-sidebar-bg z-header py-[55px] my-0 px-[25px]">
       <div className="flex items-center justify-between h-full px-[5px]">
         {/* Logo/Brand - Left Side aligned with sidebar menu */}
-        <div className="text-right ml-4">
-          <h1 className="text-lg font-medium text-soabra-text-primary">
+        <div className="text-right ml-4 mx-[5px]">
+          <h1 className="font-medium text-soabra-text-primary text-xl">
             SoaBra
           </h1>
           <div className="text-xs text-soabra-text-secondary">
