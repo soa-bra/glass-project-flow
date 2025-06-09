@@ -1,13 +1,12 @@
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
-
 interface SidebarProps {
   onToggle?: (collapsed: boolean) => void;
 }
-
-const Sidebar = ({ onToggle }: SidebarProps) => {
+const Sidebar = ({
+  onToggle
+}: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  
   const menuItems = [{
     icon: Home,
     label: 'الرئيسية',
@@ -33,22 +32,19 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
     label: 'الأرشيف',
     active: false
   }];
-  
   const toggleSidebar = () => {
     const newCollapsedState = !isCollapsed;
     setIsCollapsed(newCollapsedState);
     onToggle?.(newCollapsedState);
   };
-
   useEffect(() => {
     onToggle?.(isCollapsed);
   }, [isCollapsed, onToggle]);
-
   return <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out ${isCollapsed ? 'w-20' : 'w-60'}`}>
-      <nav className="flex flex-col gap-2 py-0 my-0 px-0 mx-[15px]">
+      <nav className="flex flex-col gap-2 my-0 px-px py-[13px] mx-[10px]">
         {/* Menu Title Section with Toggle */}
         <div className="text-center mb-2 rounded-full py-[31px] px-[5px] my-[20px]">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between px-[14px] mx-0 my-[8px] rounded-lg">
             <div className={`flex-1 transition-all duration-500 ease-in-out ${isCollapsed ? 'opacity-0 translate-x-4 scale-95' : 'opacity-100 translate-x-0 scale-100'}`} style={{
             transitionDelay: isCollapsed ? '0ms' : '100ms'
           }}>
@@ -113,5 +109,4 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
       </nav>
     </aside>;
 };
-
 export default Sidebar;
