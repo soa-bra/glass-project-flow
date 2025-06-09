@@ -1,28 +1,13 @@
-
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
-
 const Index = () => {
-  return (
-    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic px-0 mx-[5px]">
+  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic py-0 mx-0 px-[240px] my-[90px]">
       {/* Header */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[60px] px-[240px] mx-0">
-        {/* Sidebar */}
-        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-width duration-300 my-[51px] py-0 px-[6px] w-[80px]">
-          <Sidebar />
-        </div>
-
-        {/* Main Content Area - Empty for now */}
-        <div className="flex-1 ml-[80px]">
-          {/* Content area ready for future components */}
-        </div>
-      </div>
-    </div>
-  );
+      
+    </div>;
 };
-
 export default Index;
