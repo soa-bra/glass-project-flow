@@ -1,3 +1,4 @@
+
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 interface SidebarProps {
@@ -44,7 +45,7 @@ const Sidebar = ({
       <nav className="flex flex-col gap-2 my-0 px-0 py-[18px] mx-[10px]">
         {/* Menu Title Section with Toggle */}
         <div className="text-center mb-2 rounded-full py-[31px] px-0 my-[34px]">
-          <div className="flex items-center justify-between rounded-lg px-[3px] mx-[5px] my-0">
+          <div className={`flex items-center rounded-lg px-[3px] mx-[5px] my-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
             <div className={`flex-1 transition-all duration-500 ease-in-out ${isCollapsed ? 'opacity-0 translate-x-4 scale-95' : 'opacity-100 translate-x-0 scale-100'}`} style={{
             transitionDelay: isCollapsed ? '0ms' : '100ms'
           }}>
@@ -67,7 +68,7 @@ const Sidebar = ({
         return <button key={index} className={`
                 flex items-center gap-3 px-2 py-3 text-right transition-all duration-400 ease-in-out group relative
                 ${item.active ? 'bg-white/20 text-[#3e494c] font-medium rounded-full shadow-sm' : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light rounded-3xl'}
-                ${isCollapsed ? 'justify-center' : ''}
+                ${isCollapsed ? 'justify-center px-0' : ''}
                 hover:translate-y-[-2px] hover:shadow-md active:translate-y-0 active:scale-95
               `}>
               {/* Icon container with subtle hover effects */}
@@ -75,6 +76,7 @@ const Sidebar = ({
                 w-10 h-10 flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full
                 ${item.active ? 'bg-white/20 border-[#3e494c]/40' : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/50 group-hover:bg-white/5'}
                 group-hover:scale-105 group-active:scale-95
+                ${isCollapsed ? 'mx-auto' : ''}
               `}>
                 <IconComponent className={`
                   w-4 h-4 transition-all duration-300 ease-out
