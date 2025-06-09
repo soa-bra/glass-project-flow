@@ -1,6 +1,7 @@
-import { Project } from '@/pages/Index';
+import { Project } from '@/types/project';
 import { RefreshCcw, Plus, ArrowUpDown } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+
 interface ProjectsListProps {
   onProjectSelect: (project: Project) => void;
   isCompressed: boolean;

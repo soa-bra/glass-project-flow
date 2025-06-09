@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { Project } from '@/pages/Index';
+import { Project } from '@/types/project';
 import FinancialCard from './dashboard/FinancialCard';
 import ProjectCalendarCard from './dashboard/ProjectCalendarCard';
 import AnalyticsCard from './dashboard/AnalyticsCard';
