@@ -17,9 +17,9 @@ const Index = () => {
           <Sidebar />
         </div>
 
-        {/* Main Content Area - positioned to occupy 30% of interface width */}
-        <div className="w-[30%] transition-all duration-500 ease-in-out mr-[280px] p-6">
-          <div className="glass rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform">
+        {/* Main Content Area - positioned to occupy 30% of interface width with full height */}
+        <div className="w-[30%] h-[calc(100vh-60px)] transition-all duration-500 ease-in-out mr-[280px] p-6">
+          <div className="glass rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform h-full flex flex-col justify-center">
             <h1 className="text-3xl font-bold text-soabra-text-primary mb-4 animate-fade-in">
               مرحباً بك في SoaBra
             </h1>
