@@ -54,8 +54,8 @@ const Sidebar = () => {
                 </h2>}
             </div>
             <button onClick={toggleSidebar} className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ease-out border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/10 hover:scale-105 active:scale-95">
-              <div className={`transition-transform duration-300 ease-out ${isCollapsed ? 'rotate-0' : 'rotate-180'}`}>
-                {isCollapsed ? <ChevronLeft className="w-4 h-4 text-[#3e494c]" /> : <ChevronRight className="w-4 h-4 text-[#3e494c]" />}
+              <div className={`transition-transform duration-300 ease-out ${isCollapsed ? 'rotate-0' : 'rotate-0'}`}>
+                {isCollapsed ? <ChevronRight className="w-4 h-4 text-[#3e494c]" /> : <ChevronLeft className="w-4 h-4 text-[#3e494c]" />}
               </div>
             </button>
           </div>
@@ -101,7 +101,7 @@ const Sidebar = () => {
                     </span>
                     {item.active && (
                       <div className={`w-2 h-2 bg-[#3e494c] rounded-full ml-2 mx-[70px] px-0 transition-all duration-500 ease-out group-hover:scale-110 ${isCollapsed ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}`} 
-                           style={{ transitionDelay: isCollapsed ? '0ms' : '400ms' }} />
+                           style={{ transitionDelay: isCollapsed ? '0ms' : '800ms' }} />
                     )}
                   </>
                 )}
