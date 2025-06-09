@@ -64,24 +64,6 @@ const ProjectsList = ({
     phase: 'التخطيط',
     phaseColor: '#F59E0B'
   }];
-  return <div className="h-full bg-soabra-projects-bg rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-      <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="p-6 border-b border-gray-200 bg-white py-0 px-[240px]">
-          <h2 className="text-2xl font-bold text-soabra-text-primary mb-2">المشاريع</h2>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-soabra-text-secondary">
-              {projects.length} مشروع نشط
-            </span>
-            <button className="px-4 py-2 bg-soabra-primary-blue text-white rounded-lg text-sm font-medium hover:bg-soabra-primary-blue-hover transition-colors">
-              إضافة مشروع +
-            </button>
-          </div>
-        </div>
-
-        {/* Projects List */}
-        
-      </div>
-    </div>;
+  return;
 };
 export default ProjectsList;
