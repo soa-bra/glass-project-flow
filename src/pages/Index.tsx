@@ -12,7 +12,7 @@ const Index = () => {
 
       <div className="flex h-screen pt-[60px] overflow-hidden px-[46px] mx-px">
         {/* Sidebar - Fixed and no scroll */}
-        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out my-[50px] mx-[4px] px-0">
+        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out my-[50px] px-0 mx-[15px]">
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
 
