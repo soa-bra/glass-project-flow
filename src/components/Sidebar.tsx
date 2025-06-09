@@ -123,7 +123,7 @@ const Sidebar = () => {
                     </span>
                     {item.active && (
                       <div 
-                        className={`w-2 h-2 bg-[#3e494c] rounded-full ml-2 mx-[32px] px-0 transition-all duration-400 ease-in-out group-hover:scale-110 ${
+                        className={`w-2 h-2 bg-[#3e494c] rounded-full ml-auto mr-[-16px] transition-all duration-400 ease-in-out group-hover:scale-110 ${
                           isCollapsed ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
                         }`} 
                         style={{
