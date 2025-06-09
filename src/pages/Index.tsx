@@ -1,10 +1,14 @@
+
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useState } from 'react';
+
 const Index = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden">
+
+  return (
+    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden">
       {/* Header - Fixed and no scroll */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
@@ -16,8 +20,17 @@ const Index = () => {
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
 
-        {/* Main Content Area - Moves with sidebar, content inside can scroll */}
-        <div className={`fixed top-[137px] w-[24%] h-[calc(100vh-137px)] transition-all duration-500 ease-in-out px-0 ${isSidebarCollapsed ? 'mr-[115px]' : 'mr-[255px]'}`}>
+        {/* Main Content Area - Responsive positioning relative to sidebar */}
+        <div className={`fixed top-[137px] h-[calc(100vh-137px)] transition-all duration-500 ease-in-out px-0 
+          ${isSidebarCollapsed ? 
+            'mr-[115px] w-[calc(100vw-115px-36px)] max-w-[24%] min-w-[300px]' : 
+            'mr-[255px] w-[calc(100vw-255px-36px)] max-w-[24%] min-w-[300px]'
+          }
+          sm:w-[24%] sm:min-w-[280px] sm:max-w-[350px]
+          md:w-[24%] md:min-w-[320px] md:max-w-[400px]
+          lg:w-[24%] lg:min-w-[350px] lg:max-w-[450px]
+          xl:w-[24%] xl:min-w-[400px] xl:max-w-[500px]
+        `}>
           <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col px-[7px] mx-[10px]">
             <ScrollArea className="w-full h-full">
               <div className="p-8 text-center py-[35px] px-[5px]">
@@ -25,8 +38,8 @@ const Index = () => {
                   مرحباً بك في SoaBra
                 </h1>
                 <p className="text-lg text-soabra-text-secondary animate-fade-in mb-8" style={{
-                animationDelay: '0.2s'
-              }}>
+                  animationDelay: '0.2s'
+                }}>
                   نظام إدارة المشاريع جاهز للاستخدام
                 </p>
                 
@@ -67,6 +80,8 @@ const Index = () => {
           </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
