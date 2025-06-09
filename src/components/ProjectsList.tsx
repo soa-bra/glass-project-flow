@@ -1,6 +1,6 @@
 
 import { Project } from '@/types/project';
-import { RotateCcw, Plus, ArrowUpDown, Building, Users, Calendar, Clock, TrendingUp } from 'lucide-react';
+import { RotateCcw, Plus, ArrowUpDown, Building, Users, Calendar, Clock, TrendingUp, CheckSquare } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface ProjectsListProps {
