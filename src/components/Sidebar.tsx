@@ -43,12 +43,13 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-700 ease-out ${isCollapsed ? 'w-20' : 'w-60'}`}>
+    <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out ${isCollapsed ? 'w-20' : 'w-60'}`}>
       <nav className="flex flex-col gap-2 px-0 mx-[15px] py-0 my-0">
         {/* Menu Title Section with Toggle */}
         <div className="text-center mb-2 rounded-full px-[8px] py-[30px] my-[20px]">
           <div className="flex items-center justify-between">
-            <div className={`flex-1 transition-all duration-700 ease-out ${isCollapsed ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`}>
+            <div className={`flex-1 transition-all duration-500 ease-in-out ${isCollapsed ? 'opacity-0 translate-x-4 scale-95' : 'opacity-100 translate-x-0 scale-100'}`}
+                 style={{ transitionDelay: isCollapsed ? '0ms' : '100ms' }}>
               {!isCollapsed && <h2 className="text-soabra-text-primary text-right text-xl font-medium px-3">
                   القائمة
                 </h2>}
@@ -64,11 +65,13 @@ const Sidebar = () => {
         {/* Menu Items */}
         {menuItems.map((item, index) => {
           const IconComponent = item.icon;
+          const baseDelay = isCollapsed ? 0 : 150 + (index * 50);
+          
           return (
             <button
               key={index}
               className={`
-                flex items-center gap-3 px-2 py-3 text-right transition-all duration-500 ease-out group relative
+                flex items-center gap-3 px-2 py-3 text-right transition-all duration-400 ease-in-out group relative
                 ${item.active 
                   ? 'bg-white/20 text-[#3e494c] font-medium rounded-full shadow-sm' 
                   : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light rounded-3xl'
@@ -93,15 +96,16 @@ const Sidebar = () => {
               </div>
               
               {/* Label with smooth transitions */}
-              <div className={`flex-1 flex items-center transition-all duration-700 ease-out ${isCollapsed ? 'opacity-0 translate-x-4 w-0' : 'opacity-100 translate-x-0 w-auto'}`}>
+              <div className={`flex-1 flex items-center transition-all duration-500 ease-in-out ${isCollapsed ? 'opacity-0 translate-x-6 scale-95 w-0' : 'opacity-100 translate-x-0 scale-100 w-auto'}`}
+                   style={{ transitionDelay: `${baseDelay}ms` }}>
                 {!isCollapsed && (
                   <>
                     <span className="tracking-wide text-base transition-all duration-200 group-hover:font-medium">
                       {item.label}
                     </span>
                     {item.active && (
-                      <div className={`w-2 h-2 bg-[#3e494c] rounded-full ml-2 mx-[70px] px-0 transition-all duration-500 ease-out group-hover:scale-110 ${isCollapsed ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}`} 
-                           style={{ transitionDelay: isCollapsed ? '0ms' : '800ms' }} />
+                      <div className={`w-2 h-2 bg-[#3e494c] rounded-full ml-2 mx-[70px] px-0 transition-all duration-400 ease-in-out group-hover:scale-110 ${isCollapsed ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}`} 
+                           style={{ transitionDelay: isCollapsed ? '0ms' : `${baseDelay + 200}ms` }} />
                     )}
                   </>
                 )}
@@ -111,7 +115,8 @@ const Sidebar = () => {
         })}
 
         {/* Bottom Version with smooth transitions */}
-        <div className={`mt-auto pt-2 py-0 my-0 transition-all duration-700 ease-out ${isCollapsed ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
+        <div className={`mt-auto pt-2 py-0 my-0 transition-all duration-500 ease-in-out ${isCollapsed ? 'opacity-0 translate-y-4 scale-95' : 'opacity-100 translate-y-0 scale-100'}`}
+             style={{ transitionDelay: isCollapsed ? '0ms' : '450ms' }}>
           {!isCollapsed && <div className="px-2">
               <div className="text-center text-xs text-soabra-text-secondary/70 font-medium my-[45px] transition-all duration-300 hover:text-soabra-text-secondary">
                 الإصدار 2.1.0
