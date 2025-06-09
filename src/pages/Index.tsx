@@ -1,11 +1,8 @@
-
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import { useState } from 'react';
-
 const Index = () => {
-  return (
-    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic">
+  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic">
       {/* Header */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
@@ -13,7 +10,7 @@ const Index = () => {
 
       <div className="flex h-screen pt-[60px]">
         {/* Sidebar with dynamic width support */}
-        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out">
+        <div className="fixed top-[60px] right-0 h-[calc(100vh-60px)] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out my-[55px] px-0 mx-[11px]">
           <Sidebar />
         </div>
 
@@ -24,15 +21,13 @@ const Index = () => {
               مرحباً بك في SoaBra
             </h1>
             <p className="text-lg text-soabra-text-secondary animate-fade-in" style={{
-              animationDelay: '0.2s'
-            }}>
+            animationDelay: '0.2s'
+          }}>
               نظام إدارة المشاريع جاهز للاستخدام
             </p>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;

@@ -31,9 +31,9 @@ const Sidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
   return <aside className={`bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out ${isCollapsed ? 'w-20' : 'w-60'}`}>
-      <nav className="flex flex-col gap-2 px-0 mx-[15px] py-0 my-0">
+      <nav className="flex flex-col gap-2 py-0 my-0 px-0 mx-0">
         {/* Menu Title Section with Toggle */}
-        <div className="text-center mb-2 rounded-full px-[8px] my-[10px] py-[47px]">
+        <div className="text-center mb-2 rounded-full px-[15px] py-[31px] my-[46px]">
           <div className="flex items-center justify-between">
             <div className={`flex-1 transition-all duration-500 ease-in-out ${isCollapsed ? 'opacity-0 translate-x-4 scale-95' : 'opacity-100 translate-x-0 scale-100'}`} style={{
             transitionDelay: isCollapsed ? '0ms' : '100ms'
