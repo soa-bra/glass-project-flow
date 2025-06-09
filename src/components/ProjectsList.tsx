@@ -64,7 +64,7 @@ const ProjectsList = ({
     phase: 'التخطيط',
     phaseColor: '#F59E0B'
   }];
-  return <div className="bg-[e3e3e3] rounded-lg bg-zinc-200 py-px my-[36px] mx-[4px] px-[10px]">
+  return <div className="bg-[e3e3e3] rounded-lg bg-zinc-200 py-px my-[36px] px-[10px] mx-[27px]">
       <div className="p-4 pt-2 h-full px-0 rounded-lg mx-0 bg-[soabra-primary-blue] my-0 py-0">
         {/* Header */}
         <div className="text-center mb-6 my-0 py-0">
@@ -76,14 +76,14 @@ const ProjectsList = ({
         </div>
 
         {/* Projects List */}
-        <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent px-0 my-0 py-0">
+        <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-soabra-primary-blue/20 scrollbar-track-transparent my-0 py-0 px-[30px] mx-[37px]">
           {projects.map((project, index) => <div key={project.id} onClick={() => onProjectSelect(project)} style={{
           animationDelay: `${index * 0.1}s`,
           animation: 'slideInRight 0.6s ease-out both'
-        }} className="group bg-soabra-card-bg glass rounded-3xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm bg-stone-50 px-[15px] mx-[20px] my-[15px] py-[5px]">
+        }} className="group bg-soabra-card-bg glass rounded-3xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-soabra-primary-blue/10 hover:scale-[1.02] hover:-translate-y-1 border border-white/30 hover:border-white/50 backdrop-blur-sm bg-stone-50 my-[15px] py-[5px] mx-0 px-[25px]">
               {/* Project Header */}
-              <div className="flex items-start justify-between mb-4 mx-0 px-0 my-[10px]">
-                <div className="flex-1 ml-4">
+              <div className="flex items-start justify-between mb-4 my-[10px] mx-px px-0">
+                <div className="flex-1 ml-4 mx-[5px] px-0">
                   <h3 className="font-bold text-soabra-text-primary leading-tight text-base mb-2 group-hover:text-soabra-primary-blue transition-colors duration-300">
                     {project.title}
                   </h3>
@@ -99,7 +99,7 @@ const ProjectsList = ({
               </div>
 
               {/* Project Details */}
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 mx-0">
                 {/* Phase Badge */}
                 <span className="text-sm px-3 py-2 rounded-2xl text-white font-bold shadow-md group-hover:shadow-lg transition-all duration-300" style={{
               backgroundColor: project.phaseColor
@@ -114,7 +114,7 @@ const ProjectsList = ({
               </div>
 
               {/* Status Indicator */}
-              <div className="flex justify-between items-center my-[10px]">
+              <div className="flex justify-between items-center my-[10px] mx-0 px-0">
                 <div className={`
                   w-3 h-3 rounded-full shadow-sm animate-pulse
                   ${project.status === 'success' ? 'bg-soabra-status-success' : ''}

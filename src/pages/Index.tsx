@@ -38,19 +38,19 @@ const Index = () => {
         <HeaderBar />
         
         {/* Main Content - Three Column Layout */}
-        <div className="flex flex-1 overflow-hidden px-[5px] py-0 my-0">
+        <div className="flex flex-1 overflow-hidden py-0 my-0 px-[5px]">
           {/* Sidebar - Right side */}
           <div className="transform transition-all duration-500 ease-in-out hover:scale-[1.01] py-0 my-0 px-0">
             <Sidebar />
           </div>
           
           {/* Projects Column - Middle */}
-          <div className="transform transition-all duration-300 ease-in-out bg-[e3e3e3] rounded-3xl px-0 mx-[10px] bg-zinc-200 py-0 my-0">
+          <div className="transform transition-all duration-300 ease-in-out bg-[e3e3e3] rounded-3xl px-0 bg-zinc-200 py-0 my-0 mx-[11px]">
             <ProjectsList onProjectSelect={handleProjectSelect} isCompressed={isDashboardOpen} />
           </div>
           
           {/* Calendar Column - Left side */}
-          <div className="transform transition-all duration-300 ease-in-out py-0 mx-0 my-[5px] px-[5px]">
+          <div className="transform transition-all duration-300 ease-in-out py-0 my-[5px] px-0 mx-[2px]">
             <CalendarColumn isCompressed={isDashboardOpen} />
           </div>
           
