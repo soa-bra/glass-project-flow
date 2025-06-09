@@ -86,9 +86,9 @@ const MainCalendar = () => {
     });
   };
   const today = new Date();
-  return <div className="shadow-sm border h-full rounded-3xl bg-transparent">
+  return <div className="shadow-sm border h-full rounded-3xl bg-transparent px-[105px] mx-0 py-[29px] my-0">
       {/* Calendar Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-100">
+      <div className="flex items-center justify-between p-6 border-b border-gray-100 px-[100px]">
         <button onClick={() => navigateMonth('next')} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
           <ChevronLeft className="w-5 h-5 text-soabra-text-primary" />
         </button>
@@ -103,7 +103,7 @@ const MainCalendar = () => {
       </div>
 
       {/* Calendar Grid */}
-      <div className="p-6 py-[43px]">
+      <div className="p-6 px-0 py-[25px]">
         {/* Week Days Header */}
         <div className="grid grid-cols-7 gap-2 mb-4">
           {weekDays.map(day => <div key={day} className="text-center text-sm font-medium text-soabra-text-secondary">
@@ -146,7 +146,7 @@ const MainCalendar = () => {
       </div>
 
       {/* Legend */}
-      <div className="p-6 border-t border-gray-100">
+      <div className="p-6 border-t border-gray-100 my-[33px] mx-0 py-[39px] px-[130px]">
         <h3 className="text-sm font-medium text-soabra-text-primary mb-3">المشاريع النشطة</h3>
         <div className="flex flex-wrap gap-4">
           {events.map(event => <div key={event.id} className="flex items-center gap-2">
