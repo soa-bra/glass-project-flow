@@ -37,7 +37,7 @@ const ProjectCardStatusIndicators = ({
         {/* المالك - بدون هالة */}
         <div style={{
         backgroundColor: '#E3E3E3'
-      }} className="rounded-full justify-between flex items-center bg-[soabra-projects-bg] px-[4px] py-0">
+      }} className="rounded-full justify-between flex items-center bg-[soabra-projects-bg] px-[4px] py-px">
           <span className="text-sm font-arabic text-gray-700 px-[3px]">
             {owner}
           </span>
