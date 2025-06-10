@@ -137,7 +137,7 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
         borderRadius: '20px',
         background: 'linear-gradient(135deg, #E8E4F3 0%, #E1E8F4 20%, #D4E6E8 40%, #C7E4DC 60%, #BAE1D0 80%, #ADDFC4 100%)',
         backdropFilter: 'blur(20px)',
-        boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2)',
+        boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.15), 0 0 0 0 transparent',
         overflow: 'hidden',
         zIndex: 30
       }}
