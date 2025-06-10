@@ -1,4 +1,5 @@
 
+
 const statusColors = {
   success: '#00bb88',
   warning: '#ffb500',
@@ -17,12 +18,12 @@ const ProjectCardStatusIndicators = ({
   owner,
   value
 }: ProjectCardStatusIndicatorsProps) => {
-  return <div className="flex items-center justify-between py-0 my-[12px] mx-0 px-0">
+  return <div className="flex items-center justify-between py-0 my-[12px] mx-[14px] px-0">
       {/* دائرة حالة المشروع - على الجانب الأيسر الآن */}
       <div style={{
       backgroundColor: statusColors[status],
       boxShadow: `0 2px 6px ${statusColors[status]}20, 0 0 12px ${statusColors[status]}15`
-    }} className="w-[20px] h-[20px] rounded-full my-0 py-0 px-0 mx-[10px]" />
+    }} className="w-[20px] h-[20px] rounded-full my-0 py-0 px-0 mx-0" />
 
       {/* التاريخ + المالك + القيمة - على الجانب الأيمن الآن */}
       <div className="flex items-center gap-[2px] flex-1 justify-end mx-0 px-0">
@@ -56,3 +57,4 @@ const ProjectCardStatusIndicators = ({
     </div>;
 };
 export default ProjectCardStatusIndicators;
+
