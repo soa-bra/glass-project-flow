@@ -1,4 +1,5 @@
 
+
 const statusColors = {
   success: '#00bb88',
   warning: '#ffb500',
@@ -41,11 +42,10 @@ const ProjectCardStatusIndicators = ({
           </span>
         </div>
 
-        {/* المالك مع الهالة */}
+        {/* المالك - بدون هالة */}
         <div 
           style={{
-            backgroundColor: '#E3E3E3',
-            boxShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)'
+            backgroundColor: '#E3E3E3'
           }} 
           className="rounded-full py-0 mx-[15px] px-[25px]"
         >
@@ -68,3 +68,4 @@ const ProjectCardStatusIndicators = ({
 };
 
 export default ProjectCardStatusIndicators;
+
