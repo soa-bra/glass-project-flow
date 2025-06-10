@@ -27,16 +27,16 @@ const ProjectCardHeader = ({
 }: ProjectCardHeaderProps) => {
   return (
     <div className="flex items-start justify-between mb-2 px-0 py-0 mx-0 my-0 relative">
-      {/* أيقونة المهام على اليمين */}
-      <ProjectCardTasksCircle tasksCount={tasksCount} />
+      {/* أيقونة الأيام على اليمين في RTL */}
+      <div className="relative">
+        <ProjectCardDaysCircle daysLeft={daysLeft} />
+      </div>
       
       {/* العنوان والوصف في الوسط */}
       <ProjectCardTitle title={title} description={description} />
       
-      {/* أيقونة الأيام على اليسار */}
-      <div className="relative">
-        <ProjectCardDaysCircle daysLeft={daysLeft} />
-      </div>
+      {/* أيقونة المهام على اليسار في RTL */}
+      <ProjectCardTasksCircle tasksCount={tasksCount} />
     </div>
   );
 };
