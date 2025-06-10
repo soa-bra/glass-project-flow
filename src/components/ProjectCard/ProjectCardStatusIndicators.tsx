@@ -1,3 +1,4 @@
+
 const statusColors = {
   success: '#5DDC82',
   warning: '#ECFF8C',
@@ -24,21 +25,21 @@ const ProjectCardStatusIndicators = ({
     }} className="w-[15px] h-[15px] rounded-full px-0 mx-[75px]" />
 
       {/* التاريخ */}
-      <div className="bg-white/60 backdrop-blur-sm rounded-full py-0 mx-[2px] px-[21px]">
+      <div className="rounded-full py-0 mx-[2px] px-[21px]" style={{ backgroundColor: '#E3E3E3' }}>
         <span className="text-sm font-arabic text-gray-700">
           {date}
         </span>
       </div>
 
       {/* المكلف */}
-      <div className="bg-white/60 backdrop-blur-sm rounded-full py-0 px-0 mx-[2px]">
+      <div className="rounded-full py-0 px-0 mx-[2px]" style={{ backgroundColor: '#E3E3E3' }}>
         <span className="text-sm font-arabic mx-[20px] px-px text-gray-700">
           {owner}
         </span>
       </div>
 
       {/* القيمة */}
-      <div className="bg-white/60 backdrop-blur-sm rounded-full my-0 py-0 mx-[2px] px-[21px]">
+      <div className="rounded-full my-0 py-0 mx-[2px] px-[21px]" style={{ backgroundColor: '#E3E3E3' }}>
         <span className="text-sm font-arabic text-gray-700">
           {value}
         </span>
