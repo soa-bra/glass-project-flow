@@ -49,7 +49,7 @@ const ProjectCardLayout = ({
         glass-enhanced rounded-[40px] p-2 mx-auto my-1 cursor-pointer
         transition-all duration-300 ease-in-out
         ${isSelected 
-          ? 'shadow-lg scale-[1.02] opacity-100' 
+          ? 'shadow-lg opacity-100' 
           : isOtherSelected 
             ? 'opacity-50 shadow-sm' 
             : 'opacity-100 shadow-sm hover:shadow-md'
