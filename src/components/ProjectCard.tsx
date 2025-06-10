@@ -72,7 +72,7 @@ const ProjectCard = ({
       </div>
 
       {/* الصف السفلي - حالة المشروع والتاريخ والمكلف والقيمة */}
-      <div className="flex items-center justify-between py-0 my-0 px-0 mx-0">
+      <div className="flex items-center justify-between py-0 my-0 mx-[150px] px-0">
         {/* حالة المشروع - دائرة ملونة */}
         <div style={{
         backgroundColor: statusColors[status]
@@ -84,7 +84,7 @@ const ProjectCard = ({
         </div>
 
         {/* المكلف */}
-        <div className="bg-white/60 rounded-full py-0 px-0 mx-0">
+        <div className="bg-white/60 rounded-full py-0 px-[10px] mx-0">
           <span className="text-sm text-gray-700 font-arabic mx-[20px] px-px">{owner}</span>
         </div>
 
