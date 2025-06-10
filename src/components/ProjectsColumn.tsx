@@ -90,7 +90,7 @@ const ProjectsColumn = ({
       </div>
 
       {/* قائمة المشاريع */}
-      <div className="flex-1 space-y-2 overflow-y-auto mx-0 px-0 my-[8px] py-[5px]">
+      <div className="flex-1 space-y-2 overflow-y-auto mx-0 px-0 my-0 py-0">
         {mockProjects.map(project => <ProjectCard key={project.id} {...project} onProjectSelect={handleProjectSelect} isSelected={selectedProjectId === project.id} isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} />)}
       </div>
 
