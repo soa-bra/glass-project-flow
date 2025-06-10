@@ -1,35 +1,27 @@
-
-
 const statusColors = {
   success: '#5DDC82',
   warning: '#ECFF8C',
   error: '#F23D3D',
   info: '#9DCBFF'
 };
-
 interface ProjectCardStatusIndicatorsProps {
   status: 'success' | 'warning' | 'error' | 'info';
   date: string;
   owner: string;
   value: string;
 }
-
 const ProjectCardStatusIndicators = ({
   status,
   date,
   owner,
   value
 }: ProjectCardStatusIndicatorsProps) => {
-  return (
-    <div className="flex items-center justify-between py-[2px] my-[2px] px-px mx-px">
+  return <div className="flex items-center justify-between px-0 mx-0 my-[5px] py-[5px]">
       {/* حالة المشروع - دائرة ملونة */}
-      <div 
-        style={{
-          backgroundColor: statusColors[status],
-          boxShadow: `0 4px 8px ${statusColors[status]}30`
-        }} 
-        className="w-[15px] h-[15px] rounded-full px-0 mx-[13px]" 
-      />
+      <div style={{
+      backgroundColor: statusColors[status],
+      boxShadow: `0 4px 8px ${statusColors[status]}30`
+    }} className="w-[15px] h-[15px] rounded-full px-0 mx-[75px]" />
 
       {/* التاريخ */}
       <div className="bg-white/60 backdrop-blur-sm rounded-full py-0 mx-[2px] px-[21px]">
@@ -51,9 +43,6 @@ const ProjectCardStatusIndicators = ({
           {value}
         </span>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ProjectCardStatusIndicators;
-
