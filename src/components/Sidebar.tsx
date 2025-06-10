@@ -42,8 +42,8 @@ const Sidebar = ({
   }, [isCollapsed, onToggle]);
   return <aside style={{
     width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)'
-  }} className="bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out px-0 mx-[12px]">
-      <nav className="flex flex-col gap-2 my-0 py-0 px-0 mx-0">
+  }} className="bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out mx-0 px-0">
+      <nav className="flex flex-col gap-2 py-0 mx-0 my-[7px] px-0">
         {/* Menu Title Section with Toggle */}
         <div className="text-center mb-2 rounded-full mx-0 px-0 py-0 my-0">
           <div className={`flex items-center rounded-lg px-[3px] mx-[5px] my-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>

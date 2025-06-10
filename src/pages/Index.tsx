@@ -29,7 +29,7 @@ const Index = () => {
         <div style={{
         marginRight: 'var(--sidebar-margin)',
         marginTop: '50px'
-      }} className="fixed top-[var(--sidebar-top-offset)] right-0 h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout mx-0 my-[2px] py-[4px] px-[10px]">
+      }} className="fixed top-[var(--sidebar-top-offset)] right-0 h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout my-0 py-0 px-0 mx-[15px]">
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
 
