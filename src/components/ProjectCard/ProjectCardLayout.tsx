@@ -24,7 +24,7 @@ const ProjectCardLayout = ({
     <div 
       onClick={handleClick} 
       className={`
-        relative w-full bg-white/60 backdrop-blur-[20px] rounded-2xl shadow-sm mx-auto my-1 p-3 
+        relative w-full bg-white/60 backdrop-blur-[20px] rounded-2xl shadow-sm mx-auto my-1 p-2 
         cursor-pointer transition-all duration-500 ease-out
         ${isSelected ? 'shadow-lg shadow-blue-200/30' : ''} 
         ${isOtherSelected ? 'opacity-50' : 'opacity-100'}
@@ -39,3 +39,4 @@ const ProjectCardLayout = ({
 };
 
 export default ProjectCardLayout;
+

@@ -17,7 +17,7 @@ const ProjectCardHeader = ({
   tasksCount
 }: ProjectCardHeaderProps) => {
   return (
-    <div className="flex items-center justify-between mb-3 px-0 mx-0 my-0 py-[11px]">
+    <div className="flex items-center justify-between mb-2 px-1 mx-0 my-0 py-2">
       <ProjectCardDaysCircle daysLeft={daysLeft} />
       <ProjectCardTitle title={title} description={description} />
       <ProjectCardTasksCircle tasksCount={tasksCount} />
@@ -26,3 +26,4 @@ const ProjectCardHeader = ({
 };
 
 export default ProjectCardHeader;
+
