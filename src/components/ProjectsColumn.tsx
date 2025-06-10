@@ -1,5 +1,4 @@
 
-
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { useState } from 'react';
@@ -131,25 +130,28 @@ const ProjectsColumn = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col py-0 px-0 my-[66px] overflow-hidden">
-      {/* شريط الأدوات */}
-      <ProjectsToolbar />
+    <div className="w-full h-full flex flex-col overflow-hidden">
+      {/* شريط الأدوات الثابت */}
+      <div className="flex-shrink-0 bg-soabra-projects-bg pt-[66px] pb-2">
+        <ProjectsToolbar />
+      </div>
       
-      {/* قائمة المشاريع - تمتد حتى نهاية الصفحة */}
-      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mx-0 px-0 my-0 py-0 rounded-xl mt-6">
-        {mockProjects.map(project => (
-          <ProjectCard 
-            key={project.id} 
-            {...project} 
-            onProjectSelect={handleProjectSelect} 
-            isSelected={selectedProjectId === project.id} 
-            isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} 
-          />
-        ))}
+      {/* قائمة المشاريع القابلة للتمرير */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-2">
+        <div className="space-y-2">
+          {mockProjects.map(project => (
+            <ProjectCard 
+              key={project.id} 
+              {...project} 
+              onProjectSelect={handleProjectSelect} 
+              isSelected={selectedProjectId === project.id} 
+              isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} 
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
 export default ProjectsColumn;
-
