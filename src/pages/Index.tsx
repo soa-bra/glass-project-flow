@@ -4,48 +4,85 @@ import HeaderBar from '@/components/HeaderBar';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 const Index = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [isOperationsBoardVisible, setIsOperationsBoardVisible] = useState(true);
   const projectDetailsRef = useRef<HTMLDivElement>(null);
+  const lastClickTimeRef = useRef<number>(0);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleProjectSelect = (projectId: string) => {
-    console.log('Selected project:', projectId);
+  const handleProjectSelect = useCallback((projectId: string) => {
+    const now = Date.now();
+    const timeSinceLastClick = now - lastClickTimeRef.current;
     
-    // إذا كان المشروع محدد بالفعل، قم بإلغاء التحديد وإغلاق لوحة التفاصيل
-    if (selectedProjectId === projectId) {
-      setSelectedProjectId(null);
-      setIsOperationsBoardVisible(true); // إظهار لوح العمليات عند إلغاء التحديد
-      return;
+    console.log('🔥 Index: handleProjectSelect called with projectId:', projectId);
+    console.log('🔥 Current selectedProjectId:', selectedProjectId);
+    console.log('🔥 Time since last click:', timeSinceLastClick, 'ms');
+    
+    // إلغاء أي timeout سابق
+    if (debounceTimeoutRef.current) {
+      console.log('🔥 Clearing previous debounce timeout');
+      clearTimeout(debounceTimeoutRef.current);
     }
     
-    // تحديد مشروع جديد
-    setSelectedProjectId(projectId);
-    setIsOperationsBoardVisible(false); // إخفاء اللوح عند تحديد مشروع
-  };
+    // تحديث وقت آخر نقرة
+    lastClickTimeRef.current = now;
+    
+    // استخدام debounce لمنع النقرات المتعددة السريعة
+    debounceTimeoutRef.current = setTimeout(() => {
+      console.log('🔥 Debounce timeout executed - processing click');
+      
+      // إذا كان المشروع محدد بالفعل، قم بإلغاء التحديد وإغلاق لوحة التفاصيل
+      if (selectedProjectId === projectId) {
+        console.log('🔥 Same project clicked - deselecting');
+        setSelectedProjectId(null);
+        setIsOperationsBoardVisible(true);
+        return;
+      }
+      
+      // تحديد مشروع جديد
+      console.log('🔥 New project selected:', projectId);
+      setSelectedProjectId(projectId);
+      setIsOperationsBoardVisible(false);
+    }, 150); // debounce لمدة 150ms
+  }, [selectedProjectId]);
 
-  const handleResetSelection = () => {
+  const handleResetSelection = useCallback(() => {
+    console.log('🔥 handleResetSelection called');
     setSelectedProjectId(null);
-    setIsOperationsBoardVisible(true); // إظهار اللوح عند إلغاء تحديد المشروع
-  };
+    setIsOperationsBoardVisible(true);
+  }, []);
 
   // إضافة مستمع الأحداث للنقر خارج لوحة تفاصيل المشروع
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (selectedProjectId && projectDetailsRef.current && !projectDetailsRef.current.contains(event.target as Node)) {
+        console.log('🔥 Click outside project details - resetting selection');
         handleResetSelection();
       }
     };
+    
     if (selectedProjectId) {
       document.addEventListener('mousedown', handleClickOutside);
     }
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      // تنظيف timeout عند unmount
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
     };
-  }, [selectedProjectId]);
+  }, [selectedProjectId, handleResetSelection]);
+
+  // إضافة تسجيل للتغييرات في selectedProjectId
+  useEffect(() => {
+    console.log('🔥 selectedProjectId changed to:', selectedProjectId);
+    console.log('🔥 isOperationsBoardVisible:', isOperationsBoardVisible);
+  }, [selectedProjectId, isOperationsBoardVisible]);
 
   return (
     <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden mx-0 px-0">
