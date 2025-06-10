@@ -16,7 +16,7 @@ const ProjectCardStatusIndicators = ({
   owner,
   value
 }: ProjectCardStatusIndicatorsProps) => {
-  return <div className="flex items-center justify-between py-0 my-[15px] px-0 mx-[19px]">
+  return <div className="flex items-center justify-between py-0 mx-0 px-[28px] my-[24px]">
       {/* دائرة حالة المشروع - على الجانب الأيسر الآن */}
       <div style={{
       backgroundColor: statusColors[status],
@@ -24,7 +24,7 @@ const ProjectCardStatusIndicators = ({
     }} className="w-[20px] h-[20px] rounded-full my-0 py-0 px-0 mx-0" />
 
       {/* التاريخ + المالك + القيمة - على الجانب الأيمن الآن */}
-      <div className="flex items-center gap-[1px] flex-1 justify-end mx-[46px] px-[18px]">
+      <div className="flex items-center gap-[2px] flex-1 justify-end mx-[46px] px-[22px]">
         {/* التاريخ */}
         <div style={{
         backgroundColor: '#E3E3E3'
