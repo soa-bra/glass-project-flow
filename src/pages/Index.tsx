@@ -1,3 +1,4 @@
+
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsColumn from '@/components/ProjectsColumn';
@@ -49,7 +50,11 @@ const Index = () => {
         </div>
 
         {/* Operations Board */}
-        <OperationsBoard isVisible={isOperationsBoardVisible} onClose={handleResetSelection} />
+        <OperationsBoard 
+          isVisible={isOperationsBoardVisible} 
+          onClose={handleResetSelection}
+          isSidebarCollapsed={isSidebarCollapsed}
+        />
 
         {/* Project Dashboard - سيتم إضافته في المستقبل */}
         {selectedProjectId && <div className="fixed bg-white/40 backdrop-blur-sm rounded-3xl shadow-lg transition-all duration-500 ease-in-out transform" style={{
