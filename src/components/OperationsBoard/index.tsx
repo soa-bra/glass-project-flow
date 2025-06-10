@@ -130,10 +130,10 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
         isVisible ? 'translate-x-0' : 'translate-x-[100%]'
       }`}
       style={{
-        width: '60vw',
+        right: '15px',
+        left: 'calc(var(--content-area-left) + 500px + 35px + 10px)',
         height: 'calc(100vh - 60px)',
         top: 'var(--sidebar-top-offset)',
-        left: '15px',
         borderRadius: '20px',
         background: 'linear-gradient(135deg, #A8D4A8 0%, #6FC8C8 50%, #4FA3C4 100%)',
         backdropFilter: 'blur(20px)',
