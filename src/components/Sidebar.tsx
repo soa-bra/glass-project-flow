@@ -1,3 +1,4 @@
+
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 interface SidebarProps {
@@ -56,7 +57,7 @@ const Sidebar = ({
             </div>
             <button onClick={toggleSidebar} className="w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 ease-out border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/10 hover:scale-105 active:scale-95 text-3xl px-0 mx-0">
               <div className={`transition-transform duration-300 ease-out ${isCollapsed ? 'rotate-0' : 'rotate-0'}`}>
-                {isCollapsed ? <ChevronRight className="w-4 h-4 text-[#3e494c]" /> : <ChevronLeft className="w-4 h-4 text-[#3e494c]" />}
+                {isCollapsed ? <ChevronRight className="w-6 h-6 text-[#3e494c]" /> : <ChevronLeft className="w-6 h-6 text-[#3e494c]" />}
               </div>
             </button>
           </div>
@@ -74,14 +75,14 @@ const Sidebar = ({
               `}>
               {/* Icon container with subtle hover effects */}
               <div className={`
-                  w-10 h-10 flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full
+                  w-[60px] h-[60px] flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full
                   ${item.active ? 'bg-white/20 border-[#3e494c]/40' : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/50 group-hover:bg-white/5'}
                   group-hover:scale-105 group-active:scale-95
                 `} style={{
             margin: isCollapsed ? '0 auto' : '0'
           }}>
                 <IconComponent className={`
-                    w-4 h-4 transition-all duration-300 ease-out
+                    w-6 h-6 transition-all duration-300 ease-out
                     ${item.active ? 'text-[#3e494c]' : 'group-hover:text-[#3e494c]'}
                   `} />
               </div>
