@@ -1,4 +1,3 @@
-
 interface ProjectCardProps {
   id: string;
   title: string;
@@ -15,14 +14,12 @@ interface ProjectCardProps {
   isSelected?: boolean;
   isOtherSelected?: boolean;
 }
-
 const statusColors = {
   success: '#5DDC82',
-  warning: '#ECFF8C', 
+  warning: '#ECFF8C',
   error: '#F23D3D',
   info: '#9DCBFF'
 };
-
 const ProjectCard = ({
   id,
   title,
@@ -40,14 +37,7 @@ const ProjectCard = ({
   const handleClick = () => {
     onProjectSelect?.(id);
   };
-
-  return (
-    <div 
-      onClick={handleClick} 
-      className={`w-full bg-white/60 backdrop-blur-sm rounded-2xl shadow-sm mx-auto my-3 p-4 cursor-pointer transition-all duration-300 ${
-        isSelected ? 'ring-2 ring-[#0099FF]/70' : 'hover:bg-white/75'
-      } ${isOtherSelected ? 'opacity-50' : 'opacity-100'}`}
-    >
+  return <div onClick={handleClick} className={`w-full bg-white/60 backdrop-blur-sm rounded-2xl shadow-sm mx-auto my-3 p-4 cursor-pointer transition-all duration-300 ${isSelected ? 'ring-2 ring-[#0099FF]/70' : 'hover:bg-white/75'} ${isOtherSelected ? 'opacity-50' : 'opacity-100'}`}>
       {/* الصف العلوي - عدد الأيام والعنوان وعدد المهام */}
       <div className="flex items-center justify-between mb-4">
         {/* عدد الأيام - دائرة على اليسار */}
@@ -62,10 +52,10 @@ const ProjectCard = ({
 
         {/* العنوان والوصف في المنتصف */}
         <div className="flex-1 text-center px-4">
-          <h3 className="text-lg font-bold text-gray-900 mb-1 font-arabic">
+          <h3 className="text-lg font-bold text-gray-900 mb-1 font-arabic text-right">
             {title}
           </h3>
-          <p className="text-sm text-blue-600 font-arabic">
+          <p className="font-arabic text-right text-[soabra-status-success] text-cyan-800">
             {description}
           </p>
         </div>
@@ -84,10 +74,9 @@ const ProjectCard = ({
       {/* الصف السفلي - حالة المشروع والتاريخ والمكلف والقيمة */}
       <div className="flex items-center justify-between">
         {/* حالة المشروع - دائرة ملونة */}
-        <div 
-          className="w-12 h-12 rounded-full" 
-          style={{ backgroundColor: statusColors[status] }}
-        ></div>
+        <div className="w-12 h-12 rounded-full" style={{
+        backgroundColor: statusColors[status]
+      }}></div>
 
         {/* التاريخ */}
         <div className="px-4 py-2 bg-white/60 rounded-full">
@@ -104,8 +93,6 @@ const ProjectCard = ({
           <span className="text-sm text-gray-700 font-arabic">{value}</span>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ProjectCard;
