@@ -43,9 +43,9 @@ const Sidebar = ({
   return <aside style={{
     width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)'
   }} className="bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out mx-0 px-0">
-      <nav className="flex flex-col gap-2 my-0 py-0 mx-[10px] px-[35px]">
+      <nav className="flex flex-col gap-2 my-0 py-0 px-[30px] mx-[10px]">
         {/* Menu Title Section with Toggle */}
-        <div className="text-center mb-2 rounded-full py-0 my-[48px] px-0 mx-[3px]">
+        <div className="text-center mb-2 rounded-full py-0 my-[48px] mx-0 px-[18px]">
           <div className={`flex items-center rounded-lg px-[3px] mx-[5px] my-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
             <div className={`flex-1 transition-all duration-500 ease-in-out ${isCollapsed ? 'opacity-0 translate-x-4 scale-95' : 'opacity-100 translate-x-0 scale-100'}`} style={{
             transitionDelay: isCollapsed ? '0ms' : '100ms'
@@ -54,7 +54,7 @@ const Sidebar = ({
                   القائمة
                 </h2>}
             </div>
-            <button onClick={toggleSidebar} className="w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 ease-out border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/10 hover:scale-105 active:scale-95 text-3xl px-0 mx-0">
+            <button onClick={toggleSidebar} className="w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 ease-out border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/10 hover:scale-105 active:scale-95 text-3xl mx-0 px-[15px]">
               <div className={`transition-transform duration-300 ease-out ${isCollapsed ? 'rotate-0' : 'rotate-0'}`}>
                 {isCollapsed ? <ChevronRight className="w-4 h-4 text-[#3e494c]" /> : <ChevronLeft className="w-4 h-4 text-[#3e494c]" />}
               </div>
