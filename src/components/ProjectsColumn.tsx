@@ -1,5 +1,4 @@
 
-
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { useState } from 'react';
@@ -135,8 +134,14 @@ const ProjectsColumn = ({
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
-      {/* قائمة المشاريع - تمتد حتى نهاية الصفحة */}
-      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mx-0 px-0 my-0 py-0 rounded-xl mt-6">
+      {/* قائمة المشاريع - الماسك يبدأ من هنا */}
+      <div 
+        className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mx-0 px-0 my-0 py-0 rounded-xl mt-6"
+        style={{
+          mask: 'linear-gradient(to bottom, transparent 0px, black 20px, black calc(100% - 20px), transparent 100%)',
+          WebkitMask: 'linear-gradient(to bottom, transparent 0px, black 20px, black calc(100% - 20px), transparent 100%)'
+        }}
+      >
         {mockProjects.map(project => (
           <ProjectCard 
             key={project.id} 
@@ -152,4 +157,3 @@ const ProjectsColumn = ({
 };
 
 export default ProjectsColumn;
-
