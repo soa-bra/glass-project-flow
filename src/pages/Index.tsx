@@ -18,13 +18,13 @@ const Index = () => {
     setSelectedProjectId(null);
     setIsOperationsBoardVisible(true); // إظهار اللوح عند إلغاء تحديد المشروع
   };
-  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden px-[8px] mx-0">
+  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden mx-0 px-0">
       {/* Header - Fixed and no scroll */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 mx-0 my-0 px-[13px]">
+      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 mx-0 my-0 px-0">
         {/* Sidebar - Fixed with consistent margin */}
         <div style={{
         marginRight: 'var(--sidebar-margin)',
