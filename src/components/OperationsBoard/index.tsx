@@ -133,7 +133,7 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
         width: '60vw',
         height: 'calc(100vh - 60px)',
         top: 'var(--sidebar-top-offset)',
-        left: '20px',
+        left: '10px',
         borderRadius: '20px',
         background: 'linear-gradient(135deg, #A8D4A8 0%, #6FC8C8 50%, #4FA3C4 100%)',
         backdropFilter: 'blur(20px)',
