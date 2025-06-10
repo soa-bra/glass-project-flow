@@ -14,9 +14,17 @@ const Index = () => {
 
   const handleProjectSelect = (projectId: string) => {
     console.log('Selected project:', projectId);
+    
+    // إذا كان المشروع محدد بالفعل، قم بإلغاء التحديد وإغلاق لوحة التفاصيل
+    if (selectedProjectId === projectId) {
+      setSelectedProjectId(null);
+      setIsOperationsBoardVisible(true); // إظهار لوح العمليات عند إلغاء التحديد
+      return;
+    }
+    
+    // تحديد مشروع جديد
     setSelectedProjectId(projectId);
     setIsOperationsBoardVisible(false); // إخفاء اللوح عند تحديد مشروع
-    // يمكن إضافة منطق التنقل أو فتح تفاصيل المشروع هنا
   };
 
   const handleResetSelection = () => {
