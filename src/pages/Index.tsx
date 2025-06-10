@@ -44,7 +44,7 @@ const Index = () => {
           }}
         >
           <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col mx-[var(--sidebar-margin)] px-[5px] overflow-hidden">
-            <ScrollArea className="w-full h-full" orientation="vertical">
+            <ScrollArea className="w-full h-full">
               <div className="p-2 mx-[5px] my-0 px-0 py-0 overflow-y-auto overflow-x-hidden">
                 <ProjectsColumn onProjectSelect={handleProjectSelect} />
               </div>

@@ -1,4 +1,4 @@
-import { Separator } from '@/components/ui/separator';
+
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { useState } from 'react';
@@ -65,39 +65,41 @@ const mockProjects = [{
   isOverBudget: true,
   hasOverdueTasks: false
 }];
+
 interface ProjectsColumnProps {
   onProjectSelect?: (projectId: string) => void;
 }
+
 const ProjectsColumn = ({
   onProjectSelect
 }: ProjectsColumnProps) => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  
   const handleProjectSelect = (projectId: string) => {
     const newSelectedId = selectedProjectId === projectId ? null : projectId;
     setSelectedProjectId(newSelectedId);
     onProjectSelect?.(projectId);
   };
-  return <div className="w-full h-full flex flex-col py-0 px-0 my-[66px] overflow-hidden">
+
+  return (
+    <div className="w-full h-full flex flex-col py-0 px-0 my-[66px] overflow-hidden">
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
-      {/* العنوان الفرعي والفاصل */}
-      <div className="mt-6 mb-4 py-0 px-0 my-[10px]">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 font-arabic text-center my-[20px]">
-          اليوم
-        </h3>
-        <Separator className="bg-gray-300 h-px" />
+      {/* قائمة المشاريع - تمتد حتى نهاية الصفحة */}
+      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mx-0 px-0 my-0 py-0 rounded-xl mt-6">
+        {mockProjects.map(project => (
+          <ProjectCard 
+            key={project.id} 
+            {...project} 
+            onProjectSelect={handleProjectSelect} 
+            isSelected={selectedProjectId === project.id} 
+            isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} 
+          />
+        ))}
       </div>
-
-      {/* قائمة المشاريع */}
-      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mx-0 px-0 my-0 py-0 rounded-xl">
-        {mockProjects.map(project => <ProjectCard key={project.id} {...project} onProjectSelect={handleProjectSelect} isSelected={selectedProjectId === project.id} isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} />)}
-      </div>
-
-      {/* عنوان القسم التالي */}
-      <div className="px-6 mt-10 mb-6">
-        <h3 className="text-gray-800 font-arabic text-center my-0 py-0 px-0 text-base font-semibold">من اسبوع</h3>
-      </div>
-    </div>;
+    </div>
+  );
 };
+
 export default ProjectsColumn;
