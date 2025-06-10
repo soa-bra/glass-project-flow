@@ -26,19 +26,11 @@ const ProjectCardLayout = ({
   status
 }: ProjectCardLayoutProps) => {
   const handleClick = (event: React.MouseEvent) => {
-    console.log('🎯 ProjectCardLayout: Click event started for project:', id);
-    console.log('🎯 Current selection state - isSelected:', isSelected, 'isOtherSelected:', isOtherSelected);
-    
     // منع انتشار الحدث لمكونات أخرى
     event.stopPropagation();
     
-    console.log('🎯 Event propagation stopped');
-    
     if (onProjectSelect) {
-      console.log('🎯 Calling onProjectSelect for project:', id);
       onProjectSelect(id);
-    } else {
-      console.log('⚠️ onProjectSelect is not available');
     }
   };
 
