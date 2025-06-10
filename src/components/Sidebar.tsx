@@ -54,7 +54,7 @@ const Sidebar = ({
                   القائمة
                 </h2>}
             </div>
-            <button onClick={toggleSidebar} className="w-15  h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/10 hover:scale-105 active:scale-95 text-3xl mx-0 px-[15px]">
+            <button onClick={toggleSidebar} className="w-[60px] h-[60px]  rounded-full flex items-center justify-center transition-all duration-300 ease-out border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/10 hover:scale-105 active:scale-95 text-3xl mx-0 px-[15px]">
               <div className={`transition-transform duration-300 ease-out ${isCollapsed ? 'rotate-0' : 'rotate-0'}`}>
                 {isCollapsed ? <ChevronRight className="w-4 h-4 text-[#3e494c]" /> : <ChevronLeft className="w-4 h-4 text-[#3e494c]" />}
               </div>
