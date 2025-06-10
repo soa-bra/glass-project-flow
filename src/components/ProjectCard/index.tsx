@@ -30,6 +30,7 @@ const ProjectCard = ({
         title={title}
         description={description}
         tasksCount={tasksCount}
+        status={status}
       />
       
       <ProjectCardFooter
