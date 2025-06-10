@@ -51,7 +51,7 @@ const ProjectCard = ({
         </div>
 
         {/* العنوان والوصف في المنتصف */}
-        <div className="flex-1 text-center px-4">
+        <div className="flex-1 text-center mx-[9px] px-[5px]">
           <h3 className="text-lg font-bold text-gray-900 mb-1 font-arabic text-right">
             {title}
           </h3>
