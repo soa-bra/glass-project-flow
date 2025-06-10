@@ -156,7 +156,7 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
                   <button
                     key={item.value}
                     onClick={() => setActiveTab(item.value)}
-                    className="flex items-center justify-center px-5 py-5 transition-all duration-400 ease-in-out group relative min-w-fit"
+                    className="flex items-center justify-center px-2.5 py-2.5 transition-all duration-400 ease-in-out group relative min-w-fit"
                   >
                     {/* إطار النص مع التأثيرات اللونية داخل الحدود */}
                     <div className={`
