@@ -2,15 +2,25 @@
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsColumn from '@/components/ProjectsColumn';
+import OperationsBoard from '@/components/OperationsBoard';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useState } from 'react';
 
 const Index = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [isOperationsBoardVisible, setIsOperationsBoardVisible] = useState(true);
   
   const handleProjectSelect = (projectId: string) => {
     console.log('Selected project:', projectId);
+    setSelectedProjectId(projectId);
+    setIsOperationsBoardVisible(false); // إخفاء اللوح عند تحديد مشروع
     // يمكن إضافة منطق التنقل أو فتح تفاصيل المشروع هنا
+  };
+
+  const handleResetSelection = () => {
+    setSelectedProjectId(null);
+    setIsOperationsBoardVisible(true); // إظهار اللوح عند إلغاء تحديد المشروع
   };
 
   return (
@@ -46,11 +56,44 @@ const Index = () => {
           <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col mx-[var(--sidebar-margin)] px-[5px] overflow-hidden">
             <ScrollArea className="w-full h-full">
               <div className="p-2 mx-[5px] my-0 px-0 py-0 overflow-y-auto overflow-x-hidden">
-                <ProjectsColumn onProjectSelect={handleProjectSelect} />
+                <ProjectsColumn 
+                  onProjectSelect={handleProjectSelect} 
+                />
               </div>
             </ScrollArea>
           </div>
         </div>
+
+        {/* Operations Board */}
+        <OperationsBoard 
+          isVisible={isOperationsBoardVisible} 
+          onClose={handleResetSelection}
+        />
+
+        {/* Project Dashboard - سيتم إضافته في المستقبل */}
+        {selectedProjectId && (
+          <div className="fixed bg-white/40 backdrop-blur-sm rounded-3xl shadow-lg transition-all duration-500 ease-in-out transform"
+            style={{
+              width: '60vw',
+              height: 'calc(100vh - 60px)',
+              top: 'var(--sidebar-top-offset)',
+              left: '20px',
+            }}
+          >
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold">تفاصيل المشروع</h2>
+                <p className="text-gray-500">رقم المشروع: {selectedProjectId}</p>
+                <button 
+                  onClick={handleResetSelection}
+                  className="mt-4 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-full"
+                >
+                  عودة إلى لوح التشغيل
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
