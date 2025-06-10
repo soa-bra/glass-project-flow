@@ -155,27 +155,30 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
                   <button
                     key={item.value}
                     onClick={() => setActiveTab(item.value)}
-                    className={`
-                      flex items-center justify-center px-6 py-4 transition-all duration-400 ease-in-out group relative min-w-fit
-                      ${activeTab === item.value 
-                        ? 'bg-white/20 text-[#3e494c] font-medium rounded-3xl shadow-sm' 
-                        : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light rounded-3xl'
-                      }
-                      hover:translate-y-[-2px] hover:shadow-md active:translate-y-0 active:scale-95
-                    `}
+                    className="flex items-center justify-center px-6 py-4 transition-all duration-400 ease-in-out group relative min-w-fit"
                   >
-                    {/* إطار النص مع نفس تصميم الشريط الجانبي */}
+                    {/* إطار النص مع التأثيرات اللونية داخل الحدود */}
                     <div className={`
-                      min-w-[120px] h-[60px] flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full
+                      min-w-[120px] h-[60px] flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full relative overflow-hidden
                       ${activeTab === item.value 
-                        ? 'bg-white/20 border-[#3e494c]/40' 
-                        : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/50 group-hover:bg-white/5'
+                        ? 'border-[#3e494c]/40 bg-white/30' 
+                        : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/50'
                       }
                       group-hover:scale-105 group-active:scale-95
                     `}>
+                      {/* خلفية التأثير للهوفر - داخل الإطار */}
+                      <div className={`
+                        absolute inset-0 rounded-full transition-all duration-300 ease-out
+                        ${activeTab === item.value 
+                          ? 'bg-white/20 opacity-100' 
+                          : 'bg-white/0 group-hover:bg-white/10 opacity-0 group-hover:opacity-100'
+                        }
+                      `} />
+                      
+                      {/* النص */}
                       <span className={`
-                        tracking-wide text-sm transition-all duration-300 ease-out font-arabic whitespace-nowrap
-                        ${activeTab === item.value ? 'text-[#3e494c] font-medium' : 'group-hover:text-[#3e494c] group-hover:font-medium'}
+                        tracking-wide text-sm transition-all duration-300 ease-out font-arabic whitespace-nowrap relative z-10
+                        ${activeTab === item.value ? 'text-[#3e494c] font-medium' : 'text-[#3e494c]/70 group-hover:text-[#3e494c] group-hover:font-medium'}
                       `}>
                         {item.label}
                       </span>
