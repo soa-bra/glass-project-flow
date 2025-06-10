@@ -1,6 +1,6 @@
 import { RefreshCcw, Filter, Plus } from 'lucide-react';
 const ProjectsToolbar = () => {
-  return <div className="flex items-center justify-between h-14 px-4 py-0 my-[11px]">
+  return <div className="flex items-center justify-between h-14 px-4 my-0 py-[2px]">
       {/* الأيقونات يميناً */}
       <div className="flex items-center gap-3">
         <button className="w-9 h-9 rounded-full border-2 border-[#3e494c]/50 bg-transparent flex items-center justify-center transition-all duration-300 hover:bg-white/20 group">

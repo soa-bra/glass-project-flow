@@ -77,12 +77,12 @@ const ProjectsColumn = ({
     setSelectedProjectId(newSelectedId);
     onProjectSelect?.(projectId);
   };
-  return <div className="w-full h-full flex flex-col py-0 my-0">
+  return <div className="w-full h-full flex flex-col py-0 px-0 my-[66px]">
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
       {/* العنوان الفرعي والفاصل */}
-      <div className="mt-6 mb-4 py-0 px-0 my-0">
+      <div className="mt-6 mb-4 py-0 px-0 my-[10px]">
         <h3 className="text-lg font-semibold text-gray-800 mb-4 font-arabic text-center my-[20px]">
           اليوم
         </h3>
