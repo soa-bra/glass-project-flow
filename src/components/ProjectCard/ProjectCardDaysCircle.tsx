@@ -1,15 +1,16 @@
 
+
 interface ProjectCardDaysCircleProps {
   daysLeft: number;
 }
 
 const ProjectCardDaysCircle = ({ daysLeft }: ProjectCardDaysCircleProps) => {
   return (
-    <div className="w-[15px] h-[15px] rounded-full border-2 border-gray-300 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm mx-[2px] px-[8px]">
-      <span className="text-[8px] font-bold leading-none text-gray-800">
+    <div className="w-[56px] h-[56px] rounded-full border-2 border-gray-300 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm mx-[2px] px-[8px]">
+      <span className="text-sm font-bold leading-none text-gray-800">
         {daysLeft.toString().padStart(2, '0')}
       </span>
-      <span className="text-[6px] leading-none text-gray-600">
+      <span className="text-xs leading-none text-gray-600">
         يوم
       </span>
     </div>
@@ -17,3 +18,4 @@ const ProjectCardDaysCircle = ({ daysLeft }: ProjectCardDaysCircleProps) => {
 };
 
 export default ProjectCardDaysCircle;
+
