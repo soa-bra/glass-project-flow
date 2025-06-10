@@ -1,11 +1,10 @@
-
 interface ProjectCardTasksCircleProps {
   tasksCount: number;
 }
 const ProjectCardTasksCircle = ({
   tasksCount
 }: ProjectCardTasksCircleProps) => {
-  return <div className="w-[75px] h-[75px] rounded-full flex flex-col items-center justify-center bg-[#CCD4D7] px-0 py-0 my-[5px]">
+  return <div className="w-[75px] h-[75px] rounded-full flex flex-col items-center justify-center bg-[#CCD4D7] px-0 py-0 my-0">
       <span className="text-sm font-bold leading-none" style={{
       color: '#2A3437'
     }}>

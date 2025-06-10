@@ -6,7 +6,7 @@ const ProjectCardTitle = ({
   title,
   description
 }: ProjectCardTitleProps) => {
-  return <div className="flex-1 text-center py-0 my-[15px] px-0 mx-[20px]">
+  return <div className="flex-1 text-center py-0 px-0 my-[8px] mx-[14px]">
       <h3 className="text-lg font-bold mb-1 font-arabic text-right text-gray-900 mx-0 py-0 my-0">
         {title}
       </h3>
