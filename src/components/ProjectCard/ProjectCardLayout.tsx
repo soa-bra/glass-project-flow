@@ -46,7 +46,7 @@ const ProjectCardLayout = ({
       onClick={handleClick}
       style={getCardStyles()}
       className={`
-        bg-white/60 backdrop-blur-[20px] rounded-3xl p-2 mx-auto my-1 cursor-pointer
+        bg-white/60 backdrop-blur-[20px] rounded-[32px] p-2 mx-auto my-1 cursor-pointer
         transition-all duration-300 ease-in-out
         ${isSelected 
           ? 'shadow-lg scale-[1.02] opacity-100' 
