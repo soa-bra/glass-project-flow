@@ -22,7 +22,7 @@ const ProjectCardStatusIndicators = ({ status, date, owner, value }: ProjectCard
           backgroundColor: statusColors[status],
           boxShadow: `0 4px 8px ${statusColors[status]}30`
         }} 
-        className="w-12 h-12 rounded-full px-0 mx-[13px]" 
+        className="w-[15px] h-[15px] rounded-full px-0 mx-[13px]" 
       />
 
       {/* التاريخ */}
