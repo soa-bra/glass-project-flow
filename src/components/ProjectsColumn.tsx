@@ -72,12 +72,15 @@ const ProjectsColumn = ({
   onProjectSelect
 }: ProjectsColumnProps) => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  
   const handleProjectSelect = (projectId: string) => {
     const newSelectedId = selectedProjectId === projectId ? null : projectId;
     setSelectedProjectId(newSelectedId);
     onProjectSelect?.(projectId);
   };
-  return <div className="w-full h-full flex flex-col py-[3px] my-[16px]">
+
+  return (
+    <div className="w-full h-full flex flex-col py-[3px] my-[16px]">
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
@@ -90,8 +93,16 @@ const ProjectsColumn = ({
       </div>
 
       {/* قائمة المشاريع */}
-      <div className="flex-1 space-y-6 overflow-y-auto mx-0 px-0 my-[14px] py-[9px]">
-        {mockProjects.map(project => <ProjectCard key={project.id} {...project} onProjectSelect={handleProjectSelect} isSelected={selectedProjectId === project.id} isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} />)}
+      <div className="flex-1 space-y-2 overflow-y-auto mx-0 px-0 my-[14px] py-[9px]">
+        {mockProjects.map(project => (
+          <ProjectCard 
+            key={project.id} 
+            {...project} 
+            onProjectSelect={handleProjectSelect} 
+            isSelected={selectedProjectId === project.id} 
+            isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} 
+          />
+        ))}
       </div>
 
       {/* عنوان القسم التالي */}
@@ -100,6 +111,8 @@ const ProjectsColumn = ({
           ثلاث أسابيع
         </h3>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default ProjectsColumn;

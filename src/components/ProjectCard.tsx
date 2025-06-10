@@ -1,3 +1,4 @@
+
 interface ProjectCardProps {
   id: string;
   title: string;
@@ -14,12 +15,14 @@ interface ProjectCardProps {
   isSelected?: boolean;
   isOtherSelected?: boolean;
 }
+
 const statusColors = {
   success: '#5DDC82',
   warning: '#ECFF8C',
   error: '#F23D3D',
   info: '#9DCBFF'
 };
+
 const ProjectCard = ({
   id,
   title,
@@ -37,9 +40,16 @@ const ProjectCard = ({
   const handleClick = () => {
     onProjectSelect?.(id);
   };
-  return <div onClick={handleClick} className={`w-full bg-white/60 backdrop-blur-sm rounded-2xl shadow-sm mx-auto my-3 p-4 cursor-pointer transition-all duration-300 ${isSelected ? 'ring-2 ring-[#0099FF]/70' : 'hover:bg-white/75'} ${isOtherSelected ? 'opacity-50' : 'opacity-100'}`}>
+
+  return (
+    <div 
+      onClick={handleClick} 
+      className={`w-full bg-white/60 backdrop-blur-sm rounded-2xl shadow-sm mx-auto my-1 p-3 cursor-pointer transition-all duration-300 ${
+        isSelected ? 'ring-2 ring-[#0099FF]/70' : 'hover:bg-white/75'
+      } ${isOtherSelected ? 'opacity-50' : 'opacity-100'}`}
+    >
       {/* الصف العلوي - عدد الأيام والعنوان وعدد المهام */}
-      <div className="flex items-center justify-between mb-4 px-0">
+      <div className="flex items-center justify-between mb-3 px-0">
         {/* عدد الأيام - دائرة على اليسار */}
         <div className="w-16 h-16 rounded-full border-2 border-gray-300 flex flex-col items-center justify-center bg-white/80 px-0 mx-0">
           <span className="text-sm font-bold text-gray-800 leading-none">
@@ -74,9 +84,10 @@ const ProjectCard = ({
       {/* الصف السفلي - حالة المشروع والتاريخ والمكلف والقيمة */}
       <div className="flex items-center justify-between my-0 py-0 px-0 mx-0">
         {/* حالة المشروع - دائرة ملونة */}
-        <div style={{
-        backgroundColor: statusColors[status]
-      }} className="w-12 h-12 rounded-full px-0 mx-[13px]"></div>
+        <div 
+          style={{ backgroundColor: statusColors[status] }} 
+          className="w-12 h-12 rounded-full px-0 mx-[13px]"
+        ></div>
 
         {/* التاريخ */}
         <div className="bg-white/60 rounded-full py-0 mx-[26px] px-[10px]">
@@ -93,6 +104,8 @@ const ProjectCard = ({
           <span className="text-sm text-gray-700 font-arabic">{value}</span>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default ProjectCard;
