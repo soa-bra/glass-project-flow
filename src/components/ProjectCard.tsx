@@ -1,3 +1,4 @@
+
 interface ProjectCardProps {
   id: string;
   title: string;
@@ -14,12 +15,14 @@ interface ProjectCardProps {
   isSelected?: boolean;
   isOtherSelected?: boolean;
 }
+
 const statusColors = {
   success: '#5DDC82',
-  warning: '#ECFF8C',
+  warning: '#ECFF8C', 
   error: '#F23D3D',
   info: '#9DCBFF'
 };
+
 const ProjectCard = ({
   id,
   title,
@@ -29,6 +32,7 @@ const ProjectCard = ({
   date,
   owner,
   value,
+  daysLeft,
   onProjectSelect,
   isSelected = false,
   isOtherSelected = false
@@ -36,45 +40,72 @@ const ProjectCard = ({
   const handleClick = () => {
     onProjectSelect?.(id);
   };
-  return <div onClick={handleClick} className={`w-[90%] h-[80px] bg-[#F2F2F2] rounded-xl shadow-sm mx-auto my-2 px-3 py-2 flex flex-col justify-between cursor-pointer transition-all duration-300 ${isSelected ? 'ring-2 ring-[#0099FF]/70' : 'hover:bg-white/25'} ${isOtherSelected ? 'opacity-50' : 'opacity-100'}`}>
-      {/* الصف العلوي */}
-      <div className="flex items-start justify-between py-0">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-[18px] font-medium text-[#2A3437] font-arabic truncate">
+
+  return (
+    <div 
+      onClick={handleClick} 
+      className={`w-full bg-white/60 backdrop-blur-sm rounded-2xl shadow-sm mx-auto my-3 p-4 cursor-pointer transition-all duration-300 ${
+        isSelected ? 'ring-2 ring-[#0099FF]/70' : 'hover:bg-white/75'
+      } ${isOtherSelected ? 'opacity-50' : 'opacity-100'}`}
+    >
+      {/* الصف العلوي - عدد الأيام والعنوان وعدد المهام */}
+      <div className="flex items-center justify-between mb-4">
+        {/* عدد الأيام - دائرة على اليسار */}
+        <div className="w-16 h-16 rounded-full border-2 border-gray-300 flex flex-col items-center justify-center bg-white/80">
+          <span className="text-sm font-bold text-gray-800 leading-none">
+            {daysLeft.toString().padStart(2, '0')}
+          </span>
+          <span className="text-xs text-gray-600 leading-none">
+            يوم
+          </span>
+        </div>
+
+        {/* العنوان والوصف في المنتصف */}
+        <div className="flex-1 text-center px-4">
+          <h3 className="text-lg font-bold text-gray-900 mb-1 font-arabic">
             {title}
           </h3>
-          <p className="text-[14px] text-[#007B8C] font-arabic leading-4 truncate">
+          <p className="text-sm text-blue-600 font-arabic">
             {description}
           </p>
         </div>
 
-        {/* عدد المهام */}
-        <div className="w-[64px] h-[64px] bg-[#C5D1D6] rounded-full flex flex-col items-center justify-center shrink-0">
-          <span className="text-[14px] font-bold text-[#2A3437] leading-none">
+        {/* عدد المهام - دائرة على اليمين */}
+        <div className="w-16 h-16 rounded-full bg-gray-400 flex flex-col items-center justify-center">
+          <span className="text-sm font-bold text-white leading-none">
             {tasksCount.toString().padStart(2, '0')}
           </span>
-          <span className="text-[12px] text-[#2A3437] leading-none">
+          <span className="text-xs text-white leading-none">
             مهام
           </span>
         </div>
       </div>
 
-      {/* الصف السفلي */}
-      <div className="flex items-center justify-between mt-1">
-        {/* حالة المشروع */}
-        <div className="w-[36px] h-[36px] rounded-full shrink-0" style={{
-        backgroundColor: statusColors[status]
-      }}></div>
+      {/* الصف السفلي - حالة المشروع والتاريخ والمكلف والقيمة */}
+      <div className="flex items-center justify-between">
+        {/* حالة المشروع - دائرة ملونة */}
+        <div 
+          className="w-12 h-12 rounded-full" 
+          style={{ backgroundColor: statusColors[status] }}
+        ></div>
 
         {/* التاريخ */}
-        <span className="glass-badge">{date}</span>
+        <div className="px-4 py-2 bg-white/60 rounded-full">
+          <span className="text-sm text-gray-700 font-arabic">{date}</span>
+        </div>
 
         {/* المكلف */}
-        <span className="glass-badge w-[110px] justify-center">{owner}</span>
+        <div className="px-4 py-2 bg-white/60 rounded-full">
+          <span className="text-sm text-gray-700 font-arabic">{owner}</span>
+        </div>
 
         {/* القيمة */}
-        <span className="glass-badge py-[20px]">{value}</span>
+        <div className="px-4 py-2 bg-white/60 rounded-full">
+          <span className="text-sm text-gray-700 font-arabic">{value}</span>
+        </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default ProjectCard;
