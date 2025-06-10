@@ -112,7 +112,7 @@ const mockProjects = [{
   hasOverdueTasks: false
 }];
 const ProjectsColumn = () => {
-  return <div className="w-full h-full flex flex-col px-2 overflow-hidden py-4">
+  return <div className="w-full h-full flex flex-col overflow-hidden px-0 py-0">
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
