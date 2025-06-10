@@ -1,4 +1,3 @@
-
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { useState } from 'react';
@@ -113,45 +112,30 @@ const mockProjects = [{
   isOverBudget: false,
   hasOverdueTasks: false
 }];
-
 interface ProjectsColumnProps {
   onProjectSelect?: (projectId: string) => void;
 }
-
 const ProjectsColumn = ({
   onProjectSelect
 }: ProjectsColumnProps) => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  
   const handleProjectSelect = (projectId: string) => {
     const newSelectedId = selectedProjectId === projectId ? null : projectId;
     setSelectedProjectId(newSelectedId);
     onProjectSelect?.(projectId);
   };
-
-  return (
-    <div dir="rtl" className="w-full h-full flex flex-col overflow-hidden">
+  return <div dir="rtl" className="w-full h-full flex flex-col overflow-hidden">
       {/* شريط الأدوات الثابت */}
       <div className="flex-shrink-0 bg-soabra-projects-bg pt-[66px] pb-2">
         <ProjectsToolbar />
       </div>
       
       {/* قائمة المشاريع القابلة للتمرير - معكوسة */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden pr-2">
-        <div className="space-y-2">
-          {mockProjects.reverse().map(project => (
-            <ProjectCard 
-              key={project.id} 
-              {...project} 
-              onProjectSelect={handleProjectSelect} 
-              isSelected={selectedProjectId === project.id} 
-              isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} 
-            />
-          ))}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden pr-2 rounded-lg">
+        <div className="space-y-2 rounded-xl">
+          {mockProjects.reverse().map(project => <ProjectCard key={project.id} {...project} onProjectSelect={handleProjectSelect} isSelected={selectedProjectId === project.id} isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} />)}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ProjectsColumn;
