@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
@@ -113,14 +112,14 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
     }
   }, [activeTab, isVisible]);
 
-  // قائمة التبويبات مع الأيقونات
+  // قائمة التبويبات بدون الأيقونات
   const tabItems = [
-    { value: 'overview', label: 'نظرة عامّة', icon: Eye },
-    { value: 'finance', label: 'مالية', icon: DollarSign },
-    { value: 'legal', label: 'قانونية', icon: FileText },
-    { value: 'hr', label: 'موارد بشرية', icon: Users },
-    { value: 'clients', label: 'عملاء', icon: Building },
-    { value: 'reports', label: 'تقارير', icon: BarChart3 },
+    { value: 'overview', label: 'نظرة عامّة' },
+    { value: 'finance', label: 'مالية' },
+    { value: 'legal', label: 'قانونية' },
+    { value: 'hr', label: 'موارد بشرية' },
+    { value: 'clients', label: 'عملاء' },
+    { value: 'reports', label: 'تقارير' },
   ];
 
   // التبويبات مع المحتوى
@@ -152,13 +151,12 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
           <div className="border-b border-gray-200/30 h-[120px] flex items-center px-6">
             <div className="w-full flex items-center gap-2 overflow-x-auto">
               {tabItems.map((item) => {
-                const IconComponent = item.icon;
                 return (
                   <button
                     key={item.value}
                     onClick={() => setActiveTab(item.value)}
                     className={`
-                      flex flex-col items-center gap-2 px-4 py-3 transition-all duration-400 ease-in-out group relative min-w-fit
+                      flex items-center justify-center px-6 py-4 transition-all duration-400 ease-in-out group relative min-w-fit
                       ${activeTab === item.value 
                         ? 'bg-white/20 text-[#3e494c] font-medium rounded-3xl shadow-sm' 
                         : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light rounded-3xl'
@@ -166,25 +164,22 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
                       hover:translate-y-[-2px] hover:shadow-md active:translate-y-0 active:scale-95
                     `}
                   >
-                    {/* Icon container with same design as sidebar */}
+                    {/* إطار النص مع نفس تصميم الشريط الجانبي */}
                     <div className={`
-                      w-[60px] h-[60px] flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full
+                      min-w-[120px] h-[60px] flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full
                       ${activeTab === item.value 
                         ? 'bg-white/20 border-[#3e494c]/40' 
                         : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/50 group-hover:bg-white/5'
                       }
                       group-hover:scale-105 group-active:scale-95
                     `}>
-                      <IconComponent className={`
-                        w-6 h-6 transition-all duration-300 ease-out
-                        ${activeTab === item.value ? 'text-[#3e494c]' : 'group-hover:text-[#3e494c]'}
-                      `} />
+                      <span className={`
+                        tracking-wide text-sm transition-all duration-300 ease-out font-arabic whitespace-nowrap
+                        ${activeTab === item.value ? 'text-[#3e494c] font-medium' : 'group-hover:text-[#3e494c] group-hover:font-medium'}
+                      `}>
+                        {item.label}
+                      </span>
                     </div>
-                    
-                    {/* Label */}
-                    <span className="tracking-wide text-sm transition-all duration-200 group-hover:font-medium whitespace-nowrap">
-                      {item.label}
-                    </span>
                   </button>
                 );
               })}
