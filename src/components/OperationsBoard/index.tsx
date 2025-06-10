@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
@@ -16,42 +17,12 @@ type TabData = {
 interface OperationsBoardProps {
   isVisible: boolean;
   onClose: () => void;
-  isSidebarCollapsed?: boolean;
 }
 
-export const OperationsBoard = ({ isVisible, onClose, isSidebarCollapsed = false }: OperationsBoardProps) => {
+export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [tabData, setTabData] = useState<TabData>({});
   const [loading, setLoading] = useState<boolean>(false);
-
-  // حساب العرض الديناميكي للوحة
-  const calculateBoardWidth = () => {
-    const sidebarWidth = isSidebarCollapsed ? 115 : 255; // عرض الشريط الجانبي
-    const sidebarMargin = 20; // هامش الشريط الجانبي
-    const projectsColumnWidth = 500; // عرض عامود المشاريع
-    const projectsColumnMargin = 25; // هامش عامود المشاريع
-    const boardLeftMargin = 15; // الهامش الأيسر للوحة
-    const boardRightMargin = 15; // الهامش الأيمن للوحة (بين اللوحة والعامود)
-    
-    // العرض المتاح = عرض الشاشة - عرض الشريط الجانبي - هوامش الشريط الجانبي - عرض عامود المشاريع - هوامش عامود المشاريع - هوامش اللوحة
-    const availableWidth = `calc(100vw - ${sidebarWidth}px - ${sidebarMargin}px - ${projectsColumnWidth}px - ${projectsColumnMargin}px - ${boardLeftMargin}px - ${boardRightMargin}px)`;
-    
-    return availableWidth;
-  };
-
-  // حساب الموضع الأيسر للوحة
-  const calculateBoardLeft = () => {
-    const sidebarWidth = isSidebarCollapsed ? 115 : 255; // عرض الشريط الجانبي
-    const sidebarMargin = 20; // هامش الشريط الجانبي
-    const projectsColumnWidth = 500; // عرض عامود المشاريع
-    const projectsColumnMargin = 25; // هامش عامود المشاريع
-    const boardRightMargin = 15; // الهامش بين اللوحة والعامود
-    
-    // الموضع الأيسر = عرض الشريط الجانبي + هامش الشريط الجانبي + عرض عامود المشاريع + هامش عامود المشاريع + الهامش بين اللوحة والعامود
-    const leftPosition = sidebarWidth + sidebarMargin + projectsColumnWidth + projectsColumnMargin + boardRightMargin;
-    
-    return `${leftPosition}px`;
-  };
 
   // محاكاة جلب البيانات من الـ API
   const fetchTabData = async (tabName: string) => {
@@ -159,10 +130,10 @@ export const OperationsBoard = ({ isVisible, onClose, isSidebarCollapsed = false
         isVisible ? 'translate-x-0' : 'translate-x-[100%]'
       }`}
       style={{
-        width: calculateBoardWidth(),
+        width: '60vw',
         height: 'calc(100vh - 60px)',
         top: 'var(--sidebar-top-offset)',
-        left: calculateBoardLeft(),
+        left: '15px',
         borderRadius: '20px',
         background: 'linear-gradient(135deg, #A8D4A8 0%, #6FC8C8 50%, #4FA3C4 100%)',
         backdropFilter: 'blur(20px)',
