@@ -129,7 +129,7 @@ const ProjectsColumn = ({
       <ProjectsToolbar />
       
       {/* قائمة المشاريع - تمتد حتى نهاية الصفحة */}
-      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mx-0 px-0 py-0 rounded-xl mt-6 my-[33px]">
+      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-rounded-xl mt-6 my-[33px] bg-transparent rounded-xl">
         {mockProjects.map(project => <ProjectCard key={project.id} {...project} onProjectSelect={handleProjectSelect} isSelected={selectedProjectId === project.id} isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} />)}
       </div>
     </div>;
