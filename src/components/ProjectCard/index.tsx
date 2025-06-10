@@ -13,17 +13,11 @@ const ProjectCard = ({
   date,
   owner,
   value,
-  daysLeft,
-  onProjectSelect,
-  isSelected = false,
-  isOtherSelected = false
+  daysLeft
 }: ProjectCardProps) => {
   return (
     <ProjectCardLayout
       id={id}
-      isSelected={isSelected}
-      isOtherSelected={isOtherSelected}
-      onProjectSelect={onProjectSelect}
       status={status}
     >
       <ProjectCardHeader

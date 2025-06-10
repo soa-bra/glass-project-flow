@@ -113,19 +113,7 @@ const mockProjects = [{
   hasOverdueTasks: false
 }];
 
-interface ProjectsColumnProps {
-  onProjectSelect?: (projectId: string) => void;
-  selectedProjectId?: string | null;
-}
-
-const ProjectsColumn = ({
-  onProjectSelect,
-  selectedProjectId
-}: ProjectsColumnProps) => {
-  const handleProjectSelect = (projectId: string) => {
-    onProjectSelect?.(projectId);
-  };
-
+const ProjectsColumn = () => {
   return (
     <div className="w-full h-full flex flex-col px-0 overflow-hidden py-0 my-[30px]">
       {/* شريط الأدوات */}
@@ -137,9 +125,6 @@ const ProjectsColumn = ({
           <ProjectCard 
             key={project.id} 
             {...project} 
-            onProjectSelect={handleProjectSelect} 
-            isSelected={selectedProjectId === project.id} 
-            isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} 
           />
         ))}
       </div>

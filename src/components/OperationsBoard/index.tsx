@@ -6,15 +6,13 @@ import { useTabData } from './useTabData';
 import { TabNavigation } from './TabNavigation';
 import { TabContentWrapper } from './TabContentWrapper';
 
-export const OperationsBoard = ({ isVisible, onClose, isSidebarCollapsed }: OperationsBoardProps) => {
+export const OperationsBoard = ({ isSidebarCollapsed }: { isSidebarCollapsed: boolean }) => {
   const [activeTab, setActiveTab] = useState('overview');
-  const { tabData, loading } = useTabData(activeTab, isVisible);
+  const { tabData, loading } = useTabData(activeTab, true);
 
   return (
     <div 
       className={`fixed transition-all duration-500 ease-in-out ${
-        isVisible ? 'translate-x-0' : 'translate-x-[-120%]'
-      } ${
         isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'
       }`}
       style={{
