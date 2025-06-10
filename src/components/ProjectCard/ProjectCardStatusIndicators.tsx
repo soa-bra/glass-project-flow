@@ -31,21 +31,21 @@ const ProjectCardStatusIndicators = ({
       />
 
       {/* التاريخ */}
-      <div className="bg-white/60 backdrop-blur-sm rounded-full py-0 mx-[15px] px-[21px]">
+      <div className="bg-white/60 backdrop-blur-sm rounded-full py-0 mx-[5px] px-[21px]">
         <span className="text-sm font-arabic text-gray-700">
           {date}
         </span>
       </div>
 
       {/* المكلف */}
-      <div className="bg-white/60 backdrop-blur-sm rounded-full py-0 px-0 mx-[15px]">
+      <div className="bg-white/60 backdrop-blur-sm rounded-full py-0 px-0 mx-[5px]">
         <span className="text-sm font-arabic mx-[20px] px-px text-gray-700">
           {owner}
         </span>
       </div>
 
       {/* القيمة */}
-      <div className="bg-white/60 backdrop-blur-sm rounded-full my-0 py-0 mx-[15px] px-[21px]">
+      <div className="bg-white/60 backdrop-blur-sm rounded-full my-0 py-0 mx-0 px-[21px]">
         <span className="text-sm font-arabic text-gray-700">
           {value}
         </span>
