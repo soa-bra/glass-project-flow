@@ -77,13 +77,13 @@ const ProjectsColumn = ({
     setSelectedProjectId(newSelectedId);
     onProjectSelect?.(projectId);
   };
-  return <div className="w-full h-full flex flex-col my-0 py-0">
+  return <div className="w-full h-full flex flex-col my-[15px] py-[50px]">
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
       {/* العنوان الفرعي والفاصل */}
-      <div className="px-6 mt-6 mb-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 font-arabic text-center">
+      <div className="mt-6 mb-4 py-0 px-[46px] my-0">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 font-arabic text-center my-[20px]">
           اليوم
         </h3>
         <Separator className="bg-gray-300 h-px" />
@@ -96,9 +96,7 @@ const ProjectsColumn = ({
 
       {/* عنوان القسم التالي */}
       <div className="px-6 mt-10 mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 font-arabic text-center">
-          ثلاث أسابيع
-        </h3>
+        <h3 className="text-gray-800 font-arabic text-center my-0 py-0 px-0 text-base font-semibold">من اسبوع</h3>
       </div>
     </div>;
 };
