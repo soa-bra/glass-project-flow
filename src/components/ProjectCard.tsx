@@ -41,7 +41,7 @@ const ProjectCard = ({
       {/* الصف العلوي - عدد الأيام والعنوان وعدد المهام */}
       <div className="flex items-center justify-between mb-4">
         {/* عدد الأيام - دائرة على اليسار */}
-        <div className="w-16 h-16 rounded-full border-2 border-gray-300 flex flex-col items-center justify-center bg-white/80">
+        <div className="w-16 h-16 rounded-full border-2 border-gray-300 flex flex-col items-center justify-center bg-white/80 px-0 mx-0">
           <span className="text-sm font-bold text-gray-800 leading-none">
             {daysLeft.toString().padStart(2, '0')}
           </span>
@@ -72,11 +72,11 @@ const ProjectCard = ({
       </div>
 
       {/* الصف السفلي - حالة المشروع والتاريخ والمكلف والقيمة */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between py-0 my-0 mx-0 px-[30px]">
         {/* حالة المشروع - دائرة ملونة */}
-        <div className="w-12 h-12 rounded-full" style={{
+        <div style={{
         backgroundColor: statusColors[status]
-      }}></div>
+      }} className="w-12 h-12 rounded-full px-0 mx-[13px]"></div>
 
         {/* التاريخ */}
         <div className="px-4 py-2 bg-white/60 rounded-full">
