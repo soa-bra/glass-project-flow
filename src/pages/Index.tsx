@@ -1,4 +1,3 @@
-
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsColumn from '@/components/ProjectsColumn';
@@ -57,7 +56,7 @@ const Index = () => {
         width: '60vw',
         height: 'calc(100vh - 60px)',
         top: 'var(--sidebar-top-offset)',
-        left: '10px'
+        left: '15px'
       }}>
             <div className="w-full h-full flex items-center justify-center">
               <div className="text-center">
