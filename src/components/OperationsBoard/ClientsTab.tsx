@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 
 interface ActiveClient {
   id: number;
@@ -54,22 +53,20 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({ data, loading }) => {
       <div>
         <h3 className="text-xl font-arabic font-medium text-right mb-4">العملاء النشطين</h3>
         
-        <Card className="bg-white/40 backdrop-blur-sm">
-          <CardContent className="p-4">
-            <ul className="space-y-2">
-              {data.active.map(client => (
-                <li key={client.id} className="border-b border-gray-200/60 last:border-0 pb-2 last:pb-0">
-                  <div className="flex justify-between items-center">
-                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
-                      {client.projects} مشروع
-                    </span>
-                    <h4 className="font-medium text-lg text-right">{client.name}</h4>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <div className="glass-enhanced rounded-[40px] p-4 transition-all duration-200 ease-in-out">
+          <ul className="space-y-2">
+            {data.active.map(client => (
+              <li key={client.id} className="border-b border-gray-200/60 last:border-0 pb-2 last:pb-0">
+                <div className="flex justify-between items-center">
+                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                    {client.projects} مشروع
+                  </span>
+                  <h4 className="font-medium text-lg text-right">{client.name}</h4>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
       
       {/* بطاقات مؤشر NPS */}
@@ -78,40 +75,38 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({ data, loading }) => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {data.nps.map(item => (
-            <Card 
+            <div 
               key={item.id}
-              className="bg-white/40 backdrop-blur-sm hover:bg-white/50 transition-all"
+              className="glass-enhanced rounded-[40px] p-4 transition-all duration-200 ease-in-out hover:bg-white/50"
             >
-              <CardContent className="p-4">
-                <div className="text-right mb-2">
-                  <h4 className="font-medium">{item.client}</h4>
+              <div className="text-right mb-2">
+                <h4 className="font-medium">{item.client}</h4>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className={`text-sm font-medium px-2.5 py-1 rounded ${
+                    item.score >= 75 ? 'bg-green-100 text-green-800' :
+                    item.score >= 60 ? 'bg-amber-100 text-amber-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {getNPSRating(item.score)}
+                  </span>
                 </div>
                 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className={`text-sm font-medium px-2.5 py-1 rounded ${
-                      item.score >= 75 ? 'bg-green-100 text-green-800' :
-                      item.score >= 60 ? 'bg-amber-100 text-amber-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {getNPSRating(item.score)}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold">{item.score}</span>
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getNPSColor(item.score) }}></div>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-bold">{item.score}</span>
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getNPSColor(item.score) }}></div>
                 </div>
-                
-                <div className="mt-3 bg-gray-200 h-2 rounded-full">
-                  <div 
-                    className={`h-2 rounded-full ${getNPSColor(item.score)}`}
-                    style={{ width: `${item.score}%` }}
-                  ></div>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+              
+              <div className="mt-3 bg-gray-200 h-2 rounded-full">
+                <div 
+                  className={`h-2 rounded-full ${getNPSColor(item.score)}`}
+                  style={{ width: `${item.score}%` }}
+                ></div>
+              </div>
+            </div>
           ))}
         </div>
       </div>

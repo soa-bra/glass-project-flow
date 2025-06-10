@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
 interface ProjectBudget {
@@ -51,33 +50,31 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({ data, loading }) => {
           const barColor = spentPercentage > 90 ? 'bg-red-500' : spentPercentage > 75 ? 'bg-orange-400' : 'bg-green-500';
           
           return (
-            <Card key={project.id} className="bg-white/40 backdrop-blur-sm hover:bg-white/50 transition-all">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <div className="text-left text-sm">
-                    <span className="font-medium">{spentPercentage}%</span>
-                  </div>
-                  <div className="text-right">
-                    <h3 className="font-medium">{project.name}</h3>
-                  </div>
+            <div key={project.id} className="glass-enhanced rounded-[40px] p-4 transition-all duration-200 ease-in-out hover:bg-white/50">
+              <div className="flex justify-between items-center mb-2">
+                <div className="text-left text-sm">
+                  <span className="font-medium">{spentPercentage}%</span>
                 </div>
-                
-                <div className="flex mb-2">
-                  <div className="flex-1">
-                    <Progress 
-                      value={spentPercentage} 
-                      className="h-5 bg-gray-200"
-                      indicatorClassName={barColor}
-                    />
-                  </div>
+                <div className="text-right">
+                  <h3 className="font-medium">{project.name}</h3>
                 </div>
-                
-                <div className="flex justify-between text-sm text-gray-600">
-                  <div>{formatCurrency(project.spent)}</div>
-                  <div>{formatCurrency(project.budget)}</div>
+              </div>
+              
+              <div className="flex mb-2">
+                <div className="flex-1">
+                  <Progress 
+                    value={spentPercentage} 
+                    className="h-5 bg-gray-200"
+                    indicatorClassName={barColor}
+                  />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+              
+              <div className="flex justify-between text-sm text-gray-600">
+                <div>{formatCurrency(project.spent)}</div>
+                <div>{formatCurrency(project.budget)}</div>
+              </div>
+            </div>
           );
         })}
       </div>
@@ -87,20 +84,18 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({ data, loading }) => {
         <h3 className="text-xl font-arabic font-medium text-right mb-4">المشاريع التي تجاوزت 80% من الميزانية</h3>
         
         {data.overBudget.length > 0 ? (
-          <Card className="bg-white/40 backdrop-blur-sm">
-            <CardContent className="p-4">
-              <ul className="space-y-3">
-                {data.overBudget.map(project => (
-                  <li key={project.id} className="border-b border-gray-200 pb-2 last:border-0 last:pb-0">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium text-red-600">{project.percentage}%</span>
-                      <h4 className="text-right">{project.name}</h4>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+          <div className="glass-enhanced rounded-[40px] p-4 transition-all duration-200 ease-in-out">
+            <ul className="space-y-3">
+              {data.overBudget.map(project => (
+                <li key={project.id} className="border-b border-gray-200 pb-2 last:border-0 last:pb-0">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-red-600">{project.percentage}%</span>
+                    <h4 className="text-right">{project.name}</h4>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : (
           <p className="text-center text-gray-500">لا توجد مشاريع تجاوزت 80% من الميزانية</p>
         )}
