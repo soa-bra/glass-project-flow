@@ -24,12 +24,12 @@ const Index = () => {
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 px-0 mx-0 my-0">
+      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 mx-0 my-0 px-[13px]">
         {/* Sidebar - Fixed with consistent margin */}
         <div style={{
         marginRight: 'var(--sidebar-margin)',
         marginTop: '50px'
-      }} className="fixed top-[var(--sidebar-top-offset)] right-0 h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout px-0 py-0 my-0 mx-[15px]">
+      }} className="fixed top-[var(--sidebar-top-offset)] right-0 h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout px-0 py-0 my-0 mx-0">
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
 
