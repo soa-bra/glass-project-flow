@@ -18,18 +18,18 @@ const Index = () => {
     setSelectedProjectId(null);
     setIsOperationsBoardVisible(true); // إظهار اللوح عند إلغاء تحديد المشروع
   };
-  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden">
+  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden px-0 mx-0">
       {/* Header - Fixed and no scroll */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden">
+      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 my-[34px] mx-0 px-0">
         {/* Sidebar - Fixed with consistent margin */}
-        <div className="fixed top-[var(--sidebar-top-offset)] right-0 h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout" style={{
+        <div style={{
         marginRight: 'var(--sidebar-margin)',
         marginTop: '50px'
-      }}>
+      }} className="fixed top-[var(--sidebar-top-offset)] right-0 h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout mx-[10px] px-[10px]">
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
 
@@ -39,9 +39,9 @@ const Index = () => {
         maxWidth: '500px',
         minWidth: '300px'
       }}>
-          <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col mx-[var(--sidebar-margin)] px-[5px] overflow-hidden">
+          <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform w-full h-full flex flex-col overflow-hidden px-0 mx-[25px]">
             <ScrollArea className="w-full h-full">
-              <div className="p-2 my-0 px-0 py-0 overflow-y-auto overflow-x-hidden mx-[5px]">
+              <div className="p-2 px-0 overflow-y-auto overflow-x-hidden mx-[5px] my-px py-[3px]">
                 <ProjectsColumn onProjectSelect={handleProjectSelect} />
               </div>
             </ScrollArea>
