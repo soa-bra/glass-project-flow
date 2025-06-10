@@ -7,6 +7,7 @@ import { LegalTab } from './LegalTab';
 import { HRTab } from './HRTab';
 import { ClientsTab } from './ClientsTab';
 import { ReportsTab } from './ReportsTab';
+import { Eye, DollarSign, FileText, Users, Building, BarChart3 } from 'lucide-react';
 
 // نوع لبيانات التبويب
 type TabData = {
@@ -112,6 +113,16 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
     }
   }, [activeTab, isVisible]);
 
+  // قائمة التبويبات مع الأيقونات
+  const tabItems = [
+    { value: 'overview', label: 'نظرة عامّة', icon: Eye },
+    { value: 'finance', label: 'مالية', icon: DollarSign },
+    { value: 'legal', label: 'قانونية', icon: FileText },
+    { value: 'hr', label: 'موارد بشرية', icon: Users },
+    { value: 'clients', label: 'عملاء', icon: Building },
+    { value: 'reports', label: 'تقارير', icon: BarChart3 },
+  ];
+
   // التبويبات مع المحتوى
   return (
     <div 
@@ -138,45 +149,46 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
           className="w-full h-full"
           dir="rtl"
         >
-          <div className="border-b border-gray-200/30 h-[60px] flex items-center px-6">
-            <TabsList className="bg-transparent w-full justify-start">
-              <TabsTrigger 
-                value="overview" 
-                className={`text-lg font-arabic py-2 px-4 ${activeTab === 'overview' ? 'border-b-[3px] border-sky-400' : ''}`}
-              >
-                نظرة عامّة
-              </TabsTrigger>
-              <TabsTrigger 
-                value="finance" 
-                className={`text-lg font-arabic py-2 px-4 ${activeTab === 'finance' ? 'border-b-[3px] border-sky-400' : ''}`}
-              >
-                مالية
-              </TabsTrigger>
-              <TabsTrigger 
-                value="legal" 
-                className={`text-lg font-arabic py-2 px-4 ${activeTab === 'legal' ? 'border-b-[3px] border-sky-400' : ''}`}
-              >
-                قانونية
-              </TabsTrigger>
-              <TabsTrigger 
-                value="hr" 
-                className={`text-lg font-arabic py-2 px-4 ${activeTab === 'hr' ? 'border-b-[3px] border-sky-400' : ''}`}
-              >
-                موارد بشرية
-              </TabsTrigger>
-              <TabsTrigger 
-                value="clients" 
-                className={`text-lg font-arabic py-2 px-4 ${activeTab === 'clients' ? 'border-b-[3px] border-sky-400' : ''}`}
-              >
-                عملاء
-              </TabsTrigger>
-              <TabsTrigger 
-                value="reports" 
-                className={`text-lg font-arabic py-2 px-4 ${activeTab === 'reports' ? 'border-b-[3px] border-sky-400' : ''}`}
-              >
-                تقارير
-              </TabsTrigger>
-            </TabsList>
+          <div className="border-b border-gray-200/30 h-[120px] flex items-center px-6">
+            <div className="w-full flex items-center gap-2 overflow-x-auto">
+              {tabItems.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <button
+                    key={item.value}
+                    onClick={() => setActiveTab(item.value)}
+                    className={`
+                      flex flex-col items-center gap-2 px-4 py-3 transition-all duration-400 ease-in-out group relative min-w-fit
+                      ${activeTab === item.value 
+                        ? 'bg-white/20 text-[#3e494c] font-medium rounded-3xl shadow-sm' 
+                        : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light rounded-3xl'
+                      }
+                      hover:translate-y-[-2px] hover:shadow-md active:translate-y-0 active:scale-95
+                    `}
+                  >
+                    {/* Icon container with same design as sidebar */}
+                    <div className={`
+                      w-[60px] h-[60px] flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full
+                      ${activeTab === item.value 
+                        ? 'bg-white/20 border-[#3e494c]/40' 
+                        : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/50 group-hover:bg-white/5'
+                      }
+                      group-hover:scale-105 group-active:scale-95
+                    `}>
+                      <IconComponent className={`
+                        w-6 h-6 transition-all duration-300 ease-out
+                        ${activeTab === item.value ? 'text-[#3e494c]' : 'group-hover:text-[#3e494c]'}
+                      `} />
+                    </div>
+                    
+                    {/* Label */}
+                    <span className="tracking-wide text-sm transition-all duration-200 group-hover:font-medium whitespace-nowrap">
+                      {item.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-6">
