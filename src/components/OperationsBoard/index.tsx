@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
@@ -155,7 +156,7 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
                   <button
                     key={item.value}
                     onClick={() => setActiveTab(item.value)}
-                    className="flex items-center justify-center px-6 py-4 transition-all duration-400 ease-in-out group relative min-w-fit"
+                    className="flex items-center justify-center px-5 py-5 transition-all duration-400 ease-in-out group relative min-w-fit"
                   >
                     {/* إطار النص مع التأثيرات اللونية داخل الحدود */}
                     <div className={`
