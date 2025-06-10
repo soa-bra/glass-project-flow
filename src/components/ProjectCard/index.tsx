@@ -24,6 +24,7 @@ const ProjectCard = ({
       isSelected={isSelected}
       isOtherSelected={isOtherSelected}
       onProjectSelect={onProjectSelect}
+      status={status}
     >
       <ProjectCardHeader
         daysLeft={daysLeft}
