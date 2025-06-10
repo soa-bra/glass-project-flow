@@ -24,21 +24,26 @@
     --header-height: 60px;
     --sidebar-top-offset: 137px;
     
-    /* Operations Board Layout Variables */
-    --operations-left-expanded: calc(var(--sidebar-width-expanded) + var(--content-margin) + 525px);
-    --operations-left-collapsed: calc(var(--sidebar-width-collapsed) + var(--content-margin) + 525px);
-    --operations-width-expanded: calc(100vw - var(--operations-left-expanded) - 20px);
-    --operations-width-collapsed: calc(100vw - var(--operations-left-collapsed) - 20px);
+    /* RTL Layout Variables - ترتيب صحيح من اليمين لليسار */
+    /* القائمة - أقصى اليمين */
+    --sidebar-right: 25px;
     
-    /* Projects Column Layout Variables */
-    --projects-left-expanded: calc(var(--sidebar-width-expanded) + var(--content-margin));
-    --projects-left-collapsed: calc(var(--sidebar-width-collapsed) + var(--content-margin));
+    /* عامود المشاريع - في الوسط */
+    --projects-right-expanded: calc(var(--sidebar-width-expanded) + 50px);
+    --projects-right-collapsed: calc(var(--sidebar-width-collapsed) + 50px);
+    --projects-width: 500px;
+    
+    /* لوحة التشغيل - أقصى اليسار */
+    --operations-right-expanded: calc(var(--projects-right-expanded) + var(--projects-width) + 25px);
+    --operations-right-collapsed: calc(var(--projects-right-collapsed) + var(--projects-width) + 25px);
+    --operations-width-expanded: calc(100vw - var(--operations-right-expanded) - 25px);
+    --operations-width-collapsed: calc(100vw - var(--operations-right-collapsed) - 25px);
     
     /* Project Details Layout Variables */
-    --project-details-width-expanded: calc(100vw - var(--operations-left-expanded) - 20px);
-    --project-details-width-collapsed: calc(100vw - var(--operations-left-collapsed) - 20px);
-    --project-details-left-expanded: var(--operations-left-expanded);
-    --project-details-left-collapsed: var(--operations-left-collapsed);
+    --project-details-width-expanded: var(--operations-width-expanded);
+    --project-details-width-collapsed: var(--operations-width-collapsed);
+    --project-details-right-expanded: var(--operations-right-expanded);
+    --project-details-right-collapsed: var(--operations-right-collapsed);
     
     /* Button Colors */
     --primary-blue: #0099FF;
@@ -236,41 +241,41 @@
     background-color: rgba(0, 153, 255, 0.4);
   }
 
-  /* Layout Utilities using CSS Variables */
+  /* RTL Layout Classes - ترتيب صحيح من اليمين لليسار */
   .sidebar-layout {
-    margin-right: var(--sidebar-margin);
+    right: var(--sidebar-right);
   }
 
-  /* Projects Column Layout Classes */
+  /* Projects Column Layout Classes - عامود المشاريع في الوسط */
   .projects-layout-expanded {
-    left: var(--projects-left-expanded);
-    width: calc(100vw - var(--projects-left-expanded) - var(--sidebar-margin));
+    right: var(--projects-right-expanded);
+    width: var(--projects-width);
   }
 
   .projects-layout-collapsed {
-    left: var(--projects-left-collapsed);
-    width: calc(100vw - var(--projects-left-collapsed) - var(--sidebar-margin));
+    right: var(--projects-right-collapsed);
+    width: var(--projects-width);
   }
 
-  /* Operations Board Layout Classes */
+  /* Operations Board Layout Classes - لوحة التشغيل أقصى اليسار */
   .operations-board-expanded {
-    left: var(--operations-left-expanded);
+    right: var(--operations-right-expanded);
     width: var(--operations-width-expanded);
   }
 
   .operations-board-collapsed {
-    left: var(--operations-left-collapsed);
+    right: var(--operations-right-collapsed);
     width: var(--operations-width-collapsed);
   }
 
   /* Project Details Layout Classes */
   .project-details-expanded {
-    left: var(--project-details-left-expanded);
+    right: var(--project-details-right-expanded);
     width: var(--project-details-width-expanded);
   }
 
   .project-details-collapsed {
-    left: var(--project-details-left-collapsed);
+    right: var(--project-details-right-collapsed);
     width: var(--project-details-width-collapsed);
   }
 

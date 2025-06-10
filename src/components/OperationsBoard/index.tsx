@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
@@ -127,7 +128,7 @@ export const OperationsBoard = ({ isVisible, onClose, isSidebarCollapsed }: Oper
   return (
     <div 
       className={`fixed transition-all duration-500 ease-in-out ${
-        isVisible ? 'translate-x-0' : '-translate-x-[120%]'
+        isVisible ? 'translate-x-0' : 'translate-x-[120%]'
       } ${
         isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'
       }`}

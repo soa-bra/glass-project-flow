@@ -47,26 +47,20 @@ const Index = () => {
       </div>
 
       <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 mx-0 my-0 px-0">
-        {/* Sidebar - Fixed with consistent margin */}
+        {/* Sidebar - أقصى اليمين */}
         <div 
-          style={{
-            marginRight: 'var(--sidebar-margin)',
-            marginTop: '50px'
-          }} 
-          className="fixed top-[var(--sidebar-top-offset)] right-0 h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout my-0 px-0 py-0 mx-[25px]"
+          className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout my-0 px-0 py-0"
         >
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
 
-        {/* Main Content Area - Responsive positioning with consistent margins */}
+        {/* Projects Column - في الوسط */}
         <div 
           className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-500 ease-in-out ${
             isSidebarCollapsed ? 'projects-layout-collapsed' : 'projects-layout-expanded'
           }`} 
           style={{
             top: 'var(--sidebar-top-offset)',
-            maxWidth: '500px',
-            minWidth: '300px'
           }}
         >
           <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl w-full h-full flex flex-col overflow-hidden px-0 mx-[25px]">
@@ -78,7 +72,7 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Operations Board - مع تمرير حالة السايد بار */}
+        {/* Operations Board - أقصى اليسار */}
         <OperationsBoard 
           isVisible={isOperationsBoardVisible} 
           onClose={handleResetSelection}
