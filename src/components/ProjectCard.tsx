@@ -72,24 +72,24 @@ const ProjectCard = ({
       </div>
 
       {/* الصف السفلي - حالة المشروع والتاريخ والمكلف والقيمة */}
-      <div className="flex items-center justify-between py-0 my-0 mx-0 px-[30px]">
+      <div className="flex items-center justify-between py-0 my-0 px-0 mx-0">
         {/* حالة المشروع - دائرة ملونة */}
         <div style={{
         backgroundColor: statusColors[status]
       }} className="w-12 h-12 rounded-full px-0 mx-[13px]"></div>
 
         {/* التاريخ */}
-        <div className="px-4 py-2 bg-white/60 rounded-full">
+        <div className="bg-white/60 rounded-full py-0 px-[14px] mx-[25px]">
           <span className="text-sm text-gray-700 font-arabic">{date}</span>
         </div>
 
         {/* المكلف */}
-        <div className="px-4 py-2 bg-white/60 rounded-full">
-          <span className="text-sm text-gray-700 font-arabic">{owner}</span>
+        <div className="bg-white/60 rounded-full py-0 px-0 mx-0">
+          <span className="text-sm text-gray-700 font-arabic mx-[20px] px-px">{owner}</span>
         </div>
 
         {/* القيمة */}
-        <div className="px-4 py-2 bg-white/60 rounded-full">
+        <div className="bg-white/60 rounded-full my-0 py-0 mx-0 px-[20px]">
           <span className="text-sm text-gray-700 font-arabic">{value}</span>
         </div>
       </div>
