@@ -1,4 +1,3 @@
-
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { useState } from 'react';
@@ -138,17 +137,12 @@ const ProjectsColumn = ({
       
       {/* قائمة المشاريع القابلة للتمرير - بدون شريط تمرير مرئي */}
       <div 
-        className="flex-1 overflow-y-auto overflow-x-hidden pr-2 rounded-lg"
+        className="flex-1 overflow-y-auto overflow-x-hidden pr-2 rounded-lg [&::-webkit-scrollbar]:hidden"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none'
         }}
       >
-        <style jsx>{`
-          div::-webkit-scrollbar {
-            display: none;
-          }
-        `}</style>
         <div className="space-y-2 rounded-xl">
           {mockProjects.reverse().map(project => (
             <ProjectCard 
