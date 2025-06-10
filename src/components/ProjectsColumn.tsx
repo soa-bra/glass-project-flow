@@ -130,14 +130,14 @@ const ProjectsColumn = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden">
+    <div dir="rtl" className="w-full h-full flex flex-col overflow-hidden">
       {/* شريط الأدوات الثابت */}
       <div className="flex-shrink-0 bg-soabra-projects-bg pt-[66px] pb-2">
         <ProjectsToolbar />
       </div>
       
       {/* قائمة المشاريع القابلة للتمرير */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden px-2">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden pr-2">
         <div className="space-y-2">
           {mockProjects.map(project => (
             <ProjectCard 
