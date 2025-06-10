@@ -1,5 +1,4 @@
 
-
 import { ReactNode } from 'react';
 
 const statusColors = {
@@ -47,7 +46,7 @@ const ProjectCardLayout = ({
       onClick={handleClick}
       style={getCardStyles()}
       className={`
-        bg-white/60 backdrop-blur-[20px] rounded-[40px] p-2 mx-auto my-1 cursor-pointer
+        glass-enhanced rounded-[40px] p-2 mx-auto my-1 cursor-pointer
         transition-all duration-300 ease-in-out
         ${isSelected 
           ? 'shadow-lg scale-[1.02] opacity-100' 
@@ -63,4 +62,3 @@ const ProjectCardLayout = ({
 };
 
 export default ProjectCardLayout;
-
