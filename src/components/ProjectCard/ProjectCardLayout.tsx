@@ -35,7 +35,8 @@ const ProjectCardLayout = ({
   const getCardStyles = () => {
     if (isSelected) {
       return {
-        boxShadow: `0 0 20px ${statusColors[status]}30, 0 4px 16px ${statusColors[status]}20`
+        boxShadow: `0 0 20px ${statusColors[status]}30, 0 4px 16px ${statusColors[status]}20`,
+        transform: 'scale(1.02)'
       };
     }
     return {};
@@ -47,7 +48,7 @@ const ProjectCardLayout = ({
       style={getCardStyles()}
       className={`
         glass-enhanced rounded-[40px] p-2 mx-auto my-1 cursor-pointer
-        transition-all duration-300 ease-in-out
+        transition-all duration-200 ease-in-out
         ${isSelected 
           ? 'shadow-lg opacity-100' 
           : isOtherSelected 
