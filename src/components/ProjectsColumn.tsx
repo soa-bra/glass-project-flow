@@ -1,3 +1,4 @@
+
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { useState } from 'react';
@@ -129,7 +130,7 @@ const ProjectsColumn = ({
   };
 
   return (
-    <div dir="rtl" className="w-full h-full flex flex-col overflow-hidden">
+    <div dir="rtl" className="w-full h-full flex flex-col overflow-hidden px-[5px]">
       {/* شريط الأدوات الثابت */}
       <div className="flex-shrink-0 bg-soabra-projects-bg pt-[66px] pb-2">
         <ProjectsToolbar />
