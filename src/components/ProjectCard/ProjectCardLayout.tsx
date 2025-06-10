@@ -51,7 +51,7 @@ const ProjectCardLayout = ({
         ${isSelected 
           ? 'opacity-100' 
           : isOtherSelected 
-            ? 'opacity-50 shadow-sm' 
+            ? 'opacity-25 shadow-sm' 
             : 'opacity-100 shadow-sm hover:shadow-md'
         }
       `}
