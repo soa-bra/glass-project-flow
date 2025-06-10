@@ -1,4 +1,3 @@
-
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 
@@ -112,34 +111,15 @@ const mockProjects = [{
   isOverBudget: false,
   hasOverdueTasks: false
 }];
-
 const ProjectsColumn = () => {
-  return (
-    <div className="w-full h-full flex flex-col overflow-hidden relative">
-      {/* شريط الأدوات الثابت */}
-      <div className="sticky top-0 z-10 bg-soabra-projects-bg">
-        <ProjectsToolbar />
-      </div>
+  return <div className="w-full h-full flex flex-col overflow-hidden px-0 py-0">
+      {/* شريط الأدوات */}
+      <ProjectsToolbar />
       
-      {/* منطقة التمرير مع تأثير التلاشي */}
-      <div className="flex-1 relative overflow-hidden">
-        {/* تأثير التلاشي العلوي */}
-        <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-soabra-projects-bg to-transparent z-20 pointer-events-none rounded-t-3xl" />
-        
-        {/* تأثير التلاشي السفلي */}
-        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-soabra-projects-bg to-transparent z-20 pointer-events-none" />
-        
-        {/* قائمة المشاريع */}
-        <div className="h-full overflow-y-auto overflow-x-hidden px-[10px] py-4">
-          <div className="space-y-2">
-            {mockProjects.map(project => (
-              <ProjectCard key={project.id} {...project} />
-            ))}
-          </div>
-        </div>
+      {/* قائمة المشاريع - تمتد حتى نهاية الصفحة */}
+      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mt-4l">
+        {mockProjects.map(project => <ProjectCard key={project.id} {...project} />)}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ProjectsColumn;
