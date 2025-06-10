@@ -31,6 +31,9 @@ const Index = () => {
       </div>
 
       <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 mx-0 my-0 px-[50px]">
+        {/* Operations Board - تم نقله إلى اليسار */}
+        <OperationsBoard isVisible={isOperationsBoardVisible} onClose={handleResetSelection} />
+
         {/* Sidebar - Fixed with consistent margin */}
         <div
           style={{
@@ -60,9 +63,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Operations Board - تم نقله إلى اليمين */}
-        <OperationsBoard isVisible={isOperationsBoardVisible} onClose={handleResetSelection} />
-
         {/* Project Dashboard - سيتم إضافته في المستقبل */}
         {selectedProjectId && (
           <div
@@ -71,7 +71,7 @@ const Index = () => {
               width: '60vw',
               height: 'calc(100vh - 60px)',
               top: 'var(--sidebar-top-offset)',
-              right: '15px'
+              left: '15px'
             }}
           >
             <div className="w-full h-full flex items-center justify-center">
