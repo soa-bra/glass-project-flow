@@ -72,14 +72,12 @@ const ProjectsColumn = ({
   onProjectSelect
 }: ProjectsColumnProps) => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-
   const handleProjectSelect = (projectId: string) => {
     const newSelectedId = selectedProjectId === projectId ? null : projectId;
     setSelectedProjectId(newSelectedId);
     onProjectSelect?.(projectId);
   };
-
-  return <div className="w-full h-full flex flex-col mx-0 px-0 py-[12px] my-0">
+  return <div className="w-full h-full flex flex-col mx-0 px-0 my-[3px] py-[9px]">
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
@@ -92,7 +90,7 @@ const ProjectsColumn = ({
       </div>
 
       {/* قائمة المشاريع */}
-      <div className="flex-1 space-y-4 overflow-y-auto mx-[34px] px-[5px]">
+      <div className="flex-1 space-y-4 overflow-y-auto py-[147px] my-0 mx-0 px-0">
         {mockProjects.map(project => <ProjectCard key={project.id} {...project} onProjectSelect={handleProjectSelect} isSelected={selectedProjectId === project.id} isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} />)}
       </div>
     </div>;
