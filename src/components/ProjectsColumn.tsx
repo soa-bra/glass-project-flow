@@ -85,15 +85,15 @@ const ProjectsColumn = ({
       <ProjectsToolbar />
       
       {/* العنوان الفرعي والفاصل */}
-      <div className="px-6 mt-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-6 font-arabic text-center">
+      <div className="px-6 mt-6 mb-4">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 font-arabic text-center">
           اليوم
         </h3>
         <Separator className="bg-gray-300 h-px" />
       </div>
 
       {/* قائمة المشاريع */}
-      <div className="flex-1 space-y-2 overflow-y-auto mx-0 px-0 my-[14px] py-[9px]">
+      <div className="flex-1 space-y-2 overflow-y-auto mx-0 px-0 my-[8px] py-[5px]">
         {mockProjects.map(project => (
           <ProjectCard 
             key={project.id} 
