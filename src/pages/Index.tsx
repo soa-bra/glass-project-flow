@@ -18,18 +18,18 @@ const Index = () => {
     setSelectedProjectId(null);
     setIsOperationsBoardVisible(true); // إظهار اللوح عند إلغاء تحديد المشروع
   };
-  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden px-0 mx-0">
+  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden mx-[16px] px-[8px]">
       {/* Header - Fixed and no scroll */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 my-[34px] mx-0 px-0">
+      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 my-[34px] px-0 mx-0">
         {/* Sidebar - Fixed with consistent margin */}
         <div style={{
         marginRight: 'var(--sidebar-margin)',
         marginTop: '50px'
-      }} className="fixed top-[var(--sidebar-top-offset)] right-0 h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout mx-[10px] px-[10px]">
+      }} className="fixed top-[var(--sidebar-top-offset)] right-0 h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout px-0 mx-[11px]">
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
 
