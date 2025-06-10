@@ -8,15 +8,26 @@ import { TabData, fetchTabData } from './TabsData';
 interface OperationsBoardProps {
   isVisible: boolean;
   onClose: () => void;
+  isSidebarCollapsed?: boolean;
 }
 
 export const OperationsBoard = ({
   isVisible,
-  onClose
+  onClose,
+  isSidebarCollapsed = false
 }: OperationsBoardProps) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [tabData, setTabData] = useState<TabData>({});
   const [loading, setLoading] = useState<boolean>(false);
+
+  // حساب الموضع الصحيح بناءً على عرض الشريط الجانبي وعمود المشاريع
+  const calculateLeftPosition = () => {
+    const sidebarWidth = isSidebarCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)';
+    const projectsColumnWidth = '500px';
+    const margin = '10px';
+    
+    return `calc(${sidebarWidth} + ${projectsColumnWidth} + 30px)`; // 30px = 3 * 10px margins
+  };
 
   // جلب بيانات التبويب النشط عند تغييره
   useEffect(() => {
@@ -44,10 +55,12 @@ export const OperationsBoard = ({
     <div 
       className={`fixed transition-all duration-500 ease-in-out ${isVisible ? 'translate-x-0' : 'translate-x-[-100%]'}`} 
       style={{
-        width: '60vw',
+        width: 'calc(100vw - var(--sidebar-width-expanded) - 520px - 40px)', // العرض المتبقي مع الهوامش
+        minWidth: '400px',
+        maxWidth: '60vw',
         height: 'calc(100vh - 60px)',
         top: 'var(--sidebar-top-offset)',
-        left: '10px',
+        left: calculateLeftPosition(),
         borderRadius: '20px',
         background: 'linear-gradient(135deg, #E8F2FE 0%, #F9DBF8 50%, #DAD4FC 100%)',
         backdropFilter: 'blur(20px)',

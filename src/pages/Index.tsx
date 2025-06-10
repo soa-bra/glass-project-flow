@@ -63,17 +63,25 @@ const Index = () => {
         </div>
 
         {/* Operations Board - Left most element */}
-        <OperationsBoard isVisible={isOperationsBoardVisible} onClose={handleResetSelection} />
+        <OperationsBoard 
+          isVisible={isOperationsBoardVisible} 
+          onClose={handleResetSelection}
+          isSidebarCollapsed={isSidebarCollapsed}
+        />
 
         {/* Project Dashboard - سيتم إضافته في المستقبل */}
         {selectedProjectId && (
           <div
             className="fixed bg-white/40 backdrop-blur-sm rounded-3xl shadow-lg transition-all duration-500 ease-in-out transform"
             style={{
-              width: '60vw',
+              width: 'calc(100vw - var(--sidebar-width-expanded) - 520px - 40px)',
+              minWidth: '400px',
+              maxWidth: '60vw',
               height: 'calc(100vh - 60px)',
               top: 'var(--sidebar-top-offset)',
-              left: '15px'
+              left: isSidebarCollapsed 
+                ? 'calc(var(--sidebar-width-collapsed) + 530px)' 
+                : 'calc(var(--sidebar-width-expanded) + 530px)'
             }}
           >
             <div className="w-full h-full flex items-center justify-center">
