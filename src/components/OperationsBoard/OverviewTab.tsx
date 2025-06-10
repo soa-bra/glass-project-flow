@@ -41,7 +41,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading }) => {
   return (
     <div className="flex h-full gap-6">
       {/* الخط الزمني - Timeline */}
-      <div className="w-1/4 bg-white/40 backdrop-blur-sm rounded-2xl p-4 shadow-md">
+      <div className="w-1/4 bg-white/40 backdrop-blur-sm rounded-2xl p-4">
         <h3 className="text-xl font-arabic font-medium mb-4 text-right">المواعيد القادمة</h3>
         
         <div className="relative mt-6">
@@ -63,7 +63,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading }) => {
       {/* شبكة الويدجت */}
       <div className="flex-1 grid grid-cols-2 gap-4">
         {/* الميزانية/المصروفات */}
-        <Card className="bg-white/40 hover:bg-white/50 backdrop-blur-sm transition-all hover:scale-105 hover:shadow-lg">
+        <Card className="bg-white/40 hover:bg-white/50 backdrop-blur-sm transition-all">
           <CardContent className="p-6">
             <h3 className="text-lg font-arabic font-medium mb-4 text-right">الميزانية والمصروفات</h3>
             
@@ -95,7 +95,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading }) => {
         </Card>
 
         {/* العقود */}
-        <Card className="bg-white/40 hover:bg-white/50 backdrop-blur-sm transition-all hover:scale-105 hover:shadow-lg">
+        <Card className="bg-white/40 hover:bg-white/50 backdrop-blur-sm transition-all">
           <CardContent className="p-6">
             <h3 className="text-lg font-arabic font-medium mb-4 text-right">حالة العقود</h3>
             
@@ -124,7 +124,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading }) => {
         </Card>
 
         {/* الموارد البشرية */}
-        <Card className="bg-white/40 hover:bg-white/50 backdrop-blur-sm transition-all hover:scale-105 hover:shadow-lg">
+        <Card className="bg-white/40 hover:bg-white/50 backdrop-blur-sm transition-all">
           <CardContent className="p-6">
             <h3 className="text-lg font-arabic font-medium mb-4 text-right">الموارد البشرية</h3>
             
@@ -156,7 +156,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading }) => {
         </Card>
 
         {/* رضا العملاء */}
-        <Card className="bg-white/40 hover:bg-white/50 backdrop-blur-sm transition-all hover:scale-105 hover:shadow-lg">
+        <Card className="bg-white/40 hover:bg-white/50 backdrop-blur-sm transition-all">
           <CardContent className="p-6">
             <h3 className="text-lg font-arabic font-medium mb-4 text-right">مؤشر رضا العملاء</h3>
             

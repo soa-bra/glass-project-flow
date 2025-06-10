@@ -45,7 +45,7 @@ export const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
       
       {/* بطاقات إحصائيات الفريق */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-white/40 backdrop-blur-sm hover:bg-white/50 transition-all hover:scale-105 hover:shadow-lg">
+        <Card className="bg-white/40 backdrop-blur-sm hover:bg-white/50 transition-all">
           <CardContent className="p-6 text-center">
             <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
@@ -57,7 +57,7 @@ export const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
           </CardContent>
         </Card>
         
-        <Card className="bg-white/40 backdrop-blur-sm hover:bg-white/50 transition-all hover:scale-105 hover:shadow-lg">
+        <Card className="bg-white/40 backdrop-blur-sm hover:bg-white/50 transition-all">
           <CardContent className="p-6 text-center">
             <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-amber-600" viewBox="0 0 20 20" fill="currentColor">
@@ -69,7 +69,7 @@ export const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
           </CardContent>
         </Card>
         
-        <Card className="bg-white/40 backdrop-blur-sm hover:bg-white/50 transition-all hover:scale-105 hover:shadow-lg">
+        <Card className="bg-white/40 backdrop-blur-sm hover:bg-white/50 transition-all">
           <CardContent className="p-6 text-center">
             <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-3">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
@@ -130,7 +130,7 @@ export const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
       {/* زر إضافة عضو */}
       <div className="flex justify-center mt-6">
         <button 
-          className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2"
+          className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-6 rounded-full transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
