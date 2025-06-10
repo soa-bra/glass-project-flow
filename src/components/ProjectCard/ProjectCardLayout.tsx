@@ -29,11 +29,10 @@ const ProjectCardLayout = ({
     console.log('🎯 ProjectCardLayout: Click event started for project:', id);
     console.log('🎯 Current selection state - isSelected:', isSelected, 'isOtherSelected:', isOtherSelected);
     
-    // منع انتشار الحدث وتكراره
+    // منع انتشار الحدث لمكونات أخرى
     event.stopPropagation();
-    event.preventDefault();
     
-    console.log('🎯 Event propagation stopped and default prevented');
+    console.log('🎯 Event propagation stopped');
     
     if (onProjectSelect) {
       console.log('🎯 Calling onProjectSelect for project:', id);
@@ -67,7 +66,9 @@ const ProjectCardLayout = ({
         }
       `}
     >
-      {children}
+      <div className="pointer-events-none">
+        {children}
+      </div>
     </div>
   );
 };
