@@ -135,7 +135,7 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
         top: 'var(--sidebar-top-offset)',
         left: '15px',
         borderRadius: '20px',
-        background: 'linear-gradient(135deg, #5B9BD5 0%, #4A90A4 25%, #3E8B73 50%, #5BAA6F 75%, #7BC142 100%)',
+        background: 'linear-gradient(135deg, #E8E4F3 0%, #E1E8F4 20%, #D4E6E8 40%, #C7E4DC 60%, #BAE1D0 80%, #ADDFC4 100%)',
         backdropFilter: 'blur(20px)',
         boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2)',
         overflow: 'hidden',
