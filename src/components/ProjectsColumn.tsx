@@ -1,6 +1,6 @@
+
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
-import { useState } from 'react';
 
 // بيانات تجريبية للمشاريع مطابقة للصور
 const mockProjects = [{
@@ -112,26 +112,39 @@ const mockProjects = [{
   isOverBudget: false,
   hasOverdueTasks: false
 }];
+
 interface ProjectsColumnProps {
   onProjectSelect?: (projectId: string) => void;
+  selectedProjectId?: string | null;
 }
+
 const ProjectsColumn = ({
-  onProjectSelect
+  onProjectSelect,
+  selectedProjectId
 }: ProjectsColumnProps) => {
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const handleProjectSelect = (projectId: string) => {
-    const newSelectedId = selectedProjectId === projectId ? null : projectId;
-    setSelectedProjectId(newSelectedId);
     onProjectSelect?.(projectId);
   };
-  return <div className="w-full h-full flex flex-col px-0 overflow-hidden py-0 my-[30px]">
+
+  return (
+    <div className="w-full h-full flex flex-col px-0 overflow-hidden py-0 my-[30px]">
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
       {/* قائمة المشاريع - تمتد حتى نهاية الصفحة */}
       <div className="flex-1 space-y-2 overflow-y-auto overflow-x-rounded-xl mt-6 my-[33px] bg-transparent rounded-xl">
-        {mockProjects.map(project => <ProjectCard key={project.id} {...project} onProjectSelect={handleProjectSelect} isSelected={selectedProjectId === project.id} isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} />)}
+        {mockProjects.map(project => (
+          <ProjectCard 
+            key={project.id} 
+            {...project} 
+            onProjectSelect={handleProjectSelect} 
+            isSelected={selectedProjectId === project.id} 
+            isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} 
+          />
+        ))}
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default ProjectsColumn;
