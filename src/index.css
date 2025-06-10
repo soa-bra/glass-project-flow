@@ -313,10 +313,37 @@
 
   @keyframes shimmer {
     0% {
-      background-position: -1000px 0;
+      background-position: -200% center;
     }
     100% {
-      background-position: 1000px 0;
+      background-position: 200% center;
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(0, 153, 255, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 25px rgba(0, 153, 255, 0.4), 0 0 35px rgba(0, 153, 255, 0.2);
+    }
+  }
+
+  @keyframes gentle-bounce {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
+
+  @keyframes soft-scale {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
     }
   }
 
@@ -330,8 +357,48 @@
 
   .animate-shimmer {
     background: linear-gradient(90deg, rgba(255,255,255,0) 25%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 75%);
-    background-size: 1000px 100%;
+    background-size: 200% 100%;
     animation: shimmer 2s infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-gentle-bounce {
+    animation: gentle-bounce 2s ease-in-out infinite;
+  }
+
+  .animate-soft-scale {
+    animation: soft-scale 3s ease-in-out infinite;
+  }
+
+  /* Enhanced Glassmorphism Effects */
+  .glass-enhanced {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .glass-enhanced:hover::before {
+    left: 100%;
   }
 
   /* Hover Effects */
@@ -347,6 +414,11 @@
     box-shadow: 0 0 30px rgba(0, 153, 255, 0.4);
   }
 
+  .hover-blur:hover {
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+  }
+
   /* Transitions */
   .transition-magic {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -354,6 +426,18 @@
 
   .transition-bounce {
     transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .transition-smooth {
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Background Gradient for Selected Cards */
+  .bg-gradient-selected {
+    background: linear-gradient(135deg, 
+      rgba(0, 153, 255, 0.05) 0%, 
+      rgba(255, 255, 255, 0.6) 30%, 
+      rgba(0, 153, 255, 0.03) 100%);
   }
 }
 
@@ -373,4 +457,32 @@
     pointer-events: none;
     animation: float 6s ease-in-out infinite;
   }
+
+  /* Enhanced Status Indicators */
+  .status-indicator {
+    position: relative;
+    overflow: visible;
+  }
+
+  .status-indicator::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    background: inherit;
+    opacity: 0.3;
+    filter: blur(8px);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* Smooth entrance animations for cards */
+  .card-entrance {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .card-entrance:nth-child(1) { animation-delay: 0.1s; }
+  .card-entrance:nth-child(2) { animation-delay: 0.2s; }
+  .card-entrance:nth-child(3) { animation-delay: 0.3s; }
+  .card-entrance:nth-child(4) { animation-delay: 0.4s; }
+  .card-entrance:nth-child(5) { animation-delay: 0.5s; }
 }
