@@ -17,27 +17,27 @@
     --calendar-gradient-end: #DAD4FC;
     
     /* Layout Constants for Consistent Spacing */
-    --sidebar-margin: 10px;
+    --sidebar-margin: 15px;
     --content-margin: 20px;
     --sidebar-width-expanded: 255px;
     --sidebar-width-collapsed: 115px;
     --header-height: 60px;
     --sidebar-top-offset: 137px;
     
-    /* RTL Layout Variables - ترتيب صحيح من اليمين لليسار */
+    /* RTL Layout Variables - ترتيب صحيح من اليمين لليسار مع هوامش محسّنة */
     /* القائمة - أقصى اليمين */
-    --sidebar-right: 25px;
+    --sidebar-right: 20px;
     
-    /* عامود المشاريع - في الوسط */
-    --projects-right-expanded: calc(var(--sidebar-width-expanded) + 50px);
-    --projects-right-collapsed: calc(var(--sidebar-width-collapsed) + 50px);
-    --projects-width: 500px;
+    /* عامود المشاريع - في الوسط مع مسافة مناسبة */
+    --projects-right-expanded: calc(var(--sidebar-width-expanded) + 40px);
+    --projects-right-collapsed: calc(var(--sidebar-width-collapsed) + 40px);
+    --projects-width: 480px;
     
-    /* لوحة التشغيل - أقصى اليسار */
-    --operations-right-expanded: calc(var(--projects-right-expanded) + var(--projects-width) + 25px);
-    --operations-right-collapsed: calc(var(--projects-right-collapsed) + var(--projects-width) + 25px);
-    --operations-width-expanded: calc(100vw - var(--operations-right-expanded) - 25px);
-    --operations-width-collapsed: calc(100vw - var(--operations-right-collapsed) - 25px);
+    /* لوحة التشغيل - أقصى اليسار مع مسافة مناسبة */
+    --operations-right-expanded: calc(var(--projects-right-expanded) + var(--projects-width) + 20px);
+    --operations-right-collapsed: calc(var(--projects-right-collapsed) + var(--projects-width) + 20px);
+    --operations-width-expanded: calc(100vw - var(--operations-right-expanded) - 20px);
+    --operations-width-collapsed: calc(100vw - var(--operations-right-collapsed) - 20px);
     
     /* Project Details Layout Variables */
     --project-details-width-expanded: var(--operations-width-expanded);

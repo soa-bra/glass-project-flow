@@ -10,16 +10,16 @@ const Index = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden mx-0 px-0">
+    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden">
       {/* Header - Fixed and no scroll */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 mx-0 my-0 px-0">
+      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden">
         {/* Sidebar - أقصى اليمين */}
         <div 
-          className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout my-0 px-0 py-0"
+          className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout"
         >
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
@@ -33,9 +33,9 @@ const Index = () => {
             top: 'var(--sidebar-top-offset)',
           }}
         >
-          <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl w-full h-full flex flex-col overflow-hidden px-0 mx-[25px]">
+          <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl w-full h-full flex flex-col overflow-hidden">
             <ScrollArea className="w-full h-full">
-              <div className="p-2 px-0 overflow-y-auto overflow-x-hidden my-0 py-0 mx-[10px]">
+              <div className="p-4 overflow-y-auto overflow-x-hidden">
                 <ProjectsColumn />
               </div>
             </ScrollArea>

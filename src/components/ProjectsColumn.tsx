@@ -115,12 +115,12 @@ const mockProjects = [{
 
 const ProjectsColumn = () => {
   return (
-    <div className="w-full h-full flex flex-col px-0 overflow-hidden py-0 my-[30px]">
+    <div className="w-full h-full flex flex-col px-2 overflow-hidden py-4">
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
       {/* قائمة المشاريع - تمتد حتى نهاية الصفحة */}
-      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-rounded-xl mt-6 my-[33px] bg-transparent rounded-xl">
+      <div className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden mt-4 bg-transparent rounded-xl">
         {mockProjects.map(project => (
           <ProjectCard 
             key={project.id} 
