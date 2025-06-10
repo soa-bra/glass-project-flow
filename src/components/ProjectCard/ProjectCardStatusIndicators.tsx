@@ -1,3 +1,4 @@
+
 const statusColors = {
   success: '#00bb88',
   warning: '#ffb500',
@@ -26,7 +27,7 @@ const ProjectCardStatusIndicators = ({
       {/* التاريخ + المالك + القيمة - على الجانب الأيمن الآن */}
       <div className="flex items-center gap-[2px] flex-1 justify-end mx-0 px-0">
         {/* التاريخ */}
-        <div className="rounded-full py-0 px-[21px]" style={{
+        <div className="rounded-full py-[2px] px-[21px] flex items-center" style={{
         backgroundColor: '#E3E3E3'
       }}>
           <span className="text-sm font-arabic text-gray-700">
@@ -37,14 +38,14 @@ const ProjectCardStatusIndicators = ({
         {/* المالك - بدون هالة */}
         <div style={{
         backgroundColor: '#E3E3E3'
-      }} className="rounded-full py-0 mx-[15px] px-[25px]">
+      }} className="rounded-full py-[2px] mx-[15px] px-[25px] flex items-center">
           <span className="text-sm font-arabic text-gray-700 px-[3px]">
             {owner}
           </span>
         </div>
 
         {/* القيمة */}
-        <div className="rounded-full py-0 px-[21px]" style={{
+        <div className="rounded-full py-[2px] px-[21px] flex items-center" style={{
         backgroundColor: '#E3E3E3'
       }}>
           <span className="text-sm font-arabic text-gray-700">
