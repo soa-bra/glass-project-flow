@@ -124,7 +124,7 @@ const ProjectsColumn = ({
     setSelectedProjectId(newSelectedId);
     onProjectSelect?.(projectId);
   };
-  return <div className="w-full h-full flex flex-col px-0 overflow-hidden my-[60px] py-px">
+  return <div className="w-full h-full flex flex-col px-0 overflow-hidden py-0 my-[30px]">
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
