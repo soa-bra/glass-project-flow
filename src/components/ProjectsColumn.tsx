@@ -77,9 +77,7 @@ const ProjectsColumn = ({
     setSelectedProjectId(newSelectedId);
     onProjectSelect?.(projectId);
   };
-
-  return (
-    <div className="w-full h-full flex flex-col py-0 px-0 my-[66px]">
+  return <div className="w-full h-full flex flex-col py-0 px-0 my-[66px]">
       {/* شريط الأدوات */}
       <ProjectsToolbar />
       
@@ -92,24 +90,14 @@ const ProjectsColumn = ({
       </div>
 
       {/* قائمة المشاريع */}
-      <div className="flex-1 space-y-2 overflow-y-auto mx-0 px-0 my-0 py-0">
-        {mockProjects.map(project => (
-          <ProjectCard
-            key={project.id}
-            {...project}
-            onProjectSelect={handleProjectSelect}
-            isSelected={selectedProjectId === project.id}
-            isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id}
-          />
-        ))}
+      <div className="flex-1 space-y-2 overflow-y-auto mx-0 px-0 my-0 py-0 rounded-xl">
+        {mockProjects.map(project => <ProjectCard key={project.id} {...project} onProjectSelect={handleProjectSelect} isSelected={selectedProjectId === project.id} isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} />)}
       </div>
 
       {/* عنوان القسم التالي */}
       <div className="px-6 mt-10 mb-6">
         <h3 className="text-gray-800 font-arabic text-center my-0 py-0 px-0 text-base font-semibold">من اسبوع</h3>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ProjectsColumn;
