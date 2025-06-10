@@ -120,7 +120,7 @@ const ProjectsColumn = () => {
       <ProjectsToolbar />
       
       {/* قائمة المشاريع - تمتد حتى نهاية الصفحة */}
-      <div className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden mt-4 bg-transparent rounded-xl">
+      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mt-4 bg-transparent rounded-xl">
         {mockProjects.map(project => (
           <ProjectCard 
             key={project.id} 
