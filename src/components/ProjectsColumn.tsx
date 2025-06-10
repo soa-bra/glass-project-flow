@@ -136,10 +136,10 @@ const ProjectsColumn = ({
         <ProjectsToolbar />
       </div>
       
-      {/* قائمة المشاريع القابلة للتمرير */}
+      {/* قائمة المشاريع القابلة للتمرير - معكوسة */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden pr-2">
         <div className="space-y-2">
-          {mockProjects.map(project => (
+          {mockProjects.reverse().map(project => (
             <ProjectCard 
               key={project.id} 
               {...project} 
