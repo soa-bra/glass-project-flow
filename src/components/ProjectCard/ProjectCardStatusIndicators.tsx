@@ -26,9 +26,9 @@ const ProjectCardStatusIndicators = ({
       {/* التاريخ + المالك + القيمة - على الجانب الأيمن الآن */}
       <div className="flex items-center gap-[1px] flex-1 justify-end mx-[46px] px-[18px]">
         {/* التاريخ */}
-        <div className="rounded-full py-[2px] px-[21px] flex items-center" style={{
+        <div style={{
         backgroundColor: '#E3E3E3'
-      }}>
+      }} className="rounded-full py-[2px] flex items-center px-[15px]">
           <span className="text-sm font-arabic text-gray-700">
             {date}
           </span>
