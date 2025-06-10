@@ -24,44 +24,46 @@ const Index = () => {
   };
 
   return (
-    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden px-[16px] my-0 py-0 mx-0">
+    <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden">
       {/* Header - Fixed and no scroll */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 mx-0 my-0 px-[50px]">
-        {/* Operations Board - تم نقله إلى اليسار */}
-        <OperationsBoard isVisible={isOperationsBoardVisible} onClose={handleResetSelection} />
-
-        {/* Sidebar - Fixed with consistent margin */}
+      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden">
+        {/* Sidebar - Right most element */}
         <div
           style={{
-            marginRight: 'var(--sidebar-margin)',
-            marginTop: '50px'
+            marginRight: '10px',
+            marginTop: '50px',
+            width: isSidebarCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)'
           }}
-          className="fixed top-[var(--sidebar-top-offset)] right-0 h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout my-0 py-0 px-0 mx-[20px]"
+          className="fixed top-[var(--sidebar-top-offset)] right-0 h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out"
         >
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
 
-        {/* Main Content Area - Responsive positioning with consistent margins */}
+        {/* Projects Column - Middle element */}
         <div
-          className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'content-layout-collapsed' : 'content-layout-expanded'}`}
+          className="fixed h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-500 ease-in-out"
           style={{
             top: 'var(--sidebar-top-offset)',
-            maxWidth: '500px',
+            right: isSidebarCollapsed ? 'calc(var(--sidebar-width-collapsed) + 20px)' : 'calc(var(--sidebar-width-expanded) + 20px)',
+            width: '500px',
             minWidth: '300px'
           }}
         >
-          <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl w-full h-full flex flex-col overflow-hidden px-0 mx-[25px]">
+          <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl w-full h-full flex flex-col overflow-hidden" style={{ marginRight: '10px' }}>
             <ScrollArea className="w-full h-full">
-              <div className="p-2 px-0 overflow-y-auto overflow-x-hidden my-0 py-0 mx-[11px]">
+              <div className="p-2 overflow-y-auto overflow-x-hidden">
                 <ProjectsColumn onProjectSelect={handleProjectSelect} />
               </div>
             </ScrollArea>
           </div>
         </div>
+
+        {/* Operations Board - Left most element */}
+        <OperationsBoard isVisible={isOperationsBoardVisible} onClose={handleResetSelection} />
 
         {/* Project Dashboard - سيتم إضافته في المستقبل */}
         {selectedProjectId && (

@@ -47,7 +47,7 @@ export const OperationsBoard = ({
         width: '60vw',
         height: 'calc(100vh - 60px)',
         top: 'var(--sidebar-top-offset)',
-        left: '15px',
+        left: '10px',
         borderRadius: '20px',
         background: 'linear-gradient(135deg, #E8F2FE 0%, #F9DBF8 50%, #DAD4FC 100%)',
         backdropFilter: 'blur(20px)',
