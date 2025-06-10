@@ -24,6 +24,22 @@
     --header-height: 60px;
     --sidebar-top-offset: 137px;
     
+    /* Operations Board Layout Variables */
+    --operations-left-expanded: calc(var(--sidebar-width-expanded) + var(--content-margin) + 525px);
+    --operations-left-collapsed: calc(var(--sidebar-width-collapsed) + var(--content-margin) + 525px);
+    --operations-width-expanded: calc(100vw - var(--operations-left-expanded) - 20px);
+    --operations-width-collapsed: calc(100vw - var(--operations-left-collapsed) - 20px);
+    
+    /* Projects Column Layout Variables */
+    --projects-left-expanded: calc(var(--sidebar-width-expanded) + var(--content-margin));
+    --projects-left-collapsed: calc(var(--sidebar-width-collapsed) + var(--content-margin));
+    
+    /* Project Details Layout Variables */
+    --project-details-width-expanded: calc(100vw - var(--operations-left-expanded) - 20px);
+    --project-details-width-collapsed: calc(100vw - var(--operations-left-collapsed) - 20px);
+    --project-details-left-expanded: var(--operations-left-expanded);
+    --project-details-left-collapsed: var(--operations-left-collapsed);
+    
     /* Button Colors */
     --primary-blue: #0099FF;
     --primary-blue-hover: #0077CC;
@@ -80,6 +96,7 @@
   }
 
   .dark {
+    /* ... keep existing code (dark theme variables) */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -134,6 +151,7 @@
 
 /* Enhanced Glassmorphism Components - Updated to match reference design */
 @layer components {
+  /* ... keep existing code (glass, calendar-gradient, project-card, btn-primary styles) */
   .glass {
     background: var(--glass-bg);
     backdrop-filter: blur(30px);
@@ -223,6 +241,40 @@
     margin-right: var(--sidebar-margin);
   }
 
+  /* Projects Column Layout Classes */
+  .projects-layout-expanded {
+    left: var(--projects-left-expanded);
+    width: calc(100vw - var(--projects-left-expanded) - var(--sidebar-margin));
+  }
+
+  .projects-layout-collapsed {
+    left: var(--projects-left-collapsed);
+    width: calc(100vw - var(--projects-left-collapsed) - var(--sidebar-margin));
+  }
+
+  /* Operations Board Layout Classes */
+  .operations-board-expanded {
+    left: var(--operations-left-expanded);
+    width: var(--operations-width-expanded);
+  }
+
+  .operations-board-collapsed {
+    left: var(--operations-left-collapsed);
+    width: var(--operations-width-collapsed);
+  }
+
+  /* Project Details Layout Classes */
+  .project-details-expanded {
+    left: var(--project-details-left-expanded);
+    width: var(--project-details-width-expanded);
+  }
+
+  .project-details-collapsed {
+    left: var(--project-details-left-collapsed);
+    width: var(--project-details-width-collapsed);
+  }
+
+  /* Legacy Content Layout Classes - للتوافق مع الكود القديم */
   .content-layout-expanded {
     margin-right: calc(var(--sidebar-width-expanded) + var(--content-margin));
     width: calc(100vw - var(--sidebar-width-expanded) - var(--content-margin) - var(--sidebar-margin));
@@ -236,6 +288,7 @@
 
 /* Enhanced Typography System */
 @layer utilities {
+  /* ... keep existing code (typography, animations, glass effects, etc.) */
   .text-heading-main {
     @apply text-3xl font-bold text-[var(--text-primary)];
     line-height: 1.2;

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
@@ -17,9 +16,10 @@ type TabData = {
 interface OperationsBoardProps {
   isVisible: boolean;
   onClose: () => void;
+  isSidebarCollapsed: boolean;
 }
 
-export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) => {
+export const OperationsBoard = ({ isVisible, onClose, isSidebarCollapsed }: OperationsBoardProps) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [tabData, setTabData] = useState<TabData>({});
   const [loading, setLoading] = useState<boolean>(false);
@@ -128,12 +128,12 @@ export const OperationsBoard = ({ isVisible, onClose }: OperationsBoardProps) =>
     <div 
       className={`fixed transition-all duration-500 ease-in-out ${
         isVisible ? 'translate-x-0' : '-translate-x-[120%]'
+      } ${
+        isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'
       }`}
       style={{
-        width: '60vw',
         height: 'calc(100vh - 60px)',
         top: 'var(--sidebar-top-offset)',
-        left: '20px',
         borderRadius: '20px',
         background: 'linear-gradient(135deg, #e8f1f9 0%, #f1f1f1 50%, #c8eddf 100%)',
         backdropFilter: 'blur(20px)',
