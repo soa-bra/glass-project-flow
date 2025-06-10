@@ -1,4 +1,3 @@
-
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 interface SidebarProps {
@@ -69,13 +68,13 @@ const Sidebar = ({
         const baseDelay = isCollapsed ? 0 : 150 + index * 50;
         return <button key={index} className={`
                 flex items-center gap-3 px-2 py-3 text-right transition-all duration-400 ease-in-out group relative
-                ${item.active ? 'bg-white/20 text-[#3e494c] font-medium rounded-lg shadow-sm' : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light rounded-lg'}
+                ${item.active ? 'bg-white/20 text-[#3e494c] font-medium rounded-full shadow-sm' : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light rounded-full'}
                 ${isCollapsed ? 'justify-center px-0 py-3' : ''}
                 hover:translate-y-[-2px] hover:shadow-md active:translate-y-0 active:scale-95
               `}>
               {/* Icon container with subtle hover effects */}
               <div className={`
-                  w-[60px] h-[60px] flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-lg
+                  w-[60px] h-[60px] flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full
                   ${item.active ? 'bg-white/20 border-[#3e494c]/40' : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/50 group-hover:bg-white/5'}
                   group-hover:scale-105 group-active:scale-95
                 `} style={{
