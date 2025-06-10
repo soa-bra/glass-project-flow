@@ -1,5 +1,3 @@
-
-
 const statusColors = {
   success: '#00bb88',
   warning: '#ffb500',
@@ -18,7 +16,7 @@ const ProjectCardStatusIndicators = ({
   owner,
   value
 }: ProjectCardStatusIndicatorsProps) => {
-  return <div className="flex items-center justify-between py-0 my-[12px] mx-[14px] px-0">
+  return <div className="flex items-center justify-between py-0 mx-[21px] px-px my-[15px]">
       {/* دائرة حالة المشروع - على الجانب الأيسر الآن */}
       <div style={{
       backgroundColor: statusColors[status],
@@ -26,7 +24,7 @@ const ProjectCardStatusIndicators = ({
     }} className="w-[20px] h-[20px] rounded-full my-0 py-0 px-0 mx-0" />
 
       {/* التاريخ + المالك + القيمة - على الجانب الأيمن الآن */}
-      <div className="flex items-center gap-[2px] flex-1 justify-end mx-0 px-0">
+      <div className="flex items-center gap-[\u0661px] flex-1 justify-end mx-[46px] px-0">
         {/* التاريخ */}
         <div className="rounded-full py-[2px] px-[21px] flex items-center" style={{
         backgroundColor: '#E3E3E3'
@@ -39,7 +37,7 @@ const ProjectCardStatusIndicators = ({
         {/* المالك - بدون هالة */}
         <div style={{
         backgroundColor: '#E3E3E3'
-      }} className="rounded-full py-[2px] mx-[15px] px-[25px] flex items-center">
+      }} className="rounded-full justify-between flex items-center bg-[soabra-projects-bg] px-[4px] py-0">
           <span className="text-sm font-arabic text-gray-700 px-[3px]">
             {owner}
           </span>
@@ -57,4 +55,3 @@ const ProjectCardStatusIndicators = ({
     </div>;
 };
 export default ProjectCardStatusIndicators;
-
