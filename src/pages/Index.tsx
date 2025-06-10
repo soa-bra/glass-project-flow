@@ -24,7 +24,7 @@ const Index = () => {
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 mx-0 my-0 px-[70px]">
+      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 mx-0 my-0 px-[50px]">
         {/* Sidebar - Fixed with consistent margin */}
         <div style={{
         marginRight: 'var(--sidebar-margin)',
