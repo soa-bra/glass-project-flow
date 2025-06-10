@@ -21,7 +21,7 @@ const ProjectCardHeader = ({
   tasksCount,
   status
 }: ProjectCardHeaderProps) => {
-  return <div className="flex items-start justify-between mb-2 py-0 mx-0 my-0 relative px-0">
+  return <div className="flex items-start justify-between mb-2 mx-0 relative py-0 my-0 px-0">
       <div className="relative">
         <ProjectCardDaysCircle daysLeft={daysLeft} />
         {/* نقطة حالة المشروع بمحاذاة الطرف الأيمن من دائرة الأيام */}
