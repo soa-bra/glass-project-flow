@@ -16,7 +16,7 @@ const ProjectCardStatusIndicators = ({
   owner,
   value
 }: ProjectCardStatusIndicatorsProps) => {
-  return <div className="flex items-center justify-between px-0 mx-0 my-[5px] py-[5px]">
+  return <div className="flex items-center justify-between px-0 mx-0 my-0 py-[5px]">
       {/* دائرة حالة المشروع - على الجانب الأيسر الآن */}
       <div style={{
       backgroundColor: statusColors[status],
