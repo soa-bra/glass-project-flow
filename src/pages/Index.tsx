@@ -18,13 +18,13 @@ const Index = () => {
     setSelectedProjectId(null);
     setIsOperationsBoardVisible(true); // إظهار اللوح عند إلغاء تحديد المشروع
   };
-  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden mx-0 px-0">
+  return <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden px-[16px] my-0 py-0 mx-0">
       {/* Header - Fixed and no scroll */}
       <div className="fixed top-0 inset-x-0 bg-soabra-solid-bg z-header">
         <HeaderBar />
       </div>
 
-      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 mx-0 my-0 px-0">
+      <div className="flex h-screen pt-[var(--header-height)] overflow-hidden py-0 mx-0 my-0 px-[70px]">
         {/* Sidebar - Fixed with consistent margin */}
         <div style={{
         marginRight: 'var(--sidebar-margin)',
@@ -41,7 +41,7 @@ const Index = () => {
       }}>
           <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 hover:shadow-xl w-full h-full flex flex-col overflow-hidden px-0 mx-[25px]">
             <ScrollArea className="w-full h-full">
-              <div className="p-2 px-0 overflow-y-auto overflow-x-hidden my-0 py-0 mx-[10px]">
+              <div className="p-2 px-0 overflow-y-auto overflow-x-hidden my-0 py-0 mx-[11px]">
                 <ProjectsColumn onProjectSelect={handleProjectSelect} />
               </div>
             </ScrollArea>
