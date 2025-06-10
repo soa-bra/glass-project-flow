@@ -92,15 +92,15 @@ const ProjectsColumn = ({ onProjectSelect }: ProjectsColumnProps) => {
       <ProjectsToolbar />
       
       {/* العنوان الفرعي والفاصل */}
-      <div className="px-4 mt-4 mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 font-arabic text-center">
+      <div className="px-6 mt-6 mb-8">
+        <h3 className="text-lg font-semibold text-gray-800 mb-6 font-arabic text-center">
           اليوم
         </h3>
         <Separator className="bg-gray-300 h-px" />
       </div>
 
       {/* قائمة المشاريع */}
-      <div className="flex-1 space-y-4 overflow-y-auto px-4">
+      <div className="flex-1 space-y-6 overflow-y-auto px-6">
         {mockProjects.map((project) => (
           <ProjectCard
             key={project.id}
@@ -113,7 +113,7 @@ const ProjectsColumn = ({ onProjectSelect }: ProjectsColumnProps) => {
       </div>
 
       {/* عنوان القسم التالي */}
-      <div className="px-4 mt-8 mb-4">
+      <div className="px-6 mt-10 mb-6">
         <h3 className="text-lg font-semibold text-gray-800 font-arabic text-center">
           ثلاث أسابيع
         </h3>
