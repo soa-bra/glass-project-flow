@@ -35,7 +35,6 @@ const ProjectCardLayout = ({
   const getCardStyles = () => {
     if (isSelected) {
       return {
-        boxShadow: `0 0 30px ${statusColors[status]}40, 0 0 15px ${statusColors[status]}20`,
         transform: 'scale(1.02)'
       };
     }
