@@ -24,7 +24,7 @@ const ProjectCardStatusIndicators = ({
     }} className="w-[20px] h-[20px] rounded-full" />
 
       {/* القيمة + المالك + التاريخ - على الجانب الأيمن الآن */}
-      <div className="flex items-center gap-[1px] flex-1 justify-end">
+      <div className="flex items-center gap-[2px] flex-1 justify-end mx-0 px-0">
         {/* القيمة */}
         <div className="rounded-full py-0 px-[21px]" style={{
         backgroundColor: '#E3E3E3'
