@@ -1,0 +1,129 @@
+
+/* Enhanced Animation System */
+@layer utilities {
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(0, 153, 255, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(0, 153, 255, 0.6);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(0, 153, 255, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 25px rgba(0, 153, 255, 0.4), 0 0 35px rgba(0, 153, 255, 0.2);
+    }
+  }
+
+  @keyframes gentle-bounce {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
+
+  @keyframes soft-scale {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, rgba(255,255,255,0) 25%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-gentle-bounce {
+    animation: gentle-bounce 2s ease-in-out infinite;
+  }
+
+  .animate-soft-scale {
+    animation: soft-scale 3s ease-in-out infinite;
+  }
+
+  /* Transitions */
+  .transition-magic {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .transition-bounce {
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .transition-smooth {
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Smooth entrance animations for cards */
+  .card-entrance {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .card-entrance:nth-child(1) { animation-delay: 0.1s; }
+  .card-entrance:nth-child(2) { animation-delay: 0.2s; }
+  .card-entrance:nth-child(3) { animation-delay: 0.3s; }
+  .card-entrance:nth-child(4) { animation-delay: 0.4s; }
+  .card-entrance:nth-child(5) { animation-delay: 0.5s; }
+}

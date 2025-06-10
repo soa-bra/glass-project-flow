@@ -1,0 +1,51 @@
+
+/* RTL Layout Classes - ترتيب صحيح من اليمين لليسار */
+@layer components {
+  .sidebar-layout {
+    right: var(--sidebar-right);
+  }
+
+  /* Projects Column Layout Classes - عامود المشاريع في الوسط */
+  .projects-layout-expanded {
+    right: var(--projects-right-expanded);
+    width: var(--projects-width);
+  }
+
+  .projects-layout-collapsed {
+    right: var(--projects-right-collapsed);
+    width: var(--projects-width);
+  }
+
+  /* Operations Board Layout Classes - لوحة التشغيل أقصى اليسار */
+  .operations-board-expanded {
+    right: var(--operations-right-expanded);
+    width: var(--operations-width-expanded);
+  }
+
+  .operations-board-collapsed {
+    right: var(--operations-right-collapsed);
+    width: var(--operations-width-collapsed);
+  }
+
+  /* Project Details Layout Classes */
+  .project-details-expanded {
+    right: var(--project-details-right-expanded);
+    width: var(--project-details-width-expanded);
+  }
+
+  .project-details-collapsed {
+    right: var(--project-details-right-collapsed);
+    width: var(--project-details-width-collapsed);
+  }
+
+  /* Legacy Content Layout Classes - للتوافق مع الكود القديم */
+  .content-layout-expanded {
+    margin-right: calc(var(--sidebar-width-expanded) + var(--content-margin));
+    width: calc(100vw - var(--sidebar-width-expanded) - var(--content-margin) - var(--sidebar-margin));
+  }
+
+  .content-layout-collapsed {
+    margin-right: calc(var(--sidebar-width-collapsed) + var(--content-margin));
+    width: calc(100vw - var(--sidebar-width-collapsed) - var(--content-margin) - var(--sidebar-margin));
+  }
+}
