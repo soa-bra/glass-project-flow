@@ -243,13 +243,29 @@ export const OperationsBoard = ({
     top: 'var(--sidebar-top-offset)',
     left: '15px',
     borderRadius: '20px',
-    background: 'linear-gradient(135deg, #A8D4A8 0%, #6FC8C8 50%, #4FA3C4 100%)',
+    background: 'linear-gradient(135deg, #E8F2FE 0%, #F9DBF8 50%, #DAD4FC 100%)',
     backdropFilter: 'blur(20px)',
-    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2)',
     overflow: 'hidden',
-    zIndex: 30
+    zIndex: 30,
+    position: 'relative'
   }}>
-      <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col mx-0 px-0">
+      {/* طبقة النويز والتأثيرات */}
+      <div 
+        className="absolute inset-0 opacity-30"
+        style={{
+          background: `
+            radial-gradient(circle at 2px 2px, rgba(0,0,0,0.03) 1px, transparent 0),
+            radial-gradient(circle at 6px 6px, rgba(255,255,255,0.05) 1px, transparent 0),
+            linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.02) 75%),
+            linear-gradient(-45deg, rgba(0,0,0,0.01) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.01) 75%)
+          `,
+          backgroundSize: '20px 20px, 40px 40px, 30px 30px, 30px 30px',
+          backgroundPosition: '0 0, 10px 10px, 0 0, 15px 15px',
+          borderRadius: '20px'
+        }}
+      />
+      
+      <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col mx-0 px-0 relative z-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full my-0 mx-0 px-0">
           <div className="border-b border-gray-200/30 h-[120px] flex items-center px-[30px]">
             <div className="w-full flex items-center gap-2 overflow-x-auto">
