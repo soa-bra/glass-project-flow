@@ -1,5 +1,7 @@
+
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const mockProjects = [
   {
@@ -123,13 +125,21 @@ const mockProjects = [
 
 const ProjectsColumn = () => {
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden px-0 py-0">
-      <ProjectsToolbar />
+    <div className="w-full h-full flex flex-col overflow-hidden rounded-3xl bg-soabra-projects-bg">
+      {/* شريط الأدوات ثابت في الأعلى */}
+      <div className="flex-shrink-0 px-4 pt-4">
+        <ProjectsToolbar />
+      </div>
       
-      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mt-4">
-        {mockProjects.map(project => (
-          <ProjectCard key={project.id} {...project} />
-        ))}
+      {/* منطقة التمرير للمشاريع مع تأثير النافذة الدائرية */}
+      <div className="flex-1 overflow-hidden rounded-3xl">
+        <ScrollArea className="h-full w-full">
+          <div className="space-y-2 px-4 pb-4">
+            {mockProjects.map(project => (
+              <ProjectCard key={project.id} {...project} />
+            ))}
+          </div>
+        </ScrollArea>
       </div>
     </div>
   );

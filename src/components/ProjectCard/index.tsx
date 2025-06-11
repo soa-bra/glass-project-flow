@@ -18,7 +18,6 @@ const ProjectCard = ({
   return (
     <ProjectCardLayout
       id={id}
-      status={status}
     >
       <ProjectCardHeader
         daysLeft={daysLeft}

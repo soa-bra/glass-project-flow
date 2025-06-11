@@ -3,7 +3,6 @@ import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useState } from 'react';
 
 const Index = () => {
@@ -23,12 +22,8 @@ const Index = () => {
         <div className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'projects-layout-collapsed' : 'projects-layout-expanded'}`} style={{
           top: 'var(--sidebar-top-offset)'
         }}>
-          <div className="bg-soabra-projects-bg rounded-t-3xl transition-all duration-300 w-full h-full flex flex-col overflow-hidden">
-            <ScrollArea className="w-full h-full">
-              <div className="p-4 overflow-y-auto overflow-x-hidden px-[10px] py-[15px]">
-                <ProjectsColumn />
-              </div>
-            </ScrollArea>
+          <div className="w-full h-full p-2">
+            <ProjectsColumn />
           </div>
         </div>
 
