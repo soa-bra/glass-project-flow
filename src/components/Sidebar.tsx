@@ -52,130 +52,97 @@ const Sidebar = ({
       style={{
         width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)'
       }} 
-      className="bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-700 ease-out mx-0 px-px"
+      className="bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out mx-0 px-px"
     >
-      <nav className="flex flex-col gap-1 h-full py-0 px-0 transition-all duration-700 ease-out">
-        {/* Menu Title Section with Toggle */}
-        <div className={`text-center mb-1 rounded-full mx-0 px-0 py-[8px] my-[18px] transition-all duration-700 ease-out ${isCollapsed ? 'flex justify-center' : ''}`}>
-          <div className={`flex items-center rounded-lg transition-all duration-700 ease-out ${isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[20px]'}`}>
-            {/* Title container */}
+      <nav className="flex flex-col gap-2 h-full py-0 px-0 transition-all duration-500 ease-in-out">
+        {/* Menu Title Section with Toggle - Enhanced smooth transitions */}
+        <div className={`text-center mb-2 rounded-full mx-0 px-0 py-[10px] my-[20px] ${isCollapsed ? 'flex justify-center' : ''}`}>
+          <div className={`flex items-center rounded-lg transition-all duration-500 ease-in-out ${isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[20px]'}`}>
+            {/* Title container - smooth fade transitions */}
             {!isCollapsed && (
-              <div className="flex-1 transition-all duration-700 ease-out opacity-100 translate-x-0 scale-100" 
-                style={{ 
-                  transitionDelay: isCollapsed ? '0ms' : '200ms',
-                  transitionProperty: 'opacity, transform'
-                }}>
-                <h2 className="text-soabra-text-primary text-right font-medium text-3xl px-0 mx-[18px] transition-all duration-500 ease-out">
+              <div className="flex-1 transition-all duration-500 ease-in-out opacity-100 translate-x-0 scale-100" 
+                style={{ transitionDelay: '100ms' }}>
+                <h2 className="text-soabra-text-primary text-right font-medium text-3xl px-0 mx-[18px]">
                   القائمة
                 </h2>
               </div>
             )}
             
-            {/* Toggle button */}
+            {/* Toggle button - enhanced smooth transitions */}
             <button 
               onClick={toggleSidebar} 
-              className="group w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-500 ease-out border-2 border-[#3e494c]/20 hover:border-[#3e494c]/40 hover:bg-white/10 text-3xl px-0 mx-0 flex-shrink-0 hover:shadow-lg hover:shadow-white/5"
-              style={{
-                transform: 'translateZ(0)',
-                backfaceVisibility: 'hidden'
-              }}
+              className="group w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-500 ease-in-out border-2 border-[#3e494c]/30 hover:border-[#3e494c]/50 hover:bg-white/15 hover:scale-105 text-3xl px-0 mx-0 hover:shadow-md flex-shrink-0"
             >
-              <div className="transition-all duration-500 ease-out transform" style={{ willChange: 'transform' }}>
+              <div className="transition-all duration-500 ease-in-out transform">
                 {isCollapsed ? (
-                  <ChevronRight className="w-6 h-6 text-[#3e494c] transition-all duration-500 ease-out transform hover:scale-110" />
+                  <ChevronRight className="w-6 h-6 text-[#3e494c] transition-all duration-500 ease-in-out" />
                 ) : (
-                  <ChevronLeft className="w-6 h-6 text-[#3e494c] transition-all duration-500 ease-out transform hover:scale-110" />
+                  <ChevronLeft className="w-6 h-6 text-[#3e494c] transition-all duration-500 ease-in-out" />
                 )}
               </div>
             </button>
           </div>
         </div>
 
-        {/* Menu Items */}
-        <div className={`flex flex-col gap-1 px-0 transition-all duration-700 ease-out ${isCollapsed ? 'mx-[15px]' : 'mx-[15px]'}`}>
+        {/* Menu Items - Enhanced smooth active states and transitions */}
+        <div className={`flex flex-col gap-2 px-0 transition-all duration-500 ease-in-out ${isCollapsed ? 'mx-[15px]' : 'mx-[15px]'}`}>
           {menuItems.map((item, index) => {
             const IconComponent = item.icon;
-            const baseDelay = isCollapsed ? 0 : 200 + (index * 30);
+            const baseDelay = isCollapsed ? 0 : 150 + (index * 50);
             
             return (
               <button 
                 key={index} 
                 className={`
-                  flex items-center gap-3 text-right transition-all duration-500 ease-out group relative overflow-hidden
+                  flex items-center gap-3 text-right transition-all duration-500 ease-in-out group relative
                   ${item.active 
-                    ? 'bg-white/15 text-[#3e494c] font-medium rounded-full shadow-md border border-white/25' 
-                    : 'text-soabra-text-secondary hover:bg-white/8 hover:text-[#3e494c] font-light rounded-full border border-transparent hover:border-white/15 hover:shadow-sm'
+                    ? 'bg-white/20 text-[#3e494c] font-medium rounded-full shadow-lg border border-white/40 scale-[1.02]' 
+                    : 'text-soabra-text-secondary hover:bg-white/15 hover:text-[#3e494c] font-light rounded-full hover:shadow-md border border-transparent hover:border-white/20 hover:scale-[1.01]'
                   }
-                  ${isCollapsed ? 'justify-center px-[12px] py-2' : 'px-2 py-2'}
+                  ${isCollapsed ? 'justify-center px-[12px] py-3' : 'px-2 py-3'}
                 `}
-                style={{
-                  transform: 'translateZ(0)',
-                  backfaceVisibility: 'hidden',
-                  willChange: 'transform, background-color, box-shadow'
-                }}
               >
-                {/* Icon container */}
+                {/* Icon container - enhanced smooth transitions */}
                 <div className={`
-                    w-[60px] h-[60px] flex items-center justify-center transition-all duration-400 ease-out flex-shrink-0 border-2 rounded-full relative overflow-hidden
+                    w-[60px] h-[60px] flex items-center justify-center transition-all duration-500 ease-in-out flex-shrink-0 border-2 rounded-full
                     ${item.active 
-                      ? 'bg-white/20 border-[#3e494c]/30 shadow-sm' 
-                      : 'border-[#3e494c]/20 group-hover:border-[#3e494c]/35 group-hover:bg-white/10 group-hover:shadow-sm'
+                      ? 'bg-white/25 border-[#3e494c]/50 shadow-lg scale-105' 
+                      : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/50 group-hover:bg-white/15 group-hover:shadow-md group-hover:scale-105'
                     }
-                  `}
-                  style={{
-                    transform: 'translateZ(0)',
-                    backfaceVisibility: 'hidden'
-                  }}>
-                  {/* Ripple effect */}
-                  <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 bg-gradient-to-r from-white/5 to-white/10 transition-opacity duration-300 ease-out" />
-                  
+                  `}>
                   <IconComponent className={`
-                      w-6 h-6 transition-all duration-300 ease-out relative z-10
+                      w-6 h-6 transition-all duration-500 ease-in-out
                       ${item.active 
-                        ? 'text-[#3e494c]' 
-                        : 'text-soabra-text-secondary group-hover:text-[#3e494c]'
+                        ? 'text-[#3e494c] scale-110' 
+                        : 'text-soabra-text-secondary group-hover:text-[#3e494c] group-hover:scale-110'
                       }
-                    `} 
-                    style={{ willChange: 'transform, color' }} />
+                    `} />
                 </div>
                 
-                {/* Label */}
+                {/* Label - enhanced smooth fade */}
                 {!isCollapsed && (
                   <div 
-                    className="flex-1 flex items-center transition-all duration-500 ease-out opacity-100 translate-x-0 scale-100 w-auto overflow-hidden" 
-                    style={{ 
-                      transitionDelay: `${baseDelay}ms`,
-                      transitionProperty: 'opacity, transform'
-                    }}
+                    className="flex-1 flex items-center transition-all duration-500 ease-in-out opacity-100 translate-x-0 scale-100 w-auto" 
+                    style={{ transitionDelay: `${baseDelay}ms` }}
                   >
-                    <span className={`tracking-wide text-base transition-all duration-300 ease-out whitespace-nowrap ${
-                      item.active ? 'font-semibold' : 'group-hover:font-medium'
-                    }`}>
+                    <span className={`tracking-wide text-base transition-all duration-500 ease-in-out ${item.active ? 'font-semibold' : 'group-hover:font-medium'}`}>
                       {item.label}
                     </span>
                   </div>
-                )}
-                
-                {/* Active indicator */}
-                {item.active && (
-                  <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-soabra-primary-blue/60 to-soabra-primary-blue/30 rounded-l-full transition-all duration-300 ease-out" />
                 )}
               </button>
             );
           })}
         </div>
 
-        {/* Bottom Version */}
-        <div className={`mt-auto pt-1 py-0 transition-all duration-700 ease-out ${isCollapsed ? 'mx-[15px] flex justify-center' : 'mx-[15px]'}`}>
+        {/* Bottom Version - enhanced smooth transitions */}
+        <div className={`mt-auto pt-2 py-0 transition-all duration-500 ease-in-out ${isCollapsed ? 'mx-[15px] flex justify-center' : 'mx-[15px]'}`}>
           {!isCollapsed && (
             <div 
-              className="px-2 transition-all duration-500 ease-out opacity-100 translate-y-0 scale-100" 
-              style={{ 
-                transitionDelay: isCollapsed ? '0ms' : '500ms',
-                transitionProperty: 'opacity, transform'
-              }}
+              className="px-2 transition-all duration-500 ease-in-out opacity-100 translate-y-0 scale-100" 
+              style={{ transitionDelay: '450ms' }}
             >
-              <div className="text-center text-xs text-soabra-text-secondary/60 font-medium my-[35px] transition-all duration-300 ease-out hover:text-soabra-text-secondary/80 cursor-default">
+              <div className="text-center text-xs text-soabra-text-secondary/70 font-medium my-[45px] transition-all duration-500 ease-in-out hover:text-soabra-text-secondary hover:scale-105">
                 الإصدار 2.1.0
               </div>
             </div>
