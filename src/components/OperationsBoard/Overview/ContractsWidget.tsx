@@ -13,31 +13,29 @@ interface ContractsWidgetProps {
 }
 
 export const ContractsWidget: React.FC<ContractsWidgetProps> = ({ contracts }) => {
+  const total = contracts.signed + contracts.expired;
+  const signedPercentage = (contracts.signed / total) * 100;
+
   return (
-    <GenericCard>
-      <h3 className="text-lg font-arabic font-medium mb-4 text-right">حالة العقود</h3>
+    <GenericCard className="h-full">
+      <h3 className="text-xl font-arabic font-bold mb-6 text-right text-gray-800">حالة العقود</h3>
       
-      <div className="flex flex-col items-center mt-6">
-        <div className="flex w-full justify-between mb-4">
-          <div className="text-center">
-            <span className="text-3xl font-bold block">{contracts.signed}</span>
-            <span className="text-sm text-gray-600">موقّعة</span>
-          </div>
-
-          <div className="text-center text-orange-500">
-            <span className="text-3xl font-bold block">{contracts.expired}</span>
-            <span className="text-sm">منتهية</span>
-          </div>
+      <div className="flex justify-center items-center mb-8">
+        <div className="text-center ml-8">
+          <div className="text-4xl font-bold text-blue-500 mb-1">{contracts.signed}</div>
+          <div className="text-sm text-gray-600">موقّعة</div>
         </div>
-
-        <Progress 
-          value={
-            (contracts.signed / (contracts.signed + contracts.expired)) * 100
-          } 
-          className="h-3 w-full bg-orange-200"
-          indicatorClassName="bg-blue-500"
-        />
+        <div className="text-center">
+          <div className="text-4xl font-bold text-orange-500 mb-1">{contracts.expired}</div>
+          <div className="text-sm text-gray-600">منتهية</div>
+        </div>
       </div>
+
+      <Progress 
+        value={signedPercentage} 
+        className="h-3 bg-orange-200"
+        indicatorClassName="bg-blue-500"
+      />
     </GenericCard>
   );
 };
