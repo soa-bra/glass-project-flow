@@ -1,6 +1,5 @@
 
 import React from 'react';
-import GenericCard from '@/components/ui/GenericCard';
 
 interface SatisfactionWidgetProps {
   satisfaction: number;
@@ -8,11 +7,9 @@ interface SatisfactionWidgetProps {
 
 export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfaction }) => {
   return (
-    <GenericCard
-      header={
-        <h3 className="text-lg font-arabic font-medium text-right">مؤشر رضا العملاء</h3>
-      }
-    >
+    <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out hover:bg-white/50">
+      <h3 className="text-lg font-arabic font-medium mb-4 text-right">مؤشر رضا العملاء</h3>
+      
       <div className="flex flex-col items-center justify-center mt-2">
         <div className="relative w-32 h-32">
           <svg className="w-full h-full" viewBox="0 0 36 36">
@@ -45,6 +42,6 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfac
           </p>
         </div>
       </div>
-    </GenericCard>
+    </div>
   );
 };

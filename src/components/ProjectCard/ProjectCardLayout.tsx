@@ -38,10 +38,10 @@ const ProjectCardLayout = ({
       onClick={handleClick}
       style={getCardStyles()}
       className={`
-        rounded-[40px] p-2 mx-0 my-1 cursor-pointer
+        glass-enhanced rounded-[40px] p-2 mx-0 my-1 cursor-pointer
         transition-all duration-200 ease-in-out
         ${isSelected 
-          ? 'opacity-100 ring-2 ring-[#0099FF]/70' 
+          ? 'opacity-100' 
           : isOtherSelected 
             ? 'opacity-25 shadow-sm' 
             : 'opacity-100 shadow-sm hover:shadow-md'

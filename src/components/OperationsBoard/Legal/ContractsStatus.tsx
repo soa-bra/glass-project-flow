@@ -1,6 +1,5 @@
 
 import React from 'react';
-import GenericCard from '@/components/ui/GenericCard';
 
 interface ContractCount {
   signed: number;
@@ -19,18 +18,9 @@ export const ContractsStatus: React.FC<ContractsStatusProps> = ({ contracts }) =
   const expiredPercentage = Math.round((contracts.expired / total) * 100);
 
   return (
-    <GenericCard
-      header={
-        <h3 className="text-xl font-arabic font-medium text-right">حالة العقود</h3>
-      }
-      footer={
-        <div className="flex justify-between text-xs">
-          <span className="text-blue-600">موقّعة</span>
-          <span className="text-amber-500">قيد المعالجة</span>
-          <span className="text-red-500">منتهية</span>
-        </div>
-      }
-    >
+    <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out hover:bg-white/50">
+      <h3 className="text-xl font-arabic font-medium text-right mb-4">حالة العقود</h3>
+      
       <div className="flex justify-between items-center my-4">
         <div className="text-center">
           <span className="block text-2xl font-bold text-blue-600">{contracts.signed}</span>
@@ -62,6 +52,12 @@ export const ContractsStatus: React.FC<ContractsStatusProps> = ({ contracts }) =
           style={{ width: `${expiredPercentage}%`, left: `${signedPercentage + pendingPercentage}%` }}
         ></div>
       </div>
-    </GenericCard>
+      
+      <div className="flex justify-between text-xs mt-2">
+        <span className="text-blue-600">موقّعة</span>
+        <span className="text-amber-500">قيد المعالجة</span>
+        <span className="text-red-500">منتهية</span>
+      </div>
+    </div>
   );
 };
