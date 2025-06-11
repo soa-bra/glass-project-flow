@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { BaseCard } from '@/components/ui/BaseCard';
 
 interface BudgetData {
   total: number;
@@ -18,18 +18,25 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({ budget }) => {
   };
 
   const percentage = Math.round((budget.spent / budget.total) * 100);
+  const isOverBudget = percentage > 80;
 
   return (
-    <GenericCard className="h-24">
-      <h3 className="text-sm font-arabic font-bold mb-2 text-right text-gray-800">الميزانية والمصروفات</h3>
-      
+    <BaseCard 
+      size="md"
+      neonRing={isOverBudget ? 'warning' : 'info'}
+      header={
+        <h3 className="text-sm font-arabic font-bold text-gray-800">
+          الميزانية والمصروفات
+        </h3>
+      }
+    >
       <div className="space-y-2">
         <div className="text-right">
           <div className="mb-1">
             <span className="text-xs text-gray-600">الميزانية الإجمالية</span>
           </div>
           <div className="text-sm font-bold text-gray-900 mb-1">
-            {formatNumber(budget.total)}.... ريال
+            {formatNumber(budget.total)} ريال
           </div>
           <Progress value={100} className="h-1 bg-blue-100" indicatorClassName="bg-blue-500" />
         </div>
@@ -39,15 +46,15 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({ budget }) => {
             <span className="text-xs text-gray-600">المصروفات</span>
           </div>
           <div className="text-sm font-bold text-gray-900 mb-1">
-            {formatNumber(budget.spent)}.... ريال ({percentage}%)
+            {formatNumber(budget.spent)} ريال ({percentage}%)
           </div>
           <Progress 
             value={percentage} 
             className="h-1 bg-green-100"
-            indicatorClassName="bg-green-500"
+            indicatorClassName={`${isOverBudget ? 'bg-red-500' : 'bg-green-500'}`}
           />
         </div>
       </div>
-    </GenericCard>
+    </BaseCard>
   );
 };

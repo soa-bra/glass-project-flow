@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { BaseCard } from '@/components/ui/BaseCard';
 
 interface ContractsData {
   signed: number;
@@ -15,11 +15,18 @@ interface ContractsWidgetProps {
 export const ContractsWidget: React.FC<ContractsWidgetProps> = ({ contracts }) => {
   const total = contracts.signed + contracts.expired;
   const signedPercentage = (contracts.signed / total) * 100;
+  const hasExpiredContracts = contracts.expired > 0;
 
   return (
-    <GenericCard className="h-24">
-      <h3 className="text-sm font-arabic font-bold mb-2 text-right text-gray-800">حالة العقود</h3>
-      
+    <BaseCard 
+      size="md"
+      neonRing={hasExpiredContracts ? 'warning' : 'success'}
+      header={
+        <h3 className="text-sm font-arabic font-bold text-gray-800">
+          حالة العقود
+        </h3>
+      }
+    >
       <div className="flex justify-center items-center mb-2">
         <div className="text-center ml-6">
           <div className="text-lg font-bold text-blue-500 mb-1">{contracts.signed}</div>
@@ -36,6 +43,6 @@ export const ContractsWidget: React.FC<ContractsWidgetProps> = ({ contracts }) =
         className="h-1 bg-orange-200"
         indicatorClassName="bg-blue-500"
       />
-    </GenericCard>
+    </BaseCard>
   );
 };
