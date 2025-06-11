@@ -31,8 +31,8 @@ const ProjectCardStatusIndicators = ({
         className="w-[20px] h-[20px] rounded-full my-0 py-0 px-0 mx-0" 
       />
 
-      {/* التاريخ + المالك + القيمة - محاذاة إلى اليمين */}
-      <div className="flex items-center gap-[3px] flex-1 justify-end mx-[14px] px-0">
+      {/* التاريخ + المالك + القيمة - محاذاة إلى اليمين مع عنوان المشروع */}
+      <div className="flex items-center gap-[3px] flex-1 justify-end mx-0 px-0">
         {/* التاريخ */}
         <div 
           style={{
@@ -57,9 +57,9 @@ const ProjectCardStatusIndicators = ({
           </span>
         </div>
 
-        {/* القيمة */}
+        {/* القيمة - محاذاة مع حد عنوان المشروع */}
         <div 
-          className="rounded-full py-[2px] px-[21px] flex items-center" 
+          className="rounded-full py-[2px] px-[21px] flex items-center mr-[14px]" 
           style={{
             backgroundColor: '#E3E3E3'
           }}
