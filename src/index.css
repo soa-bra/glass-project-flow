@@ -24,18 +24,18 @@
     --header-height: 60px;
     --sidebar-top-offset: 137px;
     
-    /* RTL Layout Variables - ترتيب صحيح من اليمين لليسار مع هوامش محسّنة */
+    /* RTL Layout Variables - تقليل الهوامش إلى النصف */
     /* القائمة - أقصى اليمين */
     --sidebar-right: 20px;
     
-    /* عامود المشاريع - في الوسط مع مسافة مناسبة */
-    --projects-right-expanded: calc(var(--sidebar-width-expanded) + 40px);
-    --projects-right-collapsed: calc(var(--sidebar-width-collapsed) + 40px);
+    /* عامود المشاريع - في الوسط مع مسافة مقللة */
+    --projects-right-expanded: calc(var(--sidebar-width-expanded) + 20px);
+    --projects-right-collapsed: calc(var(--sidebar-width-collapsed) + 20px);
     --projects-width: 480px;
     
-    /* لوحة التشغيل - أقصى اليسار مع مسافة مناسبة */
-    --operations-right-expanded: calc(var(--projects-right-expanded) + var(--projects-width) + 20px);
-    --operations-right-collapsed: calc(var(--projects-right-collapsed) + var(--projects-width) + 20px);
+    /* لوحة التشغيل - أقصى اليسار مع مسافة مقللة */
+    --operations-right-expanded: calc(var(--projects-right-expanded) + var(--projects-width) + 10px);
+    --operations-right-collapsed: calc(var(--projects-right-collapsed) + var(--projects-width) + 10px);
     --operations-width-expanded: calc(100vw - var(--operations-right-expanded) - 20px);
     --operations-width-collapsed: calc(100vw - var(--operations-right-collapsed) - 20px);
     
