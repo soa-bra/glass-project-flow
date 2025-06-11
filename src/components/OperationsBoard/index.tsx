@@ -23,8 +23,8 @@ export const OperationsBoard = ({
     overflow: 'hidden',
     zIndex: 30
   }}>
-      <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col">
-        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full px-0">
+      <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col py-0 my-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full px-0 py-0 my-0">
           <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
 
           <TabContentWrapper tabData={tabData} loading={loading} />

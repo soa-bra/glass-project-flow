@@ -15,7 +15,7 @@ export const TabContentWrapper: React.FC<TabContentWrapperProps> = ({
   tabData,
   loading
 }) => {
-  return <div className="flex-1 overflow-y-auto p-6 py-0 my-0 px-[8px]">
+  return <div className="flex-1 overflow-y-auto p-6 py-0 my-0 px-[10px]">
       <TabsContent value="overview" className="space-y-4 h-full animate-in fade-in-0 slide-in-from-bottom-5 data-[state=inactive]:animate-out">
         <OverviewTab data={tabData.overview} loading={loading} />
       </TabsContent>
