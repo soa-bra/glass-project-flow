@@ -43,14 +43,14 @@ const Sidebar = ({
   return <aside style={{
     width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)'
   }} className="bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out mx-0 px-0">
-      <nav className="flex flex-col gap-2 my-0 py-0 mx-0 px-px">
+      <nav className="flex flex-col gap-2 my-0 py-0 px-0 mx-[10px]">
         {/* Menu Title Section with Toggle */}
-        <div className="text-center mb-2 rounded-full mx-0 px-[4px] my-0 py-[35px]">
+        <div className="text-center mb-2 rounded-full mx-0 px-0 my-[20px] py-[10px]">
           <div className={`flex items-center rounded-lg px-[3px] mx-[5px] my-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
             <div className={`flex-1 transition-all duration-500 ease-in-out ${isCollapsed ? 'opacity-0 translate-x-4 scale-95' : 'opacity-100 translate-x-0 scale-100'}`} style={{
             transitionDelay: isCollapsed ? '0ms' : '100ms'
           }}>
-              {!isCollapsed && <h2 className="text-soabra-text-primary text-right font-medium text-3xl mx-0 px-0">
+              {!isCollapsed && <h2 className="text-soabra-text-primary text-right font-medium text-3xl px-0 mx-[18px]">
                   القائمة
                 </h2>}
             </div>
