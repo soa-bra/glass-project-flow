@@ -15,24 +15,44 @@ const Index = () => {
       </div>
 
       <div className="flex h-screen pt-[var(--header-height)] overflow-hidden">
-        <div className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar transition-all duration-500 ease-in-out sidebar-layout">
+        {/* Sidebar with enhanced animation synchronization */}
+        <div 
+          className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar sidebar-layout"
+          style={{
+            transition: 'all var(--animation-duration-main) var(--animation-easing)'
+          }}
+        >
           <Sidebar onToggle={setIsSidebarCollapsed} />
         </div>
 
+        {/* Projects Column with synchronized animation */}
         <div 
-          className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-500 ease-in-out ${
+          className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${
             isSidebarCollapsed ? 'projects-layout-collapsed' : 'projects-layout-expanded'
           }`} 
           style={{
-            top: 'var(--sidebar-top-offset)'
+            top: 'var(--sidebar-top-offset)',
+            transition: 'all var(--animation-duration-main) var(--animation-easing)'
           }}
         >
-          <div className="w-full h-full p-2 py-0 px-[2px] transition-all duration-500 ease-in-out">
+          <div 
+            className="w-full h-full p-2 py-0 px-[2px]"
+            style={{
+              transition: 'all var(--animation-duration-main) var(--animation-easing)'
+            }}
+          >
             <ProjectsColumn />
           </div>
         </div>
 
-        <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
+        {/* Operations Board with synchronized animation */}
+        <div 
+          style={{
+            transition: 'all var(--animation-duration-main) var(--animation-easing)'
+          }}
+        >
+          <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
+        </div>
       </div>
     </div>
   );

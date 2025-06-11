@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,6 +15,15 @@
     --calendar-gradient-start: #E8F2FE;
     --calendar-gradient-mid: #F9DBF8;
     --calendar-gradient-end: #DAD4FC;
+    
+    /* Animation Timing Variables for Perfect Synchronization */
+    --animation-duration-main: 500ms;
+    --animation-duration-fast: 300ms;
+    --animation-duration-slow: 700ms;
+    --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --animation-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --stagger-delay: 50ms;
+    --base-delay: 100ms;
     
     /* Layout Constants for Consistent Spacing */
     --sidebar-margin: 15px;
@@ -48,7 +58,7 @@
     --glass-bg: rgba(255, 255, 255, 0.15);
     --glass-border: rgba(255, 255, 255, 0.2);
     
-    /* Standard shadcn variables */
+    /* ... keep existing code (standard shadcn variables) */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -80,6 +90,7 @@
   }
 
   .dark {
+    /* ... keep existing code (dark mode variables) */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -143,39 +154,59 @@
     overflow: hidden;
   }
 
-  /* RTL Layout Classes */
+  /* RTL Layout Classes with Synchronized Animation */
   .sidebar-layout {
     right: var(--sidebar-right);
+    transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
   .projects-layout-expanded {
     right: var(--projects-right-expanded);
     width: var(--projects-width);
+    transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
   .projects-layout-collapsed {
     right: var(--projects-right-collapsed);
     width: var(--projects-width);
+    transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
   .operations-board-expanded {
     right: var(--operations-right-expanded);
     width: var(--operations-width-expanded);
+    transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
   .operations-board-collapsed {
     right: var(--operations-right-collapsed);
     width: var(--operations-width-collapsed);
+    transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
   .project-details-expanded {
     right: var(--project-details-right-expanded);
     width: var(--project-details-width-expanded);
+    transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
   .project-details-collapsed {
     right: var(--project-details-right-collapsed);
     width: var(--project-details-width-collapsed);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  /* Synchronized Animation Helpers */
+  .sync-transition {
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .sync-transition-fast {
+    transition: all var(--animation-duration-fast) var(--animation-easing);
+  }
+
+  .sync-transition-slow {
+    transition: all var(--animation-duration-slow) var(--animation-easing);
   }
 
   /* Custom Scrollbar */
@@ -200,6 +231,7 @@
 
 /* Typography System */
 @layer utilities {
+  /* ... keep existing code (typography utilities) */
   .text-heading-main {
     @apply text-3xl font-bold;
     line-height: 1.2;
