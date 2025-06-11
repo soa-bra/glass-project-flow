@@ -21,29 +21,29 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({ budget }) => {
 
   return (
     <GenericCard className="h-full">
-      <h3 className="text-xl font-arabic font-bold mb-6 text-right text-gray-800">الميزانية والمصروفات</h3>
+      <h3 className="text-lg font-arabic font-bold mb-4 text-right text-gray-800">الميزانية والمصروفات</h3>
       
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="text-right">
-          <div className="mb-2">
-            <span className="text-sm text-gray-600">الميزانية الإجمالية</span>
+          <div className="mb-1">
+            <span className="text-xs text-gray-600">الميزانية الإجمالية</span>
           </div>
-          <div className="text-lg font-bold text-gray-900 mb-3">
+          <div className="text-base font-bold text-gray-900 mb-2">
             {formatNumber(budget.total)}.... ريال
           </div>
-          <Progress value={100} className="h-3 bg-blue-100" indicatorClassName="bg-blue-500" />
+          <Progress value={100} className="h-2 bg-blue-100" indicatorClassName="bg-blue-500" />
         </div>
 
         <div className="text-right">
-          <div className="mb-2">
-            <span className="text-sm text-gray-600">المصروفات</span>
+          <div className="mb-1">
+            <span className="text-xs text-gray-600">المصروفات</span>
           </div>
-          <div className="text-lg font-bold text-gray-900 mb-3">
+          <div className="text-base font-bold text-gray-900 mb-2">
             {formatNumber(budget.spent)}.... ريال ({percentage}%)
           </div>
           <Progress 
             value={percentage} 
-            className="h-3 bg-green-100"
+            className="h-2 bg-green-100"
             indicatorClassName="bg-green-500"
           />
         </div>
