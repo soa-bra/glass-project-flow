@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
-import OverviewTab from './OverviewTab';
-import FinanceTab from './FinanceTab';
+import { OverviewTab } from './OverviewTab';
+import { FinanceTab } from './FinanceTab';
 import LegalTab from './LegalTab';
 import HRTab from './HRTab';
-import ClientsTab from './ClientsTab';
-import ReportsTab from './ReportsTab';
+import { ClientsTab } from './ClientsTab';
+import { ReportsTab } from './ReportsTab';
 
 export const TabContentWrapper = ({ tabData, loading }: { tabData: any; loading: boolean }) => {
   return (
