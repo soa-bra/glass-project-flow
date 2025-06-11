@@ -29,13 +29,13 @@ const HeaderBar = () => {
         <div className="flex-1" />
 
         {/* Action Icons - Right Side: بحث ← تحديث ← تنبيهات ← مستخدم ← إعدادات */}
-        <div className="flex items-center gap-4 px-0 mx-0">
+        <div className="flex items-center gap-0 px-0 mx-0">
           <button className="p-2 hover:bg-white/20 transition-colors group rounded-full">
             <div className="w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
               <Search className="w-6 h-6 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
             </div>
           </button>
-          <button className="p-2 hover:bg-white/20 transition-colors group rounded-full">
+          <button className="p-2 hover:bg-white/20 transition-colors group rounded-full px-[8px]">
             <div className="w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
               <RefreshCcw className="w-6 h-6 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
             </div>
