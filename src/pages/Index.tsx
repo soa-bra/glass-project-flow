@@ -18,7 +18,7 @@ const Index = () => {
         <div className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'projects-layout-collapsed' : 'projects-layout-expanded'}`} style={{
         top: 'var(--sidebar-top-offset)'
       }}>
-          <div className="w-full h-full p-2 px-[6px] py-0">
+          <div className="w-full h-full p-2 px-[6px] mx-0 py-0 my-[6px]">
             <ProjectsColumn />
           </div>
         </div>

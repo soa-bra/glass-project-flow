@@ -1,17 +1,14 @@
-
 import GenericCard from '@/components/ui/GenericCard';
 import { SoaBraBadge } from '@/components/ui/SoaBraBadge';
 import { StatusDot } from '@/components/ui/StatusDot';
 import { ProgressChip } from '@/components/ui/ProgressChip';
 import type { ProjectCardProps } from './types';
-
 const statusColors = {
   success: '#5DDC82',
-  warning: '#ECFF8C', 
+  warning: '#ECFF8C',
   error: '#F23D3D',
   info: '#0099FF'
 };
-
 const ProjectCard = ({
   id,
   title,
@@ -25,11 +22,7 @@ const ProjectCard = ({
 }: ProjectCardProps) => {
   const progressValue = Math.max(0, Math.min(100, (30 - daysLeft) * 3.33)); // تقدير التقدم بناءً على الأيام المتبقية
 
-  return (
-    <GenericCard
-      className="mx-0 my-1"
-      header={
-        <div className="w-full flex items-center justify-between">
+  return <GenericCard className="mx-0 my-1" header={<div className="w-full flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-[75px] h-[75px] rounded-full border-2 border-gray-300 flex flex-col items-center justify-center bg-transparent">
               <span className="text-sm font-bold leading-none text-gray-800">
@@ -48,17 +41,18 @@ const ProjectCard = ({
           </div>
           
           <div className="w-[75px] h-[75px] rounded-full flex flex-col items-center justify-center bg-[#CCD4D7] px-0 py-0 my-0">
-            <span className="text-sm font-bold leading-none" style={{ color: '#2A3437' }}>
+            <span className="text-sm font-bold leading-none" style={{
+        color: '#2A3437'
+      }}>
               {tasksCount.toString().padStart(2, '0')}
             </span>
-            <span style={{ color: '#2A3437' }} className="text-xs leading-none my-[5px] py-0">
+            <span style={{
+        color: '#2A3437'
+      }} className="text-xs leading-none my-[5px] py-0">
               مهام
             </span>
           </div>
-        </div>
-      }
-      footer={
-        <div className="flex items-center gap-2 text-sm justify-between">
+        </div>} footer={<div className="flex items-center gap-0 text-sm justify-between">
           <div className="flex items-center gap-2">
             <StatusDot color={statusColors[status]} />
             <SoaBraBadge>{date}</SoaBraBadge>
@@ -67,14 +61,10 @@ const ProjectCard = ({
             <SoaBraBadge className="w-[110px] justify-center">{owner}</SoaBraBadge>
             <SoaBraBadge>{value}</SoaBraBadge>
           </div>
-        </div>
-      }
-    >
+        </div>}>
       <p className="font-arabic text-right text-cyan-800 px-0 py-0 mx-px my-0">
         {description}
       </p>
-    </GenericCard>
-  );
+    </GenericCard>;
 };
-
 export default ProjectCard;
