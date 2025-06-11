@@ -11,7 +11,7 @@ const HeaderBar = () => {
     console.log('تم تحميل صورة الشعار بنجاح');
     setImageLoaded(true);
   };
-  return <header className="fixed top-0 right-0 left-0 h-[60px] bg-soabra-sidebar-bg z-header my-0 px-[25px] py-[65px]">
+  return <header className="fixed top-0 right-0 left-0 h-[60px] bg-soabra-sidebar-bg z-header my-0 py-[65px] px-px">
       <div className="flex items-center justify-between h-full px-[5px]">
         {/* Logo/Brand - Left Side aligned with sidebar menu */}
         <div className="text-right ml-4 mx-[5px] flex items-center">
