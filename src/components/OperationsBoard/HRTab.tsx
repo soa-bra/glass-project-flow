@@ -28,16 +28,25 @@ interface HRTabProps {
 
 const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
   if (loading || !data) {
-    return <div className="h-full flex items-center justify-center">جارٍ التحميل...</div>;
+    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-arabic font-medium text-right">الموارد البشرية</h2>
+    <div className="space-y-6 h-full">
+      <div className="text-right">
+        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">الموارد البشرية</h2>
+        <p className="text-gray-600 text-sm">إدارة الفريق والموظفين</p>
+      </div>
       
       <HRStatsCards stats={data.stats} />
-      <TeamFillProgress stats={{ active: data.stats.active, vacancies: data.stats.vacancies }} />
-      <ProjectDistribution distribution={data.distribution} />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TeamFillProgress stats={{ active: data.stats.active, vacancies: data.stats.vacancies }} />
+        <div className="lg:col-span-1">
+          <ProjectDistribution distribution={data.distribution} />
+        </div>
+      </div>
+      
       <AddMemberButton />
     </div>
   );

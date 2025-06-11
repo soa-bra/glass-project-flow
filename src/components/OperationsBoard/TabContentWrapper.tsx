@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
@@ -6,6 +7,7 @@ import LegalTab from './LegalTab';
 import HRTab from './HRTab';
 import { ClientsTab } from './ClientsTab';
 import { ReportsTab } from './ReportsTab';
+
 export const TabContentWrapper = ({
   tabData,
   loading
@@ -13,29 +15,31 @@ export const TabContentWrapper = ({
   tabData: any;
   loading: boolean;
 }) => {
-  return <>
-      <TabsContent value="overview" className="w-full h-full overflow-auto p-6 mx-0 py-0 px-[10px]">
+  return (
+    <>
+      <TabsContent value="overview" className="w-full h-full overflow-auto p-4 m-0 data-[state=active]:flex data-[state=active]:flex-col">
         <OverviewTab data={tabData.overview} loading={loading} />
       </TabsContent>
       
-      <TabsContent value="finance" className="w-full h-full overflow-auto p-6">
+      <TabsContent value="finance" className="w-full h-full overflow-auto p-4 m-0">
         <FinanceTab data={tabData.finance} loading={loading} />
       </TabsContent>
       
-      <TabsContent value="legal" className="w-full h-full overflow-auto p-6">
+      <TabsContent value="legal" className="w-full h-full overflow-auto p-4 m-0">
         <LegalTab data={tabData.legal} loading={loading} />
       </TabsContent>
       
-      <TabsContent value="hr" className="w-full h-full overflow-auto p-6">
+      <TabsContent value="hr" className="w-full h-full overflow-auto p-4 m-0">
         <HRTab data={tabData.hr} loading={loading} />
       </TabsContent>
       
-      <TabsContent value="clients" className="w-full h-full overflow-auto p-6">
+      <TabsContent value="clients" className="w-full h-full overflow-auto p-4 m-0">
         <ClientsTab data={tabData.clients} loading={loading} />
       </TabsContent>
       
-      <TabsContent value="reports" className="w-full h-full overflow-auto p-6">
+      <TabsContent value="reports" className="w-full h-full overflow-auto p-4 m-0">
         <ReportsTab data={tabData.reports} loading={loading} />
       </TabsContent>
-    </>;
+    </>
+  );
 };

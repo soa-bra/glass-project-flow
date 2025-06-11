@@ -28,12 +28,15 @@ interface ClientsTabProps {
 
 export const ClientsTab: React.FC<ClientsTabProps> = ({ data, loading }) => {
   if (loading || !data) {
-    return <div className="h-full flex items-center justify-center">جارٍ التحميل...</div>;
+    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-arabic font-medium text-right">العملاء</h2>
+    <div className="space-y-6 h-full">
+      <div className="text-right">
+        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">العملاء</h2>
+        <p className="text-gray-600 text-sm">إدارة العلاقات مع العملاء</p>
+      </div>
       
       <ActiveClientsList active={data.active} />
       <NPSScores nps={data.nps} />

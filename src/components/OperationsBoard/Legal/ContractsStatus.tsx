@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { BaseCard } from '@/components/ui/BaseCard';
 
 interface ContractCount {
   signed: number;
@@ -18,9 +19,14 @@ export const ContractsStatus: React.FC<ContractsStatusProps> = ({ contracts }) =
   const expiredPercentage = Math.round((contracts.expired / total) * 100);
 
   return (
-    <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out hover:bg-white/50">
-      <h3 className="text-xl font-arabic font-medium text-right mb-4">حالة العقود</h3>
-      
+    <BaseCard 
+      size="md"
+      header={
+        <h3 className="text-lg font-arabic font-bold text-gray-800">
+          حالة العقود
+        </h3>
+      }
+    >
       <div className="flex justify-between items-center my-4">
         <div className="text-center">
           <span className="block text-2xl font-bold text-blue-600">{contracts.signed}</span>
@@ -38,26 +44,26 @@ export const ContractsStatus: React.FC<ContractsStatusProps> = ({ contracts }) =
         </div>
       </div>
 
-      <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
+      <div className="relative h-4 bg-gray-200/50 rounded-full overflow-hidden">
         <div 
-          className="absolute h-full bg-blue-600 left-0" 
+          className="absolute h-full bg-blue-600 left-0 rounded-full" 
           style={{ width: `${signedPercentage}%` }}
         ></div>
         <div 
-          className="absolute h-full bg-amber-500" 
+          className="absolute h-full bg-amber-500 rounded-full" 
           style={{ width: `${pendingPercentage}%`, left: `${signedPercentage}%` }}
         ></div>
         <div 
-          className="absolute h-full bg-red-500" 
+          className="absolute h-full bg-red-500 rounded-full" 
           style={{ width: `${expiredPercentage}%`, left: `${signedPercentage + pendingPercentage}%` }}
         ></div>
       </div>
       
       <div className="flex justify-between text-xs mt-2">
-        <span className="text-blue-600">موقّعة</span>
-        <span className="text-amber-500">قيد المعالجة</span>
-        <span className="text-red-500">منتهية</span>
+        <span className="text-blue-600">{signedPercentage}%</span>
+        <span className="text-amber-500">{pendingPercentage}%</span>
+        <span className="text-red-500">{expiredPercentage}%</span>
       </div>
-    </div>
+    </BaseCard>
   );
 };
