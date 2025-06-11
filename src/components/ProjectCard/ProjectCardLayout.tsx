@@ -20,12 +20,7 @@ const ProjectCardLayout = ({
   status
 }: ProjectCardLayoutProps) => {
   return (
-    <div
-      className="w-full rounded-[40px] p-4 transition-all duration-200 ease-in-out"
-      style={{
-        backdropFilter: 'blur(20px)'
-      }}
-    >
+    <div className="w-full rounded-[40px] p-4 transition-all duration-200 ease-in-out">
       <div>
         {children}
       </div>
