@@ -12,27 +12,27 @@ export const TabContentWrapper = ({ tabData, loading }: { tabData: any; loading:
   return (
     <>
       <TabsContent value="overview" className="w-full h-full overflow-auto p-6">
-        <OverviewTab data={tabData} loading={loading} />
+        <OverviewTab data={tabData.overview} loading={loading} />
       </TabsContent>
       
       <TabsContent value="finance" className="w-full h-full overflow-auto p-6">
-        <FinanceTab data={tabData} loading={loading} />
+        <FinanceTab data={tabData.finance} loading={loading} />
       </TabsContent>
       
       <TabsContent value="legal" className="w-full h-full overflow-auto p-6">
-        <LegalTab data={tabData} loading={loading} />
+        <LegalTab data={tabData.legal} loading={loading} />
       </TabsContent>
       
       <TabsContent value="hr" className="w-full h-full overflow-auto p-6">
-        <HRTab data={tabData} loading={loading} />
+        <HRTab data={tabData.hr} loading={loading} />
       </TabsContent>
       
       <TabsContent value="clients" className="w-full h-full overflow-auto p-6">
-        <ClientsTab data={tabData} loading={loading} />
+        <ClientsTab data={tabData.clients} loading={loading} />
       </TabsContent>
       
       <TabsContent value="reports" className="w-full h-full overflow-auto p-6">
-        <ReportsTab data={tabData} loading={loading} />
+        <ReportsTab data={tabData.reports} loading={loading} />
       </TabsContent>
     </>
   );
