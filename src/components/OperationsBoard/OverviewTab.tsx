@@ -5,6 +5,11 @@ import { BudgetWidget } from './Overview/BudgetWidget';
 import { ContractsWidget } from './Overview/ContractsWidget';
 import { HRWidget } from './Overview/HRWidget';
 import { SatisfactionWidget } from './Overview/SatisfactionWidget';
+import { ExtraWidgetOne } from './Overview/ExtraWidgetOne';
+import { ExtraWidgetTwo } from './Overview/ExtraWidgetTwo';
+import { ExtraWidgetThree } from './Overview/ExtraWidgetThree';
+import { ExtraWidgetFour } from './Overview/ExtraWidgetFour';
+import { ExtraWidgetFive } from './Overview/ExtraWidgetFive';
 
 interface TimelineEvent {
   id: number;
@@ -50,14 +55,34 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   }
 
   return (
-    <div className="flex h-[40%] gap-2">
-      <TimelineSection timeline={data.timeline} />
+    <div className="flex flex-col h-full gap-2">
+      {/* الخط الزمني الأفقي في الأعلى - كامل العرض */}
+      <div className="w-full">
+        <TimelineSection timeline={data.timeline} />
+      </div>
 
-      <div className="flex-1 grid grid-cols-2 gap-2">
-        <BudgetWidget budget={data.widgets.budget} />
-        <ContractsWidget contracts={data.widgets.contracts} />
-        <HRWidget hr={data.widgets.hr} />
-        <SatisfactionWidget satisfaction={data.widgets.satisfaction} />
+      {/* التخطيط الجديد للبطاقات */}
+      <div className="flex-1 flex gap-2">
+        {/* البطاقات الأربع الأساسية في الوسط */}
+        <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-2">
+          <BudgetWidget budget={data.widgets.budget} />
+          <ContractsWidget contracts={data.widgets.contracts} />
+          <HRWidget hr={data.widgets.hr} />
+          <SatisfactionWidget satisfaction={data.widgets.satisfaction} />
+        </div>
+
+        {/* العمود الجديد - بطاقتان بالطول */}
+        <div className="w-64 flex flex-col gap-2">
+          <ExtraWidgetOne />
+          <ExtraWidgetTwo />
+        </div>
+      </div>
+
+      {/* الصف الجديد - ثلاث بطاقات بالعرض */}
+      <div className="w-full grid grid-cols-3 gap-2">
+        <ExtraWidgetThree />
+        <ExtraWidgetFour />
+        <ExtraWidgetFive />
       </div>
     </div>
   );

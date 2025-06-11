@@ -18,25 +18,40 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({
   timeline
 }) => {
   return (
-    <div className="w-1/4">
-      <GenericCard className="h-full">
-        <h3 className="text-lg font-arabic font-bold mb-4 text-right text-gray-800">المواعيد القادمة</h3>
-        
-        <div className="space-y-4">
-          {timeline.map((event, index) => (
-            <div key={event.id} className="flex items-start gap-2 text-right">
-              <div className="flex flex-col items-end flex-1">
-                <div className="flex items-center gap-1 mb-1">
-                  <span className="text-xs font-medium text-gray-600">{new Date(event.date).toLocaleDateString('ar-SA')}</span>
-                  <div className={`w-2 h-2 rounded-full ${event.color}`}></div>
-                </div>
-                <h4 className="text-sm font-bold text-gray-900 mb-0.5">{event.title}</h4>
-                <p className="text-xs text-gray-600">{event.department}</p>
+    <GenericCard className="w-full h-32">
+      <h3 className="text-lg font-arabic font-bold mb-4 text-right text-gray-800">المواعيد القادمة</h3>
+      
+      {/* الخط الزمني الأفقي */}
+      <div className="relative overflow-x-auto">
+        <div className="flex items-center gap-8 min-w-full pb-2">
+          {timeline.slice(0, 5).map((event, index) => (
+            <div key={event.id} className="flex flex-col items-center min-w-fit">
+              {/* التاريخ */}
+              <div className="text-xs text-gray-500 mb-2 whitespace-nowrap">
+                {new Date(event.date).toLocaleDateString('ar-SA', { month: 'short', day: 'numeric' })}
               </div>
+              
+              {/* النقطة الملونة */}
+              <div className={`w-3 h-3 rounded-full ${event.color} relative z-10 bg-white border-2`}></div>
+              
+              {/* العنوان والقسم */}
+              <div className="text-center mt-2">
+                <div className="text-sm font-medium text-gray-900 whitespace-nowrap mb-1">
+                  {event.title}
+                </div>
+                <div className="text-xs text-gray-600 whitespace-nowrap">
+                  {event.department}
+                </div>
+              </div>
+              
+              {/* الخط الواصل (إلا آخر عنصر) */}
+              {index < timeline.slice(0, 5).length - 1 && (
+                <div className="absolute top-8 h-0.5 bg-gray-300 w-8 translate-x-6"></div>
+              )}
             </div>
           ))}
         </div>
-      </GenericCard>
-    </div>
+      </div>
+    </GenericCard>
   );
 };
