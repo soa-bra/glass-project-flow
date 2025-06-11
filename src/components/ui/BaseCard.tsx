@@ -26,7 +26,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
 }) => {
   const variantClass = 
     variant === 'glass' 
-      ? 'glass-card hover-glow'
+      ? 'advanced-glass-card hover-glow-enhanced'
       : variant === 'gradient'
       ? `grad-${color}`
       : `flat-${color}`;
@@ -36,7 +36,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
 
   return (
     <div
-      className={`${variantClass} ${sizeClass} ${neonClass} p-4 flex flex-col gap-2 font-arabic transition-all duration-300 ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`${variantClass} ${sizeClass} ${neonClass} rounded-[24px] p-6 flex flex-col gap-3 font-arabic transition-all duration-500 ease-out ${onClick ? 'cursor-pointer' : ''} ${className}`}
       onClick={onClick}
     >
       {header && (
@@ -48,7 +48,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
         {children}
       </div>
       {footer && (
-        <div className="pt-2 border-t border-white/10 text-right">
+        <div className="pt-3 border-t border-white/20 text-right">
           {footer}
         </div>
       )}

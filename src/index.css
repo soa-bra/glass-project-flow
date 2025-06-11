@@ -229,89 +229,166 @@
   }
 }
 
-/* Glass + Neon Design System */
+/* Advanced Glass + Neon Design System */
 @layer utilities {
-  /* البطاقة الزجاجية الأساسية */
-  .glass-card {
-    @apply bg-white/40 backdrop-blur-[20px] border border-white/20
-           rounded-xl shadow-[0_4px_10px_rgba(0,0,0,.05)]
-           transition-all duration-300;
+  /* البطاقة الزجاجية المتقدمة - مطابقة للصورة */
+  .advanced-glass-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+    overflow: hidden;
   }
   
-  .hover-glow {
-    @apply hover:bg-white/50 hover:shadow-[0_6px_16px_rgba(0,0,0,.08)];
+  .advanced-glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      rgba(255, 255, 255, 0) 0%, 
+      rgba(255, 255, 255, 0.8) 50%, 
+      rgba(255, 255, 255, 0) 100%);
   }
   
-  /* مؤشرات النيون */
+  .hover-glow-enhanced {
+    @apply hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)] 
+           hover:border-white/40 
+           hover:bg-white/35
+           hover:scale-[1.02];
+  }
+  
+  /* مؤشرات النيون المحسنة */
   .neon-ring-success {
-    box-shadow: 0 0 0 3px #5DDC82 inset;
+    box-shadow: 
+      0 0 0 2px rgba(93, 220, 130, 0.4) inset,
+      0 0 20px rgba(93, 220, 130, 0.2);
   }
   
   .neon-ring-warning {
-    box-shadow: 0 0 0 3px #ECFF8C inset;
+    box-shadow: 
+      0 0 0 2px rgba(236, 255, 140, 0.4) inset,
+      0 0 20px rgba(236, 255, 140, 0.2);
   }
   
   .neon-ring-error {
-    box-shadow: 0 0 0 3px #F23D3D inset;
+    box-shadow: 
+      0 0 0 2px rgba(242, 61, 61, 0.4) inset,
+      0 0 20px rgba(242, 61, 61, 0.2);
   }
   
   .neon-ring-info {
-    box-shadow: 0 0 0 3px #9DCBFF inset;
+    box-shadow: 
+      0 0 0 2px rgba(157, 203, 255, 0.4) inset,
+      0 0 20px rgba(157, 203, 255, 0.2);
   }
   
-  /* بطاقات الانحدار */
+  /* بطاقات الانحدار المحسنة */
   .grad-pinkblue {
-    @apply bg-gradient-to-br from-pink-400/60 to-blue-400/60 text-white;
+    background: linear-gradient(135deg, 
+      rgba(236, 72, 153, 0.8) 0%, 
+      rgba(59, 130, 246, 0.8) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    box-shadow: 0 8px 32px rgba(147, 51, 234, 0.3);
   }
   
   .grad-orange {
-    @apply bg-gradient-to-br from-orange-400/70 to-yellow-300/70 text-white;
+    background: linear-gradient(135deg, 
+      rgba(251, 146, 60, 0.8) 0%, 
+      rgba(253, 224, 71, 0.8) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    box-shadow: 0 8px 32px rgba(251, 146, 60, 0.3);
   }
   
   .grad-success {
-    @apply bg-gradient-to-br from-green-400/70 to-emerald-300/70 text-white;
+    background: linear-gradient(135deg, 
+      rgba(34, 197, 94, 0.8) 0%, 
+      rgba(110, 231, 183, 0.8) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3);
   }
   
   .grad-warning {
-    @apply bg-gradient-to-br from-amber-400/70 to-yellow-300/70 text-white;
+    background: linear-gradient(135deg, 
+      rgba(245, 158, 11, 0.8) 0%, 
+      rgba(253, 224, 71, 0.8) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3);
   }
   
   .grad-info {
-    @apply bg-gradient-to-br from-blue-400/70 to-cyan-300/70 text-white;
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.8) 0%, 
+      rgba(103, 232, 249, 0.8) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
   }
   
-  /* البطاقات الصارخة */
+  /* البطاقات الصارخة المحسنة */
   .flat-crimson {
-    @apply bg-[#EF4444] text-white;
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+    color: white;
+    box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
   .flat-orange {
-    @apply bg-orange-500 text-white;
+    background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+    color: white;
+    box-shadow: 0 8px 32px rgba(249, 115, 22, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
   .flat-success {
-    @apply bg-green-500 text-white;
+    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+    color: white;
+    box-shadow: 0 8px 32px rgba(34, 197, 94, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
   .flat-warning {
-    @apply bg-amber-500 text-white;
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    color: white;
+    box-shadow: 0 8px 32px rgba(245, 158, 11, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
   .flat-info {
-    @apply bg-blue-500 text-white;
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    color: white;
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  /* أحجام البطاقات */
+  /* أحجام البطاقات المحسنة */
   .card-sm {
-    @apply h-20;
+    @apply min-h-[120px];
   }
   
   .card-md {
-    @apply h-32;
+    @apply min-h-[160px];
   }
   
   .card-lg {
-    @apply h-40;
+    @apply min-h-[200px];
   }
   
   /* Typography System */
