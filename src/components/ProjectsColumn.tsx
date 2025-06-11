@@ -127,11 +127,17 @@ const ProjectsColumn = () => {
              background: 'rgba(255, 255, 255, 0.4)',
              backdropFilter: 'blur(20px)'
            }}>
-        {/* المنطقة القابلة للتمرير داخل النافذة المدورة - تقليل الحشو */}
-        <div className="h-full overflow-y-auto overflow-x-hidden px-2 py-2 space-y-2">
-          {mockProjects.map(project => (
-            <ProjectCard key={project.id} {...project} />
-          ))}
+        {/* المنطقة القابلة للتمرير داخل النافذة المدورة - بدون خلفية وشريط تمرير فوق المحتوى */}
+        <div className="h-full overflow-y-auto overflow-x-hidden space-y-2 relative" 
+             style={{
+               scrollbarWidth: 'thin',
+               scrollbarColor: 'rgba(0, 153, 255, 0.3) transparent'
+             }}>
+          <div className="px-2 py-2 space-y-2">
+            {mockProjects.map(project => (
+              <ProjectCard key={project.id} {...project} />
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -21,7 +21,7 @@ const ProjectCardLayout = ({
 }: ProjectCardLayoutProps) => {
   return (
     <div
-      className="glass-enhanced rounded-[40px] p-2 w-full my-1 opacity-100 transition-all duration-200 ease-in-out"
+      className="glass-enhanced rounded-[40px] p-2 w-full opacity-100 transition-all duration-200 ease-in-out"
     >
       <div>
         {children}
