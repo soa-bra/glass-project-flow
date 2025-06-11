@@ -1,3 +1,4 @@
+
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 interface SidebarProps {
@@ -43,10 +44,10 @@ const Sidebar = ({
   return <aside style={{
     width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)'
   }} className="bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out mx-0 px-0">
-      <nav className="flex flex-col gap-2 my-0 py-0 px-0 mx-[15px]">
+      <nav className={`flex flex-col gap-2 my-0 py-0 px-0 transition-all duration-500 ease-in-out ${isCollapsed ? 'mx-[15px]' : 'mx-[15px]'}`}>
         {/* Menu Title Section with Toggle */}
         <div className="text-center mb-2 rounded-full mx-0 px-0 py-[10px] my-[20px]">
-          <div className={`flex items-center rounded-lg px-[3px] mx-[5px] my-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+          <div className={`flex items-center rounded-lg transition-all duration-500 ease-in-out ${isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[5px]'}`}>
             <div className={`flex-1 transition-all duration-500 ease-in-out ${isCollapsed ? 'opacity-0 translate-x-4 scale-95' : 'opacity-100 translate-x-0 scale-100'}`} style={{
             transitionDelay: isCollapsed ? '0ms' : '100ms'
           }}>
@@ -67,9 +68,9 @@ const Sidebar = ({
         const IconComponent = item.icon;
         const baseDelay = isCollapsed ? 0 : 150 + index * 50;
         return <button key={index} className={`
-                flex items-center gap-3 px-2 py-3 text-right transition-all duration-400 ease-in-out group relative
+                flex items-center gap-3 text-right transition-all duration-400 ease-in-out group relative
                 ${item.active ? 'bg-white/20 text-[#3e494c] font-medium rounded-full shadow-sm' : 'text-soabra-text-secondary hover:bg-white/10 hover:text-soabra-text-primary font-light rounded-full'}
-                ${isCollapsed ? 'justify-center px-0 py-3' : ''}
+                ${isCollapsed ? 'justify-center px-0 py-3' : 'px-2 py-3'}
                 hover:translate-y-[-2px] hover:shadow-md active:translate-y-0 active:scale-95
               `}>
               {/* Icon container with subtle hover effects */}
@@ -77,9 +78,7 @@ const Sidebar = ({
                   w-[60px] h-[60px] flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full
                   ${item.active ? 'bg-white/20 border-[#3e494c]/40' : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/50 group-hover:bg-white/5'}
                   group-hover:scale-105 group-active:scale-95
-                `} style={{
-            margin: isCollapsed ? '0 auto' : '0'
-          }}>
+                `}>
                 <IconComponent className={`
                     w-6 h-6 transition-all duration-300 ease-out
                     ${item.active ? 'text-[#3e494c]' : 'group-hover:text-[#3e494c]'}
