@@ -1,4 +1,3 @@
-
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 
@@ -112,36 +111,28 @@ const mockProjects = [{
   isOverBudget: false,
   hasOverdueTasks: false
 }];
-
 const ProjectsColumn = () => {
-  return (
-    <div className="w-full h-full flex flex-col">
+  return <div className="w-full h-full flex flex-col">
       {/* شريط الأدوات - خارج النافذة المدورة */}
       <div className="px-4 py-2">
         <ProjectsToolbar />
       </div>
       
       {/* النافذة المدورة للمشاريع */}
-      <div className="flex-1 mx-4 mb-4 rounded-3xl overflow-hidden" 
-           style={{
-             background: 'rgba(255, 255, 255, 0.4)',
-             backdropFilter: 'blur(20px)'
-           }}>
+      <div style={{
+      background: 'rgba(255, 255, 255, 0.4)',
+      backdropFilter: 'blur(20px)'
+    }} className="flex-1 mb-4 rounded-3xl overflow-hidden mx-[10px]">
         {/* المنطقة القابلة للتمرير داخل النافذة المدورة - بدون خلفية وشريط تمرير فوق المحتوى */}
-        <div className="h-full overflow-y-auto overflow-x-hidden space-y-2 relative" 
-             style={{
-               scrollbarWidth: 'thin',
-               scrollbarColor: 'rgba(0, 153, 255, 0.3) transparent'
-             }}>
-          <div className="px-2 py-2 space-y-2">
-            {mockProjects.map(project => (
-              <ProjectCard key={project.id} {...project} />
-            ))}
+        <div className="h-full overflow-y-auto overflow-x-hidden space-y-2 relative" style={{
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'rgba(0, 153, 255, 0.3) transparent'
+      }}>
+          <div className="py-2 space-y-2 px-0">
+            {mockProjects.map(project => <ProjectCard key={project.id} {...project} />)}
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ProjectsColumn;
