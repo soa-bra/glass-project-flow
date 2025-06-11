@@ -127,8 +127,8 @@ const ProjectsColumn = () => {
              background: 'rgba(255, 255, 255, 0.4)',
              backdropFilter: 'blur(20px)'
            }}>
-        {/* المنطقة القابلة للتمرير داخل النافذة المدورة */}
-        <div className="h-full overflow-y-auto overflow-x-hidden p-4 space-y-2">
+        {/* المنطقة القابلة للتمرير داخل النافذة المدورة - تقليل الحشو */}
+        <div className="h-full overflow-y-auto overflow-x-hidden px-2 py-2 space-y-2">
           {mockProjects.map(project => (
             <ProjectCard key={project.id} {...project} />
           ))}
