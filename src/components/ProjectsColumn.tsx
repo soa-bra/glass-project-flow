@@ -111,8 +111,7 @@ const mockProjects = [{
   hasOverdueTasks: false
 }];
 const ProjectsColumn = () => {
-  return (
-    <div className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl bg-soabra-projects-bg">
+  return <div className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl bg-soabra-projects-bg mx-0">
       {/* شريط الأدوات ثابت في الأعلى */}
       <div className="flex-shrink-0 px-4 pt-4">
         <ProjectsToolbar />
@@ -121,13 +120,11 @@ const ProjectsColumn = () => {
       {/* منطقة التمرير للمشاريع مع تأثير النافذة الدائرية */}
       <div className="flex-1 overflow-hidden rounded-t-3xl">
         <ScrollArea className="h-full w-full">
-          <div className="space-y-2 pb-4 px-0 mx-[15px]">
+          <div className="space-y-2 pb-4 px-0 mx-[15px] rounded-full">
             {mockProjects.map(project => <ProjectCard key={project.id} {...project} />)}
           </div>
         </ScrollArea>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ProjectsColumn;
