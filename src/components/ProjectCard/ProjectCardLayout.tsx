@@ -7,7 +7,6 @@ interface ProjectCardLayoutProps {
   isSelected?: boolean;
   isOtherSelected?: boolean;
   onProjectSelect?: (projectId: string) => void;
-  status: 'success' | 'warning' | 'error' | 'info';
 }
 
 const ProjectCardLayout = ({

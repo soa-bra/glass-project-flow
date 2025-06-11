@@ -26,7 +26,7 @@ interface HRTabProps {
   loading: boolean;
 }
 
-export const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
+const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
   if (loading || !data) {
     return <div className="h-full flex items-center justify-center">جارٍ التحميل...</div>;
   }
@@ -42,3 +42,5 @@ export const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
     </div>
   );
 };
+
+export default HRTab;

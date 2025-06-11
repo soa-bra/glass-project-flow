@@ -27,7 +27,7 @@ interface LegalTabProps {
   loading: boolean;
 }
 
-export const LegalTab: React.FC<LegalTabProps> = ({ data, loading }) => {
+const LegalTab: React.FC<LegalTabProps> = ({ data, loading }) => {
   if (loading || !data) {
     return <div className="h-full flex items-center justify-center">جارٍ التحميل...</div>;
   }
@@ -42,3 +42,5 @@ export const LegalTab: React.FC<LegalTabProps> = ({ data, loading }) => {
     </div>
   );
 };
+
+export default LegalTab;

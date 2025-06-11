@@ -1,4 +1,3 @@
-
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 
@@ -127,7 +126,7 @@ const ProjectsColumn = () => {
     <div className="w-full h-full flex flex-col overflow-hidden px-0 py-0">
       <ProjectsToolbar />
       
-      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mt-4 my-[20px]">
+      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mt-4">
         {mockProjects.map(project => (
           <ProjectCard key={project.id} {...project} />
         ))}
