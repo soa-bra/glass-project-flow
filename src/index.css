@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -24,20 +23,20 @@
     --header-height: 60px;
     --sidebar-top-offset: 137px;
     
-    /* RTL Layout Variables - تقليل الهوامش إلى النصف */
+    /* RTL Layout Variables - تقليل الهوامش لتطابق هامش أيقونة الإعدادات */
     /* القائمة - أقصى اليمين */
-    --sidebar-right: 20px;
+    --sidebar-right: 8px;
     
     /* عامود المشاريع - في الوسط مع مسافة مقللة */
-    --projects-right-expanded: calc(var(--sidebar-width-expanded) + 20px);
-    --projects-right-collapsed: calc(var(--sidebar-width-collapsed) + 20px);
+    --projects-right-expanded: calc(var(--sidebar-width-expanded) + 8px);
+    --projects-right-collapsed: calc(var(--sidebar-width-collapsed) + 8px);
     --projects-width: 480px;
     
     /* لوحة التشغيل - أقصى اليسار مع مسافة مقللة */
-    --operations-right-expanded: calc(var(--projects-right-expanded) + var(--projects-width) + 10px);
-    --operations-right-collapsed: calc(var(--projects-right-collapsed) + var(--projects-width) + 10px);
-    --operations-width-expanded: calc(100vw - var(--operations-right-expanded) - 20px);
-    --operations-width-collapsed: calc(100vw - var(--operations-right-collapsed) - 20px);
+    --operations-right-expanded: calc(var(--projects-right-expanded) + var(--projects-width) + 8px);
+    --operations-right-collapsed: calc(var(--projects-right-collapsed) + var(--projects-width) + 8px);
+    --operations-width-expanded: calc(100vw - var(--operations-right-expanded) - 8px);
+    --operations-width-collapsed: calc(100vw - var(--operations-right-collapsed) - 8px);
     
     /* Project Details Layout Variables */
     --project-details-width-expanded: var(--operations-width-expanded);
