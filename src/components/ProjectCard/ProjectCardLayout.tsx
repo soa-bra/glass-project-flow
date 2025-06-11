@@ -21,7 +21,11 @@ const ProjectCardLayout = ({
 }: ProjectCardLayoutProps) => {
   return (
     <div
-      className="glass-enhanced rounded-[40px] p-2 w-full opacity-100 transition-all duration-200 ease-in-out"
+      className="w-full rounded-[40px] p-4 transition-all duration-200 ease-in-out"
+      style={{
+        background: 'rgba(255, 255, 255, 0.4)',
+        backdropFilter: 'blur(20px)'
+      }}
     >
       <div>
         {children}
