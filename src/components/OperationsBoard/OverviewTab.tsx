@@ -9,7 +9,6 @@ import { ExtraWidgetTwo } from './Overview/ExtraWidgetTwo';
 import { ExtraWidgetThree } from './Overview/ExtraWidgetThree';
 import { ExtraWidgetFour } from './Overview/ExtraWidgetFour';
 import { ExtraWidgetFive } from './Overview/ExtraWidgetFive';
-
 interface TimelineEvent {
   id: number;
   date: string;
@@ -17,7 +16,6 @@ interface TimelineEvent {
   department: string;
   color: string;
 }
-
 interface WidgetsData {
   budget: {
     total: number;
@@ -34,59 +32,49 @@ interface WidgetsData {
   };
   satisfaction: number;
 }
-
 interface OverviewData {
   timeline: TimelineEvent[];
   widgets: WidgetsData;
 }
-
 interface OverviewTabProps {
   data?: OverviewData;
   loading: boolean;
 }
-
 export const OverviewTab: React.FC<OverviewTabProps> = ({
   data,
   loading
 }) => {
   if (loading || !data) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-lg font-arabic text-[#3e494c]/70">جارٍ التحميل...</div>
-      </div>
-    );
+    return <div className="h-full flex items-center justify-center">جارٍ التحميل...</div>;
   }
-
-  return (
-    <div className="flex flex-col h-full gap-4 p-2">
-      {/* الخط الزمني في الأعلى */}
+  return <div className="flex flex-col h-full gap-2">
+      {/* الخط الزمني الأفقي في الأعلى - كامل العرض */}
       <div className="w-full">
         <TimelineSection timeline={data.timeline} />
       </div>
 
-      {/* التخطيط الرئيسي للبطاقات */}
-      <div className="flex-1 flex gap-4">
+      {/* التخطيط الجديد للبطاقات */}
+      <div className="flex-1 flex gap-2 my-[155px] py-[179px]">
         {/* البطاقات الأربع الأساسية في الوسط */}
-        <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-4">
+        <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-2 px-0 mx-0 py-0 my-[66px]">
           <BudgetWidget budget={data.widgets.budget} />
           <ContractsWidget contracts={data.widgets.contracts} />
           <HRWidget hr={data.widgets.hr} />
           <SatisfactionWidget satisfaction={data.widgets.satisfaction} />
         </div>
 
-        {/* العمود الجانبي - بطاقتان طوليتان */}
-        <div className="w-64 flex flex-col gap-4">
+        {/* العمود الجديد - بطاقتان بالطول */}
+        <div className="w-64 flex flex-col gap-2 my-[65px]">
           <ExtraWidgetOne />
           <ExtraWidgetTwo />
         </div>
       </div>
 
-      {/* الصف السفلي - ثلاث بطاقات عرضية */}
-      <div className="w-full grid grid-cols-3 gap-4 h-20">
+      {/* الصف الجديد - ثلاث بطاقات بالعرض */}
+      <div className="w-full grid grid-cols-3 gap-2">
         <ExtraWidgetThree />
         <ExtraWidgetFour />
         <ExtraWidgetFive />
       </div>
-    </div>
-  );
+    </div>;
 };
