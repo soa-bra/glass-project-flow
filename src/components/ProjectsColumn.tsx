@@ -112,26 +112,13 @@ const mockProjects = [{
   hasOverdueTasks: false
 }];
 const ProjectsColumn = () => {
-  return <div className="w-full h-full flex flex-col">
-      {/* شريط الأدوات - خارج النافذة المدورة */}
-      <div className="px-4 py-2">
-        <ProjectsToolbar />
-      </div>
+  return <div className="w-full h-full flex flex-col overflow-hidden px-0 py-0">
+      {/* شريط الأدوات */}
+      <ProjectsToolbar />
       
-      {/* النافذة المدورة للمشاريع */}
-      <div style={{
-      background: 'rgba(255, 255, 255, 0.4)',
-      backdropFilter: 'blur(20px)'
-    }} className="flex-1 mb-4 rounded-3xl overflow-hidden mx-[10px]">
-        {/* المنطقة القابلة للتمرير داخل النافذة المدورة - بدون خلفية وشريط تمرير فوق المحتوى */}
-        <div className="h-full overflow-y-auto overflow-x-hidden space-y-2 relative" style={{
-        scrollbarWidth: 'thin',
-        scrollbarColor: 'rgba(0, 153, 255, 0.3) transparent'
-      }}>
-          <div className="py-2 space-y-2 px-0">
-            {mockProjects.map(project => <ProjectCard key={project.id} {...project} />)}
-          </div>
-        </div>
+      {/* قائمة المشاريع - تمتد حتى نهاية الصفحة */}
+      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden mt-4l my-[20px]">
+        {mockProjects.map(project => <ProjectCard key={project.id} {...project} />)}
       </div>
     </div>;
 };
