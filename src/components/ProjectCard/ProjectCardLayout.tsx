@@ -11,54 +11,19 @@ const statusColors = {
 interface ProjectCardLayoutProps {
   children: ReactNode;
   id: string;
-  isSelected?: boolean;
-  isOtherSelected?: boolean;
-  onProjectSelect?: (projectId: string) => void;
   status: 'success' | 'warning' | 'error' | 'info';
 }
 
 const ProjectCardLayout = ({
   children,
   id,
-  isSelected = false,
-  isOtherSelected = false,
-  onProjectSelect,
   status
 }: ProjectCardLayoutProps) => {
-  const handleClick = (event: React.MouseEvent) => {
-    // منع انتشار الحدث لمكونات أخرى
-    event.stopPropagation();
-    
-    if (onProjectSelect) {
-      onProjectSelect(id);
-    }
-  };
-
-  const getCardStyles = () => {
-    if (isSelected) {
-      return {
-        transform: 'scale(1.02)'
-      };
-    }
-    return {};
-  };
-
   return (
     <div
-      onClick={handleClick}
-      style={getCardStyles()}
-      className={`
-        glass-enhanced rounded-[40px] p-2 mx-0 my-1 cursor-pointer
-        transition-all duration-200 ease-in-out
-        ${isSelected 
-          ? 'opacity-100' 
-          : isOtherSelected 
-            ? 'opacity-25 shadow-sm' 
-            : 'opacity-100 shadow-sm hover:shadow-md'
-        }
-      `}
+      className="glass-enhanced rounded-[40px] p-2 w-full my-1 opacity-100 transition-all duration-200 ease-in-out"
     >
-      <div className="pointer-events-none">
+      <div>
         {children}
       </div>
     </div>
