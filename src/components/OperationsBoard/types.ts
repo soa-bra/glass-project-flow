@@ -1,5 +1,4 @@
 
-// نوع لبيانات التبويب
 export type TabData = {
   [key: string]: any;
 };

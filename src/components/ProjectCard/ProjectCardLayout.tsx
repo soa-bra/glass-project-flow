@@ -1,13 +1,6 @@
 
 import { ReactNode } from 'react';
 
-const statusColors = {
-  success: '#00bb88',
-  warning: '#ffb500',
-  error: '#f4767f',
-  info: '#2f6ead'
-};
-
 interface ProjectCardLayoutProps {
   children: ReactNode;
   id: string;
@@ -23,10 +16,8 @@ const ProjectCardLayout = ({
   isSelected = false,
   isOtherSelected = false,
   onProjectSelect,
-  status
 }: ProjectCardLayoutProps) => {
   const handleClick = (event: React.MouseEvent) => {
-    // منع انتشار الحدث لمكونات أخرى
     event.stopPropagation();
     
     if (onProjectSelect) {
