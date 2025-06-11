@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { GenericCard } from '@/components/ui/GenericCard';
 
 interface SatisfactionWidgetProps {
   satisfaction: number;
@@ -7,7 +8,7 @@ interface SatisfactionWidgetProps {
 
 export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfaction }) => {
   return (
-    <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out hover:bg-white/50">
+    <GenericCard>
       <h3 className="text-lg font-arabic font-medium mb-4 text-right">مؤشر رضا العملاء</h3>
       
       <div className="flex flex-col items-center justify-center mt-2">
@@ -42,6 +43,6 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfac
           </p>
         </div>
       </div>
-    </div>
+    </GenericCard>
   );
 };

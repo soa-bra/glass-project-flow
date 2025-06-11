@@ -1,17 +1,23 @@
+
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
+import { GenericCard } from '@/components/ui/GenericCard';
+
 interface HRData {
   members: number;
   vacancies: number;
   onLeave: number;
 }
+
 interface HRWidgetProps {
   hr: HRData;
 }
+
 export const HRWidget: React.FC<HRWidgetProps> = ({
   hr
 }) => {
-  return <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out hover:bg-white/50 px-[25px] mx-0">
+  return (
+    <GenericCard>
       <h3 className="text-lg font-arabic font-medium mb-4 text-right">الموارد البشرية</h3>
       
       <div className="flex justify-between mt-4">
@@ -34,5 +40,6 @@ export const HRWidget: React.FC<HRWidgetProps> = ({
       <div className="mt-4">
         <Progress value={hr.members / (hr.members + hr.vacancies) * 100} className="h-2 bg-gray-200" indicatorClassName="bg-blue-500" />
       </div>
-    </div>;
+    </GenericCard>
+  );
 };
