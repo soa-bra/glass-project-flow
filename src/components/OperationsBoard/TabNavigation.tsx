@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TabItem } from './types';
 interface TabNavigationProps {
@@ -11,7 +10,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
-  return <div className="border-b border-gray-200/30 h-[120px] flex items-center px-0">
+  return <div className="border-b border-gray-200/30 h-[120px] flex items-center px-0 rounded-md">
       <div className="w-full flex items-center gap-0 overflow-x-auto">
         {tabItems.map(item => {
         return <button key={item.value} onClick={() => onTabChange(item.value)} className="flex items-center justify-center px-2.5 py-2.5 transition-all duration-400 ease-in-out group relative min-w-fit">
