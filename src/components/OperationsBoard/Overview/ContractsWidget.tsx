@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
+import GenericCard from '@/components/ui/GenericCard';
 
 interface ContractsData {
   signed: number;
@@ -13,9 +14,11 @@ interface ContractsWidgetProps {
 
 export const ContractsWidget: React.FC<ContractsWidgetProps> = ({ contracts }) => {
   return (
-    <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out hover:bg-white/50">
-      <h3 className="text-lg font-arabic font-medium mb-4 text-right">حالة العقود</h3>
-      
+    <GenericCard
+      header={
+        <h3 className="text-lg font-arabic font-medium text-right">حالة العقود</h3>
+      }
+    >
       <div className="flex flex-col items-center mt-6">
         <div className="flex w-full justify-between mb-4">
           <div className="text-center">
@@ -37,6 +40,6 @@ export const ContractsWidget: React.FC<ContractsWidgetProps> = ({ contracts }) =
           indicatorClassName="bg-blue-500"
         />
       </div>
-    </div>
+    </GenericCard>
   );
 };

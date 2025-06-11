@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
+import GenericCard from '@/components/ui/GenericCard';
 
 interface BudgetData {
   total: number;
@@ -17,9 +18,11 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({ budget }) => {
   };
 
   return (
-    <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out hover:bg-white/50">
-      <h3 className="text-lg font-arabic font-medium mb-4 text-right">الميزانية والمصروفات</h3>
-      
+    <GenericCard
+      header={
+        <h3 className="text-lg font-arabic font-medium text-right">الميزانية والمصروفات</h3>
+      }
+    >
       <div className="space-y-4">
         <div>
           <div className="flex justify-between mb-1">
@@ -44,6 +47,6 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({ budget }) => {
           />
         </div>
       </div>
-    </div>
+    </GenericCard>
   );
 };

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import GenericCard from '@/components/ui/GenericCard';
 
 interface ProjectDistribution {
   project: string;
@@ -18,7 +19,7 @@ export const ProjectDistribution: React.FC<ProjectDistributionProps> = ({ distri
     <div>
       <h3 className="text-xl font-arabic font-medium text-right mb-4">توزيع الأعضاء على المشاريع</h3>
       
-      <div className="glass-enhanced rounded-[40px] p-6 space-y-4 transition-all duration-200 ease-in-out">
+      <GenericCard className="space-y-4">
         {sortedDistribution.map((item, index) => (
           <div key={index}>
             <div className="flex justify-between items-center mb-1">
@@ -33,7 +34,7 @@ export const ProjectDistribution: React.FC<ProjectDistributionProps> = ({ distri
             </div>
           </div>
         ))}
-      </div>
+      </GenericCard>
     </div>
   );
 };

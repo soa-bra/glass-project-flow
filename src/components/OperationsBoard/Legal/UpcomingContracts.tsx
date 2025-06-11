@@ -1,5 +1,6 @@
 
 import React from 'react';
+import GenericCard from '@/components/ui/GenericCard';
 
 interface UpcomingContract {
   id: number;
@@ -22,10 +23,7 @@ export const UpcomingContracts: React.FC<UpcomingContractsProps> = ({ upcoming }
           const daysLeft = Math.ceil((new Date(contract.date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
           
           return (
-            <div 
-              key={contract.id} 
-              className="glass-enhanced rounded-[40px] p-4 transition-all duration-200 ease-in-out hover:bg-white/50"
-            >
+            <GenericCard key={contract.id}>
               <div className="flex justify-between items-center">
                 <div className="text-center bg-gray-100 rounded-full py-1 px-3 text-sm">
                   <span className={`font-bold ${daysLeft < 10 ? 'text-red-500' : 'text-blue-600'}`}>
@@ -39,7 +37,7 @@ export const UpcomingContracts: React.FC<UpcomingContractsProps> = ({ upcoming }
                   <p className="text-xs text-gray-500 mt-1">{new Date(contract.date).toLocaleDateString('ar-SA')}</p>
                 </div>
               </div>
-            </div>
+            </GenericCard>
           );
         })}
       </div>

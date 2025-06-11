@@ -1,5 +1,6 @@
 
 import React from 'react';
+import GenericCard from '@/components/ui/GenericCard';
 
 interface OverBudgetProject {
   id: number;
@@ -17,7 +18,7 @@ export const OverBudgetAlert: React.FC<OverBudgetAlertProps> = ({ overBudget }) 
       <h3 className="text-xl font-arabic font-medium text-right mb-4">المشاريع التي تجاوزت 80% من الميزانية</h3>
       
       {overBudget.length > 0 ? (
-        <div className="glass-enhanced rounded-[40px] p-4 transition-all duration-200 ease-in-out">
+        <GenericCard>
           <ul className="space-y-3">
             {overBudget.map(project => (
               <li key={project.id} className="border-b border-gray-200 pb-2 last:border-0 last:pb-0">
@@ -28,7 +29,7 @@ export const OverBudgetAlert: React.FC<OverBudgetAlertProps> = ({ overBudget }) 
               </li>
             ))}
           </ul>
-        </div>
+        </GenericCard>
       ) : (
         <p className="text-center text-gray-500">لا توجد مشاريع تجاوزت 80% من الميزانية</p>
       )}

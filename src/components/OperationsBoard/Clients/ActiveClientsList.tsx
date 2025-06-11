@@ -1,5 +1,6 @@
 
 import React from 'react';
+import GenericCard from '@/components/ui/GenericCard';
 
 interface ActiveClient {
   id: number;
@@ -16,7 +17,7 @@ export const ActiveClientsList: React.FC<ActiveClientsListProps> = ({ active }) 
     <div>
       <h3 className="text-xl font-arabic font-medium text-right mb-4">العملاء النشطين</h3>
       
-      <div className="glass-enhanced rounded-[40px] p-4 transition-all duration-200 ease-in-out">
+      <GenericCard>
         <ul className="space-y-2">
           {active.map(client => (
             <li key={client.id} className="border-b border-gray-200/60 last:border-0 pb-2 last:pb-0">
@@ -29,7 +30,7 @@ export const ActiveClientsList: React.FC<ActiveClientsListProps> = ({ active }) 
             </li>
           ))}
         </ul>
-      </div>
+      </GenericCard>
     </div>
   );
 };
