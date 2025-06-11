@@ -1,4 +1,3 @@
-
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 interface SidebarProps {
@@ -43,7 +42,7 @@ const Sidebar = ({
   }, [isCollapsed, onToggle]);
   return <aside style={{
     width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)'
-  }} className="bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out mx-0 px-0">
+  }} className="bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl transition-all duration-500 ease-in-out mx-0 px-px">
       <nav className={`flex flex-col gap-2 my-0 py-0 px-0 transition-all duration-500 ease-in-out ${isCollapsed ? 'mx-[15px]' : 'mx-[15px]'}`}>
         {/* Menu Title Section with Toggle */}
         <div className="text-center mb-2 rounded-full mx-0 px-0 py-[10px] my-[20px]">
