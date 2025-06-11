@@ -8,11 +8,11 @@ interface SatisfactionWidgetProps {
 
 export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfaction }) => {
   return (
-    <GenericCard className="h-full">
-      <h3 className="text-lg font-arabic font-bold mb-4 text-right text-gray-800">مؤشر رضا العملاء</h3>
+    <GenericCard className="h-24">
+      <h3 className="text-sm font-arabic font-bold mb-2 text-right text-gray-800">مؤشر رضا العملاء</h3>
       
       <div className="flex flex-col items-center justify-center">
-        <div className="relative w-24 h-24 mb-3">
+        <div className="relative w-16 h-16 mb-1">
           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
             {/* Background circle */}
             <path
@@ -32,7 +32,7 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfac
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-xl font-bold text-gray-900">{satisfaction}%</span>
+            <span className="text-sm font-bold text-gray-900">{satisfaction}%</span>
           </div>
         </div>
         <div className="text-center">

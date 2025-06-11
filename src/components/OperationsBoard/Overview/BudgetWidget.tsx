@@ -20,30 +20,30 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({ budget }) => {
   const percentage = Math.round((budget.spent / budget.total) * 100);
 
   return (
-    <GenericCard className="h-full">
-      <h3 className="text-lg font-arabic font-bold mb-4 text-right text-gray-800">الميزانية والمصروفات</h3>
+    <GenericCard className="h-24">
+      <h3 className="text-sm font-arabic font-bold mb-2 text-right text-gray-800">الميزانية والمصروفات</h3>
       
-      <div className="space-y-4">
+      <div className="space-y-2">
         <div className="text-right">
           <div className="mb-1">
             <span className="text-xs text-gray-600">الميزانية الإجمالية</span>
           </div>
-          <div className="text-base font-bold text-gray-900 mb-2">
+          <div className="text-sm font-bold text-gray-900 mb-1">
             {formatNumber(budget.total)}.... ريال
           </div>
-          <Progress value={100} className="h-2 bg-blue-100" indicatorClassName="bg-blue-500" />
+          <Progress value={100} className="h-1 bg-blue-100" indicatorClassName="bg-blue-500" />
         </div>
 
         <div className="text-right">
           <div className="mb-1">
             <span className="text-xs text-gray-600">المصروفات</span>
           </div>
-          <div className="text-base font-bold text-gray-900 mb-2">
+          <div className="text-sm font-bold text-gray-900 mb-1">
             {formatNumber(budget.spent)}.... ريال ({percentage}%)
           </div>
           <Progress 
             value={percentage} 
-            className="h-2 bg-green-100"
+            className="h-1 bg-green-100"
             indicatorClassName="bg-green-500"
           />
         </div>
