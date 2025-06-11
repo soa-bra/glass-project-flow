@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TabItem } from './types';
 interface TabNavigationProps {
@@ -16,7 +17,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
         return <button key={item.value} onClick={() => onTabChange(item.value)} className="flex items-center justify-center px-2.5 py-2.5 transition-all duration-400 ease-in-out group relative min-w-fit">
               {/* إطار النص مع التأثيرات اللونية داخل الحدود */}
               <div className={`
-                min-w-[120px] h-[60px] flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full relative overflow-hidden
+                min-w-[120px] h-[50px] flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0 border-2 rounded-full relative overflow-hidden
                 ${activeTab === item.value ? 'border-[#3e494c]/40 bg-white/30' : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/50'}
                 group-hover:scale-105 group-active:scale-95
               `}>
