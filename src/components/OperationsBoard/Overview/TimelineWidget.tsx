@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface TimelineEvent {
@@ -20,6 +20,9 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
   className = '' 
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   const scroll = (direction: number) => {
     if (scrollRef.current) {
@@ -33,6 +36,37 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
   const openEvent = (event: TimelineEvent) => {
     console.log('فتح الحدث:', event);
     // يمكن إضافة modal أو popover هنا
+  };
+
+  // إضافة وظائف السحب بالماوس
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+    scrollRef.current.style.cursor = 'grabbing';
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+    if (scrollRef.current) {
+      scrollRef.current.style.cursor = 'grab';
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    if (scrollRef.current) {
+      scrollRef.current.style.cursor = 'grab';
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
   };
 
   return (
@@ -67,60 +101,56 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
         </div>
       </header>
 
-      {/* خط الزمن القابل للتمرير */}
+      {/* خط الزمن المستمر القابل للتمرير والسحب */}
       <div className="flex-1 relative overflow-hidden">
         <div
           ref={scrollRef}
           className="
             overflow-x-auto scrollbar-hide
             cursor-grab active:cursor-grabbing select-none
-            h-full flex items-center
+            h-full flex items-center relative
           "
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
         >
-          <ul className="flex items-center gap-12 py-6 px-4">
+          {/* الخط الزمني المستمر */}
+          <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-200 via-purple-200 to-green-200 rounded-full transform -translate-y-1/2 z-0"></div>
+          
+          {/* الأحداث */}
+          <div className="flex items-center gap-24 py-6 px-8 relative z-10">
             {timeline.map((event, index) => (
-              <li key={event.id} className="relative flex flex-col items-center min-w-fit">
+              <div key={event.id} className="relative flex flex-col items-center min-w-fit">
                 
                 {/* التاريخ */}
-                <span className="text-xs text-gray-600 mb-3 whitespace-nowrap font-medium">
+                <span className="text-xs text-gray-600 mb-4 whitespace-nowrap font-medium bg-white/60 px-2 py-1 rounded-full backdrop-blur-sm">
                   {new Date(event.date).toLocaleDateString('ar-SA', { 
                     month: 'short', 
                     day: 'numeric' 
                   })}
                 </span>
 
-                {/* النقطة التفاعلية مع الخط */}
-                <div className="relative flex items-center">
-                  {/* خط للنقطة السابقة */}
-                  {index > 0 && (
-                    <div className="absolute right-full h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 w-12 rounded-full"></div>
-                  )}
-                  
-                  <button
-                    className="w-5 h-5 rounded-full border-2 border-white shadow-md transition-all duration-200 hover:scale-110 relative z-10 hover:shadow-lg"
-                    style={{ backgroundColor: event.color }}
-                    onClick={() => openEvent(event)}
-                  />
-                  
-                  {/* خط للنقطة التالية */}
-                  {index < timeline.length - 1 && (
-                    <div className="absolute left-full h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 w-12 rounded-full"></div>
-                  )}
-                </div>
+                {/* النقطة التفاعلية */}
+                <button
+                  className="w-6 h-6 rounded-full border-3 border-white shadow-lg transition-all duration-200 hover:scale-125 relative z-20 hover:shadow-xl ring-2 ring-white/50"
+                  style={{ backgroundColor: event.color }}
+                  onClick={() => openEvent(event)}
+                />
 
                 {/* تفاصيل الحدث */}
-                <div className="text-center mt-3 max-w-28">
-                  <div className="text-xs font-semibold text-gray-900 whitespace-nowrap mb-1">
+                <div className="text-center mt-4 max-w-32">
+                  <div className="text-sm font-semibold text-gray-900 whitespace-nowrap mb-1 bg-white/60 px-2 py-1 rounded-lg backdrop-blur-sm">
                     {event.title}
                   </div>
-                  <div className="text-xs text-gray-600 whitespace-nowrap opacity-75">
+                  <div className="text-xs text-gray-600 whitespace-nowrap opacity-75 bg-white/40 px-2 py-0.5 rounded-full backdrop-blur-sm">
                     {event.department}
                   </div>
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </div>
