@@ -13,7 +13,7 @@ export const ExtraWidgetFour: React.FC = () => {
           إحصائية 4
         </h3>
       }
-      className="h-[120px]"
+      className="h-[180px]"
     >
       <div className="flex-1 flex items-center justify-between">
         <div className="text-lg font-bold text-orange-600">67</div>

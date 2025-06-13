@@ -12,7 +12,7 @@ export const ExtraWidgetTwo: React.FC = () => {
           إحصائية إضافية 2
         </h3>
       }
-      className="h-[120px]"
+      className="h-[180px]"
     >
       <div className="flex-1 flex flex-col items-center justify-center">
         <div className="text-2xl font-bold text-green-600 mb-1">78%</div>
