@@ -1,5 +1,5 @@
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface TimelineEvent {
@@ -38,65 +38,50 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
     // يمكن إضافة modal أو popover هنا
   };
 
-  // تصحيح وظائف السحب الأفقي فقط
-  const handleMouseDown = (e: React.MouseEvent) => {
+  // نظام السحب المحسن باستخدام Pointer Events
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
     if (!scrollRef.current) return;
+    
+    // التقاط المؤشر لضمان تتبع الحركة حتى خارج العنصر
+    (e.target as Element).setPointerCapture(e.pointerId);
+    
     setIsDragging(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setStartX(e.clientX);
     setScrollLeft(scrollRef.current.scrollLeft);
     scrollRef.current.style.cursor = 'grabbing';
-    e.preventDefault(); // منع السلوك الافتراضي
-  };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-    if (scrollRef.current) {
-      scrollRef.current.style.cursor = 'grab';
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    if (scrollRef.current) {
-      scrollRef.current.style.cursor = 'grab';
-    }
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !scrollRef.current) return;
+    
+    // منع السلوك الافتراضي والتمرير العمودي
     e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // السحب الأفقي فقط
-    scrollRef.current.scrollLeft = scrollLeft - walk;
-  };
+  }, []);
 
-  // إضافة مستمعات الأحداث للنافذة للتعامل مع السحب خارج العنصر
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !scrollRef.current) return;
-      e.preventDefault();
-      const x = e.pageX - scrollRef.current.offsetLeft;
-      const walk = (x - startX) * 2;
-      scrollRef.current.scrollLeft = scrollLeft - walk;
-    };
-
-    const handleGlobalMouseUp = () => {
-      setIsDragging(false);
-      if (scrollRef.current) {
-        scrollRef.current.style.cursor = 'grab';
-      }
-    };
-
-    if (isDragging) {
-      document.addEventListener('mousemove', handleGlobalMouseMove);
-      document.addEventListener('mouseup', handleGlobalMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleGlobalMouseMove);
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
-    };
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    
+    e.preventDefault();
+    
+    // حساب المسافة الأفقية فقط
+    const deltaX = e.clientX - startX;
+    const newScrollLeft = scrollLeft - deltaX;
+    
+    // تطبيق التمرير الأفقي
+    scrollRef.current.scrollLeft = newScrollLeft;
   }, [isDragging, startX, scrollLeft]);
+
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    if (!scrollRef.current) return;
+    
+    // تحرير التقاط المؤشر
+    (e.target as Element).releasePointerCapture(e.pointerId);
+    
+    setIsDragging(false);
+    scrollRef.current.style.cursor = 'grab';
+  }, []);
+
+  const handlePointerLeave = useCallback(() => {
+    if (scrollRef.current) {
+      scrollRef.current.style.cursor = 'grab';
+    }
+  }, []);
 
   return (
     <div className={`
@@ -130,7 +115,7 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
         </div>
       </header>
 
-      {/* خط الزمن المستمر القابل للتمرير والسحب الأفقي فقط */}
+      {/* خط الزمن المستمر القابل للسحب الأفقي فقط */}
       <div className="flex-1 relative overflow-hidden">
         <div
           ref={scrollRef}
@@ -141,12 +126,13 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
           "
           style={{ 
             scrollbarWidth: 'none', 
-            msOverflowStyle: 'none'
+            msOverflowStyle: 'none',
+            touchAction: 'pan-x' // السماح بالسحب الأفقي فقط على الأجهزة اللمسية
           }}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerLeave}
         >
           {/* الخط الزمني المستمر */}
           <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-200 via-purple-200 to-green-200 rounded-full transform -translate-y-1/2 z-0"></div>
