@@ -20,7 +20,10 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
         <TabsTrigger
           key={tab.value}
           value={tab.value}
-          className="text-sm font-arabic rounded-full px-4 py-2 transition-all duration-300 data-[state=active]:bg-gray-800/90 data-[state=active]:text-white data-[state=active]:shadow-lg text-gray-600 hover:text-gray-800 hover:bg-white/20"
+          className="text-sm font-arabic rounded-full px-4 py-2 transition-all duration-300 
+                     data-[state=active]:bg-gray-800/90 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-transparent
+                     data-[state=inactive]:border data-[state=inactive]:border-white/30
+                     text-gray-600 hover:text-gray-800 hover:bg-white/20 border border-white/30"
         >
           {tab.label}
         </TabsTrigger>
