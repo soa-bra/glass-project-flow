@@ -19,14 +19,13 @@ export interface ProjectData {
   client: ClientData;
   documents: DocumentData[];
   timeline: TimelineData[];
-  events: CalendarEvent[];
 }
 
 export interface TaskData {
   id: string;
   title: string;
   description: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'blocked';
+  status: 'pending' | 'in-progress' | 'completed';
   assignee: string;
   dueDate: string;
   priority: 'low' | 'medium' | 'high';
@@ -55,22 +54,21 @@ export interface TimelineData {
   type: 'task' | 'meeting' | 'deadline';
 }
 
-export interface CalendarEvent {
-  id: string;
-  title: string;
-  date: string;
-  time?: string;
-}
+export type ProjectTab = 
+  | 'tasks' 
+  | 'finance' 
+  | 'legal' 
+  | 'client' 
+  | 'reports' 
+  | 'calendar'
+  | 'notifications';
 
-export const PROJECT_TABS = [
-  { value: 'dashboard' as ProjectTab, label: 'لوحة التحكم' },
-  { value: 'tasks' as ProjectTab, label: 'المهام' },
-  { value: 'finance' as ProjectTab, label: 'المالية' },
-  { value: 'legal' as ProjectTab, label: 'القانونية' },
-  { value: 'client' as ProjectTab, label: 'العميل' },
-  { value: 'reports' as ProjectTab, label: 'التقارير' },
-  { value: 'calendar' as ProjectTab, label: 'التقويم' },
-  { value: 'notifications' as ProjectTab, label: 'الإشعارات' }
+export const PROJECT_TABS: { value: ProjectTab; label: string }[] = [
+  { value: 'tasks', label: 'قائمة المهام' },
+  { value: 'finance', label: 'التفاصيل المالية' },
+  { value: 'legal', label: 'الشؤون القانونية' },
+  { value: 'client', label: 'معلومات العميل' },
+  { value: 'reports', label: 'تقارير المشروع' },
+  { value: 'calendar', label: 'تقويم المشروع' },
+  { value: 'notifications', label: 'الإشعارات' },
 ];
-
-export type ProjectTab = 'dashboard' | 'tasks' | 'finance' | 'legal' | 'client' | 'reports' | 'calendar' | 'notifications';

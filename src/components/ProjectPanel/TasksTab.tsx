@@ -91,7 +91,7 @@ export const TasksTab: React.FC<TasksTabProps> = ({ tasks: initialTasks, loading
         >
           <option value="all">كل المهام</option>
           <option value="pending">قيد الانتظار</option>
-          <option value="in_progress">قيد التنفيذ</option>
+          <option value="in-progress">قيد التنفيذ</option>
           <option value="completed">مكتمل</option>
         </select>
 
@@ -122,7 +122,7 @@ export const TasksTab: React.FC<TasksTabProps> = ({ tasks: initialTasks, loading
           <div className="text-xs text-gray-600">إجمالي المهام</div>
         </div>
         <div className="bg-white/20 backdrop-blur-[10px] rounded-[15px] p-3 text-center border border-white/30">
-          <div className="text-lg font-bold text-blue-600">{tasks.filter(t => t.status === 'in_progress').length}</div>
+          <div className="text-lg font-bold text-blue-600">{tasks.filter(t => t.status === 'in-progress').length}</div>
           <div className="text-xs text-gray-600">قيد التنفيذ</div>
         </div>
         <div className="bg-white/20 backdrop-blur-[10px] rounded-[15px] p-3 text-center border border-white/30">

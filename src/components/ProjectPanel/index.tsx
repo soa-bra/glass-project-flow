@@ -7,7 +7,6 @@ import { MotionSystem } from './MotionSystem';
 import { ProjectHeader } from './ProjectHeader';
 import { ProjectQuickActions } from './ProjectQuickActions';
 import { ProjectTabs } from './ProjectTabs';
-import { ProjectDashboard } from './ProjectDashboard';
 import { TasksTab } from './TasksTab';
 import { FinanceTab } from './FinanceTab';
 import { LegalTab } from './LegalTab';
@@ -73,8 +72,6 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     if (!projectData) return null;
 
     switch (activeTab) {
-      case 'dashboard':
-        return <ProjectDashboard projectData={projectData} loading={loading} />;
       case 'tasks':
         return <TasksTab tasks={projectData.tasks} loading={loading} />;
       case 'finance':
@@ -90,7 +87,7 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
       case 'notifications':
         return <NotificationCenter />;
       default:
-        return <ProjectDashboard projectData={projectData} loading={loading} />;
+        return null;
     }
   };
 
@@ -100,10 +97,10 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     return null;
   }
 
-  console.log('ProjectPanel rendering content with Portal');
+  console.log('ProjectPanel rendering content with Portal - simplified structure');
 
-  // محتوى اللوحة مع MotionSystem
-  const panelContent = (
+  // محتوى اللوحة المبسط - إزالة الطبقات المضاعفة
+  return createPortal(
     <MotionSystem isVisible={isVisible} onClose={onClose}>
       {/* Header */}
       {projectData && (
@@ -115,7 +112,7 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
       )}
 
       {/* Quick Actions */}
-      <div className="px-6 pt-4">
+      <div className="p-6">
         <ProjectQuickActions
           onAddTask={handleAddTask}
           onSmartGenerate={handleSmartGenerate}
@@ -136,10 +133,9 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
           renderTabContent()
         )}
       </div>
-    </MotionSystem>
+    </MotionSystem>,
+    document.body
   );
-
-  return createPortal(panelContent, document.body);
 };
 
 export default ProjectPanel;

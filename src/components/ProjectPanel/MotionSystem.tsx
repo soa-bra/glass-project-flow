@@ -20,7 +20,7 @@ const backdropVariants = {
   exit: { 
     opacity: 0,
     transition: {
-      duration: 0.25,
+      duration: 0.2,
       ease: [0.4, 0.0, 1, 1] as const
     }
   }
@@ -28,8 +28,8 @@ const backdropVariants = {
 
 const panelVariants = {
   hidden: { 
-    x: '-100%',
-    scale: 0.96,
+    x: '100%',
+    scale: 0.95,
     opacity: 0
   },
   visible: { 
@@ -38,17 +38,30 @@ const panelVariants = {
     opacity: 1,
     transition: {
       type: "spring" as const,
-      stiffness: 240,
-      damping: 28,
-      duration: 0.5
+      damping: 25,
+      stiffness: 200,
+      duration: 0.5,
+      staggerChildren: 0.1
     }
   },
   exit: { 
-    x: '-100%',
-    scale: 0.96,
+    x: '100%',
+    scale: 0.95,
     opacity: 0,
     transition: {
-      duration: 0.25,
+      duration: 0.3,
+      ease: [0.4, 0.0, 0.2, 1] as const
+    }
+  }
+};
+
+const contentVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.3,
       ease: [0.4, 0.0, 0.2, 1] as const
     }
   }
@@ -63,34 +76,36 @@ export const MotionSystem: React.FC<MotionSystemProps> = ({
     <AnimatePresence mode="wait">
       {isVisible && (
         <motion.div
-          className="fixed inset-0 z-[1300] flex items-center justify-start"
+          className="fixed inset-0 z-[10000] flex items-center justify-end"
           variants={backdropVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
           onClick={onClose}
           style={{
-            background: 'rgba(0, 0, 0, 0.08)',
-            backdropFilter: 'blur(4px)'
+            background: 'rgba(0, 0, 0, 0.15)',
+            backdropFilter: 'blur(8px)'
           }}
         >
           <motion.div
-            className="w-[75vw] h-full flex flex-col"
+            className="w-[60vw] h-full flex flex-col"
             variants={panelVariants}
             onClick={(e) => e.stopPropagation()}
             style={{
               background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.25) 100%)',
               backdropFilter: 'blur(20px) saturate(180%)',
-              borderRadius: '0 20px 20px 0',
+              borderRadius: '20px 0 0 20px',
               border: '1px solid rgba(255, 255, 255, 0.3)',
               boxShadow: `
-                4px 0 20px rgba(0, 0, 0, 0.08),
-                inset -1px 0 0 rgba(255, 255, 255, 0.4),
+                -4px 0 20px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4),
                 0 0 40px rgba(255, 255, 255, 0.1)
               `
             }}
           >
-            {children}
+            <motion.div variants={contentVariants} className="flex-1 overflow-hidden">
+              {children}
+            </motion.div>
           </motion.div>
         </motion.div>
       )}
