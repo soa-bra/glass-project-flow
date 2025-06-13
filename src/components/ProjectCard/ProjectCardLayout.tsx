@@ -19,7 +19,7 @@ const ProjectCardLayout = ({
   isSelected = false,
   isOtherSelected = false,
 }: ProjectCardLayoutProps) => {
-  const { openBoard, selectedProject, boardTheme } = useProjectBoard();
+  const { openBoard, closeBoard, selectedProject, boardTheme } = useProjectBoard();
 
   const handleClick = (event: React.MouseEvent) => {
     event.stopPropagation();
