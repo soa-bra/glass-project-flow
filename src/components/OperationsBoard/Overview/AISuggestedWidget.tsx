@@ -18,7 +18,6 @@ interface AISuggestedWidgetProps {
 const widgetConfig = {
   kpi: {
     icon: TrendingUp,
-    gradient: 'from-blue-500 to-blue-600',
     content: {
       main: '94%',
       sub: 'معدل الإنجاز الشهري',
@@ -27,7 +26,6 @@ const widgetConfig = {
   },
   reports: {
     icon: FileText,
-    gradient: 'from-purple-500 to-purple-600',
     content: {
       main: '8',
       sub: 'تقارير جاهزة للمراجعة',
@@ -36,7 +34,6 @@ const widgetConfig = {
   },
   alerts: {
     icon: AlertCircle,
-    gradient: 'from-orange-500 to-red-500',
     content: {
       main: '5',
       sub: 'تنبيهات تحتاج متابعة',
@@ -45,7 +42,6 @@ const widgetConfig = {
   },
   analytics: {
     icon: BarChart3,
-    gradient: 'from-green-500 to-emerald-600',
     content: {
       main: '↗️',
       sub: 'الأداء في تحسن مستمر',
@@ -54,7 +50,6 @@ const widgetConfig = {
   },
   team: {
     icon: Users,
-    gradient: 'from-indigo-500 to-blue-600',
     content: {
       main: '23',
       sub: 'عضو فريق نشط',
@@ -63,7 +58,6 @@ const widgetConfig = {
   },
   goals: {
     icon: Target,
-    gradient: 'from-pink-500 to-rose-600',
     content: {
       main: '7/10',
       sub: 'أهداف محققة',
@@ -83,38 +77,38 @@ export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      rounded-2xl p-4 text-white shadow-lg 
-      bg-gradient-to-br ${config.gradient}
-      hover:shadow-xl transition-all duration-300
+      rounded-3xl p-6
+      bg-white/80 backdrop-blur-xl border border-white/30
+      shadow-lg hover:shadow-xl transition-all duration-300
       flex flex-col justify-between
     `}>
       
       {/* رأس البطاقة */}
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-arabic font-semibold opacity-90">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-arabic font-bold text-gray-800">
           {title}
         </h3>
-        <Icon size={20} className="opacity-80" />
+        <Icon size={24} className="text-gray-600" />
       </div>
 
       {/* المحتوى الرئيسي */}
       <div className="flex-1 flex flex-col justify-center">
-        <div className="text-2xl font-bold mb-1">
+        <div className="text-3xl font-bold mb-2 text-gray-900">
           {config.content.main}
         </div>
         
-        <div className="text-sm opacity-90 mb-2">
+        <div className="text-sm text-gray-600 mb-3">
           {config.content.sub}
         </div>
         
-        <div className="text-xs opacity-75">
+        <div className="text-xs text-gray-500">
           {config.content.trend}
         </div>
       </div>
 
       {/* مؤشر التفاعل */}
-      <div className="mt-3 pt-3 border-t border-white/20">
-        <button className="text-xs opacity-75 hover:opacity-100 transition-opacity">
+      <div className="mt-4 pt-4 border-t border-gray-200/50">
+        <button className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
           عرض التفاصيل ←
         </button>
       </div>

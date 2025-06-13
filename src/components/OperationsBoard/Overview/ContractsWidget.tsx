@@ -21,40 +21,42 @@ export const ContractsWidget: React.FC<ContractsWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      glass-enhanced rounded-[20px] p-4
-      ${hasExpired ? 'neon-ring-warning' : 'neon-ring-success'}
+      rounded-3xl p-6
+      bg-white/80 backdrop-blur-xl border border-white/30
+      shadow-lg hover:shadow-xl transition-all duration-300
       flex flex-col justify-between
+      ${hasExpired ? 'border-orange-200/50' : 'border-green-200/50'}
     `}>
       
-      <h3 className="text-sm font-arabic font-bold text-gray-800 mb-3">
+      <h3 className="text-lg font-arabic font-bold text-gray-800 mb-4">
         العقود
       </h3>
 
-      <div className="space-y-3 flex-1">
+      <div className="space-y-4 flex-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FileText size={14} className="text-green-500" />
-            <span className="text-xs text-gray-600">موقعة</span>
+          <div className="flex items-center gap-3">
+            <FileText size={18} className="text-green-500" />
+            <span className="text-sm text-gray-600">موقعة</span>
           </div>
-          <span className="text-lg font-bold text-green-500">
+          <span className="text-xl font-bold text-green-500">
             {contracts.signed}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Clock size={14} className="text-orange-500" />
-            <span className="text-xs text-gray-600">منتهية</span>
+          <div className="flex items-center gap-3">
+            <Clock size={18} className="text-orange-500" />
+            <span className="text-sm text-gray-600">منتهية</span>
           </div>
-          <span className="text-lg font-bold text-orange-500">
+          <span className="text-xl font-bold text-orange-500">
             {contracts.expired}
           </span>
         </div>
       </div>
 
       {hasExpired && (
-        <div className="mt-3 p-2 bg-orange-50 rounded-lg">
-          <p className="text-xs text-orange-700">
+        <div className="mt-4 p-3 bg-orange-50/80 rounded-xl backdrop-blur-sm">
+          <p className="text-xs text-orange-700 font-medium">
             يوجد عقود تحتاج تجديد
           </p>
         </div>

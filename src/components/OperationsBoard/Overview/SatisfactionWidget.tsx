@@ -23,34 +23,41 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({
     return 'يحتاج تحسين';
   };
 
+  const colorClasses = {
+    success: 'border-green-200/50',
+    warning: 'border-yellow-200/50', 
+    error: 'border-red-200/50'
+  }
+
   return (
     <div className={`
       ${className}
-      glass-enhanced rounded-[20px] p-4
-      neon-ring-${getSatisfactionColor(satisfaction)}
+      rounded-3xl p-6
+      bg-white/80 backdrop-blur-xl border ${colorClasses[getSatisfactionColor(satisfaction)]}
+      shadow-lg hover:shadow-xl transition-all duration-300
       flex flex-col justify-between
     `}>
       
-      <h3 className="text-sm font-arabic font-bold text-gray-800 mb-3">
+      <h3 className="text-lg font-arabic font-bold text-gray-800 mb-4">
         رضا العملاء
       </h3>
 
       <div className="flex-1 flex flex-col justify-center items-center text-center">
-        <div className="text-2xl font-bold text-gray-900 mb-2">
+        <div className="text-3xl font-bold text-gray-900 mb-3">
           {satisfaction}%
         </div>
         
-        <div className="text-sm text-gray-600 mb-4">
+        <div className="text-sm text-gray-600 mb-6">
           {getSatisfactionText(satisfaction)}
         </div>
 
         <Progress 
           value={satisfaction} 
-          className="w-full h-2 bg-gray-200"
+          className="w-full h-3 bg-gray-200/50 rounded-full"
           indicatorClassName={
-            satisfaction >= 80 ? 'bg-green-500' : 
-            satisfaction >= 60 ? 'bg-yellow-500' : 
-            'bg-red-500'
+            satisfaction >= 80 ? 'bg-green-500 rounded-full' : 
+            satisfaction >= 60 ? 'bg-yellow-500 rounded-full' : 
+            'bg-red-500 rounded-full'
           }
         />
       </div>

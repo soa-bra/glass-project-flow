@@ -27,58 +27,59 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      rounded-2xl p-6 text-white shadow-lg transition-all duration-300
-      ${isHealthy ? 'bg-emerald-500/95 hover:bg-emerald-600/95' : 'bg-rose-500/95 hover:bg-rose-600/95'}
+      rounded-3xl p-8 text-white shadow-xl transition-all duration-300 hover:shadow-2xl
+      ${isHealthy ? 'bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600' : 'bg-gradient-to-br from-red-500 via-rose-500 to-red-600'}
+      backdrop-blur-xl border border-white/20
     `}>
       
       {/* رأس البطاقة */}
-      <h3 className="text-lg font-arabic font-semibold mb-2">
+      <h3 className="text-xl font-arabic font-bold mb-6">
         الميزانية والمصروفات
       </h3>
 
       {/* الميزانية الإجمالية */}
-      <div className="mt-4">
-        <p className="text-3xl font-bold tracking-wide">
-          {formatCurrency(budget.total)} ريال
+      <div className="mb-8">
+        <p className="text-4xl font-bold tracking-wide mb-2">
+          {formatCurrency(budget.total)}
         </p>
-        <p className="text-sm opacity-90 mt-1">
-          الميزانية الإجمالية
+        <p className="text-sm opacity-90">
+          ريال - الميزانية الإجمالية
         </p>
       </div>
 
       {/* تفاصيل المصروفات */}
-      <div className="mt-6 space-y-3">
+      <div className="space-y-4">
         <div className="flex justify-between items-center">
           <span className="text-sm opacity-90">المصروفات:</span>
-          <span className="font-semibold">
-            {formatCurrency(budget.spent)} ريال ({percentage}%)
+          <span className="font-semibold text-lg">
+            {formatCurrency(budget.spent)} ريال
           </span>
         </div>
 
         <div className="flex justify-between items-center">
           <span className="text-sm opacity-90">المتبقي:</span>
-          <span className="font-semibold">
+          <span className="font-semibold text-lg">
             {formatCurrency(remaining)} ريال
           </span>
         </div>
 
         {/* شريط التقدم */}
-        <div className="mt-4">
+        <div className="mt-6">
+          <div className="flex justify-between text-sm mb-2 opacity-90">
+            <span>{percentage}%</span>
+            <span>مستخدم من الميزانية</span>
+          </div>
           <Progress 
             value={percentage} 
-            className="h-3 bg-white/20" 
-            indicatorClassName="bg-white/90"
+            className="h-3 bg-white/20 rounded-full" 
+            indicatorClassName="bg-white/90 rounded-full"
           />
-          <div className="flex justify-between text-xs mt-1 opacity-75">
-            <span>0%</span>
-            <span>100%</span>
-          </div>
         </div>
       </div>
 
       {/* تحذير إذا تجاوز الميزانية */}
       {!isHealthy && (
-        <div className="mt-4 p-3 bg-white/10 rounded-lg">
+        <div className="mt-6 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
           <p className="text-sm font-medium">
             ⚠️ تحذير: تم تجاوز الميزانية المخططة
           </p>
