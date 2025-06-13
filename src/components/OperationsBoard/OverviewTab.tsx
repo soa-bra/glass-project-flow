@@ -9,6 +9,7 @@ import { ExtraWidgetTwo } from './Overview/ExtraWidgetTwo';
 import { ExtraWidgetThree } from './Overview/ExtraWidgetThree';
 import { ExtraWidgetFour } from './Overview/ExtraWidgetFour';
 import { ExtraWidgetFive } from './Overview/ExtraWidgetFive';
+
 interface TimelineEvent {
   id: number;
   date: string;
@@ -47,5 +48,62 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   if (loading || !data) {
     return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
-  return;
+
+  return (
+    <div className="h-full overflow-y-auto px-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4" style={{ minHeight: 'calc(100vh - 200px)' }}>
+        
+        {/* الصف الأول - البطاقة الزمنية تأخذ العرض الكامل */}
+        <div className="lg:col-span-3">
+          <TimelineSection timeline={data.timeline} />
+        </div>
+
+        {/* الصف الثاني - 3 بطاقات متوسطة */}
+        <div className="lg:col-span-1">
+          <BudgetWidget budget={data.widgets.budget} />
+        </div>
+        <div className="lg:col-span-1">
+          <ContractsWidget contracts={data.widgets.contracts} />
+        </div>
+        <div className="lg:col-span-1">
+          <HRWidget hr={data.widgets.hr} />
+        </div>
+
+        {/* الصف الثالث - بطاقة الرضا تأخذ العرض الكامل */}
+        <div className="lg:col-span-3">
+          <SatisfactionWidget satisfaction={data.widgets.satisfaction} />
+        </div>
+
+        {/* الصف الرابع - 3 بطاقات إضافية */}
+        <div className="lg:col-span-1">
+          <ExtraWidgetOne />
+        </div>
+        <div className="lg:col-span-1">
+          <ExtraWidgetTwo />
+        </div>
+        <div className="lg:col-span-1">
+          <ExtraWidgetThree />
+        </div>
+
+        {/* الصف الخامس - بطاقتان */}
+        <div className="lg:col-span-1">
+          <ExtraWidgetFour />
+        </div>
+        <div className="lg:col-span-2">
+          <ExtraWidgetFive />
+        </div>
+
+        {/* الصف السادس - بطاقة إضافية */}
+        <div className="lg:col-span-3">
+          <div className="advanced-glass-card hover-glow-enhanced rounded-[24px] p-6 min-h-[120px] flex items-center justify-center">
+            <div className="text-center">
+              <h3 className="text-lg font-arabic font-bold text-gray-800 mb-2">إحصائيات إضافية</h3>
+              <p className="text-gray-600 text-sm">المزيد من البيانات والتحليلات قريباً</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
 };
