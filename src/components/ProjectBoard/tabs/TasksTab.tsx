@@ -16,7 +16,7 @@ interface Task {
 
 interface TasksTabProps {
   project: ProjectCardProps;
-  tint: string;
+  tint?: string;
 }
 
 const mockTasks: Task[] = [
@@ -49,7 +49,7 @@ const mockTasks: Task[] = [
   }
 ];
 
-export const TasksTab: React.FC<TasksTabProps> = ({ project, tint }) => {
+const TasksTab: React.FC<TasksTabProps> = ({ project, tint = '#3b82f6' }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
 
@@ -165,3 +165,5 @@ export const TasksTab: React.FC<TasksTabProps> = ({ project, tint }) => {
     </motion.div>
   );
 };
+
+export default TasksTab;

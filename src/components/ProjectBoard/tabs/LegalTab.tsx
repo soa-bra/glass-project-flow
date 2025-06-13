@@ -14,7 +14,7 @@ interface Contract {
 
 interface LegalTabProps {
   project: ProjectCardProps;
-  tint: string;
+  tint?: string;
 }
 
 const mockContracts: Contract[] = [
@@ -41,7 +41,7 @@ const mockContracts: Contract[] = [
   }
 ];
 
-export const LegalTab: React.FC<LegalTabProps> = ({ project, tint }) => {
+const LegalTab: React.FC<LegalTabProps> = ({ project, tint = '#3b82f6' }) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'signed': return <CheckCircle size={20} className="text-green-600" />;
@@ -145,3 +145,5 @@ export const LegalTab: React.FC<LegalTabProps> = ({ project, tint }) => {
     </motion.div>
   );
 };
+
+export default LegalTab;

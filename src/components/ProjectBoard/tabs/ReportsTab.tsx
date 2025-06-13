@@ -14,7 +14,7 @@ interface Report {
 
 interface ReportsTabProps {
   project: ProjectCardProps;
-  tint: string;
+  tint?: string;
 }
 
 const mockReports: Report[] = [
@@ -50,7 +50,7 @@ const progressData = [
   { week: 'الأسبوع 6', progress: 85 },
 ];
 
-export const ReportsTab: React.FC<ReportsTabProps> = ({ project, tint }) => {
+const ReportsTab: React.FC<ReportsTabProps> = ({ project, tint = '#3b82f6' }) => {
   const getFileIcon = (type: string) => {
     return <FileText size={20} className="text-gray-600" />;
   };
@@ -152,3 +152,5 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project, tint }) => {
     </motion.div>
   );
 };
+
+export default ReportsTab;
