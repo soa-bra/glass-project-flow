@@ -2,15 +2,15 @@
 import React, { useState } from 'react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Plus, CheckCircle, Circle } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { TaskItem } from './TaskItem';
 
 const initialTasks = [
-  { id: '1', title: 'تصميم واجهة المستخدم', completed: true, priority: 'high' },
-  { id: '2', title: 'تطوير صفحة الرئيسية', completed: false, priority: 'high' },
-  { id: '3', title: 'إضافة نظام المصادقة', completed: false, priority: 'medium' },
-  { id: '4', title: 'اختبار الوظائف', completed: false, priority: 'low' },
-  { id: '5', title: 'مراجعة الكود', completed: false, priority: 'medium' }
+  { id: '1', title: 'تصميم واجهة المستخدم', completed: true, priority: 'high' as const },
+  { id: '2', title: 'تطوير صفحة الرئيسية', completed: false, priority: 'high' as const },
+  { id: '3', title: 'إضافة نظام المصادقة', completed: false, priority: 'medium' as const },
+  { id: '4', title: 'اختبار الوظائف', completed: false, priority: 'low' as const },
+  { id: '5', title: 'مراجعة الكود', completed: false, priority: 'medium' as const }
 ];
 
 export const TasksCard: React.FC = () => {

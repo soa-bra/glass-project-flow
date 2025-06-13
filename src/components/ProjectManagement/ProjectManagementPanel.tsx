@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Escape } from 'lucide-react';
+import { X } from 'lucide-react';
 import chroma from 'chroma-js';
 import { ProjectHeader } from './ProjectHeader';
 import { ProjectStepper } from './ProjectStepper';
