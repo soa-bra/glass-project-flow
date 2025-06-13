@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
@@ -116,7 +115,7 @@ const mockProjects = [{
 }];
 
 const ProjectsColumn = React.memo(() => {
-  const { selectedProjectId, selectProject } = useProjectSelection();
+  const { selectedProjectId, isPanelVisible, toggleProject } = useProjectSelection();
 
   return (
     <div className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl bg-soabra-projects-bg mx-0">
@@ -135,7 +134,7 @@ const ProjectsColumn = React.memo(() => {
                 {...project}
                 isSelected={selectedProjectId === project.id}
                 isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id}
-                onProjectSelect={selectProject}
+                onProjectSelect={toggleProject}
               />
             ))}
           </div>

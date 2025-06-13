@@ -10,6 +10,16 @@ export const useProjectSelection = () => {
     setIsPanelVisible(true);
   }, []);
 
+  const toggleProject = useCallback((projectId: string) => {
+    if (selectedProjectId === projectId) {
+      // إلغاء التحديد إذا كان المشروع محدد بالفعل
+      closePanel();
+    } else {
+      // تحديد مشروع جديد
+      selectProject(projectId);
+    }
+  }, [selectedProjectId]);
+
   const closePanel = useCallback(() => {
     setIsPanelVisible(false);
     // تأخير إزالة المشروع المحدد للسماح بانتهاء الحركة
@@ -22,6 +32,7 @@ export const useProjectSelection = () => {
     selectedProjectId,
     isPanelVisible,
     selectProject,
+    toggleProject,
     closePanel
   };
 };
