@@ -27,6 +27,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ project }) => {
   ]);
 
   const [filter, setFilter] = useState<'all' | 'pending' | 'in-progress' | 'completed' | 'overdue'>('all');
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const getStatusColor = (status: string) => {
     const colors = {
@@ -57,6 +58,16 @@ const TasksTab: React.FC<TasksTabProps> = ({ project }) => {
     return colors[priority as keyof typeof colors] || '#6b7280';
   };
 
+  const handleSwipeTask = (taskId: string, direction: 'left' | 'right') => {
+    setTasks(prev => prev.map(task => {
+      if (task.id === taskId) {
+        const newStatus = direction === 'right' ? 'completed' : 'pending';
+        return { ...task, status: newStatus };
+      }
+      return task;
+    }));
+  };
+
   const filteredTasks = filter === 'all' ? tasks : tasks.filter(task => task.status === filter);
 
   const filters = [
@@ -69,6 +80,56 @@ const TasksTab: React.FC<TasksTabProps> = ({ project }) => {
 
   return (
     <div className="h-full flex flex-col">
+      {/* Add Task Modal */}
+      <AnimatePresence>
+        {showAddModal && (
+          <motion.div
+            className="fixed inset-0 z-[60] flex items-center justify-center"
+            style={{ 
+              background: 'rgba(0, 0, 0, 0.5)',
+              backdropFilter: 'blur(8px)'
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowAddModal(false)}
+          >
+            <motion.div
+              className="bg-white/20 backdrop-blur-xl rounded-3xl p-8 max-w-md w-full mx-4"
+              style={{
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: 'inset 0 0 24px rgba(255,255,255,0.25)',
+              }}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", bounce: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-bold text-white font-arabic mb-4">إضافة مهمة جديدة</h3>
+              <input 
+                className="w-full p-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 font-arabic mb-4"
+                placeholder="عنوان المهمة"
+              />
+              <div className="flex gap-3">
+                <button 
+                  className="flex-1 py-3 bg-white/30 hover:bg-white/40 rounded-xl text-white font-arabic transition-colors"
+                  onClick={() => setShowAddModal(false)}
+                >
+                  إضافة
+                </button>
+                <button 
+                  className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-arabic transition-colors"
+                  onClick={() => setShowAddModal(false)}
+                >
+                  إلغاء
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header with Add Task and Filters */}
       <motion.div 
         className="flex items-center justify-between mb-6"
@@ -78,9 +139,10 @@ const TasksTab: React.FC<TasksTabProps> = ({ project }) => {
       >
         <div className="flex items-center gap-3">
           <motion.button 
-            className="flex items-center gap-2 px-4 py-2 bg-white/30 hover:bg-white/40 rounded-full text-sm text-white font-arabic transition-all duration-200"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-2 px-6 py-3 bg-white/30 hover:bg-white/40 rounded-full text-sm text-white font-arabic transition-all duration-200"
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 1 }}
+            onClick={() => setShowAddModal(true)}
           >
             <Plus size={16} strokeWidth={1.5} />
             إضافة مهمة جديدة
@@ -100,7 +162,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ project }) => {
         </div>
       </motion.div>
 
-      {/* Filter Tabs */}
+      {/* Filter Chips */}
       <motion.div 
         className="flex items-center gap-2 mb-6 overflow-x-auto"
         initial={{ opacity: 0, x: -20 }}
@@ -147,7 +209,21 @@ const TasksTab: React.FC<TasksTabProps> = ({ project }) => {
                 ease: [0.45, 0, 0.55, 1]
               }}
               className="rounded-3xl backdrop-blur-3xl bg-white/30 p-4 border border-white/20 hover:bg-white/35 transition-all duration-200 cursor-pointer group"
+              style={{
+                borderRight: `4px solid ${getStatusColor(task.status)}`,
+                backdropFilter: 'blur(14px)',
+                boxShadow: 'inset 0 0 16px rgba(255,255,255,0.15)',
+              }}
               whileHover={{ scale: 1.02, y: -2 }}
+              drag="x"
+              dragConstraints={{ left: -100, right: 100 }}
+              onDragEnd={(event, info) => {
+                if (info.offset.x > 50) {
+                  handleSwipeTask(task.id, 'right');
+                } else if (info.offset.x < -50) {
+                  handleSwipeTask(task.id, 'left');
+                }
+              }}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -196,6 +272,14 @@ const TasksTab: React.FC<TasksTabProps> = ({ project }) => {
                     <MoreHorizontal size={16} />
                   </motion.button>
                 </div>
+              </div>
+
+              {/* Swipe indicators */}
+              <div className="absolute top-4 left-4 text-green-400 opacity-0 group-hover:opacity-60 transition-opacity pointer-events-none">
+                ← سحب للإنجاز
+              </div>
+              <div className="absolute top-4 right-4 text-yellow-400 opacity-0 group-hover:opacity-60 transition-opacity pointer-events-none">
+                سحب للتعليق →
               </div>
             </motion.div>
           ))}

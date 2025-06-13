@@ -25,6 +25,9 @@ const ProjectCardLayout = ({
     event.stopPropagation();
     if (!selectedProject) {
       openBoard(project);
+    } else if (selectedProject?.id === id) {
+      // إغلاق اللوحة عند النقر على البطاقة المحددة
+      closeBoard();
     }
   };
 
@@ -45,8 +48,10 @@ const ProjectCardLayout = ({
   const getCardStyle = () => {
     if (isSelected && selectedProject?.id === id) {
       return {
-        background: boardTheme.gradient,
-        backdropFilter: 'blur(20px)',
+        background: 'linear-gradient(135deg, rgba(125, 107, 255, 0.8) 0%, rgba(255, 200, 92, 0.6) 50%, rgba(125, 107, 255, 0.8) 100%)',
+        backdropFilter: 'blur(14px)',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: 'inset 0 0 24px rgba(255,255,255,0.25)',
       };
     }
     return {};
@@ -60,8 +65,12 @@ const ProjectCardLayout = ({
       style={getCardStyle()}
       whileHover={{ scale: isSelected ? 1 : 1.02 }}
       transition={{ 
-        duration: 0.45,
-        ease: [0.25, 0.8, 0.25, 1]
+        duration: 0.25,
+        ease: [0.4, 0.0, 0.2, 1],
+        layout: {
+          duration: 0.35,
+          ease: [0.4, 0.0, 0.2, 1]
+        }
       }}
     >
       <div className="pointer-events-none">

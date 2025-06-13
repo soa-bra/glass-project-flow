@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react';
@@ -39,12 +38,10 @@ const CalendarTab: React.FC<CalendarTabProps> = ({ project }) => {
     const firstDay = getFirstDayOfMonth(currentDate);
     const days = [];
 
-    // Empty cells for days before month starts
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
 
-    // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(day);
     }
@@ -108,13 +105,24 @@ const CalendarTab: React.FC<CalendarTabProps> = ({ project }) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* View Toggle with Slide Indicator */}
+          <div className="relative flex items-center gap-1 p-1 bg-white/10 rounded-full">
+            <motion.div
+              className="absolute bg-white/30 rounded-full"
+              style={{
+                width: viewType === 'month' ? '50px' : '60px',
+                height: '32px',
+              }}
+              animate={{
+                x: viewType === 'month' ? 0 : '50px'
+              }}
+              transition={{ duration: 0.3, ease: [0.4, 0.0, 0.2, 1] }}
+            />
+            
             <motion.button
               onClick={() => setViewType('month')}
-              className={`px-4 py-2 rounded-full text-sm font-arabic transition-all duration-200 ${
-                viewType === 'month'
-                  ? 'bg-white/40 text-white border border-white/60'
-                  : 'bg-white/10 text-white/70 hover:bg-white/20'
+              className={`relative z-10 px-4 py-2 rounded-full text-sm font-arabic transition-all duration-200 ${
+                viewType === 'month' ? 'text-white' : 'text-white/70'
               }`}
               whileHover={{ scale: 1.05 }}
             >
@@ -123,10 +131,8 @@ const CalendarTab: React.FC<CalendarTabProps> = ({ project }) => {
             
             <motion.button
               onClick={() => setViewType('week')}
-              className={`px-4 py-2 rounded-full text-sm font-arabic transition-all duration-200 ${
-                viewType === 'week'
-                  ? 'bg-white/40 text-white border border-white/60'
-                  : 'bg-white/10 text-white/70 hover:bg-white/20'
+              className={`relative z-10 px-4 py-2 rounded-full text-sm font-arabic transition-all duration-200 ${
+                viewType === 'week' ? 'text-white' : 'text-white/70'
               }`}
               whileHover={{ scale: 1.05 }}
             >
@@ -138,6 +144,10 @@ const CalendarTab: React.FC<CalendarTabProps> = ({ project }) => {
         {/* Calendar Grid */}
         <motion.div 
           className="flex-1 rounded-3xl backdrop-blur-3xl bg-white/30 p-6"
+          style={{
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            boxShadow: 'inset 0 0 16px rgba(255,255,255,0.15)',
+          }}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.15 }}
@@ -157,7 +167,7 @@ const CalendarTab: React.FC<CalendarTabProps> = ({ project }) => {
             ))}
           </div>
 
-          {/* Calendar Days */}
+          {/* Calendar Days with Drag&Drop support */}
           <div className="grid grid-cols-7 gap-2 flex-1">
             {generateCalendarDays().map((day, index) => (
               <motion.div
@@ -179,6 +189,12 @@ const CalendarTab: React.FC<CalendarTabProps> = ({ project }) => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.25 + (index * 0.01) }}
                 whileHover={day ? { scale: 1.05 } : {}}
+                drag={day && events.some(event => event.date === day)}
+                dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                onDragEnd={() => {
+                  // Re-render tasks when event is moved
+                  console.log('Event moved, updating tasks list');
+                }}
               >
                 {day && (
                   <>
@@ -187,10 +203,14 @@ const CalendarTab: React.FC<CalendarTabProps> = ({ project }) => {
                       .filter(event => event.date === day)
                       .slice(0, 2)
                       .map((event, eventIndex) => (
-                        <div
+                        <motion.div
                           key={event.id}
-                          className="w-full h-1.5 rounded-full mb-1"
+                          className="w-full h-1.5 rounded-full mb-1 cursor-move"
                           style={{ backgroundColor: event.color }}
+                          drag
+                          dragMomentum={false}
+                          whileDrag={{ scale: 1.1, rotate: 2 }}
+                          title={event.title}
                         />
                       ))
                     }
@@ -205,6 +225,10 @@ const CalendarTab: React.FC<CalendarTabProps> = ({ project }) => {
       {/* Today's Agenda Sidebar */}
       <motion.div 
         className="w-80 rounded-3xl backdrop-blur-3xl bg-white/30 p-6"
+        style={{
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: 'inset 0 0 16px rgba(255,255,255,0.15)',
+        }}
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
@@ -218,11 +242,14 @@ const CalendarTab: React.FC<CalendarTabProps> = ({ project }) => {
           {todayAgenda.map((item, index) => (
             <motion.div
               key={index}
-              className="flex items-start gap-3 p-3 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-200"
+              className="flex items-start gap-3 p-3 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-200 cursor-pointer"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + (index * 0.05) }}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.02, x: 4 }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 100 }}
+              dragElastic={0.2}
             >
               <div className="flex items-center gap-1 text-white/80 text-sm min-w-fit">
                 <Clock size={14} />
