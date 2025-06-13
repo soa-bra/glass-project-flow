@@ -1,10 +1,11 @@
 
 import React from 'react';
-import { TimelineSection } from './Overview/TimelineSection';
+import { TimelineWidget } from './Overview/TimelineWidget';
 import { BudgetWidget } from './Overview/BudgetWidget';
-import { ContractsWidget } from './Overview/ContractsWidget';
 import { HRWidget } from './Overview/HRWidget';
 import { SatisfactionWidget } from './Overview/SatisfactionWidget';
+import { ContractsWidget } from './Overview/ContractsWidget';
+import { AISuggestedWidget } from './Overview/AISuggestedWidget';
 
 interface TimelineEvent {
   id: number;
@@ -51,59 +52,57 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
   return (
     <div className="h-full overflow-auto">
-      {/* التخطيط الجديد للبطاقات */}
-      <div className="grid grid-cols-3 gap-4 h-full p-4">
-        {/* البطاقة الأولى - الأحداث القادمة - عرض كامل في الصف الأول */}
-        <div className="col-span-3">
-          <TimelineSection timeline={data.timeline} />
-        </div>
+      {/* شبكة اللوحة الرئيسية */}
+      <section className="
+        management-grid
+        grid grid-cols-12 grid-rows-12 gap-4 
+        h-full w-full p-6
+        lg:grid-cols-8 lg:grid-rows-18
+        sm:flex sm:flex-col sm:gap-4
+      ">
+        
+        {/* 1. بطاقة الأحداث القادمة - عرض كامل في الأعلى */}
+        <TimelineWidget 
+          timeline={data.timeline} 
+          className="col-span-12 row-span-3 lg:col-span-8 lg:row-span-4" 
+        />
 
-        {/* الصف الثاني */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* بطاقة فرعية صغيرة */}
-          <ContractsWidget contracts={data.widgets.contracts} />
-          
-          {/* بطاقة فرعية صغيرة */}
-          <HRWidget hr={data.widgets.hr} />
-        </div>
+        {/* 2. بطاقة المالية - لون صلب */}
+        <BudgetWidget 
+          budget={data.widgets.budget} 
+          className="col-span-6 row-span-4 lg:col-span-4 lg:row-span-5" 
+        />
 
-        {/* البطاقة الثانية - المالية - لون مختلف */}
-        <div className="col-span-2">
-          <BudgetWidget budget={data.widgets.budget} />
-        </div>
+        {/* 3. بطاقات ذكية مقترحة */}
+        <ContractsWidget 
+          contracts={data.widgets.contracts} 
+          className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-3" 
+        />
 
-        {/* الصف الثالث */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* بطاقة فرعية */}
-          <SatisfactionWidget satisfaction={data.widgets.satisfaction} />
-          
-          {/* بطاقة فرعية إضافية */}
-          <div className="glass-enhanced rounded-[40px] p-4 flex items-center justify-center">
-            <div className="text-center text-gray-500 font-arabic">
-              <p className="text-sm">بطاقة إضافية</p>
-              <p className="text-xs mt-1">محتوى قابل للتخصيص</p>
-            </div>
-          </div>
-        </div>
+        <HRWidget 
+          hr={data.widgets.hr} 
+          className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-3" 
+        />
 
-        <div className="col-span-2 grid grid-cols-2 gap-4">
-          {/* بطاقة إضافية */}
-          <div className="glass-enhanced rounded-[40px] p-4 flex items-center justify-center">
-            <div className="text-center text-gray-500 font-arabic">
-              <p className="text-sm">مؤشرات الأداء</p>
-              <p className="text-xs mt-1">KPIs</p>
-            </div>
-          </div>
-          
-          {/* بطاقة إضافية */}
-          <div className="glass-enhanced rounded-[40px] p-4 flex items-center justify-center">
-            <div className="text-center text-gray-500 font-arabic">
-              <p className="text-sm">التقارير السريعة</p>
-              <p className="text-xs mt-1">Quick Reports</p>
-            </div>
-          </div>
-        </div>
-      </div>
+        <SatisfactionWidget 
+          satisfaction={data.widgets.satisfaction} 
+          className="col-span-3 row-span-3 lg:col-span-2 lg:row-span-4" 
+        />
+
+        <AISuggestedWidget 
+          type="kpi"
+          title="مؤشرات الأداء"
+          className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-2" 
+        />
+
+        {/* بطاقات إضافية مقترحة */}
+        <AISuggestedWidget 
+          type="reports"
+          title="التقارير السريعة"
+          className="col-span-6 row-span-2 lg:col-span-4 lg:row-span-2" 
+        />
+
+      </section>
     </div>
   );
 };

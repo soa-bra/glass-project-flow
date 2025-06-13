@@ -1,13 +1,16 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { BaseCard } from '@/components/ui/BaseCard';
 
 interface SatisfactionWidgetProps {
   satisfaction: number;
+  className?: string;
 }
 
-export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfaction }) => {
+export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ 
+  satisfaction, 
+  className = '' 
+}) => {
   const getSatisfactionColor = (score: number) => {
     if (score >= 80) return 'success';
     if (score >= 60) return 'warning';
@@ -21,19 +24,19 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfac
   };
 
   return (
-    <BaseCard 
-      size="md"
-      variant="glass"
-      neonRing={getSatisfactionColor(satisfaction)}
-      header={
-        <h3 className="text-sm font-arabic font-bold text-gray-800">
-          رضا العملاء
-        </h3>
-      }
-      className="h-[180px]"
-    >
-      <div className="flex-1 flex flex-col justify-center items-center">
-        <div className="text-3xl font-bold text-gray-900 mb-2">
+    <div className={`
+      ${className}
+      glass-enhanced rounded-[20px] p-4
+      neon-ring-${getSatisfactionColor(satisfaction)}
+      flex flex-col justify-between
+    `}>
+      
+      <h3 className="text-sm font-arabic font-bold text-gray-800 mb-3">
+        رضا العملاء
+      </h3>
+
+      <div className="flex-1 flex flex-col justify-center items-center text-center">
+        <div className="text-2xl font-bold text-gray-900 mb-2">
           {satisfaction}%
         </div>
         
@@ -51,6 +54,6 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfac
           }
         />
       </div>
-    </BaseCard>
+    </div>
   );
 };

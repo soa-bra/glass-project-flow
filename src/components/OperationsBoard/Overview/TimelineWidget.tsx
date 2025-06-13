@@ -1,0 +1,126 @@
+
+import React, { useRef } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+interface TimelineEvent {
+  id: number;
+  date: string;
+  title: string;
+  department: string;
+  color: string;
+}
+
+interface TimelineWidgetProps {
+  timeline: TimelineEvent[];
+  className?: string;
+}
+
+export const TimelineWidget: React.FC<TimelineWidgetProps> = ({ 
+  timeline, 
+  className = '' 
+}) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: number) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ 
+        left: direction, 
+        behavior: 'smooth' 
+      });
+    }
+  };
+
+  const openEvent = (event: TimelineEvent) => {
+    console.log('فتح الحدث:', event);
+    // يمكن إضافة modal أو popover هنا
+  };
+
+  return (
+    <div className={`
+      ${className}
+      glass-enhanced rounded-[20px] p-6
+      flex flex-col
+    `}>
+      
+      {/* رأس البطاقة */}
+      <header className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-arabic font-bold text-gray-800">
+          الأحداث القادمة
+        </h3>
+        
+        {/* أزرار التنقل */}
+        <div className="flex gap-2">
+          <button 
+            onClick={() => scroll(200)}
+            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+          >
+            <ChevronRight size={16} />
+          </button>
+          <button 
+            onClick={() => scroll(-200)}
+            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+          >
+            <ChevronLeft size={16} />
+          </button>
+        </div>
+      </header>
+
+      {/* خط الزمن القابل للتمرير */}
+      <div className="flex-1 relative overflow-hidden">
+        <div
+          ref={scrollRef}
+          className="
+            overflow-x-auto scrollbar-hide
+            cursor-grab active:cursor-grabbing select-none
+            h-full flex items-center
+          "
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          <ul className="flex items-center gap-12 py-4 px-4">
+            {timeline.map((event, index) => (
+              <li key={event.id} className="relative flex flex-col items-center min-w-fit">
+                
+                {/* التاريخ */}
+                <span className="text-xs text-gray-500 mb-3 whitespace-nowrap font-medium">
+                  {new Date(event.date).toLocaleDateString('ar-SA', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                </span>
+
+                {/* النقطة التفاعلية */}
+                <div className="relative flex items-center">
+                  {/* خط للنقطة السابقة */}
+                  {index > 0 && (
+                    <div className="absolute right-full h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 w-12"></div>
+                  )}
+                  
+                  <button
+                    className="w-4 h-4 rounded-full border-2 border-white shadow-md transition-transform hover:scale-110 relative z-10"
+                    style={{ backgroundColor: event.color }}
+                    onClick={() => openEvent(event)}
+                  />
+                  
+                  {/* خط للنقطة التالية */}
+                  {index < timeline.length - 1 && (
+                    <div className="absolute left-full h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 w-12"></div>
+                  )}
+                </div>
+
+                {/* تفاصيل الحدث */}
+                <div className="text-center mt-3">
+                  <div className="text-sm font-semibold text-gray-900 whitespace-nowrap mb-1">
+                    {event.title}
+                  </div>
+                  <div className="text-xs text-gray-600 whitespace-nowrap">
+                    {event.department}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
