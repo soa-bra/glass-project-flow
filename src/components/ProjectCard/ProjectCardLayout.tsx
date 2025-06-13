@@ -24,29 +24,24 @@ const ProjectCardLayout = ({
     }
   };
 
-  const getCardStyles = () => {
+  const getCardClasses = () => {
+    let baseClasses = 'project-card-glass project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer';
+    
     if (isSelected) {
-      return {
-        transform: 'scale(1.02)'
-      };
+      return `${baseClasses} project-card-selected`;
     }
-    return {};
+    
+    if (isOtherSelected) {
+      return `${baseClasses} project-card-dimmed`;
+    }
+    
+    return baseClasses;
   };
 
   return (
     <div
       onClick={handleClick}
-      style={getCardStyles()}
-      className={`
-        glass-enhanced rounded-[40px] p-2 mx-auto my-1 cursor-pointer
-        transition-all duration-200 ease-in-out
-        ${isSelected 
-          ? 'opacity-100' 
-          : isOtherSelected 
-            ? 'opacity-25 shadow-sm' 
-            : 'opacity-100 shadow-sm hover:shadow-md'
-        }
-      `}
+      className={getCardClasses()}
     >
       <div className="pointer-events-none">
         {children}
