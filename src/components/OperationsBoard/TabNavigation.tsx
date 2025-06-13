@@ -15,7 +15,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   onTabChange
 }) => {
   return (
-    <TabsList className="flex w-auto bg-transparent p-1 px-6 mt-2 mb-4 gap-1 h-auto">
+    <TabsList className="flex w-auto bg-transparent p-0 px-6 mt-0 mb-4 gap-1 h-auto">
       {tabItems.map((tab) => (
         <TabsTrigger
           key={tab.value}
