@@ -102,8 +102,8 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         />
 
         <AISuggestedWidget 
-          type="alerts"
-          title="التنبيهات والإشعارات"
+          type="goals"
+          title="الأهداف والإنجازات"
           className="col-span-3 h-[160px]" 
         />
 
@@ -117,13 +117,6 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
           type="team"
           title="إدارة الفريق"
           className="col-span-3 h-[160px]" 
-        />
-
-        {/* الصف الخامس - الأهداف والإنجازات */}
-        <AISuggestedWidget 
-          type="goals"
-          title="الأهداف والإنجازات"
-          className="col-span-12 h-[160px]" 
         />
 
       </section>
