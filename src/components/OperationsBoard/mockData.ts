@@ -2,9 +2,11 @@
 export const getMockData = () => ({
   overview: {
     timeline: [
-      { id: 1, date: '2025-06-15', title: 'اجتماع مجلس الإدارة', department: 'إدارية', color: 'bg-blue-500' },
-      { id: 2, date: '2025-06-20', title: 'تسليم المرحلة الأولى', department: 'هندسية', color: 'bg-green-500' },
-      { id: 3, date: '2025-06-25', title: 'توقيع عقد جديد', department: 'قانونية', color: 'bg-purple-500' },
+      { id: 1, date: '2025-06-15', title: 'اجتماع مجلس الإدارة', department: 'إدارية', color: '#374151' },
+      { id: 2, date: '2025-06-20', title: 'تسليم المرحلة الأولى', department: 'هندسية', color: '#374151' },
+      { id: 3, date: '2025-06-25', title: 'توقيع عقد جديد', department: 'قانونية', color: '#374151' },
+      { id: 4, date: '2025-07-01', title: 'مراجعة الأداء الشهري', department: 'مالية', color: '#374151' },
+      { id: 5, date: '2025-07-10', title: 'تدريب الفريق الجديد', department: 'موارد بشرية', color: '#374151' },
     ],
     widgets: {
       budget: { total: 1000000, spent: 450000 },
