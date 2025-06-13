@@ -168,12 +168,14 @@ const Index = () => {
           <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
         </div>
 
-        {/* Project Board */}
-        <ProjectBoard
-          project={selectedProject!}
-          visible={!!selectedProject}
-          onClose={handleCloseBoard}
-        />
+        {/* Project Board - Only render when selectedProject exists */}
+        {selectedProject && (
+          <ProjectBoard
+            project={selectedProject}
+            visible={true}
+            onClose={handleCloseBoard}
+          />
+        )}
       </div>
     </div>
   );
