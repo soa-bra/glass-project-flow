@@ -17,7 +17,7 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
       const mockData: ProjectData = {
         id,
         title: 'تطوير الموقع الإلكتروني',
-        description: 'تطوير موقع سوبرا',
+        description: 'تطوير موقع سوبرا الإلكتروني مع تطبيق تقنيات الذكاء الاصطناعي',
         status: 'info',
         budget: {
           total: 15000,
@@ -28,7 +28,7 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
           {
             id: '1',
             title: 'تصميم الواجهة الرئيسية',
-            description: 'تصميم الصفحة الرئيسية للموقع',
+            description: 'تصميم الصفحة الرئيسية للموقع باستخدام Figma وتطبيق مبادئ UX/UI',
             status: 'completed',
             assignee: 'أحمد محمد',
             dueDate: '2025-06-20',
@@ -37,27 +37,68 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
           {
             id: '2',
             title: 'تطوير قاعدة البيانات',
-            description: 'إنشاء وتكوين قاعدة البيانات',
+            description: 'إنشاء وتكوين قاعدة البيانات باستخدام PostgreSQL',
             status: 'in-progress',
             assignee: 'سارة أحمد',
             dueDate: '2025-06-25',
             priority: 'medium'
+          },
+          {
+            id: '3',
+            title: 'تطوير API الخلفي',
+            description: 'بناء API RESTful باستخدام Node.js و Express',
+            status: 'pending',
+            assignee: 'محمد علي',
+            dueDate: '2025-06-30',
+            priority: 'high'
+          },
+          {
+            id: '4',
+            title: 'تكامل الذكاء الاصطناعي',
+            description: 'دمج خدمات الذكاء الاصطناعي في التطبيق',
+            status: 'pending',
+            assignee: 'فاطمة خالد',
+            dueDate: '2025-07-05',
+            priority: 'medium'
+          },
+          {
+            id: '5',
+            title: 'اختبار الأداء والأمان',
+            description: 'إجراء اختبارات شاملة للأداء والأمان',
+            status: 'pending',
+            assignee: 'عمر حسن',
+            dueDate: '2025-07-10',
+            priority: 'low'
           }
         ],
         client: {
-          name: 'محمد العلي',
+          name: 'د. محمد العلي',
           company: 'شركة التقنية المتقدمة',
-          email: 'mohamed@tech.com',
+          email: 'mohamed.ali@techadvanced.com',
           phone: '+966501234567',
           satisfaction: 85
         },
         documents: [
           {
             id: '1',
-            name: 'عقد المشروع',
+            name: 'عقد المشروع الأساسي',
             type: 'pdf',
-            url: '/documents/contract.pdf',
+            url: '/documents/main-contract.pdf',
             uploadDate: '2025-06-01'
+          },
+          {
+            id: '2',
+            name: 'مواصفات المشروع التقنية',
+            type: 'pdf',
+            url: '/documents/technical-specs.pdf',
+            uploadDate: '2025-06-02'
+          },
+          {
+            id: '3',
+            name: 'التصميمات الأولية',
+            type: 'figma',
+            url: '/designs/initial-designs.fig',
+            uploadDate: '2025-06-05'
           }
         ],
         timeline: [
@@ -66,6 +107,18 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
             title: 'بداية المشروع',
             date: '2025-06-01',
             type: 'task'
+          },
+          {
+            id: '2',
+            title: 'اجتماع مراجعة التصميم',
+            date: '2025-06-15',
+            type: 'meeting'
+          },
+          {
+            id: '3',
+            title: 'موعد تسليم المرحلة الأولى',
+            date: '2025-06-30',
+            type: 'deadline'
           }
         ]
       };

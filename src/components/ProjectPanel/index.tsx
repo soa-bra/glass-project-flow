@@ -3,10 +3,16 @@ import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { ProjectPanelProps, ProjectTab } from './types';
 import { useProjectPanel } from './useProjectPanel';
+import { MotionSystem } from './MotionSystem';
 import { ProjectHeader } from './ProjectHeader';
 import { ProjectQuickActions } from './ProjectQuickActions';
 import { ProjectTabs } from './ProjectTabs';
 import { TasksTab } from './TasksTab';
+import { FinanceTab } from './FinanceTab';
+import { LegalTab } from './LegalTab';
+import { ClientTab } from './ClientTab';
+import { ReportsTab } from './ReportsTab';
+import { CalendarTab } from './CalendarTab';
 
 export const ProjectPanel: React.FC<ProjectPanelProps> = ({
   projectId,
@@ -40,13 +46,6 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     };
   }, [isVisible, onClose]);
 
-  // معالجة النقر خارج اللوحة
-  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  }, [onClose]);
-
   const handleAddTask = useCallback(() => {
     console.log('إضافة مهمة جديدة');
   }, []);
@@ -66,15 +65,15 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
       case 'tasks':
         return <TasksTab tasks={projectData.tasks} loading={loading} />;
       case 'finance':
-        return <div className="p-6">التفاصيل المالية قيد التطوير</div>;
+        return <FinanceTab projectData={projectData} loading={loading} />;
       case 'legal':
-        return <div className="p-6">الشؤون القانونية قيد التطوير</div>;
+        return <LegalTab projectData={projectData} loading={loading} />;
       case 'client':
-        return <div className="p-6">معلومات العميل قيد التطوير</div>;
+        return <ClientTab projectData={projectData} loading={loading} />;
       case 'reports':
-        return <div className="p-6">تقارير المشروع قيد التطوير</div>;
+        return <ReportsTab projectData={projectData} loading={loading} />;
       case 'calendar':
-        return <div className="p-6">تقويم المشروع قيد التطوير</div>;
+        return <CalendarTab projectData={projectData} loading={loading} />;
       default:
         return null;
     }
@@ -83,60 +82,39 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
   if (!isVisible) return null;
 
   const panelContent = (
-    <div
-      className="fixed inset-0 z-[1200] flex items-center justify-end"
-      onClick={handleBackdropClick}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="project-panel-title"
-    >
-      <div
-        className={`
-          w-[60vw] h-full bg-white/45 backdrop-blur-[20px] border-l border-white/40
-          shadow-[-4px_0_20px_rgba(0,0,0,0.08)] flex flex-col
-          transform transition-transform duration-300 ease-out
-          ${isVisible ? 'translate-x-0' : 'translate-x-full'}
-        `}
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          background: `linear-gradient(135deg, var(--stageColor, #2f6ead)20, #ffffff00 100%), 
-                      rgba(255, 255, 255, 0.45)`,
-          borderRadius: '20px 0 0 20px'
-        }}
-      >
-        {/* Header */}
-        {projectData && (
-          <ProjectHeader
-            title={projectData.title}
-            status={projectData.status}
-            onClose={onClose}
-          />
-        )}
+    <MotionSystem isVisible={isVisible} onClose={onClose}>
+      {/* Header */}
+      {projectData && (
+        <ProjectHeader
+          title={projectData.title}
+          status={projectData.status}
+          onClose={onClose}
+        />
+      )}
 
-        {/* Quick Actions */}
-        <div className="p-6">
-          <ProjectQuickActions
-            onAddTask={handleAddTask}
-            onSmartGenerate={handleSmartGenerate}
-            onEditProject={handleEditProject}
-          />
-        </div>
-
-        {/* Tabs */}
-        <ProjectTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
-        {/* Content */}
-        <div className="flex-1 overflow-auto">
-          {error ? (
-            <div className="p-6 text-center text-red-600">
-              {error}
-            </div>
-          ) : (
-            renderTabContent()
-          )}
-        </div>
+      {/* Quick Actions */}
+      <div className="p-6">
+        <ProjectQuickActions
+          onAddTask={handleAddTask}
+          onSmartGenerate={handleSmartGenerate}
+          onEditProject={handleEditProject}
+        />
       </div>
-    </div>
+
+      {/* Tabs */}
+      <ProjectTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Content */}
+      <div className="flex-1 overflow-auto">
+        {error ? (
+          <div className="p-6 text-center text-red-600">
+            {error}
+          </div>
+        ) : (
+          renderTabContent()
+        )}
+      </div>
+    </MotionSystem>
   );
 
   return createPortal(panelContent, document.body);
