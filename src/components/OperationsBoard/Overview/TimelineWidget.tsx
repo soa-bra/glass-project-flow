@@ -1,4 +1,5 @@
 
+
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -32,97 +33,102 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
 
   const openEvent = (event: TimelineEvent) => {
     console.log('فتح الحدث:', event);
-    // يمكن إضافة modal أو popover هنا
   };
 
   return (
     <div className={`
       ${className}
-      rounded-3xl p-5
-      bg-white/80 backdrop-blur-xl border border-white/30
+      rounded-3xl p-6 relative overflow-hidden
+      bg-white/40 backdrop-blur-[20px] border border-white/30
       shadow-lg hover:shadow-xl transition-all duration-300
-      flex flex-col
     `}>
       
-      {/* رأس البطاقة */}
-      <header className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-arabic font-bold text-gray-800">
-          الأحداث القادمة
-        </h3>
-        
-        {/* أزرار التنقل */}
-        <div className="flex gap-2">
-          <button 
-            onClick={() => scroll(200)}
-            className="p-2 rounded-full bg-white/40 hover:bg-white/60 transition-colors backdrop-blur-sm"
+      {/* خلفية متدرجة مستوحاة من التصاميم */}
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/20 via-purple-300/20 to-pink-400/20 rounded-3xl"></div>
+      
+      {/* المحتوى */}
+      <div className="relative z-10">
+        {/* رأس البطاقة */}
+        <header className="flex items-center justify-between mb-6">
+          <div className="flex gap-2">
+            <button 
+              onClick={() => scroll(200)}
+              className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 transition-all duration-200 flex items-center justify-center shadow-lg"
+            >
+              <ChevronRight size={16} className="text-white" />
+            </button>
+            <button 
+              onClick={() => scroll(-200)}
+              className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all duration-200 flex items-center justify-center shadow-lg"
+            >
+              <ChevronLeft size={16} className="text-white" />
+            </button>
+          </div>
+          <h3 className="text-lg font-bold text-[#2A3437] font-arabic">
+            الأحداث القادمة
+          </h3>
+        </header>
+
+        {/* خط الزمن */}
+        <div className="flex-1 relative overflow-hidden">
+          <div
+            ref={scrollRef}
+            className="overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none h-full flex items-center"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            <ChevronRight size={16} />
-          </button>
-          <button 
-            onClick={() => scroll(-200)}
-            className="p-2 rounded-full bg-white/40 hover:bg-white/60 transition-colors backdrop-blur-sm"
-          >
-            <ChevronLeft size={16} />
-          </button>
-        </div>
-      </header>
-
-      {/* خط الزمن القابل للتمرير */}
-      <div className="flex-1 relative overflow-hidden">
-        <div
-          ref={scrollRef}
-          className="
-            overflow-x-auto scrollbar-hide
-            cursor-grab active:cursor-grabbing select-none
-            h-full flex items-center
-          "
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          <ul className="flex items-center gap-12 py-6 px-4">
-            {timeline.map((event, index) => (
-              <li key={event.id} className="relative flex flex-col items-center min-w-fit">
-                
-                {/* التاريخ */}
-                <span className="text-xs text-gray-600 mb-3 whitespace-nowrap font-medium">
-                  {new Date(event.date).toLocaleDateString('ar-SA', { 
-                    month: 'short', 
-                    day: 'numeric' 
-                  })}
-                </span>
-
-                {/* النقطة التفاعلية مع الخط */}
-                <div className="relative flex items-center">
-                  {/* خط للنقطة السابقة */}
-                  {index > 0 && (
-                    <div className="absolute right-full h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 w-12 rounded-full"></div>
-                  )}
+            <ul className="flex items-center gap-12 py-6 px-4">
+              {timeline.map((event, index) => (
+                <li key={event.id} className="relative flex flex-col items-center min-w-fit">
                   
-                  <button
-                    className="w-5 h-5 rounded-full border-2 border-white shadow-md transition-all duration-200 hover:scale-110 relative z-10 hover:shadow-lg"
-                    style={{ backgroundColor: event.color }}
-                    onClick={() => openEvent(event)}
-                  />
-                  
-                  {/* خط للنقطة التالية */}
-                  {index < timeline.length - 1 && (
-                    <div className="absolute left-full h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 w-12 rounded-full"></div>
-                  )}
-                </div>
+                  {/* التاريخ */}
+                  <div className="mb-4 p-2 rounded-xl bg-white/50 backdrop-blur-sm">
+                    <span className="text-xs text-gray-700 whitespace-nowrap font-medium font-arabic">
+                      {new Date(event.date).toLocaleDateString('ar-SA', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })}
+                    </span>
+                  </div>
 
-                {/* تفاصيل الحدث */}
-                <div className="text-center mt-3 max-w-28">
-                  <div className="text-xs font-semibold text-gray-900 whitespace-nowrap mb-1">
-                    {event.title}
+                  {/* النقطة التفاعلية */}
+                  <div className="relative flex items-center">
+                    {/* خط للنقطة السابقة */}
+                    {index > 0 && (
+                      <div className="absolute right-full h-1 bg-gradient-to-r from-indigo-300 to-purple-300 w-12 rounded-full"></div>
+                    )}
+                    
+                    <button
+                      className="relative w-6 h-6 rounded-full border-3 border-white shadow-xl transition-all duration-200 hover:scale-125 z-10 hover:shadow-2xl"
+                      style={{ backgroundColor: event.color }}
+                      onClick={() => openEvent(event)}
+                    >
+                      <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: event.color }}></div>
+                    </button>
+                    
+                    {/* خط للنقطة التالية */}
+                    {index < timeline.length - 1 && (
+                      <div className="absolute left-full h-1 bg-gradient-to-r from-purple-300 to-pink-300 w-12 rounded-full"></div>
+                    )}
                   </div>
-                  <div className="text-xs text-gray-600 whitespace-nowrap opacity-75">
-                    {event.department}
+
+                  {/* تفاصيل الحدث */}
+                  <div className="text-center mt-4 max-w-28">
+                    <div className="p-3 rounded-2xl bg-white/50 backdrop-blur-sm mb-2">
+                      <div className="text-sm font-bold text-[#2A3437] whitespace-nowrap mb-1 font-arabic">
+                        {event.title}
+                      </div>
+                      <div className="text-xs text-gray-600 whitespace-nowrap font-arabic">
+                        {event.department}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
