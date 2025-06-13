@@ -7,7 +7,7 @@
 
 @layer base {
   :root {
-    /* SoaBra Color Palette */
+    /* ... keep existing code (color palette variables) */
     --solid-bg: #CCD4D7;
     --sidebar-header-bg: #CCD4D7;
     --projects-column-bg: #E3E3E3;
@@ -241,7 +241,7 @@
       0 4px 16px rgba(0, 0, 0, 0.06),
       inset 0 1px 0 rgba(255, 255, 255, 0.4),
       inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: all 0.2s ease-in-out;
     position: relative;
     overflow: hidden;
   }
@@ -260,9 +260,7 @@
   }
   
   .hover-glow-enhanced {
-    @apply hover:shadow-[0_6px_20px_rgba(0,0,0,0.08)] 
-           hover:border-white/40 
-           hover:bg-white/35
+    @apply hover:shadow-sm 
            hover:scale-[1.02];
   }
   
@@ -291,7 +289,7 @@
       0 0 10px rgba(157, 203, 255, 0.15);
   }
   
-  /* بطاقات الانحدار المحسنة */
+  /* ... keep existing code (gradient cards) */
   .grad-pinkblue {
     background: linear-gradient(135deg, 
       rgba(236, 72, 153, 0.8) 0%, 
@@ -342,7 +340,7 @@
     box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
   }
   
-  /* البطاقات الصارخة المحسنة */
+  /* ... keep existing code (flat cards) */
   .flat-crimson {
     background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
     color: white;
@@ -378,7 +376,7 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  /* أحجام البطاقات المحسنة */
+  /* ... keep existing code (card sizes and typography) */
   .card-sm {
     @apply min-h-[120px];
   }
