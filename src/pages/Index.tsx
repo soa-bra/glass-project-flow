@@ -33,7 +33,7 @@ const Index = () => {
         {/* Operations Board with synchronized animation */}
         <div style={{
         transition: 'all var(--animation-duration-main) var(--animation-easing)'
-      }}>
+      }} className="">
           <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
         </div>
       </div>
