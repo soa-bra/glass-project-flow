@@ -33,7 +33,7 @@ const Index: React.FC = () => {
         <div 
           className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] transition-all var(--animation-duration-main) var(--animation-easing) ${
             isSidebarCollapsed ? 'projects-layout-collapsed' : 'projects-layout-expanded'
-          }`} 
+          } ${isPanelVisible ? 'w-[22vw] blur-[2px]' : ''}`} 
           style={{
             top: 'var(--sidebar-top-offset)'
           }}
@@ -43,19 +43,19 @@ const Index: React.FC = () => {
           </div>
         </div>
 
-        {/* لوحة العمليات - تختفي تدريجياً عند فتح لوحة المشروع */}
+        {/* لوحة العمليات - تنزلق خارج الإطار عند فتح لوحة المشروع */}
         <div 
           className={`mx-0 transition-all duration-500 ease-in-out ${
             selectedProjectId && isPanelVisible 
-              ? 'opacity-0 pointer-events-none scale-95' 
-              : 'opacity-100 pointer-events-auto scale-100'
+              ? 'translate-x-full opacity-0 pointer-events-none' 
+              : 'translate-x-0 opacity-100 pointer-events-auto'
           }`}
         >
           <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
         </div>
       </div>
 
-      {/* لوحة تحكم المشروع مع Portal محسن */}
+      {/* لوحة تحكم المشروع */}
       {selectedProjectId && (
         <ProjectPanel
           projectId={selectedProjectId}

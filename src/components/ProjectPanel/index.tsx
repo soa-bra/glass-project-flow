@@ -7,6 +7,7 @@ import { MotionSystem } from './MotionSystem';
 import { ProjectHeader } from './ProjectHeader';
 import { ProjectQuickActions } from './ProjectQuickActions';
 import { ProjectTabs } from './ProjectTabs';
+import { ProjectDashboard } from './ProjectDashboard';
 import { TasksTab } from './TasksTab';
 import { FinanceTab } from './FinanceTab';
 import { LegalTab } from './LegalTab';
@@ -72,6 +73,8 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     if (!projectData) return null;
 
     switch (activeTab) {
+      case 'dashboard':
+        return <ProjectDashboard projectData={projectData} loading={loading} />;
       case 'tasks':
         return <TasksTab tasks={projectData.tasks} loading={loading} />;
       case 'finance':
@@ -87,7 +90,7 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
       case 'notifications':
         return <NotificationCenter />;
       default:
-        return null;
+        return <ProjectDashboard projectData={projectData} loading={loading} />;
     }
   };
 
@@ -99,62 +102,41 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
 
   console.log('ProjectPanel rendering content with Portal');
 
-  // محتوى اللوحة مع تحسينات z-index والموضع
+  // محتوى اللوحة مع MotionSystem
   const panelContent = (
-    <div 
-      className="fixed inset-0 bg-black/20 backdrop-blur-sm"
-      style={{ zIndex: 9999 }}
-    >
-      <div 
-        className="fixed inset-0 flex items-center justify-center p-4"
-        onClick={(e) => {
-          // إغلاق اللوحة عند النقر على الخلفية
-          if (e.target === e.currentTarget) {
-            console.log('إغلاق اللوحة بالنقر على الخلفية');
-            onClose();
-          }
-        }}
-      >
-        <div 
-          className="w-full max-w-6xl h-full max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MotionSystem isVisible={isVisible} onClose={onClose}>
-            {/* Header */}
-            {projectData && (
-              <ProjectHeader
-                title={projectData.title}
-                status={projectData.status}
-                onClose={onClose}
-              />
-            )}
+    <MotionSystem isVisible={isVisible} onClose={onClose}>
+      {/* Header */}
+      {projectData && (
+        <ProjectHeader
+          title={projectData.title}
+          status={projectData.status}
+          onClose={onClose}
+        />
+      )}
 
-            {/* Quick Actions */}
-            <div className="p-6">
-              <ProjectQuickActions
-                onAddTask={handleAddTask}
-                onSmartGenerate={handleSmartGenerate}
-                onEditProject={handleEditProject}
-              />
-            </div>
-
-            {/* Tabs */}
-            <ProjectTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
-            {/* Content */}
-            <div className="flex-1 overflow-auto">
-              {error ? (
-                <div className="p-6 text-center text-red-600">
-                  {error}
-                </div>
-              ) : (
-                renderTabContent()
-              )}
-            </div>
-          </MotionSystem>
-        </div>
+      {/* Quick Actions */}
+      <div className="px-6 pt-4">
+        <ProjectQuickActions
+          onAddTask={handleAddTask}
+          onSmartGenerate={handleSmartGenerate}
+          onEditProject={handleEditProject}
+        />
       </div>
-    </div>
+
+      {/* Tabs */}
+      <ProjectTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Content */}
+      <div className="flex-1 overflow-auto">
+        {error ? (
+          <div className="p-6 text-center text-red-600">
+            {error}
+          </div>
+        ) : (
+          renderTabContent()
+        )}
+      </div>
+    </MotionSystem>
   );
 
   return createPortal(panelContent, document.body);
