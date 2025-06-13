@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TimelineSection } from './Overview/TimelineSection';
 import { BudgetWidget } from './Overview/BudgetWidget';
@@ -9,6 +10,7 @@ import { ExtraWidgetTwo } from './Overview/ExtraWidgetTwo';
 import { ExtraWidgetThree } from './Overview/ExtraWidgetThree';
 import { ExtraWidgetFour } from './Overview/ExtraWidgetFour';
 import { ExtraWidgetFive } from './Overview/ExtraWidgetFive';
+import { BaseCard } from '@/components/ui/BaseCard';
 
 interface TimelineEvent {
   id: number;
@@ -95,12 +97,19 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
         {/* الصف السادس - بطاقة إضافية */}
         <div className="lg:col-span-3">
-          <div className="advanced-glass-card hover-glow-enhanced rounded-[24px] p-6 min-h-[120px] flex items-center justify-center">
+          <BaseCard 
+            size="sm"
+            header={
+              <h3 className="text-lg font-arabic font-bold text-gray-800 text-center">
+                إحصائيات إضافية
+              </h3>
+            }
+            className="min-h-[120px] flex items-center justify-center"
+          >
             <div className="text-center">
-              <h3 className="text-lg font-arabic font-bold text-gray-800 mb-2">إحصائيات إضافية</h3>
               <p className="text-gray-600 text-sm">المزيد من البيانات والتحليلات قريباً</p>
             </div>
-          </div>
+          </BaseCard>
         </div>
 
       </div>
