@@ -4,20 +4,23 @@ import ProjectCardHeader from './ProjectCardHeader';
 import ProjectCardFooter from './ProjectCardFooter';
 import type { ProjectCardProps } from './types';
 
-const ProjectCard = ({
-  id,
-  title,
-  description,
-  tasksCount,
-  status,
-  date,
-  owner,
-  value,
-  daysLeft
-}: ProjectCardProps) => {
+const ProjectCard = (project: ProjectCardProps) => {
+  const {
+    id,
+    title,
+    description,
+    tasksCount,
+    status,
+    date,
+    owner,
+    value,
+    daysLeft
+  } = project;
+
   return (
     <ProjectCardLayout
       id={id}
+      project={project}
     >
       <ProjectCardHeader
         daysLeft={daysLeft}
