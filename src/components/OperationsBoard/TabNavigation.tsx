@@ -12,7 +12,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   onTabChange
 }) => {
   return <TabsList className="flex w-auto bg-transparent gap-1 h-auto py-0 px my-0">
-      {tabItems.map(tab => <TabsTrigger key={tab.value} value={tab.value} className="text-sm font-arabic rounded-full px-6 py-3 transition-all duration-300 data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-600 data-[state=inactive]:border data-[state=inactive]:border-gray-400 hover:bg-gray-100 whitespace-nowrap">
+      {tabItems.map(tab => <TabsTrigger key={tab.value} value={tab.value} className="text-sm font-arabic rounded-full transition-all duration-300 data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-600 data-[state=inactive]:border data-[state=inactive]:border-gray-400 hover:bg-gray-100 whitespace-nowrap py-[15px] px-[25px]">
           {tab.label}
         </TabsTrigger>)}
     </TabsList>;
