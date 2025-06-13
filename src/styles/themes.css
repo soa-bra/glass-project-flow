@@ -1,0 +1,75 @@
+
+/* نظام الألوان والثيمات - SoaBra Design System */
+
+:root {
+  /* الثيم الافتراضي - الألوان الحالية */
+  --theme-primary: #0099FF;
+  --theme-primary-hover: #0077CC;
+  --theme-secondary: #6B7280;
+  --theme-success: #5DDC82;
+  --theme-warning: #ECFF8C;
+  --theme-error: #F23D3D;
+  --theme-neutral: #EDEDEE;
+  
+  /* خلفيات متدرجة للثيم */
+  --theme-bg-primary: #CCD4D7;
+  --theme-bg-secondary: #E3E3E3;
+  --theme-bg-tertiary: #F2F2F2;
+  
+  /* متغيرات الشفافية للـ Glassmorphism */
+  --glass-opacity-light: rgba(255, 255, 255, 0.4);
+  --glass-opacity-medium: rgba(255, 255, 255, 0.25);
+  --glass-opacity-heavy: rgba(255, 255, 255, 0.15);
+  --glass-blur: blur(20px);
+  --glass-border: rgba(255, 255, 255, 0.2);
+}
+
+/* ثيم داكن اختياري */
+[data-theme="dark"] {
+  --theme-primary: #66B3FF;
+  --theme-primary-hover: #4DA6FF;
+  --theme-secondary: #9CA3AF;
+  --theme-success: #10B981;
+  --theme-warning: #F59E0B;
+  --theme-error: #EF4444;
+  --theme-neutral: #374151;
+  
+  --theme-bg-primary: #1F2937;
+  --theme-bg-secondary: #111827;
+  --theme-bg-tertiary: #030712;
+  
+  --glass-opacity-light: rgba(0, 0, 0, 0.4);
+  --glass-opacity-medium: rgba(0, 0, 0, 0.25);
+  --glass-opacity-heavy: rgba(0, 0, 0, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* فئات الثيم القابلة للاستخدام */
+.theme-glass-light {
+  background: var(--glass-opacity-light);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+.theme-glass-medium {
+  background: var(--glass-opacity-medium);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+.theme-glass-heavy {
+  background: var(--glass-opacity-heavy);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+.theme-primary-btn {
+  background: var(--theme-primary);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.theme-primary-btn:hover {
+  background: var(--theme-primary-hover);
+  transform: translateY(-1px);
+}

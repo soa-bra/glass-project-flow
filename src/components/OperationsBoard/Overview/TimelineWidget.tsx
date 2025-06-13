@@ -23,18 +23,21 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = React.memo(({
   const handleScrollRight = React.useCallback(() => scroll(200), [scroll]);
 
   return (
-    <div className={`
-      ${className}
-      rounded-3xl p-6
-      bg-white/45 backdrop-blur-[20px] border border-white/40
-      shadow-lg hover:shadow-xl transition-all duration-300
-      flex flex-col
-      font-arabic
-      overflow-hidden
-      min-h-[320px]
-    `}>
+    <div 
+      className={cn(
+        className,
+        'theme-glass-light rounded-3xl p-6',
+        'shadow-lg hover:shadow-xl transition-all duration-300',
+        'flex flex-col font-arabic overflow-hidden min-h-[320px]'
+      )}
+      role="region"
+      aria-label="الأحداث القادمة"
+    >
       <header className="flex items-center justify-between mb-5">
-        <h3 className="text-xl font-arabic font-bold text-gray-800">
+        <h3 
+          className="text-xl font-arabic font-bold text-high-contrast"
+          id="timeline-heading"
+        >
           الأحداث القادمة
         </h3>
         
@@ -46,8 +49,14 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = React.memo(({
         />
       </header>
 
-      <div className="flex-1 relative min-h-0 py-[35px]">
-        <TimelineScrollContainer timeline={timeline} onEventClick={openEvent} />
+      <div 
+        className="flex-1 relative min-h-0 py-[35px]"
+        aria-labelledby="timeline-heading"
+      >
+        <TimelineScrollContainer 
+          timeline={timeline} 
+          onEventClick={openEvent} 
+        />
       </div>
     </div>
   );

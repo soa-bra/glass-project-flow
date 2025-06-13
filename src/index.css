@@ -3,6 +3,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* استيراد أنظمة التصميم المحسنة */
+@import './styles/themes.css';
+@import './styles/accessibility.css';
+@import './styles/responsive.css';
+
 /* SoaBra Design System - Enhanced Glassmorphism & Typography */
 
 @layer base {
