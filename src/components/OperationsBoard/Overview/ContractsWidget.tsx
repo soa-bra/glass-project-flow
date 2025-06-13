@@ -27,23 +27,26 @@ export const ContractsWidget: React.FC<ContractsWidgetProps> = ({ contracts }) =
           حالة العقود
         </h3>
       }
+      className="h-[180px]"
     >
-      <div className="flex justify-center items-center mb-2">
-        <div className="text-center ml-6">
-          <div className="text-lg font-bold text-blue-500 mb-1">{contracts.signed}</div>
-          <div className="text-xs text-gray-600">موقّعة</div>
+      <div className="flex-1 flex flex-col justify-center">
+        <div className="flex justify-center items-center mb-4">
+          <div className="text-center ml-6">
+            <div className="text-lg font-bold text-blue-500 mb-1">{contracts.signed}</div>
+            <div className="text-xs text-gray-600">موقّعة</div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-bold text-orange-500 mb-1">{contracts.expired}</div>
+            <div className="text-xs text-gray-600">منتهية</div>
+          </div>
         </div>
-        <div className="text-center">
-          <div className="text-lg font-bold text-orange-500 mb-1">{contracts.expired}</div>
-          <div className="text-xs text-gray-600">منتهية</div>
-        </div>
-      </div>
 
-      <Progress 
-        value={signedPercentage} 
-        className="h-1 bg-orange-200"
-        indicatorClassName="bg-blue-500"
-      />
+        <Progress 
+          value={signedPercentage} 
+          className="h-1 bg-orange-200"
+          indicatorClassName="bg-blue-500"
+        />
+      </div>
     </BaseCard>
   );
 };

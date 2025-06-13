@@ -29,9 +29,9 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfac
           مؤشر رضا العملاء
         </h3>
       }
-      className="min-h-[160px]"
+      className="h-[220px]"
     >
-      <div className="flex items-center justify-center gap-8">
+      <div className="flex-1 flex items-center justify-center gap-8">
         {/* الدائرة الأساسية */}
         <div className="flex flex-col items-center">
           <div className="relative w-24 h-24 mb-2">

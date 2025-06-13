@@ -30,8 +30,9 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({ budget }) => {
           الميزانية والمصروفات
         </h3>
       }
+      className="h-[180px]"
     >
-      <div className="space-y-2">
+      <div className="space-y-2 flex-1 flex flex-col justify-center">
         <div className="text-right">
           <div className="mb-1">
             <span className="text-xs text-gray-600">الميزانية الإجمالية</span>

@@ -28,27 +28,30 @@ export const HRWidget: React.FC<HRWidgetProps> = ({ hr }) => {
           الموارد البشرية
         </h3>
       }
+      className="h-[180px]"
     >
-      <div className="flex justify-center items-center mb-2">
-        <div className="text-center ml-3">
-          <div className="text-lg font-bold text-blue-500 mb-1">{hr.members}</div>
-          <div className="text-xs text-gray-600">أعضاء الفريق</div>
+      <div className="flex-1 flex flex-col justify-center">
+        <div className="flex justify-center items-center mb-4">
+          <div className="text-center ml-3">
+            <div className="text-lg font-bold text-blue-500 mb-1">{hr.members}</div>
+            <div className="text-xs text-gray-600">أعضاء الفريق</div>
+          </div>
+          <div className="text-center ml-3">
+            <div className="text-lg font-bold text-orange-500 mb-1">{hr.onLeave}</div>
+            <div className="text-xs text-gray-600">في إجازة</div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-bold text-purple-500 mb-1">{hr.vacancies}</div>
+            <div className="text-xs text-gray-600">شواغر</div>
+          </div>
         </div>
-        <div className="text-center ml-3">
-          <div className="text-lg font-bold text-orange-500 mb-1">{hr.onLeave}</div>
-          <div className="text-xs text-gray-600">في إجازة</div>
-        </div>
-        <div className="text-center">
-          <div className="text-lg font-bold text-purple-500 mb-1">{hr.vacancies}</div>
-          <div className="text-xs text-gray-600">شواغر</div>
-        </div>
-      </div>
 
-      <Progress 
-        value={fillPercentage} 
-        className="h-1 bg-blue-200" 
-        indicatorClassName="bg-blue-500" 
-      />
+        <Progress 
+          value={fillPercentage} 
+          className="h-1 bg-blue-200" 
+          indicatorClassName="bg-blue-500" 
+        />
+      </div>
     </BaseCard>
   );
 };

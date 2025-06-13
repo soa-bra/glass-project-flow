@@ -13,8 +13,9 @@ export const ExtraWidgetFive: React.FC = () => {
           تحذير
         </h3>
       }
+      className="h-[180px]"
     >
-      <div className="flex items-center justify-between">
+      <div className="flex-1 flex items-center justify-between">
         <div className="text-lg font-bold text-red-600">12</div>
         <div className="text-xs text-gray-600">المهام المتأخرة</div>
       </div>

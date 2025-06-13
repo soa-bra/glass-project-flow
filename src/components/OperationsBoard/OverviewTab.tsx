@@ -105,7 +105,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
                 إحصائيات إضافية
               </h3>
             }
-            className="min-h-[120px] flex items-center justify-center"
+            className="h-[180px] flex items-center justify-center"
           >
             <div className="text-center">
               <p className="text-gray-600 text-sm">المزيد من البيانات والتحليلات قريباً</p>

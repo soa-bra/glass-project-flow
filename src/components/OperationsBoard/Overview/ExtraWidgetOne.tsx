@@ -12,8 +12,9 @@ export const ExtraWidgetOne: React.FC = () => {
           إحصائية إضافية 1
         </h3>
       }
+      className="h-[180px]"
     >
-      <div className="flex flex-col items-center justify-center h-full">
+      <div className="flex-1 flex flex-col items-center justify-center">
         <div className="text-2xl font-bold text-purple-600 mb-1">45</div>
         <div className="text-xs text-gray-600 text-center">مؤشر الأداء</div>
       </div>

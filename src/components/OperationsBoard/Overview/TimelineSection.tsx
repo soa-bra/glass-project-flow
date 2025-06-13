@@ -24,10 +24,10 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ timeline }) =>
           المواعيد والأحداث القادمة
         </h3>
       }
-      className="w-full min-h-[140px]"
+      className="w-full h-[180px]"
     >
-      <div className="relative overflow-x-auto">
-        <div className="flex items-center gap-8 min-w-full pb-2 justify-center">
+      <div className="relative overflow-x-auto flex-1">
+        <div className="flex items-center gap-8 min-w-full pb-2 justify-center h-full">
           {timeline.slice(0, 8).map((event, index) => (
             <div key={event.id} className="flex flex-col items-center min-w-fit relative">
               <div className="text-xs text-gray-500 mb-2 whitespace-nowrap font-medium">
