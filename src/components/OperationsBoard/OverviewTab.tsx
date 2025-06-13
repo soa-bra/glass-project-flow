@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TimelineSection } from './Overview/TimelineSection';
 import { BudgetWidget } from './Overview/BudgetWidget';
@@ -9,7 +10,7 @@ import { ExtraWidgetTwo } from './Overview/ExtraWidgetTwo';
 import { ExtraWidgetThree } from './Overview/ExtraWidgetThree';
 import { ExtraWidgetFour } from './Overview/ExtraWidgetFour';
 import { ExtraWidgetFive } from './Overview/ExtraWidgetFive';
-import { BaseCard } from '@/components/ui/BaseCard';
+
 interface TimelineEvent {
   id: number;
   date: string;
@@ -17,6 +18,7 @@ interface TimelineEvent {
   department: string;
   color: string;
 }
+
 interface WidgetsData {
   budget: {
     total: number;
@@ -33,14 +35,17 @@ interface WidgetsData {
   };
   satisfaction: number;
 }
+
 interface OverviewData {
   timeline: TimelineEvent[];
   widgets: WidgetsData;
 }
+
 interface OverviewTabProps {
   data?: OverviewData;
   loading: boolean;
 }
+
 export const OverviewTab: React.FC<OverviewTabProps> = ({
   data,
   loading
@@ -48,6 +53,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   if (loading || !data) {
     return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
+
   return <div className="h-full overflow-y-auto px-[5px]">
       <div style={{
       minHeight: 'calc(100vh - 200px)'
@@ -91,17 +97,6 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         </div>
         <div className="lg:col-span-2">
           <ExtraWidgetFive />
-        </div>
-
-        {/* الصف السادس - بطاقة إضافية */}
-        <div className="lg:col-span-3">
-          <BaseCard size="sm" variant="glass" header={<h3 className="text-lg font-arabic font-bold text-gray-800 text-center">
-                إحصائيات إضافية
-              </h3>} className="h-[180px] flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-gray-600 text-sm">المزيد من البيانات والتحليلات قريباً</p>
-            </div>
-          </BaseCard>
         </div>
 
       </div>
