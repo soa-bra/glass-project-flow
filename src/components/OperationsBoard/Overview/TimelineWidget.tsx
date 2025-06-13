@@ -1,6 +1,7 @@
 
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import GlassWidget from '@/components/ui/GlassWidget';
 
 interface TimelineEvent {
   id: number;
@@ -36,15 +37,10 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
   };
 
   return (
-    <div className={`
-      ${className}
-      glass-enhanced rounded-[20px] p-6
-      flex flex-col
-    `}>
-      
+    <GlassWidget className={className}>
       {/* رأس البطاقة */}
       <header className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-arabic font-bold text-gray-800">
+        <h3 className="text-lg font-arabic font-bold">
           الأحداث القادمة
         </h3>
         
@@ -81,7 +77,7 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
               <li key={event.id} className="relative flex flex-col items-center min-w-fit">
                 
                 {/* التاريخ */}
-                <span className="text-xs text-gray-500 mb-3 whitespace-nowrap font-medium">
+                <span className="text-xs text-white/60 mb-3 whitespace-nowrap font-medium">
                   {new Date(event.date).toLocaleDateString('ar-SA', { 
                     month: 'short', 
                     day: 'numeric' 
@@ -92,7 +88,7 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
                 <div className="relative flex items-center">
                   {/* خط للنقطة السابقة */}
                   {index > 0 && (
-                    <div className="absolute right-full h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 w-12"></div>
+                    <div className="absolute right-full h-0.5 bg-gradient-to-r from-white/30 to-white/40 w-12"></div>
                   )}
                   
                   <button
@@ -103,16 +99,16 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
                   
                   {/* خط للنقطة التالية */}
                   {index < timeline.length - 1 && (
-                    <div className="absolute left-full h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 w-12"></div>
+                    <div className="absolute left-full h-0.5 bg-gradient-to-r from-white/30 to-white/40 w-12"></div>
                   )}
                 </div>
 
                 {/* تفاصيل الحدث */}
                 <div className="text-center mt-3">
-                  <div className="text-sm font-semibold text-gray-900 whitespace-nowrap mb-1">
+                  <div className="text-sm font-semibold whitespace-nowrap mb-1">
                     {event.title}
                   </div>
-                  <div className="text-xs text-gray-600 whitespace-nowrap">
+                  <div className="text-xs text-white/60 whitespace-nowrap">
                     {event.department}
                   </div>
                 </div>
@@ -121,6 +117,6 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
           </ul>
         </div>
       </div>
-    </div>
+    </GlassWidget>
   );
 };

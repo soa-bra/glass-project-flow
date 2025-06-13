@@ -8,6 +8,7 @@ import {
   AlertCircle,
   Target
 } from 'lucide-react';
+import GlassWidget from '@/components/ui/GlassWidget';
 
 interface AISuggestedWidgetProps {
   type: 'kpi' | 'reports' | 'alerts' | 'analytics' | 'team' | 'goals';
@@ -18,7 +19,7 @@ interface AISuggestedWidgetProps {
 const widgetConfig = {
   kpi: {
     icon: TrendingUp,
-    gradient: 'from-blue-500 to-blue-600',
+    accent: true,
     content: {
       main: '94%',
       sub: 'معدل الإنجاز الشهري',
@@ -27,7 +28,7 @@ const widgetConfig = {
   },
   reports: {
     icon: FileText,
-    gradient: 'from-purple-500 to-purple-600',
+    accent: false,
     content: {
       main: '8',
       sub: 'تقارير جاهزة للمراجعة',
@@ -36,7 +37,7 @@ const widgetConfig = {
   },
   alerts: {
     icon: AlertCircle,
-    gradient: 'from-orange-500 to-red-500',
+    accent: false,
     content: {
       main: '5',
       sub: 'تنبيهات تحتاج متابعة',
@@ -45,7 +46,7 @@ const widgetConfig = {
   },
   analytics: {
     icon: BarChart3,
-    gradient: 'from-green-500 to-emerald-600',
+    accent: false,
     content: {
       main: '↗️',
       sub: 'الأداء في تحسن مستمر',
@@ -54,7 +55,7 @@ const widgetConfig = {
   },
   team: {
     icon: Users,
-    gradient: 'from-indigo-500 to-blue-600',
+    accent: false,
     content: {
       main: '23',
       sub: 'عضو فريق نشط',
@@ -63,7 +64,7 @@ const widgetConfig = {
   },
   goals: {
     icon: Target,
-    gradient: 'from-pink-500 to-rose-600',
+    accent: false,
     content: {
       main: '7/10',
       sub: 'أهداف محققة',
@@ -81,14 +82,7 @@ export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
   const Icon = config.icon;
 
   return (
-    <div className={`
-      ${className}
-      rounded-2xl p-4 text-white shadow-lg 
-      bg-gradient-to-br ${config.gradient}
-      hover:shadow-xl transition-all duration-300
-      flex flex-col justify-between
-    `}>
-      
+    <GlassWidget accent={config.accent} className={className}>
       {/* رأس البطاقة */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-arabic font-semibold opacity-90">
@@ -118,6 +112,6 @@ export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
           عرض التفاصيل ←
         </button>
       </div>
-    </div>
+    </GlassWidget>
   );
 };
