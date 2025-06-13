@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Progress } from '@/components/ui/progress';
 
 interface BudgetData {
   total: number;
@@ -21,69 +22,69 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({
 
   const remaining = budget.total - budget.spent;
   const percentage = Math.round((budget.spent / budget.total) * 100);
+  const isHealthy = remaining >= 0 && percentage <= 80;
 
   return (
     <div className={`
       ${className}
-      rounded-2xl p-4 relative overflow-hidden
-      bg-white/40 backdrop-blur-[20px] border border-white/30
-      shadow-sm transition-all duration-300
+      rounded-3xl p-6 text-white shadow-xl transition-all duration-300 hover:shadow-2xl
+      ${isHealthy ? 'bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600' : 'bg-gradient-to-br from-red-500 via-rose-500 to-red-600'}
+      backdrop-blur-xl border border-white/20
     `}>
       
-      {/* المحتوى */}
-      <div className="relative z-10">
-        {/* رأس البطاقة */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
-            <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zM14 6a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h8zM6 8a2 2 0 012 2v1a2 2 0 01-2 2V8zM8 9a1 1 0 000 2h1a1 1 0 100-2H8z"/>
-            </svg>
-          </div>
-          <h3 className="text-sm font-medium text-gray-800 font-arabic">
-            الميزانية
-          </h3>
+      {/* رأس البطاقة */}
+      <h3 className="text-lg font-arabic font-bold mb-5">
+        الميزانية والمصروفات
+      </h3>
+
+      {/* الميزانية الإجمالية */}
+      <div className="mb-6">
+        <p className="text-3xl font-bold tracking-wide mb-1">
+          {formatCurrency(budget.total)}
+        </p>
+        <p className="text-sm opacity-90">
+          ريال - الميزانية الإجمالية
+        </p>
+      </div>
+
+      {/* تفاصيل المصروفات */}
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <span className="text-sm opacity-90">المصروفات:</span>
+          <span className="font-semibold">
+            {formatCurrency(budget.spent)} ريال
+          </span>
         </div>
 
-        {/* الرقم الرئيسي */}
-        <div className="mb-4">
-          <div className="text-lg font-bold text-gray-900 mb-1">
-            {formatCurrency(budget.total)}
-          </div>
-          <div className="text-xs text-gray-600 font-arabic">
-            ريال - الميزانية الإجمالية
-          </div>
+        <div className="flex justify-between items-center">
+          <span className="text-sm opacity-90">المتبقي:</span>
+          <span className="font-semibold">
+            {formatCurrency(remaining)} ريال
+          </span>
         </div>
 
-        {/* شريط التقدم مع النسبة */}
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs text-gray-600 font-arabic">{percentage}% مستخدم</span>
-            <span className="text-xs text-gray-500">|</span>
+        {/* شريط التقدم */}
+        <div className="mt-5">
+          <div className="flex justify-between text-sm mb-2 opacity-90">
+            <span>{percentage}%</span>
+            <span>مستخدم من الميزانية</span>
           </div>
-          <div className="h-2 bg-gray-200/50 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-1000"
-              style={{width: `${percentage}%`}}
-            ></div>
-          </div>
-        </div>
-
-        {/* تفاصيل الميزانية */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="text-center p-2 rounded-lg bg-white/30">
-            <div className="text-xs font-medium text-green-600">
-              {formatCurrency(budget.spent)}
-            </div>
-            <div className="text-xs text-gray-600 font-arabic">المصروفات</div>
-          </div>
-          <div className="text-center p-2 rounded-lg bg-white/30">
-            <div className="text-xs font-medium text-blue-600">
-              {formatCurrency(remaining)}
-            </div>
-            <div className="text-xs text-gray-600 font-arabic">المتبقي</div>
-          </div>
+          <Progress 
+            value={percentage} 
+            className="h-2.5 bg-white/20 rounded-full" 
+            indicatorClassName="bg-white/90 rounded-full"
+          />
         </div>
       </div>
+
+      {/* تحذير إذا تجاوز الميزانية */}
+      {!isHealthy && (
+        <div className="mt-5 p-3 bg-white/10 rounded-xl backdrop-blur-sm">
+          <p className="text-sm font-medium">
+            ⚠️ تحذير: تم تجاوز الميزانية المخططة
+          </p>
+        </div>
+      )}
     </div>
   );
 };

@@ -17,63 +17,45 @@ export const HRWidget: React.FC<HRWidgetProps> = ({
   hr, 
   className = '' 
 }) => {
-  const total = hr.members + hr.vacancies;
-  const activePercentage = Math.round((hr.members / total) * 100);
+  const hasVacancies = hr.vacancies > 0;
 
   return (
     <div className={`
       ${className}
-      rounded-2xl p-4 relative overflow-hidden
-      bg-white/40 backdrop-blur-[20px] border border-white/30
-      shadow-sm transition-all duration-300
+      rounded-3xl p-5
+      bg-white/80 backdrop-blur-xl border border-white/30
+      shadow-lg hover:shadow-xl transition-all duration-300
+      ${hasVacancies ? 'border-orange-200/50' : 'border-green-200/50'}
+      flex flex-col justify-between
     `}>
       
-      {/* المحتوى */}
-      <div className="relative z-10">
-        {/* رأس البطاقة مع الأيقونة والعنوان */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-            <Users size={16} className="text-blue-600" />
+      <h3 className="text-lg font-arabic font-bold text-gray-800 mb-4">
+        الموارد البشرية
+      </h3>
+
+      <div className="space-y-4 flex-1">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Users size={16} className="text-blue-500" />
+            <span className="text-sm text-gray-600">الموظفين</span>
           </div>
-          <h3 className="text-sm font-medium text-gray-800 font-arabic">
-            الموارد البشرية
-          </h3>
+          <span className="text-xl font-bold text-blue-500">{hr.members}</span>
         </div>
 
-        {/* الرقم الرئيسي - أسلوب بسيط */}
-        <div className="mb-4">
-          <div className="text-2xl font-bold text-gray-900 mb-1">
-            {hr.members}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <UserPlus size={16} className="text-orange-500" />
+            <span className="text-sm text-gray-600">الشواغر</span>
           </div>
-          <div className="text-xs text-gray-600 font-arabic">
-            موظف نشط
-          </div>
+          <span className="text-xl font-bold text-orange-500">{hr.vacancies}</span>
         </div>
 
-        {/* شريط التقدم البسيط */}
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs text-gray-600 font-arabic">{activePercentage}%</span>
-            <span className="text-xs text-gray-500 font-arabic">معدل التوظيف</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <UserMinus size={16} className="text-gray-500" />
+            <span className="text-sm text-gray-600">في إجازة</span>
           </div>
-          <div className="h-2 bg-gray-200/50 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-blue-500 rounded-full transition-all duration-1000"
-              style={{width: `${activePercentage}%`}}
-            ></div>
-          </div>
-        </div>
-
-        {/* الإحصائيات السفلية */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="text-center p-2 rounded-lg bg-white/30">
-            <div className="text-sm font-medium text-orange-600">{hr.vacancies}</div>
-            <div className="text-xs text-gray-600 font-arabic">شواغر</div>
-          </div>
-          <div className="text-center p-2 rounded-lg bg-white/30">
-            <div className="text-sm font-medium text-gray-600">{hr.onLeave}</div>
-            <div className="text-xs text-gray-600 font-arabic">في إجازة</div>
-          </div>
+          <span className="text-xl font-bold text-gray-500">{hr.onLeave}</span>
         </div>
       </div>
     </div>
