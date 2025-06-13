@@ -1,6 +1,5 @@
 
 import React, { useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
 import { ProjectPanelProps, ProjectTab } from './types';
 import { useProjectPanel } from './useProjectPanel';
 import { MotionSystem } from './MotionSystem';
@@ -31,30 +30,6 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
   } = useProjectPanel(projectId, isVisible);
 
   console.log('ProjectPanel data - projectData:', projectData, 'loading:', loading, 'error:', error);
-
-  // معالجة مفتاح Escape
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isVisible) {
-        console.log('إغلاق اللوحة بمفتاح Escape');
-        onClose();
-      }
-    };
-
-    if (isVisible) {
-      console.log('تفعيل معالجة مفتاح Escape وإخفاء scroll');
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    } else {
-      console.log('إعادة تفعيل scroll');
-      document.body.style.overflow = 'auto';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'auto';
-    };
-  }, [isVisible, onClose]);
 
   const handleAddTask = useCallback(() => {
     console.log('إضافة مهمة جديدة');
@@ -97,10 +72,9 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     return null;
   }
 
-  console.log('ProjectPanel rendering content with Portal - simplified structure');
+  console.log('ProjectPanel rendering content - main structure');
 
-  // محتوى اللوحة المبسط - إزالة الطبقات المضاعفة
-  return createPortal(
+  return (
     <MotionSystem isVisible={isVisible} onClose={onClose}>
       {/* Header */}
       {projectData && (
@@ -133,8 +107,7 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
           renderTabContent()
         )}
       </div>
-    </MotionSystem>,
-    document.body
+    </MotionSystem>
   );
 };
 
