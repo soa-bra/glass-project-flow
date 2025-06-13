@@ -15,12 +15,12 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   onTabChange
 }) => {
   return (
-    <TabsList className="grid w-full grid-cols-6 bg-white/20 backdrop-blur-sm rounded-lg p-1 mx-4 mt-2 mb-4">
+    <TabsList className="grid w-full grid-cols-6 bg-transparent backdrop-blur-sm rounded-full p-2 mx-4 mt-2 mb-4 border border-white/20">
       {tabItems.map((tab) => (
         <TabsTrigger
           key={tab.value}
           value={tab.value}
-          className="text-sm font-arabic data-[state=active]:bg-white/80 data-[state=active]:text-gray-800 text-gray-600 hover:text-gray-800 transition-all"
+          className="text-sm font-arabic rounded-full px-4 py-2 transition-all duration-300 data-[state=active]:bg-gray-800/90 data-[state=active]:text-white data-[state=active]:shadow-lg text-gray-600 hover:text-gray-800 hover:bg-white/20"
         >
           {tab.label}
         </TabsTrigger>
