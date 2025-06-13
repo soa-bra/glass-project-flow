@@ -1,0 +1,71 @@
+
+/* تحسينات الأداء والرسوم المتحركة */
+
+@layer utilities {
+  /* تحسين الرسوم المتحركة */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* تحسين النصوص */
+  .text-optimized {
+    font-display: swap;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* تحسين الصور */
+  .image-optimized {
+    object-fit: cover;
+    loading: lazy;
+    decoding: async;
+  }
+  
+  /* تحسين التفاعل */
+  .interaction-optimized {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* تحسين الذاكرة */
+  .memory-optimized {
+    contain: layout style paint;
+  }
+  
+  /* تقليل الترتيب المعاد */
+  .layout-stable {
+    contain: layout;
+  }
+  
+  /* تحسين الظلال */
+  .shadow-optimized {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  }
+}
+
+/* تحسينات خاصة بالخط الزمني */
+.timeline-optimized {
+  contain: layout style;
+  transform: translateZ(0);
+}
+
+.timeline-item-optimized {
+  contain: layout style paint;
+  will-change: transform, opacity;
+}
+
+/* تحسينات للعناصر المتحركة */
+@media (prefers-reduced-motion: reduce) {
+  .timeline-item-optimized {
+    transition: none !important;
+    animation: none !important;
+  }
+}

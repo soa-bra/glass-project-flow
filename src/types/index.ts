@@ -26,6 +26,11 @@ export interface TimelineEvent {
   title: string;
   department: string;
   color: string;
+  description?: string;
+  time?: string;
+  type?: 'meeting' | 'deadline' | 'milestone' | 'event';
+  priority?: 'high' | 'medium' | 'low';
+  status?: 'upcoming' | 'in-progress' | 'completed' | 'overdue';
 }
 
 export interface TabItem {

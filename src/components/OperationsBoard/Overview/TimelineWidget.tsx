@@ -3,8 +3,9 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { TimelineWidgetProps, TimelineEvent } from './Timeline/types';
 import { TimelineNavigation } from './Timeline/TimelineNavigation';
-import { TimelineScrollContainer } from './Timeline/TimelineScrollContainer';
+import { TimelineContainer } from './Timeline/TimelineContainer';
 import { useTimelineScroll } from './Timeline/useTimelineScroll';
+import { useMemoizedCallback } from '@/utils/memoization';
 
 export const TimelineWidget: React.FC<TimelineWidgetProps> = React.memo(({
   timeline,
@@ -16,12 +17,13 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = React.memo(({
     scroll
   } = useTimelineScroll();
 
-  const openEvent = React.useCallback((event: TimelineEvent) => {
+  const openEvent = useMemoizedCallback((event: TimelineEvent) => {
     // يمكن إضافة modal أو popover هنا
+    console.log('فتح الحدث:', event);
   }, []);
 
-  const handleScrollLeft = React.useCallback(() => scroll(-200), [scroll]);
-  const handleScrollRight = React.useCallback(() => scroll(200), [scroll]);
+  const handleScrollLeft = useMemoizedCallback(() => scroll(-200), [scroll]);
+  const handleScrollRight = useMemoizedCallback(() => scroll(200), [scroll]);
 
   return (
     <div 
@@ -54,7 +56,7 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = React.memo(({
         className="flex-1 relative min-h-0 py-[35px]"
         aria-labelledby="timeline-heading"
       >
-        <TimelineScrollContainer 
+        <TimelineContainer 
           timeline={timeline} 
           onEventClick={openEvent} 
         />
