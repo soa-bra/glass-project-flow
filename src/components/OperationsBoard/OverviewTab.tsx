@@ -94,23 +94,23 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
           className="col-span-4 h-[180px]" 
         />
 
-        {/* الصف الرابع - التقارير والبطاقات الإضافية */}
+        {/* الصف الرابع - التقارير والأهداف وإدارة الفريق بنفس مقاسات الصف الثالث */}
         <AISuggestedWidget 
           type="reports"
           title="التقارير التنفيذية"
-          className="col-span-3 h-[160px]" 
+          className="col-span-4 h-[180px]" 
         />
 
         <AISuggestedWidget 
           type="goals"
           title="الأهداف والإنجازات"
-          className="col-span-3 h-[160px]" 
+          className="col-span-4 h-[180px]" 
         />
 
         <AISuggestedWidget 
           type="team"
           title="إدارة الفريق"
-          className="col-span-6 h-[160px]" 
+          className="col-span-4 h-[180px]" 
         />
 
       </section>
