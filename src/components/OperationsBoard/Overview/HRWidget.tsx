@@ -21,6 +21,7 @@ export const HRWidget: React.FC<HRWidgetProps> = ({ hr }) => {
   return (
     <BaseCard 
       size="md"
+      variant="glass"
       neonRing={hasVacancies ? 'warning' : 'success'}
       header={
         <h3 className="text-sm font-arabic font-bold text-gray-800">

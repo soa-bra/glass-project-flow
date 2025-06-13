@@ -18,6 +18,7 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ timeline }) =>
   return (
     <BaseCard 
       size="md"
+      variant="glass"
       header={
         <h3 className="text-lg font-arabic font-bold text-gray-800 text-center">
           المواعيد والأحداث القادمة

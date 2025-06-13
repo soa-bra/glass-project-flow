@@ -22,6 +22,7 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfac
   return (
     <BaseCard 
       size="lg"
+      variant="glass"
       neonRing={getRingColor(satisfaction)}
       header={
         <h3 className="text-xl font-arabic font-bold text-gray-800 text-center">

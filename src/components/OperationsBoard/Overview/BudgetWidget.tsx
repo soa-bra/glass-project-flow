@@ -23,6 +23,7 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({ budget }) => {
   return (
     <BaseCard 
       size="md"
+      variant="glass"
       neonRing={isOverBudget ? 'warning' : 'info'}
       header={
         <h3 className="text-sm font-arabic font-bold text-gray-800">

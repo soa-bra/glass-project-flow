@@ -20,6 +20,7 @@ export const ContractsWidget: React.FC<ContractsWidgetProps> = ({ contracts }) =
   return (
     <BaseCard 
       size="md"
+      variant="glass"
       neonRing={hasExpiredContracts ? 'warning' : 'success'}
       header={
         <h3 className="text-sm font-arabic font-bold text-gray-800">

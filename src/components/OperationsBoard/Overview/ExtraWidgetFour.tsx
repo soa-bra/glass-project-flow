@@ -6,6 +6,7 @@ export const ExtraWidgetFour: React.FC = () => {
   return (
     <BaseCard 
       size="sm"
+      variant="glass"
       neonRing="success"
       header={
         <h3 className="text-sm font-arabic font-bold text-gray-800">

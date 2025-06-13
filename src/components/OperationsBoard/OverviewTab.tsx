@@ -99,6 +99,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         <div className="lg:col-span-3">
           <BaseCard 
             size="sm"
+            variant="glass"
             header={
               <h3 className="text-lg font-arabic font-bold text-gray-800 text-center">
                 إحصائيات إضافية
