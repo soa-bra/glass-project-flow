@@ -14,7 +14,7 @@ export const TimelineEventItem: React.FC<TimelineEventItemProps> = ({
   return (
     <div className="relative flex flex-col items-center min-w-fit group">
       {/* التاريخ */}
-      <div className="text-xs text-gray-700 mb-4 whitespace-nowrap font-medium bg-white/70 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/40 transition-all duration-200 group-hover:bg-white/80">
+      <div className="text-xs text-gray-700 mb-3 whitespace-nowrap font-medium bg-white/70 px-2.5 py-1 rounded-full backdrop-blur-sm border border-white/40 transition-all duration-200 group-hover:bg-white/80">
         {new Date(event.date).toLocaleDateString('ar-SA', { 
           month: 'short', 
           day: 'numeric' 
@@ -24,8 +24,8 @@ export const TimelineEventItem: React.FC<TimelineEventItemProps> = ({
       {/* النقطة التفاعلية */}
       <button
         className="
-          w-7 h-7 rounded-full border-4 border-white 
-          shadow-lg hover:shadow-xl
+          w-6 h-6 rounded-full border-3 border-white 
+          shadow-md hover:shadow-lg
           transition-all duration-300 
           hover:scale-125 active:scale-110
           relative z-20 
@@ -38,11 +38,11 @@ export const TimelineEventItem: React.FC<TimelineEventItemProps> = ({
       />
 
       {/* تفاصيل الحدث */}
-      <div className="text-center mt-4 max-w-36 transition-all duration-200 group-hover:scale-105">
-        <div className="text-sm font-semibold text-gray-900 whitespace-nowrap mb-2 bg-white/70 px-3 py-1.5 rounded-lg backdrop-blur-sm border border-white/40 transition-all duration-200 group-hover:bg-white/80">
+      <div className="text-center mt-3 max-w-32 transition-all duration-200 group-hover:scale-105">
+        <div className="text-sm font-semibold text-gray-900 whitespace-nowrap mb-1.5 bg-white/70 px-2.5 py-1 rounded-lg backdrop-blur-sm border border-white/40 transition-all duration-200 group-hover:bg-white/80">
           {event.title}
         </div>
-        <div className="text-xs text-gray-600 whitespace-nowrap bg-white/50 px-2 py-1 rounded-full backdrop-blur-sm border border-white/30 transition-all duration-200 group-hover:bg-white/60">
+        <div className="text-xs text-gray-600 whitespace-nowrap bg-white/50 px-2 py-0.5 rounded-full backdrop-blur-sm border border-white/30 transition-all duration-200 group-hover:bg-white/60">
           {event.department}
         </div>
       </div>
