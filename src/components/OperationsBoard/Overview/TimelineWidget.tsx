@@ -37,7 +37,7 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
       </header>
 
       {/* محتوى الخط الزمني */}
-      <div className="flex-1 relative min-h-0 py-[35px]">
+      <div className="flex-1 relative min-h-0 py-0">
         <TimelineScrollContainer timeline={timeline} onEventClick={openEvent} />
       </div>
     </div>;
