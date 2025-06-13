@@ -20,7 +20,7 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
     <div className={`
       ${className}
       rounded-3xl p-6
-      bg-white/80 backdrop-blur-xl border border-white/30
+      bg-white/45 backdrop-blur-[20px] border border-white/40
       shadow-lg hover:shadow-xl transition-all duration-300
       flex flex-col
       font-arabic
@@ -29,7 +29,7 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
     `}>
       
       {/* رأس البطاقة */}
-      <header className="flex items-center justify-between mb-6">
+      <header className="flex items-center justify-between mb-5">
         <h3 className="text-xl font-arabic font-bold text-gray-800">
           الأحداث القادمة
         </h3>
