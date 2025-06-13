@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import GlassWidget from '@/components/ui/GlassWidget';
+import { cn } from '@/lib/utils';
 
 interface BudgetData {
   total: number;
