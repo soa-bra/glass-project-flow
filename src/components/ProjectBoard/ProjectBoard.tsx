@@ -6,11 +6,11 @@ import { ProjectCardProps } from '@/components/ProjectCard/types';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ProjectBoardHeader } from './ProjectBoardHeader';
 import { ProjectBoardActionBar } from './ProjectBoardActionBar';
-import { TasksTab } from './tabs/TasksTab';
+import TasksTab from './tabs/TasksTab';
 import { FinanceDetailsTab } from './tabs/FinanceDetailsTab';
-import { LegalTab } from './tabs/LegalTab';
+import LegalTab from './tabs/LegalTab';
 import { ClientInfoTab } from './tabs/ClientInfoTab';
-import { ReportsTab } from './tabs/ReportsTab';
+import ReportsTab from './tabs/ReportsTab';
 import { ProjectCalendarTab } from './tabs/ProjectCalendarTab';
 import { ProjectSidebar } from './ProjectSidebar';
 
