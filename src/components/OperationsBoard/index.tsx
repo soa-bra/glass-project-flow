@@ -33,7 +33,7 @@ export const OperationsBoard = ({
         
         <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col mx-0 px-0">
           <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
-          <div className="flex-1 overflow-hidden my-0 px-[10px]">
+          <div className="flex-1 overflow-hidden my-0 px-[15px]">
             <TabContentWrapper tabData={tabData} loading={loading} />
           </div>
         </Tabs>

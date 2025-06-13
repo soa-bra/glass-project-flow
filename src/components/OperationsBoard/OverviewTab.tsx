@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TimelineWidget } from './Overview/TimelineWidget';
 import { BudgetWidget } from './Overview/BudgetWidget';
@@ -6,7 +5,6 @@ import { HRWidget } from './Overview/HRWidget';
 import { SatisfactionWidget } from './Overview/SatisfactionWidget';
 import { ContractsWidget } from './Overview/ContractsWidget';
 import { AISuggestedWidget } from './Overview/AISuggestedWidget';
-
 interface TimelineEvent {
   id: number;
   date: string;
@@ -14,7 +12,6 @@ interface TimelineEvent {
   department: string;
   color: string;
 }
-
 interface WidgetsData {
   budget: {
     total: number;
@@ -31,17 +28,14 @@ interface WidgetsData {
   };
   satisfaction: number;
 }
-
 interface OverviewData {
   timeline: TimelineEvent[];
   widgets: WidgetsData;
 }
-
 interface OverviewTabProps {
   data?: OverviewData;
   loading: boolean;
 }
-
 export const OverviewTab: React.FC<OverviewTabProps> = ({
   data,
   loading
@@ -49,59 +43,28 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   if (loading || !data) {
     return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
-
-  return (
-    <div className="h-full overflow-auto">
-      {/* الشبكة الجديدة للوحة */}
-      <section className="
-        grid grid-cols-12 gap-6 
-        h-full w-full p-6
-        auto-rows-min
-      ">
+  return <div className="h-full overflow-auto">
+      {/* شبكة اللوحة الرئيسية */}
+      <section className="management-grid grid grid-cols-12 grid-rows-12 gap-4 h-full w-full p-6 lg:grid-cols-8 lg:grid-rows-18 sm:flex sm:flex-col sm:gap-4 py-[10px] px-0">
         
-        {/* 1. خط الزمن - عرض كامل في الأعلى */}
-        <TimelineWidget 
-          timeline={data.timeline} 
-          className="col-span-12 h-[220px]" 
-        />
+        {/* 1. بطاقة الأحداث القادمة - عرض كامل في الأعلى */}
+        <TimelineWidget timeline={data.timeline} className="col-span-12 row-span-3 lg:col-span-8 lg:row-span-4" />
 
-        {/* الصف الثاني - بطاقة العقود على اليسار */}
-        <ContractsWidget 
-          contracts={data.widgets.contracts} 
-          className="col-span-3 h-[280px]" 
-        />
+        {/* 2. بطاقة المالية - لون صلب */}
+        <BudgetWidget budget={data.widgets.budget} className="col-span-6 row-span-4 lg:col-span-4 lg:row-span-5" />
 
-        {/* بطاقة الميزانية في المركز - المساحة الأكبر */}
-        <BudgetWidget 
-          budget={data.widgets.budget} 
-          className="col-span-6 h-[280px]" 
-        />
+        {/* 3. بطاقات ذكية مقترحة */}
+        <ContractsWidget contracts={data.widgets.contracts} className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-3" />
 
-        {/* بطاقة الموارد البشرية على اليمين */}
-        <HRWidget 
-          hr={data.widgets.hr} 
-          className="col-span-3 h-[280px]" 
-        />
+        <HRWidget hr={data.widgets.hr} className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-3" />
 
-        {/* الصف الثالث - البطاقات الإضافية */}
-        <SatisfactionWidget 
-          satisfaction={data.widgets.satisfaction} 
-          className="col-span-4 h-[220px]" 
-        />
+        <SatisfactionWidget satisfaction={data.widgets.satisfaction} className="col-span-3 row-span-3 lg:col-span-2 lg:row-span-4" />
 
-        <AISuggestedWidget 
-          type="kpi"
-          title="مؤشرات الأداء الرئيسية"
-          className="col-span-4 h-[220px]" 
-        />
+        <AISuggestedWidget type="kpi" title="مؤشرات الأداء" className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-2" />
 
-        <AISuggestedWidget 
-          type="reports"
-          title="التقارير التنفيذية"
-          className="col-span-4 h-[220px]" 
-        />
+        {/* بطاقات إضافية مقترحة */}
+        <AISuggestedWidget type="reports" title="التقارير السريعة" className="col-span-6 row-span-2 lg:col-span-4 lg:row-span-2" />
 
       </section>
-    </div>
-  );
+    </div>;
 };
