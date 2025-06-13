@@ -47,8 +47,8 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
       {/* الشبكة الجديدة للوحة مع صفوف متعددة - ارتفاعات متساوية */}
       <section className="grid grid-cols-12 gap-2.5 h-full w-full px-[10px] pb-[25px] auto-rows-min max-h-full py-[9px]">
         
-        {/* الصف الأول - خط الزمن عرض كامل */}
-        <TimelineWidget timeline={data.timeline} className="col-span-12 h-[220px]" />
+        {/* الصف الأول - خط الزمن عرض كامل - ارتفاع مقلل */}
+        <TimelineWidget timeline={data.timeline} className="col-span-12 h-[180px]" />
 
         {/* الصف الثاني - العقود والميزانية فقط */}
         <ContractsWidget contracts={data.widgets.contracts} className="col-span-4 h-[260px]" />
