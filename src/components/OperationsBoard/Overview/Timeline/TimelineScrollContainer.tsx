@@ -28,12 +28,12 @@ export const TimelineScrollContainer: React.FC<TimelineScrollContainerProps> = (
     <div className="h-full relative overflow-hidden rounded-2xl">
       {/* مؤشر التمرير الأيسر */}
       {canScrollLeft && (
-        <div className="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-white/70 via-white/50 to-transparent z-20 pointer-events-none rounded-r-2xl" />
+        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white/80 via-white/60 to-transparent z-20 pointer-events-none rounded-r-2xl" />
       )}
       
       {/* مؤشر التمرير الأيمن */}
       {canScrollRight && (
-        <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-white/70 via-white/50 to-transparent z-20 pointer-events-none rounded-l-2xl" />
+        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white/80 via-white/60 to-transparent z-20 pointer-events-none rounded-l-2xl" />
       )}
       
       <div
@@ -56,11 +56,12 @@ export const TimelineScrollContainer: React.FC<TimelineScrollContainerProps> = (
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
       >
-        {/* الخط الزمني المستمر */}
-        <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-300 via-purple-300 to-green-300 rounded-full transform -translate-y-1/2 z-0" />
+        {/* الخط الزمني المستمر - تم ضبطه ليمر بمنتصف الدوائر */}
+        <div className="absolute left-0 right-0 h-1.5 bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 rounded-full shadow-sm z-10" 
+             style={{ top: 'calc(50% - 3px)' }} />
         
         {/* الأحداث */}
-        <div className="flex items-center gap-20 py-8 px-10 min-w-max relative z-10">
+        <div className="flex items-center gap-24 py-10 px-12 min-w-max relative z-20">
           {timeline.map((event) => (
             <TimelineEventItem
               key={event.id}

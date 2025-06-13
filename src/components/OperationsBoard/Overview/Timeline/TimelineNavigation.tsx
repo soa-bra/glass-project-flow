@@ -21,29 +21,29 @@ export const TimelineNavigation: React.FC<TimelineNavigationProps> = ({
         onClick={onScrollRight}
         disabled={!canScrollRight}
         className={`
-          p-2.5 rounded-xl transition-all duration-300 
-          backdrop-blur-sm border border-white/30
+          p-3 rounded-xl transition-all duration-300 
+          backdrop-blur-sm border border-white/40
           ${canScrollRight 
-            ? 'bg-white/50 hover:bg-white/70 text-gray-700 hover:scale-105 active:scale-95 shadow-sm hover:shadow-md' 
-            : 'bg-white/20 text-gray-400 cursor-not-allowed opacity-50'
+            ? 'bg-white/60 hover:bg-white/80 text-gray-700 hover:scale-105 active:scale-95 shadow-sm hover:shadow-md' 
+            : 'bg-white/25 text-gray-400 cursor-not-allowed opacity-50'
           }
         `}
       >
-        <ChevronRight size={16} />
+        <ChevronRight size={18} />
       </button>
       <button 
         onClick={onScrollLeft}
         disabled={!canScrollLeft}
         className={`
-          p-2.5 rounded-xl transition-all duration-300 
-          backdrop-blur-sm border border-white/30
+          p-3 rounded-xl transition-all duration-300 
+          backdrop-blur-sm border border-white/40
           ${canScrollLeft 
-            ? 'bg-white/50 hover:bg-white/70 text-gray-700 hover:scale-105 active:scale-95 shadow-sm hover:shadow-md' 
-            : 'bg-white/20 text-gray-400 cursor-not-allowed opacity-50'
+            ? 'bg-white/60 hover:bg-white/80 text-gray-700 hover:scale-105 active:scale-95 shadow-sm hover:shadow-md' 
+            : 'bg-white/25 text-gray-400 cursor-not-allowed opacity-50'
           }
         `}
       >
-        <ChevronLeft size={16} />
+        <ChevronLeft size={18} />
       </button>
     </div>
   );
