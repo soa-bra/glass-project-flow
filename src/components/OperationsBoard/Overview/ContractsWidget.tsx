@@ -21,35 +21,39 @@ export const ContractsWidget: React.FC<ContractsWidgetProps> = ({
 
   return (
     <GlassWidget className={className}>
-      <h3 className="text-sm font-arabic font-bold mb-3">
+      <h3 className="text-base font-arabic font-semibold mb-4 text-white/90">
         العقود
       </h3>
 
-      <div className="space-y-3 flex-1">
+      <div className="space-y-4 flex-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FileText size={14} className="text-green-400" />
-            <span className="text-xs text-white/70">موقعة</span>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+              <FileText size={16} className="text-green-400" />
+            </div>
+            <span className="text-sm text-white/80">موقعة</span>
           </div>
-          <span className="text-lg font-bold text-green-400">
+          <span className="text-xl font-bold text-green-400">
             {contracts.signed}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Clock size={14} className="text-orange-400" />
-            <span className="text-xs text-white/70">منتهية</span>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
+              <Clock size={16} className="text-orange-400" />
+            </div>
+            <span className="text-sm text-white/80">منتهية</span>
           </div>
-          <span className="text-lg font-bold text-orange-400">
+          <span className="text-xl font-bold text-orange-400">
             {contracts.expired}
           </span>
         </div>
       </div>
 
       {hasExpired && (
-        <div className="mt-3 p-2 bg-white/10 rounded-lg">
-          <p className="text-xs text-orange-300">
+        <div className="mt-4 p-3 bg-orange-500/10 rounded-xl border border-orange-500/20">
+          <p className="text-xs text-orange-300 font-medium">
             يوجد عقود تحتاج تجديد
           </p>
         </div>

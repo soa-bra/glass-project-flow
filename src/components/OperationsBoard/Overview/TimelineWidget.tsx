@@ -33,14 +33,13 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
 
   const openEvent = (event: TimelineEvent) => {
     console.log('فتح الحدث:', event);
-    // يمكن إضافة modal أو popover هنا
   };
 
   return (
     <GlassWidget className={className}>
       {/* رأس البطاقة */}
-      <header className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-arabic font-bold">
+      <header className="flex items-center justify-between mb-6">
+        <h3 className="text-xl font-arabic font-bold text-white">
           الأحداث القادمة
         </h3>
         
@@ -48,15 +47,15 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
         <div className="flex gap-2">
           <button 
             onClick={() => scroll(200)}
-            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+            className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-sm"
           >
-            <ChevronRight size={16} />
+            <ChevronRight size={18} className="text-white/80" />
           </button>
           <button 
             onClick={() => scroll(-200)}
-            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+            className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-sm"
           >
-            <ChevronLeft size={16} />
+            <ChevronLeft size={18} className="text-white/80" />
           </button>
         </div>
       </header>
@@ -69,15 +68,16 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
             overflow-x-auto scrollbar-hide
             cursor-grab active:cursor-grabbing select-none
             h-full flex items-center
+            py-4
           "
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          <ul className="flex items-center gap-12 py-4 px-4">
+          <ul className="flex items-center gap-16 px-4">
             {timeline.map((event, index) => (
               <li key={event.id} className="relative flex flex-col items-center min-w-fit">
                 
                 {/* التاريخ */}
-                <span className="text-xs text-white/60 mb-3 whitespace-nowrap font-medium">
+                <span className="text-sm text-white/70 mb-4 whitespace-nowrap font-medium">
                   {new Date(event.date).toLocaleDateString('ar-SA', { 
                     month: 'short', 
                     day: 'numeric' 
@@ -88,27 +88,30 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
                 <div className="relative flex items-center">
                   {/* خط للنقطة السابقة */}
                   {index > 0 && (
-                    <div className="absolute right-full h-0.5 bg-gradient-to-r from-white/30 to-white/40 w-12"></div>
+                    <div className="absolute right-full h-0.5 bg-gradient-to-r from-white/20 to-white/40 w-16"></div>
                   )}
                   
                   <button
-                    className="w-4 h-4 rounded-full border-2 border-white shadow-md transition-transform hover:scale-110 relative z-10"
-                    style={{ backgroundColor: event.color }}
+                    className="w-5 h-5 rounded-full border-2 border-white/80 shadow-lg transition-all hover:scale-125 hover:shadow-xl relative z-10 backdrop-blur-sm"
+                    style={{ 
+                      backgroundColor: event.color,
+                      boxShadow: `0 0 20px ${event.color}30`
+                    }}
                     onClick={() => openEvent(event)}
                   />
                   
                   {/* خط للنقطة التالية */}
                   {index < timeline.length - 1 && (
-                    <div className="absolute left-full h-0.5 bg-gradient-to-r from-white/30 to-white/40 w-12"></div>
+                    <div className="absolute left-full h-0.5 bg-gradient-to-r from-white/40 to-white/20 w-16"></div>
                   )}
                 </div>
 
                 {/* تفاصيل الحدث */}
-                <div className="text-center mt-3">
-                  <div className="text-sm font-semibold whitespace-nowrap mb-1">
+                <div className="text-center mt-4">
+                  <div className="text-base font-semibold whitespace-nowrap mb-2 text-white">
                     {event.title}
                   </div>
-                  <div className="text-xs text-white/60 whitespace-nowrap">
+                  <div className="text-sm text-white/60 whitespace-nowrap">
                     {event.department}
                   </div>
                 </div>

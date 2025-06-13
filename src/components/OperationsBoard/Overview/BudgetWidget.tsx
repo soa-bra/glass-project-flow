@@ -15,12 +15,6 @@ interface BudgetWidgetProps {
 
 type FinanceStatus = 'ok' | 'warning' | 'danger';
 
-const palette: Record<FinanceStatus, string> = {
-  ok: 'before:!bg-emerald-600/90',
-  warning: 'before:!bg-amber-500/90',
-  danger: 'before:!bg-rose-600/90',
-};
-
 export const BudgetWidget: React.FC<BudgetWidgetProps> = ({
   budget,
   className = ''
@@ -36,54 +30,63 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({
   const status: FinanceStatus = ratio > 1 ? 'danger' : ratio > 0.7 ? 'warning' : 'ok';
 
   return (
-    <GlassWidget className={`${palette[status]} ${className}`}>
+    <GlassWidget 
+      accent={status === 'danger'} 
+      glowing={status === 'danger'}
+      className={className}
+    >
       {/* رأس البطاقة */}
-      <h3 className="font-medium text-base mb-1 font-arabic">
+      <h3 className="font-medium text-lg mb-4 font-arabic text-white/90">
         الميزانية والمصروفات
       </h3>
 
       {/* الميزانية الإجمالية */}
       <div className="mt-4">
-        <p className="text-3xl font-bold tracking-wide mb-4">
+        <p className="text-4xl font-bold tracking-wide mb-6 text-white">
           {formatCurrency(budget.total)} ريال
         </p>
       </div>
 
       {/* تفاصيل المصروفات */}
-      <div className="space-y-3">
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-white/80">المصروفات:</span>
-          <span className="font-semibold">
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <span className="text-white/70 text-base">المصروفات:</span>
+          <span className="font-semibold text-white text-lg">
             {formatCurrency(budget.spent)} ريال ({percentage}%)
           </span>
         </div>
 
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-white/80">المتبقي:</span>
-          <span className="font-semibold">
+        <div className="flex justify-between items-center">
+          <span className="text-white/70 text-base">المتبقي:</span>
+          <span className="font-semibold text-white text-lg">
             {formatCurrency(remaining)} ريال
           </span>
         </div>
 
-        {/* شريط التقدم */}
-        <div className="mt-4">
-          <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
+        {/* شريط التقدم المحسن */}
+        <div className="mt-6">
+          <div className="h-3 w-full bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
             <div
               style={{ width: `${Math.min(ratio, 1) * 100}%` }}
-              className="h-full bg-white/80 transition-[width] duration-500"
+              className={cn(
+                "h-full transition-[width] duration-700 ease-out",
+                status === 'ok' ? 'bg-gradient-to-r from-green-400 to-emerald-500' :
+                status === 'warning' ? 'bg-gradient-to-r from-yellow-400 to-orange-500' :
+                'bg-gradient-to-r from-red-400 to-pink-500'
+              )}
             />
           </div>
-          <div className="flex justify-between text-xs mt-1 opacity-75">
+          <div className="flex justify-between text-xs mt-2 text-white/60">
             <span>0%</span>
             <span>100%</span>
           </div>
         </div>
       </div>
 
-      {/* تحذير إذا تجاوز الميزانية */}
+      {/* تحذير محسن */}
       {status !== 'ok' && (
-        <div className="mt-4 p-3 bg-white/10 rounded-lg">
-          <p className="text-sm font-medium">
+        <div className="mt-6 p-4 bg-white/10 rounded-xl border border-white/20">
+          <p className="text-sm font-medium text-white">
             {status === 'danger' ? '⚠️ تحذير: تم تجاوز الميزانية المخططة' : '⚠️ تنبيه: اقتراب من حد الميزانية'}
           </p>
         </div>
