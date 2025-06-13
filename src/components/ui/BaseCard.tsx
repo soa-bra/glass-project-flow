@@ -1,4 +1,6 @@
+
 import React from 'react';
+
 interface BaseCardProps {
   variant?: 'glass' | 'gradient' | 'flat';
   color?: 'pinkblue' | 'orange' | 'crimson' | 'success' | 'warning' | 'info';
@@ -10,6 +12,7 @@ interface BaseCardProps {
   children: React.ReactNode;
   className?: string;
 }
+
 export const BaseCard: React.FC<BaseCardProps> = ({
   variant = 'glass',
   color = 'pinkblue',
@@ -24,5 +27,15 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   const variantClass = variant === 'glass' ? 'advanced-glass-card hover-glow-enhanced' : variant === 'gradient' ? `grad-${color}` : `flat-${color}`;
   const sizeClass = `card-${size}`;
   const neonClass = neonRing ? `neon-ring-${neonRing}` : '';
-  return;
+  
+  return (
+    <div 
+      className={`${variantClass} ${sizeClass} ${neonClass} ${className}`}
+      onClick={onClick}
+    >
+      {header && <div className="card-header">{header}</div>}
+      <div className="card-content">{children}</div>
+      {footer && <div className="card-footer">{footer}</div>}
+    </div>
+  );
 };
