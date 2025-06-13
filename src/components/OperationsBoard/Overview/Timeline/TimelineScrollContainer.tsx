@@ -20,7 +20,7 @@ export const TimelineScrollContainer: React.FC<TimelineScrollContainerProps> = (
     handlePointerUp,
     handlePointerCancel
   } = useTimelineScroll();
-  return <div className="h-full relative overflow-hidden rounded-2xl px-0 py-[3px] my-0">
+  return <div className="h-full relative overflow-hidden rounded-2xl px-0 my-0 py-0">
       {/* مؤشر التمرير الأيسر */}
       {canScrollLeft && <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white/90 via-white/60 to-transparent z-20 pointer-events-none" />}
       
