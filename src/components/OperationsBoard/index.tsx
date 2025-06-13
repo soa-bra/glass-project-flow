@@ -23,7 +23,7 @@ export const OperationsBoard = ({
     overflow: 'hidden',
     zIndex: 30
   }}>
-      <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col mx-0 px-0">
+      <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col mx-0 px-0 my-0">
         {/* عنوان اللوحة */}
         <div className="text-right px-6 py-[24px] my-[24px]">
           <h2 className="font-medium text-[#2A3437] font-arabic text-3xl">
@@ -31,9 +31,9 @@ export const OperationsBoard = ({
           </h2>
         </div>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col mx-0 px-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col mx-0 px-0 my-0 py-0">
           <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
-          <div className="flex-1 overflow-hidden my-0 px-0">
+          <div className="flex-1 overflow-hidden px-0 my-[26px] py-0">
             <TabContentWrapper tabData={tabData} loading={loading} />
           </div>
         </Tabs>
