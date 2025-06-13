@@ -9,33 +9,34 @@ export const useTimelineScroll = () => {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   
-  // متغيرات لتحسين الأداء
+  // متغيرات لتحسين الأداء والسحب السلس
   const dragStartRef = useRef(false);
   const lastPointerRef = useRef(0);
   const velocityRef = useRef(0);
   const animationFrameRef = useRef<number>();
+  const lastTimeRef = useRef(0);
 
   // تحديث حالة أزرار التنقل
   const updateScrollButtons = useCallback(() => {
     if (!scrollRef.current) return;
     
     const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setCanScrollLeft(scrollLeft > 5);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+    setCanScrollLeft(scrollLeft > 10);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
   }, []);
 
-  // إضافة الزخم للتمرير
+  // إضافة الزخم للتمرير السلس
   const applyMomentum = useCallback(() => {
-    if (!scrollRef.current || Math.abs(velocityRef.current) < 0.5) {
+    if (!scrollRef.current || Math.abs(velocityRef.current) < 1) {
       return;
     }
 
     scrollRef.current.scrollLeft += velocityRef.current;
-    velocityRef.current *= 0.95; // تقليل السرعة تدريجياً
+    velocityRef.current *= 0.92; // تقليل السرعة تدريجياً
     
     updateScrollButtons();
     
-    if (Math.abs(velocityRef.current) > 0.5) {
+    if (Math.abs(velocityRef.current) > 1) {
       animationFrameRef.current = requestAnimationFrame(applyMomentum);
     }
   }, [updateScrollButtons]);
@@ -52,10 +53,10 @@ export const useTimelineScroll = () => {
     };
     
     const handleWheel = (e: WheelEvent) => {
-      // السماح بالتمرير الأفقي باستخدام العجلة
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      // تحسين التمرير بالعجلة
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey) {
         e.preventDefault();
-        scrollElement.scrollLeft += e.deltaX;
+        scrollElement.scrollLeft += e.deltaX || e.deltaY;
         updateScrollButtons();
       }
     };
@@ -98,6 +99,7 @@ export const useTimelineScroll = () => {
     setStartX(e.clientX);
     setScrollLeft(scrollRef.current.scrollLeft);
     lastPointerRef.current = e.clientX;
+    lastTimeRef.current = Date.now();
     velocityRef.current = 0;
     
     // منع التحديد والسلوك الافتراضي
@@ -116,8 +118,15 @@ export const useTimelineScroll = () => {
     const newScrollLeft = scrollLeft - deltaX;
     
     // حساب السرعة للزخم
-    velocityRef.current = (lastPointerRef.current - e.clientX) * 0.8;
+    const currentTime = Date.now();
+    const timeDelta = currentTime - lastTimeRef.current;
+    
+    if (timeDelta > 0) {
+      velocityRef.current = (lastPointerRef.current - e.clientX) / timeDelta * 16; // تطبيع للـ 60fps
+    }
+    
     lastPointerRef.current = e.clientX;
+    lastTimeRef.current = currentTime;
     
     // تطبيق التمرير مع القيود
     const maxScroll = scrollRef.current.scrollWidth - scrollRef.current.clientWidth;
@@ -138,7 +147,7 @@ export const useTimelineScroll = () => {
     dragStartRef.current = false;
     
     // تطبيق الزخم إذا كان هناك سرعة كافية
-    if (Math.abs(velocityRef.current) > 2) {
+    if (Math.abs(velocityRef.current) > 3) {
       applyMomentum();
     }
     

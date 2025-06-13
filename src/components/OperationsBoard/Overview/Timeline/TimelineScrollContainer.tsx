@@ -25,15 +25,15 @@ export const TimelineScrollContainer: React.FC<TimelineScrollContainerProps> = (
   } = useTimelineScroll();
 
   return (
-    <div className="h-full relative overflow-hidden">
+    <div className="h-full relative overflow-hidden rounded-2xl">
       {/* مؤشر التمرير الأيسر */}
       {canScrollLeft && (
-        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white/60 via-white/40 to-transparent z-20 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-white/70 via-white/50 to-transparent z-20 pointer-events-none rounded-r-2xl" />
       )}
       
       {/* مؤشر التمرير الأيمن */}
       {canScrollRight && (
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white/60 via-white/40 to-transparent z-20 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-white/70 via-white/50 to-transparent z-20 pointer-events-none rounded-l-2xl" />
       )}
       
       <div
@@ -44,11 +44,11 @@ export const TimelineScrollContainer: React.FC<TimelineScrollContainerProps> = (
           scrollbar-hide
           ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}
           transition-all duration-200
+          touch-pan-x
         `}
         style={{ 
           scrollbarWidth: 'none', 
           msOverflowStyle: 'none',
-          touchAction: 'pan-x',
           WebkitOverflowScrolling: 'touch'
         }}
         onPointerDown={handlePointerDown}
@@ -57,10 +57,10 @@ export const TimelineScrollContainer: React.FC<TimelineScrollContainerProps> = (
         onPointerCancel={handlePointerCancel}
       >
         {/* الخط الزمني المستمر */}
-        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-300 via-purple-300 to-green-300 rounded-full transform -translate-y-1/2 z-0" />
+        <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-300 via-purple-300 to-green-300 rounded-full transform -translate-y-1/2 z-0" />
         
         {/* الأحداث */}
-        <div className="flex items-center gap-16 py-6 px-8 min-w-max relative z-10">
+        <div className="flex items-center gap-20 py-8 px-10 min-w-max relative z-10">
           {timeline.map((event) => (
             <TimelineEventItem
               key={event.id}
