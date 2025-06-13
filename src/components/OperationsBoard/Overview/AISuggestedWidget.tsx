@@ -1,20 +1,10 @@
-
 import React from 'react';
-import { 
-  BarChart3, 
-  FileText, 
-  TrendingUp, 
-  Users, 
-  AlertCircle,
-  Target
-} from 'lucide-react';
-
+import { BarChart3, FileText, TrendingUp, Users, AlertCircle, Target } from 'lucide-react';
 interface AISuggestedWidgetProps {
   type: 'kpi' | 'reports' | 'alerts' | 'analytics' | 'team' | 'goals';
   title: string;
   className?: string;
 }
-
 const widgetConfig = {
   kpi: {
     icon: TrendingUp,
@@ -65,7 +55,6 @@ const widgetConfig = {
     }
   }
 };
-
 export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
   type,
   title,
@@ -73,9 +62,7 @@ export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
 }) => {
   const config = widgetConfig[type];
   const Icon = config.icon;
-
-  return (
-    <div className={`
+  return <div className={`
       ${className}
       rounded-3xl p-5
       bg-white/80 backdrop-blur-xl border border-white/30
@@ -88,7 +75,7 @@ export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
         <h3 className="text-lg font-arabic font-bold text-gray-800">
           {title}
         </h3>
-        <Icon size={20} className="text-gray-600" />
+        
       </div>
 
       {/* المحتوى الرئيسي */}
@@ -112,6 +99,5 @@ export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
           عرض التفاصيل ←
         </button>
       </div>
-    </div>
-  );
+    </div>;
 };
