@@ -76,7 +76,7 @@ export const MotionSystem: React.FC<MotionSystemProps> = ({
     <AnimatePresence mode="wait">
       {isVisible && (
         <motion.div
-          className="fixed inset-0 z-[1200] flex items-center justify-end"
+          className="fixed inset-0 z-[10000] flex items-center justify-end"
           variants={backdropVariants}
           initial="hidden"
           animate="visible"

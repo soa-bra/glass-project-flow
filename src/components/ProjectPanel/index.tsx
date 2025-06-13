@@ -97,67 +97,45 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     return null;
   }
 
-  console.log('ProjectPanel rendering content with Portal');
+  console.log('ProjectPanel rendering content with Portal - simplified structure');
 
-  // محتوى اللوحة مع تحسينات z-index والموضع
-  const panelContent = (
-    <div 
-      className="fixed inset-0 bg-black/20 backdrop-blur-sm"
-      style={{ zIndex: 9999 }}
-    >
-      <div 
-        className="fixed inset-0 flex items-center justify-center p-4"
-        onClick={(e) => {
-          // إغلاق اللوحة عند النقر على الخلفية
-          if (e.target === e.currentTarget) {
-            console.log('إغلاق اللوحة بالنقر على الخلفية');
-            onClose();
-          }
-        }}
-      >
-        <div 
-          className="w-full max-w-6xl h-full max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MotionSystem isVisible={isVisible} onClose={onClose}>
-            {/* Header */}
-            {projectData && (
-              <ProjectHeader
-                title={projectData.title}
-                status={projectData.status}
-                onClose={onClose}
-              />
-            )}
+  // محتوى اللوحة المبسط - إزالة الطبقات المضاعفة
+  return createPortal(
+    <MotionSystem isVisible={isVisible} onClose={onClose}>
+      {/* Header */}
+      {projectData && (
+        <ProjectHeader
+          title={projectData.title}
+          status={projectData.status}
+          onClose={onClose}
+        />
+      )}
 
-            {/* Quick Actions */}
-            <div className="p-6">
-              <ProjectQuickActions
-                onAddTask={handleAddTask}
-                onSmartGenerate={handleSmartGenerate}
-                onEditProject={handleEditProject}
-              />
-            </div>
-
-            {/* Tabs */}
-            <ProjectTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
-            {/* Content */}
-            <div className="flex-1 overflow-auto">
-              {error ? (
-                <div className="p-6 text-center text-red-600">
-                  {error}
-                </div>
-              ) : (
-                renderTabContent()
-              )}
-            </div>
-          </MotionSystem>
-        </div>
+      {/* Quick Actions */}
+      <div className="p-6">
+        <ProjectQuickActions
+          onAddTask={handleAddTask}
+          onSmartGenerate={handleSmartGenerate}
+          onEditProject={handleEditProject}
+        />
       </div>
-    </div>
-  );
 
-  return createPortal(panelContent, document.body);
+      {/* Tabs */}
+      <ProjectTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Content */}
+      <div className="flex-1 overflow-auto">
+        {error ? (
+          <div className="p-6 text-center text-red-600">
+            {error}
+          </div>
+        ) : (
+          renderTabContent()
+        )}
+      </div>
+    </MotionSystem>,
+    document.body
+  );
 };
 
 export default ProjectPanel;
