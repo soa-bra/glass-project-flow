@@ -1,3 +1,4 @@
+
 export interface ProjectPanelProps {
   projectId: string;
   isVisible: boolean;
@@ -18,13 +19,14 @@ export interface ProjectData {
   client: ClientData;
   documents: DocumentData[];
   timeline: TimelineData[];
+  events: CalendarEvent[];
 }
 
 export interface TaskData {
   id: string;
   title: string;
   description: string;
-  status: 'pending' | 'in-progress' | 'completed';
+  status: 'pending' | 'in_progress' | 'completed' | 'blocked';
   assignee: string;
   dueDate: string;
   priority: 'low' | 'medium' | 'high';
@@ -51,6 +53,13 @@ export interface TimelineData {
   title: string;
   date: string;
   type: 'task' | 'meeting' | 'deadline';
+}
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  date: string;
+  time?: string;
 }
 
 export const PROJECT_TABS = [

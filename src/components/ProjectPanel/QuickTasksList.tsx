@@ -1,17 +1,10 @@
 
 import React from 'react';
 import { CheckCircle, Circle, Clock, ArrowLeft } from 'lucide-react';
-
-interface Task {
-  id: string;
-  title: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'blocked';
-  priority: 'low' | 'medium' | 'high';
-  due_date?: string;
-}
+import { TaskData } from './types';
 
 interface QuickTasksListProps {
-  tasks: Task[];
+  tasks: TaskData[];
   onViewAllTasks: () => void;
   onTaskClick: (taskId: string) => void;
 }
@@ -21,18 +14,20 @@ export const QuickTasksList: React.FC<QuickTasksListProps> = ({
   onViewAllTasks,
   onTaskClick
 }) => {
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: TaskData['status']) => {
     switch (status) {
       case 'completed':
         return <CheckCircle size={16} className="text-green-500" />;
       case 'in_progress':
         return <Clock size={16} className="text-blue-500" />;
+      case 'blocked':
+        return <Circle size={16} className="text-red-500" />;
       default:
         return <Circle size={16} className="text-gray-400" />;
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority: TaskData['priority']) => {
     switch (priority) {
       case 'high':
         return 'border-r-red-500';
@@ -43,7 +38,7 @@ export const QuickTasksList: React.FC<QuickTasksListProps> = ({
     }
   };
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status: TaskData['status']) => {
     switch (status) {
       case 'completed':
         return 'مكتمل';
@@ -103,11 +98,9 @@ export const QuickTasksList: React.FC<QuickTasksListProps> = ({
                     {getStatusLabel(task.status)}
                   </span>
                   
-                  {task.due_date && (
-                    <span className="text-gray-500">
-                      {new Date(task.due_date).toLocaleDateString('ar-SA')}
-                    </span>
-                  )}
+                  <span className="text-gray-500">
+                    {new Date(task.dueDate).toLocaleDateString('ar-SA')}
+                  </span>
                 </div>
               </div>
             </div>
