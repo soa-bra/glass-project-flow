@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { TimelineWidgetProps, TimelineEvent } from './Timeline/types';
 import { TimelineNavigation } from './Timeline/TimelineNavigation';
 import { TimelineScrollContainer } from './Timeline/TimelineScrollContainer';
 import { useTimelineScroll } from './Timeline/useTimelineScroll';
-
 export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
   timeline,
   className = ''
@@ -26,11 +24,11 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
       flex flex-col
       font-arabic
       overflow-hidden
-      min-h-[180px]
+      min-h-[320px]
     `}>
       
       {/* رأس البطاقة */}
-      <header className="flex items-center justify-between mb-3">
+      <header className="flex items-center justify-between mb-5">
         <h3 className="text-xl font-arabic font-bold text-gray-800">
           الأحداث القادمة
         </h3>
@@ -39,7 +37,7 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
       </header>
 
       {/* محتوى الخط الزمني */}
-      <div className="flex-1 relative min-h-0 py-0">
+      <div className="flex-1 relative min-h-0 py-[35px]">
         <TimelineScrollContainer timeline={timeline} onEventClick={openEvent} />
       </div>
     </div>;

@@ -39,9 +39,9 @@ export const TimelineScrollContainer: React.FC<TimelineScrollContainerProps> = (
       msOverflowStyle: 'none',
       WebkitOverflowScrolling: 'touch'
     }} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerCancel}>
-        {/* الخط الزمني البسيط - خط رمادي مستقيم - محرك إلى الأعلى */}
+        {/* الخط الزمني البسيط - خط رمادي مستقيم */}
         <div className="absolute left-0 right-0 h-0.5 bg-gray-400 z-10" style={{
-        top: 'calc(30% - 1px)'
+        top: 'calc(50% - 1px)'
       }} />
         
         {/* الأحداث */}
