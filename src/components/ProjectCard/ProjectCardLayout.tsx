@@ -38,7 +38,7 @@ const ProjectCardLayout = ({
       onClick={handleClick}
       style={getCardStyles()}
       className={`
-        glass-enhanced rounded-[40px] p-2 mx-0 my-1 cursor-pointer
+        glass-enhanced rounded-[40px] p-2 mx-auto my-1 cursor-pointer
         transition-all duration-200 ease-in-out
         ${isSelected 
           ? 'opacity-100' 
