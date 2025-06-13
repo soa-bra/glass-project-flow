@@ -2,66 +2,11 @@
 export const getMockData = () => ({
   overview: {
     timeline: [
-      { 
-        id: 1, 
-        date: '2025-06-15', 
-        title: 'اجتماع مجلس الإدارة', 
-        department: 'إدارية', 
-        color: '#374151',
-        description: 'اجتماع شهري لمجلس الإدارة',
-        time: '10:00',
-        type: 'meeting' as const,
-        priority: 'high' as const,
-        status: 'upcoming' as const
-      },
-      { 
-        id: 2, 
-        date: '2025-06-20', 
-        title: 'تسليم المرحلة الأولى', 
-        department: 'هندسية', 
-        color: '#374151',
-        description: 'تسليم المرحلة الأولى من المشروع الرئيسي',
-        time: '14:00',
-        type: 'deadline' as const,
-        priority: 'high' as const,
-        status: 'upcoming' as const
-      },
-      { 
-        id: 3, 
-        date: '2025-06-25', 
-        title: 'توقيع عقد جديد', 
-        department: 'قانونية', 
-        color: '#374151',
-        description: 'توقيع عقد جديد مع العميل الاستراتيجي',
-        time: '11:30',
-        type: 'milestone' as const,
-        priority: 'medium' as const,
-        status: 'upcoming' as const
-      },
-      { 
-        id: 4, 
-        date: '2025-07-01', 
-        title: 'مراجعة الأداء الشهري', 
-        department: 'مالية', 
-        color: '#374151',
-        description: 'مراجعة شاملة للأداء المالي',
-        time: '09:00',
-        type: 'meeting' as const,
-        priority: 'medium' as const,
-        status: 'upcoming' as const
-      },
-      { 
-        id: 5, 
-        date: '2025-07-10', 
-        title: 'تدريب الفريق الجديد', 
-        department: 'موارد بشرية', 
-        color: '#374151',
-        description: 'برنامج تدريبي للموظفين الجدد',
-        time: '13:00',
-        type: 'event' as const,
-        priority: 'low' as const,
-        status: 'upcoming' as const
-      },
+      { id: 1, date: '2025-06-15', title: 'اجتماع مجلس الإدارة', department: 'إدارية', color: '#374151' },
+      { id: 2, date: '2025-06-20', title: 'تسليم المرحلة الأولى', department: 'هندسية', color: '#374151' },
+      { id: 3, date: '2025-06-25', title: 'توقيع عقد جديد', department: 'قانونية', color: '#374151' },
+      { id: 4, date: '2025-07-01', title: 'مراجعة الأداء الشهري', department: 'مالية', color: '#374151' },
+      { id: 5, date: '2025-07-10', title: 'تدريب الفريق الجديد', department: 'موارد بشرية', color: '#374151' },
     ],
     widgets: {
       budget: { total: 1000000, spent: 450000 },

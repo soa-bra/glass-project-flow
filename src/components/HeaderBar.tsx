@@ -1,10 +1,33 @@
 
-import React from 'react';
-import { HEADER_ACTIONS, LOGO_PATH, APP_NAME } from '@/constants';
-import { useImageState } from '@/hooks/useImageState';
+import { Bell, CircleUser, Search, RefreshCcw, Settings } from 'lucide-react';
+import React, { useState, useCallback, useMemo } from 'react';
+
+const HEADER_ACTIONS = [
+  { icon: Search, label: 'البحث' },
+  { icon: RefreshCcw, label: 'تحديث' },
+  { icon: Bell, label: 'التنبيهات' },
+  { icon: CircleUser, label: 'المستخدم' },
+  { icon: Settings, label: 'الإعدادات' },
+];
 
 const HeaderBar = React.memo(() => {
-  const { imageState, handleImageError, handleImageLoad, imageStyle } = useImageState();
+  const [imageState, setImageState] = useState({
+    error: false,
+    loaded: false
+  });
+
+  const handleImageError = useCallback(() => {
+    setImageState(prev => ({ ...prev, error: true }));
+  }, []);
+
+  const handleImageLoad = useCallback(() => {
+    setImageState(prev => ({ ...prev, loaded: true }));
+  }, []);
+
+  const imageStyle = useMemo(() => ({
+    opacity: imageState.loaded ? 1 : 0.7,
+    border: '1px solid rgba(255,255,255,0.2)'
+  }), [imageState.loaded]);
 
   return (
     <header className="fixed top-0 right-0 left-0 h-[60px] bg-soabra-sidebar-bg z-header my-0 py-[65px] px-[5px]">
@@ -12,8 +35,8 @@ const HeaderBar = React.memo(() => {
         <div className="text-right ml-4 mx-[5px] flex items-center">
           {!imageState.error ? (
             <img 
-              src={LOGO_PATH}
-              alt={`${APP_NAME} Logo`}
+              src="/lovable-uploads/9a8b8ed4-b3d6-4ecf-b62c-e6c1eba8c3d4.png" 
+              alt="SoaBra Logo" 
               className="h-12 w-auto object-contain transition-opacity duration-300" 
               onError={handleImageError} 
               onLoad={handleImageLoad}
@@ -22,7 +45,7 @@ const HeaderBar = React.memo(() => {
           ) : (
             <div>
               <span className="text-soabra-text-primary font-bold text-lg font-arabic">
-                {APP_NAME}
+                SoaBra
               </span>
             </div>
           )}
