@@ -20,17 +20,8 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
         <TabsTrigger 
           key={tab.value} 
           value={tab.value} 
-          className="text-sm font-arabic rounded-full py-3 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-400 hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap px-[15px]"
-          style={{
-            '--active-bg': '#2A3437'
-          } as React.CSSProperties}
-          data-active={tab.value === activeTab}
+          className="text-sm font-arabic rounded-full py-3 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-400 hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap px-[15px] data-[state=active]:bg-[#2A3437]"
         >
-          <style jsx>{`
-            [data-active="true"] {
-              background-color: #2A3437 !important;
-            }
-          `}</style>
           {tab.label}
         </TabsTrigger>
       ))}
