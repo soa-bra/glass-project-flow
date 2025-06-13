@@ -28,7 +28,7 @@ export const HRWidget: React.FC<HRWidgetProps> = ({ hr }) => {
           الموارد البشرية
         </h3>
       }
-      className="h-[180px]"
+      className="h-[120px]"
     >
       <div className="flex-1 flex flex-col justify-center">
         <div className="flex justify-center items-center mb-4">

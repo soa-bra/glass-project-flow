@@ -24,7 +24,7 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ timeline }) =>
           المواعيد والأحداث القادمة
         </h3>
       }
-      className="w-full h-[180px]"
+      className="w-full h-[120px]"
     >
       <div className="relative overflow-x-auto flex-1">
         <div className="flex items-center gap-8 min-w-full pb-2 justify-center h-full">

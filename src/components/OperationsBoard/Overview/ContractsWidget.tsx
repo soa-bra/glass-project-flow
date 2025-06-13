@@ -27,7 +27,7 @@ export const ContractsWidget: React.FC<ContractsWidgetProps> = ({ contracts }) =
           حالة العقود
         </h3>
       }
-      className="h-[180px]"
+      className="h-[120px]"
     >
       <div className="flex-1 flex flex-col justify-center">
         <div className="flex justify-center items-center mb-4">

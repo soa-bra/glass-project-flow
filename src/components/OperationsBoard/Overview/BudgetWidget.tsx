@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { BaseCard } from '@/components/ui/BaseCard';
@@ -18,7 +19,7 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({
   const isOverBudget = percentage > 80;
   return <BaseCard size="md" variant="glass" neonRing={isOverBudget ? 'warning' : 'info'} header={<h3 className="text-sm font-arabic font-bold text-gray-800">
           الميزانية والمصروفات
-        </h3>} className="h-[180px]">
+        </h3>} className="h-[120px]">
       <div className="space-y-2 flex-1 flex flex-col justify-center px-0 py-0 my-0">
         <div className="text-right my-0 py-0">
           <div className="mb-1">
