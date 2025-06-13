@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TimelineWidget } from './Overview/TimelineWidget';
 import { BudgetWidget } from './Overview/BudgetWidget';
@@ -51,53 +52,53 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
   return (
     <div className="h-full overflow-auto">
-      {/* شبكة اللوحة الجديدة */}
+      {/* الشبكة الجديدة للوحة */}
       <section className="
-        grid grid-cols-12 gap-4 
+        grid grid-cols-12 gap-6 
         h-full w-full p-6
         auto-rows-min
       ">
         
-        {/* 1. بطاقة الأحداث القادمة - عرض كامل في الأعلى */}
+        {/* 1. خط الزمن - عرض كامل في الأعلى */}
         <TimelineWidget 
           timeline={data.timeline} 
-          className="col-span-12 h-[200px]" 
+          className="col-span-12 h-[220px]" 
         />
 
         {/* الصف الثاني - بطاقة العقود على اليسار */}
         <ContractsWidget 
           contracts={data.widgets.contracts} 
-          className="col-span-3 h-[250px]" 
+          className="col-span-3 h-[280px]" 
         />
 
-        {/* بطاقة الميزانية في الوسط */}
+        {/* بطاقة الميزانية في المركز - المساحة الأكبر */}
         <BudgetWidget 
           budget={data.widgets.budget} 
-          className="col-span-6 h-[250px]" 
+          className="col-span-6 h-[280px]" 
         />
 
         {/* بطاقة الموارد البشرية على اليمين */}
         <HRWidget 
           hr={data.widgets.hr} 
-          className="col-span-3 h-[250px]" 
+          className="col-span-3 h-[280px]" 
         />
 
-        {/* الصف الثالث - بطاقات إضافية */}
+        {/* الصف الثالث - البطاقات الإضافية */}
         <SatisfactionWidget 
           satisfaction={data.widgets.satisfaction} 
-          className="col-span-4 h-[200px]" 
+          className="col-span-4 h-[220px]" 
         />
 
         <AISuggestedWidget 
           type="kpi"
-          title="مؤشرات الأداء"
-          className="col-span-4 h-[200px]" 
+          title="مؤشرات الأداء الرئيسية"
+          className="col-span-4 h-[220px]" 
         />
 
         <AISuggestedWidget 
           type="reports"
-          title="التقارير السريعة"
-          className="col-span-4 h-[200px]" 
+          title="التقارير التنفيذية"
+          className="col-span-4 h-[220px]" 
         />
 
       </section>
