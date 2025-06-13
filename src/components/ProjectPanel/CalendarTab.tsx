@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
 import { ProjectData } from './types';
-import { Calendar, Clock, Users, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
+import { InteractiveCalendar } from './InteractiveCalendar';
+import { Calendar, Clock, Users, MapPin, Bell, Plus } from 'lucide-react';
 
 interface CalendarTabProps {
   projectData: ProjectData;
@@ -9,7 +10,7 @@ interface CalendarTabProps {
 }
 
 export const CalendarTab: React.FC<CalendarTabProps> = ({ projectData, loading }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
   if (loading) {
     return (
@@ -24,7 +25,7 @@ export const CalendarTab: React.FC<CalendarTabProps> = ({ projectData, loading }
     );
   }
 
-  const upcomingEvents = [
+  const calendarEvents = [
     {
       id: '1',
       title: 'اجتماع مراجعة التقدم',
@@ -32,7 +33,7 @@ export const CalendarTab: React.FC<CalendarTabProps> = ({ projectData, loading }
       time: '10:00',
       attendees: 5,
       location: 'قاعة الاجتماعات الرئيسية',
-      type: 'meeting'
+      type: 'meeting' as const
     },
     {
       id: '2',
@@ -41,7 +42,7 @@ export const CalendarTab: React.FC<CalendarTabProps> = ({ projectData, loading }
       time: '17:00',
       attendees: 3,
       location: 'عبر الإنترنت',
-      type: 'deadline'
+      type: 'deadline' as const
     },
     {
       id: '3',
@@ -50,15 +51,29 @@ export const CalendarTab: React.FC<CalendarTabProps> = ({ projectData, loading }
       time: '14:30',
       attendees: 8,
       location: 'استوديو التصميم',
-      type: 'workshop'
+      type: 'task' as const
+    },
+    {
+      id: '4',
+      title: 'مراجعة الكود',
+      date: '2025-06-25',
+      time: '11:00',
+      attendees: 4,
+      location: 'مكتب التطوير',
+      type: 'task' as const
     }
   ];
+
+  const upcomingEvents = calendarEvents
+    .filter(event => new Date(event.date) >= new Date())
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 5);
 
   const getEventTypeColor = (type: string) => {
     switch (type) {
       case 'meeting': return 'bg-blue-100 text-blue-600 border-blue-200';
       case 'deadline': return 'bg-red-100 text-red-600 border-red-200';
-      case 'workshop': return 'bg-green-100 text-green-600 border-green-200';
+      case 'task': return 'bg-green-100 text-green-600 border-green-200';
       default: return 'bg-gray-100 text-gray-600 border-gray-200';
     }
   };
@@ -67,72 +82,45 @@ export const CalendarTab: React.FC<CalendarTabProps> = ({ projectData, loading }
     switch (type) {
       case 'meeting': return 'اجتماع';
       case 'deadline': return 'موعد نهائي';
-      case 'workshop': return 'ورشة عمل';
+      case 'task': return 'مهمة';
       default: return 'حدث';
     }
   };
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    const newDate = new Date(currentDate);
-    if (direction === 'prev') {
-      newDate.setMonth(newDate.getMonth() - 1);
-    } else {
-      newDate.setMonth(newDate.getMonth() + 1);
-    }
-    setCurrentDate(newDate);
+  const handleEventClick = (event: any) => {
+    setSelectedEvent(event);
   };
 
   return (
     <div className="p-6 space-y-6">
-      {/* التقويم الشهري */}
-      <div className="bg-white/30 backdrop-blur-[15px] rounded-[20px] p-6 border border-white/40">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">تقويم المشروع</h3>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigateMonth('prev')}
-              className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-            >
-              <ChevronRight size={20} className="text-gray-600" />
-            </button>
-            <span className="px-4 py-2 bg-white/20 rounded-lg font-semibold text-gray-800">
-              {currentDate.toLocaleDateString('ar-SA', { year: 'numeric', month: 'long' })}
-            </span>
-            <button
-              onClick={() => navigateMonth('next')}
-              className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-            >
-              <ChevronLeft size={20} className="text-gray-600" />
-            </button>
-          </div>
-        </div>
-        
-        {/* شبكة التقويم المبسطة */}
-        <div className="grid grid-cols-7 gap-2 mb-4">
-          {['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map(day => (
-            <div key={day} className="text-center p-2 text-sm font-semibold text-gray-600">
-              {day}
-            </div>
-          ))}
-          {/* خلايا التقويم - مبسطة للعرض */}
-          {Array.from({ length: 35 }, (_, i) => (
-            <div key={i} className="aspect-square flex items-center justify-center text-sm hover:bg-white/20 rounded-lg transition-colors cursor-pointer">
-              {i + 1 <= 30 ? i + 1 : ''}
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* التقويم التفاعلي */}
+      <InteractiveCalendar
+        events={calendarEvents}
+        onEventClick={handleEventClick}
+        onDateClick={(date) => console.log('تاريخ محدد:', date)}
+      />
 
       {/* الأحداث القادمة */}
       <div className="bg-white/30 backdrop-blur-[15px] rounded-[20px] p-6 border border-white/40">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold text-gray-800 font-arabic">الأحداث القادمة</h3>
-          <Calendar className="w-6 h-6 text-blue-600" />
+          <div className="flex gap-2">
+            <button className="p-2 hover:bg-white/20 rounded-lg transition-colors">
+              <Bell size={16} className="text-gray-600" />
+            </button>
+            <button className="p-2 hover:bg-white/20 rounded-lg transition-colors">
+              <Plus size={16} className="text-gray-600" />
+            </button>
+          </div>
         </div>
         
         <div className="space-y-3">
           {upcomingEvents.map((event) => (
-            <div key={event.id} className="bg-white/20 backdrop-blur-[10px] rounded-[15px] p-4 border border-white/30">
+            <div 
+              key={event.id} 
+              className="bg-white/20 backdrop-blur-[10px] rounded-[15px] p-4 border border-white/30 cursor-pointer hover:bg-white/30 transition-colors"
+              onClick={() => handleEventClick(event)}
+            >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <h4 className="font-semibold text-gray-800 mb-2">{event.title}</h4>
@@ -169,23 +157,91 @@ export const CalendarTab: React.FC<CalendarTabProps> = ({ projectData, loading }
       <div className="bg-white/30 backdrop-blur-[15px] rounded-[20px] p-6 border border-white/40">
         <h3 className="text-lg font-bold text-gray-800 font-arabic mb-4">ملخص الأنشطة</h3>
         
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <div className="text-center p-3 bg-blue-100 rounded-lg">
-            <p className="text-2xl font-bold text-blue-600">5</p>
-            <p className="text-sm text-gray-600">اجتماعات هذا الشهر</p>
+            <p className="text-2xl font-bold text-blue-600">
+              {calendarEvents.filter(e => e.type === 'meeting').length}
+            </p>
+            <p className="text-sm text-gray-600">اجتماعات</p>
           </div>
           
           <div className="text-center p-3 bg-red-100 rounded-lg">
-            <p className="text-2xl font-bold text-red-600">3</p>
+            <p className="text-2xl font-bold text-red-600">
+              {calendarEvents.filter(e => e.type === 'deadline').length}
+            </p>
             <p className="text-sm text-gray-600">مواعيد نهائية</p>
           </div>
           
           <div className="text-center p-3 bg-green-100 rounded-lg">
-            <p className="text-2xl font-bold text-green-600">2</p>
-            <p className="text-sm text-gray-600">ورش عمل</p>
+            <p className="text-2xl font-bold text-green-600">
+              {calendarEvents.filter(e => e.type === 'task').length}
+            </p>
+            <p className="text-sm text-gray-600">مهام</p>
+          </div>
+
+          <div className="text-center p-3 bg-purple-100 rounded-lg">
+            <p className="text-2xl font-bold text-purple-600">
+              {upcomingEvents.length}
+            </p>
+            <p className="text-sm text-gray-600">قادمة</p>
           </div>
         </div>
       </div>
+
+      {/* تفاصيل الحدث المحدد */}
+      {selectedEvent && (
+        <div className="bg-white/30 backdrop-blur-[15px] rounded-[20px] p-6 border border-white/40">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-800 font-arabic">تفاصيل الحدث</h3>
+            <button 
+              onClick={() => setSelectedEvent(null)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="space-y-3">
+            <div>
+              <h4 className="font-semibold text-gray-800">{selectedEvent.title}</h4>
+              <div className={`inline-block px-2 py-1 rounded-full text-xs font-medium border mt-1 ${getEventTypeColor(selectedEvent.type)}`}>
+                {getEventTypeLabel(selectedEvent.type)}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <Calendar size={16} className="text-gray-500" />
+                <span>{new Date(selectedEvent.date).toLocaleDateString('ar-SA')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock size={16} className="text-gray-500" />
+                <span>{selectedEvent.time}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users size={16} className="text-gray-500" />
+                <span>{selectedEvent.attendees} مشارك</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin size={16} className="text-gray-500" />
+                <span>{selectedEvent.location}</span>
+              </div>
+            </div>
+            
+            <div className="flex gap-2 pt-3">
+              <button className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors">
+                تعديل
+              </button>
+              <button className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
+                حذف
+              </button>
+              <button className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+                تكرار
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,38 +1,61 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { TaskData } from './types';
-import { Search, Filter, Plus, Zap } from 'lucide-react';
+import { TaskCard } from './TaskCard';
+import { Search, Filter, Plus, Zap, Grid, List } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 interface TasksTabProps {
   tasks: TaskData[];
   loading: boolean;
 }
 
-const statusColors = {
-  'pending': '#fbbf24',
-  'in-progress': '#3b82f6',
-  'completed': '#10b981'
-};
+export const TasksTab: React.FC<TasksTabProps> = ({ tasks: initialTasks, loading }) => {
+  const [tasks, setTasks] = useState(initialTasks);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
 
-const statusLabels = {
-  'pending': 'قيد الانتظار',
-  'in-progress': 'قيد التنفيذ',
-  'completed': 'مكتمل'
-};
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
-const priorityColors = {
-  'low': '#6b7280',
-  'medium': '#f59e0b',
-  'high': '#ef4444'
-};
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
 
-const priorityLabels = {
-  'low': 'منخفضة',
-  'medium': 'متوسطة',
-  'high': 'عالية'
-};
+    if (active.id !== over?.id) {
+      setTasks((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over?.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
 
-export const TasksTab: React.FC<TasksTabProps> = ({ tasks, loading }) => {
+  const filteredTasks = tasks.filter(task => {
+    const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         task.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterStatus === 'all' || task.status === filterStatus;
+    return matchesSearch && matchesFilter;
+  });
+
   if (loading) {
     return (
       <div className="p-6 space-y-4">
@@ -55,9 +78,29 @@ export const TasksTab: React.FC<TasksTabProps> = ({ tasks, loading }) => {
           <input
             type="text"
             placeholder="البحث في المهام..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-4 pr-10 py-2 bg-white/20 backdrop-blur-[10px] border border-white/30 rounded-full text-right placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
           />
         </div>
+        
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="px-3 py-2 bg-white/20 backdrop-blur-[10px] border border-white/30 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
+        >
+          <option value="all">كل المهام</option>
+          <option value="pending">قيد الانتظار</option>
+          <option value="in-progress">قيد التنفيذ</option>
+          <option value="completed">مكتمل</option>
+        </select>
+
+        <button
+          onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
+          className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+        >
+          {viewMode === 'list' ? <Grid size={16} /> : <List size={16} />}
+        </button>
         
         <button className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
           <Filter size={16} className="text-gray-600" />
@@ -72,47 +115,49 @@ export const TasksTab: React.FC<TasksTabProps> = ({ tasks, loading }) => {
         </button>
       </div>
 
-      {/* قائمة المهام */}
-      <div className="space-y-3">
-        {tasks.map((task) => (
-          <div
-            key={task.id}
-            className="bg-white/30 backdrop-blur-[15px] rounded-[20px] p-4 border border-white/40 hover:bg-white/40 transition-all duration-200"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: priorityColors[task.priority] }}
-                ></div>
-                <span className="text-xs text-gray-600">
-                  {priorityLabels[task.priority]}
-                </span>
-              </div>
-              
-              <div
-                className="px-3 py-1 rounded-full text-xs font-medium text-white"
-                style={{ backgroundColor: statusColors[task.status] }}
-              >
-                {statusLabels[task.status]}
-              </div>
-            </div>
-            
-            <h3 className="font-semibold text-gray-800 mb-2 text-right font-arabic">
-              {task.title}
-            </h3>
-            
-            <p className="text-sm text-gray-600 mb-3 text-right">
-              {task.description}
-            </p>
-            
-            <div className="flex items-center justify-between text-sm text-gray-500">
-              <span>{new Date(task.dueDate).toLocaleDateString('ar-SA')}</span>
-              <span>{task.assignee}</span>
-            </div>
-          </div>
-        ))}
+      {/* إحصائيات المهام */}
+      <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="bg-white/20 backdrop-blur-[10px] rounded-[15px] p-3 text-center border border-white/30">
+          <div className="text-lg font-bold text-gray-800">{tasks.length}</div>
+          <div className="text-xs text-gray-600">إجمالي المهام</div>
+        </div>
+        <div className="bg-white/20 backdrop-blur-[10px] rounded-[15px] p-3 text-center border border-white/30">
+          <div className="text-lg font-bold text-blue-600">{tasks.filter(t => t.status === 'in-progress').length}</div>
+          <div className="text-xs text-gray-600">قيد التنفيذ</div>
+        </div>
+        <div className="bg-white/20 backdrop-blur-[10px] rounded-[15px] p-3 text-center border border-white/30">
+          <div className="text-lg font-bold text-green-600">{tasks.filter(t => t.status === 'completed').length}</div>
+          <div className="text-xs text-gray-600">مكتمل</div>
+        </div>
+        <div className="bg-white/20 backdrop-blur-[10px] rounded-[15px] p-3 text-center border border-white/30">
+          <div className="text-lg font-bold text-yellow-600">{tasks.filter(t => t.status === 'pending').length}</div>
+          <div className="text-xs text-gray-600">قيد الانتظار</div>
+        </div>
       </div>
+
+      {/* قائمة المهام */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={filteredTasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
+          <div className={viewMode === 'grid' ? 'grid grid-cols-2 gap-3' : 'space-y-3'}>
+            {filteredTasks.map((task) => (
+              <TaskCard key={task.id} task={task} />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+
+      {filteredTasks.length === 0 && (
+        <div className="text-center py-12">
+          <div className="text-gray-500 mb-2">لا توجد مهام تطابق المعايير المحددة</div>
+          <button className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors">
+            إضافة مهمة جديدة
+          </button>
+        </div>
+      )}
     </div>
   );
 };

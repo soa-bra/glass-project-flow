@@ -13,6 +13,7 @@ import { LegalTab } from './LegalTab';
 import { ClientTab } from './ClientTab';
 import { ReportsTab } from './ReportsTab';
 import { CalendarTab } from './CalendarTab';
+import { NotificationCenter } from './NotificationCenter';
 
 export const ProjectPanel: React.FC<ProjectPanelProps> = ({
   projectId,
@@ -74,6 +75,8 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
         return <ReportsTab projectData={projectData} loading={loading} />;
       case 'calendar':
         return <CalendarTab projectData={projectData} loading={loading} />;
+      case 'notifications':
+        return <NotificationCenter />;
       default:
         return null;
     }

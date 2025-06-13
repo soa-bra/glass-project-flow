@@ -60,7 +60,8 @@ export type ProjectTab =
   | 'legal' 
   | 'client' 
   | 'reports' 
-  | 'calendar';
+  | 'calendar'
+  | 'notifications';
 
 export const PROJECT_TABS: { value: ProjectTab; label: string }[] = [
   { value: 'tasks', label: 'قائمة المهام' },
@@ -69,4 +70,5 @@ export const PROJECT_TABS: { value: ProjectTab; label: string }[] = [
   { value: 'client', label: 'معلومات العميل' },
   { value: 'reports', label: 'تقارير المشروع' },
   { value: 'calendar', label: 'تقويم المشروع' },
+  { value: 'notifications', label: 'الإشعارات' },
 ];
