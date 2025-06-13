@@ -7,7 +7,6 @@ interface ProjectCardLayoutProps {
   isSelected?: boolean;
   isOtherSelected?: boolean;
   onProjectSelect?: (projectId: string) => void;
-  onProjectManagement?: (projectId: string) => void;
 }
 
 const ProjectCardLayout = ({
@@ -16,21 +15,12 @@ const ProjectCardLayout = ({
   isSelected = false,
   isOtherSelected = false,
   onProjectSelect,
-  onProjectManagement,
 }: ProjectCardLayoutProps) => {
   const handleClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     
     if (onProjectSelect) {
       onProjectSelect(id);
-    }
-  };
-
-  const handleDoubleClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    
-    if (onProjectManagement) {
-      onProjectManagement(id);
     }
   };
 
@@ -46,7 +36,6 @@ const ProjectCardLayout = ({
   return (
     <div
       onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
       style={getCardStyles()}
       className={`
         glass-enhanced rounded-[40px] p-2 mx-0 my-1 cursor-pointer
@@ -58,7 +47,6 @@ const ProjectCardLayout = ({
             : 'opacity-100 shadow-sm hover:shadow-md'
         }
       `}
-      title="انقر نقراً مزدوجاً لفتح لوحة إدارة المشروع"
     >
       <div className="pointer-events-none">
         {children}
