@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
@@ -6,6 +7,7 @@ import LegalTab from './LegalTab';
 import HRTab from './HRTab';
 import { ClientsTab } from './ClientsTab';
 import { ReportsTab } from './ReportsTab';
+
 export const TabContentWrapper = ({
   tabData,
   loading
@@ -13,8 +15,9 @@ export const TabContentWrapper = ({
   tabData: any;
   loading: boolean;
 }) => {
-  return <>
-      <TabsContent value="overview" className="w-full h-full overflow-auto p-4 m-0 px-0">
+  return (
+    <>
+      <TabsContent value="overview" className="w-full h-full overflow-auto p-4 m-0">
         <OverviewTab data={tabData.overview} loading={loading} />
       </TabsContent>
       
@@ -37,5 +40,6 @@ export const TabContentWrapper = ({
       <TabsContent value="reports" className="w-full h-full overflow-auto p-4 m-0">
         <ReportsTab data={tabData.reports} loading={loading} />
       </TabsContent>
-    </>;
+    </>
+  );
 };
