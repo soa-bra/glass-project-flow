@@ -38,7 +38,7 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
     >
       <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0">
         {/* Menu Title Section with Toggle - Synchronized Animation */}
-        <div className={`text-center mb-2 rounded-full mx-0 px-0 py-[10px] my-[20px] sync-transition ${isCollapsed ? 'flex justify-center' : ''}`}>
+        <div className={`text-center mb-2 rounded-full mx-0 px-0 py-[24px] my-[24px] sync-transition ${isCollapsed ? 'flex justify-center' : ''}`}>
           <div className={`flex items-center rounded-lg sync-transition ${isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[20px]'}`}>
             {/* Title container - Perfect synchronization */}
             <div 

@@ -32,7 +32,7 @@ export const OperationsBoard = ({
     >
       <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col">
         {/* عنوان اللوحة */}
-        <div className="text-right px-6 pt-6 pb-2">
+        <div className="text-right px-6 py-[24px] my-[24px]">
           <h2 className="font-medium text-[#2A3437] font-arabic text-3xl">
             لوحة الإدارة والتشغيل
           </h2>

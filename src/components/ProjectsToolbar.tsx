@@ -3,7 +3,7 @@ import { RefreshCcw, Filter, Plus } from 'lucide-react';
 
 const ProjectsToolbar = () => {
   return (
-    <div className="flex items-center justify-between h-14 py-2 px-3 my-4">
+    <div className="flex items-center justify-between h-14 py-[24px] px-3 my-[24px]">
       {/* العنوان يميناً */}
       <h2 className="font-medium text-[#2A3437] font-arabic text-3xl">
         المشاريع
