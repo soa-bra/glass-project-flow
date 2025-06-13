@@ -1,31 +1,55 @@
+
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
+
 interface SatisfactionWidgetProps {
   satisfaction: number;
 }
-export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({
-  satisfaction
-}) => {
+
+export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfaction }) => {
   const getRingColor = (score: number) => {
     if (score >= 80) return 'success';
     if (score >= 60) return 'warning';
     return 'error';
   };
+
   const getScoreText = (score: number) => {
     if (score >= 80) return 'ممتاز';
     if (score >= 60) return 'جيد';
     return 'يحتاج تحسين';
   };
-  return <BaseCard size="lg" variant="glass" neonRing={getRingColor(satisfaction)} header={<h3 className="font-arabic font-bold text-gray-800 text-center text-base">
+
+  return (
+    <BaseCard 
+      size="lg"
+      variant="glass"
+      neonRing={getRingColor(satisfaction)}
+      header={
+        <h3 className="text-xl font-arabic font-bold text-gray-800 text-center">
           مؤشر رضا العملاء
-        </h3>} className="h-[220px]">
-      <div className="flex-1 flex items-center justify-center gap-8 px-0 mx-0">
+        </h3>
+      }
+      className="h-[220px]"
+    >
+      <div className="flex-1 flex items-center justify-center gap-8">
         {/* الدائرة الأساسية */}
         <div className="flex flex-col items-center">
           <div className="relative w-24 h-24 mb-2">
             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e5e7eb" strokeWidth="3" />
-              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke={satisfaction >= 80 ? "#10b981" : satisfaction >= 60 ? "#f59e0b" : "#ef4444"} strokeWidth="3" strokeDasharray={`${satisfaction}, 100`} strokeLinecap="round" />
+              <path
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke="#e5e7eb"
+                strokeWidth="3"
+              />
+              <path
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke={satisfaction >= 80 ? "#10b981" : satisfaction >= 60 ? "#f59e0b" : "#ef4444"}
+                strokeWidth="3"
+                strokeDasharray={`${satisfaction}, 100`}
+                strokeLinecap="round"
+              />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-2xl font-bold text-gray-900">{satisfaction}%</span>
@@ -58,5 +82,6 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({
           </div>
         </div>
       </div>
-    </BaseCard>;
+    </BaseCard>
+  );
 };
