@@ -36,13 +36,18 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isVisible) {
+        console.log('إغلاق اللوحة بمفتاح Escape');
         onClose();
       }
     };
 
     if (isVisible) {
+      console.log('تفعيل معالجة مفتاح Escape وإخفاء scroll');
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+    } else {
+      console.log('إعادة تفعيل scroll');
+      document.body.style.overflow = 'auto';
     }
 
     return () => {
@@ -86,47 +91,70 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     }
   };
 
+  // لا نعرض اللوحة إذا لم تكن مرئية
   if (!isVisible) {
     console.log('ProjectPanel not visible, returning null');
     return null;
   }
 
-  console.log('ProjectPanel rendering content');
+  console.log('ProjectPanel rendering content with Portal');
 
+  // محتوى اللوحة مع تحسينات z-index والموضع
   const panelContent = (
-    <MotionSystem isVisible={isVisible} onClose={onClose}>
-      {/* Header */}
-      {projectData && (
-        <ProjectHeader
-          title={projectData.title}
-          status={projectData.status}
-          onClose={onClose}
-        />
-      )}
+    <div 
+      className="fixed inset-0 bg-black/20 backdrop-blur-sm"
+      style={{ zIndex: 9999 }}
+    >
+      <div 
+        className="fixed inset-0 flex items-center justify-center p-4"
+        onClick={(e) => {
+          // إغلاق اللوحة عند النقر على الخلفية
+          if (e.target === e.currentTarget) {
+            console.log('إغلاق اللوحة بالنقر على الخلفية');
+            onClose();
+          }
+        }}
+      >
+        <div 
+          className="w-full max-w-6xl h-full max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <MotionSystem isVisible={isVisible} onClose={onClose}>
+            {/* Header */}
+            {projectData && (
+              <ProjectHeader
+                title={projectData.title}
+                status={projectData.status}
+                onClose={onClose}
+              />
+            )}
 
-      {/* Quick Actions */}
-      <div className="p-6">
-        <ProjectQuickActions
-          onAddTask={handleAddTask}
-          onSmartGenerate={handleSmartGenerate}
-          onEditProject={handleEditProject}
-        />
+            {/* Quick Actions */}
+            <div className="p-6">
+              <ProjectQuickActions
+                onAddTask={handleAddTask}
+                onSmartGenerate={handleSmartGenerate}
+                onEditProject={handleEditProject}
+              />
+            </div>
+
+            {/* Tabs */}
+            <ProjectTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+            {/* Content */}
+            <div className="flex-1 overflow-auto">
+              {error ? (
+                <div className="p-6 text-center text-red-600">
+                  {error}
+                </div>
+              ) : (
+                renderTabContent()
+              )}
+            </div>
+          </MotionSystem>
+        </div>
       </div>
-
-      {/* Tabs */}
-      <ProjectTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
-      {/* Content */}
-      <div className="flex-1 overflow-auto">
-        {error ? (
-          <div className="p-6 text-center text-red-600">
-            {error}
-          </div>
-        ) : (
-          renderTabContent()
-        )}
-      </div>
-    </MotionSystem>
+    </div>
   );
 
   return createPortal(panelContent, document.body);

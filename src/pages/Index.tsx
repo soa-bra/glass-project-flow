@@ -43,16 +43,19 @@ const Index: React.FC = () => {
           </div>
         </div>
 
+        {/* لوحة العمليات - تختفي تدريجياً عند فتح لوحة المشروع */}
         <div 
-          className={`mx-0 transition-all duration-300 ${
-            isPanelVisible ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          className={`mx-0 transition-all duration-500 ease-in-out ${
+            selectedProjectId && isPanelVisible 
+              ? 'opacity-0 pointer-events-none scale-95' 
+              : 'opacity-100 pointer-events-auto scale-100'
           }`}
         >
           <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
         </div>
       </div>
 
-      {/* لوحة تحكم المشروع */}
+      {/* لوحة تحكم المشروع مع Portal محسن */}
       {selectedProjectId && (
         <ProjectPanel
           projectId={selectedProjectId}
