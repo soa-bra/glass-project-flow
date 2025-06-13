@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { BaseCard } from '@/components/ui/BaseCard';
 
@@ -13,8 +13,14 @@ interface TeamFillProgressProps {
 }
 
 export const TeamFillProgress: React.FC<TeamFillProgressProps> = ({ stats }) => {
-  const totalTeamSize = stats.active + stats.vacancies;
-  const percentageFilled = Math.round((stats.active / totalTeamSize) * 100);
+  const { totalTeamSize, percentageFilled } = useMemo(() => {
+    const total = stats.active + stats.vacancies;
+    const percentage = Math.round((stats.active / total) * 100);
+    return {
+      totalTeamSize: total,
+      percentageFilled: percentage
+    };
+  }, [stats.active, stats.vacancies]);
 
   return (
     <BaseCard 

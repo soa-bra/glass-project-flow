@@ -16,9 +16,7 @@ const ProjectCard = ({
   daysLeft
 }: ProjectCardProps) => {
   return (
-    <ProjectCardLayout
-      id={id}
-    >
+    <ProjectCardLayout id={id}>
       <ProjectCardHeader
         daysLeft={daysLeft}
         title={title}
@@ -37,4 +35,5 @@ const ProjectCard = ({
   );
 };
 
+export { ProjectCard };
 export default ProjectCard;

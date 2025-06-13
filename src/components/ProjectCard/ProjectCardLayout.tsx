@@ -1,5 +1,5 @@
 
-import { ReactNode } from 'react';
+import { ReactNode, useCallback } from 'react';
 
 interface ProjectCardLayoutProps {
   children: ReactNode;
@@ -16,33 +16,18 @@ const ProjectCardLayout = ({
   isOtherSelected = false,
   onProjectSelect,
 }: ProjectCardLayoutProps) => {
-  const handleClick = (event: React.MouseEvent) => {
+  const handleClick = useCallback((event: React.MouseEvent) => {
     event.stopPropagation();
-    
-    if (onProjectSelect) {
-      onProjectSelect(id);
-    }
-  };
+    onProjectSelect?.(id);
+  }, [id, onProjectSelect]);
 
-  const getCardClasses = () => {
-    let baseClasses = 'project-card-glass project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer';
-    
-    if (isSelected) {
-      return `${baseClasses} project-card-selected`;
-    }
-    
-    if (isOtherSelected) {
-      return `${baseClasses} project-card-dimmed`;
-    }
-    
-    return baseClasses;
-  };
+  const cardClasses = `project-card-glass project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer ${
+    isSelected ? 'project-card-selected' : 
+    isOtherSelected ? 'project-card-dimmed' : ''
+  }`;
 
   return (
-    <div
-      onClick={handleClick}
-      className={getCardClasses()}
-    >
+    <div onClick={handleClick} className={cardClasses}>
       <div className="pointer-events-none">
         {children}
       </div>
@@ -50,4 +35,5 @@ const ProjectCardLayout = ({
   );
 };
 
+export { ProjectCardLayout };
 export default ProjectCardLayout;
