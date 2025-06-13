@@ -108,15 +108,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         />
 
         <AISuggestedWidget 
-          type="analytics"
-          title="التحليلات المتقدمة"
-          className="col-span-3 h-[160px]" 
-        />
-
-        <AISuggestedWidget 
           type="team"
           title="إدارة الفريق"
-          className="col-span-3 h-[160px]" 
+          className="col-span-6 h-[160px]" 
         />
 
       </section>
