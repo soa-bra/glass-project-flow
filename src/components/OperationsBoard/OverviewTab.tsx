@@ -66,23 +66,23 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
           className="col-span-12 h-[180px]" 
         />
 
-        {/* الصف الثاني - العقود والميزانية والموارد البشرية */}
+        {/* الصف الثاني - العقود والميزانية فقط */}
         <ContractsWidget 
           contracts={data.widgets.contracts} 
-          className="col-span-3 h-[220px]" 
+          className="col-span-4 h-[220px]" 
         />
 
         <BudgetWidget 
           budget={data.widgets.budget} 
-          className="col-span-6 h-[220px]" 
+          className="col-span-8 h-[220px]" 
         />
 
+        {/* الصف الثالث - الموارد البشرية والرضا ومؤشرات الأداء */}
         <HRWidget 
           hr={data.widgets.hr} 
-          className="col-span-3 h-[220px]" 
+          className="col-span-4 h-[180px]" 
         />
 
-        {/* الصف الثالث - البطاقات الذكية */}
         <SatisfactionWidget 
           satisfaction={data.widgets.satisfaction} 
           className="col-span-4 h-[180px]" 
@@ -94,13 +94,13 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
           className="col-span-4 h-[180px]" 
         />
 
+        {/* الصف الرابع - التقارير والبطاقات الإضافية */}
         <AISuggestedWidget 
           type="reports"
           title="التقارير التنفيذية"
-          className="col-span-4 h-[180px]" 
+          className="col-span-3 h-[160px]" 
         />
 
-        {/* الصف الرابع الجديد - بطاقات إضافية */}
         <AISuggestedWidget 
           type="alerts"
           title="التنبيهات والإشعارات"
@@ -119,10 +119,11 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
           className="col-span-3 h-[160px]" 
         />
 
+        {/* الصف الخامس - الأهداف والإنجازات */}
         <AISuggestedWidget 
           type="goals"
           title="الأهداف والإنجازات"
-          className="col-span-3 h-[160px]" 
+          className="col-span-12 h-[160px]" 
         />
 
       </section>
