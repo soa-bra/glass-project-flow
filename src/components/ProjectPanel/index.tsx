@@ -65,7 +65,7 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     console.log('إضافة مهمة جديدة');
   }, []);
 
-  const handleSmart Generate = useCallback(() => {
+  const handleSmartGenerate = useCallback(() => {
     console.log('توليد ذكي للمهام');
   }, []);
 
