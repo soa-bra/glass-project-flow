@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TimelineWidget } from './Overview/TimelineWidget';
 import { BudgetWidget } from './Overview/BudgetWidget';
@@ -55,19 +56,17 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
         <BudgetWidget budget={data.widgets.budget} className="col-span-8 h-[260px]" />
 
-        {/* الصف الثالث - الموارد البشرية والرضا ومؤشرات الأداء */}
+        {/* الصف الثالث - الموارد البشرية والرضا ومؤشرات الأداء (ممتدة لصفين) */}
         <HRWidget hr={data.widgets.hr} className="col-span-4 h-[220px]" />
 
         <SatisfactionWidget satisfaction={data.widgets.satisfaction} className="col-span-4 h-[220px]" />
 
-        <AISuggestedWidget type="kpi" title="مؤشرات الأداء الرئيسية" className="col-span-4 h-[220px]" />
+        <AISuggestedWidget type="kpi" title="مؤشرات الأداء الرئيسية" className="col-span-4 row-span-2 h-[462px]" />
 
-        {/* الصف الرابع - التقارير والأهداف وإدارة الفريق بنفس مقاسات الصف الثالث */}
+        {/* الصف الرابع - التقارير وأداء الفريق */}
         <AISuggestedWidget type="reports" title="التقارير التنفيذية" className="col-span-4 h-[220px]" />
 
-        <AISuggestedWidget type="goals" title="الأهداف والإنجازات" className="col-span-4 h-[220px]" />
-
-        <AISuggestedWidget type="team" title="إدارة الفريق" className="col-span-4 h-[220px]" />
+        <AISuggestedWidget type="team" title="أداء الفريق" className="col-span-4 h-[220px]" />
 
       </section>
     </div>;
