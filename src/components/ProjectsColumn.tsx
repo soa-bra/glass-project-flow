@@ -3,6 +3,7 @@ import React from 'react';
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useProjectSelection } from '@/hooks/useProjectSelection';
 
 const mockProjects = [{
   id: '1',
@@ -114,12 +115,10 @@ const mockProjects = [{
   hasOverdueTasks: false
 }];
 
-interface ProjectsColumnProps {
-  onProjectSelect: (projectId: string) => void;
-}
+const ProjectsColumn = React.memo(() => {
+  const { selectedProjectId, isPanelVisible, toggleProject } = useProjectSelection();
 
-const ProjectsColumn = React.memo<ProjectsColumnProps>(({ onProjectSelect }) => {
-  console.log('ProjectsColumn render with onProjectSelect callback');
+  console.log('ProjectsColumn render - selectedProjectId:', selectedProjectId, 'isPanelVisible:', isPanelVisible);
 
   return (
     <div className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl bg-soabra-projects-bg mx-0">
@@ -132,13 +131,22 @@ const ProjectsColumn = React.memo<ProjectsColumnProps>(({ onProjectSelect }) => 
       <div className="flex-1 overflow-hidden rounded-t-3xl">
         <ScrollArea className="h-full w-full">
           <div className="space-y-2 pb-4 px-0 rounded-full mx-[10px]">
-            {mockProjects.map(project => (
-              <ProjectCard
-                key={project.id}
-                {...project}
-                onProjectSelect={onProjectSelect}
-              />
-            ))}
+            {mockProjects.map(project => {
+              const isSelected = selectedProjectId === project.id && isPanelVisible;
+              const isOtherSelected = selectedProjectId !== null && selectedProjectId !== project.id && isPanelVisible;
+              
+              console.log(`ProjectCard ${project.id} - isSelected: ${isSelected}, isOtherSelected: ${isOtherSelected}`);
+              
+              return (
+                <ProjectCard
+                  key={project.id}
+                  {...project}
+                  isSelected={isSelected}
+                  isOtherSelected={isOtherSelected}
+                  onProjectSelect={toggleProject}
+                />
+              );
+            })}
           </div>
         </ScrollArea>
       </div>

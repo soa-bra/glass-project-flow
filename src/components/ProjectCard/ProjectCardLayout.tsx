@@ -4,23 +4,28 @@ import { ReactNode, useCallback } from 'react';
 interface ProjectCardLayoutProps {
   children: ReactNode;
   id: string;
+  isSelected?: boolean;
+  isOtherSelected?: boolean;
   onProjectSelect?: (projectId: string) => void;
 }
 
 const ProjectCardLayout: React.FC<ProjectCardLayoutProps> = ({
   children,
   id,
+  isSelected = false,
+  isOtherSelected = false,
   onProjectSelect,
 }) => {
   const handleClick = useCallback((event: React.MouseEvent) => {
     event.stopPropagation();
-    console.log('النقر على كارت المشروع:', id);
     onProjectSelect?.(id);
   }, [id, onProjectSelect]);
 
   const cardClasses = `
     project-card-glass project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer 
-    transition-all duration-200 ease-out hover:scale-[1.02]
+    transition-all duration-200 ease-out
+    ${isSelected ? 'project-card-selected scale-[0.96] shadow-lg' : 
+      isOtherSelected ? 'project-card-dimmed opacity-70' : ''}
   `;
 
   return (

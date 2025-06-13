@@ -16,19 +16,18 @@ export const ProjectQuickActions: React.FC<ProjectQuickActionsProps> = ({
 }) => {
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-3 md:flex gap-3 p-4 bg-white/30 backdrop-blur-[15px] rounded-[20px] border border-white/40">
+      <div className="flex items-center gap-2 p-4 bg-white/20 backdrop-blur-[10px] rounded-[20px] border border-white/30">
         <Tooltip>
           <TooltipTrigger asChild>
             <button
               onClick={onAddTask}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-sky-500 hover:bg-sky-600 text-white transition-all duration-200 font-medium text-sm font-arabic"
+              className="w-12 h-12 rounded-full bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center transition-colors"
             >
-              <Plus size={18} />
-              <span className="hidden md:inline">إضافة مهمة</span>
+              <Plus size={20} />
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>إضافة مهمة جديدة</p>
+            <p>إضافة مهمة</p>
           </TooltipContent>
         </Tooltip>
 
@@ -36,14 +35,13 @@ export const ProjectQuickActions: React.FC<ProjectQuickActionsProps> = ({
           <TooltipTrigger asChild>
             <button
               onClick={onSmartGenerate}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-amber-500 hover:bg-amber-600 text-white transition-all duration-200 font-medium text-sm font-arabic"
+              className="w-12 h-12 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center transition-colors"
             >
-              <Zap size={18} />
-              <span className="hidden md:inline">توليد ذكي</span>
+              <Zap size={20} />
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>توليد مهام ذكية</p>
+            <p>توليد ذكي للمهام</p>
           </TooltipContent>
         </Tooltip>
 
@@ -51,14 +49,13 @@ export const ProjectQuickActions: React.FC<ProjectQuickActionsProps> = ({
           <TooltipTrigger asChild>
             <button
               onClick={onEditProject}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-gray-500 hover:bg-gray-600 text-white transition-all duration-200 font-medium text-sm font-arabic"
+              className="w-12 h-12 rounded-full bg-gray-500 hover:bg-gray-600 text-white flex items-center justify-center transition-colors"
             >
-              <Edit3 size={18} />
-              <span className="hidden md:inline">تعديل المشروع</span>
+              <Edit3 size={20} />
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>تعديل بيانات المشروع</p>
+            <p>تعديل المشروع</p>
           </TooltipContent>
         </Tooltip>
       </div>
