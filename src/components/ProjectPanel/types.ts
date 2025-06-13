@@ -55,6 +55,7 @@ export interface TimelineData {
 }
 
 export type ProjectTab = 
+  | 'dashboard'
   | 'tasks' 
   | 'finance' 
   | 'legal' 
@@ -64,6 +65,7 @@ export type ProjectTab =
   | 'notifications';
 
 export const PROJECT_TABS: { value: ProjectTab; label: string }[] = [
+  { value: 'dashboard', label: 'لوحة التحكم' },
   { value: 'tasks', label: 'قائمة المهام' },
   { value: 'finance', label: 'التفاصيل المالية' },
   { value: 'legal', label: 'الشؤون القانونية' },
@@ -72,3 +74,31 @@ export const PROJECT_TABS: { value: ProjectTab; label: string }[] = [
   { value: 'calendar', label: 'تقويم المشروع' },
   { value: 'notifications', label: 'الإشعارات' },
 ];
+
+// Enhanced panel configuration interfaces
+export interface PanelMotionConfig {
+  entryDuration: number;
+  exitDuration: number;
+  staggerDelay: number;
+}
+
+export interface PanelLayoutConfig {
+  gridTemplate: string;
+  gap: string;
+  responsiveBreakpoint: number;
+}
+
+export interface ProgressBarConfig {
+  segments: number;
+  height: string;
+  activeColor: string;
+  inactiveColor: string;
+  animationDuration: number;
+}
+
+export interface BudgetCardConfig {
+  strokeWidth: number;
+  radius: number;
+  animationDuration: number;
+  gradientColors: string[];
+}

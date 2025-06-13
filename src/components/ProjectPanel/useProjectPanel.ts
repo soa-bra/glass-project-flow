@@ -1,10 +1,9 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { ProjectData, ProjectTab } from './types';
 
 export const useProjectPanel = (projectId: string | null, isVisible: boolean) => {
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
-  const [activeTab, setActiveTab] = useState<ProjectTab>('tasks');
+  const [activeTab, setActiveTab] = useState<ProjectTab>('dashboard');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
