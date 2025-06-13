@@ -1,307 +1,167 @@
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Filter, MoreHorizontal, Calendar, DollarSign } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Search, Filter, Plus, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { ProjectCardProps } from '@/components/ProjectCard/types';
-
-interface TasksTabProps {
-  project: ProjectCardProps;
-}
 
 interface Task {
   id: string;
   title: string;
+  description: string;
   status: 'pending' | 'in-progress' | 'completed' | 'overdue';
-  dueDate: string;
-  value?: string;
-  priority: 'low' | 'medium' | 'high';
+  assignee: string;
+  deadline: string;
+  priority: 'high' | 'medium' | 'low';
 }
 
-const TasksTab: React.FC<TasksTabProps> = ({ project }) => {
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: '1', title: 'تصميم واجهة المستخدم الرئيسية', status: 'in-progress', dueDate: '2025-01-20', value: '15,000 ر.س', priority: 'high' },
-    { id: '2', title: 'برمجة نظام المصادقة', status: 'completed', dueDate: '2025-01-15', value: '8,000 ر.س', priority: 'medium' },
-    { id: '3', title: 'اختبار الأمان والحماية', status: 'pending', dueDate: '2025-01-25', value: '12,000 ر.س', priority: 'high' },
-    { id: '4', title: 'كتابة الوثائق التقنية', status: 'overdue', dueDate: '2025-01-10', priority: 'low' },
-    { id: '5', title: 'مراجعة الكود النهائي', status: 'pending', dueDate: '2025-01-30', value: '5,000 ر.س', priority: 'medium' },
-  ]);
+interface TasksTabProps {
+  project: ProjectCardProps;
+  tint: string;
+}
 
-  const [filter, setFilter] = useState<'all' | 'pending' | 'in-progress' | 'completed' | 'overdue'>('all');
-  const [showAddModal, setShowAddModal] = useState(false);
+const mockTasks: Task[] = [
+  {
+    id: '1',
+    title: 'تصميم واجهة المستخدم الرئيسية',
+    description: 'إنشاء التصميم الأولي للصفحة الرئيسية',
+    status: 'in-progress',
+    assignee: 'أحمد محمد',
+    deadline: '2025-01-20',
+    priority: 'high'
+  },
+  {
+    id: '2', 
+    title: 'برمجة نظام المصادقة',
+    description: 'تطوير نظام تسجيل الدخول والحماية',
+    status: 'pending',
+    assignee: 'سارة أحمد',
+    deadline: '2025-01-25',
+    priority: 'medium'
+  },
+  {
+    id: '3',
+    title: 'اختبار الأداء',
+    description: 'فحص سرعة الموقع وتحسين الأداء',
+    status: 'completed',
+    assignee: 'محمد علي',
+    deadline: '2025-01-15',
+    priority: 'low'
+  }
+];
 
-  const getStatusColor = (status: string) => {
-    const colors = {
-      'pending': '#f59e0b',
-      'in-progress': '#3b82f6', 
-      'completed': '#22c55e',
-      'overdue': '#ef4444'
-    };
-    return colors[status as keyof typeof colors] || '#6b7280';
+export const TasksTab: React.FC<TasksTabProps> = ({ project, tint }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed': return <CheckCircle2 size={16} className="text-green-600" />;
+      case 'in-progress': return <Clock size={16} className="text-blue-600" />;
+      case 'overdue': return <AlertCircle size={16} className="text-red-600" />;
+      default: return <Clock size={16} className="text-gray-400" />;
+    }
   };
 
-  const getStatusLabel = (status: string) => {
-    const labels = {
-      'pending': 'في الانتظار',
-      'in-progress': 'قيد التنفيذ',
-      'completed': 'مكتملة',
-      'overdue': 'متأخرة'
-    };
-    return labels[status as keyof typeof labels] || status;
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-100 text-green-800 border-green-200';
+      case 'in-progress': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'overdue': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
   };
 
   const getPriorityColor = (priority: string) => {
-    const colors = {
-      'low': '#10b981',
-      'medium': '#f59e0b',
-      'high': '#ef4444'
-    };
-    return colors[priority as keyof typeof colors] || '#6b7280';
+    switch (priority) {
+      case 'high': return 'bg-red-500';
+      case 'medium': return 'bg-yellow-500';
+      case 'low': return 'bg-green-500';
+      default: return 'bg-gray-500';
+    }
   };
-
-  const handleSwipeTask = (taskId: string, direction: 'left' | 'right') => {
-    setTasks(prev => prev.map(task => {
-      if (task.id === taskId) {
-        const newStatus = direction === 'right' ? 'completed' : 'pending';
-        return { ...task, status: newStatus };
-      }
-      return task;
-    }));
-  };
-
-  const filteredTasks = filter === 'all' ? tasks : tasks.filter(task => task.status === filter);
-
-  const filters = [
-    { key: 'all', label: 'الكل', count: tasks.length },
-    { key: 'pending', label: 'في الانتظار', count: tasks.filter(t => t.status === 'pending').length },
-    { key: 'in-progress', label: 'قيد التنفيذ', count: tasks.filter(t => t.status === 'in-progress').length },
-    { key: 'completed', label: 'مكتملة', count: tasks.filter(t => t.status === 'completed').length },
-    { key: 'overdue', label: 'متأخرة', count: tasks.filter(t => t.status === 'overdue').length },
-  ];
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Add Task Modal */}
-      <AnimatePresence>
-        {showAddModal && (
-          <motion.div
-            className="fixed inset-0 z-[60] flex items-center justify-center"
-            style={{ 
-              background: 'rgba(0, 0, 0, 0.5)',
-              backdropFilter: 'blur(8px)'
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowAddModal(false)}
-          >
-            <motion.div
-              className="bg-white/20 backdrop-blur-xl rounded-3xl p-8 max-w-md w-full mx-4"
-              style={{
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: 'inset 0 0 24px rgba(255,255,255,0.25)',
-              }}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: "spring", bounce: 0.3 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-xl font-bold text-white font-arabic mb-4">إضافة مهمة جديدة</h3>
-              <input 
-                className="w-full p-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 font-arabic mb-4"
-                placeholder="عنوان المهمة"
-              />
-              <div className="flex gap-3">
-                <button 
-                  className="flex-1 py-3 bg-white/30 hover:bg-white/40 rounded-xl text-white font-arabic transition-colors"
-                  onClick={() => setShowAddModal(false)}
-                >
-                  إضافة
-                </button>
-                <button 
-                  className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-arabic transition-colors"
-                  onClick={() => setShowAddModal(false)}
-                >
-                  إلغاء
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Header with Add Task and Filters */}
+    <motion.div 
+      className="h-full p-6 overflow-hidden"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.25 }}
+    >
+      {/* Search and Filter Bar */}
       <motion.div 
-        className="flex items-center justify-between mb-6"
-        initial={{ opacity: 0, y: -10 }}
+        className="flex items-center gap-4 mb-6"
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <div className="flex items-center gap-3">
-          <motion.button 
-            className="flex items-center gap-2 px-6 py-3 bg-white/30 hover:bg-white/40 rounded-full text-sm text-white font-arabic transition-all duration-200"
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 1 }}
-            onClick={() => setShowAddModal(true)}
-          >
-            <Plus size={16} strokeWidth={1.5} />
-            إضافة مهمة جديدة
-          </motion.button>
-          
-          <motion.button 
-            className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-full text-sm text-white font-arabic transition-all duration-200"
-            whileHover={{ scale: 1.05 }}
-          >
-            <Filter size={16} strokeWidth={1.5} />
-            فلترة
-          </motion.button>
+        <div className="flex-1 relative">
+          <Search size={18} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="البحث في المهام..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pr-10 pl-4 py-2.5 bg-white/30 border border-white/20 rounded-full text-sm font-arabic placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white/40"
+          />
         </div>
-
-        <div className="text-sm text-white/80 font-arabic">
-          {filteredTasks.length} من {tasks.length} مهام
-        </div>
-      </motion.div>
-
-      {/* Filter Chips */}
-      <motion.div 
-        className="flex items-center gap-2 mb-6 overflow-x-auto"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.15 }}
-      >
-        {filters.map((filterItem, index) => (
-          <motion.button
-            key={filterItem.key}
-            onClick={() => setFilter(filterItem.key as any)}
-            className={`
-              flex items-center gap-2 px-4 py-2 rounded-full text-sm font-arabic transition-all duration-200 whitespace-nowrap
-              ${filter === filterItem.key 
-                ? 'bg-white/40 text-white border border-white/60' 
-                : 'bg-white/10 text-white/70 hover:bg-white/20'
-              }
-            `}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 + (index * 0.03) }}
-            whileHover={{ scale: 1.05 }}
-          >
-            {filterItem.label}
-            <span className="px-2 py-0.5 bg-white/20 rounded-full text-xs">
-              {filterItem.count}
-            </span>
-          </motion.button>
-        ))}
+        <button className="flex items-center gap-2 px-4 py-2.5 bg-white/20 hover:bg-white/30 rounded-full text-sm font-arabic text-gray-700 transition-colors border border-white/20">
+          <Filter size={16} />
+          تصفية
+        </button>
+        <button 
+          className="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-arabic text-white transition-colors"
+          style={{ backgroundColor: tint }}
+        >
+          <Plus size={16} />
+          مهمة جديدة
+        </button>
       </motion.div>
 
       {/* Tasks List */}
-      <div className="flex-1 overflow-y-auto space-y-3">
-        <AnimatePresence mode="popLayout">
-          {filteredTasks.map((task, index) => (
-            <motion.div
-              key={task.id}
-              layout
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              transition={{ 
-                delay: index * 0.03,
-                duration: 0.3,
-                ease: [0.45, 0, 0.55, 1]
-              }}
-              className="rounded-3xl backdrop-blur-3xl bg-white/30 p-4 border border-white/20 hover:bg-white/35 transition-all duration-200 cursor-pointer group"
-              style={{
-                borderRight: `4px solid ${getStatusColor(task.status)}`,
-                backdropFilter: 'blur(14px)',
-                boxShadow: 'inset 0 0 16px rgba(255,255,255,0.15)',
-              }}
-              whileHover={{ scale: 1.02, y: -2 }}
-              drag="x"
-              dragConstraints={{ left: -100, right: 100 }}
-              onDragEnd={(event, info) => {
-                if (info.offset.x > 50) {
-                  handleSwipeTask(task.id, 'right');
-                } else if (info.offset.x < -50) {
-                  handleSwipeTask(task.id, 'left');
-                }
-              }}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-white font-arabic font-medium text-lg group-hover:text-white/90">
-                      {task.title}
-                    </h3>
-                    <div 
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: getPriorityColor(task.priority) }}
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-4 text-sm text-white/70">
-                    <div className="flex items-center gap-1">
-                      <Calendar size={14} />
-                      <span className="font-arabic">{task.dueDate}</span>
-                    </div>
-                    {task.value && (
-                      <div className="flex items-center gap-1">
-                        <DollarSign size={14} />
-                        <span className="font-arabic">{task.value}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <motion.div
-                    className="px-3 py-1 rounded-full text-xs font-arabic border"
-                    style={{ 
-                      backgroundColor: `${getStatusColor(task.status)}20`,
-                      borderColor: `${getStatusColor(task.status)}40`,
-                      color: getStatusColor(task.status)
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    {getStatusLabel(task.status)}
-                  </motion.div>
-
-                  <motion.button 
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-200"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <MoreHorizontal size={16} />
-                  </motion.button>
+      <div className="h-[calc(100%-100px)] overflow-y-auto space-y-3">
+        {mockTasks.map((task, index) => (
+          <motion.div
+            key={task.id}
+            className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/20 hover:bg-white/30 transition-all duration-200 cursor-pointer"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 + 0.2 }}
+            whileHover={{ scale: 1.01 }}
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-3">
+                {getStatusIcon(task.status)}
+                <div>
+                  <h3 className="text-base font-semibold font-arabic text-gray-800">
+                    {task.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 font-arabic mt-1">
+                    {task.description}
+                  </p>
                 </div>
               </div>
-
-              {/* Swipe indicators */}
-              <div className="absolute top-4 left-4 text-green-400 opacity-0 group-hover:opacity-60 transition-opacity pointer-events-none">
-                ← سحب للإنجاز
+              <div className={`w-3 h-3 rounded-full ${getPriorityColor(task.priority)}`} />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <span className={`px-2 py-1 rounded-full text-xs font-arabic border ${getStatusColor(task.status)}`}>
+                  {task.status === 'completed' ? 'مكتملة' : 
+                   task.status === 'in-progress' ? 'قيد التنفيذ' :
+                   task.status === 'overdue' ? 'متأخرة' : 'في الانتظار'}
+                </span>
+                <span className="text-sm text-gray-600 font-arabic">
+                  {task.assignee}
+                </span>
               </div>
-              <div className="absolute top-4 right-4 text-yellow-400 opacity-0 group-hover:opacity-60 transition-opacity pointer-events-none">
-                سحب للتعليق →
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+              <span className="text-sm text-gray-500 font-arabic">
+                {task.deadline}
+              </span>
+            </div>
+          </motion.div>
+        ))}
       </div>
-
-      {/* Empty State */}
-      {filteredTasks.length === 0 && (
-        <motion.div 
-          className="flex-1 flex items-center justify-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          <div className="text-center text-white/60">
-            <div className="text-lg font-arabic mb-2">لا توجد مهام</div>
-            <div className="text-sm">جرب تغيير الفلتر أو إضافة مهمة جديدة</div>
-          </div>
-        </motion.div>
-      )}
-    </div>
+    </motion.div>
   );
 };
-
-export default TasksTab;

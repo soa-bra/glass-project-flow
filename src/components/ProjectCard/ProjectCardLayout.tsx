@@ -8,50 +8,51 @@ interface ProjectCardLayoutProps {
   children: ReactNode;
   id: string;
   project: ProjectCardProps;
-  isSelected?: boolean;
-  isOtherSelected?: boolean;
 }
 
 const ProjectCardLayout = ({
   children,
   id,
   project,
-  isSelected = false,
-  isOtherSelected = false,
 }: ProjectCardLayoutProps) => {
-  const { openBoard, closeBoard, selectedProject, boardTheme } = useProjectBoard();
+  const { openBoard, selectedProject } = useProjectBoard();
+
+  const isSelected = selectedProject?.id === id;
 
   const handleClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     if (!selectedProject) {
       openBoard(project);
-    } else if (selectedProject?.id === id) {
-      // إغلاق اللوحة عند النقر على البطاقة المحددة
-      closeBoard();
     }
+  };
+
+  const getProjectTint = (status: string) => {
+    const tints = {
+      success: 'rgba(34, 197, 94, 0.4)',
+      warning: 'rgba(245, 158, 11, 0.4)',
+      error: 'rgba(239, 68, 68, 0.4)',
+      info: 'rgba(59, 130, 246, 0.4)',
+    };
+    return tints[status as keyof typeof tints] || tints.info;
   };
 
   const getCardClasses = () => {
     let baseClasses = 'project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer transition-all duration-300';
     
     if (isSelected) {
-      return `${baseClasses} shadow-none`;
-    }
-    
-    if (isOtherSelected) {
-      return `${baseClasses} project-card-dimmed backdrop-blur-xl bg-white/40`;
+      return `${baseClasses} shadow-none border border-white/30`;
     }
     
     return `${baseClasses} project-card-glass backdrop-blur-xl bg-white/40`;
   };
 
   const getCardStyle = () => {
-    if (isSelected && selectedProject?.id === id) {
+    if (isSelected) {
       return {
-        background: 'linear-gradient(135deg, rgba(125, 107, 255, 0.8) 0%, rgba(255, 200, 92, 0.6) 50%, rgba(125, 107, 255, 0.8) 100%)',
+        background: getProjectTint(project.status),
         backdropFilter: 'blur(14px)',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: 'inset 0 0 24px rgba(255,255,255,0.25)',
+        border: '1px solid rgba(255, 255, 255, 0.3)',
+        boxShadow: 'inset 0 0 24px rgba(255,255,255,0.15)',
       };
     }
     return {};
@@ -59,7 +60,7 @@ const ProjectCardLayout = ({
 
   return (
     <motion.div
-      layoutId={`project-card-${id}`}
+      layoutId={isSelected ? `project-piece-${id}` : `project-card-${id}`}
       onClick={handleClick}
       className={getCardClasses()}
       style={getCardStyle()}
