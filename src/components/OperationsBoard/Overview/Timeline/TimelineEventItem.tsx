@@ -4,7 +4,7 @@ import { TimelineEvent } from './types';
 
 interface TimelineEventItemProps {
   event: TimelineEvent;
-  onEventClick: (event: TimelineEvent);
+  onEventClick: (event: TimelineEvent) => void;
 }
 
 export const TimelineEventItem: React.FC<TimelineEventItemProps> = ({
