@@ -1,0 +1,77 @@
+
+/* RTL Layout Classes with Synchronized Animation - SoaBra Design System */
+
+@layer components {
+  .sidebar-layout {
+    right: var(--sidebar-right);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .projects-layout-expanded {
+    right: var(--projects-right-expanded);
+    width: var(--projects-width);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .projects-layout-collapsed {
+    right: var(--projects-right-collapsed);
+    width: var(--projects-width);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .operations-board-expanded {
+    right: var(--operations-right-expanded);
+    width: var(--operations-width-expanded);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .operations-board-collapsed {
+    right: var(--operations-right-collapsed);
+    width: var(--operations-width-collapsed);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .project-details-expanded {
+    right: var(--project-details-right-expanded);
+    width: var(--project-details-width-expanded);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .project-details-collapsed {
+    right: var(--project-details-right-collapsed);
+    width: var(--project-details-width-collapsed);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  /* Synchronized Animation Helpers */
+  .sync-transition {
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .sync-transition-fast {
+    transition: all var(--animation-duration-fast) var(--animation-easing);
+  }
+
+  .sync-transition-slow {
+    transition: all var(--animation-duration-slow) var(--animation-easing);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 153, 255, 0.2);
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 153, 255, 0.4);
+  }
+}
