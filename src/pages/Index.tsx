@@ -1,12 +1,14 @@
-
 import React, { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
+import ProjectPanel from '@/components/ProjectPanel';
+import { useProjectSelection } from '@/hooks/useProjectSelection';
 
 const Index: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const { selectedProjectId, isPanelVisible, closePanel } = useProjectSelection();
 
   const layoutStyles = React.useMemo(() => ({
     transition: 'all var(--animation-duration-main) var(--animation-easing)'
@@ -44,10 +46,24 @@ const Index: React.FC = () => {
           </div>
         </div>
 
-        <div style={layoutStyles} className="mx-0">
+        <div 
+          style={layoutStyles} 
+          className={`mx-0 transition-all duration-300 ${
+            isPanelVisible ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
+        >
           <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
         </div>
       </div>
+
+      {/* لوحة تحكم المشروع */}
+      {selectedProjectId && (
+        <ProjectPanel
+          projectId={selectedProjectId}
+          isVisible={isPanelVisible}
+          onClose={closePanel}
+        />
+      )}
     </div>
   );
 };

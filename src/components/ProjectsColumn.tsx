@@ -1,8 +1,8 @@
-
 import React from 'react';
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useProjectSelection } from '@/hooks/useProjectSelection';
 
 const mockProjects = [{
   id: '1',
@@ -115,6 +115,8 @@ const mockProjects = [{
 }];
 
 const ProjectsColumn = React.memo(() => {
+  const { selectedProjectId, selectProject } = useProjectSelection();
+
   return (
     <div className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl bg-soabra-projects-bg mx-0">
       {/* شريط الأدوات ثابت في الأعلى */}
@@ -127,7 +129,13 @@ const ProjectsColumn = React.memo(() => {
         <ScrollArea className="h-full w-full">
           <div className="space-y-2 pb-4 px-0 rounded-full mx-[10px]">
             {mockProjects.map(project => (
-              <ProjectCard key={project.id} {...project} />
+              <div key={project.id} onClick={() => selectProject(project.id)}>
+                <ProjectCard
+                  {...project}
+                  isSelected={selectedProjectId === project.id}
+                  isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id}
+                />
+              </div>
             ))}
           </div>
         </ScrollArea>

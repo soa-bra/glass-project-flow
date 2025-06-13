@@ -21,10 +21,12 @@ const ProjectCardLayout: React.FC<ProjectCardLayoutProps> = ({
     onProjectSelect?.(id);
   }, [id, onProjectSelect]);
 
-  const cardClasses = `project-card-glass project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer ${
-    isSelected ? 'project-card-selected' : 
-    isOtherSelected ? 'project-card-dimmed' : ''
-  }`;
+  const cardClasses = `
+    project-card-glass project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer 
+    transition-all duration-200 ease-out
+    ${isSelected ? 'project-card-selected scale-[0.96] shadow-lg' : 
+      isOtherSelected ? 'project-card-dimmed opacity-70' : ''}
+  `;
 
   return (
     <div onClick={handleClick} className={cardClasses}>
