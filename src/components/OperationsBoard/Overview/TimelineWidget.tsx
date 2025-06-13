@@ -38,13 +38,14 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
     // يمكن إضافة modal أو popover هنا
   };
 
-  // إضافة وظائف السحب بالماوس
+  // تصحيح وظائف السحب الأفقي فقط
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollRef.current) return;
     setIsDragging(true);
     setStartX(e.pageX - scrollRef.current.offsetLeft);
     setScrollLeft(scrollRef.current.scrollLeft);
     scrollRef.current.style.cursor = 'grabbing';
+    e.preventDefault(); // منع السلوك الافتراضي
   };
 
   const handleMouseLeave = () => {
@@ -65,9 +66,37 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
     if (!isDragging || !scrollRef.current) return;
     e.preventDefault();
     const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
+    const walk = (x - startX) * 2; // السحب الأفقي فقط
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
+
+  // إضافة مستمعات الأحداث للنافذة للتعامل مع السحب خارج العنصر
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!isDragging || !scrollRef.current) return;
+      e.preventDefault();
+      const x = e.pageX - scrollRef.current.offsetLeft;
+      const walk = (x - startX) * 2;
+      scrollRef.current.scrollLeft = scrollLeft - walk;
+    };
+
+    const handleGlobalMouseUp = () => {
+      setIsDragging(false);
+      if (scrollRef.current) {
+        scrollRef.current.style.cursor = 'grab';
+      }
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleGlobalMouseMove);
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isDragging, startX, scrollLeft]);
 
   return (
     <div className={`
@@ -101,16 +130,19 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
         </div>
       </header>
 
-      {/* خط الزمن المستمر القابل للتمرير والسحب */}
+      {/* خط الزمن المستمر القابل للتمرير والسحب الأفقي فقط */}
       <div className="flex-1 relative overflow-hidden">
         <div
           ref={scrollRef}
           className="
-            overflow-x-auto scrollbar-hide
+            overflow-x-auto overflow-y-hidden scrollbar-hide
             cursor-grab active:cursor-grabbing select-none
             h-full flex items-center relative
           "
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          style={{ 
+            scrollbarWidth: 'none', 
+            msOverflowStyle: 'none'
+          }}
           onMouseDown={handleMouseDown}
           onMouseLeave={handleMouseLeave}
           onMouseUp={handleMouseUp}
