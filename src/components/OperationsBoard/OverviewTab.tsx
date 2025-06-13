@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TimelineSection } from './Overview/TimelineSection';
 import { BudgetWidget } from './Overview/BudgetWidget';
@@ -10,7 +9,6 @@ import { ExtraWidgetTwo } from './Overview/ExtraWidgetTwo';
 import { ExtraWidgetThree } from './Overview/ExtraWidgetThree';
 import { ExtraWidgetFour } from './Overview/ExtraWidgetFour';
 import { ExtraWidgetFive } from './Overview/ExtraWidgetFive';
-
 interface TimelineEvent {
   id: number;
   date: string;
@@ -18,7 +16,6 @@ interface TimelineEvent {
   department: string;
   color: string;
 }
-
 interface WidgetsData {
   budget: {
     total: number;
@@ -35,17 +32,14 @@ interface WidgetsData {
   };
   satisfaction: number;
 }
-
 interface OverviewData {
   timeline: TimelineEvent[];
   widgets: WidgetsData;
 }
-
 interface OverviewTabProps {
   data?: OverviewData;
   loading: boolean;
 }
-
 export const OverviewTab: React.FC<OverviewTabProps> = ({
   data,
   loading
@@ -53,14 +47,13 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   if (loading || !data) {
     return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
-
-  return <div className="h-full overflow-y-auto px-[5px]">
+  return <div className="h-full overflow-y-auto px-0 py-0">
       <div style={{
       minHeight: 'calc(100vh - 200px)'
-    }} className="grid grid-cols-1 lg:grid-cols-3 gap-4 my-0 mx-0 px-0">
+    }} className="grid grid-cols-1 lg:grid-cols-3 gap-2 mx-0 my-px py-[7px] px-0">
         
         {/* الصف الأول - البطاقة الزمنية تأخذ العرض الكامل */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 mx-0 px-0 my-[6px] py-0">
           <TimelineSection timeline={data.timeline} />
         </div>
 
