@@ -1,55 +1,21 @@
 
-import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React from 'react';
+import { SIDEBAR_MENU_ITEMS, APP_VERSION } from '@/constants';
+import { useSidebar } from '@/hooks/useSidebar';
 
 interface SidebarProps {
   onToggle?: (collapsed: boolean) => void;
 }
 
 const Sidebar = React.memo<SidebarProps>(({ onToggle }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const menuItems = useMemo(() => [
-    { icon: Home, label: 'الرئيسية', active: true },
-    { icon: FolderOpen, label: 'المشاريع', active: false },
-    { icon: CheckSquare, label: 'المهام', active: false },
-    { icon: Building, label: 'الإدارات', active: false },
-    { icon: Users, label: 'التخطيط التشاركي', active: false },
-    { icon: Archive, label: 'الأرشيف', active: false }
-  ], []);
-
-  const toggleSidebar = useCallback(() => {
-    setIsCollapsed(prev => {
-      const newCollapsedState = !prev;
-      onToggle?.(newCollapsedState);
-      return newCollapsedState;
-    });
-  }, [onToggle]);
-
-  const sidebarStyle = useMemo(() => ({
-    width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)',
-    transition: 'all var(--animation-duration-main) var(--animation-easing)'
-  }), [isCollapsed]);
-
-  const titleContainerStyle = useMemo(() => ({
-    transition: 'all var(--animation-duration-main) var(--animation-easing)',
-    opacity: isCollapsed ? 0 : 1,
-    transform: isCollapsed ? 'translateX(24px) scale(0.9)' : 'translateX(0) scale(1)',
-    width: isCollapsed ? '0' : 'auto',
-    transitionDelay: isCollapsed ? '0ms' : 'calc(var(--animation-duration-main) * 0.4)'
-  }), [isCollapsed]);
-
-  const versionStyle = useMemo(() => ({
-    opacity: isCollapsed ? 0 : 1,
-    transform: isCollapsed ? 'translateY(24px) scale(0.9)' : 'translateY(0) scale(1)',
-    height: isCollapsed ? '0' : 'auto',
-    transition: 'all var(--animation-duration-main) var(--animation-easing)',
-    transitionDelay: isCollapsed ? '0ms' : 'calc(var(--animation-duration-main) * 0.8)'
-  }), [isCollapsed]);
-
-  useEffect(() => {
-    onToggle?.(isCollapsed);
-  }, [isCollapsed, onToggle]);
+  const { 
+    isCollapsed, 
+    toggleSidebar, 
+    sidebarStyle, 
+    titleContainerStyle, 
+    versionStyle 
+  } = useSidebar({ onToggle });
 
   return (
     <aside 
@@ -98,7 +64,7 @@ const Sidebar = React.memo<SidebarProps>(({ onToggle }) => {
 
         {/* Menu Items - Perfectly synchronized staggered animation */}
         <div className={`flex flex-col gap-2 px-0 sync-transition ${isCollapsed ? 'mx-[15px]' : 'mx-[15px]'}`}>
-          {menuItems.map((item, index) => {
+          {SIDEBAR_MENU_ITEMS.map((item, index) => {
             const IconComponent = item.icon;
             return (
               <button
@@ -160,7 +126,7 @@ const Sidebar = React.memo<SidebarProps>(({ onToggle }) => {
             style={versionStyle}
           >
             <div className="text-center text-xs text-soabra-text-secondary/70 font-medium my-[45px] sync-transition-fast hover:text-soabra-text-secondary hover:scale-105 whitespace-nowrap">
-              الإصدار 2.1.0
+              الإصدار {APP_VERSION}
             </div>
           </div>
         </div>

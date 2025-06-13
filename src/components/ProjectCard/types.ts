@@ -1,14 +1,3 @@
 
-export interface ProjectCardProps {
-  id: string;
-  title: string;
-  description: string;
-  daysLeft: number;
-  tasksCount: number;
-  status: 'success' | 'warning' | 'error' | 'info';
-  date: string;
-  owner: string;
-  value: string;
-  isOverBudget?: boolean;
-  hasOverdueTasks?: boolean;
-}
+// إعادة تصدير من الملف المركزي
+export type { Project as ProjectCardProps } from '@/types';

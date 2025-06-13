@@ -1,7 +1,14 @@
 
-export type TabData = {
-  [key: string]: any;
-};
+// إعادة تصدير الأنواع من الملف المركزي
+export type { 
+  TabData, 
+  TabItem,
+  FinanceData,
+  LegalData,
+  HRData,
+  ClientsData,
+  TimelineEvent 
+} from '@/types';
 
 export interface OperationsBoardProps {
   isVisible: boolean;
@@ -9,16 +16,5 @@ export interface OperationsBoardProps {
   isSidebarCollapsed: boolean;
 }
 
-export interface TabItem {
-  value: string;
-  label: string;
-}
-
-export const TAB_ITEMS: TabItem[] = [
-  { value: 'overview', label: 'نظرة عامّة' },
-  { value: 'finance', label: 'مالية' },
-  { value: 'legal', label: 'قانونية' },
-  { value: 'hr', label: 'موارد بشرية' },
-  { value: 'clients', label: 'عملاء' },
-  { value: 'reports', label: 'تقارير' },
-];
+// استخدام الثوابت من الملف المركزي
+export { TAB_ITEMS } from '@/constants';
