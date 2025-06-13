@@ -13,8 +13,8 @@ export const TimelineEventItem: React.FC<TimelineEventItemProps> = ({
 }) => {
   return (
     <div className="relative flex flex-col items-center min-w-fit group px-0">
-      {/* التاريخ في الأعلى */}
-      <div className="text-sm font-bold text-gray-800 mb-4 whitespace-nowrap bg-white/90 rounded-lg backdrop-blur-sm border border-white/60 shadow-sm transition-all duration-200 group-hover:bg-white group-hover:shadow-md py-0 px-0">
+      {/* التاريخ في الأعلى - بدون تأثير هوفر */}
+      <div className="text-sm font-bold text-gray-800 mb-4 whitespace-nowrap bg-white/90 rounded-lg backdrop-blur-sm border border-white/60 shadow-sm py-0 px-0">
         {new Date(event.date).toLocaleDateString('ar-EG', {
           month: 'short',
           day: 'numeric'
@@ -35,12 +35,12 @@ export const TimelineEventItem: React.FC<TimelineEventItemProps> = ({
         onPointerDown={e => e.stopPropagation()} 
       />
 
-      {/* تفاصيل الحدث تحت الخط */}
-      <div className="text-center mt-4 max-w-36 transition-all duration-200 group-hover:scale-105 my-[5px]">
-        <div className="text-sm font-bold text-gray-900 mb-2 bg-white/90 rounded-lg backdrop-blur-sm border border-white/60 shadow-sm transition-all duration-200 group-hover:bg-white group-hover:shadow-md leading-tight py-0 px-0">
+      {/* تفاصيل الحدث تحت الخط - بدون تأثير هوفر */}
+      <div className="text-center mt-4 max-w-36 my-[5px]">
+        <div className="text-sm font-bold text-gray-900 mb-2 bg-white/90 rounded-lg backdrop-blur-sm border border-white/60 shadow-sm leading-tight py-0 px-0">
           {event.title}
         </div>
-        <div className="text-xs font-medium text-gray-700 bg-white/80 rounded-md backdrop-blur-sm border border-white/50 transition-all duration-200 group-hover:bg-white/95 py-0 px-0">
+        <div className="text-xs font-medium text-gray-700 bg-white/80 rounded-md backdrop-blur-sm border border-white/50 py-0 px-0">
           {event.department}
         </div>
       </div>
