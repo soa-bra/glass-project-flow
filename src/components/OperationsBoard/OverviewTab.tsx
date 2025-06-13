@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TimelineWidget } from './Overview/TimelineWidget';
 import { BudgetWidget } from './Overview/BudgetWidget';
@@ -52,54 +51,53 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
   return (
     <div className="h-full overflow-auto">
-      {/* شبكة اللوحة الرئيسية */}
+      {/* شبكة اللوحة الجديدة */}
       <section className="
-        management-grid
-        grid grid-cols-12 grid-rows-12 gap-4 
+        grid grid-cols-12 gap-4 
         h-full w-full p-6
-        lg:grid-cols-8 lg:grid-rows-18
-        sm:flex sm:flex-col sm:gap-4
+        auto-rows-min
       ">
         
         {/* 1. بطاقة الأحداث القادمة - عرض كامل في الأعلى */}
         <TimelineWidget 
           timeline={data.timeline} 
-          className="col-span-12 row-span-3 lg:col-span-8 lg:row-span-4" 
+          className="col-span-12 h-[200px]" 
         />
 
-        {/* 2. بطاقة المالية - لون صلب */}
-        <BudgetWidget 
-          budget={data.widgets.budget} 
-          className="col-span-6 row-span-4 lg:col-span-4 lg:row-span-5" 
-        />
-
-        {/* 3. بطاقات ذكية مقترحة */}
+        {/* الصف الثاني - بطاقة العقود على اليسار */}
         <ContractsWidget 
           contracts={data.widgets.contracts} 
-          className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-3" 
+          className="col-span-3 h-[250px]" 
         />
 
+        {/* بطاقة الميزانية في الوسط */}
+        <BudgetWidget 
+          budget={data.widgets.budget} 
+          className="col-span-6 h-[250px]" 
+        />
+
+        {/* بطاقة الموارد البشرية على اليمين */}
         <HRWidget 
           hr={data.widgets.hr} 
-          className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-3" 
+          className="col-span-3 h-[250px]" 
         />
 
+        {/* الصف الثالث - بطاقات إضافية */}
         <SatisfactionWidget 
           satisfaction={data.widgets.satisfaction} 
-          className="col-span-3 row-span-3 lg:col-span-2 lg:row-span-4" 
+          className="col-span-4 h-[200px]" 
         />
 
         <AISuggestedWidget 
           type="kpi"
           title="مؤشرات الأداء"
-          className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-2" 
+          className="col-span-4 h-[200px]" 
         />
 
-        {/* بطاقات إضافية مقترحة */}
         <AISuggestedWidget 
           type="reports"
           title="التقارير السريعة"
-          className="col-span-6 row-span-2 lg:col-span-4 lg:row-span-2" 
+          className="col-span-4 h-[200px]" 
         />
 
       </section>
