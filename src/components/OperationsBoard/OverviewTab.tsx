@@ -54,8 +54,8 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
     <div className="h-full overflow-auto">
       {/* الشبكة الجديدة للوحة مع صفوف متعددة - ارتفاعات متساوية */}
       <section className="
-        grid grid-cols-12 gap-px 
-        h-full w-full px-px py-px pb-[25px]
+        grid grid-cols-12 gap-2.5 
+        h-full w-full px-2.5 py-2.5 pb-[25px]
         auto-rows-min
         max-h-full
       ">
