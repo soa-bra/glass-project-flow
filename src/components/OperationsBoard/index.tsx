@@ -38,7 +38,7 @@ export const OperationsBoard = ({
           </h2>
         </div>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col">
+        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col px-6">
           <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
           <div className="flex-1 overflow-hidden my-0 px-[10px]">
             <TabContentWrapper tabData={tabData} loading={loading} />
