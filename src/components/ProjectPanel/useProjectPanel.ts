@@ -38,7 +38,7 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
             id: '2',
             title: 'تطوير قاعدة البيانات',
             description: 'إنشاء وتكوين قاعدة البيانات باستخدام PostgreSQL',
-            status: 'in-progress',
+            status: 'in_progress',
             assignee: 'سارة أحمد',
             dueDate: '2025-06-25',
             priority: 'medium'
@@ -119,6 +119,19 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
             title: 'موعد تسليم المرحلة الأولى',
             date: '2025-06-30',
             type: 'deadline'
+          }
+        ],
+        events: [
+          {
+            id: '1',
+            title: 'اجتماع مراجعة التصميم',
+            date: '2025-06-15',
+            time: '10:00'
+          },
+          {
+            id: '2',
+            title: 'تسليم المرحلة الأولى',
+            date: '2025-06-30'
           }
         ]
       };
