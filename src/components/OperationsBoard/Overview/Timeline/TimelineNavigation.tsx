@@ -21,9 +21,10 @@ export const TimelineNavigation: React.FC<TimelineNavigationProps> = ({
         onClick={onScrollRight}
         disabled={!canScrollRight}
         className={`
-          p-2 rounded-full transition-all duration-300 backdrop-blur-sm
+          p-2.5 rounded-full transition-all duration-300 
+          backdrop-blur-sm border border-white/30
           ${canScrollRight 
-            ? 'bg-white/40 hover:bg-white/60 text-gray-700 hover:scale-110' 
+            ? 'bg-white/50 hover:bg-white/70 text-gray-700 hover:scale-110 active:scale-95 shadow-sm hover:shadow-md' 
             : 'bg-white/20 text-gray-400 cursor-not-allowed opacity-50'
           }
         `}
@@ -34,9 +35,10 @@ export const TimelineNavigation: React.FC<TimelineNavigationProps> = ({
         onClick={onScrollLeft}
         disabled={!canScrollLeft}
         className={`
-          p-2 rounded-full transition-all duration-300 backdrop-blur-sm
+          p-2.5 rounded-full transition-all duration-300 
+          backdrop-blur-sm border border-white/30
           ${canScrollLeft 
-            ? 'bg-white/40 hover:bg-white/60 text-gray-700 hover:scale-110' 
+            ? 'bg-white/50 hover:bg-white/70 text-gray-700 hover:scale-110 active:scale-95 shadow-sm hover:shadow-md' 
             : 'bg-white/20 text-gray-400 cursor-not-allowed opacity-50'
           }
         `}

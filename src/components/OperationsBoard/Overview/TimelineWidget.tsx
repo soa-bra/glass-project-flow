@@ -19,15 +19,16 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      rounded-3xl p-5
+      rounded-3xl p-6
       bg-white/40 backdrop-blur-[20px] border border-white/30
       shadow-lg hover:shadow-xl transition-all duration-300
       flex flex-col
       font-arabic
+      overflow-hidden
     `}>
       
       {/* رأس البطاقة */}
-      <header className="flex items-center justify-between mb-4">
+      <header className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-arabic font-bold text-gray-800">
           الأحداث القادمة
         </h3>
@@ -40,10 +41,13 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
         />
       </header>
 
-      <TimelineScrollContainer
-        timeline={timeline}
-        onEventClick={openEvent}
-      />
+      {/* محتوى الخط الزمني */}
+      <div className="flex-1 relative min-h-0">
+        <TimelineScrollContainer
+          timeline={timeline}
+          onEventClick={openEvent}
+        />
+      </div>
     </div>
   );
 };

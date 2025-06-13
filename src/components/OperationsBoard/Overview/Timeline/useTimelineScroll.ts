@@ -8,15 +8,37 @@ export const useTimelineScroll = () => {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  
+  // متغيرات لتحسين الأداء
+  const dragStartRef = useRef(false);
+  const lastPointerRef = useRef(0);
+  const velocityRef = useRef(0);
+  const animationFrameRef = useRef<number>();
 
   // تحديث حالة أزرار التنقل
   const updateScrollButtons = useCallback(() => {
     if (!scrollRef.current) return;
     
     const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setCanScrollLeft(scrollLeft > 0);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+    setCanScrollLeft(scrollLeft > 5);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
   }, []);
+
+  // إضافة الزخم للتمرير
+  const applyMomentum = useCallback(() => {
+    if (!scrollRef.current || Math.abs(velocityRef.current) < 0.5) {
+      return;
+    }
+
+    scrollRef.current.scrollLeft += velocityRef.current;
+    velocityRef.current *= 0.95; // تقليل السرعة تدريجياً
+    
+    updateScrollButtons();
+    
+    if (Math.abs(velocityRef.current) > 0.5) {
+      animationFrameRef.current = requestAnimationFrame(applyMomentum);
+    }
+  }, [updateScrollButtons]);
 
   // مراقبة التمرير لتحديث المؤشرات
   useEffect(() => {
@@ -25,92 +47,108 @@ export const useTimelineScroll = () => {
 
     updateScrollButtons();
     
-    const handleScroll = () => updateScrollButtons();
-    scrollElement.addEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      updateScrollButtons();
+    };
     
-    return () => scrollElement.removeEventListener('scroll', handleScroll);
+    const handleWheel = (e: WheelEvent) => {
+      // السماح بالتمرير الأفقي باستخدام العجلة
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        e.preventDefault();
+        scrollElement.scrollLeft += e.deltaX;
+        updateScrollButtons();
+      }
+    };
+    
+    scrollElement.addEventListener('scroll', handleScroll, { passive: true });
+    scrollElement.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      scrollElement.removeEventListener('scroll', handleScroll);
+      scrollElement.removeEventListener('wheel', handleWheel);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
   }, [updateScrollButtons]);
 
-  const scroll = (direction: number) => {
+  const scroll = useCallback((direction: number) => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ 
         left: direction, 
         behavior: 'smooth' 
       });
     }
-  };
+  }, []);
 
-  // نظام السحب المحسن مع منع التداخل
+  // بداية السحب
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    if (!scrollRef.current) return;
+    if (!scrollRef.current || e.button !== 0) return;
     
-    console.log('بدء السحب - Pointer Down');
+    // إلغاء أي حركة زخم سابقة
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
     
-    // التقاط المؤشر بشكل صحيح
     const target = e.currentTarget as Element;
     target.setPointerCapture(e.pointerId);
     
     setIsDragging(true);
+    dragStartRef.current = true;
     setStartX(e.clientX);
     setScrollLeft(scrollRef.current.scrollLeft);
+    lastPointerRef.current = e.clientX;
+    velocityRef.current = 0;
     
-    // تغيير المؤشر فوراً
-    scrollRef.current.style.cursor = 'grabbing';
-    scrollRef.current.style.userSelect = 'none';
-    
-    // منع السلوك الافتراضي بقوة
+    // منع التحديد والسلوك الافتراضي
     e.preventDefault();
     e.stopPropagation();
   }, []);
 
+  // أثناء السحب
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isDragging || !scrollRef.current) return;
+    if (!isDragging || !scrollRef.current || !dragStartRef.current) return;
     
-    // منع السلوك الافتراضي بقوة
     e.preventDefault();
     e.stopPropagation();
     
-    // حساب المسافة الأفقية فقط
     const deltaX = e.clientX - startX;
     const newScrollLeft = scrollLeft - deltaX;
     
-    console.log('السحب - Delta X:', deltaX, 'ScrollLeft الجديد:', newScrollLeft);
+    // حساب السرعة للزخم
+    velocityRef.current = (lastPointerRef.current - e.clientX) * 0.8;
+    lastPointerRef.current = e.clientX;
     
-    // تطبيق التمرير الأفقي مع تقييد الحدود
+    // تطبيق التمرير مع القيود
     const maxScroll = scrollRef.current.scrollWidth - scrollRef.current.clientWidth;
     const clampedScroll = Math.max(0, Math.min(newScrollLeft, maxScroll));
     
     scrollRef.current.scrollLeft = clampedScroll;
-  }, [isDragging, startX, scrollLeft]);
+    updateScrollButtons();
+  }, [isDragging, startX, scrollLeft, updateScrollButtons]);
 
+  // نهاية السحب
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
     if (!scrollRef.current) return;
     
-    console.log('انتهاء السحب - Pointer Up');
-    
-    // تحرير التقاط المؤشر
     const target = e.currentTarget as Element;
     target.releasePointerCapture(e.pointerId);
     
     setIsDragging(false);
+    dragStartRef.current = false;
     
-    // إعادة تعيين المؤشر
-    scrollRef.current.style.cursor = 'grab';
-    scrollRef.current.style.userSelect = 'auto';
+    // تطبيق الزخم إذا كان هناك سرعة كافية
+    if (Math.abs(velocityRef.current) > 2) {
+      applyMomentum();
+    }
     
-    // تحديث المؤشرات
     updateScrollButtons();
-  }, [updateScrollButtons]);
+  }, [applyMomentum, updateScrollButtons]);
 
+  // إلغاء السحب
   const handlePointerCancel = useCallback((e: React.PointerEvent) => {
-    console.log('إلغاء السحب - Pointer Cancel');
     handlePointerUp(e);
   }, [handlePointerUp]);
-
-  // منع السلوك الافتراضي لأحداث اللمس
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-  }, []);
 
   return {
     scrollRef,
@@ -121,7 +159,6 @@ export const useTimelineScroll = () => {
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
-    handlePointerCancel,
-    handleTouchStart
+    handlePointerCancel
   };
 };
