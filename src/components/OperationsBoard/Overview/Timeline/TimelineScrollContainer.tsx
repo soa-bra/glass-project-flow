@@ -56,14 +56,14 @@ export const TimelineScrollContainer: React.FC<TimelineScrollContainerProps> = (
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
       >
-        {/* الخط الزمني البسيط - خط رمادي مستقيم */}
+        {/* الخط الزمني الأفقي - خط رفيع رمادي */}
         <div 
-          className="absolute left-0 right-0 h-0.5 bg-gray-400 z-10" 
-          style={{ top: 'calc(50% - 1px)' }} 
+          className="absolute left-0 right-0 h-px bg-gray-300 z-10" 
+          style={{ top: '20px' }} 
         />
         
         {/* الأحداث */}
-        <div className="flex items-center gap-20 py-8 px-10 min-w-max relative z-20">
+        <div className="flex items-center justify-start gap-16 py-4 px-10 min-w-max relative z-20">
           {timeline.map((event) => (
             <TimelineEventItem
               key={event.id}
