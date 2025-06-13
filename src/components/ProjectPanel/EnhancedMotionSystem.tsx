@@ -18,7 +18,7 @@ const entryMotionVariants = {
     opacity: 1,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
+      ease: [0.4, 0.0, 0.2, 1]
     }
   },
   exit: { 
@@ -26,7 +26,7 @@ const entryMotionVariants = {
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: "easeIn"
+      ease: [0.4, 0.0, 1, 1]
     }
   }
 };
