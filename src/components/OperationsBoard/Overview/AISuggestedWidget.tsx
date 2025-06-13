@@ -77,7 +77,7 @@ export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      rounded-3xl p-6
+      rounded-3xl p-5
       bg-white/80 backdrop-blur-xl border border-white/30
       shadow-lg hover:shadow-xl transition-all duration-300
       flex flex-col justify-between
@@ -88,12 +88,12 @@ export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
         <h3 className="text-lg font-arabic font-bold text-gray-800">
           {title}
         </h3>
-        <Icon size={24} className="text-gray-600" />
+        <Icon size={20} className="text-gray-600" />
       </div>
 
       {/* المحتوى الرئيسي */}
       <div className="flex-1 flex flex-col justify-center">
-        <div className="text-3xl font-bold mb-2 text-gray-900">
+        <div className="text-2xl font-bold mb-2 text-gray-900">
           {config.content.main}
         </div>
         
@@ -107,7 +107,7 @@ export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
       </div>
 
       {/* مؤشر التفاعل */}
-      <div className="mt-4 pt-4 border-t border-gray-200/50">
+      <div className="mt-4 pt-3 border-t border-gray-200/50">
         <button className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
           عرض التفاصيل ←
         </button>

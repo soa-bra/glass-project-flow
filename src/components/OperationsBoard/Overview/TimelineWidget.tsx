@@ -38,15 +38,15 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      rounded-3xl p-6
+      rounded-3xl p-5
       bg-white/80 backdrop-blur-xl border border-white/30
       shadow-lg hover:shadow-xl transition-all duration-300
       flex flex-col
     `}>
       
       {/* رأس البطاقة */}
-      <header className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-arabic font-bold text-gray-800">
+      <header className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-arabic font-bold text-gray-800">
           الأحداث القادمة
         </h3>
         
@@ -78,12 +78,12 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
           "
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          <ul className="flex items-center gap-16 py-8 px-6">
+          <ul className="flex items-center gap-12 py-6 px-4">
             {timeline.map((event, index) => (
               <li key={event.id} className="relative flex flex-col items-center min-w-fit">
                 
                 {/* التاريخ */}
-                <span className="text-sm text-gray-600 mb-4 whitespace-nowrap font-medium">
+                <span className="text-xs text-gray-600 mb-3 whitespace-nowrap font-medium">
                   {new Date(event.date).toLocaleDateString('ar-SA', { 
                     month: 'short', 
                     day: 'numeric' 
@@ -94,27 +94,27 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
                 <div className="relative flex items-center">
                   {/* خط للنقطة السابقة */}
                   {index > 0 && (
-                    <div className="absolute right-full h-1 bg-gradient-to-r from-gray-300 to-gray-400 w-16 rounded-full"></div>
+                    <div className="absolute right-full h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 w-12 rounded-full"></div>
                   )}
                   
                   <button
-                    className="w-6 h-6 rounded-full border-3 border-white shadow-lg transition-all duration-200 hover:scale-125 relative z-10 hover:shadow-xl"
+                    className="w-5 h-5 rounded-full border-2 border-white shadow-md transition-all duration-200 hover:scale-110 relative z-10 hover:shadow-lg"
                     style={{ backgroundColor: event.color }}
                     onClick={() => openEvent(event)}
                   />
                   
                   {/* خط للنقطة التالية */}
                   {index < timeline.length - 1 && (
-                    <div className="absolute left-full h-1 bg-gradient-to-r from-gray-300 to-gray-400 w-16 rounded-full"></div>
+                    <div className="absolute left-full h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 w-12 rounded-full"></div>
                   )}
                 </div>
 
                 {/* تفاصيل الحدث */}
-                <div className="text-center mt-4 max-w-32">
-                  <div className="text-sm font-semibold text-gray-900 whitespace-nowrap mb-1">
+                <div className="text-center mt-3 max-w-28">
+                  <div className="text-xs font-semibold text-gray-900 whitespace-nowrap mb-1">
                     {event.title}
                   </div>
-                  <div className="text-xs text-gray-600 whitespace-nowrap">
+                  <div className="text-xs text-gray-600 whitespace-nowrap opacity-75">
                     {event.department}
                   </div>
                 </div>

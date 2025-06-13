@@ -22,38 +22,40 @@ export const HRWidget: React.FC<HRWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      glass-enhanced rounded-[20px] p-4
-      ${hasVacancies ? 'neon-ring-warning' : 'neon-ring-success'}
+      rounded-3xl p-5
+      bg-white/80 backdrop-blur-xl border border-white/30
+      shadow-lg hover:shadow-xl transition-all duration-300
+      ${hasVacancies ? 'border-orange-200/50' : 'border-green-200/50'}
       flex flex-col justify-between
     `}>
       
-      <h3 className="text-sm font-arabic font-bold text-gray-800 mb-3">
+      <h3 className="text-lg font-arabic font-bold text-gray-800 mb-4">
         الموارد البشرية
       </h3>
 
-      <div className="space-y-3 flex-1">
+      <div className="space-y-4 flex-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Users size={14} className="text-blue-500" />
-            <span className="text-xs text-gray-600">الموظفين</span>
+          <div className="flex items-center gap-2.5">
+            <Users size={16} className="text-blue-500" />
+            <span className="text-sm text-gray-600">الموظفين</span>
           </div>
-          <span className="text-lg font-bold text-blue-500">{hr.members}</span>
+          <span className="text-xl font-bold text-blue-500">{hr.members}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <UserPlus size={14} className="text-orange-500" />
-            <span className="text-xs text-gray-600">الشواغر</span>
+          <div className="flex items-center gap-2.5">
+            <UserPlus size={16} className="text-orange-500" />
+            <span className="text-sm text-gray-600">الشواغر</span>
           </div>
-          <span className="text-lg font-bold text-orange-500">{hr.vacancies}</span>
+          <span className="text-xl font-bold text-orange-500">{hr.vacancies}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <UserMinus size={14} className="text-gray-500" />
-            <span className="text-xs text-gray-600">في إجازة</span>
+          <div className="flex items-center gap-2.5">
+            <UserMinus size={16} className="text-gray-500" />
+            <span className="text-sm text-gray-600">في إجازة</span>
           </div>
-          <span className="text-lg font-bold text-gray-500">{hr.onLeave}</span>
+          <span className="text-xl font-bold text-gray-500">{hr.onLeave}</span>
         </div>
       </div>
     </div>

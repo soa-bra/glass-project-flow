@@ -32,7 +32,7 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      rounded-3xl p-6
+      rounded-3xl p-5
       bg-white/80 backdrop-blur-xl border ${colorClasses[getSatisfactionColor(satisfaction)]}
       shadow-lg hover:shadow-xl transition-all duration-300
       flex flex-col justify-between
@@ -43,17 +43,17 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({
       </h3>
 
       <div className="flex-1 flex flex-col justify-center items-center text-center">
-        <div className="text-3xl font-bold text-gray-900 mb-3">
+        <div className="text-3xl font-bold text-gray-900 mb-2">
           {satisfaction}%
         </div>
         
-        <div className="text-sm text-gray-600 mb-6">
+        <div className="text-sm text-gray-600 mb-5">
           {getSatisfactionText(satisfaction)}
         </div>
 
         <Progress 
           value={satisfaction} 
-          className="w-full h-3 bg-gray-200/50 rounded-full"
+          className="w-full h-2.5 bg-gray-200/50 rounded-full"
           indicatorClassName={
             satisfaction >= 80 ? 'bg-green-500 rounded-full' : 
             satisfaction >= 60 ? 'bg-yellow-500 rounded-full' : 
