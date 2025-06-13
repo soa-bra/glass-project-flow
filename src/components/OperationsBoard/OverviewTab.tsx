@@ -1,10 +1,7 @@
+
 import React from 'react';
-import { TimelineWidget } from './Overview/TimelineWidget';
-import { BudgetWidget } from './Overview/BudgetWidget';
-import { HRWidget } from './Overview/HRWidget';
-import { SatisfactionWidget } from './Overview/SatisfactionWidget';
-import { ContractsWidget } from './Overview/ContractsWidget';
-import { AISuggestedWidget } from './Overview/AISuggestedWidget';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 
 interface TimelineEvent {
   id: number;
@@ -15,19 +12,9 @@ interface TimelineEvent {
 }
 
 interface WidgetsData {
-  budget: {
-    total: number;
-    spent: number;
-  };
-  contracts: {
-    signed: number;
-    expired: number;
-  };
-  hr: {
-    members: number;
-    vacancies: number;
-    onLeave: number;
-  };
+  budget: { total: number; spent: number };
+  contracts: { signed: number; expired: number };
+  hr: { members: number; vacancies: number; onLeave: number };
   satisfaction: number;
 }
 
@@ -41,78 +28,165 @@ interface OverviewTabProps {
   loading: boolean;
 }
 
-export const OverviewTab: React.FC<OverviewTabProps> = ({
-  data,
-  loading
-}) => {
+export const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading }) => {
   if (loading || !data) {
-    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
+    return <div className="h-full flex items-center justify-center">جارٍ التحميل...</div>;
   }
 
+  // تنسيق الأرقام كنص عربي بالآلاف
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('ar-SA').format(num);
+  };
+
   return (
-    <div className="h-full overflow-auto">
-      {/* الشبكة الجديدة للوحة مع صفوف متعددة - ارتفاعات متساوية */}
-      <section className="
-        grid grid-cols-12 gap-2.5 
-        h-full w-full px-[10px] py-2.5 pb-[25px]
-        auto-rows-min
-        max-h-full
-      ">
+    <div className="flex h-full gap-6">
+      {/* الخط الزمني - Timeline */}
+      <div className="w-1/4 glass-enhanced rounded-[40px] p-6">
+        <h3 className="text-xl font-arabic font-medium mb-4 text-right">المواعيد القادمة</h3>
         
-        {/* الصف الأول - خط الزمن عرض كامل */}
-        <TimelineWidget 
-          timeline={data.timeline} 
-          className="col-span-12 h-[220px]" 
-        />
+        <div className="relative mt-6">
+          <div className="absolute h-full w-0.5 bg-gray-300 left-4"></div>
+          
+          {data.timeline.map((event, index) => (
+            <div key={event.id} className="mb-8 relative">
+              <div className={`absolute left-4 transform -translate-x-1/2 w-3 h-3 rounded-full ${event.color}`}></div>
+              <div className="mr-10 text-right">
+                <p className="text-sm text-gray-500">{new Date(event.date).toLocaleDateString('ar-SA')}</p>
+                <h4 className="text-base font-medium">{event.title}</h4>
+                <p className="text-xs text-gray-600">{event.department}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-        {/* الصف الثاني - العقود والميزانية فقط */}
-        <ContractsWidget 
-          contracts={data.widgets.contracts} 
-          className="col-span-4 h-[260px]" 
-        />
+      {/* شبكة الويدجت */}
+      <div className="flex-1 grid grid-cols-2 gap-4">
+        {/* الميزانية/المصروفات */}
+        <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out hover:bg-white/50">
+          <h3 className="text-lg font-arabic font-medium mb-4 text-right">الميزانية والمصروفات</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-gray-600">الميزانية الإجمالية</span>
+                <span className="font-medium text-right">{formatNumber(data.widgets.budget.total)} ريال</span>
+              </div>
+              <Progress value={100} className="h-2 bg-gray-200" indicatorClassName="bg-blue-400" />
+            </div>
 
-        <BudgetWidget 
-          budget={data.widgets.budget} 
-          className="col-span-8 h-[260px]" 
-        />
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-gray-600">المصروفات</span>
+                <span className="font-medium text-right">
+                  {formatNumber(data.widgets.budget.spent)} ريال 
+                  ({Math.round((data.widgets.budget.spent / data.widgets.budget.total) * 100)}%)
+                </span>
+              </div>
+              <Progress 
+                value={(data.widgets.budget.spent / data.widgets.budget.total) * 100} 
+                className="h-2 bg-gray-200"
+                indicatorClassName="bg-green-400"
+              />
+            </div>
+          </div>
+        </div>
 
-        {/* الصف الثالث - الموارد البشرية والرضا ومؤشرات الأداء */}
-        <HRWidget 
-          hr={data.widgets.hr} 
-          className="col-span-4 h-[220px]" 
-        />
+        {/* العقود */}
+        <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out hover:bg-white/50">
+          <h3 className="text-lg font-arabic font-medium mb-4 text-right">حالة العقود</h3>
+          
+          <div className="flex flex-col items-center mt-6">
+            <div className="flex w-full justify-between mb-4">
+              <div className="text-center">
+                <span className="text-3xl font-bold block">{data.widgets.contracts.signed}</span>
+                <span className="text-sm text-gray-600">موقّعة</span>
+              </div>
 
-        <SatisfactionWidget 
-          satisfaction={data.widgets.satisfaction} 
-          className="col-span-4 h-[220px]" 
-        />
+              <div className="text-center text-orange-500">
+                <span className="text-3xl font-bold block">{data.widgets.contracts.expired}</span>
+                <span className="text-sm">منتهية</span>
+              </div>
+            </div>
 
-        <AISuggestedWidget 
-          type="kpi"
-          title="مؤشرات الأداء الرئيسية"
-          className="col-span-4 h-[220px]" 
-        />
+            <Progress 
+              value={
+                (data.widgets.contracts.signed / (data.widgets.contracts.signed + data.widgets.contracts.expired)) * 100
+              } 
+              className="h-3 w-full bg-orange-200"
+              indicatorClassName="bg-blue-500"
+            />
+          </div>
+        </div>
 
-        {/* الصف الرابع - التقارير والأهداف وإدارة الفريق بنفس مقاسات الصف الثالث */}
-        <AISuggestedWidget 
-          type="reports"
-          title="التقارير التنفيذية"
-          className="col-span-4 h-[220px]" 
-        />
+        {/* الموارد البشرية */}
+        <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out hover:bg-white/50">
+          <h3 className="text-lg font-arabic font-medium mb-4 text-right">الموارد البشرية</h3>
+          
+          <div className="flex justify-between mt-4">
+            <div className="text-center">
+              <span className="text-2xl font-bold block text-blue-600">{data.widgets.hr.members}</span>
+              <span className="text-xs text-gray-600">أعضاء الفريق</span>
+            </div>
 
-        <AISuggestedWidget 
-          type="goals"
-          title="الأهداف والإنجازات"
-          className="col-span-4 h-[220px]" 
-        />
+            <div className="text-center">
+              <span className="text-2xl font-bold block text-amber-500">{data.widgets.hr.onLeave}</span>
+              <span className="text-xs text-gray-600">في إجازة</span>
+            </div>
 
-        <AISuggestedWidget 
-          type="team"
-          title="إدارة الفريق"
-          className="col-span-4 h-[220px]" 
-        />
+            <div className="text-center">
+              <span className="text-2xl font-bold block text-purple-600">{data.widgets.hr.vacancies}</span>
+              <span className="text-xs text-gray-600">شواغر</span>
+            </div>
+          </div>
 
-      </section>
+          <div className="mt-4">
+            <Progress 
+              value={(data.widgets.hr.members / (data.widgets.hr.members + data.widgets.hr.vacancies)) * 100}
+              className="h-2 bg-gray-200" 
+              indicatorClassName="bg-blue-500"
+            />
+          </div>
+        </div>
+
+        {/* رضا العملاء */}
+        <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out hover:bg-white/50">
+          <h3 className="text-lg font-arabic font-medium mb-4 text-right">مؤشر رضا العملاء</h3>
+          
+          <div className="flex flex-col items-center justify-center mt-2">
+            <div className="relative w-32 h-32">
+              <svg className="w-full h-full" viewBox="0 0 36 36">
+                <path
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="#eee"
+                  strokeWidth="3"
+                />
+                <path
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke={data.widgets.satisfaction > 80 ? "#4ADE80" : data.widgets.satisfaction > 60 ? "#FACC15" : "#F87171"}
+                  strokeWidth="3"
+                  strokeDasharray={`${data.widgets.satisfaction}, 100`}
+                />
+              </svg>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <span className="text-3xl font-bold">{data.widgets.satisfaction}%</span>
+              </div>
+            </div>
+            <div className="text-center mt-2">
+              <p className="text-sm text-gray-600">
+                {data.widgets.satisfaction > 80 
+                  ? "ممتاز"
+                  : data.widgets.satisfaction > 60 
+                  ? "جيد"
+                  : "بحاجة لتحسين"
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

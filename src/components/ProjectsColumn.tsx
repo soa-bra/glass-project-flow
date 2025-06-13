@@ -1,6 +1,8 @@
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { useState } from 'react';
+
+// بيانات تجريبية للمشاريع مطابقة للصور
 const mockProjects = [{
   id: '1',
   title: 'تطوير الموقع الإلكتروني',
@@ -110,20 +112,25 @@ const mockProjects = [{
   isOverBudget: false,
   hasOverdueTasks: false
 }];
-const ProjectsColumn = () => {
-  return <div className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl bg-soabra-projects-bg mx-0">
-      {/* شريط الأدوات ثابت في الأعلى */}
-      <div className="flex-shrink-0 px-4 pt-4">
-        <ProjectsToolbar />
-      </div>
+interface ProjectsColumnProps {
+  onProjectSelect?: (projectId: string) => void;
+}
+const ProjectsColumn = ({
+  onProjectSelect
+}: ProjectsColumnProps) => {
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const handleProjectSelect = (projectId: string) => {
+    const newSelectedId = selectedProjectId === projectId ? null : projectId;
+    setSelectedProjectId(newSelectedId);
+    onProjectSelect?.(projectId);
+  };
+  return <div className="w-full h-full flex flex-col px-0 overflow-hidden py-0 my-[30px]">
+      {/* شريط الأدوات */}
+      <ProjectsToolbar />
       
-      {/* منطقة التمرير للمشاريع مع تأثير النافذة الدائرية */}
-      <div className="flex-1 overflow-hidden rounded-t-3xl">
-        <ScrollArea className="h-full w-full">
-          <div className="space-y-2 pb-4 px-0 rounded-full mx-[10px]">
-            {mockProjects.map(project => <ProjectCard key={project.id} {...project} />)}
-          </div>
-        </ScrollArea>
+      {/* قائمة المشاريع - تمتد حتى نهاية الصفحة */}
+      <div className="flex-1 space-y-2 overflow-y-auto overflow-x-rounded-xl mt-6 my-[33px] bg-transparent rounded-xl">
+        {mockProjects.map(project => <ProjectCard key={project.id} {...project} onProjectSelect={handleProjectSelect} isSelected={selectedProjectId === project.id} isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id} />)}
       </div>
     </div>;
 };

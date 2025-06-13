@@ -1,12 +1,20 @@
 
 import { ReactNode } from 'react';
 
+const statusColors = {
+  success: '#00bb88',
+  warning: '#ffb500',
+  error: '#f4767f',
+  info: '#2f6ead'
+};
+
 interface ProjectCardLayoutProps {
   children: ReactNode;
   id: string;
   isSelected?: boolean;
   isOtherSelected?: boolean;
   onProjectSelect?: (projectId: string) => void;
+  status: 'success' | 'warning' | 'error' | 'info';
 }
 
 const ProjectCardLayout = ({
@@ -15,11 +23,11 @@ const ProjectCardLayout = ({
   isSelected = false,
   isOtherSelected = false,
   onProjectSelect,
+  status
 }: ProjectCardLayoutProps) => {
-  const handleClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    
+  const handleClick = () => {
     if (onProjectSelect) {
+      console.log('Selected project:', id);
       onProjectSelect(id);
     }
   };
@@ -38,7 +46,7 @@ const ProjectCardLayout = ({
       onClick={handleClick}
       style={getCardStyles()}
       className={`
-        glass-enhanced rounded-[40px] p-2 mx-0 my-1 cursor-pointer
+        glass-enhanced rounded-[40px] p-2 mx-auto my-1 cursor-pointer
         transition-all duration-200 ease-in-out
         ${isSelected 
           ? 'opacity-100' 
@@ -48,9 +56,7 @@ const ProjectCardLayout = ({
         }
       `}
     >
-      <div className="pointer-events-none">
-        {children}
-      </div>
+      {children}
     </div>
   );
 };
