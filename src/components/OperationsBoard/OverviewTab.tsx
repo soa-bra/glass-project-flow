@@ -50,45 +50,45 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   return <div className="h-full overflow-y-auto px-0 py-0">
       <div style={{
       minHeight: 'calc(100vh - 200px)'
-    }} className="grid grid-cols-1 lg:grid-cols-3 gap-[5px] mx-0 my-px py-[7px] px-[5px]">
+    }} className="grid grid-cols-1 lg:grid-cols-3 gap-[5px] mx-0 px-0 my-0 py-[11px]">
         
         {/* الصف الأول - البطاقة الزمنية تأخذ العرض الكامل */}
-        <div className="lg:col-span-3 mx-0 px-0 my-[6px] py-0">
+        <div className="lg:col-span-3 mx-0 py-0 my-0 px-0">
           <TimelineSection timeline={data.timeline} />
         </div>
 
-        {/* الصف الثاني - بطاقة الميزانية (تأخذ صف واحد) + بطاقة العقود + بطاقة الموارد البشرية */}
-        <div className="lg:col-span-1 lg:row-span-2">
+        {/* الصف الثاني - 3 بطاقات متوسطة */}
+        <div className="lg:col-span-1 my-0 py-0">
           <BudgetWidget budget={data.widgets.budget} />
         </div>
-        <div className="lg:col-span-1">
+        <div className="lg:col-span- 0">
           <ContractsWidget contracts={data.widgets.contracts} />
         </div>
         <div className="lg:col-span-1">
           <HRWidget hr={data.widgets.hr} />
         </div>
 
-        {/* الصف الثالث - بطاقة الرضا + بطاقة إضافية */}
-        <div className="lg:col-span-1">
+        {/* الصف الثالث - بطاقة الرضا تأخذ العرض الكامل */}
+        <div className="lg:col-span-3">
           <SatisfactionWidget satisfaction={data.widgets.satisfaction} />
         </div>
+
+        {/* الصف الرابع - 3 بطاقات إضافية */}
         <div className="lg:col-span-1">
           <ExtraWidgetOne />
         </div>
-
-        {/* الصف الرابع - بطاقتان إضافيتان */}
         <div className="lg:col-span-1">
           <ExtraWidgetTwo />
         </div>
         <div className="lg:col-span-1">
           <ExtraWidgetThree />
         </div>
+
+        {/* الصف الخامس - بطاقتان */}
         <div className="lg:col-span-1">
           <ExtraWidgetFour />
         </div>
-
-        {/* الصف الخامس - بطاقة واحدة عريضة */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-2">
           <ExtraWidgetFive />
         </div>
 
