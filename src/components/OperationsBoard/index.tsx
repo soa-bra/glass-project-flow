@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import { Tabs } from '@/components/ui/tabs';
 import { TAB_ITEMS } from './types';
 import { useTabData } from './useTabData';
 import { TabNavigation } from './TabNavigation';
 import { TabContentWrapper } from './TabContentWrapper';
+
 export const OperationsBoard = ({
   isSidebarCollapsed
 }: {
@@ -14,15 +16,20 @@ export const OperationsBoard = ({
     tabData,
     loading
   } = useTabData(activeTab, true);
-  return <div className={`fixed transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'}`} style={{
-    height: 'calc(100vh - 60px)',
-    top: 'var(--sidebar-top-offset)',
-    borderRadius: '20px',
-    background: 'linear-gradient(135deg, #e8f1f9 0%, #f1f1f1 50%, #c8eddf 100%)',
-    backdropFilter: 'blur(20px)',
-    overflow: 'hidden',
-    zIndex: 30
-  }}>
+
+  return (
+    <div 
+      className={`fixed transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'}`} 
+      style={{
+        height: 'calc(100vh - 60px)',
+        top: 'var(--sidebar-top-offset)',
+        borderRadius: '20px',
+        background: 'linear-gradient(135deg, #D2691E 0%, #CD853F 25%, #DEB887 50%, #F4A460 75%, #D2B48C 100%)',
+        backdropFilter: 'blur(20px)',
+        overflow: 'hidden',
+        zIndex: 30
+      }}
+    >
       <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col mx-0 px-0">
         {/* عنوان اللوحة */}
         <div className="text-right px-6 py-[24px] my-[24px]">
@@ -38,6 +45,8 @@ export const OperationsBoard = ({
           </div>
         </Tabs>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default OperationsBoard;
