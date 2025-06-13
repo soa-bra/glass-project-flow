@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TabItem } from './types';
@@ -20,7 +21,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
         <TabsTrigger 
           key={tab.value} 
           value={tab.value} 
-          className="text-sm font-arabic rounded-full py-3 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-400 hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap px-[15px] data-[state=active]:bg-black"
+          className="text-sm font-arabic rounded-full py-3 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-400 hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap px-[30px] data-[state=active]:bg-black"
         >
           {tab.label}
         </TabsTrigger>
@@ -28,3 +29,4 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
     </TabsList>
   );
 };
+
