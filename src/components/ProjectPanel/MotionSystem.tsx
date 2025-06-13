@@ -14,14 +14,14 @@ const backdropVariants = {
     opacity: 1,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
+      ease: [0.4, 0.0, 0.2, 1] as const
     }
   },
   exit: { 
     opacity: 0,
     transition: {
       duration: 0.2,
-      ease: "easeIn"
+      ease: [0.4, 0.0, 1, 1] as const
     }
   }
 };
@@ -37,7 +37,7 @@ const panelVariants = {
     scale: 1,
     opacity: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       damping: 25,
       stiffness: 200,
       duration: 0.5,
@@ -50,7 +50,7 @@ const panelVariants = {
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: "easeInOut"
+      ease: [0.4, 0.0, 0.2, 1] as const
     }
   }
 };
@@ -62,7 +62,7 @@ const contentVariants = {
     y: 0,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
+      ease: [0.4, 0.0, 0.2, 1] as const
     }
   }
 };
