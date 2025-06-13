@@ -1,5 +1,4 @@
 
-
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -38,33 +37,30 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      rounded-3xl p-6 relative overflow-hidden
+      rounded-2xl p-4 relative overflow-hidden
       bg-white/40 backdrop-blur-[20px] border border-white/30
-      shadow-lg hover:shadow-xl transition-all duration-300
+      shadow-sm transition-all duration-300
     `}>
       
-      {/* خلفية متدرجة مستوحاة من التصاميم */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/20 via-purple-300/20 to-pink-400/20 rounded-3xl"></div>
-      
       {/* المحتوى */}
-      <div className="relative z-10">
+      <div className="relative z-10 h-full">
         {/* رأس البطاقة */}
-        <header className="flex items-center justify-between mb-6">
+        <header className="flex items-center justify-between mb-4">
           <div className="flex gap-2">
             <button 
               onClick={() => scroll(200)}
-              className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 transition-all duration-200 flex items-center justify-center shadow-lg"
+              className="w-8 h-8 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 transition-all duration-200 flex items-center justify-center"
             >
-              <ChevronRight size={16} className="text-white" />
+              <ChevronRight size={14} className="text-indigo-600" />
             </button>
             <button 
               onClick={() => scroll(-200)}
-              className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all duration-200 flex items-center justify-center shadow-lg"
+              className="w-8 h-8 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 transition-all duration-200 flex items-center justify-center"
             >
-              <ChevronLeft size={16} className="text-white" />
+              <ChevronLeft size={14} className="text-purple-600" />
             </button>
           </div>
-          <h3 className="text-lg font-bold text-[#2A3437] font-arabic">
+          <h3 className="text-sm font-medium text-gray-800 font-arabic">
             الأحداث القادمة
           </h3>
         </header>
@@ -73,15 +69,15 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
         <div className="flex-1 relative overflow-hidden">
           <div
             ref={scrollRef}
-            className="overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none h-full flex items-center"
+            className="overflow-x-auto scrollbar-hide h-full flex items-center pb-2"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            <ul className="flex items-center gap-12 py-6 px-4">
+            <ul className="flex items-center gap-8 py-4 px-2">
               {timeline.map((event, index) => (
                 <li key={event.id} className="relative flex flex-col items-center min-w-fit">
                   
                   {/* التاريخ */}
-                  <div className="mb-4 p-2 rounded-xl bg-white/50 backdrop-blur-sm">
+                  <div className="mb-3 p-2 rounded-lg bg-white/40">
                     <span className="text-xs text-gray-700 whitespace-nowrap font-medium font-arabic">
                       {new Date(event.date).toLocaleDateString('ar-SA', { 
                         month: 'short', 
@@ -94,27 +90,26 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
                   <div className="relative flex items-center">
                     {/* خط للنقطة السابقة */}
                     {index > 0 && (
-                      <div className="absolute right-full h-1 bg-gradient-to-r from-indigo-300 to-purple-300 w-12 rounded-full"></div>
+                      <div className="absolute right-full h-0.5 bg-gray-300 w-8 rounded-full"></div>
                     )}
                     
                     <button
-                      className="relative w-6 h-6 rounded-full border-3 border-white shadow-xl transition-all duration-200 hover:scale-125 z-10 hover:shadow-2xl"
+                      className="relative w-4 h-4 rounded-full border-2 border-white shadow-sm transition-all duration-200 hover:scale-125 z-10"
                       style={{ backgroundColor: event.color }}
                       onClick={() => openEvent(event)}
                     >
-                      <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: event.color }}></div>
                     </button>
                     
                     {/* خط للنقطة التالية */}
                     {index < timeline.length - 1 && (
-                      <div className="absolute left-full h-1 bg-gradient-to-r from-purple-300 to-pink-300 w-12 rounded-full"></div>
+                      <div className="absolute left-full h-0.5 bg-gray-300 w-8 rounded-full"></div>
                     )}
                   </div>
 
                   {/* تفاصيل الحدث */}
-                  <div className="text-center mt-4 max-w-28">
-                    <div className="p-3 rounded-2xl bg-white/50 backdrop-blur-sm mb-2">
-                      <div className="text-sm font-bold text-[#2A3437] whitespace-nowrap mb-1 font-arabic">
+                  <div className="text-center mt-3 max-w-24">
+                    <div className="p-2 rounded-lg bg-white/40 mb-1">
+                      <div className="text-xs font-medium text-gray-900 whitespace-nowrap mb-1 font-arabic">
                         {event.title}
                       </div>
                       <div className="text-xs text-gray-600 whitespace-nowrap font-arabic">
@@ -131,4 +126,3 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
     </div>
   );
 };
-

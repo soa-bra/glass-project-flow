@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { Users, UserMinus, UserPlus } from 'lucide-react';
 
@@ -24,65 +23,55 @@ export const HRWidget: React.FC<HRWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      rounded-3xl p-6 relative overflow-hidden
+      rounded-2xl p-4 relative overflow-hidden
       bg-white/40 backdrop-blur-[20px] border border-white/30
-      shadow-lg hover:shadow-xl transition-all duration-300
+      shadow-sm transition-all duration-300
     `}>
-      
-      {/* خلفية متدرجة */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-cyan-300/20 to-teal-400/20 rounded-3xl"></div>
       
       {/* المحتوى */}
       <div className="relative z-10">
-        {/* رأس البطاقة */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
-            <Users size={20} className="text-white" />
+        {/* رأس البطاقة مع الأيقونة والعنوان */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+            <Users size={16} className="text-blue-600" />
           </div>
-          <h3 className="text-lg font-bold text-[#2A3437] font-arabic">
+          <h3 className="text-sm font-medium text-gray-800 font-arabic">
             الموارد البشرية
           </h3>
         </div>
 
-        {/* الرقم الرئيسي */}
-        <div className="text-center mb-6">
-          <div className="text-4xl font-bold text-[#2A3437] mb-2">
+        {/* الرقم الرئيسي - أسلوب بسيط */}
+        <div className="mb-4">
+          <div className="text-2xl font-bold text-gray-900 mb-1">
             {hr.members}
           </div>
-          <div className="text-sm text-gray-600 font-arabic">
+          <div className="text-xs text-gray-600 font-arabic">
             موظف نشط
           </div>
         </div>
 
-        {/* إحصائيات مرئية */}
-        <div className="space-y-4 mb-6">
-          {/* شريط النشاط */}
-          <div className="relative h-3 bg-white/30 rounded-full overflow-hidden">
+        {/* شريط التقدم البسيط */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs text-gray-600 font-arabic">{activePercentage}%</span>
+            <span className="text-xs text-gray-500 font-arabic">معدل التوظيف</span>
+          </div>
+          <div className="h-2 bg-gray-200/50 rounded-full overflow-hidden">
             <div 
-              className="absolute h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-1000 ease-out"
+              className="h-full bg-blue-500 rounded-full transition-all duration-1000"
               style={{width: `${activePercentage}%`}}
             ></div>
           </div>
-          <div className="flex justify-between text-xs text-gray-600 font-arabic">
-            <span>{activePercentage}% نشط</span>
-            <span>معدل التوظيف</span>
-          </div>
         </div>
 
-        {/* التفاصيل */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="text-center p-3 rounded-2xl bg-orange-100/50 backdrop-blur-sm">
-            <div className="flex items-center justify-center mb-2">
-              <UserPlus size={16} className="text-orange-500" />
-            </div>
-            <div className="text-lg font-bold text-orange-600">{hr.vacancies}</div>
+        {/* الإحصائيات السفلية */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="text-center p-2 rounded-lg bg-white/30">
+            <div className="text-sm font-medium text-orange-600">{hr.vacancies}</div>
             <div className="text-xs text-gray-600 font-arabic">شواغر</div>
           </div>
-          <div className="text-center p-3 rounded-2xl bg-gray-100/50 backdrop-blur-sm">
-            <div className="flex items-center justify-center mb-2">
-              <UserMinus size={16} className="text-gray-500" />
-            </div>
-            <div className="text-lg font-bold text-gray-600">{hr.onLeave}</div>
+          <div className="text-center p-2 rounded-lg bg-white/30">
+            <div className="text-sm font-medium text-gray-600">{hr.onLeave}</div>
             <div className="text-xs text-gray-600 font-arabic">في إجازة</div>
           </div>
         </div>
@@ -90,4 +79,3 @@ export const HRWidget: React.FC<HRWidgetProps> = ({
     </div>
   );
 };
-
