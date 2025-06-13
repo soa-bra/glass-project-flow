@@ -9,13 +9,13 @@ interface ProjectCardLayoutProps {
   onProjectSelect?: (projectId: string) => void;
 }
 
-const ProjectCardLayout = ({
+const ProjectCardLayout: React.FC<ProjectCardLayoutProps> = ({
   children,
   id,
   isSelected = false,
   isOtherSelected = false,
   onProjectSelect,
-}: ProjectCardLayoutProps) => {
+}) => {
   const handleClick = useCallback((event: React.MouseEvent) => {
     event.stopPropagation();
     onProjectSelect?.(id);

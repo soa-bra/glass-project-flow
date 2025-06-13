@@ -10,7 +10,7 @@ interface OperationsBoardProps {
   isSidebarCollapsed: boolean;
 }
 
-const OperationsBoard: React.FC<OperationsBoardProps> = ({ isSidebarCollapsed }) => {
+const OperationsBoard: React.FC<OperationsBoardProps> = React.memo(({ isSidebarCollapsed }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const { tabData, loading } = useTabData(activeTab, true);
 
@@ -31,6 +31,10 @@ const OperationsBoard: React.FC<OperationsBoardProps> = ({ isSidebarCollapsed })
     zIndex: 30
   }), []);
 
+  const handleTabChange = React.useCallback((tab: string) => {
+    setActiveTab(tab);
+  }, []);
+
   return (
     <div className={boardClasses} style={boardStyles}>
       <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col mx-0 px-0">
@@ -40,11 +44,11 @@ const OperationsBoard: React.FC<OperationsBoardProps> = ({ isSidebarCollapsed })
           </h2>
         </div>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col mx-0 px-0">
+        <Tabs value={activeTab} onValueChange={handleTabChange} dir="rtl" className="w-full h-full flex flex-col mx-0 px-0">
           <TabNavigation 
             tabItems={TAB_ITEMS} 
             activeTab={activeTab} 
-            onTabChange={setActiveTab} 
+            onTabChange={handleTabChange} 
           />
           <div className="flex-1 overflow-hidden my-0 px-0">
             <TabContentWrapper tabData={tabData} loading={loading} />
@@ -53,7 +57,9 @@ const OperationsBoard: React.FC<OperationsBoardProps> = ({ isSidebarCollapsed })
       </div>
     </div>
   );
-};
+});
+
+OperationsBoard.displayName = 'OperationsBoard';
 
 export { OperationsBoard };
 export default OperationsBoard;

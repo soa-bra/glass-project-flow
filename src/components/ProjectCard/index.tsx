@@ -1,10 +1,11 @@
 
+import React from 'react';
 import ProjectCardLayout from './ProjectCardLayout';
 import ProjectCardHeader from './ProjectCardHeader';
 import ProjectCardFooter from './ProjectCardFooter';
 import type { ProjectCardProps } from './types';
 
-const ProjectCard = ({
+const ProjectCard: React.FC<ProjectCardProps> = React.memo(({
   id,
   title,
   description,
@@ -14,7 +15,7 @@ const ProjectCard = ({
   owner,
   value,
   daysLeft
-}: ProjectCardProps) => {
+}) => {
   return (
     <ProjectCardLayout id={id}>
       <ProjectCardHeader
@@ -33,7 +34,9 @@ const ProjectCard = ({
       />
     </ProjectCardLayout>
   );
-};
+});
+
+ProjectCard.displayName = 'ProjectCard';
 
 export { ProjectCard };
 export default ProjectCard;

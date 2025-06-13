@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { TimelineWidgetProps, TimelineEvent } from './Timeline/types';
 import { TimelineNavigation } from './Timeline/TimelineNavigation';
 import { TimelineScrollContainer } from './Timeline/TimelineScrollContainer';
 import { useTimelineScroll } from './Timeline/useTimelineScroll';
-export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
+
+export const TimelineWidget: React.FC<TimelineWidgetProps> = React.memo(({
   timeline,
   className = ''
 }) => {
@@ -12,11 +14,16 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
     canScrollRight,
     scroll
   } = useTimelineScroll();
-  const openEvent = (event: TimelineEvent) => {
-    console.log('فتح الحدث:', event);
+
+  const openEvent = React.useCallback((event: TimelineEvent) => {
     // يمكن إضافة modal أو popover هنا
-  };
-  return <div className={`
+  }, []);
+
+  const handleScrollLeft = React.useCallback(() => scroll(-200), [scroll]);
+  const handleScrollRight = React.useCallback(() => scroll(200), [scroll]);
+
+  return (
+    <div className={`
       ${className}
       rounded-3xl p-6
       bg-white/45 backdrop-blur-[20px] border border-white/40
@@ -26,19 +33,24 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
       overflow-hidden
       min-h-[320px]
     `}>
-      
-      {/* رأس البطاقة */}
       <header className="flex items-center justify-between mb-5">
         <h3 className="text-xl font-arabic font-bold text-gray-800">
           الأحداث القادمة
         </h3>
         
-        <TimelineNavigation canScrollLeft={canScrollLeft} canScrollRight={canScrollRight} onScrollLeft={() => scroll(-200)} onScrollRight={() => scroll(200)} />
+        <TimelineNavigation 
+          canScrollLeft={canScrollLeft} 
+          canScrollRight={canScrollRight} 
+          onScrollLeft={handleScrollLeft} 
+          onScrollRight={handleScrollRight} 
+        />
       </header>
 
-      {/* محتوى الخط الزمني */}
       <div className="flex-1 relative min-h-0 py-[35px]">
         <TimelineScrollContainer timeline={timeline} onEventClick={openEvent} />
       </div>
-    </div>;
-};
+    </div>
+  );
+});
+
+TimelineWidget.displayName = 'TimelineWidget';

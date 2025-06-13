@@ -27,9 +27,13 @@ interface FinanceTabProps {
   loading: boolean;
 }
 
-export const FinanceTab: React.FC<FinanceTabProps> = ({ data, loading }) => {
+export const FinanceTab: React.FC<FinanceTabProps> = React.memo(({ data, loading }) => {
   if (loading || !data) {
-    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
+    return (
+      <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
+        جارٍ التحميل...
+      </div>
+    );
   }
 
   return (
@@ -44,4 +48,6 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({ data, loading }) => {
       <ExportButton />
     </div>
   );
-};
+});
+
+FinanceTab.displayName = 'FinanceTab';

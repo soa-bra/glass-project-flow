@@ -1,16 +1,20 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 
-const Index = () => {
+const Index: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  const layoutStyles = {
+  const layoutStyles = React.useMemo(() => ({
     transition: 'all var(--animation-duration-main) var(--animation-easing)'
-  };
+  }), []);
+
+  const handleSidebarToggle = React.useCallback((collapsed: boolean) => {
+    setIsSidebarCollapsed(collapsed);
+  }, []);
 
   return (
     <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden">
@@ -23,7 +27,7 @@ const Index = () => {
           style={layoutStyles} 
           className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar sidebar-layout px-0 mx-0"
         >
-          <Sidebar onToggle={setIsSidebarCollapsed} />
+          <Sidebar onToggle={handleSidebarToggle} />
         </div>
 
         <div 

@@ -26,7 +26,15 @@ interface HRTabProps {
   loading: boolean;
 }
 
-const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
+const HRTab: React.FC<HRTabProps> = React.memo(({ data, loading }) => {
+  const fillProgressStats = React.useMemo(() => {
+    if (!data) return { active: 0, vacancies: 0 };
+    return {
+      active: data.stats.active,
+      vacancies: data.stats.vacancies
+    };
+  }, [data]);
+
   if (loading || !data) {
     return (
       <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
@@ -34,11 +42,6 @@ const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
       </div>
     );
   }
-
-  const fillProgressStats = {
-    active: data.stats.active,
-    vacancies: data.stats.vacancies
-  };
 
   return (
     <div className="space-y-6 h-full px-0">
@@ -61,7 +64,9 @@ const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
       <AddMemberButton />
     </div>
   );
-};
+});
+
+HRTab.displayName = 'HRTab';
 
 export { HRTab };
 export default HRTab;

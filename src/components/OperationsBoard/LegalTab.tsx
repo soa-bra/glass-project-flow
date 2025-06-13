@@ -27,7 +27,7 @@ interface LegalTabProps {
   loading: boolean;
 }
 
-const LegalTab: React.FC<LegalTabProps> = ({ data, loading }) => {
+const LegalTab: React.FC<LegalTabProps> = React.memo(({ data, loading }) => {
   if (loading || !data) {
     return (
       <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
@@ -50,7 +50,9 @@ const LegalTab: React.FC<LegalTabProps> = ({ data, loading }) => {
       <UploadButton />
     </div>
   );
-};
+});
+
+LegalTab.displayName = 'LegalTab';
 
 export { LegalTab };
 export default LegalTab;

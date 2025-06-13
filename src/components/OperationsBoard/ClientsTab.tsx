@@ -26,9 +26,13 @@ interface ClientsTabProps {
   loading: boolean;
 }
 
-export const ClientsTab: React.FC<ClientsTabProps> = ({ data, loading }) => {
+export const ClientsTab: React.FC<ClientsTabProps> = React.memo(({ data, loading }) => {
   if (loading || !data) {
-    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
+    return (
+      <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
+        جارٍ التحميل...
+      </div>
+    );
   }
 
   return (
@@ -43,4 +47,6 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({ data, loading }) => {
       <AddClientButton />
     </div>
   );
-};
+});
+
+ClientsTab.displayName = 'ClientsTab';

@@ -11,7 +11,7 @@ interface ProjectDistributionProps {
   distribution: ProjectDistribution[];
 }
 
-export const ProjectDistribution: React.FC<ProjectDistributionProps> = ({ distribution }) => {
+export const ProjectDistribution: React.FC<ProjectDistributionProps> = React.memo(({ distribution }) => {
   const { sortedDistribution, maxMembers } = useMemo(() => {
     const sorted = [...distribution].sort((a, b) => b.members - a.members);
     const max = Math.max(...sorted.map(item => item.members));
@@ -20,6 +20,11 @@ export const ProjectDistribution: React.FC<ProjectDistributionProps> = ({ distri
       maxMembers: max
     };
   }, [distribution]);
+
+  const gradientClassName = useMemo(() => 
+    "h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-700 ease-out",
+    []
+  );
 
   return (
     <BaseCard 
@@ -39,7 +44,7 @@ export const ProjectDistribution: React.FC<ProjectDistributionProps> = ({ distri
             </div>
             <div className="h-6 bg-gray-200/50 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-700 ease-out"
+                className={gradientClassName}
                 style={{width: `${(item.members / maxMembers) * 100}%`}}
               />
             </div>
@@ -48,4 +53,6 @@ export const ProjectDistribution: React.FC<ProjectDistributionProps> = ({ distri
       </div>
     </BaseCard>
   );
-};
+});
+
+ProjectDistribution.displayName = 'ProjectDistribution';

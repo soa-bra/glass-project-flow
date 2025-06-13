@@ -12,7 +12,7 @@ interface TeamFillProgressProps {
   stats: HRStats;
 }
 
-export const TeamFillProgress: React.FC<TeamFillProgressProps> = ({ stats }) => {
+export const TeamFillProgress: React.FC<TeamFillProgressProps> = React.memo(({ stats }) => {
   const { totalTeamSize, percentageFilled } = useMemo(() => {
     const total = stats.active + stats.vacancies;
     const percentage = Math.round((stats.active / total) * 100);
@@ -21,6 +21,8 @@ export const TeamFillProgress: React.FC<TeamFillProgressProps> = ({ stats }) => 
       percentageFilled: percentage
     };
   }, [stats.active, stats.vacancies]);
+
+  const progressIndicatorClassName = useMemo(() => "bg-blue-500 rounded-full", []);
 
   return (
     <BaseCard 
@@ -39,7 +41,7 @@ export const TeamFillProgress: React.FC<TeamFillProgressProps> = ({ stats }) => 
       <Progress 
         value={percentageFilled} 
         className="h-3 bg-gray-200/50 rounded-full"
-        indicatorClassName="bg-blue-500 rounded-full"
+        indicatorClassName={progressIndicatorClassName}
       />
       
       <div className="flex justify-between text-sm mt-3">
@@ -48,4 +50,6 @@ export const TeamFillProgress: React.FC<TeamFillProgressProps> = ({ stats }) => 
       </div>
     </BaseCard>
   );
-};
+});
+
+TeamFillProgress.displayName = 'TeamFillProgress';
