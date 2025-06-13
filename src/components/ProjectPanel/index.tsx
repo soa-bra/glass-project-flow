@@ -4,14 +4,9 @@ import { createPortal } from 'react-dom';
 import { ProjectPanelProps, ProjectTab } from './types';
 import { useProjectPanel } from './useProjectPanel';
 import { EnhancedMotionSystem } from './EnhancedMotionSystem';
-import { ProjectPanelLayout } from './ProjectPanelLayout';
-import { ProjectHeader } from './ProjectHeader';
-import { EnhancedProgressBar } from './EnhancedProgressBar';
-import { EnhancedBudgetCard } from './EnhancedBudgetCard';
-import { EnhancedQuickActions } from './EnhancedQuickActions';
-import { EnhancedProjectTabs } from './EnhancedProjectTabs';
-import { TasksPreviewCard } from './TasksPreviewCard';
-import { CalendarPreviewCard } from './CalendarPreviewCard';
+import { ProjectPanelHeader } from './ProjectPanelHeader';
+import { ProjectPanelTabs } from './ProjectPanelTabs';
+import { ProjectDashboard } from './ProjectDashboard';
 import { TasksTab } from './TasksTab';
 import { FinanceTab } from './FinanceTab';
 import { LegalTab } from './LegalTab';
@@ -61,23 +56,6 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     };
   }, [isVisible, onClose]);
 
-  const handleAddTask = useCallback(() => {
-    console.log('إضافة مهمة جديدة');
-  }, []);
-
-  const handleSmartGenerate = useCallback(() => {
-    console.log('توليد ذكي للمهام');
-  }, []);
-
-  const handleEditProject = useCallback(() => {
-    console.log('تعديل المشروع');
-  }, []);
-
-  const handleBudgetDetails = useCallback(() => {
-    console.log('عرض التفاصيل المالية');
-    setActiveTab('finance');
-  }, [setActiveTab]);
-
   const renderTabContent = () => {
     if (!projectData) return null;
 
@@ -97,30 +75,7 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
       case 'notifications':
         return <NotificationCenter />;
       default:
-        return (
-         // Dashboard view with enhanced layout
-          <ProjectPanelLayout>
-            {projectData && (
-              <>
-                <EnhancedBudgetCard
-                  totalBudget={projectData.budget.total}
-                  spentBudget={projectData.budget.spent}
-                  onDetailsClick={handleBudgetDetails}
-                />
-                
-                <CalendarPreviewCard />
-                
-                <EnhancedQuickActions
-                  onAddTask={handleAddTask}
-                  onSmartGenerate={handleSmartGenerate}
-                  onEditProject={handleEditProject}
-                />
-                
-                <TasksPreviewCard tasks={projectData.tasks} />
-              </>
-            )}
-          </ProjectPanelLayout>
-        );
+        return <ProjectDashboard projectData={projectData} loading={loading} />;
     }
   };
 
@@ -130,36 +85,33 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     return null;
   }
 
-  console.log('ProjectPanel rendering content with Portal - enhanced structure');
+  console.log('ProjectPanel rendering content with Portal');
 
   return createPortal(
     <EnhancedMotionSystem isVisible={isVisible} onClose={onClose}>
-      {/* Header */}
-      {projectData && (
-        <ProjectHeader
-          title={projectData.title}
-          status={projectData.status}
-          onClose={onClose}
-        />
-      )}
-
-      {/* Progress Bar */}
-      <div className="px-6 py-4">
-        <EnhancedProgressBar />
-      </div>
-
-      {/* Tabs */}
-      <EnhancedProjectTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
-      {/* Content */}
-      <div className="flex-1 overflow-auto">
-        {error ? (
-          <div className="p-6 text-center text-red-600 font-arabic">
-            {error}
-          </div>
-        ) : (
-          renderTabContent()
+      <div className="h-full flex flex-col bg-white/40 backdrop-blur-[20px]">
+        {/* Header */}
+        {projectData && (
+          <ProjectPanelHeader
+            title={projectData.title}
+            status={projectData.status}
+            onClose={onClose}
+          />
         )}
+
+        {/* Tabs */}
+        <ProjectPanelTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+        {/* Content */}
+        <div className="flex-1 overflow-auto">
+          {error ? (
+            <div className="p-6 text-center text-red-600 font-arabic">
+              {error}
+            </div>
+          ) : (
+            renderTabContent()
+          )}
+        </div>
       </div>
     </EnhancedMotionSystem>,
     document.body

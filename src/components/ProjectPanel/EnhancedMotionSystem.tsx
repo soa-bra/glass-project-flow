@@ -17,7 +17,7 @@ const entryMotionVariants: Variants = {
     x: 0,
     opacity: 1,
     transition: {
-      duration: 0.3,
+      duration: 0.4,
       ease: [0.4, 0, 0.2, 1] as const
     }
   },
@@ -34,7 +34,7 @@ const entryMotionVariants: Variants = {
 const backdropVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { 
-    opacity: 0.3,
+    opacity: 1,
     transition: { duration: 0.2 }
   },
   exit: { 
@@ -60,7 +60,7 @@ export const EnhancedMotionSystem: React.FC<EnhancedMotionSystemProps> = ({
           onClick={onClose}
           style={{
             backdropFilter: 'blur(20px)',
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)'
+            background: 'rgba(0, 0, 0, 0.15)'
           }}
         >
           <motion.div
