@@ -1,10 +1,14 @@
+
 import React from 'react';
 import { TimelineWidget } from './Overview/TimelineWidget';
-import { BudgetWidget } from './Overview/BudgetWidget';
-import { HRWidget } from './Overview/HRWidget';
-import { SatisfactionWidget } from './Overview/SatisfactionWidget';
-import { ContractsWidget } from './Overview/ContractsWidget';
-import { AISuggestedWidget } from './Overview/AISuggestedWidget';
+import { MainStatsWidget } from './Overview/MainStatsWidget';
+import { PowerConsumptionWidget } from './Overview/PowerConsumptionWidget';
+import { ThermostatWidget } from './Overview/ThermostatWidget';
+import { HumidityWidget } from './Overview/HumidityWidget';
+import { TemperatureWidget } from './Overview/TemperatureWidget';
+import { DeviceControlsWidget } from './Overview/DeviceControlsWidget';
+import { WeatherWidget } from './Overview/WeatherWidget';
+import { MediaPlayerWidget } from './Overview/MediaPlayerWidget';
 
 interface TimelineEvent {
   id: number;
@@ -51,65 +55,48 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
   return (
     <div className="h-full overflow-auto">
-      {/* الشبكة الجديدة للوحة مع صفوف متعددة - ارتفاعات متساوية */}
+      {/* الشبكة الجديدة للوحة مع صفوف متعددة - تصميم مشابه للصورة */}
       <section className="
-        grid grid-cols-12 gap-2.5 
+        grid grid-cols-12 gap-1 
         h-full w-full px-[10px] py-2.5 pb-[25px]
         auto-rows-min
         max-h-full
       ">
         
-        {/* الصف الأول - خط الزمن عرض كامل */}
-        <TimelineWidget 
-          timeline={data.timeline} 
-          className="col-span-12 h-[220px]" 
+        {/* الصف الأول - البطاقة الرئيسية والرسم البياني للاستهلاك */}
+        <MainStatsWidget 
+          data={data.widgets} 
+          className="col-span-4 h-[280px]" 
         />
 
-        {/* الصف الثاني - العقود والميزانية فقط */}
-        <ContractsWidget 
-          contracts={data.widgets.contracts} 
-          className="col-span-4 h-[260px]" 
+        <PowerConsumptionWidget 
+          className="col-span-5 h-[280px]" 
         />
 
-        <BudgetWidget 
-          budget={data.widgets.budget} 
-          className="col-span-8 h-[260px]" 
+        <ThermostatWidget 
+          className="col-span-3 h-[280px]" 
         />
 
-        {/* الصف الثالث - الموارد البشرية والرضا ومؤشرات الأداء */}
-        <HRWidget 
-          hr={data.widgets.hr} 
-          className="col-span-4 h-[220px]" 
+        {/* الصف الثاني - المؤشرات الصغيرة */}
+        <HumidityWidget 
+          className="col-span-2 h-[120px]" 
         />
 
-        <SatisfactionWidget 
-          satisfaction={data.widgets.satisfaction} 
-          className="col-span-4 h-[220px]" 
+        <TemperatureWidget 
+          className="col-span-2 h-[120px]" 
         />
 
-        <AISuggestedWidget 
-          type="kpi"
-          title="مؤشرات الأداء الرئيسية"
-          className="col-span-4 h-[220px]" 
+        <WeatherWidget 
+          className="col-span-2 h-[120px]" 
         />
 
-        {/* الصف الرابع - التقارير والأهداف وإدارة الفريق بنفس مقاسات الصف الثالث */}
-        <AISuggestedWidget 
-          type="reports"
-          title="التقارير التنفيذية"
-          className="col-span-4 h-[220px]" 
+        <MediaPlayerWidget 
+          className="col-span-6 h-[120px]" 
         />
 
-        <AISuggestedWidget 
-          type="goals"
-          title="الأهداف والإنجازات"
-          className="col-span-4 h-[220px]" 
-        />
-
-        <AISuggestedWidget 
-          type="team"
-          title="إدارة الفريق"
-          className="col-span-4 h-[220px]" 
+        {/* الصف الثالث - أدوات التحكم بالأجهزة */}
+        <DeviceControlsWidget 
+          className="col-span-12 h-[180px]" 
         />
 
       </section>
