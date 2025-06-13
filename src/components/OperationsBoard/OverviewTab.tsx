@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TimelineSection } from './Overview/TimelineSection';
 import { BudgetWidget } from './Overview/BudgetWidget';
@@ -11,7 +10,6 @@ import { ExtraWidgetThree } from './Overview/ExtraWidgetThree';
 import { ExtraWidgetFour } from './Overview/ExtraWidgetFour';
 import { ExtraWidgetFive } from './Overview/ExtraWidgetFive';
 import { BaseCard } from '@/components/ui/BaseCard';
-
 interface TimelineEvent {
   id: number;
   date: string;
@@ -50,10 +48,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   if (loading || !data) {
     return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
-
-  return (
-    <div className="h-full overflow-y-auto px-2">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4" style={{ minHeight: 'calc(100vh - 200px)' }}>
+  return <div className="h-full overflow-y-auto px-2">
+      <div style={{
+      minHeight: 'calc(100vh - 200px)'
+    }} className="grid grid-cols-1 lg:grid-cols-3 gap-4 my-0 mx-0 px-0">
         
         {/* الصف الأول - البطاقة الزمنية تأخذ العرض الكامل */}
         <div className="lg:col-span-3">
@@ -97,16 +95,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
         {/* الصف السادس - بطاقة إضافية */}
         <div className="lg:col-span-3">
-          <BaseCard 
-            size="sm"
-            variant="glass"
-            header={
-              <h3 className="text-lg font-arabic font-bold text-gray-800 text-center">
+          <BaseCard size="sm" variant="glass" header={<h3 className="text-lg font-arabic font-bold text-gray-800 text-center">
                 إحصائيات إضافية
-              </h3>
-            }
-            className="h-[180px] flex items-center justify-center"
-          >
+              </h3>} className="h-[180px] flex items-center justify-center">
             <div className="text-center">
               <p className="text-gray-600 text-sm">المزيد من البيانات والتحليلات قريباً</p>
             </div>
@@ -114,6 +105,5 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         </div>
 
       </div>
-    </div>
-  );
+    </div>;
 };

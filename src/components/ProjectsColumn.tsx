@@ -120,7 +120,7 @@ const ProjectsColumn = () => {
       {/* منطقة التمرير للمشاريع مع تأثير النافذة الدائرية */}
       <div className="flex-1 overflow-hidden rounded-t-3xl">
         <ScrollArea className="h-full w-full">
-          <div className="space-y-2 pb-4 px-0 mx-[15px] rounded-full">
+          <div className="space-y-2 pb-4 px-0 rounded-full mx-[10px]">
             {mockProjects.map(project => <ProjectCard key={project.id} {...project} />)}
           </div>
         </ScrollArea>
