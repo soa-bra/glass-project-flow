@@ -64,7 +64,7 @@ const Index: React.FC = () => {
       opacity: 1,
       transition: {
         duration: 0.3,
-        ease: [0.4, 0.0, 0.2, 1]
+        ease: [0.4, 0.0, 0.2, 1] as any
       }
     },
     hidden: { 
@@ -72,7 +72,7 @@ const Index: React.FC = () => {
       opacity: 0.3,
       transition: {
         duration: 0.3,
-        ease: [0.4, 0.0, 0.2, 1]
+        ease: [0.4, 0.0, 0.2, 1] as any
       }
     }
   };
@@ -85,7 +85,7 @@ const Index: React.FC = () => {
       filter: 'blur(0px)',
       transition: {
         duration: 0.3,
-        ease: [0.4, 0.0, 0.2, 1]
+        ease: [0.4, 0.0, 0.2, 1] as any
       }
     },
     dimmed: {
@@ -94,7 +94,7 @@ const Index: React.FC = () => {
       filter: 'blur(1px)',
       transition: {
         duration: 0.3,
-        ease: [0.4, 0.0, 0.2, 1]
+        ease: [0.4, 0.0, 0.2, 1] as any
       }
     }
   };
