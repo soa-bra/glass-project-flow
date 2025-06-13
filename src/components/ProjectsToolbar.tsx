@@ -1,7 +1,8 @@
 
+import React from 'react';
 import { RefreshCcw, Filter, Plus } from 'lucide-react';
 
-const ProjectsToolbar = () => {
+const ProjectsToolbar = React.memo(() => {
   return (
     <div className="flex items-center justify-between h-14 py-[24px] px-3 my-[24px]">
       {/* العنوان يميناً */}
@@ -23,6 +24,8 @@ const ProjectsToolbar = () => {
       </div>
     </div>
   );
-};
+});
+
+ProjectsToolbar.displayName = 'ProjectsToolbar';
 
 export default ProjectsToolbar;

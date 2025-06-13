@@ -1,28 +1,51 @@
 
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 interface SidebarProps {
   onToggle?: (collapsed: boolean) => void;
 }
 
-const Sidebar = ({ onToggle }: SidebarProps) => {
+const Sidebar = React.memo<SidebarProps>(({ onToggle }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const menuItems = [
+  const menuItems = useMemo(() => [
     { icon: Home, label: 'الرئيسية', active: true },
     { icon: FolderOpen, label: 'المشاريع', active: false },
     { icon: CheckSquare, label: 'المهام', active: false },
     { icon: Building, label: 'الإدارات', active: false },
     { icon: Users, label: 'التخطيط التشاركي', active: false },
     { icon: Archive, label: 'الأرشيف', active: false }
-  ];
+  ], []);
 
-  const toggleSidebar = () => {
-    const newCollapsedState = !isCollapsed;
-    setIsCollapsed(newCollapsedState);
-    onToggle?.(newCollapsedState);
-  };
+  const toggleSidebar = useCallback(() => {
+    setIsCollapsed(prev => {
+      const newCollapsedState = !prev;
+      onToggle?.(newCollapsedState);
+      return newCollapsedState;
+    });
+  }, [onToggle]);
+
+  const sidebarStyle = useMemo(() => ({
+    width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)',
+    transition: 'all var(--animation-duration-main) var(--animation-easing)'
+  }), [isCollapsed]);
+
+  const titleContainerStyle = useMemo(() => ({
+    transition: 'all var(--animation-duration-main) var(--animation-easing)',
+    opacity: isCollapsed ? 0 : 1,
+    transform: isCollapsed ? 'translateX(24px) scale(0.9)' : 'translateX(0) scale(1)',
+    width: isCollapsed ? '0' : 'auto',
+    transitionDelay: isCollapsed ? '0ms' : 'calc(var(--animation-duration-main) * 0.4)'
+  }), [isCollapsed]);
+
+  const versionStyle = useMemo(() => ({
+    opacity: isCollapsed ? 0 : 1,
+    transform: isCollapsed ? 'translateY(24px) scale(0.9)' : 'translateY(0) scale(1)',
+    height: isCollapsed ? '0' : 'auto',
+    transition: 'all var(--animation-duration-main) var(--animation-easing)',
+    transitionDelay: isCollapsed ? '0ms' : 'calc(var(--animation-duration-main) * 0.8)'
+  }), [isCollapsed]);
 
   useEffect(() => {
     onToggle?.(isCollapsed);
@@ -30,10 +53,7 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
 
   return (
     <aside 
-      style={{
-        width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)',
-        transition: 'all var(--animation-duration-main) var(--animation-easing)'
-      }}
+      style={sidebarStyle}
       className="bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl mx-0 overflow-hidden px-0"
     >
       <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0">
@@ -42,14 +62,8 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
           <div className={`flex items-center rounded-lg sync-transition ${isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[20px]'}`}>
             {/* Title container - Perfect synchronization */}
             <div 
-              className={`flex-1 overflow-hidden`}
-              style={{
-                transition: 'all var(--animation-duration-main) var(--animation-easing)',
-                opacity: isCollapsed ? 0 : 1,
-                transform: isCollapsed ? 'translateX(24px) scale(0.9)' : 'translateX(0) scale(1)',
-                width: isCollapsed ? '0' : 'auto',
-                transitionDelay: isCollapsed ? '0ms' : 'calc(var(--animation-duration-main) * 0.4)'
-              }}
+              className="flex-1 overflow-hidden"
+              style={titleContainerStyle}
             >
               <h2 className="text-soabra-text-primary text-right font-medium text-3xl px-0 mx-[18px] whitespace-nowrap">
                 القائمة
@@ -143,13 +157,7 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
         <div className={`mt-auto pt-2 py-0 sync-transition ${isCollapsed ? 'mx-[15px] flex justify-center' : 'mx-[15px]'}`}>
           <div 
             className="px-2 overflow-hidden"
-            style={{
-              opacity: isCollapsed ? 0 : 1,
-              transform: isCollapsed ? 'translateY(24px) scale(0.9)' : 'translateY(0) scale(1)',
-              height: isCollapsed ? '0' : 'auto',
-              transition: 'all var(--animation-duration-main) var(--animation-easing)',
-              transitionDelay: isCollapsed ? '0ms' : 'calc(var(--animation-duration-main) * 0.8)'
-            }}
+            style={versionStyle}
           >
             <div className="text-center text-xs text-soabra-text-secondary/70 font-medium my-[45px] sync-transition-fast hover:text-soabra-text-secondary hover:scale-105 whitespace-nowrap">
               الإصدار 2.1.0
@@ -159,6 +167,8 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
       </nav>
     </aside>
   );
-};
+});
+
+Sidebar.displayName = 'Sidebar';
 
 export default Sidebar;
