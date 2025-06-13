@@ -52,59 +52,54 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
   return (
     <div className="h-full overflow-auto">
-      {/* شبكة اللوحة الرئيسية وفقاً للتخطيط في الصورة */}
+      {/* شبكة اللوحة الرئيسية */}
       <section className="
+        management-grid
         grid grid-cols-12 grid-rows-12 gap-4 
         h-full w-full p-6
+        lg:grid-cols-8 lg:grid-rows-18
+        sm:flex sm:flex-col sm:gap-4
       ">
         
-        {/* البطاقة الأولى - خط الزمن - عرض كامل في الأعلى (المنطقة رقم 1) */}
+        {/* 1. بطاقة الأحداث القادمة - عرض كامل في الأعلى */}
         <TimelineWidget 
           timeline={data.timeline} 
-          className="col-span-12 row-span-3" 
+          className="col-span-12 row-span-3 lg:col-span-8 lg:row-span-4" 
         />
 
-        {/* الصف الثاني - البطاقات الصغيرة على اليسار والبطاقة الكبيرة على اليمين */}
-        {/* البطاقتان الصغيرتان في العمود الأيسر */}
+        {/* 2. بطاقة المالية - لون صلب */}
+        <BudgetWidget 
+          budget={data.widgets.budget} 
+          className="col-span-6 row-span-4 lg:col-span-4 lg:row-span-5" 
+        />
+
+        {/* 3. بطاقات ذكية مقترحة */}
         <ContractsWidget 
           contracts={data.widgets.contracts} 
-          className="col-span-3 row-span-2" 
+          className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-3" 
         />
 
         <HRWidget 
           hr={data.widgets.hr} 
-          className="col-span-3 row-span-2" 
+          className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-3" 
         />
 
-        {/* البطاقة الكبيرة على اليمين (المنطقة رقم 2) */}
-        <BudgetWidget 
-          budget={data.widgets.budget} 
-          className="col-span-6 row-span-4" 
-        />
-
-        {/* الصف الثالث - بطاقة أطول في العمود الأيسر */}
         <SatisfactionWidget 
           satisfaction={data.widgets.satisfaction} 
-          className="col-span-3 row-span-3" 
+          className="col-span-3 row-span-3 lg:col-span-2 lg:row-span-4" 
         />
 
-        {/* الصف الرابع - أربع بطاقات في الأسفل */}
         <AISuggestedWidget 
           type="kpi"
           title="مؤشرات الأداء"
-          className="col-span-3 row-span-2" 
+          className="col-span-3 row-span-2 lg:col-span-2 lg:row-span-2" 
         />
 
+        {/* بطاقات إضافية مقترحة */}
         <AISuggestedWidget 
           type="reports"
           title="التقارير السريعة"
-          className="col-span-6 row-span-2" 
-        />
-
-        <AISuggestedWidget 
-          type="alerts"
-          title="التنبيهات"
-          className="col-span-3 row-span-2" 
+          className="col-span-6 row-span-2 lg:col-span-4 lg:row-span-2" 
         />
 
       </section>

@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { Tabs } from '@/components/ui/tabs';
 import { TAB_ITEMS } from './types';
 import { useTabData } from './useTabData';
 import { TabNavigation } from './TabNavigation';
 import { TabContentWrapper } from './TabContentWrapper';
-
 export const OperationsBoard = ({
   isSidebarCollapsed
 }: {
@@ -16,27 +14,19 @@ export const OperationsBoard = ({
     tabData,
     loading
   } = useTabData(activeTab, true);
-
-  return (
-    <div 
-      className={`fixed transition-all duration-500 ease-in-out ${
-        isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'
-      }`} 
-      style={{
-        height: 'calc(100vh - 60px)',
-        top: 'var(--sidebar-top-offset)',
-        borderRadius: '20px',
-        // خلفية داكنة متدرجة تطابق النمط في الصور
-        background: 'linear-gradient(135deg, rgba(15,15,20,0.95) 0%, rgba(25,25,35,0.95) 50%, rgba(20,20,30,0.95) 100%)',
-        backdropFilter: 'blur(20px)',
-        overflow: 'hidden',
-        zIndex: 30
-      }}
-    >
-      <div className="w-full h-full rounded-t-[20px] backdrop-blur-sm flex flex-col mx-0 px-0">
+  return <div className={`fixed transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'}`} style={{
+    height: 'calc(100vh - 60px)',
+    top: 'var(--sidebar-top-offset)',
+    borderRadius: '20px',
+    background: 'linear-gradient(135deg, #e8f1f9 0%, #f1f1f1 50%, #c8eddf 100%)',
+    backdropFilter: 'blur(20px)',
+    overflow: 'hidden',
+    zIndex: 30
+  }}>
+      <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col mx-0 px-0">
         {/* عنوان اللوحة */}
         <div className="text-right px-6 py-[24px] my-[24px]">
-          <h2 className="font-medium text-white font-arabic text-3xl">
+          <h2 className="font-medium text-[#2A3437] font-arabic text-3xl">
             لوحة الإدارة والتشغيل
           </h2>
         </div>
@@ -48,8 +38,6 @@ export const OperationsBoard = ({
           </div>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default OperationsBoard;

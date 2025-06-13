@@ -8,7 +8,6 @@ import {
   AlertCircle,
   Target
 } from 'lucide-react';
-import GlassWidget from '@/components/ui/GlassWidget';
 
 interface AISuggestedWidgetProps {
   type: 'kpi' | 'reports' | 'alerts' | 'analytics' | 'team' | 'goals';
@@ -19,8 +18,7 @@ interface AISuggestedWidgetProps {
 const widgetConfig = {
   kpi: {
     icon: TrendingUp,
-    accent: true,
-    glowing: true,
+    gradient: 'from-blue-500 to-blue-600',
     content: {
       main: '94%',
       sub: 'معدل الإنجاز الشهري',
@@ -29,8 +27,7 @@ const widgetConfig = {
   },
   reports: {
     icon: FileText,
-    accent: false,
-    glowing: false,
+    gradient: 'from-purple-500 to-purple-600',
     content: {
       main: '8',
       sub: 'تقارير جاهزة للمراجعة',
@@ -39,8 +36,7 @@ const widgetConfig = {
   },
   alerts: {
     icon: AlertCircle,
-    accent: false,
-    glowing: false,
+    gradient: 'from-orange-500 to-red-500',
     content: {
       main: '5',
       sub: 'تنبيهات تحتاج متابعة',
@@ -49,8 +45,7 @@ const widgetConfig = {
   },
   analytics: {
     icon: BarChart3,
-    accent: false,
-    glowing: false,
+    gradient: 'from-green-500 to-emerald-600',
     content: {
       main: '↗️',
       sub: 'الأداء في تحسن مستمر',
@@ -59,8 +54,7 @@ const widgetConfig = {
   },
   team: {
     icon: Users,
-    accent: false,
-    glowing: false,
+    gradient: 'from-indigo-500 to-blue-600',
     content: {
       main: '23',
       sub: 'عضو فريق نشط',
@@ -69,8 +63,7 @@ const widgetConfig = {
   },
   goals: {
     icon: Target,
-    accent: false,
-    glowing: false,
+    gradient: 'from-pink-500 to-rose-600',
     content: {
       main: '7/10',
       sub: 'أهداف محققة',
@@ -88,42 +81,43 @@ export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
   const Icon = config.icon;
 
   return (
-    <GlassWidget 
-      accent={config.accent} 
-      glowing={config.glowing}
-      className={className}
-    >
+    <div className={`
+      ${className}
+      rounded-2xl p-4 text-white shadow-lg 
+      bg-gradient-to-br ${config.gradient}
+      hover:shadow-xl transition-all duration-300
+      flex flex-col justify-between
+    `}>
+      
       {/* رأس البطاقة */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base font-arabic font-semibold text-white/90">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-arabic font-semibold opacity-90">
           {title}
         </h3>
-        <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-          <Icon size={20} className="text-white/80" />
-        </div>
+        <Icon size={20} className="opacity-80" />
       </div>
 
       {/* المحتوى الرئيسي */}
       <div className="flex-1 flex flex-col justify-center">
-        <div className="text-3xl font-bold mb-2 text-white">
+        <div className="text-2xl font-bold mb-1">
           {config.content.main}
         </div>
         
-        <div className="text-base text-white/80 mb-3">
+        <div className="text-sm opacity-90 mb-2">
           {config.content.sub}
         </div>
         
-        <div className="text-sm text-white/60">
+        <div className="text-xs opacity-75">
           {config.content.trend}
         </div>
       </div>
 
       {/* مؤشر التفاعل */}
-      <div className="mt-4 pt-4 border-t border-white/20">
-        <button className="text-sm text-white/70 hover:text-white transition-colors">
+      <div className="mt-3 pt-3 border-t border-white/20">
+        <button className="text-xs opacity-75 hover:opacity-100 transition-opacity">
           عرض التفاصيل ←
         </button>
       </div>
-    </GlassWidget>
+    </div>
   );
 };

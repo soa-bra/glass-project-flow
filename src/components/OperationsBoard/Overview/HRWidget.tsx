@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Users, UserMinus, UserPlus } from 'lucide-react';
-import GlassWidget from '@/components/ui/GlassWidget';
 
 interface HRData {
   members: number;
@@ -21,42 +20,42 @@ export const HRWidget: React.FC<HRWidgetProps> = ({
   const hasVacancies = hr.vacancies > 0;
 
   return (
-    <GlassWidget className={className}>
-      <h3 className="text-base font-arabic font-semibold mb-4 text-white/90">
+    <div className={`
+      ${className}
+      glass-enhanced rounded-[20px] p-4
+      ${hasVacancies ? 'neon-ring-warning' : 'neon-ring-success'}
+      flex flex-col justify-between
+    `}>
+      
+      <h3 className="text-sm font-arabic font-bold text-gray-800 mb-3">
         الموارد البشرية
       </h3>
 
-      <div className="space-y-4 flex-1">
+      <div className="space-y-3 flex-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
-              <Users size={16} className="text-blue-400" />
-            </div>
-            <span className="text-sm text-white/80">الموظفين</span>
+          <div className="flex items-center gap-2">
+            <Users size={14} className="text-blue-500" />
+            <span className="text-xs text-gray-600">الموظفين</span>
           </div>
-          <span className="text-xl font-bold text-blue-400">{hr.members}</span>
+          <span className="text-lg font-bold text-blue-500">{hr.members}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
-              <UserPlus size={16} className="text-orange-400" />
-            </div>
-            <span className="text-sm text-white/80">الشواغر</span>
+          <div className="flex items-center gap-2">
+            <UserPlus size={14} className="text-orange-500" />
+            <span className="text-xs text-gray-600">الشواغر</span>
           </div>
-          <span className="text-xl font-bold text-orange-400">{hr.vacancies}</span>
+          <span className="text-lg font-bold text-orange-500">{hr.vacancies}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gray-500/20 flex items-center justify-center">
-              <UserMinus size={16} className="text-gray-400" />
-            </div>
-            <span className="text-sm text-white/80">في إجازة</span>
+          <div className="flex items-center gap-2">
+            <UserMinus size={14} className="text-gray-500" />
+            <span className="text-xs text-gray-600">في إجازة</span>
           </div>
-          <span className="text-xl font-bold text-gray-400">{hr.onLeave}</span>
+          <span className="text-lg font-bold text-gray-500">{hr.onLeave}</span>
         </div>
       </div>
-    </GlassWidget>
+    </div>
   );
 };
