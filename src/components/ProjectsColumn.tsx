@@ -1,3 +1,4 @@
+
 import React from 'react';
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
@@ -129,13 +130,13 @@ const ProjectsColumn = React.memo(() => {
         <ScrollArea className="h-full w-full">
           <div className="space-y-2 pb-4 px-0 rounded-full mx-[10px]">
             {mockProjects.map(project => (
-              <div key={project.id} onClick={() => selectProject(project.id)}>
-                <ProjectCard
-                  {...project}
-                  isSelected={selectedProjectId === project.id}
-                  isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id}
-                />
-              </div>
+              <ProjectCard
+                key={project.id}
+                {...project}
+                isSelected={selectedProjectId === project.id}
+                isOtherSelected={selectedProjectId !== null && selectedProjectId !== project.id}
+                onProjectSelect={selectProject}
+              />
             ))}
           </div>
         </ScrollArea>

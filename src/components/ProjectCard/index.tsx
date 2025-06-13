@@ -14,10 +14,18 @@ const ProjectCard: React.FC<ProjectCardProps> = React.memo(({
   date,
   owner,
   value,
-  daysLeft
+  daysLeft,
+  isSelected = false,
+  isOtherSelected = false,
+  onProjectSelect
 }) => {
   return (
-    <ProjectCardLayout id={id}>
+    <ProjectCardLayout 
+      id={id}
+      isSelected={isSelected}
+      isOtherSelected={isOtherSelected}
+      onProjectSelect={onProjectSelect}
+    >
       <ProjectCardHeader
         daysLeft={daysLeft}
         title={title}

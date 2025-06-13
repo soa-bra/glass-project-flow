@@ -11,4 +11,7 @@ export interface ProjectCardProps {
   value: string;
   isOverBudget?: boolean;
   hasOverdueTasks?: boolean;
+  isSelected?: boolean;
+  isOtherSelected?: boolean;
+  onProjectSelect?: (projectId: string) => void;
 }
