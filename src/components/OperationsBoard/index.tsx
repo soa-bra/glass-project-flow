@@ -26,9 +26,7 @@ export const OperationsBoard = ({
       <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col">
         {/* عنوان اللوحة */}
         <div className="text-right px-6 pt-6 pb-2">
-          <h1 className="text-3xl font-arabic font-medium text-gray-800 my-[20px]">
-            لوحة الإدارة والتشغيل
-          </h1>
+          
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col">

@@ -14,9 +14,7 @@ export const TabContentWrapper = ({
   loading: boolean;
 }) => {
   return <>
-      <TabsContent value="overview" className="w-full h-full overflow-auto p-2m-0 data-[state=active]:flex data-[state=active]:flex-col py-0 px-0">
-        <OverviewTab data={tabData.overview} loading={loading} />
-      </TabsContent>
+      
       
       <TabsContent value="finance" className="w-full h-full overflow-auto p-4 m-0">
         <FinanceTab data={tabData.finance} loading={loading} />
