@@ -52,53 +52,77 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
   return (
     <div className="h-full overflow-auto">
-      {/* الشبكة الجديدة للوحة */}
+      {/* الشبكة الجديدة للوحة مع صفوف متعددة */}
       <section className="
         grid grid-cols-12 gap-2.5 
         h-full w-full p-2.5
         auto-rows-min
+        max-h-full
       ">
         
-        {/* 1. خط الزمن - عرض كامل في الأعلى */}
+        {/* الصف الأول - خط الزمن عرض كامل */}
         <TimelineWidget 
           timeline={data.timeline} 
-          className="col-span-12 h-[220px]" 
+          className="col-span-12 h-[180px]" 
         />
 
-        {/* الصف الثاني - بطاقة العقود على اليسار */}
+        {/* الصف الثاني - العقود والميزانية والموارد البشرية */}
         <ContractsWidget 
           contracts={data.widgets.contracts} 
-          className="col-span-3 h-[280px]" 
+          className="col-span-3 h-[220px]" 
         />
 
-        {/* بطاقة الميزانية في المركز - المساحة الأكبر */}
         <BudgetWidget 
           budget={data.widgets.budget} 
-          className="col-span-6 h-[280px]" 
+          className="col-span-6 h-[220px]" 
         />
 
-        {/* بطاقة الموارد البشرية على اليمين */}
         <HRWidget 
           hr={data.widgets.hr} 
-          className="col-span-3 h-[280px]" 
+          className="col-span-3 h-[220px]" 
         />
 
-        {/* الصف الثالث - البطاقات الإضافية */}
+        {/* الصف الثالث - البطاقات الذكية */}
         <SatisfactionWidget 
           satisfaction={data.widgets.satisfaction} 
-          className="col-span-4 h-[220px]" 
+          className="col-span-4 h-[180px]" 
         />
 
         <AISuggestedWidget 
           type="kpi"
           title="مؤشرات الأداء الرئيسية"
-          className="col-span-4 h-[220px]" 
+          className="col-span-4 h-[180px]" 
         />
 
         <AISuggestedWidget 
           type="reports"
           title="التقارير التنفيذية"
-          className="col-span-4 h-[220px]" 
+          className="col-span-4 h-[180px]" 
+        />
+
+        {/* الصف الرابع الجديد - بطاقات إضافية */}
+        <AISuggestedWidget 
+          type="alerts"
+          title="التنبيهات والإشعارات"
+          className="col-span-3 h-[160px]" 
+        />
+
+        <AISuggestedWidget 
+          type="analytics"
+          title="التحليلات المتقدمة"
+          className="col-span-3 h-[160px]" 
+        />
+
+        <AISuggestedWidget 
+          type="team"
+          title="إدارة الفريق"
+          className="col-span-3 h-[160px]" 
+        />
+
+        <AISuggestedWidget 
+          type="goals"
+          title="الأهداف والإنجازات"
+          className="col-span-3 h-[160px]" 
         />
 
       </section>
