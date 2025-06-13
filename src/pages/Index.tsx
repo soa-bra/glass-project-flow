@@ -25,7 +25,7 @@ const Index = () => {
       }}>
           <div style={{
           transition: 'all var(--animation-duration-main) var(--animation-easing)'
-        }} className="w-full h-full p-2 py-0 px-[25px] mx-[20px]">
+        }} className="w-full h-full p-2 py-0 mx-0 px-[5px]">
             <ProjectsColumn />
           </div>
         </div>
@@ -33,7 +33,7 @@ const Index = () => {
         {/* Operations Board with synchronized animation */}
         <div style={{
         transition: 'all var(--animation-duration-main) var(--animation-easing)'
-      }}>
+      }} className="mx-0">
           <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
         </div>
       </div>
