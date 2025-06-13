@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Progress } from '@/components/ui/progress';
 import { BaseCard } from '@/components/ui/BaseCard';
+import { Users, UserMinus, UserPlus } from 'lucide-react';
 
 interface HRData {
   members: number;
@@ -14,8 +14,6 @@ interface HRWidgetProps {
 }
 
 export const HRWidget: React.FC<HRWidgetProps> = ({ hr }) => {
-  const total = hr.members + hr.vacancies;
-  const fillPercentage = (hr.members / total) * 100;
   const hasVacancies = hr.vacancies > 0;
 
   return (
@@ -30,27 +28,30 @@ export const HRWidget: React.FC<HRWidgetProps> = ({ hr }) => {
       }
       className="h-[180px]"
     >
-      <div className="flex-1 flex flex-col justify-center">
-        <div className="flex justify-center items-center mb-4">
-          <div className="text-center ml-3">
-            <div className="text-lg font-bold text-blue-500 mb-1">{hr.members}</div>
-            <div className="text-xs text-gray-600">أعضاء الفريق</div>
+      <div className="flex-1 flex flex-col justify-center space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Users size={16} className="text-blue-500" />
+            <span className="text-sm text-gray-600">الموظفين</span>
           </div>
-          <div className="text-center ml-3">
-            <div className="text-lg font-bold text-orange-500 mb-1">{hr.onLeave}</div>
-            <div className="text-xs text-gray-600">في إجازة</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-purple-500 mb-1">{hr.vacancies}</div>
-            <div className="text-xs text-gray-600">شواغر</div>
-          </div>
+          <span className="text-lg font-bold text-blue-500">{hr.members}</span>
         </div>
 
-        <Progress 
-          value={fillPercentage} 
-          className="h-1 bg-blue-200" 
-          indicatorClassName="bg-blue-500" 
-        />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <UserPlus size={16} className="text-orange-500" />
+            <span className="text-sm text-gray-600">الشواغر</span>
+          </div>
+          <span className="text-lg font-bold text-orange-500">{hr.vacancies}</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <UserMinus size={16} className="text-gray-500" />
+            <span className="text-sm text-gray-600">في إجازة</span>
+          </div>
+          <span className="text-lg font-bold text-gray-500">{hr.onLeave}</span>
+        </div>
       </div>
     </BaseCard>
   );

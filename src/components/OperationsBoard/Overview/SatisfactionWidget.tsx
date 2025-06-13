@@ -1,4 +1,6 @@
+
 import React from 'react';
+import { Progress } from '@/components/ui/progress';
 import { BaseCard } from '@/components/ui/BaseCard';
 
 interface SatisfactionWidgetProps {
@@ -6,13 +8,13 @@ interface SatisfactionWidgetProps {
 }
 
 export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfaction }) => {
-  const getRingColor = (score: number) => {
+  const getSatisfactionColor = (score: number) => {
     if (score >= 80) return 'success';
     if (score >= 60) return 'warning';
     return 'error';
   };
 
-  const getScoreText = (score: number) => {
+  const getSatisfactionText = (score: number) => {
     if (score >= 80) return 'ممتاز';
     if (score >= 60) return 'جيد';
     return 'يحتاج تحسين';
@@ -22,40 +24,32 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ satisfac
     <BaseCard 
       size="md"
       variant="glass"
-      neonRing={getRingColor(satisfaction)}
+      neonRing={getSatisfactionColor(satisfaction)}
       header={
-        <h3 className="text-sm font-arabic font-bold text-gray-800 text-center">
-          مؤشر رضا العملاء
+        <h3 className="text-sm font-arabic font-bold text-gray-800">
+          رضا العملاء
         </h3>
       }
-      className="h-[120px]"
+      className="h-[180px]"
     >
-      <div className="flex-1 flex items-center justify-center">
-        {/* الدائرة الأساسية */}
-        <div className="flex flex-col items-center">
-          <div className="relative w-16 h-16 mb-1">
-            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-              <path
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                fill="none"
-                stroke="#e5e7eb"
-                strokeWidth="3"
-              />
-              <path
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                fill="none"
-                stroke={satisfaction >= 80 ? "#10b981" : satisfaction >= 60 ? "#f59e0b" : "#ef4444"}
-                strokeWidth="3"
-                strokeDasharray={`${satisfaction}, 100`}
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-lg font-bold text-gray-900">{satisfaction}%</span>
-            </div>
-          </div>
-          <p className="text-xs text-gray-600 font-medium">{getScoreText(satisfaction)}</p>
+      <div className="flex-1 flex flex-col justify-center items-center">
+        <div className="text-3xl font-bold text-gray-900 mb-2">
+          {satisfaction}%
         </div>
+        
+        <div className="text-sm text-gray-600 mb-4">
+          {getSatisfactionText(satisfaction)}
+        </div>
+
+        <Progress 
+          value={satisfaction} 
+          className="w-full h-2 bg-gray-200"
+          indicatorClassName={
+            satisfaction >= 80 ? 'bg-green-500' : 
+            satisfaction >= 60 ? 'bg-yellow-500' : 
+            'bg-red-500'
+          }
+        />
       </div>
     </BaseCard>
   );
