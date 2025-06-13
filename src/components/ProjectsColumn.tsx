@@ -36,18 +36,18 @@ const mockProjects = [
     date: 'د. أسامة',
     owner: 'Mar 07',
     value: '15K',
-    daysLeft: 06
+    daysLeft: 6
   },
   {
     id: '4',
     title: 'ثلاث أسابيع',
     description: '',
-    tasksCount: 06,
+    tasksCount: 6,
     status: 'success' as const,
     date: 'د. أسامة',
     owner: 'Mar 07',
     value: '15K',
-    daysLeft: 06
+    daysLeft: 6
   },
   {
     id: '5',
