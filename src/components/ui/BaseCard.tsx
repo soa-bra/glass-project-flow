@@ -28,7 +28,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
       {header && <div className="flex items-center justify-between text-right px-0 mx-0 py-[0px] my-0">
           {header}
         </div>}
-      <div className="flex-1 text-right mx-0 px-[10px] py-[5px] my-[4px]">
+      <div className="flex-1 text-right mx-0 my-0 py-0 px-0">
         {children}
       </div>
       {footer && <div className="pt-3 border-t border-white/20 text-right">
