@@ -6,8 +6,8 @@
 /* SoaBra Design System - Enhanced Glassmorphism & Typography */
 
 @layer base {
+  /* ... keep existing code (color palette variables and layout constants) */
   :root {
-    /* ... keep existing code (color palette variables) */
     --solid-bg: #CCD4D7;
     --sidebar-header-bg: #CCD4D7;
     --projects-column-bg: #E3E3E3;
@@ -201,17 +201,21 @@
   .project-card-glass::after {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, 
-      transparent 30%, 
-      rgba(255, 255, 255, 0.1) 50%, 
-      transparent 70%);
+    top: -2px;
+    left: -100%;
+    width: 100%;
+    height: calc(100% + 4px);
+    background: linear-gradient(110deg, 
+      transparent 25%, 
+      rgba(255, 255, 255, 0.4) 45%, 
+      rgba(255, 255, 255, 0.6) 50%, 
+      rgba(255, 255, 255, 0.4) 55%, 
+      transparent 75%);
     opacity: 0;
-    transform: translateX(-100%) translateY(-100%);
+    transform: skewX(-25deg);
     transition: all 0.6s ease;
+    pointer-events: none;
+    z-index: 1;
   }
 
   .project-card-hover:hover {
@@ -233,7 +237,8 @@
 
   .project-card-hover:hover::after {
     opacity: 1;
-    transform: translateX(100%) translateY(100%);
+    left: 100%;
+    transition: all 0.75s cubic-bezier(0.19, 1, 0.22, 1);
   }
 
   .project-card-selected {
@@ -328,7 +333,7 @@
 
 /* Advanced Glass + Neon Design System */
 @layer utilities {
-  /* البطاقة الزجاجية المتقدمة - مطابقة للصورة */
+  /* ... keep existing code (all utility classes) */
   .advanced-glass-card {
     background: rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(30px) saturate(180%);
