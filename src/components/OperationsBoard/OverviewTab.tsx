@@ -50,7 +50,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   return <div className="h-full overflow-y-auto px-0 py-0">
       <div style={{
       minHeight: 'calc(100vh - 200px)'
-    }} className="grid grid-cols-1 lg:grid-cols-3 gap-[5px] mx-0 my-px py-[7px] px-0">
+    }} className="grid grid-cols-1 lg:grid-cols-3 gap-[5px] mx-0 px-0 py-0 my-0">
         
         {/* الصف الأول - البطاقة الزمنية تأخذ العرض الكامل */}
         <div className="lg:col-span-3 mx-0 px-0 my-[6px] py-0">
@@ -61,7 +61,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         <div className="lg:col-span-1">
           <BudgetWidget budget={data.widgets.budget} />
         </div>
-        <div className="lg:col-span-1">
+        <div className="lg:col-span- 0">
           <ContractsWidget contracts={data.widgets.contracts} />
         </div>
         <div className="lg:col-span-1">
