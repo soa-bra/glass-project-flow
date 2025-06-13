@@ -20,6 +20,8 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
   isVisible,
   onClose
 }) => {
+  console.log('ProjectPanel render - projectId:', projectId, 'isVisible:', isVisible);
+
   const {
     projectData,
     activeTab,
@@ -27,6 +29,8 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     loading,
     error
   } = useProjectPanel(projectId, isVisible);
+
+  console.log('ProjectPanel data - projectData:', projectData, 'loading:', loading, 'error:', error);
 
   // معالجة مفتاح Escape
   useEffect(() => {
@@ -82,7 +86,12 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     }
   };
 
-  if (!isVisible) return null;
+  if (!isVisible) {
+    console.log('ProjectPanel not visible, returning null');
+    return null;
+  }
+
+  console.log('ProjectPanel rendering content');
 
   const panelContent = (
     <MotionSystem isVisible={isVisible} onClose={onClose}>
