@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 interface EnhancedMotionSystemProps {
   children: React.ReactNode;
@@ -8,7 +8,7 @@ interface EnhancedMotionSystemProps {
   onClose: () => void;
 }
 
-const entryMotionVariants = {
+const entryMotionVariants: Variants = {
   hidden: { 
     x: '-100%',
     opacity: 0
@@ -18,7 +18,7 @@ const entryMotionVariants = {
     opacity: 1,
     transition: {
       duration: 0.3,
-      ease: [0.4, 0, 0.2, 1]
+      ease: [0.4, 0, 0.2, 1] as const
     }
   },
   exit: { 
@@ -26,12 +26,12 @@ const entryMotionVariants = {
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: [0.4, 0, 1, 1]
+      ease: [0.4, 0, 1, 1] as const
     }
   }
 };
 
-const backdropVariants = {
+const backdropVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { 
     opacity: 0.3,

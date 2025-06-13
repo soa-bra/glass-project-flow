@@ -1,19 +1,19 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 
 interface ProjectPanelLayoutProps {
   children: React.ReactNode;
 }
 
-const contentVariants = {
+const contentVariants: Variants = {
   hidden: { opacity: 0, y: 6 },
   visible: { 
     opacity: 1, 
     y: 0,
     transition: {
       duration: 0.3,
-      ease: [0.4, 0, 0.2, 1],
+      ease: [0.4, 0, 0.2, 1] as const,
       staggerChildren: 0.1
     }
   }
