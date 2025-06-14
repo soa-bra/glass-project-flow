@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { ProjectData, ProjectTab } from './types';
 
@@ -81,6 +82,10 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
           email: 'mohamed.ali@techadvanced.com',
           phone: '+966501234567',
           satisfaction: 85
+        },
+        legal: {
+          contractExpiry: '2025-12-31',
+          ndaSigned: true
         },
         documents: [
           {

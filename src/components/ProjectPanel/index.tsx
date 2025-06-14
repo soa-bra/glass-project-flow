@@ -6,7 +6,7 @@ import { useProjectPanel } from './useProjectPanel';
 import { EnhancedMotionSystem } from './EnhancedMotionSystem';
 import { ProjectPanelHeader } from './ProjectPanelHeader';
 import { ProjectPanelTabs } from './ProjectPanelTabs';
-import { ProjectDashboard } from './ProjectDashboard';
+import { EnhancedProjectDashboard } from './EnhancedProjectDashboard';
 import { TasksTab } from './TasksTab';
 import { FinanceTab } from './FinanceTab';
 import { LegalTab } from './LegalTab';
@@ -80,7 +80,7 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
       case 'notifications':
         return <NotificationCenter />;
       default:
-        return <ProjectDashboard projectData={projectData} loading={loading} />;
+        return <EnhancedProjectDashboard projectData={projectData} loading={loading} />;
     }
   };
 
