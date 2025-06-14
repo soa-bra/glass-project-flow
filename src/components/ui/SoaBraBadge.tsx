@@ -6,13 +6,15 @@ interface SoaBraBadgeProps {
   variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  style?: React.CSSProperties; // <-- Add this line
 }
 
 export const SoaBraBadge: React.FC<SoaBraBadgeProps> = ({
   children,
   variant = 'primary',
   size = 'md',
-  className = ''
+  className = '',
+  style = {} // <-- Default style
 }) => {
   const variantClasses = {
     primary: 'bg-soabra-primary-blue text-white',
@@ -36,8 +38,10 @@ export const SoaBraBadge: React.FC<SoaBraBadgeProps> = ({
         ${sizeClasses[size]}
         ${className}
       `}
+      style={style}
     >
       {children}
     </span>
   );
 };
+
