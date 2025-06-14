@@ -9,7 +9,7 @@ interface TabNavigationProps {
   onTabChange: (tab: string) => void;
 }
 
-// إضافة تمرير أفقي عند الحاجة مع الحفاظ على كل الأنماط
+// تعطيل التمرير الرأسي نهائيًا + إخفاء الشريط البصري بشكل كامل، والسماح بالتمرير الأفقي فقط بدون الـScrollbar
 export const TabNavigation: React.FC<TabNavigationProps> = ({
   tabItems,
   activeTab,
@@ -35,24 +35,30 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   
   return (
     <div
-      className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-0"
+      className="
+        w-full
+        overflow-x-auto
+        overflow-y-hidden
+        no-scrollbar
+        px-0
+      "
       dir="rtl"
       ref={listRef}
       style={{
-        WebkitOverflowScrolling: "touch",
-        // إضافة margin لتفادي لزوم المساحة اليسار مع زر العشرات في بعض الحالات
+        WebkitOverflowScrolling: 'touch',
         marginBottom: 2,
+        // غلق صريح للتمرير الرأسي
+        maxHeight: 'unset',
+        height: 'auto'
       }}
     >
       <TabsList 
         className="
           gap-1 justify-start mr-[20px] bg-transparent
-          min-w-max
-          flex-nowrap
+          min-w-max flex-nowrap
         "
         style={{
           direction: "rtl",
-          // important for scroll to appear only if needed
           width: "fit-content"
         }}
       >
@@ -66,6 +72,16 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
           </TabsTrigger>
         ))}
       </TabsList>
+      <style>{`
+        /* تعطيل السحب الرأسي وإخفاء أي شريط تمرير للقائمة داخل التبويبات */
+        .no-scrollbar {
+          scrollbar-width: none !important; /* Firefox */
+          -ms-overflow-style: none !important; /* IE و Edge */
+        }
+        .no-scrollbar::-webkit-scrollbar {
+          display: none !important; /* Chrome و Safari */
+        }
+      `}</style>
     </div>
   );
 };
