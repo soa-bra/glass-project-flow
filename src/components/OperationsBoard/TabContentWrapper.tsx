@@ -5,8 +5,6 @@ import { OverviewTab } from './OverviewTab';
 import { FinanceTab } from './FinanceTab';
 import { ProjectsTab } from './ProjectsTab';
 import { MarketingTab } from './MarketingTab';
-import LegalTab from './LegalTab';
-import HRTab from './HRTab';
 import { ClientsTab } from './ClientsTab';
 import { ReportsTab } from './ReportsTab';
 
