@@ -1,5 +1,7 @@
+
 import React from "react";
 import { X } from "lucide-react";
+import ProjectPanelContent from "./ProjectPanelContent";
 
 // props: frameClass controls frame (animation stage), project object, onClose
 interface ProjectPanelProps {
@@ -86,7 +88,7 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({
           </div>
         </div>
       </div>
-      {/* محتوى تجريبي سيستبدل لاحقًا بالبطاقات */}
+      {/* محتوى اللوحة الداخلية مع كل التفاصيل */}
       <div
         className="grow rounded-2xl flex items-center justify-center border border-white/10 bg-white/20 mt-8"
         style={{
@@ -96,9 +98,10 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({
           color: "#607080bb",
         }}
       >
-        ... هذه مساحة محتوى لوحة المشروع ...
+        <ProjectPanelContent project={project} />
       </div>
     </div>
   );
 };
 export default ProjectPanel;
+
