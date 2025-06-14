@@ -29,6 +29,7 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
             title: 'تصميم الواجهة الرئيسية',
             description: 'تصميم الصفحة الرئيسية للموقع باستخدام Figma وتطبيق مبادئ UX/UI',
             status: 'completed',
+            assignedTo: 'أحمد محمد',
             assignee: 'أحمد محمد',
             dueDate: '2025-06-20',
             priority: 'high'
@@ -38,6 +39,7 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
             title: 'تطوير قاعدة البيانات',
             description: 'إنشاء وتكوين قاعدة البيانات باستخدام PostgreSQL',
             status: 'in-progress',
+            assignedTo: 'سارة أحمد',
             assignee: 'سارة أحمد',
             dueDate: '2025-06-25',
             priority: 'medium'
@@ -47,6 +49,7 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
             title: 'تطوير API الخلفي',
             description: 'بناء API RESTful باستخدام Node.js و Express',
             status: 'pending',
+            assignedTo: 'محمد علي',
             assignee: 'محمد علي',
             dueDate: '2025-06-30',
             priority: 'high'
@@ -56,6 +59,7 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
             title: 'تكامل الذكاء الاصطناعي',
             description: 'دمج خدمات الذكاء الاصطناعي في التطبيق',
             status: 'pending',
+            assignedTo: 'فاطمة خالد',
             assignee: 'فاطمة خالد',
             dueDate: '2025-07-05',
             priority: 'medium'
@@ -65,6 +69,7 @@ export const useProjectPanel = (projectId: string | null, isVisible: boolean) =>
             title: 'اختبار الأداء والأمان',
             description: 'إجراء اختبارات شاملة للأداء والأمان',
             status: 'pending',
+            assignedTo: 'عمر حسن',
             assignee: 'عمر حسن',
             dueDate: '2025-07-10',
             priority: 'low'
