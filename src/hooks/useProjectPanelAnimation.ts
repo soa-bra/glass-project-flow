@@ -1,81 +1,68 @@
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type ProjectPanelStage = "closed" | "sliding-in" | "open" | "sliding-out" | "changing-content";
 
 export const useProjectPanelAnimation = () => {
+  // Track which project is currently animating in the panel
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  // Stage of the panel animation
   const [stage, setStage] = useState<ProjectPanelStage>("closed");
+  // To support crossfade when switching between projects while panel open
   const [displayedProjectId, setDisplayedProjectId] = useState<string | null>(null);
 
-  // للتحكم في موضع اللوحة بشكل أكثر سلاسة (transform وليس فقط right)
-  const [panelTranslateX, setPanelTranslateX] = useState(100); // 100 = خارج الشاشة, 0 = ظاهر بالكامل
-
-  // تابعة مع stage لتحديث الترانسليت حسب الحالة
-  useEffect(() => {
-    if (stage === "sliding-in" || stage === "changing-content") {
-      setPanelTranslateX(0); // إدخال اللوحة
-    } else if (stage === "open") {
-      setPanelTranslateX(0);
-    } else if (stage === "sliding-out") {
-      setPanelTranslateX(100); // إخراج اللوحة
-    } else if (stage === "closed") {
-      setPanelTranslateX(100);
-    }
-  }, [stage]);
-
-  // فتح مشروع
+  // When the panel is opened for a project
   const handleProjectSelect = useCallback((projectId: string) => {
+    // If panel is closed, start slide-in for the project
     if (stage === "closed" || !selectedProjectId) {
       setSelectedProjectId(projectId);
       setDisplayedProjectId(projectId);
       setStage("sliding-in");
-      setTimeout(() => setStage("open"), 500);
+      setTimeout(() => setStage("open"), 500); // match animation duration in css
     } else if (stage === "open" && displayedProjectId && displayedProjectId !== projectId) {
+      // If panel is open and user selects a new project, use crossfade effect ("changing-content")
       setStage("changing-content");
       setTimeout(() => {
         setDisplayedProjectId(projectId);
         setSelectedProjectId(projectId);
         setStage("open");
-      }, 350);
+      }, 350); // crossfade duration
     } else if (selectedProjectId === projectId) {
+      // Clicking the same project closes the panel
       closePanel();
     }
   }, [stage, selectedProjectId, displayedProjectId]);
 
-  // إغلاق اللوحة
+  // To close with slide-out
   const closePanel = useCallback(() => {
     setStage("sliding-out");
     setTimeout(() => {
       setStage("closed");
       setSelectedProjectId(null);
       setDisplayedProjectId(null);
-    }, 500);
+    }, 500); // match animation duration
   }, []);
 
-  // كلاس وtransform لحركة اللوحة
-  const projectPanelStyle: React.CSSProperties = {
-    transform: `translateX(${panelTranslateX}vw)`,
-    // سيكون 0vw = ظاهر / 100vw = خارج الشاشة تماما
-    transition: "transform var(--animation-duration-main) var(--animation-easing)",
-    willChange: "transform, opacity",
-  };
-
-  // الإدراجات الأخرى تبقى كما هي!
+  // Animation classes
   let operationsBoardClass = "";
   let projectsColumnClass = "";
+  let projectPanelClass = "";
   let slidePanel = stage === "sliding-in" || stage === "open" || stage === "changing-content";
   let slideOutPanel = stage === "sliding-out";
 
+  // Operations board, projects column, panel transitions based on open/collapsed/sidebar
   if (slidePanel) {
     operationsBoardClass = "sync-transition operations-board-slid";
     projectsColumnClass = "sync-transition projects-column-slid";
+    projectPanelClass = "sync-transition project-panel-slid-in";
   } else if (slideOutPanel) {
     operationsBoardClass = "sync-transition";
     projectsColumnClass = "sync-transition";
+    projectPanelClass = "sync-transition project-panel-slid-out";
   } else {
     operationsBoardClass = "sync-transition";
     projectsColumnClass = "sync-transition";
+    projectPanelClass = "sync-transition project-panel-hidden";
   }
 
   return {
@@ -84,8 +71,9 @@ export const useProjectPanelAnimation = () => {
     displayedProjectId,
     operationsBoardClass,
     projectsColumnClass,
-    projectPanelStyle,
+    projectPanelClass,
     handleProjectSelect,
     closePanel,
   };
 };
+
