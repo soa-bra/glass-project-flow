@@ -13,11 +13,10 @@ export const RedesignedBudgetCard: React.FC<RedesignedBudgetCardProps> = ({
 }) => {
   const config = useLovableConfig();
   const spentPercent = total > 0 ? Math.min(100, (spent / total) * 100) : 0;
-  const remainingPercent = 100 - spentPercent;
 
   return (
     <div
-      className="h-full p-7 rounded-[20px] flex flex-col items-center justify-center shadow"
+      className="h-full p-6 rounded-[20px] flex flex-col items-center justify-center"
       style={{
         background: config.theme.glass.bg,
         backdropFilter: config.theme.glass.backdrop,
@@ -30,71 +29,67 @@ export const RedesignedBudgetCard: React.FC<RedesignedBudgetCardProps> = ({
           fontFamily: config.theme.font,
           color: config.theme.colors.textPrimary
         }}>الميزانية</h3>
-        <span className="text-xs text-gray-700" style={{fontFamily: config.theme.font}}>المصروف</span>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></div>
+          <span className="text-xs" style={{fontFamily: config.theme.font, color: config.theme.colors.textSecondary}}>
+            التفاصيل
+          </span>
+        </div>
       </div>
-      <div className="relative flex-1 flex flex-col items-center justify-center w-full mb-3">
-        <svg width="180" height="120" className="transform -rotate-90">
-          {/* Vanilla oval background */}
+
+      {/* Oval Progress - مطابق للصورة المرجعية */}
+      <div className="relative flex-1 flex flex-col items-center justify-center w-full mb-4">
+        <svg width="200" height="140" className="transform -rotate-90">
+          {/* Background oval */}
           <ellipse
-            cx="90"
-            cy="60"
-            rx="70"
-            ry="45"
+            cx="100"
+            cy="70"
+            rx="80"
+            ry="50"
             fill="none"
             stroke="#E0E0E0"
-            strokeWidth={7}
-            className="opacity-40"
+            strokeWidth={8}
+            className="opacity-30"
           />
-          {/* Progress oval */}
+          {/* Progress oval - لون وردي-بنفسجي مطابق للصورة */}
           <ellipse
-            cx="90"
-            cy="60"
-            rx="70"
-            ry="45"
+            cx="100"
+            cy="70"
+            rx="80"
+            ry="50"
             fill="none"
-            stroke="url(#g-redesign)"
-            strokeWidth={7}
-            strokeDasharray={220}
-            strokeDashoffset={220 - (220 * spentPercent / 100)}
+            stroke="url(#pinkPurpleGradient)"
+            strokeWidth={8}
+            strokeDasharray={400}
+            strokeDashoffset={400 - (400 * spentPercent / 100)}
             strokeLinecap="round"
           />
           <defs>
-            <linearGradient id="g-redesign" x1="0" y1="0" x2="180" y2="0">
-              <stop offset="0%" stopColor="#7C4DFF" />
-              <stop offset="50%" stopColor="#81D4FA" />
-              <stop offset="100%" stopColor="#E91E63" />
+            <linearGradient id="pinkPurpleGradient" x1="0" y1="0" x2="200" y2="0">
+              <stop offset="0%" stopColor="#E91E63" />
+              <stop offset="50%" stopColor="#9C27B0" />
+              <stop offset="100%" stopColor="#673AB7" />
             </linearGradient>
           </defs>
         </svg>
-        {/* Center */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-2xl font-bold" style={{
+        
+        {/* Center Content - مطابق للصورة المرجعية */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-4xl font-bold mb-1" style={{
             color: config.theme.colors.textPrimary,
             fontFamily: config.theme.font
-          }}>{remaining.toLocaleString('ar-SA')}</span>
-          <span className="text-xs text-gray-500 mb-1" style={{fontFamily: config.theme.font}}>ريال باقي</span>
+          }}>15K</span>
+          <span className="text-xs text-center px-3" style={{
+            fontFamily: config.theme.font,
+            color: config.theme.colors.textSecondary
+          }}>باقي من الميزانية</span>
+          <span className="text-xs mt-2 px-2 py-1 rounded-full" style={{
+            backgroundColor: `${config.theme.colors.accent}15`,
+            color: config.theme.colors.accent,
+            fontFamily: config.theme.font
+          }}>التفاصيل &lt;</span>
         </div>
       </div>
-      <div className="w-full grid grid-cols-2 gap-3">
-        <div className="flex flex-col items-center">
-          <span className="text-lg font-bold"
-            style={{color: config.theme.colors.textPrimary, fontFamily: config.theme.font}}
-          >{spent.toLocaleString('ar-SA')}</span>
-          <span className="text-xs text-gray-500" style={{fontFamily: config.theme.font}}>مصروف</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <span className="text-lg font-bold"
-            style={{color: config.theme.colors.textPrimary, fontFamily: config.theme.font}}
-          >{total.toLocaleString('ar-SA')}</span>
-          <span className="text-xs text-gray-500" style={{fontFamily: config.theme.font}}>إجمالي</span>
-        </div>
-      </div>
-      <button
-        className="w-full mt-4 py-2 rounded-full bg-gradient-to-r from-[#7C4DFF] to-[#81D4FA] text-white font-semibold text-base shadow transition-all hover:opacity-90"
-        style={{fontFamily: config.theme.font}}
-      >
-        التفاصيل المالية
-      </button>
     </div>
   );
 };
