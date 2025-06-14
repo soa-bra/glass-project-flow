@@ -1,3 +1,4 @@
+
 import React from "react";
 import { X } from "lucide-react";
 import ProjectPanelContent from "./ProjectPanelContent";
@@ -9,6 +10,7 @@ interface ProjectPanelProps {
   project: Project;
   showFull?: boolean;
   onClose: () => void;
+  isContentVisible?: boolean;
 }
 
 const ProjectPanel: React.FC<ProjectPanelProps> = ({
@@ -16,11 +18,13 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({
   project,
   showFull,
   onClose,
+  isContentVisible,
 }) => {
   // debug log كل رندر للوحة المشروع
   console.log('[ProjectPanel] rendered', {
     frameClass,
     showFull,
+    isContentVisible,
     project,
   });
 
@@ -64,7 +68,7 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({
       </button>
 
       {/* غلاف المحتوى للتحكم في التلاشي */}
-      <div className={`w-full h-full flex flex-col transition-opacity duration-300 ease-in-out ${showFull ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`w-full h-full flex flex-col transition-opacity duration-300 ease-in-out ${isContentVisible ? 'opacity-100' : 'opacity-0'}`}>
         {/* رأس اللوحة */}
         <div className="flex flex-col gap-2 pb-7 flex-shrink-0">
           <div className="flex items-baseline justify-between w-full">

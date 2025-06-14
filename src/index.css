@@ -521,82 +521,18 @@
 }
 
 /* ProjectPanel Animation Frames */
-.project-panel-frame1 {
-  /* Start: تنطلق من البطاقة، لون هادئ بحجم البطاقة */
-  width: 320px !important;
-  height: 110px !important;
-  border-radius: 38px;
-  right: calc(var(--operations-right-expanded) + 158px);
-  top: calc(var(--sidebar-top-offset) + 100px);
-  background: rgba(255,255,255,0.45);
-  box-shadow:0 2px 14px rgba(111,111,155,0.08);
-  opacity:0.90;
-  transition:
-    all 0.09s cubic-bezier(0.4,0,0.2,1);
-  pointer-events:none;
-  z-index:1001;
-}
-.project-panel-frame2 {
-  /* تتمدد أفقياً نحو لوحة التشغيل، مع تلاشي شفاف */
-  width: 470px !important;
-  height: 124px !important;
-  border-radius: 36px;
-  right: calc(var(--operations-right-expanded) + 115px);
-  background: rgba(255,255,255,0.43);
-  transition: all 0.12s cubic-bezier(0.4,0,0.2,1);
-  opacity: 0.99;
-  pointer-events:none;
-  z-index:1001;
-}
-.project-panel-frame3 {
-  width: 650px !important;
-  height: 230px !important;
-  border-radius: 32px;
-  right: calc(var(--operations-right-expanded) + 54px);
-  background: rgba(255,255,255,0.42);
-  opacity:1;
-  transition: all 0.12s cubic-bezier(0.4,0,0.2,1);
-  pointer-events:none;
-  z-index:1001;
-}
-.project-panel-frame4 {
-  width: 810px !important;
-  height: 315px !important;
-  border-radius: 30px;
-  right: calc(var(--operations-right-expanded) + 18px);
-  background: rgba(234,240,255,0.44);
-  transition: all 0.17s cubic-bezier(0.4,0,0.2,1);
-  opacity:1;
-  pointer-events:none;
-  z-index:1002;
-}
-.project-panel-frame5 {
-  width: var(--operations-width-expanded);
-  height: calc(100vh - var(--sidebar-top-offset) - 18px);
-  border-radius: 28px;
-  right: var(--operations-right-expanded);
-  background: linear-gradient(130deg, rgba(224,228,255,0.38), rgba(225,210,255,0.28) 40%, rgba(243,235,255,0.37) 90%);
-  box-shadow: 0 8px 32px rgba(114,132,175,0.14),
-    0 0 40px rgba(227,199,255, 0.1) inset;
-  opacity:1;
-  pointer-events:auto;
-  transition: all 0.16s cubic-bezier(0.4,0,0.2,1);
-  z-index:1003;
-}
-.project-panel-frame6 {
-  width: var(--operations-width-expanded);
-  height: calc(100vh - var(--sidebar-top-offset));
-  border-radius: 32px;
-  right: var(--operations-right-expanded);
-  top: var(--sidebar-top-offset);
-  background: linear-gradient(130deg, rgba(230,236,250,0.41) 6%, rgba(242,223,255,0.36) 62%, rgba(248,246,255,0.43) 100%);
-  box-shadow: 0 12px 48px rgba(169,132,255,0.13),
-    0 0 64px rgba(189,163,255, 0.08) inset;
-  opacity:1;
+.project-panel-visible {
+  transform: translateX(0);
+  opacity: 1;
   pointer-events: auto;
-  transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
-  z-index:1004;
 }
+
+.project-panel-hidden {
+  transform: translateX(calc(-100% - 50px)); /* Move it fully off-screen */
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* rtl-for-panel-placement correction */
 .rtl-fix-panel {
   direction: rtl;
