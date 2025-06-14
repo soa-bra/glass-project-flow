@@ -3,9 +3,7 @@ import React, { useState, useCallback } from 'react';
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsColumn from '@/components/ProjectsColumn';
-import OperationsBoard from '@/components/OperationsBoard';
 import ProjectPanel from '@/components/ProjectPanel';
-import { motion } from 'framer-motion';
 
 const Index: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -27,17 +25,10 @@ const Index: React.FC = () => {
   const closeProjectPanel = useCallback(() => {
     console.log('إغلاق لوحة المشروع');
     setPanelOpen(false);
-    // تأخير إزالة المشروع المحدد للسماح بانتهاء الحركة
     setTimeout(() => {
       setSelectedProjectId(null);
     }, 300);
   }, []);
-
-  // متغيرات الحركة للوحة العمليات
-  const operationsVariants = {
-    visible: { x: 0, opacity: 1 },
-    hidden: { x: '-100%', opacity: 0 }
-  };
 
   return (
     <div dir="rtl" className="relative min-h-screen w-full bg-soabra-solid-bg font-arabic overflow-hidden">
@@ -65,25 +56,16 @@ const Index: React.FC = () => {
           </div>
         </div>
 
-        {/* لوحة العمليات - تنزلق خارج الشاشة عند فتح لوحة المشروع */}
-        <motion.div 
-          className="mx-0"
-          variants={operationsVariants}
-          animate={panelOpen ? 'hidden' : 'visible'}
-          transition={{ duration: 0.5, ease: 'easeInOut' }}
-        >
-          <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
-        </motion.div>
+        {/* لوحة تحكم المشروع - تحل محل OperationsBoard */}
+        {panelOpen && selectedProjectId && (
+          <ProjectPanel
+            projectId={selectedProjectId}
+            isVisible={panelOpen}
+            onClose={closeProjectPanel}
+            isSidebarCollapsed={isSidebarCollapsed}
+          />
+        )}
       </div>
-
-      {/* لوحة تحكم المشروع */}
-      {panelOpen && selectedProjectId && (
-        <ProjectPanel
-          projectId={selectedProjectId}
-          isVisible={panelOpen}
-          onClose={closeProjectPanel}
-        />
-      )}
     </div>
   );
 };

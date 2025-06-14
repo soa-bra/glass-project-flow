@@ -15,10 +15,15 @@ import { ReportsTab } from './ReportsTab';
 import { CalendarTab } from './CalendarTab';
 import { NotificationCenter } from './NotificationCenter';
 
-export const ProjectPanel: React.FC<ProjectPanelProps> = ({
+interface ExtendedProjectPanelProps extends ProjectPanelProps {
+  isSidebarCollapsed: boolean;
+}
+
+export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
   projectId,
   isVisible,
-  onClose
+  onClose,
+  isSidebarCollapsed
 }) => {
   console.log('ProjectPanel render - projectId:', projectId, 'isVisible:', isVisible);
 
@@ -85,11 +90,15 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
     return null;
   }
 
-  console.log('ProjectPanel rendering content with Portal');
+  console.log('ProjectPanel rendering content');
 
-  return createPortal(
-    <EnhancedMotionSystem isVisible={isVisible} onClose={onClose}>
-      <div className="h-full flex flex-col bg-white/40 backdrop-blur-[20px]">
+  return (
+    <EnhancedMotionSystem 
+      isVisible={isVisible} 
+      onClose={onClose} 
+      isSidebarCollapsed={isSidebarCollapsed}
+    >
+      <div className="h-full flex flex-col">
         {/* Header */}
         {projectData && (
           <ProjectPanelHeader
@@ -113,8 +122,7 @@ export const ProjectPanel: React.FC<ProjectPanelProps> = ({
           )}
         </div>
       </div>
-    </EnhancedMotionSystem>,
-    document.body
+    </EnhancedMotionSystem>
   );
 };
 

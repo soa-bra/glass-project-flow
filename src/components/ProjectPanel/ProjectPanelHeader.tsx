@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, MoreVertical, Star } from 'lucide-react';
 
 interface ProjectPanelHeaderProps {
   title: string;
@@ -10,10 +10,10 @@ interface ProjectPanelHeaderProps {
 }
 
 const statusColors = {
-  success: '#00bb88',
-  warning: '#ffb500',
-  error: '#f4767f',
-  info: '#2f6ead'
+  success: 'from-green-500 to-green-600',
+  warning: 'from-amber-500 to-amber-600',
+  error: 'from-red-500 to-red-600',
+  info: 'from-blue-500 to-blue-600'
 };
 
 const statusLabels = {
@@ -30,25 +30,35 @@ export const ProjectPanelHeader: React.FC<ProjectPanelHeaderProps> = ({
 }) => {
   return (
     <motion.div
-      className="flex items-center justify-between p-6 border-b border-white/30"
+      className="flex items-center justify-between p-6 border-b border-white/30 bg-white/10 backdrop-blur-[10px]"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.1 }}
     >
-      <motion.button
-        onClick={onClose}
-        className="w-10 h-10 rounded-full bg-white/40 hover:bg-white/60 backdrop-blur-[20px] border border-white/30 flex items-center justify-center transition-all duration-200"
-        aria-label="إغلاق"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <X size={18} className="text-gray-700" />
-      </motion.button>
+      <div className="flex items-center gap-4">
+        <motion.button
+          onClick={onClose}
+          className="w-10 h-10 rounded-full bg-white/40 hover:bg-white/60 backdrop-blur-[20px] border border-white/30 flex items-center justify-center transition-all duration-200 group"
+          aria-label="إغلاق"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <X size={18} className="text-gray-700 group-hover:text-gray-900" />
+        </motion.button>
+
+        <button className="w-10 h-10 rounded-full bg-white/40 hover:bg-white/60 backdrop-blur-[20px] border border-white/30 flex items-center justify-center transition-all duration-200">
+          <MoreVertical size={18} className="text-gray-700" />
+        </button>
+      </div>
 
       <div className="flex items-center gap-4">
+        <button className="flex items-center gap-2 px-3 py-1 bg-white/20 hover:bg-white/30 backdrop-blur-[10px] rounded-full transition-colors">
+          <Star size={16} className="text-amber-500" />
+          <span className="text-sm font-arabic text-gray-700">مفضل</span>
+        </button>
+
         <motion.div
-          className="px-4 py-2 rounded-full text-sm font-medium text-white backdrop-blur-[10px]"
-          style={{ backgroundColor: statusColors[status] }}
+          className={`px-4 py-2 rounded-full text-sm font-medium text-white backdrop-blur-[10px] bg-gradient-to-r ${statusColors[status]} shadow-lg`}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.2 }}

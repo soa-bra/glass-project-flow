@@ -14,16 +14,16 @@ export const ProjectPanelTabs: React.FC<ProjectPanelTabsProps> = ({
 }) => {
   return (
     <div className="bg-white/20 backdrop-blur-[10px] border-b border-white/30">
-      <div className="flex overflow-x-auto scrollbar-hide">
+      <div className="flex overflow-x-auto scrollbar-hide px-2">
         {PROJECT_TABS.map((tab, index) => (
           <motion.button
             key={tab.value}
             onClick={() => onTabChange(tab.value)}
             className={`
-              flex-shrink-0 px-6 py-4 text-sm font-medium transition-all duration-200 font-arabic relative
+              flex-shrink-0 px-6 py-4 text-sm font-medium transition-all duration-300 font-arabic relative mx-1 rounded-t-[15px]
               ${activeTab === tab.value
-                ? 'text-sky-600 bg-white/20'
-                : 'text-gray-600 hover:text-gray-800 hover:bg-white/10'
+                ? 'text-white bg-gradient-to-b from-sky-500 to-sky-600 shadow-lg'
+                : 'text-gray-600 hover:text-gray-800 hover:bg-white/20'
               }
             `}
             style={{ 
@@ -33,13 +33,13 @@ export const ProjectPanelTabs: React.FC<ProjectPanelTabsProps> = ({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}
           >
             {tab.label}
             {activeTab === tab.value && (
               <motion.div
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-500"
+                className="absolute bottom-0 left-0 right-0 h-1 bg-white rounded-t-full"
                 layoutId="activeTabIndicator"
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
               />
