@@ -1,22 +1,8 @@
-
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import React from 'react';
-
-type Project = {
-  id: string;
-  title: string;
-  description: string;
-  daysLeft: number;
-  tasksCount: number;
-  status: 'info' | 'success' | 'warning' | 'error';
-  date: string;
-  owner: string;
-  value: string;
-  isOverBudget: boolean;
-  hasOverdueTasks: boolean;
-};
+import { Project } from '@/types/project';
 
 type ProjectsColumnProps = {
   projects: Project[];

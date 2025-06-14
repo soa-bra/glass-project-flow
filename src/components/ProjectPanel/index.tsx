@@ -1,19 +1,12 @@
 import React from "react";
 import { X } from "lucide-react";
 import ProjectPanelContent from "./ProjectPanelContent";
+import { Project } from "@/types/project";
 
 // props: frameClass controls frame (animation stage), project object, onClose
 interface ProjectPanelProps {
   frameClass?: string;
-  project: {
-    id: string;
-    title: string;
-    description: string;
-    owner: string;
-    value: string;
-    daysLeft: number;
-    // ... others as needed
-  };
+  project: Project;
   showFull?: boolean;
   onClose: () => void;
 }

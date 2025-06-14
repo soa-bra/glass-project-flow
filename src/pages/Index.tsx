@@ -1,11 +1,13 @@
+
 import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import { useState } from 'react';
 import ProjectPanel from '@/components/ProjectPanel';
+import { Project } from '@/types/project';
 
-const mockProjects = [
+const mockProjects: Project[] = [
   {
     id: '1',
     title: 'تطوير الموقع الإلكتروني',

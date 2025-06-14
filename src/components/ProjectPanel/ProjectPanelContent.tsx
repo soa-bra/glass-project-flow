@@ -1,20 +1,11 @@
-
 import React from "react";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Project } from "@/types/project";
 
 interface ProjectPanelContentProps {
-  project: {
-    title: string;
-    description: string;
-    owner: string;
-    value: string;
-    daysLeft: number;
-    team?: { name: string; avatar?: string }[];
-    progress?: number;
-    links?: { label: string; url: string }[];
-  };
+  project: Project;
 }
 
 export default function ProjectPanelContent({ project }: ProjectPanelContentProps) {
