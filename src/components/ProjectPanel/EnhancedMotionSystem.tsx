@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { useLovableConfig } from '../../hooks/useLovableConfig';
 
 interface EnhancedMotionSystemProps {
   children: React.ReactNode;
@@ -9,35 +10,37 @@ interface EnhancedMotionSystemProps {
   isSidebarCollapsed: boolean;
 }
 
-const entryMotionVariants: Variants = {
-  hidden: { 
-    x: '100%',
-    opacity: 0
-  },
-  visible: { 
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.4,
-      ease: [0.4, 0, 0.2, 1] as const
-    }
-  },
-  exit: { 
-    x: '100%',
-    opacity: 0,
-    transition: {
-      duration: 0.3,
-      ease: [0.4, 0, 1, 1] as const
-    }
-  }
-};
-
 export const EnhancedMotionSystem: React.FC<EnhancedMotionSystemProps> = ({
   children,
   isVisible,
   onClose,
   isSidebarCollapsed
 }) => {
+  const config = useLovableConfig();
+
+  const entryMotionVariants: Variants = {
+    hidden: { 
+      clipPath: 'inset(0 100% 0 0)',
+      opacity: 0
+    },
+    visible: { 
+      clipPath: 'inset(0 0 0 0)',
+      opacity: 1,
+      transition: {
+        duration: config.entryMotion.panelGrow.duration,
+        ease: config.entryMotion.panelGrow.easing as [number, number, number, number]
+      }
+    },
+    exit: { 
+      clipPath: 'inset(0 100% 0 0)',
+      opacity: 0,
+      transition: {
+        duration: config.exitMotion.duration,
+        ease: config.exitMotion.easing as [number, number, number, number]
+      }
+    }
+  };
+
   const panelClasses = `fixed transition-all duration-500 ease-in-out ${
     isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'
   }`;
@@ -45,17 +48,13 @@ export const EnhancedMotionSystem: React.FC<EnhancedMotionSystemProps> = ({
   const panelStyles = {
     height: 'calc(100vh - 60px)',
     top: 'var(--sidebar-top-offset)',
-    borderRadius: '20px',
-    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.25) 100%)',
-    backdropFilter: 'blur(20px) saturate(180%)',
+    borderRadius: config.theme.radius,
+    background: config.theme.glass.bg,
+    backdropFilter: config.theme.glass.backdrop,
     overflow: 'hidden' as const,
     zIndex: 50,
-    border: '1px solid rgba(255, 255, 255, 0.3)',
-    boxShadow: `
-      0 25px 50px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4),
-      0 0 40px rgba(255, 255, 255, 0.1)
-    `
+    border: config.theme.glass.border,
+    boxShadow: config.theme.glass.shadow
   };
 
   return (

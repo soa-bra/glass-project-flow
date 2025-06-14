@@ -2,12 +2,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ProjectData } from './types';
-import { DashboardBudgetCard } from './DashboardBudgetCard';
-import { DashboardProgressCard } from './DashboardProgressCard';
-import { DashboardTasksCard } from './DashboardTasksCard';
+import { PhaseProgress } from './PhaseProgress';
+import { EnhancedQuickActionsGrid } from './EnhancedQuickActionsGrid';
+import { OvalBudgetCard } from './OvalBudgetCard';
 import { DashboardCalendarCard } from './DashboardCalendarCard';
-import { DashboardQuickActions } from './DashboardQuickActions';
-import { StageMeter } from './StageMeter';
+import { DashboardTasksCard } from './DashboardTasksCard';
+import { DashboardProgressCard } from './DashboardProgressCard';
+import { useLovableConfig } from '../../hooks/useLovableConfig';
 
 interface EnhancedProjectDashboardProps {
   projectData: ProjectData;
@@ -19,8 +20,9 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      duration: 0.3,
-      staggerChildren: 0.1
+      duration: 0.4,
+      staggerChildren: 0.1,
+      ease: [0.4, 0, 0.2, 1] as [number, number, number, number]
     }
   }
 };
@@ -33,7 +35,7 @@ const cardVariants = {
     scale: 1,
     transition: {
       duration: 0.4,
-      ease: [0.4, 0, 0.2, 1] as const
+      ease: [0.4, 0, 0.2, 1] as [number, number, number, number]
     }
   }
 };
@@ -42,26 +44,60 @@ export const EnhancedProjectDashboard: React.FC<EnhancedProjectDashboardProps> =
   projectData,
   loading
 }) => {
+  const config = useLovableConfig();
+
   if (loading) {
     return (
       <div className="p-6">
         <div className="space-y-6">
-          {/* Stage Meter Skeleton */}
-          <div className="bg-white/20 backdrop-blur-[10px] rounded-[20px] p-4 animate-pulse border border-white/30">
-            <div className="h-4 bg-white/30 rounded w-1/3 mb-4"></div>
-            <div className="h-8 bg-white/30 rounded"></div>
+          {/* Phase Progress Skeleton */}
+          <div 
+            className="rounded-[20px] p-6 animate-pulse"
+            style={{
+              background: config.theme.glass.bg,
+              backdropFilter: config.theme.glass.backdrop,
+              border: config.theme.glass.border
+            }}
+          >
+            <div className="h-6 bg-white/30 rounded w-1/3 mb-4"></div>
+            <div className="h-12 bg-white/30 rounded"></div>
           </div>
           
+          {/* Quick Actions Skeleton */}
+          <div 
+            className="rounded-[20px] p-4 animate-pulse"
+            style={{
+              background: config.theme.glass.bg,
+              backdropFilter: config.theme.glass.backdrop,
+              border: config.theme.glass.border
+            }}
+          >
+            <div className="grid grid-cols-5 gap-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-16 bg-white/30 rounded-[15px]"></div>
+              ))}
+            </div>
+          </div>
+
           {/* Grid Skeleton */}
           <div 
             className="grid gap-6" 
             style={{ 
-              gridTemplate: 'repeat(2, 1fr) / 35% 5% 60%',
+              gridTemplateColumns: '35% 5% 60%',
+              gridTemplateRows: 'repeat(2, 1fr)',
               minHeight: '500px'
             }}
           >
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="bg-white/20 backdrop-blur-[10px] rounded-[20px] animate-pulse border border-white/30">
+            {[...Array(4)].map((_, i) => (
+              <div 
+                key={i} 
+                className="rounded-[20px] animate-pulse"
+                style={{
+                  background: config.theme.glass.bg,
+                  backdropFilter: config.theme.glass.backdrop,
+                  border: config.theme.glass.border
+                }}
+              >
                 <div className="p-6">
                   <div className="h-4 bg-white/30 rounded w-3/4 mb-4"></div>
                   <div className="h-3 bg-white/30 rounded w-1/2 mb-2"></div>
@@ -75,11 +111,7 @@ export const EnhancedProjectDashboard: React.FC<EnhancedProjectDashboardProps> =
     );
   }
 
-  // حساب تقدم المشروع
   const completedTasks = projectData.tasks.filter(t => t.status === 'completed').length;
-  const progressPercentage = projectData.tasks.length > 0 
-    ? (completedTasks / projectData.tasks.length) * 100 
-    : 0;
 
   return (
     <motion.div
@@ -88,36 +120,41 @@ export const EnhancedProjectDashboard: React.FC<EnhancedProjectDashboardProps> =
       initial="hidden"
       animate="visible"
     >
-      {/* Stage Progress Meter */}
+      {/* Phase Progress */}
       <motion.div variants={cardVariants}>
-        <StageMeter progress={progressPercentage} />
+        <PhaseProgress 
+          completedTasks={completedTasks}
+          totalTasks={projectData.tasks.length}
+        />
       </motion.div>
 
       {/* Quick Actions */}
       <motion.div variants={cardVariants}>
-        <DashboardQuickActions />
+        <EnhancedQuickActionsGrid />
       </motion.div>
 
-      {/* Main Grid */}
+      {/* Main Grid - Following the specified layout */}
       <div 
         className="grid gap-6" 
         style={{ 
-          gridTemplate: 'repeat(2, 1fr) / 35% 5% 60%',
+          gridTemplateColumns: '35% 5% 60%',
+          gridTemplateRows: 'repeat(2, 1fr)',
           minHeight: '500px'
         }}
       >
-        {/* Budget Card - Left Column, Row 1 */}
+        {/* Budget Card - Area: budget (row 1, col 1) */}
         <motion.div 
           variants={cardVariants}
           style={{ gridArea: '1 / 1 / 2 / 2' }}
         >
-          <DashboardBudgetCard
-            totalBudget={projectData.budget.total}
-            spentBudget={projectData.budget.spent}
+          <OvalBudgetCard
+            total={projectData.budget.total}
+            spent={projectData.budget.spent}
+            remaining={projectData.budget.remaining}
           />
         </motion.div>
 
-        {/* Calendar Card - Left Column, Row 2 */}
+        {/* Calendar Card - Area: calendar (row 2, col 1) */}
         <motion.div 
           variants={cardVariants}
           style={{ gridArea: '2 / 1 / 3 / 2' }}
@@ -125,7 +162,7 @@ export const EnhancedProjectDashboard: React.FC<EnhancedProjectDashboardProps> =
           <DashboardCalendarCard />
         </motion.div>
 
-        {/* Progress Card - Middle Column, Row 1 */}
+        {/* Progress Card - Area: gap (row 1, col 2) */}
         <motion.div 
           variants={cardVariants}
           style={{ gridArea: '1 / 2 / 2 / 3' }}
@@ -136,7 +173,7 @@ export const EnhancedProjectDashboard: React.FC<EnhancedProjectDashboardProps> =
           />
         </motion.div>
 
-        {/* Tasks Card - Right Column, Both Rows */}
+        {/* Tasks Card - Area: tasks (both rows, col 3) */}
         <motion.div 
           variants={cardVariants}
           style={{ gridArea: '1 / 3 / 3 / 4' }}

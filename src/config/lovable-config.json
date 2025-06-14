@@ -1,0 +1,80 @@
+
+{
+  "id": "project-panel-system",
+  "description": "Card keeps its slot in the projects column; a glass-morphism panel grows from its right edge until it fully replaces the operations board, then both scroll together as if they are one rectangle.",
+  "layout": {
+    "columnWidths": {
+      "projects": "var(--projectsColumnWidth)",
+      "workspace": "calc(100% - var(--projectsColumnWidth))"
+    },
+    "panelGrid": {
+      "cols": 3,
+      "rows": 2,
+      "areas": [
+        ["budget", "gap", "tasks"],
+        ["calendar", "gap", "tasks"]
+      ]
+    }
+  },
+  "entryMotion": {
+    "cardPulse": {
+      "scale": [1, 1.04, 1],
+      "duration": 0.25
+    },
+    "pushOperationsBoard": {
+      "target": "#operations-board",
+      "translateX": [-40, 0],
+      "opacity": [1, 0],
+      "duration": 0.20,
+      "easing": [0.4, 0, 1, 1]
+    },
+    "panelGrow": {
+      "target": "#project-panel",
+      "from": { "clipPath": "inset(0 100% 0 0)" },
+      "to": { "clipPath": "inset(0 0 0 0)" },
+      "opacity": [0, 1],
+      "duration": 0.30,
+      "easing": [0.4, 0, 0.2, 1]
+    }
+  },
+  "exitMotion": {
+    "reverse": true,
+    "duration": 0.30,
+    "easing": [0.4, 0, 0.2, 1]
+  },
+  "theme": {
+    "font": "IBM Plex Sans Arabic",
+    "radius": "20px",
+    "glass": {
+      "bg": "linear-gradient(135deg,rgba(255,255,255,0.45)0%,rgba(255,255,255,0.25)100%)",
+      "backdrop": "blur(24px) saturate(180%)",
+      "border": "1px solid rgba(255,255,255,0.35)",
+      "shadow": "4px 6px 28px rgba(0,0,0,0.08)"
+    },
+    "colors": {
+      "accent": "#7C4DFF",
+      "success": "#00C853",
+      "danger": "#D50000",
+      "textPrimary": "#333",
+      "textSecondary": "#666"
+    },
+    "ease": [0.4, 0, 0.2, 1]
+  },
+  "quickActions": [
+    { "icon": "plus", "text": "إضافة مهمة", "handler": "onAddTask", "color": "#00C853" },
+    { "icon": "zap", "text": "توليد ذكي", "handler": "onSmartGen", "color": "#FF9100" },
+    { "icon": "edit", "text": "تعديل المشروع", "handler": "onEditProj", "color": "#2962FF" },
+    { "icon": "share", "text": "مشاركة", "handler": "onShare", "color": "#F50057" },
+    { "icon": "settings", "text": "الإعدادات", "handler": "onSettings", "color": "#455A64" }
+  ],
+  "phaseBar": {
+    "phases": ["التحضير", "التنفيذ البدئي", "المراجعة الأولى", "المعالجة النهائية"],
+    "segmentStyle": {
+      "height": "44px",
+      "inactive": "#E0E0E0",
+      "activeGradient": "linear-gradient(90deg,#81D4FA,#7C4DFF)"
+    },
+    "marker": { "shape": "circle", "iconCompleted": "check", "iconLocked": "lock" },
+    "transition": { "duration": 0.45, "type": "spring", "stiffness": 180 }
+  }
+}
