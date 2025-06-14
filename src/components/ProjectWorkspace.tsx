@@ -25,10 +25,8 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     ? mockProjects.find((p) => p.id === selectedProjectId)
     : null;
 
-  // إصلاح النقطة الأولى: تحديد فئة التخطيط بناءً على حالة اللوحة
-  const projectsLayoutClass = selectedProjectId
-    ? 'projects-layout-expanded'
-    : (isSidebarCollapsed ? 'projects-layout-collapsed' : 'projects-layout-expanded');
+  // إصلاح النقطة الأولى: جعل عامود المشاريع يستجيب دائماً لحالة القائمة الجانبية
+  const projectsLayoutClass = isSidebarCollapsed ? 'projects-layout-collapsed' : 'projects-layout-expanded';
 
   return (
     <>
@@ -61,6 +59,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       {/* Project Panel Animated */}
       {!!selectedProject && (
         <ProjectPanel
+          isSidebarCollapsed={isSidebarCollapsed}
           frameClass={projectPanelClass}
           project={selectedProject}
           showFull={isPanelFullyOpen}

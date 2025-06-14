@@ -528,7 +528,7 @@
 }
 
 .project-panel-hidden {
-  transform: translateX(calc(-100% - 50px)); /* Move it fully off-screen */
+  transform: translateX(100%); /* تعديل: انزلاق من اليمين لتناسب RTL */
   opacity: 0;
   pointer-events: none;
 }
