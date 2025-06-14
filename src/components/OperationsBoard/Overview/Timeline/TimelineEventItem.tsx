@@ -12,42 +12,35 @@ export const TimelineEventItem: React.FC<TimelineEventItemProps> = ({
   onEventClick
 }) => {
   return (
-    <div className="flex flex-col items-center min-w-[100px] group px-0 relative">
-      {/* Date */}
-      <div className="font-arabic text-[13px] font-medium text-gray-600 mb-3 bg-white/40 rounded-md px-2 py-1 shadow-sm border border-white/30 pointer-events-none select-none">
+    <div className="relative flex flex-col items-center min-w-fit group px-0">
+      {/* التاريخ في الأعلى */}
+      <div className="text-sm font-bold text-gray-800 mb-4 whitespace-nowrap bg-white/90 rounded-lg backdrop-blur-sm border border-white/60 shadow-sm transition-all duration-200 group-hover:bg-white group-hover:shadow-md py-0 px-0">
         {new Date(event.date).toLocaleDateString('ar-EG', {
           month: 'short',
           day: 'numeric'
         })}
       </div>
 
-      {/* Event dot button */}
-      <button
-        className={`
-          w-[30px] h-[30px] relative z-20 mb-2
-          rounded-full border-4 border-white
-          bg-gradient-to-br ${event.color || 'from-soabra-primary-blue to-slate-400'}
-          shadow-md group-hover:scale-110 transition-transform duration-200
-          focus:outline-none focus:ring-2 focus:ring-soabra-primary-blue
-        `}
-        style={{
-          background: event.color ? undefined : 'linear-gradient(135deg, #70c1f1 0%, #bfd0f1 100%)'
-        }}
-        onClick={() => onEventClick(event)}
-        onPointerDown={e => e.stopPropagation()}
+      {/* الدائرة السوداء البسيطة - تتوسط الخط */}
+      <button 
+        className="
+          w-6 h-6 rounded-full bg-gray-800 border-2 border-white 
+          shadow-md hover:shadow-lg
+          transition-all duration-200 
+          hover:scale-110 active:scale-95
+          relative z-20 
+          focus:outline-none focus:ring-2 focus:ring-gray-400
+        " 
+        onClick={() => onEventClick(event)} 
+        onPointerDown={e => e.stopPropagation()} 
       />
 
-      {/* Event Details */}
-      <div className="flex flex-col items-center mt-1 w-full max-w-[120px]">
-        <div className="font-arabic text-sm font-bold text-gray-900 mb-1 px-2 py-1 rounded-lg bg-white/90 border border-white/60 shadow-sm select-none whitespace-nowrap">
+      {/* تفاصيل الحدث تحت الخط */}
+      <div className="text-center mt-4 max-w-36 transition-all duration-200 group-hover:scale-105 my-[5px]">
+        <div className="text-sm font-bold text-gray-900 mb-2 bg-white/90 rounded-lg backdrop-blur-sm border border-white/60 shadow-sm transition-all duration-200 group-hover:bg-white group-hover:shadow-md leading-tight py-0 px-0">
           {event.title}
         </div>
-        <div className="font-arabic text-xs font-semibold px-2 mt-1 rounded-[16px] border border-white/60 shadow-md"
-          style={{
-            background: 'linear-gradient(90deg, #f4ffe0, #e6f2fe 70%)',
-            color: '#47a0d8',
-          }}
-        >
+        <div className="text-xs font-medium text-gray-700 bg-white/80 rounded-md backdrop-blur-sm border border-white/50 transition-all duration-200 group-hover:bg-white/95 py-0 px-0">
           {event.department}
         </div>
       </div>

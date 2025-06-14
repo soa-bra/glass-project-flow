@@ -16,32 +16,34 @@ export const TimelineNavigation: React.FC<TimelineNavigationProps> = ({
   onScrollRight
 }) => {
   return (
-    <div className="flex gap-2 items-center">
-      <button
+    <div className="flex gap-2">
+      <button 
         onClick={onScrollRight}
         disabled={!canScrollRight}
         className={`
-          w-9 h-9 p-0 rounded-full flex items-center justify-center transition-all duration-300
-          border border-white/25 bg-white/65 text-gray-600 hover:bg-white/90
-          hover:scale-105 active:scale-95 shadow-sm hover:shadow-md
-          ${!canScrollRight ? 'opacity-40 cursor-not-allowed' : ''}
+          p-3 rounded-xl transition-all duration-300 
+          backdrop-blur-sm border border-white/40
+          ${canScrollRight 
+            ? 'bg-white/60 hover:bg-white/80 text-gray-700 hover:scale-105 active:scale-95 shadow-sm hover:shadow-md' 
+            : 'bg-white/25 text-gray-400 cursor-not-allowed opacity-50'
+          }
         `}
-        aria-label="الى الأمام"
       >
-        <ChevronRight size={19} />
+        <ChevronRight size={18} />
       </button>
-      <button
+      <button 
         onClick={onScrollLeft}
         disabled={!canScrollLeft}
         className={`
-          w-9 h-9 p-0 rounded-full flex items-center justify-center transition-all duration-300
-          border border-white/25 bg-white/65 text-gray-600 hover:bg-white/90
-          hover:scale-105 active:scale-95 shadow-sm hover:shadow-md
-          ${!canScrollLeft ? 'opacity-40 cursor-not-allowed' : ''}
+          p-3 rounded-xl transition-all duration-300 
+          backdrop-blur-sm border border-white/40
+          ${canScrollLeft 
+            ? 'bg-white/60 hover:bg-white/80 text-gray-700 hover:scale-105 active:scale-95 shadow-sm hover:shadow-md' 
+            : 'bg-white/25 text-gray-400 cursor-not-allowed opacity-50'
+          }
         `}
-        aria-label="الى الخلف"
       >
-        <ChevronLeft size={19} />
+        <ChevronLeft size={18} />
       </button>
     </div>
   );
