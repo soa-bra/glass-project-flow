@@ -25,12 +25,22 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({
   showFull,
   onClose,
 }) => {
-  // مزيد من المنطق للتوسعة مستقبلا (stage progress, meta, ...)
+  // debug log كل رندر للوحة المشروع
+  console.log('[ProjectPanel] rendered', {
+    frameClass,
+    showFull,
+    project,
+  });
+
+  // استخراج رقم المرحلة من frameClass لمراقبة الرسومات (مثلاً frame6)
+  let stage = 0;
+  const match = frameClass && frameClass.match(/frame(\d)/);
+  if (match) stage = Number(match[1]);
 
   // زر الإغلاق بالنص الأيسر، والتصميم GLASS
   return (
     <div
-      className={`fixed z-[1002] sync-transition ${frameClass} rtl-fix-panel`}
+      className={`fixed z-[1200] sync-transition ${frameClass} rtl-fix-panel`}
       style={{
         top: "var(--sidebar-top-offset)",
         right: "var(--operations-right-expanded)",
@@ -41,17 +51,36 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({
           "0 8px 32px rgba(31,38,135,0.14), inset 0 1px 0 rgba(255,255,255,0.4)",
         backdropFilter: "blur(20px) saturate(180%)",
         WebkitBackdropFilter: "blur(20px) saturate(180%)",
-        border: "1px solid rgba(255,255,255,0.2)",
+        border: "3px solid red", // حافة حمراء قوية مؤقتًا لتأكيد ظهور اللوحة
+        // حواف شديدة ومشرقة حتى لو غطاها شيء
+        outline: "4px solid #ff00aa",
+        outlineOffset: "-5px",
         transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
-        width: "var(--operations-width-expanded)", // تنمو حسب الفريمات لاحقا
+        width: "var(--operations-width-expanded)",
         padding: "48px 54px 36px 54px",
         display: "flex",
         flexDirection: "column",
-        pointerEvents: showFull ? "auto" : "none",
-        opacity: frameClass.includes("frame6") ? 1 : 0.995,
+        pointerEvents: "auto", // لتسهيل الفحص أثناء debug
+        opacity: 1, // إلغاء التلاشي مؤقتًا
         overflow: "visible",
       }}
     >
+      {/* مراقبة المرحلة في debug */}
+      <div style={{
+        position: "absolute",
+        top: 6,
+        left: 84,
+        zIndex: 4000,
+        fontSize: 22,
+        fontWeight: 800,
+        color: "#ff00aa",
+        pointerEvents: "none",
+        background: "rgba(255,255,255,.7)",
+        borderRadius: 10,
+        padding: "1px 12px"
+      }}>
+        لوحة المشروع [stage={stage}]
+      </div>
       {/* زر الإغلاق */}
       <button
         onClick={onClose}
@@ -104,4 +133,3 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({
   );
 };
 export default ProjectPanel;
-
