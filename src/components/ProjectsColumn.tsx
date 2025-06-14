@@ -4,145 +4,61 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useState, useCallback, useRef } from 'react';
 import ProjectPanel from './ProjectPanel/ProjectPanel';
 
-const mockProjects = [{
-  id: '1',
-  title: 'تطوير الموقع الإلكتروني',
-  description: 'تطوير موقع سوبرا',
-  daysLeft: 11,
-  tasksCount: 3,
-  status: 'info' as const,
-  date: 'May 25',
-  owner: 'د. أسامة',
-  value: '15K',
-  isOverBudget: false,
-  hasOverdueTasks: false
-}, {
-  id: '2',
-  title: 'حملة التعريف',
-  description: 'حملة التعريف بسوبرا وخدماتها',
-  daysLeft: 20,
-  tasksCount: 10,
-  status: 'success' as const,
-  date: 'Aug 11',
-  owner: 'د. أسامة',
-  value: '15K',
-  isOverBudget: false,
-  hasOverdueTasks: false
-}, {
-  id: '3',
-  title: 'صفحات التواصل',
-  description: 'تطوير صفحات سوبرا بمنصات التواصل الاجتماعي',
-  daysLeft: 30,
-  tasksCount: 5,
-  status: 'info' as const,
-  date: 'Mar 07',
-  owner: 'د. أسامة',
-  value: '15K',
-  isOverBudget: false,
-  hasOverdueTasks: true
-}, {
-  id: '4',
-  title: 'المؤتمرات الثقافية',
-  description: 'تطوير مؤتمرات سوبرا لقياس الجوانب الثقافية للعلامة',
-  daysLeft: 25,
-  tasksCount: 6,
-  status: 'success' as const,
-  date: 'Jul 15',
-  owner: 'د. أسامة',
-  value: '15K',
-  isOverBudget: false,
-  hasOverdueTasks: false
-}, {
-  id: '5',
-  title: 'العلامة الثقافية للعميل',
-  description: 'تقديم خدمة تطوير العلامة الثقافية لصالح Velva',
-  daysLeft: 18,
-  tasksCount: 15,
-  status: 'warning' as const,
-  date: 'Jun 27',
-  owner: 'د. أسامة',
-  value: '15K',
-  isOverBudget: true,
-  hasOverdueTasks: false
-}, {
-  id: '6',
-  title: 'تطبيق الهاتف المحمول',
-  description: 'تطوير تطبيق سوبرا للهواتف الذكية',
-  daysLeft: 45,
-  tasksCount: 8,
-  status: 'info' as const,
-  date: 'Dec 10',
-  owner: 'م. سارة',
-  value: '25K',
-  isOverBudget: false,
-  hasOverdueTasks: false
-}, {
-  id: '7',
-  title: 'نظام إدارة المحتوى',
-  description: 'بناء نظام إدارة المحتوى الخاص بسوبرا',
-  daysLeft: 7,
-  tasksCount: 12,
-  status: 'error' as const,
-  date: 'Sep 03',
-  owner: 'م. أحمد',
-  value: '30K',
-  isOverBudget: true,
-  hasOverdueTasks: true
-}, {
-  id: '8',
-  title: 'استراتيجية التسويق الرقمي',
-  description: 'وضع خطة شاملة للتسويق الرقمي والإعلانات',
-  daysLeft: 35,
-  tasksCount: 7,
-  status: 'success' as const,
-  date: 'Nov 18',
-  owner: 'أ. فاطمة',
-  value: '20K',
-  isOverBudget: false,
-  hasOverdueTasks: false
-}, {
-  id: '9',
-  title: 'تحليل البيانات والذكاء الاصطناعي',
-  description: 'تطوير نظام تحليل البيانات باستخدام الذكاء الاصطناعي',
-  daysLeft: 60,
-  tasksCount: 20,
-  status: 'warning' as const,
-  date: 'Jan 15',
-  owner: 'د. محمد',
-  value: '50K',
-  isOverBudget: false,
-  hasOverdueTasks: false
-}];
+const mockProjects = [
+  // ... keep existing code (mockProjects definition as is) ...
+];
 
-const PANEL_ANIMATION_DURATION = 300; // ms
+const PANEL_ANIMATION_DURATION = 400; // ms
 
-const ProjectsColumn = () => {
+interface ProjectsColumnProps {
+  onProjectPanelChange?: (opened: boolean) => void;
+  onProjectPanelModeChange?: (mode: "closed" | "opening" | "open" | "closing") => void;
+  isProjectPanelOpen?: boolean;
+}
+
+const ProjectsColumn = ({
+  onProjectPanelChange,
+  onProjectPanelModeChange,
+  isProjectPanelOpen
+}: ProjectsColumnProps) => {
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [isPanelClosing, setIsPanelClosing] = useState(false);
   const closeTimeoutRef = useRef<number | null>(null);
 
-  // إغلاق اللوحة مع انتظار حركة الخروج
+  // فتح لوحة المشروع
+  const handleCardClick = useCallback(
+    (id: string) => {
+      if (isPanelClosing || (activeProjectId === id && !isPanelClosing)) return;
+      if (activeProjectId !== id) {
+        // بدء فتح اللوحة
+        onProjectPanelModeChange?.("opening");
+        setTimeout(() => {
+          setActiveProjectId(id);
+          onProjectPanelModeChange?.("open");
+          onProjectPanelChange?.(true);
+        }, 60);
+      } else {
+        // إغلاق اللوحة (عكس فقط عند النقر على الفاتح)
+        handleClosePanel();
+      }
+      setIsPanelClosing(false);
+    },
+    [activeProjectId, isPanelClosing, onProjectPanelChange, onProjectPanelModeChange]
+  );
+
+  // إغلاق اللوحة مع أنيميشن
   const handleClosePanel = useCallback(() => {
     if (!activeProjectId) return;
     setIsPanelClosing(true);
+    onProjectPanelModeChange?.("closing");
     if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
     closeTimeoutRef.current = window.setTimeout(() => {
-      setActiveProjectId(null); // يخفي اللوحة فعلياً بعد الأنيميشن
+      setActiveProjectId(null);
       setIsPanelClosing(false);
+      onProjectPanelChange?.(false);
+      onProjectPanelModeChange?.("closed");
     }, PANEL_ANIMATION_DURATION);
-  }, [activeProjectId]);
-
-  // فتح مشروع - إلغاء حالة الإغلاق إن وجدت
-  const handleCardClick = useCallback(
-    (id: string) => {
-      if (isPanelClosing) return; // لا تقطع حركة الإغلاق
-      setActiveProjectId(prev =>
-        prev === id ? null : id
-      );
-      setIsPanelClosing(false);
-    },
-    [isPanelClosing]
-  );
+  }, [activeProjectId, onProjectPanelChange, onProjectPanelModeChange]);
 
   return (
     <div className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl bg-soabra-projects-bg mx-0">
@@ -150,7 +66,6 @@ const ProjectsColumn = () => {
         <ProjectsToolbar />
       </div>
       <div className="flex-1 overflow-hidden rounded-t-3xl relative">
-        {/* منطقة التمرير للمشاريع مع تأثير النافذة الدائرية */}
         <ScrollArea className="h-full w-full z-10">
           <div className="space-y-2 pb-4 px-0 rounded-full mx-[10px] relative">
             {mockProjects.map(project => (
@@ -163,14 +78,25 @@ const ProjectsColumn = () => {
             ))}
           </div>
         </ScrollArea>
-
-        {/* لوحة تحكم المشروع */}
+        {/* لوحة التحكم في المشروع (تأخذ كامل المساحة بدل overlay) */}
         {activeProjectId && (
-          <ProjectPanel
-            project={mockProjects.find(p => p.id === activeProjectId)!}
-            onClose={handleClosePanel}
-            isClosing={isPanelClosing}
-          />
+          <div
+            className={`
+              fixed inset-0 top-[var(--header-height)] z-[1111]
+              flex items-stretch justify-end
+              pointer-events-auto
+            `}
+            style={{background: "transparent"}}
+            dir="rtl"
+          >
+            <ProjectPanel
+              project={mockProjects.find(p => p.id === activeProjectId)!}
+              onClose={handleClosePanel}
+              isClosing={isPanelClosing}
+              mode="full"
+              animationDuration={PANEL_ANIMATION_DURATION}
+            />
+          </div>
         )}
       </div>
     </div>
