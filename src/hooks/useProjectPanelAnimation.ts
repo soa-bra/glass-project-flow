@@ -1,70 +1,79 @@
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
+
+export type ProjectPanelStage = "closed" | "sliding-in" | "open" | "sliding-out" | "changing-content";
 
 export const useProjectPanelAnimation = () => {
+  // Track which project is currently animating in the panel
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [isPanelFullyOpen, setIsPanelFullyOpen] = useState(false);
-  const [projectPanelStage, setProjectPanelStage] = useState<0 | 1 | 2 | 3 | 4 | 5 | 6>(0);
+  // Stage of the panel animation
+  const [stage, setStage] = useState<ProjectPanelStage>("closed");
+  // To support crossfade when switching between projects while panel open
+  const [displayedProjectId, setDisplayedProjectId] = useState<string | null>(null);
 
-  const handleProjectSelect = (projectId: string) => {
-    if (selectedProjectId === projectId) {
-      setProjectPanelStage(0);
+  // When the panel is opened for a project
+  const handleProjectSelect = useCallback((projectId: string) => {
+    // If panel is closed, start slide-in for the project
+    if (stage === "closed" || !selectedProjectId) {
+      setSelectedProjectId(projectId);
+      setDisplayedProjectId(projectId);
+      setStage("sliding-in");
+      setTimeout(() => setStage("open"), 500); // match animation duration in css
+    } else if (stage === "open" && displayedProjectId && displayedProjectId !== projectId) {
+      // If panel is open and user selects a new project, use crossfade effect ("changing-content")
+      setStage("changing-content");
       setTimeout(() => {
-        setSelectedProjectId(null);
-        setIsPanelFullyOpen(false);
-      }, 700);
-      return;
+        setDisplayedProjectId(projectId);
+        setSelectedProjectId(projectId);
+        setStage("open");
+      }, 350); // crossfade duration
+    } else if (selectedProjectId === projectId) {
+      // Clicking the same project closes the panel
+      closePanel();
     }
-    setSelectedProjectId(projectId);
-    setProjectPanelStage(1);
-    setTimeout(() => setProjectPanelStage(2), 90);
-    setTimeout(() => setProjectPanelStage(3), 210);
-    setTimeout(() => setProjectPanelStage(4), 320);
-    setTimeout(() => setProjectPanelStage(5), 490);
-    setTimeout(() => { setProjectPanelStage(6); setIsPanelFullyOpen(true); }, 650);
-  };
+  }, [stage, selectedProjectId, displayedProjectId]);
 
-  const closePanel = () => {
-    setProjectPanelStage(0);
+  // To close with slide-out
+  const closePanel = useCallback(() => {
+    setStage("sliding-out");
     setTimeout(() => {
+      setStage("closed");
       setSelectedProjectId(null);
-      setIsPanelFullyOpen(false);
-    }, 700);
-  };
+      setDisplayedProjectId(null);
+    }, 500); // match animation duration
+  }, []);
 
-  let operationsBoardClass = '';
-  let projectPanelClass = '';
-  let projectsColumnClass = '';
+  // Animation classes
+  let operationsBoardClass = "";
+  let projectsColumnClass = "";
+  let projectPanelClass = "";
+  let slidePanel = stage === "sliding-in" || stage === "open" || stage === "changing-content";
+  let slideOutPanel = stage === "sliding-out";
 
-  if (selectedProjectId) {
-    if (projectPanelStage === 1) {
-      operationsBoardClass = 'z-30 sync-transition translate-x-0 scale-x-100 opacity-100';
-      projectPanelClass = 'project-panel-frame1';
-    } else if (projectPanelStage === 2) {
-      operationsBoardClass = 'z-30 sync-transition translate-x-0 scale-x-100 opacity-100';
-      projectPanelClass = 'project-panel-frame2';
-    } else if (projectPanelStage === 3) {
-      operationsBoardClass = 'z-30 sync-transition translate-x-[22vw] scale-x-95 opacity-95';
-      projectPanelClass = 'project-panel-frame3';
-    } else if (projectPanelStage === 4) {
-      operationsBoardClass = 'z-30 sync-transition translate-x-[34vw] scale-x-75 opacity-65';
-      projectPanelClass = 'project-panel-frame4';
-    } else if (projectPanelStage === 5) {
-      operationsBoardClass = 'z-30 sync-transition translate-x-[46vw] scale-x-35 opacity-40';
-      projectPanelClass = 'project-panel-frame5';
-    } else if (projectPanelStage === 6) {
-      operationsBoardClass = 'z-10 sync-transition opacity-0 pointer-events-none';
-      projectPanelClass = 'project-panel-frame6';
-    }
+  // Operations board, projects column, panel transitions based on open/collapsed/sidebar
+  if (slidePanel) {
+    operationsBoardClass = "sync-transition operations-board-slid";
+    projectsColumnClass = "sync-transition projects-column-slid";
+    projectPanelClass = "sync-transition project-panel-slid-in";
+  } else if (slideOutPanel) {
+    operationsBoardClass = "sync-transition";
+    projectsColumnClass = "sync-transition";
+    projectPanelClass = "sync-transition project-panel-slid-out";
+  } else {
+    operationsBoardClass = "sync-transition";
+    projectsColumnClass = "sync-transition";
+    projectPanelClass = "sync-transition project-panel-hidden";
   }
 
   return {
+    panelStage: stage,
     selectedProjectId,
-    isPanelFullyOpen,
+    displayedProjectId,
     operationsBoardClass,
-    projectPanelClass,
     projectsColumnClass,
+    projectPanelClass,
     handleProjectSelect,
     closePanel,
   };
 };
+

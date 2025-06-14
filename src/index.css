@@ -601,3 +601,44 @@
 .rtl-fix-panel {
   direction: rtl;
 }
+
+/* == Project Panel Slide In/Out Animations == */
+.operations-board-slid {
+  /* Slide operations board left: shrink width/reserve space for open panel. */
+  right: calc(var(--operations-right-expanded) - 60vw); /* Slide out of view */
+  width: 0px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+
+.projects-column-slid {
+  /* Slide projects column more left for open panel */
+  right: calc(var(--projects-right-expanded) + 30vw);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+
+.project-panel-slid-in {
+  /* Visible (slide in) */
+  opacity: 1;
+  right: var(--operations-right-expanded);
+  pointer-events: auto;
+  z-index: 1200;
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+.project-panel-slid-out {
+  /* Slide out: translate out of view */
+  opacity: 0;
+  right: calc(100vw + 80px);
+  pointer-events: none;
+  z-index: 1199;
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+.project-panel-hidden {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  right: var(--operations-right-expanded);
+}
