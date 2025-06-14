@@ -1,6 +1,8 @@
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useState, useCallback } from 'react';
+import ProjectPanel from './ProjectPanel/ProjectPanel';
 
 const mockProjects = [{
   id: '1',
@@ -112,18 +114,19 @@ const mockProjects = [{
   hasOverdueTasks: false
 }];
 
-interface ProjectsColumnProps {
-  activeProjectId: string | null;
-  onProjectSelect: (projectId: string | null) => void;
-}
+const ProjectsColumn = () => {
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
 
-const ProjectsColumn = ({ activeProjectId, onProjectSelect }: ProjectsColumnProps) => {
+  // لإغلاق اللوحة عند النقر بالخارج أو Esc
+  const handleClosePanel = useCallback(() => setActiveProjectId(null), []);
+
   return (
     <div className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl bg-soabra-projects-bg mx-0">
       <div className="flex-shrink-0 px-4 pt-4">
         <ProjectsToolbar />
       </div>
       <div className="flex-1 overflow-hidden rounded-t-3xl relative">
+        {/* منطقة التمرير للمشاريع مع تأثير النافذة الدائرية */}
         <ScrollArea className="h-full w-full z-10">
           <div className="space-y-2 pb-4 px-0 rounded-full mx-[10px] relative">
             {mockProjects.map(project => (
@@ -132,13 +135,20 @@ const ProjectsColumn = ({ activeProjectId, onProjectSelect }: ProjectsColumnProp
                 {...project}
                 isActive={activeProjectId === project.id}
                 onClick={() =>
-                  onProjectSelect(activeProjectId === project.id ? null : project.id)
+                  setActiveProjectId(activeProjectId === project.id ? null : project.id)
                 }
               />
             ))}
           </div>
         </ScrollArea>
-        {/* تمت إزالة لوحة المشروع من هنا، تُعرض من الأعلى في Index */}
+
+        {/* لوحة تحكم المشروع */}
+        {activeProjectId && (
+          <ProjectPanel
+            project={mockProjects.find(p => p.id === activeProjectId)!}
+            onClose={handleClosePanel}
+          />
+        )}
       </div>
     </div>
   );

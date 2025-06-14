@@ -19,10 +19,7 @@ export const OperationsBoard = ({
 
   return (
     <div 
-      className={`
-        fixed transition-all duration-500 ease-in-out
-        ${isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'}
-      `} 
+      className={`fixed transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'}`} 
       style={{
         height: 'calc(100vh - 60px)',
         top: 'var(--sidebar-top-offset)',
@@ -30,9 +27,7 @@ export const OperationsBoard = ({
         background: 'linear-gradient(135deg, #e7fde4 0%, #eafae1 50%, #beedd6 100%)',
         backdropFilter: 'blur(20px)',
         overflow: 'hidden',
-        zIndex: 30,
-        opacity: 1,
-        transition: 'all 0.5s cubic-bezier(0.4,0,0.2,1)'
+        zIndex: 30
       }}
     >
       <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col mx-0 px-0">
