@@ -1,8 +1,9 @@
+
 import React, { useEffect, useRef, useCallback } from 'react';
 import type { ProjectCardProps } from '../ProjectCard/types';
 import { X } from "lucide-react";
 
-// لاسترجاع بيانات المشروع مباشرةً من mockProjects
+// نفس المشاريع المؤقتة كما هي
 const mockProjects = [
   {
     id: '1',
@@ -23,11 +24,12 @@ const mockProjects = [
 interface ProjectPanelProps {
   projectId: string | null;
   onClose: () => void;
+  onExited?: () => void;
 }
 
 const bgGrad = "bg-[linear-gradient(120deg,#e2e9fc_0%,#eddcff_60%,#fff3fa_100%)]";
 
-const ProjectPanel: React.FC<ProjectPanelProps> = ({ projectId, onClose }) => {
+const ProjectPanel: React.FC<ProjectPanelProps> = ({ projectId, onClose, onExited }) => {
   const panelRef = useRef<HTMLDivElement>(null);
 
   const project = mockProjects.find((p) => p.id === projectId);
@@ -40,22 +42,37 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({ projectId, onClose }) => {
     return () => document.removeEventListener("keydown", handler);
   }, [onClose]);
 
+  // للخروج التدريجي للوحة
+  const [exiting, setExiting] = React.useState(false);
+
   const handleBackdropClick = useCallback((e: React.MouseEvent) => {
     if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-      onClose();
+      handleClose();
     }
-  }, [onClose]);
+  }, []);
+
+  const handleClose = () => {
+    setExiting(true);
+    setTimeout(() => {
+      setExiting(false);
+      if (onClose) onClose();
+      if (onExited) onExited();
+    }, 400);
+  };
 
   if (!project) return null;
 
   return (
     <div 
-      className="flex items-start justify-end h-full w-full glass-enhanced"
+      className={`
+        flex items-start justify-end h-full w-full glass-enhanced
+        ${exiting ? 'animate-slide-out-right opacity-0 pointer-events-none' : 'animate-slide-in-right opacity-100'}
+      `}
       style={{
         background: 'rgba(215,224,236,0.4)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        animation: 'fade-in 0.33s cubic-bezier(0.4,0,0.2,1)',
+        animationDuration: '0.4s',
         borderRadius: '32px'
       }}
       onMouseDown={handleBackdropClick}
@@ -64,7 +81,6 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({ projectId, onClose }) => {
       <div
         ref={panelRef}
         className={`
-          animate-slide-in-right 
           shadow-xl glass-enhanced rounded-tl-[40px] rounded-bl-[40px] 
           min-h-full max-h-full overflow-hidden
           ${bgGrad}
@@ -81,7 +97,7 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({ projectId, onClose }) => {
           className="absolute left-6 top-6 p-2 rounded-full hover:bg-white/70 transition scale-110 shadow"
           style={{ zIndex: 22 }}
           aria-label="إغلاق اللوحة"
-          onClick={onClose}
+          onClick={handleClose}
         >
           <X size={32} strokeWidth={1.8} className='text-gray-800' />
         </button>
