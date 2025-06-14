@@ -1,7 +1,8 @@
+
 import React from "react";
 import { Progress } from "@/components/ui/progress";
-import { SoaBraBadge } from "@/components/ui/SoaBraBadge";
-import { User } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ProjectPanelContentProps {
   project: {
@@ -16,92 +17,78 @@ interface ProjectPanelContentProps {
   };
 }
 
-const DUMMY_TEAM = [
-  { name: "د. أسامة", avatar: "" },
-  { name: "م. سارة", avatar: "" },
-  { name: "أ. فاطمة", avatar: "" },
-];
-
-const DUMMY_LINKS = [
-  { label: "الملفات المرفقة", url: "#" },
-  { label: "رابط المشروع", url: "#" }
-];
-
 export default function ProjectPanelContent({ project }: ProjectPanelContentProps) {
-  // يمكن إلحاق مزيد من الداتا مستقبلا من project props
-  const progress = project.progress ?? 68; // افتراضي
-  const team = project.team ?? DUMMY_TEAM;
-  const links = project.links ?? DUMMY_LINKS;
+  const progress = project.progress ?? 75;
+
+  const QuickActionButton = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+    <button
+      className={`
+        bg-soabra-primary-blue/80 text-white font-bold
+        px-4 py-2 rounded-full text-sm
+        hover:bg-soabra-primary-blue transition-all duration-200
+        backdrop-blur-md border border-white/20 shadow-lg
+        flex items-center gap-2
+        ${className}
+      `}
+    >
+      {children}
+    </button>
+  );
 
   return (
-    <div className="flex flex-col gap-8 w-full h-full font-arabic">
-      {/* مؤشر التقدم */}
-      <div className="flex items-center gap-4 mt-1">
-        <span style={{
-          fontSize: 16,
-          color: "#607080",
-          minWidth: 70,
-          fontWeight: 500
-        }}>
-          إنجاز
-        </span>
-        <div className="flex-1 flex items-center">
-          <Progress
-            value={progress}
-            indicatorClassName="bg-soabra-primary-blue transition-all duration-500"
-            className="h-[16px] bg-white/35 border border-white/30 w-full rounded-full shadow-sm"
-          />
+    <div className="flex flex-col gap-5 w-full h-full font-arabic">
+      {/* شريط تقدّم المراحل */}
+      <div>
+        <div className="flex justify-between items-center mb-2 px-1">
+          <span className="font-bold text-soabra-primary-blue">مراحل تقدم المشروع</span>
+          <span className="text-sm font-semibold text-gray-600">المهمة الحالية: المراجعة النهائية</span>
         </div>
-        <span className="font-extrabold text-soabra-primary-blue drop-shadow-sm mr-4" style={{fontSize:19}}>{progress}%</span>
+        <Progress
+          value={progress}
+          indicatorClassName="bg-gradient-to-r from-soabra-primary-blue to-[#8A2BE2]"
+          className="h-3"
+        />
       </div>
 
-      {/* وصف مختصر وشارات المشروع */}
-      <div className="flex items-end justify-between gap-8">
-        {/* بطاقة وصف مختصر */}
-        <div className="flex-1 flex flex-col gap-2">
-          <div className="text-heading-sub text-soabra-primary-blue font-bold font-arabic mb-1 text-right">
-            ملخص المشروع
-          </div>
-          <div className="text-body font-arabic text-right text-gray-800 leading-relaxed">
-            {project.description}
-          </div>
-          <div className="mt-4 flex flex-wrap gap-2 justify-end">
-            <SoaBraBadge variant="secondary" size="sm" className="font-arabic">{`عدد الأيام المتبقية: ${project.daysLeft}`}</SoaBraBadge>
-            <SoaBraBadge variant="success" size="sm" className="font-arabic">{`قيمة المشروع: ${project.value} ر.س`}</SoaBraBadge>
-          </div>
-        </div>
-        {/* شارات الفريق */}
-        <div className="flex flex-row flex-shrink-0 gap-2 items-center px-2">
-          {team.map((member, idx) => (
-            <div
-              key={member.name + idx}
-              className="relative flex items-center justify-center w-[40px] h-[40px]"
-              title={member.name}
-            >
-              <div className="rounded-full glass-enhanced border border-white/40 w-10 h-10 flex items-center justify-center shadow-md overflow-hidden">
-                {member.avatar ?
-                  <img src={member.avatar} alt={member.name} className="w-full h-full object-cover rounded-full" />
-                  : <User size={22} className="text-soabra-primary-blue" />}
-              </div>
-              <span className="absolute bottom-0 left-0 bg-white/60 rounded-full px-1 text-xs font-bold text-gray-700 shadow-sm">{member.name.split(" ")[0]}</span>
-            </div>
-          ))}
+      {/* شريط التبويبات والإجراءات */}
+      <div className="flex justify-between items-center mt-2">
+        <Tabs defaultValue="dashboard" dir="rtl">
+          <TabsList className="bg-transparent p-0 h-auto gap-1">
+            <TabsTrigger value="dashboard" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">لوحة التحكم</TabsTrigger>
+            <TabsTrigger value="tasks" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">قائمة المهام</TabsTrigger>
+            <TabsTrigger value="budget" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">الميزانية</TabsTrigger>
+            <TabsTrigger value="legal" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">الشؤون القانونية</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <div className="flex gap-2">
+          <QuickActionButton>➕ إضافة مهمة</QuickActionButton>
+          <QuickActionButton>⚡ توليد ذكي</QuickActionButton>
+          <QuickActionButton>✎ تعديل</QuickActionButton>
         </div>
       </div>
 
-      {/* روابط وملفات المشروع المهمة */}
-      <div className="mt-2 flex flex-row flex-wrap items-center gap-2 justify-end">
-        {links.map((link, idx) => (
-          <a
-            key={link.label + idx}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline text-soabra-primary-blue font-bold hover:bg-soabra-primary-blue/10 transition rounded px-2 py-1"
-          >
-            {link.label}
-          </a>
-        ))}
+      {/* شبكة البطاقات */}
+      <div className="flex-1 grid grid-cols-3 grid-rows-2 gap-4 mt-2">
+        <Card className="glass-enhanced">
+          <CardHeader><CardTitle>الميزانية</CardTitle></CardHeader>
+          <CardContent><p className="text-sm text-gray-700">متبقي 15,000 ر.س من الميزانية.</p></CardContent>
+        </Card>
+        <Card className="glass-enhanced">
+          <CardHeader><CardTitle>التنبيهات</CardTitle></CardHeader>
+          <CardContent><p className="text-sm text-gray-700">لا توجد تنبيهات جديدة.</p></CardContent>
+        </Card>
+        <Card className="glass-enhanced row-span-2">
+          <CardHeader><CardTitle>قائمة المهام</CardTitle></CardHeader>
+          <CardContent><p className="text-sm text-gray-700">عرض لآخر 5 مهام وأكثرها استعجالاً.</p></CardContent>
+        </Card>
+        <Card className="glass-enhanced">
+          <CardHeader><CardTitle>مرفقات المشروع</CardTitle></CardHeader>
+          <CardContent><p className="text-sm text-gray-700">3 ملفات مرفقة.</p></CardContent>
+        </Card>
+        <Card className="glass-enhanced">
+          <CardHeader><CardTitle>مقترح من الذكاء الاصطناعي</CardTitle></CardHeader>
+          <CardContent><p className="text-sm text-gray-700">هل تود إضافة فريق العمل؟</p></CardContent>
+        </Card>
       </div>
     </div>
   );
