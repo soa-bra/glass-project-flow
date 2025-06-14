@@ -14,9 +14,9 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   const {
     selectedProjectId,
     isPanelFullyOpen,
-    isContentVisible,
     operationsBoardClass,
     projectPanelClass,
+    projectsColumnClass,
     handleProjectSelect,
     closePanel,
   } = useProjectPanelAnimation();
@@ -25,14 +25,11 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     ? mockProjects.find((p) => p.id === selectedProjectId)
     : null;
 
-  // إصلاح النقطة الأولى: جعل عامود المشاريع يستجيب دائماً لحالة القائمة الجانبية
-  const projectsLayoutClass = isSidebarCollapsed ? 'projects-layout-collapsed' : 'projects-layout-expanded';
-
   return (
     <>
       {/* Projects Column */}
       <div
-        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsLayoutClass}`}
+        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${isSidebarCollapsed ? 'projects-layout-collapsed' : 'projects-layout-expanded'} ${projectsColumnClass}`}
         style={{
           top: 'var(--sidebar-top-offset)',
           transition: 'all var(--animation-duration-main) var(--animation-easing)',
@@ -54,16 +51,14 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         style={{ transition: 'all var(--animation-duration-main) var(--animation-easing)' }}
         className={`mx-0 ${operationsBoardClass ?? ''}`}
       >
-        <OperationsBoard isSidebarCollapsed={!!selectedProjectId ? false : isSidebarCollapsed} />
+        <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
       </div>
       {/* Project Panel Animated */}
       {!!selectedProject && (
         <ProjectPanel
-          isSidebarCollapsed={isSidebarCollapsed}
           frameClass={projectPanelClass}
           project={selectedProject}
           showFull={isPanelFullyOpen}
-          isContentVisible={isContentVisible}
           onClose={closePanel}
         />
       )}

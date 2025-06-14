@@ -1,16 +1,14 @@
-
 import React from "react";
 import { X } from "lucide-react";
 import ProjectPanelContent from "./ProjectPanelContent";
 import { Project } from "@/types/project";
 
+// props: frameClass controls frame (animation stage), project object, onClose
 interface ProjectPanelProps {
   frameClass?: string;
   project: Project;
   showFull?: boolean;
   onClose: () => void;
-  isContentVisible?: boolean;
-  isSidebarCollapsed?: boolean;
 }
 
 const ProjectPanel: React.FC<ProjectPanelProps> = ({
@@ -18,16 +16,26 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({
   project,
   showFull,
   onClose,
-  isContentVisible,
-  isSidebarCollapsed,
 }) => {
-  const layoutClass = isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded';
+  // debug log كل رندر للوحة المشروع
+  console.log('[ProjectPanel] rendered', {
+    frameClass,
+    showFull,
+    project,
+  });
 
+  // استخراج رقم المرحلة من frameClass لمراقبة الرسومات (مثلاً frame6)
+  let stage = 0;
+  const match = frameClass && frameClass.match(/frame(\d)/);
+  if (match) stage = Number(match[1]);
+
+  // زر الإغلاق بالنص الأيسر، والتصميم GLASS
   return (
     <div
-      className={`fixed z-[1200] sync-transition ${frameClass} ${layoutClass} rtl-fix-panel`}
+      className={`fixed z-[1200] sync-transition ${frameClass} rtl-fix-panel`}
       style={{
         top: "var(--sidebar-top-offset)",
+        right: "var(--operations-right-expanded)",
         height: "calc(100vh - var(--sidebar-top-offset))",
         borderRadius: "32px",
         background: "rgba(255,255,255,0.4)",
@@ -36,6 +44,8 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({
         backdropFilter: "blur(20px) saturate(180%)",
         WebkitBackdropFilter: "blur(20px) saturate(180%)",
         border: "1px solid rgba(255,255,255,0.2)",
+        transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
+        width: "var(--operations-width-expanded)",
         padding: "48px 54px 36px 54px",
         display: "flex",
         flexDirection: "column",
@@ -53,8 +63,8 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({
         <X className="text-gray-700" size={28} />
       </button>
 
-      {/* غلاف المحتوى للتحكم في التلاشي مع حركة أنيقة */}
-      <div className={`w-full h-full flex flex-col transition-all duration-300 ease-in-out ${isContentVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      {/* غلاف المحتوى للتحكم في التلاشي */}
+      <div className={`w-full h-full flex flex-col transition-opacity duration-300 ease-in-out ${showFull ? 'opacity-100' : 'opacity-0'}`}>
         {/* رأس اللوحة */}
         <div className="flex flex-col gap-2 pb-7 flex-shrink-0">
           <div className="flex items-baseline justify-between w-full">

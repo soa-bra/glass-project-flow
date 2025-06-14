@@ -4,64 +4,63 @@ import { useState } from 'react';
 export const useProjectPanelAnimation = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [isPanelFullyOpen, setIsPanelFullyOpen] = useState(false);
-  const [projectPanelStage, setProjectPanelStage] = useState<0 | 1>(0); // 0: مغلق, 1: مفتوح
-  const [isContentVisible, setIsContentVisible] = useState(false);
+  const [projectPanelStage, setProjectPanelStage] = useState<0 | 1 | 2 | 3 | 4 | 5 | 6>(0);
 
   const handleProjectSelect = (projectId: string) => {
-    // الحالة 1: إغلاق اللوحة عند الضغط على المشروع المفتوح حالياً
     if (selectedProjectId === projectId) {
-      closePanel();
-      return;
-    }
-
-    // الحالة 2: تبديل المحتوى إذا كانت اللوحة مفتوحة بالفعل لمشروع آخر
-    if (selectedProjectId && selectedProjectId !== projectId) {
-      setIsContentVisible(false);
+      setProjectPanelStage(0);
       setTimeout(() => {
-        setSelectedProjectId(projectId);
-        setIsContentVisible(true);
-      }, 300); // يتوافق مع مدة تلاشي المحتوى
+        setSelectedProjectId(null);
+        setIsPanelFullyOpen(false);
+      }, 700);
       return;
     }
-
-    // الحالة 3: فتح اللوحة إذا كانت مغلقة
     setSelectedProjectId(projectId);
     setProjectPanelStage(1);
-    setIsPanelFullyOpen(true);
-    // يتلاشى المحتوى للظهور بعد انزلاق اللوحة
-    setTimeout(() => {
-      setIsContentVisible(true);
-    }, 500); // تأخير يطابق مدة حركة اللوحة
+    setTimeout(() => setProjectPanelStage(2), 90);
+    setTimeout(() => setProjectPanelStage(3), 210);
+    setTimeout(() => setProjectPanelStage(4), 320);
+    setTimeout(() => setProjectPanelStage(5), 490);
+    setTimeout(() => { setProjectPanelStage(6); setIsPanelFullyOpen(true); }, 650);
   };
 
   const closePanel = () => {
-    setIsContentVisible(false);
-    setIsPanelFullyOpen(false);
     setProjectPanelStage(0);
     setTimeout(() => {
       setSelectedProjectId(null);
-    }, 500); // يطابق مدة الحركة
+      setIsPanelFullyOpen(false);
+    }, 700);
   };
 
   let operationsBoardClass = '';
   let projectPanelClass = '';
-  const projectsColumnClass = ''; // لم يعد ضرورياً
+  let projectsColumnClass = '';
 
-  if (projectPanelStage === 1) { // اللوحة مفتوحة أو قيد الفتح
-    operationsBoardClass = 'opacity-0 -translate-x-full pointer-events-none';
-    projectPanelClass = 'project-panel-visible';
-  } else { // اللوحة مغلقة أو قيد الإغلاق
-    operationsBoardClass = 'opacity-100 translate-x-0';
-    projectPanelClass = 'project-panel-hidden';
+  if (selectedProjectId) {
+    if (projectPanelStage === 1) {
+      operationsBoardClass = 'z-30 sync-transition translate-x-0 scale-x-100 opacity-100';
+      projectPanelClass = 'project-panel-frame1';
+    } else if (projectPanelStage === 2) {
+      operationsBoardClass = 'z-30 sync-transition translate-x-0 scale-x-100 opacity-100';
+      projectPanelClass = 'project-panel-frame2';
+    } else if (projectPanelStage === 3) {
+      operationsBoardClass = 'z-30 sync-transition translate-x-[22vw] scale-x-95 opacity-95';
+      projectPanelClass = 'project-panel-frame3';
+    } else if (projectPanelStage === 4) {
+      operationsBoardClass = 'z-30 sync-transition translate-x-[34vw] scale-x-75 opacity-65';
+      projectPanelClass = 'project-panel-frame4';
+    } else if (projectPanelStage === 5) {
+      operationsBoardClass = 'z-30 sync-transition translate-x-[46vw] scale-x-35 opacity-40';
+      projectPanelClass = 'project-panel-frame5';
+    } else if (projectPanelStage === 6) {
+      operationsBoardClass = 'z-10 sync-transition opacity-0 pointer-events-none';
+      projectPanelClass = 'project-panel-frame6';
+    }
   }
-
-  // تطبيق حركة انتقالية سلسة على لوحة العمليات
-  operationsBoardClass += ' sync-transition';
 
   return {
     selectedProjectId,
     isPanelFullyOpen,
-    isContentVisible, // قيمة جديدة مُرجعة
     operationsBoardClass,
     projectPanelClass,
     projectsColumnClass,
