@@ -1,7 +1,7 @@
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import ProjectPanel from './ProjectPanel/ProjectPanel';
 
 const mockProjects = [{
@@ -114,11 +114,35 @@ const mockProjects = [{
   hasOverdueTasks: false
 }];
 
+const PANEL_ANIMATION_DURATION = 300; // ms
+
 const ProjectsColumn = () => {
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [isPanelClosing, setIsPanelClosing] = useState(false);
+  const closeTimeoutRef = useRef<number | null>(null);
 
-  // لإغلاق اللوحة عند النقر بالخارج أو Esc
-  const handleClosePanel = useCallback(() => setActiveProjectId(null), []);
+  // إغلاق اللوحة مع انتظار حركة الخروج
+  const handleClosePanel = useCallback(() => {
+    if (!activeProjectId) return;
+    setIsPanelClosing(true);
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    closeTimeoutRef.current = window.setTimeout(() => {
+      setActiveProjectId(null); // يخفي اللوحة فعلياً بعد الأنيميشن
+      setIsPanelClosing(false);
+    }, PANEL_ANIMATION_DURATION);
+  }, [activeProjectId]);
+
+  // فتح مشروع - إلغاء حالة الإغلاق إن وجدت
+  const handleCardClick = useCallback(
+    (id: string) => {
+      if (isPanelClosing) return; // لا تقطع حركة الإغلاق
+      setActiveProjectId(prev =>
+        prev === id ? null : id
+      );
+      setIsPanelClosing(false);
+    },
+    [isPanelClosing]
+  );
 
   return (
     <div className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl bg-soabra-projects-bg mx-0">
@@ -133,10 +157,8 @@ const ProjectsColumn = () => {
               <ProjectCard
                 key={project.id}
                 {...project}
-                isActive={activeProjectId === project.id}
-                onClick={() =>
-                  setActiveProjectId(activeProjectId === project.id ? null : project.id)
-                }
+                isActive={activeProjectId === project.id && !isPanelClosing}
+                onClick={() => handleCardClick(project.id)}
               />
             ))}
           </div>
@@ -147,6 +169,7 @@ const ProjectsColumn = () => {
           <ProjectPanel
             project={mockProjects.find(p => p.id === activeProjectId)!}
             onClose={handleClosePanel}
+            isClosing={isPanelClosing}
           />
         )}
       </div>

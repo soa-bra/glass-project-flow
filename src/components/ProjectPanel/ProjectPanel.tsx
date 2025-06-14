@@ -6,31 +6,42 @@ import { X } from "lucide-react";
 interface ProjectPanelProps {
   project: ProjectCardProps;
   onClose: () => void;
+  isClosing?: boolean;
 }
 
 const bgGrad = "bg-[linear-gradient(120deg,#e2e9fc_0%,#eddcff_60%,#fff3fa_100%)]";
 
-const ProjectPanel: React.FC<ProjectPanelProps> = ({ project, onClose }) => {
+const ANIMATION_DURATION = 300; // ms, نفس الوقت في tailwind أو أقصر
+
+const ProjectPanel: React.FC<ProjectPanelProps> = ({
+  project,
+  onClose,
+  isClosing = false
+}) => {
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Esc key to close
   useEffect(() => {
+    if (isClosing) return; // لا تغلق أثناء الإغلاق بالفعل
     const handler = (e: KeyboardEvent) => {
-      if(e.key === "Escape") onClose();
+      if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
+  }, [onClose, isClosing]);
 
   // Click outside panel to close
-  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
-    if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-      onClose();
-    }
-  }, [onClose]);
+  const handleBackdropClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    },
+    [onClose]
+  );
 
   return (
-    <div 
+    <div
       className="fixed z-[1100] inset-0 flex items-start justify-end"
       style={{
         background: 'rgba(224,229,236,0.32)',
@@ -40,11 +51,13 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({ project, onClose }) => {
       }}
       onMouseDown={handleBackdropClick}
       dir="rtl"
+      aria-modal="true"
+      tabIndex={-1}
     >
       <div
         ref={panelRef}
         className={`
-          animate-slide-in-right 
+          ${isClosing ? 'animate-slide-out-right' : 'animate-slide-in-right'}
           shadow-xl glass-enhanced rounded-tl-[40px] rounded-bl-[40px] 
           min-h-screen max-h-screen overflow-hidden
           ${bgGrad}
