@@ -27,6 +27,21 @@ export const getMockData = () => ({
       { id: 2, name: 'تحديث البنية التحتية', percentage: 85 },
     ]
   },
+  projects: {
+    projects: [
+      { id: 1, name: 'الشامل الإلكتروني', status: 'نشط', manager: 'سلمان العتيبي' },
+      { id: 2, name: 'تطوير الموارد', status: 'قيد التنفيذ', manager: 'سارة بخيت' },
+      { id: 3, name: 'تجديد العلامة التجارية', status: 'متأخر', manager: 'ماجد عسيري' },
+      { id: 4, name: 'تطوير خدمات العملاء', status: 'نشط', manager: 'ديمة القحطاني' },
+    ]
+  },
+  marketing: {
+    campaigns: [
+      { id: 1, name: 'الحملة الرقمية 2025', channel: 'السوشيال ميديا', launchDate: '2025-07-01' },
+      { id: 2, name: 'مؤتمر العلامة', channel: 'الأحداث والمعارض', launchDate: '2025-08-12' },
+      { id: 3, name: 'منشورات الصحف', channel: 'الإعلام المكتوب', launchDate: '2025-07-22' },
+    ]
+  },
   legal: {
     contracts: { signed: 24, pending: 7, expired: 3 },
     upcoming: [
