@@ -10,6 +10,7 @@ interface GenericCardProps {
   variant?: 'glass' | 'gradient' | 'flat';
   color?: 'pinkblue' | 'orange' | 'crimson' | 'success' | 'warning' | 'info';
   neonRing?: 'success' | 'warning' | 'error' | 'info' | null;
+  adminBoardStyle?: boolean; // جديد: لتنسيق البطاقات داخل لوحة الإدارة فقط
 }
 
 export const GenericCard: React.FC<GenericCardProps> = ({
@@ -19,7 +20,8 @@ export const GenericCard: React.FC<GenericCardProps> = ({
   hover = true,
   variant = 'glass',
   color = 'pinkblue',
-  neonRing = null
+  neonRing = null,
+  adminBoardStyle = false
 }) => {
   const paddingClasses = {
     sm: 'p-4',
@@ -32,7 +34,12 @@ export const GenericCard: React.FC<GenericCardProps> = ({
       variant={variant}
       color={color}
       neonRing={neonRing}
-      className={`${paddingClasses[padding]} ${className}`}
+      className={`
+        ${paddingClasses[padding]} 
+        ${className} 
+        ${hover && adminBoardStyle ? 'transition-all duration-200 hover:scale-105 hover:shadow-2xl' : ''}
+      `}
+      adminBoardStyle={adminBoardStyle}
     >
       {children}
     </BaseCard>

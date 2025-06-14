@@ -1,5 +1,9 @@
 
 import React from 'react';
+import { ProjectsOverview } from './Projects/ProjectsOverview';
+import { ProjectsProgress } from './Projects/ProjectsProgress';
+import { TasksDistribution } from './Projects/TasksDistribution';
+import { ProjectsDeadlines } from './Projects/ProjectsDeadlines';
 
 interface ProjectItem {
   id: number;
@@ -25,23 +29,31 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
   }
 
   return (
-    <div className="space-y-6 h-full font-arabic px-0">
+    <div className="h-full w-full space-y-5 font-arabic px-1">
       <div className="text-right">
         <h2 className="text-2xl font-arabic font-semibold text-[#23272F] mb-1">
           إدارة المشاريع
         </h2>
-        <p className="text-soabra-text-secondary text-sm">رصد المشاريع وحالتها التشغيلية</p>
+        <p className="text-soabra-text-secondary text-sm">
+          رصد المشاريع وحالتها التشغيلية
+        </p>
       </div>
+
+      {/* شبكة البطاقات - المكونات الجديدة */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
+        <ProjectsOverview />
+        <ProjectsProgress />
+        <TasksDistribution />
+        <ProjectsDeadlines />
+      </div>
+
+      {/* جدول المشاريع - عرض تقليدي أسفل البطاقات*/}
       <div
         className="
-          rounded-3xl 
-          glass-enhanced 
-          p-0
-          overflow-x-auto 
-          border border-white/40
-          shadow-xl
-          bg-white/40
-          backdrop-blur-[20px]
+          rounded-3xl glass-enhanced
+          p-0 overflow-x-auto
+          border border-white/40 shadow-xl
+          bg-white/40 backdrop-blur-[20px] font-arabic
         "
         style={{
           fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
