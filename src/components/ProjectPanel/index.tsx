@@ -1,11 +1,11 @@
 
-import React, { useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
-import { ProjectPanelProps, ProjectTab } from './types';
+import React, { useEffect } from 'react';
+import { ProjectPanelProps } from './types';
 import { useProjectPanel } from './useProjectPanel';
 import { EnhancedMotionSystem } from './EnhancedMotionSystem';
-import { ProjectPanelHeader } from './ProjectPanelHeader';
-import { ProjectPanelTabs } from './ProjectPanelTabs';
+import { RedesignedPanelHeader } from './RedesignedPanelHeader';
+import { ProjectBrief } from './ProjectBrief';
+import { RedesignedProjectPanelTabs } from './RedesignedProjectPanelTabs';
 import { EnhancedProjectDashboard } from './EnhancedProjectDashboard';
 import { TasksTab } from './TasksTab';
 import { FinanceTab } from './FinanceTab';
@@ -25,8 +25,6 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
   onClose,
   isSidebarCollapsed
 }) => {
-  console.log('ProjectPanel render - projectId:', projectId, 'isVisible:', isVisible);
-
   const {
     projectData,
     activeTab,
@@ -35,34 +33,21 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
     error
   } = useProjectPanel(projectId, isVisible);
 
-  console.log('ProjectPanel data - projectData:', projectData, 'loading:', loading, 'error:', error);
-
-  // معالجة مفتاح Escape والأحداث المخصصة
+  // Key/mouse listeners, body locking
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isVisible) {
-        console.log('إغلاق اللوحة بمفتاح Escape');
-        onClose();
-      }
+      if (e.key === 'Escape' && isVisible) onClose();
     };
-
     const handleCustomClose = () => {
-      if (isVisible) {
-        console.log('إغلاق اللوحة بالحدث المخصص');
-        onClose();
-      }
+      if (isVisible) onClose();
     };
-
     if (isVisible) {
-      console.log('تفعيل معالجة مفتاح Escape وإخفاء scroll');
       document.addEventListener('keydown', handleEscape);
       window.addEventListener('closeProjectPanel', handleCustomClose);
       document.body.style.overflow = 'hidden';
     } else {
-      console.log('إعادة تفعيل scroll');
       document.body.style.overflow = 'auto';
     }
-
     return () => {
       document.removeEventListener('keydown', handleEscape);
       window.removeEventListener('closeProjectPanel', handleCustomClose);
@@ -72,7 +57,6 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
 
   const renderTabContent = () => {
     if (!projectData) return null;
-
     switch (activeTab) {
       case 'tasks':
         return <TasksTab tasks={projectData.tasks} loading={loading} />;
@@ -93,39 +77,41 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
     }
   };
 
-  // لا نعرض اللوحة إذا لم تكن مرئية
-  if (!isVisible) {
-    console.log('ProjectPanel not visible, returning null');
-    return null;
-  }
+  if (!isVisible) return null;
 
-  console.log('ProjectPanel rendering content');
+  // Extract brief, client, dueDate from data if available
+  const brief = projectData?.description || projectData?.brief;
+  const client = projectData?.client?.name || projectData?.client;
+  const dueDate = projectData?.deadline || projectData?.due || undefined;
 
   return (
-    <EnhancedMotionSystem 
-      isVisible={isVisible} 
-      onClose={onClose} 
+    <EnhancedMotionSystem
+      isVisible={isVisible}
+      onClose={onClose}
       isSidebarCollapsed={isSidebarCollapsed}
     >
-      <div className="h-full flex flex-col">
-        {/* Header */}
+      <div className="h-full flex flex-col font-arabic">
+        {/* Redesigned Header */}
         {projectData && (
-          <ProjectPanelHeader
-            title={projectData.title}
-            status={projectData.status}
-            onClose={onClose}
-          />
+          <>
+            <RedesignedPanelHeader
+              title={projectData.title}
+              status={projectData.status}
+              client={client}
+              dueDate={dueDate}
+              onClose={onClose}
+            />
+            <ProjectBrief brief={brief} />
+          </>
         )}
 
         {/* Tabs */}
-        <ProjectPanelTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        <RedesignedProjectPanelTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        {/* Content */}
+        {/* Main Content */}
         <div className="flex-1 overflow-auto">
           {error ? (
-            <div className="p-6 text-center text-red-600 font-arabic">
-              {error}
-            </div>
+            <div className="p-6 text-center text-red-600 font-arabic">{error}</div>
           ) : (
             renderTabContent()
           )}
