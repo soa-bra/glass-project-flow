@@ -22,8 +22,9 @@ export const ProjectMetaBadges: React.FC<ProjectMetaBadgesProps> = ({
         <SoaBraBadge
           variant="success"
           size="sm"
-          className="shadow-md"
-          style={{backgroundColor: statusColor, color: 'white', fontWeight: 600, letterSpacing: '0.01em'}}
+          className={`shadow-md font-bold tracking-tight`}
+          // Apply color with Tailwind ring or use inline style here if really needed (backgroundColor)
+          style={{ backgroundColor: statusColor, color: 'white' }}
         >
           {status}
         </SoaBraBadge>

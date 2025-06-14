@@ -80,9 +80,22 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
   if (!isVisible) return null;
 
   // Extract brief, client, dueDate from data if available
-  const brief = projectData?.description || projectData?.brief;
-  const client = projectData?.client?.name || projectData?.client;
-  const dueDate = projectData?.deadline || projectData?.due || undefined;
+  const brief = projectData?.description || '';
+  // client can only be a string (the name) for ProjectMetaBadges
+  const client = typeof projectData?.client === 'object' && projectData?.client !== null
+    ? projectData.client.name
+    : typeof projectData?.client === 'string'
+      ? projectData.client
+      : undefined;
+
+  // We'll demo due date with the first timeline deadline event if available
+  let dueDate: string | undefined = undefined;
+  if (Array.isArray(projectData?.timeline)) {
+    const deadlineEvent = projectData.timeline.find(
+      (event: any) => event.type === 'deadline'
+    );
+    if (deadlineEvent) dueDate = deadlineEvent.date;
+  }
 
   return (
     <EnhancedMotionSystem
