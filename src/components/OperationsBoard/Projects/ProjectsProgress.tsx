@@ -1,15 +1,58 @@
 
-import React from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
+import React from "react";
+import { ResponsiveContainer, BarChart, Bar, XAxis, Tooltip, Cell } from "recharts";
+import { GenericCard } from "@/components/ui/GenericCard";
 
-// نموذج أولي Placeholder
+const progressData = [
+  { name: "مشروع أ", progress: 90, color: "#29936c" },
+  { name: "مشروع ب", progress: 68, color: "#eab308" },
+  { name: "مشروع ج", progress: 41, color: "#2563eb" },
+  { name: "مشروع د", progress: 22, color: "#ef4444" }
+];
+
+const ProgressTooltip = ({ active, payload }: any) =>
+  active && payload?.length ? (
+    <div className="text-xs font-arabic bg-white/90 px-3 py-2 rounded-xl shadow border">
+      <div>
+        <span className="font-bold text-[#29936c]">{payload[0].payload.name}</span>
+      </div>
+      <div>
+        الإنجاز:{" "}
+        <span className="font-bold">
+          {payload[0].payload.progress}%
+        </span>
+      </div>
+    </div>
+  ) : null;
+
 export const ProjectsProgress: React.FC = () => (
-  <GenericCard adminBoardStyle>
+  <GenericCard adminBoardStyle hover className="relative group overflow-visible">
     <div className="flex flex-col items-end">
       <h4 className="text-lg font-bold mb-2 text-[#23272F]">تقدم المشاريع</h4>
       <div className="text-soabra-text-secondary text-sm mb-4">مخططات تقدم المشاريع</div>
-      <div className="h-6 bg-[#dfecf2] rounded-full w-full"></div>
-      {/* سيتم إضافة Progress لاحقاً */}
+      <div className="h-24 w-full relative">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart layout="vertical" data={progressData}>
+            <XAxis type="number" domain={[0, 100]} hide />
+            <Tooltip content={ProgressTooltip} />
+            <Bar dataKey="progress" radius={[12, 12, 12, 12]}>
+              {progressData.map((entry, idx) => (
+                <Cell key={entry.name} fill={entry.color} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+      {/* Hover details */}
+      <div className="absolute left-4 top-2 opacity-0 group-hover:opacity-100 
+        transition-all pointer-events-none z-30 min-w-[140px] p-2 text-xs rounded-xl
+        bg-white/80 shadow border text-right text-gray-700"
+        style={{
+          fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
+          backdropFilter: "blur(20px)"
+        }}>
+        يوضح الرسم نسب الإكمال للمشاريع الرئيسية المسجّلة حالياً.
+      </div>
     </div>
   </GenericCard>
 );

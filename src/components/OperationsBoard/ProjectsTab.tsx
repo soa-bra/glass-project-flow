@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { ProjectsOverview } from './Projects/ProjectsOverview';
 import { ProjectsProgress } from './Projects/ProjectsProgress';
 import { TasksDistribution } from './Projects/TasksDistribution';
 import { ProjectsDeadlines } from './Projects/ProjectsDeadlines';
+import { ProjectKPICards } from "./Projects/ProjectKPICards";
 
 interface ProjectItem {
   id: number;
@@ -38,6 +38,9 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
           رصد المشاريع وحالتها التشغيلية
         </p>
       </div>
+
+      {/* KPIs Cards Row */}
+      <ProjectKPICards />
 
       {/* شبكة البطاقات - المكونات الجديدة */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
