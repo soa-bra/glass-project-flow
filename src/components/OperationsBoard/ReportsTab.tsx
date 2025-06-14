@@ -17,13 +17,9 @@ interface ReportsTabProps {
   loading: boolean;
 }
 
-export const ReportsTab: React.FC<ReportsTabProps> = React.memo(({ data, loading }) => {
+export const ReportsTab: React.FC<ReportsTabProps> = ({ data, loading }) => {
   if (loading || !data) {
-    return (
-      <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
-        جارٍ التحميل...
-      </div>
-    );
+    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
 
   return (
@@ -37,6 +33,4 @@ export const ReportsTab: React.FC<ReportsTabProps> = React.memo(({ data, loading
       <CustomReportForm />
     </div>
   );
-});
-
-ReportsTab.displayName = 'ReportsTab';
+};

@@ -27,21 +27,15 @@ interface LegalTabProps {
   loading: boolean;
 }
 
-const LegalTab: React.FC<LegalTabProps> = React.memo(({ data, loading }) => {
+const LegalTab: React.FC<LegalTabProps> = ({ data, loading }) => {
   if (loading || !data) {
-    return (
-      <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
-        جارٍ التحميل...
-      </div>
-    );
+    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
 
   return (
     <div className="space-y-6 h-full">
       <div className="text-right">
-        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">
-          الشؤون القانونية
-        </h2>
+        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">الشؤون القانونية</h2>
         <p className="text-gray-600 text-sm">إدارة العقود والوثائق القانونية</p>
       </div>
       
@@ -50,9 +44,6 @@ const LegalTab: React.FC<LegalTabProps> = React.memo(({ data, loading }) => {
       <UploadButton />
     </div>
   );
-});
+};
 
-LegalTab.displayName = 'LegalTab';
-
-export { LegalTab };
 export default LegalTab;

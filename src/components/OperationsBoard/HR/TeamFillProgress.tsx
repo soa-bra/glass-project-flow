@@ -1,5 +1,5 @@
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { BaseCard } from '@/components/ui/BaseCard';
 
@@ -12,17 +12,9 @@ interface TeamFillProgressProps {
   stats: HRStats;
 }
 
-export const TeamFillProgress: React.FC<TeamFillProgressProps> = React.memo(({ stats }) => {
-  const { totalTeamSize, percentageFilled } = useMemo(() => {
-    const total = stats.active + stats.vacancies;
-    const percentage = Math.round((stats.active / total) * 100);
-    return {
-      totalTeamSize: total,
-      percentageFilled: percentage
-    };
-  }, [stats.active, stats.vacancies]);
-
-  const progressIndicatorClassName = useMemo(() => "bg-blue-500 rounded-full", []);
+export const TeamFillProgress: React.FC<TeamFillProgressProps> = ({ stats }) => {
+  const totalTeamSize = stats.active + stats.vacancies;
+  const percentageFilled = Math.round((stats.active / totalTeamSize) * 100);
 
   return (
     <BaseCard 
@@ -41,7 +33,7 @@ export const TeamFillProgress: React.FC<TeamFillProgressProps> = React.memo(({ s
       <Progress 
         value={percentageFilled} 
         className="h-3 bg-gray-200/50 rounded-full"
-        indicatorClassName={progressIndicatorClassName}
+        indicatorClassName="bg-blue-500 rounded-full"
       />
       
       <div className="flex justify-between text-sm mt-3">
@@ -50,6 +42,4 @@ export const TeamFillProgress: React.FC<TeamFillProgressProps> = React.memo(({ s
       </div>
     </BaseCard>
   );
-});
-
-TeamFillProgress.displayName = 'TeamFillProgress';
+};

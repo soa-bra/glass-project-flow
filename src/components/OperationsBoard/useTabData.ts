@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { TabData } from './types';
 import { getMockData } from './mockData';
 
@@ -7,8 +7,13 @@ export const useTabData = (activeTab: string, isVisible: boolean) => {
   const [tabData, setTabData] = useState<TabData>({});
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchTabData = useCallback(async (tabName: string) => {
+  // محاكاة جلب البيانات من الـ API
+  const fetchTabData = async (tabName: string) => {
     setLoading(true);
+    // هنا سيتم استبدال هذا بطلب API حقيقي
+    // const response = await fetch(`/api/overview?dept=${tabName}`);
+    // const data = await response.json();
+    
     const mockData = getMockData();
     
     setTimeout(() => {
@@ -17,14 +22,15 @@ export const useTabData = (activeTab: string, isVisible: boolean) => {
         [tabName]: mockData[tabName as keyof typeof mockData] 
       }));
       setLoading(false);
-    }, 300);
-  }, []);
+    }, 300); // محاكاة وقت التحميل
+  };
 
+  // جلب بيانات التبويب النشط عند تغييره
   useEffect(() => {
     if (isVisible) {
       fetchTabData(activeTab);
     }
-  }, [activeTab, isVisible, fetchTabData]);
+  }, [activeTab, isVisible]);
 
   return { tabData, loading };
 };
