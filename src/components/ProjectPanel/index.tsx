@@ -1,9 +1,8 @@
-
 import React, { useEffect } from 'react';
 import { ProjectPanelProps } from './types';
 import { useProjectPanel } from './useProjectPanel';
 import { EnhancedMotionSystem } from './EnhancedMotionSystem';
-import { RedesignedPanelHeader } from './RedesignedPanelHeader';
+import { ReferenceHeader } from './ReferenceHeader';
 import { ProjectBrief } from './ProjectBrief';
 import { RedesignedProjectPanelTabs } from './RedesignedProjectPanelTabs';
 import { EnhancedProjectDashboard } from './EnhancedProjectDashboard';
@@ -81,14 +80,12 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
 
   // Extract brief, client, dueDate from data if available
   const brief = projectData?.description || '';
-  // client can only be a string (the name) for ProjectMetaBadges
   const client = typeof projectData?.client === 'object' && projectData?.client !== null
     ? projectData.client.name
     : typeof projectData?.client === 'string'
       ? projectData.client
       : undefined;
 
-  // We'll demo due date with the first timeline deadline event if available
   let dueDate: string | undefined = undefined;
   if (Array.isArray(projectData?.timeline)) {
     const deadlineEvent = projectData.timeline.find(
@@ -104,10 +101,10 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
       isSidebarCollapsed={isSidebarCollapsed}
     >
       <div className="h-full flex flex-col font-arabic">
-        {/* Redesigned Header */}
+        {/* الهيدر الجديد */}
         {projectData && (
           <>
-            <RedesignedPanelHeader
+            <ReferenceHeader
               title={projectData.title}
               status={projectData.status}
               client={client}
@@ -118,10 +115,10 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
           </>
         )}
 
-        {/* Tabs */}
+        {/* التبويبات */}
         <RedesignedProjectPanelTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        {/* Main Content */}
+        {/* المحتوى الرئيسي */}
         <div className="flex-1 overflow-auto">
           {error ? (
             <div className="p-6 text-center text-red-600 font-arabic">{error}</div>
