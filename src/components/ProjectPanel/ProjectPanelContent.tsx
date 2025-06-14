@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Progress } from "@/components/ui/progress";
 import { SoaBraBadge } from "@/components/ui/SoaBraBadge";
@@ -67,7 +66,7 @@ export default function ProjectPanelContent({ project }: ProjectPanelContentProp
             {project.description}
           </div>
           <div className="mt-4 flex flex-wrap gap-2 justify-end">
-            <SoaBraBadge variant="info" size="sm" className="font-arabic">{`عدد الأيام المتبقية: ${project.daysLeft}`}</SoaBraBadge>
+            <SoaBraBadge variant="secondary" size="sm" className="font-arabic">{`عدد الأيام المتبقية: ${project.daysLeft}`}</SoaBraBadge>
             <SoaBraBadge variant="success" size="sm" className="font-arabic">{`قيمة المشروع: ${project.value} ر.س`}</SoaBraBadge>
           </div>
         </div>
