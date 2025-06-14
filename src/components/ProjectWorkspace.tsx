@@ -9,9 +9,6 @@ import { useProjectPanelAnimation } from '@/hooks/useProjectPanelAnimation';
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
 }
-// Helper to return px value as string from a CSS calc variable
-const getVar = (v: string) =>
-  typeof window !== "undefined" ? getComputedStyle(document.documentElement).getPropertyValue(v) : "";
 
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
   const {
@@ -19,28 +16,24 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     selectedProjectId,
     displayedProjectId,
     operationsBoardClass,
-    projectPanelClass,
     projectsColumnClass,
+    projectPanelStyle,
     handleProjectSelect,
     closePanel,
   } = useProjectPanelAnimation();
 
-  // Dynamically set right offsets depending on collapsed state
+  // الحسابات نفسها لكن ننقل right/width فقط لـ لوحة التشغيل وعمود المشاريع
   const projectsColumnRight = isSidebarCollapsed ? 'var(--projects-right-collapsed)' : 'var(--projects-right-expanded)';
   const projectsColumnWidth = 'var(--projects-width)';
   const operationsBoardRight = isSidebarCollapsed ? 'var(--operations-right-collapsed)' : 'var(--operations-right-expanded)';
   const operationsBoardWidth = isSidebarCollapsed ? 'var(--operations-width-collapsed)' : 'var(--operations-width-expanded)';
-  const projectPanelRight = operationsBoardRight;
-  const projectPanelWidth = operationsBoardWidth;
 
-  // panel content switches: always mount ProjectPanel but swap inner content with fade
   const shownProject = displayedProjectId
     ? mockProjects.find((p) => p.id === displayedProjectId)
     : null;
 
   return (
     <>
-      {/* Projects Column: shifts left when panel slides in */}
       <div
         className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`}
         style={{
@@ -65,7 +58,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         </div>
       </div>
 
-      {/* Operations Board: slides out when panel slides in */}
+      {/* Operations Board */}
       <div
         style={{
           right: operationsBoardRight,
@@ -77,20 +70,24 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
       </div>
 
-      {/* Project Panel: slides in/out and crossfades content */}
+      {/* Project Panel */}
       <ProjectPanel
-        frameClass={projectPanelClass}
+        frameClass=""
         project={shownProject}
         showFull={panelStage === "open" || panelStage === "changing-content"}
         crossfade={panelStage === "changing-content"}
         onClose={closePanel}
         style={{
-          right: projectPanelRight,
-          width: projectPanelWidth,
+          ...projectPanelStyle,
+          // الموضع الرأسي والارتفاع والـzIndex أساسي
+          right: 'var(--operations-right-expanded)',
+          top: "var(--sidebar-top-offset)",
+          width: 'var(--operations-width-expanded)',
+          height: "calc(100vh - var(--sidebar-top-offset))",
+          zIndex: 1200
         }}
       />
     </>
   );
 };
 export default ProjectWorkspace;
-
