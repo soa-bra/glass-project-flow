@@ -1,3 +1,4 @@
+
 export type ProjectTab =
   | 'dashboard'
   | 'tasks'
@@ -22,21 +23,27 @@ export const PROJECT_TABS = [
 export interface ProjectData {
   id: string;
   title: string;
+  description: string;
   status: 'success' | 'warning' | 'error' | 'info';
   budget: {
     total: number;
     spent: number;
+    remaining: number;
   };
   tasks: TaskData[];
   client: {
     name: string;
+    company: string;
     email: string;
     phone: string;
+    satisfaction: number;
   };
   legal: {
     contractExpiry: string;
     ndaSigned: boolean;
   };
+  documents: DocumentData[];
+  timeline: TimelineEvent[];
 }
 
 export interface TaskData {
@@ -46,6 +53,23 @@ export interface TaskData {
   status: 'pending' | 'in-progress' | 'completed';
   dueDate: string;
   assignedTo: string;
+  assignee: string;
+  priority: 'low' | 'medium' | 'high';
+}
+
+export interface DocumentData {
+  id: string;
+  name: string;
+  type: string;
+  url: string;
+  uploadDate: string;
+}
+
+export interface TimelineEvent {
+  id: string;
+  title: string;
+  date: string;
+  type: 'task' | 'meeting' | 'deadline';
 }
 
 export interface ProjectPanelProps {
