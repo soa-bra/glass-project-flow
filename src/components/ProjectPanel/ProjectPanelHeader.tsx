@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { X, MoreVertical, Star } from 'lucide-react';
+import { useLovableConfig } from '../../hooks/useLovableConfig';
 
 interface ProjectPanelHeaderProps {
   title: string;
@@ -28,9 +29,16 @@ export const ProjectPanelHeader: React.FC<ProjectPanelHeaderProps> = ({
   status,
   onClose
 }) => {
+  const config = useLovableConfig();
+
   return (
     <motion.div
-      className="flex items-center justify-between p-6 border-b border-white/30 bg-white/10 backdrop-blur-[10px]"
+      className="flex items-center justify-between p-6 border-b border-white/20"
+      style={{
+        background: config.theme.glass.bg,
+        backdropFilter: config.theme.glass.backdrop,
+        fontFamily: config.theme.font
+      }}
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.1 }}
@@ -54,7 +62,7 @@ export const ProjectPanelHeader: React.FC<ProjectPanelHeaderProps> = ({
       <div className="flex items-center gap-4">
         <button className="flex items-center gap-2 px-3 py-1 bg-white/20 hover:bg-white/30 backdrop-blur-[10px] rounded-full transition-colors">
           <Star size={16} className="text-amber-500" />
-          <span className="text-sm font-arabic text-gray-700">مفضل</span>
+          <span className="text-sm text-gray-700" style={{ fontFamily: config.theme.font }}>مفضل</span>
         </button>
 
         <motion.div
@@ -62,13 +70,14 @@ export const ProjectPanelHeader: React.FC<ProjectPanelHeaderProps> = ({
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.2 }}
+          style={{ fontFamily: config.theme.font }}
         >
           {statusLabels[status]}
         </motion.div>
         
         <motion.h1
-          className="text-2xl font-bold text-gray-800 font-arabic"
-          style={{ fontFamily: 'IBM Plex Sans Arabic' }}
+          className="text-2xl font-bold text-gray-800"
+          style={{ fontFamily: config.theme.font }}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.3 }}

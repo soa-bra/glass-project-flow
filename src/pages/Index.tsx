@@ -4,6 +4,7 @@ import Sidebar from '@/components/Sidebar';
 import HeaderBar from '@/components/HeaderBar';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import ProjectPanel from '@/components/ProjectPanel';
+import OperationsBoard from '@/components/OperationsBoard';
 
 const Index: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -55,6 +56,11 @@ const Index: React.FC = () => {
             <ProjectsColumn onProjectSelect={openProjectPanel} />
           </div>
         </div>
+
+        {/* لوحة العمليات - تظهر عندما لا تكون لوحة المشروع مفتوحة */}
+        {!panelOpen && (
+          <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
+        )}
 
         {/* لوحة تحكم المشروع - تحل محل OperationsBoard */}
         {panelOpen && selectedProjectId && (

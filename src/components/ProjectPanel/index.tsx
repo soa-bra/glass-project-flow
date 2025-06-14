@@ -37,7 +37,7 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
 
   console.log('ProjectPanel data - projectData:', projectData, 'loading:', loading, 'error:', error);
 
-  // معالجة مفتاح Escape
+  // معالجة مفتاح Escape والأحداث المخصصة
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isVisible) {
@@ -46,9 +46,17 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
       }
     };
 
+    const handleCustomClose = () => {
+      if (isVisible) {
+        console.log('إغلاق اللوحة بالحدث المخصص');
+        onClose();
+      }
+    };
+
     if (isVisible) {
       console.log('تفعيل معالجة مفتاح Escape وإخفاء scroll');
       document.addEventListener('keydown', handleEscape);
+      window.addEventListener('closeProjectPanel', handleCustomClose);
       document.body.style.overflow = 'hidden';
     } else {
       console.log('إعادة تفعيل scroll');
@@ -57,6 +65,7 @@ export const ProjectPanel: React.FC<ExtendedProjectPanelProps> = ({
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('closeProjectPanel', handleCustomClose);
       document.body.style.overflow = 'auto';
     };
   }, [isVisible, onClose]);
