@@ -5,7 +5,6 @@
 /* SoaBra Design System - Enhanced Glassmorphism & Typography */
 
 @layer base {
-  /* ... keep existing code (color palette variables and layout constants) */
   :root {
     --solid-bg: #CCD4D7;
     --sidebar-header-bg: #CCD4D7;
@@ -57,7 +56,7 @@
     --glass-bg: rgba(255, 255, 255, 0.15);
     --glass-border: rgba(255, 255, 255, 0.2);
     
-    /* ... keep existing code (standard shadcn variables) */
+    /* Standard shadcn variables */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -89,7 +88,7 @@
   }
 
   .dark {
-    /* ... keep existing code (dark mode variables) */
+    /* Dark mode variables */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -127,7 +126,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
+    font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif !important;
     background: var(--solid-bg);
     overflow-x: hidden;
     font-feature-settings: "kern" 1, "liga" 1;
@@ -145,172 +144,73 @@
 /* Enhanced Glassmorphism Components */
 @layer components {
   .glass-enhanced {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border: 1.8px solid rgba(255,255,255,0.21) !important;
+    box-shadow: 
+      0 12px 36px 0 rgba(46,67,100,0.08),
+      0 2px 12px 0 rgba(80, 139, 191, 0.10),
+      0 1.5px 0 rgba(255,255,255,0.12) inset !important;
     position: relative;
     overflow: hidden;
-    box-shadow: 
-      0 8px 32px rgba(31, 38, 135, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
   }
 
   .glass-enhanced::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; right: 0; left: 0;
     height: 1px;
-    background: linear-gradient(90deg, 
-      transparent 0%, 
-      rgba(255, 255, 255, 0.8) 50%, 
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,255,255,0.90) 50%,
       transparent 100%);
-    opacity: 0.8;
+    opacity: 0.75;
   }
 
-  .project-card-glass {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 
-      0 8px 32px rgba(31, 38, 135, 0.12),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Timeline Progress Bar Gradient */
+  .timeline-bar-grad {
+    background: linear-gradient(90deg, #b7e8ff 0%, #e0ffd5 70%, #6bc5ec 100%);
+    height: 6px;
+    border-radius: 8px;
   }
 
-  .project-card-glass::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, 
-      transparent 0%, 
-      rgba(255, 255, 255, 0.9) 50%, 
-      transparent 100%);
-    opacity: 0.7;
+  /* Timeline event dots with glass */
+  .timeline-dot {
+    box-shadow: 0 2px 8px rgba(68,146,255,.10), 0 1px 0 rgba(255,255,255,0.28) inset;
+    border: 4px solid #fff !important;
   }
+}
 
-  .project-card-glass::after {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -100%;
-    width: 100%;
-    height: calc(100% + 4px);
-    background: linear-gradient(110deg, 
-      transparent 25%, 
-      rgba(255, 255, 255, 0.4) 45%, 
-      rgba(255, 255, 255, 0.6) 50%, 
-      rgba(255, 255, 255, 0.4) 55%, 
-      transparent 75%);
-    opacity: 0;
-    transform: skewX(-25deg);
-    transition: all 0.6s ease;
-    pointer-events: none;
-    z-index: 1;
+/* Tab pill tweaks */
+@layer components {
+  .tab-glass {
+    background: rgba(250,250,250,0.84);
+    border: 2px solid rgba(245,245,255,0.18) !important;
+    box-shadow: 0 2px 8px rgba(170,180,224,0.08);
+    color: #192133 !important;
+    font-weight: 600 !important;
+    font-size: 16px;
+    transition: background .22s;
   }
-
-  .project-card-hover:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 
-      0 20px 40px rgba(31, 38, 135, 0.2),
-      0 0 30px rgba(255, 255, 255, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.6);
-    border-color: rgba(255, 255, 255, 0.4);
+  .tab-glass-active {
+    background: linear-gradient(110deg, #264e6e 65%, #81e4e2 100%);
+    color: #fff !important;
+    border-color: #235087 !important;
+    box-shadow: 0 4px 20px #b2e3ed48;
+    font-weight: 700 !important;
   }
+}
 
-  .project-card-hover:hover::before {
-    opacity: 1;
-    background: linear-gradient(90deg, 
-      transparent 0%, 
-      rgba(255, 255, 255, 1) 50%, 
-      transparent 100%);
+/* Typography System */
+@layer base {
+  .font-arabic {
+    font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif !important;
   }
+}
 
-  .project-card-hover:hover::after {
-    opacity: 1;
-    left: 100%;
-    transition: all 0.75s cubic-bezier(0.19, 1, 0.22, 1);
-  }
-
-  .project-card-selected {
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: 
-      0 16px 32px rgba(31, 38, 135, 0.18),
-      0 0 25px rgba(255, 255, 255, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.55);
-    border-color: rgba(255, 255, 255, 0.35);
-  }
-
-  .project-card-dimmed {
-    opacity: 0.3;
-    transform: scale(0.98);
-    filter: blur(1px);
-  }
-
-  /* RTL Layout Classes with Synchronized Animation */
-  .sidebar-layout {
-    right: var(--sidebar-right);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .projects-layout-expanded {
-    right: var(--projects-right-expanded);
-    width: var(--projects-width);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .projects-layout-collapsed {
-    right: var(--projects-right-collapsed);
-    width: var(--projects-width);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .operations-board-expanded {
-    right: var(--operations-right-expanded);
-    width: var(--operations-width-expanded);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .operations-board-collapsed {
-    right: var(--operations-right-collapsed);
-    width: var(--operations-width-collapsed);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .project-details-expanded {
-    right: var(--project-details-right-expanded);
-    width: var(--project-details-width-expanded);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .project-details-collapsed {
-    right: var(--project-details-right-collapsed);
-    width: var(--project-details-width-collapsed);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  /* Synchronized Animation Helpers */
-  .sync-transition {
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .sync-transition-fast {
-    transition: all var(--animation-duration-fast) var(--animation-easing);
-  }
-
-  .sync-transition-slow {
-    transition: all var(--animation-duration-slow) var(--animation-easing);
-  }
-
-  /* Custom Scrollbar */
+/* Custom Scrollbar */
+@layer components {
   ::-webkit-scrollbar {
     width: 6px;
   }
@@ -327,196 +227,6 @@
   
   ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 153, 255, 0.4);
-  }
-}
-
-/* Advanced Glass + Neon Design System */
-@layer utilities {
-  /* ... keep existing code (all utility classes) */
-  .advanced-glass-card {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(30px) saturate(180%);
-    -webkit-backdrop-filter: blur(30px) saturate(180%);
-    border: 1.5px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 
-      0 4px 16px rgba(0, 0, 0, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-    transition: all 0.2s ease-in-out;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .advanced-glass-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, 
-      rgba(255, 255, 255, 0) 0%, 
-      rgba(255, 255, 255, 0.8) 50%, 
-      rgba(255, 255, 255, 0) 100%);
-  }
-  
-  .hover-glow-enhanced {
-    @apply hover:shadow-sm 
-           hover:scale-[1.02];
-  }
-  
-  /* مؤشرات النيون المحسنة */
-  .neon-ring-success {
-    box-shadow: 
-      0 0 0 2px rgba(93, 220, 130, 0.4) inset,
-      0 0 10px rgba(93, 220, 130, 0.15);
-  }
-  
-  .neon-ring-warning {
-    box-shadow: 
-      0 0 0 2px rgba(236, 255, 140, 0.4) inset,
-      0 0 10px rgba(236, 255, 140, 0.15);
-  }
-  
-  .neon-ring-error {
-    box-shadow: 
-      0 0 0 2px rgba(242, 61, 61, 0.4) inset,
-      0 0 10px rgba(242, 61, 61, 0.15);
-  }
-  
-  .neon-ring-info {
-    box-shadow: 
-      0 0 0 2px rgba(157, 203, 255, 0.4) inset,
-      0 0 10px rgba(157, 203, 255, 0.15);
-  }
-  
-  /* ... keep existing code (gradient cards) */
-  .grad-pinkblue {
-    background: linear-gradient(135deg, 
-      rgba(236, 72, 153, 0.8) 0%, 
-      rgba(59, 130, 246, 0.8) 100%);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    box-shadow: 0 4px 16px rgba(147, 51, 234, 0.2);
-  }
-  
-  .grad-orange {
-    background: linear-gradient(135deg, 
-      rgba(251, 146, 60, 0.8) 0%, 
-      rgba(253, 224, 71, 0.8) 100%);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    box-shadow: 0 4px 16px rgba(251, 146, 60, 0.2);
-  }
-  
-  .grad-success {
-    background: linear-gradient(135deg, 
-      rgba(34, 197, 94, 0.8) 0%, 
-      rgba(110, 231, 183, 0.8) 100%);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.2);
-  }
-  
-  .grad-warning {
-    background: linear-gradient(135deg, 
-      rgba(245, 158, 11, 0.8) 0%, 
-      rgba(253, 224, 71, 0.8) 100%);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
-  }
-  
-  .grad-info {
-    background: linear-gradient(135deg, 
-      rgba(59, 130, 246, 0.8) 0%, 
-      rgba(103, 232, 249, 0.8) 100%);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
-  }
-  
-  /* ... keep existing code (flat cards) */
-  .flat-crimson {
-    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-    color: white;
-    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .flat-orange {
-    background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
-    color: white;
-    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .flat-success {
-    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
-    color: white;
-    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .flat-warning {
-    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-    color: white;
-    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .flat-info {
-    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-    color: white;
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  /* ... keep existing code (card sizes and typography) */
-  .card-sm {
-    @apply min-h-[120px];
-  }
-  
-  .card-md {
-    @apply min-h-[160px];
-  }
-  
-  .card-lg {
-    @apply min-h-[200px];
-  }
-  
-  /* Typography System */
-  .text-heading-main {
-    @apply text-3xl font-bold;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    font-weight: 700;
-  }
-  
-  .text-heading-sub {
-    @apply text-xl font-bold;
-    line-height: 1.3;
-    letter-spacing: -0.005em;
-    font-weight: 600;
-  }
-  
-  .text-body {
-    @apply text-base font-medium;
-    line-height: 1.6;
-    letter-spacing: 0.005em;
-    font-weight: 500;
-  }
-  
-  .text-body-secondary {
-    @apply text-sm font-medium text-gray-600;
-    line-height: 1.5;
-    letter-spacing: 0.01em;
-    font-weight: 500;
   }
 }
 
