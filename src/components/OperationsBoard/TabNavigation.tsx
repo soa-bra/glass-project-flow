@@ -1,8 +1,6 @@
-
 import React, { useRef, useEffect } from 'react';
 import { TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TabItem } from './types';
-
 interface TabNavigationProps {
   tabItems: TabItem[];
   activeTab: string;
@@ -32,45 +30,26 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
       });
     }
   }, [activeTab]);
-  
-  return (
-    <div
-      className="
+  return <div className="
         w-full
         overflow-x-auto
         overflow-y-hidden
         no-scrollbar
         px-0
-      "
-      dir="rtl"
-      ref={listRef}
-      style={{
-        WebkitOverflowScrolling: 'touch',
-        marginBottom: 2,
-        // غلق صريح للتمرير الرأسي
-        maxHeight: 'unset',
-        height: 'auto'
-      }}
-    >
-      <TabsList 
-        className="
-          gap-1 justify-start mr-[20px] bg-transparent
-          min-w-max flex-nowrap
-        "
-        style={{
-          direction: "rtl",
-          width: "fit-content"
-        }}
-      >
-        {tabItems.map(tab => (
-          <TabsTrigger 
-            key={tab.value} 
-            value={tab.value} 
-            className="text-sm font-arabic rounded-full py-3 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-400 hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap px-[30px] data-[state=active]:bg-black"
-          >
+      " dir="rtl" ref={listRef} style={{
+    WebkitOverflowScrolling: 'touch',
+    marginBottom: 2,
+    // غلق صريح للتمرير الرأسي
+    maxHeight: 'unset',
+    height: 'auto'
+  }}>
+      <TabsList style={{
+      direction: "rtl",
+      width: "fit-content"
+    }} className="gap-1 justify-start mr-[20px] bg-transparent min-w-max flex-nowrap py-[23px]">
+        {tabItems.map(tab => <TabsTrigger key={tab.value} value={tab.value} className="text-sm font-arabic rounded-full py-3 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-400 hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap px-[30px] data-[state=active]:bg-black">
             {tab.label}
-          </TabsTrigger>
-        ))}
+          </TabsTrigger>)}
       </TabsList>
       <style>{`
         /* تعطيل السحب الرأسي وإخفاء أي شريط تمرير للقائمة داخل التبويبات */
@@ -82,6 +61,5 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
           display: none !important; /* Chrome و Safari */
         }
       `}</style>
-    </div>
-  );
+    </div>;
 };
