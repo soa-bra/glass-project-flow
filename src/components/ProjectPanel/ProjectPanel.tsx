@@ -1,19 +1,37 @@
-
 import React, { useEffect, useRef, useCallback } from 'react';
 import type { ProjectCardProps } from '../ProjectCard/types';
 import { X } from "lucide-react";
 
+// لاسترجاع بيانات المشروع مباشرةً من mockProjects
+const mockProjects = [
+  {
+    id: '1',
+    title: 'تطوير الموقع الإلكتروني',
+    description: 'تطوير موقع سوبرا',
+    daysLeft: 11,
+    tasksCount: 3,
+    status: 'info' as const,
+    date: 'May 25',
+    owner: 'د. أسامة',
+    value: '15K',
+    isOverBudget: false,
+    hasOverdueTasks: false,
+  },
+  // ... keep existing mockProjects items ...
+];
+
 interface ProjectPanelProps {
-  project: ProjectCardProps;
+  projectId: string | null;
   onClose: () => void;
 }
 
 const bgGrad = "bg-[linear-gradient(120deg,#e2e9fc_0%,#eddcff_60%,#fff3fa_100%)]";
 
-const ProjectPanel: React.FC<ProjectPanelProps> = ({ project, onClose }) => {
+const ProjectPanel: React.FC<ProjectPanelProps> = ({ projectId, onClose }) => {
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Esc key to close
+  const project = mockProjects.find((p) => p.id === projectId);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if(e.key === "Escape") onClose();
@@ -22,21 +40,23 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({ project, onClose }) => {
     return () => document.removeEventListener("keydown", handler);
   }, [onClose]);
 
-  // Click outside panel to close
   const handleBackdropClick = useCallback((e: React.MouseEvent) => {
     if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
       onClose();
     }
   }, [onClose]);
 
+  if (!project) return null;
+
   return (
     <div 
-      className="fixed z-[1100] inset-0 flex items-start justify-end"
+      className="flex items-start justify-end h-full w-full glass-enhanced"
       style={{
-        background: 'rgba(224,229,236,0.32)',
-        backdropFilter: 'blur(2.5px)',
-        WebkitBackdropFilter: 'blur(2.5px)',
-        animation: 'fade-in 0.32s cubic-bezier(0.4,0,0.2,1)',
+        background: 'rgba(215,224,236,0.4)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        animation: 'fade-in 0.33s cubic-bezier(0.4,0,0.2,1)',
+        borderRadius: '32px'
       }}
       onMouseDown={handleBackdropClick}
       dir="rtl"
@@ -46,12 +66,12 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({ project, onClose }) => {
         className={`
           animate-slide-in-right 
           shadow-xl glass-enhanced rounded-tl-[40px] rounded-bl-[40px] 
-          min-h-screen max-h-screen overflow-hidden
+          min-h-full max-h-full overflow-hidden
           ${bgGrad}
         `}
         style={{
-          width: 700,
-          maxWidth: '92vw',
+          width: '100%',
+          maxWidth: '100%',
           transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)'
         }}
         onMouseDown={e => e.stopPropagation()}
@@ -72,9 +92,8 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({ project, onClose }) => {
           </div>
           <div className="text-base font-arabic text-[#7366b8] mt-2">{project.description}</div>
         </div>
-        {/* مكان لباقي المحتوى سيتم إكماله لاحقاً */}
+        {/* مكان لباقي المحتوى */}
         <div className="px-10 pb-7">
-          {/* هنا تضاف عناصر الشارات - شريط التقدم - الأزرار ...إلخ */}
           <div className="flex items-center justify-center min-h-[300px] text-gray-400/60 text-xl font-arabic font-medium">
             (هنا باقي مكونات اللوحة: الشارات والمراحل والتبويبات...)
           </div>
