@@ -1,6 +1,17 @@
 
 import React from "react";
 
+const CARD_ORIG_W = 514.0982;
+const CARD_ORIG_H = 104.2626;
+const CARD_TARGET_W = 620; // تقريبًا، يفضل التعديل لو كان القياس الفعلي مختلف
+const CARD_TARGET_H = 131; // ارتفاع البطاقة تقريبًا في التطبيق
+const SCALE = CARD_TARGET_W / CARD_ORIG_W; // النسبة للتكبير وهي ~1.206 أو 1.21
+
+// تحويل القياس الأصلي إلى النسبي
+function scale(val: number) {
+  return val * SCALE;
+}
+
 // البيانات كما هي
 const events = [
   {
@@ -21,7 +32,7 @@ const events = [
     id: 3,
     day: "25",
     month: "May",
-    title: "اجتماع لمناقشة الشراكة الوقفية",
+    title: "اجتماع مناقشة الشراكة الوقفية",
     dept: "جامعة الملك سعود",
   },
   {
@@ -49,31 +60,35 @@ const events = [
 
 export const UpcomingTimelineCard = ({ className = "" }: { className?: string }) => (
   <div
-    className={`relative w-full h-[106px] rounded-[24px] flex flex-col justify-end overflow-visible border-0 font-arabic ${className}`}
+    className={`relative w-full h-[${Math.round(CARD_TARGET_H)}px] rounded-[${scale(24)}px] flex flex-col justify-end overflow-visible border-0 font-arabic ${className}`}
     style={{
       fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
       direction: "rtl",
       background: "rgba(233, 248, 250, 0.92)",
       backdropFilter: "blur(20px)",
-      borderRadius: "24px",
+      borderRadius: `${scale(24)}px`,
       boxShadow: "none",
-      padding: "0",
+      padding: 0,
+      minHeight: `${CARD_TARGET_H}px`,
+      maxHeight: `${CARD_TARGET_H}px`,
     }}
   >
     {/* عنوان البطاقة */}
-    <div className="absolute top-0 right-0 z-20 select-none"
+    <div
+      className="absolute top-0 right-0 z-20 select-none"
       style={{
-        paddingRight: "24px",
-        paddingTop: "10px",
-        fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif'
+        paddingRight: scale(24),
+        paddingTop: scale(10),
+        fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
       }}
     >
       <span
         style={{
-          fontSize: "9px", // أصغر قليلا
+          fontSize: `${scale(10.63)}px`, // العنوان
           fontWeight: 500,
           letterSpacing: 0,
-          color: "#181b29"
+          color: "#181b29",
+          lineHeight: 1.2,
         }}
       >
         الأحداث القادمة
@@ -83,11 +98,11 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
     <div
       className="flex flex-row-reverse justify-between items-end w-full h-full relative z-10 select-text"
       style={{
-        minHeight: "86px",
-        paddingRight: "24px",
-        paddingLeft: "14px",
-        paddingTop: "25px",
-        paddingBottom: "8px",
+        minHeight: scale(86),
+        paddingRight: scale(24),
+        paddingLeft: scale(14),
+        paddingTop: scale(28),
+        paddingBottom: scale(8),
         gap: 0,
       }}
     >
@@ -95,32 +110,34 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
       {events.map((event, idx) => (
         <div
           key={event.id}
-          className="flex flex-col items-end min-w-0 max-w-[86px] flex-1 px-0"
+          className="flex flex-col items-end min-w-0 max-w-[120px] flex-1 px-0"
           style={{
             alignSelf: "flex-end",
-            zIndex: 20,
             fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
             textAlign: "right",
+            zIndex: 20,
           }}
         >
           {/* التاريخ */}
           <div
             className="flex flex-row-reverse items-end mb-0 w-full pb-0"
             style={{
-              marginBottom: "-2px",
-              paddingRight: "1px"
+              marginBottom: scale(-2),
+              paddingRight: scale(1),
+              width: "100%",
             }}
           >
             {/* اليوم */}
             <span
               style={{
                 fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
-                fontSize: "11px",
+                fontSize: `${scale(15)}px`, // اليوم
                 fontWeight: 400,
                 color: "#181b29",
                 lineHeight: 1,
-                marginLeft: "3.5px",
+                marginLeft: scale(5),
                 verticalAlign: "bottom",
+                paddingTop: 0,
               }}
             >
               {event.day}
@@ -129,12 +146,13 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
             <span
               style={{
                 fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
-                fontSize: "2.5px",
+                fontSize: `${scale(3.5)}px`, // الشهر 3.5 * النسبة
                 fontWeight: 700,
                 color: "#181b29",
                 letterSpacing: 0.3,
-                marginBottom: "1px",
+                marginBottom: scale(1), // slight offset
                 verticalAlign: "bottom",
+                marginRight: scale(2),
               }}
             >
               {event.month}
@@ -144,28 +162,32 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
           <div
             style={{
               fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-              fontSize: "3px",
+              fontSize: `${scale(3.5)}px`, // ٣٫٥ بكسل
               fontWeight: 400,
               textAlign: "right",
               color: "#111",
               whiteSpace: "normal",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              maxWidth: "78px"
+              maxWidth: scale(85),
+              marginTop: scale(2.2),
             }}
           >
             {event.title}
           </div>
+          {/* سطر فارغ */}
+          <div style={{ height: scale(3.5), minHeight: scale(3), maxHeight: scale(6) }} />
           {/* جهة الحدث */}
           <div
             style={{
               fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-              fontSize: "4px",
+              fontSize: `${scale(5.5)}px`,
               fontWeight: 500,
-              textAlign: "right",
               color: "#181b29",
-              marginTop: "4px",
-              marginBottom: "0px",
+              textAlign: "right",
+              marginBottom: 0,
+              marginTop: scale(2.7),
+              maxWidth: scale(85),
             }}
           >
             {event.dept}
@@ -173,23 +195,24 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
           {/* خط رأسي يصل الدائرة */}
           <div
             style={{
-              width: "0.18px",
+              width: `${scale(0.24)}px`,
               background: "#181b29",
-              height: "14px",
-              margin: "1px 0 0 0",
+              height: scale(24),
+              margin: `${scale(1)}px 0 0 0`,
               alignSelf: "center",
+              opacity: 0.93,
             }}
           />
-          {/* الدائرة السفلية الصغيرة */}
+          {/* الدائرة السفلية الكبيرة */}
           <div
             style={{
-              width: "11px",
-              height: "11px",
+              width: scale(18.76),
+              height: scale(18.76),
               borderRadius: "50%",
-              border: "0.18px solid #181b29",
-              background: "transparent",
+              border: `${scale(0.18)}px solid #181b29`,
+              background: "rgba(255,255,255,0.5)",
               margin: "0 auto",
-              marginTop: "-0.5px",
+              marginTop: scale(-0.5),
             }}
           />
         </div>
@@ -199,16 +222,17 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
     <div
       className="absolute left-0 right-0"
       style={{
-        bottom: "9px",
+        bottom: scale(10),
         background: "#181b29",
         opacity: 0.85,
         zIndex: 1,
         width: "100%",
         margin: "0 auto",
-        height: "0.18px",
+        height: `${scale(0.24)}px`,
       }}
     />
   </div>
 );
 
 export default UpcomingTimelineCard;
+
