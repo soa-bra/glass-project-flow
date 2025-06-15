@@ -6,6 +6,11 @@ import { HRWidget } from './Overview/HRWidget';
 import { SatisfactionWidget } from './Overview/SatisfactionWidget';
 import { ContractsWidget } from './Overview/ContractsWidget';
 import { AISuggestedWidget } from './Overview/AISuggestedWidget';
+import { ExtraWidgetOne } from './Overview/ExtraWidgetOne';
+import { ExtraWidgetTwo } from './Overview/ExtraWidgetTwo';
+import { ExtraWidgetThree } from './Overview/ExtraWidgetThree';
+import { ExtraWidgetFour } from './Overview/ExtraWidgetFour';
+import { ExtraWidgetFive } from './Overview/ExtraWidgetFive';
 
 interface TimelineEvent {
   id: number;
@@ -85,21 +90,11 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
           title="مؤشرات الأداء الرئيسية"
           className="col-span-4 h-[220px]"
         />
-        <AISuggestedWidget
-          type="reports"
-          title="التقارير التنفيذية"
-          className="col-span-4 h-[220px]"
-        />
-        <AISuggestedWidget
-          type="goals"
-          title="الأهداف والإنجازات"
-          className="col-span-4 h-[220px]"
-        />
-        <AISuggestedWidget
-          type="team"
-          title="إدارة الفريق"
-          className="col-span-4 h-[220px]"
-        />
+        <ExtraWidgetOne className="col-span-4" />
+        <ExtraWidgetTwo className="col-span-4" />
+        <ExtraWidgetThree className="col-span-4" />
+        <ExtraWidgetFour className="col-span-4" />
+        <ExtraWidgetFive className="col-span-4" />
       </section>
     </div>
   );

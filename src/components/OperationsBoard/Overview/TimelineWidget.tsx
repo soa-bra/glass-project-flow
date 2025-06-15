@@ -27,7 +27,7 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
       className={`
         ${className}
         flex flex-col rounded-3xl font-arabic min-h-[220px] mb-0
-        bg-white/45
+        bg-white/40
         `}
     >
       {/* رأس البطاقة */}

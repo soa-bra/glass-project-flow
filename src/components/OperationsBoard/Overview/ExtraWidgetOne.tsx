@@ -2,7 +2,7 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 
-export const ExtraWidgetOne: React.FC = () => {
+export const ExtraWidgetOne: React.FC<{ className?: string }> = ({ className }) => {
   return (
     <BaseCard 
       variant="glass"
@@ -13,7 +13,7 @@ export const ExtraWidgetOne: React.FC = () => {
           إحصائية إضافية 1
         </h3>
       }
-      className="h-[180px] px-6 py-6 flex flex-col justify-between"
+      className={`h-[180px] px-6 py-6 flex flex-col justify-between ${className}`}
     >
       <div className="flex-1 flex items-center justify-between">
         <div className="text-lg font-bold text-purple-600">45</div>
