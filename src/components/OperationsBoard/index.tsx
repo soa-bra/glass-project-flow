@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import { Tabs } from '@/components/ui/tabs';
 import { TAB_ITEMS } from './types';
+
+// أيقونات مسموحة من قائمة lucide-react
 import { TrendingUp, TrendingDown, Clock, FileText, ListCheck } from 'lucide-react';
 
-// عناصر الإحصاءات العلوية كما في التصميم
 const topStats = [
   {
     label: 'عدد المستخدمين',
@@ -117,9 +118,28 @@ export const OperationsBoard = ({
           boxShadow: '0 1px 10px 0 rgba(100,180,200,0.04) inset',
           border: '1px solid #e6ecef'
         }} className="w-full py-6 px-8 flex flex-col gap-1 backdrop-blur-[10px]">
+          {/* هنا سيتم استدعاء مكون TimelineWidget المطوَّر لاحقًا */}
           <div className="text-xl font-arabic font-bold mb-4 text-black">الأحداث القادمة</div>
-          {/* عناصر الخط الزمني الحقيقي تُدرج هنا وليس عنصر placeholder */}
-          {/* إذا لم يكن هناك بيانات بعد اترك المساحة فارغة (بدون عناصر اختبار أو مكونات سوف تطور لاحقا) */}
+          {/* PLACEHOLDER: الخط الزمني (سيتم تطويره لاحقًا/الدفعة القادمة) */}
+          <div className="w-full flex items-center justify-between gap-0">
+            {[...Array(6)].map((_, i) => (
+              <div className="flex flex-col items-center flex-1" key={i}>
+                <div className="mb-1 text-[22px] font-extrabold text-black leading-none">25</div>
+                <div className="mb-0 text-xs font-arabic text-black/80">يونيو</div>
+                <div className="h-[36px] w-0.5 bg-black/60 mx-auto my-1" style={{opacity: 0.6, marginBottom: 6}} />
+                <div
+                  className="w-7 h-7 rounded-full border-2 border-black bg-white/90 flex items-center justify-center mb-2"
+                  style={{
+                    borderWidth: 1.5,
+                    boxShadow: '0 1.5px 8px 0 rgba(30,24,100,0.09) inset'
+                  }}
+                />
+                <div className="text-xs font-arabic text-black/70">حدث مهم</div>
+                <div className="text-xs text-[11px] font-arabic text-black/50 mt-0.5">- 07 يوم</div>
+                <div className="text-xs font-arabic text-black/60 mt-1">الرياض</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       {/* شبكة البطاقات الرئيسية */}
@@ -130,10 +150,11 @@ export const OperationsBoard = ({
             boxShadow: '0 4px 30px 0 rgba(60,160,200,0.05) inset',
             minHeight: '280px'
           }}>
+            {/* LOAD SCORE دائرة بيانية (سيوضع مكون مخصص لاحقاً) */}
             <div className="text-lg font-arabic font-extrabold text-black mb-2">النظرة المالية</div>
             <div className="flex items-center justify-between flex-1 w-full gap-0">
               <div className="relative flex-1 flex items-center justify-center">
-                {/* عدّاد حلقي فقط */}
+                {/* PLACEHOLDER: عدّاد حلقي */}
                 <svg width="120" height="120" viewBox="0 0 120 120">
                   <circle cx="60" cy="60" r="53" fill="#fff" stroke="#c8f4e1" strokeWidth="10"/>
                   <circle cx="60" cy="60" r="53" fill="none" stroke="#29936c" strokeWidth="10"
@@ -145,7 +166,7 @@ export const OperationsBoard = ({
                   <text x="60" y="102" textAnchor="middle" fontSize="15" fill="#29936c">Load Score</text>
                 </svg>
               </div>
-              {/* معلومات القيم الجانبية */}
+              {/* القائمة الجانبية */}
               <div className="flex flex-col items-end gap-2 pr-5 flex-1">
                 <div className="text-black text-base font-extrabold">02</div>
                 <div className="text-[#182236] text-sm">مصروفات</div>
@@ -203,6 +224,7 @@ export const OperationsBoard = ({
           {/* عمود 2, صف 2: بطاقة رسم خطي */}
           <div className="rounded-3xl shadow-inner bg-[#f2ffff]/80 border border-[#e2f3f8] p-6 min-h-[130px] flex flex-col animate-fade-in delay-150">
             <div className="text-lg font-arabic font-extrabold text-black mb-2">تحليل الطلبات</div>
+            {/* PLACEHOLDER: sparklines */}
             <div className="flex items-center gap-3 flex-1">
               <svg width="80" height="36" viewBox="0 0 80 36">
                 <polyline
@@ -222,6 +244,7 @@ export const OperationsBoard = ({
           <div className="rounded-3xl shadow-inner bg-[#f2ffff]/80 border border-[#e2f3f8] p-6 min-h-[130px] flex flex-col animate-fade-in delay-200">
             <div className="text-lg font-arabic font-extrabold text-black mb-2">بيانات <span className="text-black font-normal">اقترحها الذكاء الصناعي</span></div>
             <div className="flex items-center gap-5 flex-1">
+              {/* Donut */}
               <div className="relative">
                 <svg width="54" height="54">
                   <circle cx="27" cy="27" r="24" fill="#e9f6fc"/>
@@ -283,4 +306,3 @@ export const OperationsBoard = ({
 };
 
 export default OperationsBoard;
-
