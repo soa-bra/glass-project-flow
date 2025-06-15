@@ -23,10 +23,11 @@ export const GenericCard: React.FC<GenericCardProps> = ({
   neonRing = null,
   adminBoardStyle = false
 }) => {
+  // الهوامش الداخلية الافتراضية أكثر راحة
   const paddingClasses = {
-    sm: 'p-4',
-    md: 'p-6',
-    lg: 'p-8'
+    sm: 'px-5 py-4',
+    md: 'px-8 py-6',
+    lg: 'px-12 py-8'
   };
 
   return (

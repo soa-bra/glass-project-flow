@@ -17,11 +17,13 @@ const stats = [
 ];
 
 export const ProjectsOverview: React.FC = () => (
-  <GenericCard adminBoardStyle hover className="relative group">
-    <div className="flex flex-col items-end text-right w-full">
-      <h4 className="text-lg font-bold mb-2 text-[#23272f] w-full">نظرة عامة</h4>
-      <div className="text-soabra-text-secondary text-sm mb-4 w-full text-[#23272f]">إحصائيات المشاريع</div>
-      <div className="flex flex-col gap-4 w-full">
+  <GenericCard adminBoardStyle hover padding="md" className="relative group min-h-[180px] flex flex-col justify-between">
+    <div className="flex flex-col items-end text-right w-full h-full justify-between">
+      <h4 className="text-lg font-bold mb-0 text-[#23272f] w-full leading-tight mt-1">نظرة عامة</h4>
+      <div className="text-soabra-text-secondary text-sm mb-4 mt-1 w-full text-[#23272f]">
+        إحصائيات المشاريع
+      </div>
+      <div className="flex flex-col gap-4 w-full mb-2">
         {stats.map(stat => (
           <div
             key={stat.label}

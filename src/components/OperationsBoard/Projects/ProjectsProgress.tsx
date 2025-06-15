@@ -27,11 +27,11 @@ const ProgressTooltip = ({ active, payload }: any) =>
   ) : null;
 
 export const ProjectsProgress: React.FC = () => (
-  <GenericCard adminBoardStyle hover className="relative group overflow-visible">
-    <div className="flex flex-col items-end text-right w-full">
-      <h4 className="text-lg font-bold mb-2 text-[#23272f] w-full">تقدم المشاريع</h4>
-      <div className="text-soabra-text-secondary text-sm mb-4 text-[#23272f] w-full">مخططات تقدم المشاريع</div>
-      <div className="h-24 w-full relative">
+  <GenericCard adminBoardStyle hover padding="md" className="relative group overflow-visible min-h-[210px]">
+    <div className="flex flex-col items-end text-right w-full h-full justify-between">
+      <h4 className="text-lg font-bold mb-0 text-[#23272f] w-full leading-tight mt-1">تقدم المشاريع</h4>
+      <div className="text-soabra-text-secondary text-sm mb-4 mt-1 text-[#23272f] w-full">مخططات تقدم المشاريع</div>
+      <div className="h-28 w-full relative mb-2">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart layout="vertical" data={progressData}>
             <XAxis type="number" domain={[0, 100]} hide />
