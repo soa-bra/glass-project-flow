@@ -13,7 +13,7 @@ const data = [
 
 const renderCustomTooltip = ({ active, payload }: any) =>
   active && payload?.length ? (
-    <div className="text-xs font-arabic bg-white/90 px-3 py-2 rounded-xl shadow border text-[#23272f]">
+    <div className="text-xs font-arabic bg-white/90 px-3 py-2 rounded-xl shadow border text-[#23272f] text-right">
       <div>
         <span className="font-bold text-[#23272f]">{payload[0].payload.name}</span>
       </div>
@@ -28,9 +28,9 @@ const renderCustomTooltip = ({ active, payload }: any) =>
 
 export const TasksDistribution: React.FC = () => (
   <GenericCard adminBoardStyle hover className="relative group overflow-visible">
-    <div className="flex flex-col items-end">
-      <h4 className="text-lg font-bold mb-2 text-[#23272f]">توزيع المهام</h4>
-      <div className="text-soabra-text-secondary text-sm mb-4 text-[#23272f]">توزيع المهام بين الفرق</div>
+    <div className="flex flex-col items-end text-right w-full">
+      <h4 className="text-lg font-bold mb-2 text-[#23272f] w-full">توزيع المهام</h4>
+      <div className="text-soabra-text-secondary text-sm mb-4 text-[#23272f] w-full">توزيع المهام بين الفرق</div>
       <div className="w-full h-24 relative">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
