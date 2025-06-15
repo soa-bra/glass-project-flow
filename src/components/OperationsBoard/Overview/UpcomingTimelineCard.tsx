@@ -1,7 +1,7 @@
 
 import React from "react";
 
-// نفس البيانات!
+// البيانات كما هي
 const events = [
   {
     id: 1,
@@ -49,7 +49,7 @@ const events = [
 
 export const UpcomingTimelineCard = ({ className = "" }: { className?: string }) => (
   <div
-    className={`relative w-full h-[272px] bg-[#e9f8fa] rounded-[41px] p-0 flex flex-col justify-end overflow-visible border-0 font-arabic ${className}`}
+    className={`relative w-full h-[272px] rounded-[41px] p-0 flex flex-col justify-end overflow-visible border-0 font-arabic ${className}`}
     style={{
       fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
       direction: "rtl",
@@ -59,18 +59,24 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
       boxShadow: "none",
     }}
   >
-    {/* العنوان */}
+    {/* عنوان البطاقة */}
     <div className="absolute top-0 right-0 px-14 pt-7 pb-0 flex items-center z-20 select-none">
       <span
-        className="text-[2.35rem] font-black tracking-tight text-[#181b29] font-arabic"
-        style={{ fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif' }}
+        className="font-arabic"
+        style={{
+          fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
+          fontSize: "10.63px", // px حسب المواصفة
+          fontWeight: 500, // Medium
+          letterSpacing: 0,
+          color: "#181b29"
+        }}
       >
         الأحداث القادمة
       </span>
     </div>
-    {/* الخط الزمني -- توزيع أفقي حُر */}
+    {/* الخط الزمني */}
     <div
-      className="flex flex-row-reverse justify-between items-end w-full h-full pb-0 pt-20 pr-[50px] pl-[35px] relative z-10 select-text"
+      className="flex flex-row-reverse justify-between items-end w-full h-full pb-0 pt-16 pr-[50px] pl-[26px] relative z-10 select-text"
       style={{
         minHeight: "215px",
         gap: 0,
@@ -80,100 +86,113 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
       {events.map((event, idx) => (
         <div
           key={event.id}
-          className="flex flex-col items-center min-w-0 max-w-[230px] flex-1 px-1"
+          className="flex flex-col items-end min-w-0 max-w-[170px] flex-1 px-1"
           style={{
             alignSelf: "flex-end",
             zIndex: 20,
             fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
+            textAlign: "right",
           }}
         >
           {/* التاريخ */}
-          <div className="flex flex-col items-center mb-[8px] w-full">
-            <div className="flex flex-row items-end gap-2 w-full justify-center">
-              <span
-                className="text-[1.04rem] font-normal text-[#181b29] leading-5"
-                style={{
-                  fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
-                  letterSpacing: 0.2,
-                  color: "#181b29"
-                }}
-              >
-                {event.month}
-              </span>
-              <span
-                className="text-[2.95rem] font-black text-[#181b29] leading-[1.03] mb-[2px]"
-                style={{
-                  fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
-                  color: "#181b29",
-                  fontWeight: 900,
-                  lineHeight: 1.09,
-                }}
-              >
-                {event.day}
-              </span>
-            </div>
+          <div className="flex flex-row-reverse items-end mb-0 w-full pr-1 pb-2" style={{marginBottom: "-2px"}}>
+            {/* اليوم */}
+            <span
+              style={{
+                fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
+                fontSize: "15px",
+                fontWeight: 400, // Regular
+                color: "#181b29",
+                lineHeight: 1,
+                display: "inline-block",
+                marginLeft: "7px",
+                verticalAlign: "bottom",
+              }}
+            >
+              {event.day}
+            </span>
+            {/* الشهر */}
+            <span
+              style={{
+                fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
+                fontSize: "3.5px",
+                fontWeight: 700, // Bold
+                color: "#181b29",
+                letterSpacing: 0.3,
+                display: "inline-block",
+                marginBottom: "2px",
+                verticalAlign: "bottom",
+              }}
+            >
+              {event.month}
+            </span>
           </div>
-          {/* عنوان الحدث */}
+          {/* سطر تعريف الحدث */}
           <div
-            className="w-full text-[1.04rem] text-[#111] font-normal font-arabic text-center mb-[5px] leading-normal"
             style={{
               fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
+              fontSize: "3.5px",
               fontWeight: 400,
-              marginTop: "4px",
-              marginBottom: "3px",
+              textAlign: "right",
+              color: "#111",
+              whiteSpace: "normal",
             }}
           >
             {event.title}
           </div>
+          {/* سطر فارغ */}
+          <div style={{height: "7px"}} />
           {/* جهة الحدث */}
           <div
-            className="w-full text-[1.35rem] font-black font-arabic text-center leading-tight text-[#181b29] mb-0"
             style={{
               fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-              fontWeight: 900,
-              marginBottom: "0px",
+              fontSize: "5.5px",
+              fontWeight: 500, // Medium
+              textAlign: "right",
+              color: "#181b29",
+              marginBottom: "1px",
             }}
           >
             {event.dept}
           </div>
           {/* خط رأسي يصل الدائرة */}
-          <div style={{
-            width: "2px",
-            background: "#181b29",
-            height: "42px",
-            marginTop: "3px",
-            marginBottom: "0",
-            display: "block"
-          }} />
-          {/* الدائرة السفلية الكبيرة */}
           <div
-            className="flex items-center justify-center"
             style={{
-              width: "65px",
-              height: "65px",
-              borderRadius: "50%",
-              border: "2.2px solid #181b29",
-              background: "transparent",
-              marginTop: "-2px",
-              marginBottom: "0",
+              width: "0.24px", // 0.1801pt تقريب تقريبًا
+              background: "#181b29",
+              height: "25px",
+              margin: "2px 0 0 0",
+              alignSelf: "center",
             }}
-          ></div>
+          />
+          {/* الدائرة السفلية الصغيرة */}
+          <div
+            style={{
+              width: "18.76px",
+              height: "18.76px",
+              borderRadius: "50%",
+              border: "0.24px solid #181b29",
+              background: "transparent",
+              margin: "0 auto",
+              marginTop: "-1px",
+            }}
+          />
         </div>
       ))}
     </div>
-    {/* الخط الأفقي الموحد */}
+    {/* الخط الأفقي أسفل الدوائر */}
     <div
-      className="absolute left-0 right-0 bottom-[27px] h-[2.2px]"
+      className="absolute left-0 right-0 bottom-[17px] h-[0.24px]"
       style={{
         background: "#181b29",
-        opacity: 0.78,
+        opacity: 0.95,
         zIndex: 1,
-        width: "99.7%",
+        width: "100%",
         margin: "0 auto",
+        height: "0.24px",
       }}
     />
   </div>
 );
 
 export default UpcomingTimelineCard;
-
