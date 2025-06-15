@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { 
-  BarChart3, 
-  FileText, 
   TrendingUp, 
+  FileText, 
+  AlertCircle, 
+  BarChart3, 
   Users, 
-  AlertCircle,
-  Target
+  Target 
 } from 'lucide-react';
+import { GenericCard } from '@/components/ui/GenericCard';
 
 interface AISuggestedWidgetProps {
   type: 'kpi' | 'reports' | 'alerts' | 'analytics' | 'team' | 'goals';
@@ -75,43 +76,44 @@ export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
   const Icon = config.icon;
 
   return (
-    <div className={`
-      ${className}
-      rounded-3xl p-5
-      bg-white/80 backdrop-blur-xl border border-white/30
-      shadow-lg hover:shadow-xl transition-all duration-300
-      flex flex-col justify-between
-    `}>
-      
+    <GenericCard
+      adminBoardStyle
+      hover
+      padding="md"
+      className={`
+        ${className}
+        flex flex-col justify-between h-full rounded-3xl transition-all
+        min-h-[180px]
+      `}
+    >
       {/* رأس البطاقة */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-arabic font-bold text-gray-800">
+        <h3 className="text-lg font-arabic font-bold text-[#23272f] text-right w-full leading-tight">
           {title}
         </h3>
-        <Icon size={20} className="text-gray-600" />
+        <Icon size={22} className="text-[#23272f] opacity-70" />
       </div>
 
       {/* المحتوى الرئيسي */}
-      <div className="flex-1 flex flex-col justify-center">
-        <div className="text-2xl font-bold mb-2 text-gray-900">
-          {config.content.main}
-        </div>
-        
-        <div className="text-sm text-gray-600 mb-3">
-          {config.content.sub}
-        </div>
-        
-        <div className="text-xs text-gray-500">
-          {config.content.trend}
-        </div>
+      <div className="flex-1 flex flex-col items-end justify-end w-full mt-1">
+        <div className="text-2xl font-bold mb-2 text-[#23272f] text-right w-full">{config.content.main}</div>
+        <div className="text-sm text-soabra-text-secondary mb-2 w-full text-right">{config.content.sub}</div>
+        <div className="text-xs text-gray-500 w-full text-right">{config.content.trend}</div>
       </div>
 
       {/* مؤشر التفاعل */}
-      <div className="mt-4 pt-3 border-t border-gray-200/50">
-        <button className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
+      <div className="mt-4 pt-2 border-t border-gray-100/60 w-full">
+        <button
+          type="button"
+          className="text-xs text-gray-500 hover:text-[#23272f] transition-colors underline-offset-2"
+          style={{
+            fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
+            direction: 'rtl'
+          }}
+        >
           عرض التفاصيل ←
         </button>
       </div>
-    </div>
+    </GenericCard>
   );
 };
