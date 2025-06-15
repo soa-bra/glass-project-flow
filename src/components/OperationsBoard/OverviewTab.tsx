@@ -1,17 +1,13 @@
-import React from 'react';
-import { TimelineWidget } from './Overview/TimelineWidget';
-import { BudgetWidget } from './Overview/BudgetWidget';
-import { HRWidget } from './Overview/HRWidget';
-import { SatisfactionWidget } from './Overview/SatisfactionWidget';
-import { ContractsWidget } from './Overview/ContractsWidget';
-import { AISuggestedWidget } from './Overview/AISuggestedWidget';
-import { InstantStatsRow } from './Overview/InstantStatsRow';
-import { UpcomingTimelineCard } from './Overview/UpcomingTimelineCard';
-import { ExtraWidgetOne } from './Overview/ExtraWidgetOne';
-import { ExtraWidgetTwo } from './Overview/ExtraWidgetTwo';
-import { ExtraWidgetThree } from './Overview/ExtraWidgetThree';
-import { ExtraWidgetFour } from './Overview/ExtraWidgetFour';
-import { ExtraWidgetFive } from './Overview/ExtraWidgetFive';
+
+import React from "react";
+import { TimelineWidget } from "./Overview/TimelineWidget";
+import { InstantStatsRow } from "./Overview/InstantStatsRow";
+import { UpcomingTimelineCard } from "./Overview/UpcomingTimelineCard";
+import { LeadingStatsCard } from "./Overview/LeadingStatsCard";
+import { DataStatCard } from "./Overview/DataStatCard";
+import { ScoreCircleStatCard } from "./Overview/ScoreCircleStatCard";
+import { ProjectSummaryCard } from "./Overview/ProjectSummaryCard";
+import { EmptyCard } from "./Overview/EmptyCard";
 
 export const OverviewTab: React.FC<any> = () => {
   return (
@@ -19,45 +15,57 @@ export const OverviewTab: React.FC<any> = () => {
       className="h-full overflow-auto px-6 pt-2 pb-7"
       style={{
         fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-        direction: 'rtl',
+        direction: "rtl",
       }}
     >
       {/* صف الإحصائيات العلوية */}
       <InstantStatsRow />
       {/* بطاقة الأحداث القادمة */}
-      <UpcomingTimelineCard className="mb-8" />
-      {/* شبكة 3x3 للبطاقات الرئيسية (أماكن الحشو فقط حالياً) */}
+      <UpcomingTimelineCard className="mb-7 mt-2" />
+      {/* شبكة البطاقات الرئيسية */}
       <section
         className="
-          grid grid-cols-1 md:grid-cols-3 gap-5 w-full pt-2
+          grid grid-cols-1 md:grid-cols-7 gap-6 w-full pt-1
         "
+        style={{ minHeight: "375px" }}
       >
-        <div className="col-span-1">
-          <ExtraWidgetOne />
+        {/* عمود النظرة اللحظية */}
+        <div className="col-span-2 row-span-2 h-full">
+          <LeadingStatsCard
+            value={92}
+            label="النظرة اللحظية"
+            circleData={[
+              { value: 2, label: "مثال" },
+              { value: 14, label: "مثال" },
+              { value: 78, label: "مثال" },
+            ]}
+          />
         </div>
-        <div className="col-span-1">
-          <ExtraWidgetTwo />
+        {/* بيانات (يمين الأعلى) */}
+        <div className="col-span-2 row-span-1 h-full">
+          <DataStatCard title="بيانات" value={46} label="مثال" />
         </div>
-        <div className="col-span-1">
-          <ExtraWidgetThree />
+        <div className="col-span-2 row-span-1 h-full">
+          <DataStatCard title="بيانات" value={46} label="مثال" note="هذا النص مثال للشكل النهائي" renderBar />
         </div>
-        <div className="col-span-1">
-          <ExtraWidgetFour />
+        <div className="col-span-1 row-span-1 h-full">
+          <DataStatCard title="بيانات" value={17} label="مثال" note="هذا النص مثال للشكل النهائي" />
         </div>
-        <div className="col-span-1">
-          <ExtraWidgetFive />
+        {/* بيانات أسفل الشمال */}
+        <div className="col-span-2 row-span-1 h-full">
+          <DataStatCard title="بيانات" value={3} label="مثال" renderLine />
         </div>
-        <div className="col-span-1">
-          {/* المقعد السادس - لم يُستخدم بعد */}
+        {/* النسبة الدائرية */}
+        <div className="col-span-2 row-span-1 h-full">
+          <ScoreCircleStatCard value={75} note="هذا النص مثال للشكل النهائي" />
         </div>
-        <div className="col-span-1">
-          {/* المقعد السابع - لم يُستخدم بعد */}
+        {/* تلخيص المشاريع */}
+        <div className="col-span-3 row-span-2 h-full">
+          <ProjectSummaryCard />
         </div>
-        <div className="col-span-1">
-          {/* المقعد الثامن - لم يُستخدم بعد */}
-        </div>
-        <div className="col-span-1">
-          {/* المقعد التاسع - لم يُستخدم بعد */}
+        {/* بطاقة التنبيهات الفارغة */}
+        <div className="col-span-4 row-span-2 h-full">
+          <EmptyCard />
         </div>
       </section>
     </div>
