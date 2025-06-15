@@ -12,25 +12,32 @@ import { EmptyCard } from "./Overview/EmptyCard";
 export const OverviewTab: React.FC<any> = () => {
   return (
     <div
-      className="h-full overflow-auto px-6 pt-2 pb-7"
+      className="h-full overflow-auto px-0 pt-4 pb-10"
       style={{
         fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
         direction: "rtl",
+        background: "#dde9ea", // مطابق لخلفية المرجع
+        minHeight: "100vh",
+        width: "100vw"
       }}
     >
       {/* صف الإحصائيات العلوية */}
-      <InstantStatsRow />
-      {/* بطاقة الأحداث القادمة */}
-      <UpcomingTimelineCard className="mb-7 mt-2" />
+      <div className="w-full max-w-[1400px] mx-auto">
+        <InstantStatsRow />
+      </div>
+      {/* الأحداث القادمة */}
+      <div className="w-full max-w-[1400px] mx-auto">
+        <UpcomingTimelineCard className="mb-8" />
+      </div>
       {/* شبكة البطاقات الرئيسية */}
       <section
         className="
-          grid grid-cols-1 md:grid-cols-7 gap-6 w-full pt-1
+          grid grid-cols-1 lg:grid-cols-7 gap-7 w-full max-w-[1400px] mx-auto
         "
-        style={{ minHeight: "375px" }}
+        style={{ minHeight: "475px" }}
       >
-        {/* عمود النظرة اللحظية */}
-        <div className="col-span-2 row-span-2 h-full">
+        {/* النظرة اللحظية (يسار - أكبر) */}
+        <div className="col-span-3 row-span-2 h-full">
           <LeadingStatsCard
             value={92}
             label="النظرة اللحظية"
@@ -41,30 +48,25 @@ export const OverviewTab: React.FC<any> = () => {
             ]}
           />
         </div>
-        {/* بيانات (يمين الأعلى) */}
-        <div className="col-span-2 row-span-1 h-full">
-          <DataStatCard title="بيانات" value={46} label="مثال" />
+        {/* بيانات الصف الأول */}
+        <div className="col-span-2 row-span-1 h-full flex flex-col gap-6">
+          <DataStatCard title="بيانات" value={46} label="مثال" note="هذا النص مثال للشكل النهائي" />
+          <DataStatCard title="بيانات" value={3} label="مثال" note="هذا النص مثال للشكل النهائي" renderLine />
         </div>
-        <div className="col-span-2 row-span-1 h-full">
+        <div className="col-span-2 row-span-1 h-full flex flex-col gap-6">
           <DataStatCard title="بيانات" value={46} label="مثال" note="هذا النص مثال للشكل النهائي" renderBar />
+          <DataStatCard title="بيانات" value={17} label="مثال" note="هذا النص مثال للشكل النهائي" renderBar />
         </div>
-        <div className="col-span-1 row-span-1 h-full">
-          <DataStatCard title="بيانات" value={17} label="مثال" note="هذا النص مثال للشكل النهائي" />
-        </div>
-        {/* بيانات أسفل الشمال */}
-        <div className="col-span-2 row-span-1 h-full">
-          <DataStatCard title="بيانات" value={3} label="مثال" renderLine />
-        </div>
-        {/* النسبة الدائرية */}
-        <div className="col-span-2 row-span-1 h-full">
+        {/* بيانات الصف الثاني */}
+        <div className="col-span-2 row-span-1 h-full flex items-stretch">
           <ScoreCircleStatCard value={75} note="هذا النص مثال للشكل النهائي" />
         </div>
-        {/* تلخيص المشاريع */}
-        <div className="col-span-3 row-span-2 h-full">
+        {/* تلخيص المشاريع (أسفل) */}
+        <div className="col-span-4 row-span-1 h-full">
           <ProjectSummaryCard />
         </div>
         {/* بطاقة التنبيهات الفارغة */}
-        <div className="col-span-4 row-span-2 h-full">
+        <div className="col-span-3 row-span-1 h-full">
           <EmptyCard />
         </div>
       </section>

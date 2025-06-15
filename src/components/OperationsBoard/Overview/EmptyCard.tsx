@@ -3,9 +3,10 @@ import React from "react";
 
 export const EmptyCard: React.FC = () => (
   <div
-    className="rounded-[30px] bg-[#F5FAFC] border border-white/40 glass-enhanced shadow flex flex-col h-full min-h-[205px] px-6 py-5"
+    className="rounded-[28px] bg-[#e6eeef]/90 border-none glass-enhanced shadow flex flex-col h-full min-h-[128px] px-7 py-6"
     style={{
       fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
+      background: "rgba(230, 238, 239, 0.90)",
     }}
   >
     {/* Placeholder فقط! */}
