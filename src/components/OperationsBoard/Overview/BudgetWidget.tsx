@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { GenericCard } from '@/components/ui/GenericCard';
 
 interface BudgetData {
   total: number;
@@ -29,36 +29,35 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({
   const visualColor = isHealthy ? 'success' : 'crimson';
 
   return (
-    <BaseCard
-      variant="glass"
-      color={visualColor}
+    <GenericCard
       adminBoardStyle
-      size="md"
-      className={`h-full w-full ${className}`}
-      header={
-        <h3 className="text-lg font-arabic font-bold mb-1 text-[#222a29]">الميزانية والمصروفات</h3>
-      }
+      padding="md"
+      color={visualColor}
+      className={`h-full w-full ${className} min-h-[180px] flex flex-col justify-between`}
     >
-      <div>
-        <div className="mb-2">
+      <div className="w-full flex flex-col h-full justify-between items-end text-right">
+        <h3 className="text-lg font-arabic font-bold mb-1 text-[#222a29] w-full leading-tight mt-1">
+          الميزانية والمصروفات
+        </h3>
+        <div className="mb-2 w-full">
           <span className="text-2xl font-bold text-[#29936c]">{formatCurrency(budget.total)}</span>
           <span className="text-base text-gray-600 mr-2">ريال - الميزانية الإجمالية</span>
         </div>
-        <div className="flex flex-col gap-1 my-4">
-          <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-1 my-2 w-full">
+          <div className="flex justify-between items-center w-full">
             <span className="text-base text-gray-700">المصروفات:</span>
             <span className="font-semibold text-gray-900">
               {formatCurrency(budget.spent)} ريال
             </span>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center w-full">
             <span className="text-base text-gray-700">المتبقي:</span>
             <span className="font-semibold text-gray-900">
               {formatCurrency(remaining)} ريال
             </span>
           </div>
         </div>
-        <div className="mt-4">
+        <div className="mt-3 w-full">
           <div className="flex justify-between text-base mb-1 text-gray-500">
             <span>{percentage}%</span>
             <span>مستخدم من الميزانية</span>
@@ -70,11 +69,11 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({
           />
         </div>
         {!isHealthy && (
-          <div className="mt-4 p-3 bg-[#fcd8ce]/70 rounded-xl font-arabic text-xs text-red-700 text-center border border-red-300/50 shadow">
+          <div className="mt-4 p-3 bg-[#fcd8ce]/70 rounded-xl font-arabic text-xs text-red-700 text-center border border-red-300/50 shadow w-full">
             ⚠️ تحذير: تم تجاوز الميزانية المخططة
           </div>
         )}
       </div>
-    </BaseCard>
+    </GenericCard>
   );
 };

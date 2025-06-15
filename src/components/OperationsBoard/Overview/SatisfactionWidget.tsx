@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { GenericCard } from '@/components/ui/GenericCard';
 
 interface SatisfactionWidgetProps {
   satisfaction: number;
@@ -25,12 +25,6 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({
   };
 
   // ألوان موحدة للوحة الإدارة
-  const colorClasses = {
-    success: 'border-[#bdeed3]/50',
-    warning: 'border-[#f9e2a9]/50',
-    crimson: 'border-[#fcd8ce]/50'
-  };
-
   const colorProgress = {
     success: 'bg-[#29936c] rounded-full',
     warning: 'bg-[#eab308] rounded-full',
@@ -40,31 +34,28 @@ export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({
   const colorType = getSatisfactionColor(satisfaction);
 
   return (
-    <BaseCard
-      variant="glass"
-      color={colorType}
+    <GenericCard
       adminBoardStyle
-      size="md"
-      className={`${className} h-full w-full ${colorClasses[colorType]} border`}
-      header={
-        <h3 className="text-lg font-arabic font-bold text-gray-800 mb-1">
+      color={colorType as 'success' | 'warning' | 'crimson'}
+      padding="md"
+      className={`h-full w-full min-h-[180px] flex flex-col justify-between ${className}`}
+    >
+      <div className="flex-1 flex flex-col w-full justify-between items-center text-center">
+        <h3 className="text-lg font-arabic font-bold text-gray-800 mb-1 w-full leading-tight mt-1 text-right">
           رضا العملاء
         </h3>
-      }
-    >
-      <div className="flex-1 flex flex-col justify-center items-center text-center">
-        <div className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="text-3xl font-bold text-gray-900 mb-2 w-full text-right">
           {satisfaction}%
         </div>
-        <div className="text-base text-gray-600 mb-2">
+        <div className="text-base text-gray-600 mb-2 w-full text-right">
           {getSatisfactionText(satisfaction)}
         </div>
         <Progress
           value={satisfaction}
-          className="w-full h-3 bg-gray-200/30 rounded-full"
+          className="w-full h-3 bg-gray-200/30 rounded-full mt-1"
           indicatorClassName={colorProgress[colorType]}
         />
       </div>
-    </BaseCard>
+    </GenericCard>
   );
 };
