@@ -14,7 +14,7 @@ export const ExtraWidgetFive: React.FC = () => {
           تحذير
         </h3>
       }
-      className="h-[180px] px-6 py-6 flex flex-col justify-between"
+      className="h-[180px] px-6 py-6 flex flex-col justify-between animate-fade-in"
     >
       <div className="flex-1 flex items-center justify-between">
         <div className="text-lg font-bold text-red-600">12</div>

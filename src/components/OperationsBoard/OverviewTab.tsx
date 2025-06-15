@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TimelineWidget } from './Overview/TimelineWidget';
 import { BudgetWidget } from './Overview/BudgetWidget';
@@ -6,100 +5,60 @@ import { HRWidget } from './Overview/HRWidget';
 import { SatisfactionWidget } from './Overview/SatisfactionWidget';
 import { ContractsWidget } from './Overview/ContractsWidget';
 import { AISuggestedWidget } from './Overview/AISuggestedWidget';
+import { InstantStatsRow } from './Overview/InstantStatsRow';
+import { UpcomingTimelineCard } from './Overview/UpcomingTimelineCard';
+import { ExtraWidgetOne } from './Overview/ExtraWidgetOne';
+import { ExtraWidgetTwo } from './Overview/ExtraWidgetTwo';
+import { ExtraWidgetThree } from './Overview/ExtraWidgetThree';
+import { ExtraWidgetFour } from './Overview/ExtraWidgetFour';
+import { ExtraWidgetFive } from './Overview/ExtraWidgetFive';
 
-interface TimelineEvent {
-  id: number;
-  date: string;
-  title: string;
-  department: string;
-  color: string;
-}
-
-interface WidgetsData {
-  budget: {
-    total: number;
-    spent: number;
-  };
-  contracts: {
-    signed: number;
-    expired: number;
-  };
-  hr: {
-    members: number;
-    vacancies: number;
-    onLeave: number;
-  };
-  satisfaction: number;
-}
-
-interface OverviewData {
-  timeline: TimelineEvent[];
-  widgets: WidgetsData;
-}
-
-interface OverviewTabProps {
-  data?: OverviewData;
-  loading: boolean;
-}
-
-export const OverviewTab: React.FC<OverviewTabProps> = ({
-  data,
-  loading
-}) => {
-  if (loading || !data) {
-    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
-  }
+export const OverviewTab: React.FC<any> = () => {
   return (
-    <div className="h-full overflow-auto px-1">
-      <section className="
-        grid grid-cols-12 gap-4 
-        h-full w-full pt-2.5 pb-7
-        auto-rows-min
-        max-h-full
-      ">
-        {/* خط الزمن (عرض كامل) */}
-        <TimelineWidget
-          timeline={data.timeline}
-          className="col-span-12 h-[220px]"
-        />
-        {/* العقود والميزانية */}
-        <ContractsWidget
-          contracts={data.widgets.contracts}
-          className="col-span-4 h-[260px]"
-        />
-        <BudgetWidget
-          budget={data.widgets.budget}
-          className="col-span-8 h-[260px]"
-        />
-        {/* الموارد البشرية والرضا ومؤشرات الأداء */}
-        <HRWidget
-          hr={data.widgets.hr}
-          className="col-span-4 h-[220px]"
-        />
-        <SatisfactionWidget
-          satisfaction={data.widgets.satisfaction}
-          className="col-span-4 h-[220px]"
-        />
-        <AISuggestedWidget
-          type="kpi"
-          title="مؤشرات الأداء الرئيسية"
-          className="col-span-4 h-[220px]"
-        />
-        <AISuggestedWidget
-          type="reports"
-          title="التقارير التنفيذية"
-          className="col-span-4 h-[220px]"
-        />
-        <AISuggestedWidget
-          type="goals"
-          title="الأهداف والإنجازات"
-          className="col-span-4 h-[220px]"
-        />
-        <AISuggestedWidget
-          type="team"
-          title="إدارة الفريق"
-          className="col-span-4 h-[220px]"
-        />
+    <div
+      className="h-full overflow-auto px-6 pt-2 pb-7"
+      style={{
+        fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
+        direction: 'rtl',
+      }}
+    >
+      {/* صف الإحصائيات العلوية */}
+      <InstantStatsRow />
+      {/* بطاقة الأحداث القادمة */}
+      <UpcomingTimelineCard className="mb-8" />
+      {/* شبكة 3x3 للبطاقات الرئيسية (أماكن الحشو فقط حالياً) */}
+      <section
+        className="
+          grid grid-cols-1 md:grid-cols-3 gap-5 w-full pt-2
+        "
+      >
+        <div className="col-span-1">
+          <ExtraWidgetOne />
+        </div>
+        <div className="col-span-1">
+          <ExtraWidgetTwo />
+        </div>
+        <div className="col-span-1">
+          <ExtraWidgetThree />
+        </div>
+        <div className="col-span-1">
+          <ExtraWidgetFour />
+        </div>
+        <div className="col-span-1">
+          <ExtraWidgetFive />
+        </div>
+        <div className="col-span-1">
+          {/* المقعد السادس - لم يُستخدم بعد */}
+        </div>
+        <div className="col-span-1">
+          {/* المقعد السابع - لم يُستخدم بعد */}
+        </div>
+        <div className="col-span-1">
+          {/* المقعد الثامن - لم يُستخدم بعد */}
+        </div>
+        <div className="col-span-1">
+          {/* المقعد التاسع - لم يُستخدم بعد */}
+        </div>
       </section>
     </div>
   );
