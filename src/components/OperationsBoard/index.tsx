@@ -33,7 +33,7 @@ const topStats = [
 
 const tabClass = (active: boolean) =>
   `font-arabic rounded-xl px-7 py-2.5 text-base transition-all 
-   ${active ? 'bg-black text-white shadow-sm' : 'bg-white/0 border border-gray-300 text-black hover:bg-gray-200'} 
+   ${active ? 'bg-black text-white shadow-sm' : 'bg-white/0 border border-gray-300 text-black'} 
    font-semibold`;
 
 export const OperationsBoard = ({
