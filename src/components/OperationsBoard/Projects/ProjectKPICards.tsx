@@ -6,21 +6,21 @@ const KPI_DATA = [
   {
     label: "المشاريع الفعّالة",
     value: 23,
-    icon: <CircleArrowUp className="text-green-500" size={20} />,
+    icon: <CircleArrowUp color="#23272f" size={20} />, // أيقونة سوداء
     color: "bg-soabra-success/20 text-[#23272f]",
     hint: "عدد المشاريع الحالية ضمن الخطة."
   },
   {
     label: "متأخر أو متعثر",
     value: 5,
-    icon: <ArrowDown className="text-yellow-500" size={20} />,
+    icon: <ArrowDown color="#23272f" size={20} />, // أيقونة سوداء
     color: "bg-soabra-warning/30 text-[#23272f]",
     hint: "عدد المشاريع بحاجة تدخل دعم أو متابعة."
   },
   {
     label: "نسبة الإنجاز",
     value: "78%",
-    icon: <Search className="text-blue-400" size={20} />,
+    icon: <Search color="#23272f" size={20} />, // أيقونة سوداء
     color: "bg-soabra-primary-blue/10 text-[#23272f]",
     hint: "معدل متوسط نسبة التقدم العام."
   }

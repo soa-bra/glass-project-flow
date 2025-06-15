@@ -90,13 +90,14 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
                       px-4 py-1 rounded-full text-xs font-semibold
                       ${
                         project.status === "نشط"
-                          ? "bg-[#d8faf0] text-soabra-status-success"
+                          ? "bg-[#d8faf0]"
                           : project.status === "متأخر"
-                          ? "bg-[#fff1d7] text-soabra-status-warning"
-                          : "bg-[#f2f4f7] text-soabra-status-neutral"
+                          ? "bg-[#fff1d7]"
+                          : "bg-[#f2f4f7]"
                       }
                       border border-white/50 shadow
                       transition-all
+                      text-[#23272f]
                     `}
                   >
                     {project.status}

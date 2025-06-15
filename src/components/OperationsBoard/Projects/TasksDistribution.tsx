@@ -3,11 +3,12 @@ import React from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { GenericCard } from "@/components/ui/GenericCard";
 
+// ألوان معتمدة من soabra
 const data = [
-  { name: "فريق التقنية", value: 43, color: "#29936c" },
-  { name: "فريق التسويق", value: 31, color: "#eab308" },
-  { name: "فريق الموارد", value: 23, color: "#2563eb" },
-  { name: "فريق الجودة", value: 14, color: "#b28010" }
+  { name: "فريق التقنية", value: 43, color: "#34D399" },      // soabra-success
+  { name: "فريق التسويق", value: 31, color: "#FBBF24" },      // soabra-warning
+  { name: "فريق الموارد", value: 23, color: "#0099FF" },      // soabra-primary-blue
+  { name: "فريق الجودة", value: 14, color: "#6B7280" }        // soabra-secondary
 ];
 
 const renderCustomTooltip = ({ active, payload }: any) =>

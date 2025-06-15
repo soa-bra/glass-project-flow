@@ -3,11 +3,12 @@ import React from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, Tooltip, Cell } from "recharts";
 import { GenericCard } from "@/components/ui/GenericCard";
 
+// استخدم ألوان من قائمة soabra في tailwind
 const progressData = [
-  { name: "مشروع أ", progress: 90, color: "#29936c" },
-  { name: "مشروع ب", progress: 68, color: "#eab308" },
-  { name: "مشروع ج", progress: 41, color: "#2563eb" },
-  { name: "مشروع د", progress: 22, color: "#ef4444" }
+  { name: "مشروع أ", progress: 90, color: "#34D399" },      // soabra-success
+  { name: "مشروع ب", progress: 68, color: "#FBBF24" },      // soabra-warning
+  { name: "مشروع ج", progress: 41, color: "#0099FF" },      // soabra-primary-blue
+  { name: "مشروع د", progress: 22, color: "#EF4444" }       // soabra-error
 ];
 
 const ProgressTooltip = ({ active, payload }: any) =>
