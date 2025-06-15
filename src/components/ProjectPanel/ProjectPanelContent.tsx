@@ -3,7 +3,6 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Project } from "@/types/project";
-import ProjectMilestonesProgressBar from "./ProjectMilestonesProgressBar";
 
 interface ProjectPanelContentProps {
   project: Project;
@@ -11,16 +10,6 @@ interface ProjectPanelContentProps {
 
 export default function ProjectPanelContent({ project }: ProjectPanelContentProps) {
   const progress = project.progress ?? 75;
-
-  // تعريف الديناميكية الافتراضية للمايل ستونز (يمكن تعديلها أو أخذها من project)
-  const milestones = project.milestones
-    ? project.milestones
-    : [
-        { key: "milestone1", label: "تخطيط", percent: 0 },
-        { key: "milestone2", label: "تنفيذ", percent: 33 },
-        { key: "milestone3", label: "مراجعة", percent: 66 },
-        { key: "milestone4", label: "إكمال", percent: 100 },
-      ];
 
   const QuickActionButton = ({ children, className }: { children: React.ReactNode, className?: string }) => (
     <button
@@ -39,16 +28,16 @@ export default function ProjectPanelContent({ project }: ProjectPanelContentProp
 
   return (
     <div className="flex flex-col gap-5 w-full h-full font-arabic">
-      {/* شريط تقدّم المراحل الجديد */}
+      {/* شريط تقدّم المراحل */}
       <div className="flex-shrink-0">
         <div className="flex justify-between items-center mb-2 px-1">
           <span className="font-bold text-soabra-primary-blue">مراحل تقدم المشروع</span>
           <span className="text-sm font-semibold text-gray-600">المهمة الحالية: المراجعة النهائية</span>
         </div>
-        <ProjectMilestonesProgressBar
-          progress={progress}
-          milestones={milestones}
-          stepsCount={128} // عدد شرائط المصابيح العرضية (يمكن تعديل الرقم)
+        <Progress
+          value={progress}
+          indicatorClassName="bg-gradient-to-r from-soabra-primary-blue to-[#8A2BE2]"
+          className="h-3"
         />
       </div>
 

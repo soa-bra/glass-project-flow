@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Users, UserMinus, UserPlus } from 'lucide-react';
-import { GenericCard } from '@/components/ui/GenericCard';
 
 interface HRData {
   members: number;
@@ -14,47 +13,51 @@ interface HRWidgetProps {
   className?: string;
 }
 
-export const HRWidget: React.FC<HRWidgetProps> = ({
-  hr,
-  className = ''
+export const HRWidget: React.FC<HRWidgetProps> = ({ 
+  hr, 
+  className = '' 
 }) => {
   const hasVacancies = hr.vacancies > 0;
 
   return (
-    <GenericCard
-      adminBoardStyle
-      padding="md"
-      color={hasVacancies ? 'warning' : 'success'}
-      className={`h-full w-full ${className} min-h-[180px] flex flex-col justify-between`}
-    >
-      <div className="w-full flex flex-col h-full justify-between items-end text-right">
-        <h3 className="text-lg font-arabic font-bold text-gray-800 mb-1 w-full leading-tight mt-1">
-          الموارد البشرية
-        </h3>
-        <div className="space-y-4 flex-1 w-full mt-1">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2.5">
-              <Users size={17} className="text-blue-400" />
-              <span className="text-base text-gray-600">الموظفين</span>
-            </div>
-            <span className="text-xl font-bold text-blue-400">{hr.members}</span>
+    <div className={`
+      ${className}
+      rounded-3xl p-5
+      bg-white/80 backdrop-blur-xl border border-white/30
+      shadow-lg hover:shadow-xl transition-all duration-300
+      ${hasVacancies ? 'border-orange-200/50' : 'border-green-200/50'}
+      flex flex-col justify-between
+    `}>
+      
+      <h3 className="text-lg font-arabic font-bold text-gray-800 mb-4">
+        الموارد البشرية
+      </h3>
+
+      <div className="space-y-4 flex-1">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Users size={16} className="text-blue-500" />
+            <span className="text-sm text-gray-600">الموظفين</span>
           </div>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2.5">
-              <UserPlus size={17} className="text-yellow-500" />
-              <span className="text-base text-gray-600">الشواغر</span>
-            </div>
-            <span className="text-xl font-bold text-yellow-500">{hr.vacancies}</span>
+          <span className="text-xl font-bold text-blue-500">{hr.members}</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <UserPlus size={16} className="text-orange-500" />
+            <span className="text-sm text-gray-600">الشواغر</span>
           </div>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2.5">
-              <UserMinus size={17} className="text-gray-500" />
-              <span className="text-base text-gray-600">في إجازة</span>
-            </div>
-            <span className="text-xl font-bold text-gray-500">{hr.onLeave}</span>
+          <span className="text-xl font-bold text-orange-500">{hr.vacancies}</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <UserMinus size={16} className="text-gray-500" />
+            <span className="text-sm text-gray-600">في إجازة</span>
           </div>
+          <span className="text-xl font-bold text-gray-500">{hr.onLeave}</span>
         </div>
       </div>
-    </GenericCard>
+    </div>
   );
 };

@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { FileText, Clock } from 'lucide-react';
-import { GenericCard } from '@/components/ui/GenericCard';
 
 interface ContractsData {
   signed: number;
@@ -15,47 +14,53 @@ interface ContractsWidgetProps {
 
 export const ContractsWidget: React.FC<ContractsWidgetProps> = ({ 
   contracts, 
-  className = ''
+  className = '' 
 }) => {
   const hasExpired = contracts.expired > 0;
 
   return (
-    <GenericCard
-      adminBoardStyle
-      padding="md"
-      color={hasExpired ? 'warning' : 'success'}
-      className={`h-full w-full ${className} min-h-[180px] flex flex-col justify-between`}
-    >
-      <div className="w-full flex flex-col h-full justify-between items-end text-right">
-        <h3 className="text-lg font-arabic font-bold text-gray-800 mb-1 w-full leading-tight mt-1">
-          العقود
-        </h3>
-        <div className="space-y-5 flex-1 w-full mt-1">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2.5">
-              <FileText size={18} className="text-green-500" />
-              <span className="text-base text-gray-700">موقعة</span>
-            </div>
-            <span className="text-2xl font-bold text-green-500">
-              {contracts.signed}
-            </span>
+    <div className={`
+      ${className}
+      rounded-3xl p-5
+      bg-white/80 backdrop-blur-xl border border-white/30
+      shadow-lg hover:shadow-xl transition-all duration-300
+      flex flex-col justify-between
+      ${hasExpired ? 'border-orange-200/50' : 'border-green-200/50'}
+    `}>
+      
+      <h3 className="text-lg font-arabic font-bold text-gray-800 mb-4">
+        العقود
+      </h3>
+
+      <div className="space-y-4 flex-1">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <FileText size={16} className="text-green-500" />
+            <span className="text-sm text-gray-600">موقعة</span>
           </div>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2.5">
-              <Clock size={18} className="text-orange-500" />
-              <span className="text-base text-gray-700">منتهية</span>
-            </div>
-            <span className="text-2xl font-bold text-orange-500">
-              {contracts.expired}
-            </span>
+          <span className="text-xl font-bold text-green-500">
+            {contracts.signed}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Clock size={16} className="text-orange-500" />
+            <span className="text-sm text-gray-600">منتهية</span>
           </div>
-          {hasExpired && (
-            <div className="mt-4 p-3 bg-[#f9e2a9]/60 rounded-xl font-arabic text-xs text-orange-800 text-center shadow border border-yellow-200/60 w-full">
-              يوجد عقود بحاجة تجديد
-            </div>
-          )}
+          <span className="text-xl font-bold text-orange-500">
+            {contracts.expired}
+          </span>
         </div>
       </div>
-    </GenericCard>
+
+      {hasExpired && (
+        <div className="mt-4 p-3 bg-orange-50/80 rounded-xl backdrop-blur-sm">
+          <p className="text-xs text-orange-700 font-medium">
+            يوجد عقود تحتاج تجديد
+          </p>
+        </div>
+      )}
+    </div>
   );
 };

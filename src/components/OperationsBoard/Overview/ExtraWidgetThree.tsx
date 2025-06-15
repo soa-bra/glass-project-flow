@@ -7,13 +7,13 @@ export const ExtraWidgetThree: React.FC = () => {
     <BaseCard 
       size="sm"
       variant="glass"
-      adminBoardStyle
+      neonRing="info"
       header={
-        <h3 className="text-sm font-arabic font-bold text-[#23272f] w-full text-right leading-tight mt-1">
+        <h3 className="text-sm font-arabic font-bold text-gray-800">
           إحصائية 3
         </h3>
       }
-      className="h-[180px] px-6 py-6 flex flex-col justify-between"
+      className="h-[180px]"
     >
       <div className="flex-1 flex items-center justify-between">
         <div className="text-lg font-bold text-purple-600">124</div>

@@ -10,8 +10,6 @@ interface GenericCardProps {
   variant?: 'glass' | 'gradient' | 'flat';
   color?: 'pinkblue' | 'orange' | 'crimson' | 'success' | 'warning' | 'info';
   neonRing?: 'success' | 'warning' | 'error' | 'info' | null;
-  adminBoardStyle?: boolean;
-  onClick?: () => void; // <--- أضفنا الخاصية هنا
 }
 
 export const GenericCard: React.FC<GenericCardProps> = ({
@@ -21,15 +19,12 @@ export const GenericCard: React.FC<GenericCardProps> = ({
   hover = true,
   variant = 'glass',
   color = 'pinkblue',
-  neonRing = null,
-  adminBoardStyle = false,
-  onClick // <--- وتمريرها هنا
+  neonRing = null
 }) => {
-  // تحديث هوامش البطاقة لجعلها أكثر راحة خاصة في اللوحة الرئيسية
   const paddingClasses = {
-    sm: 'px-7 py-5 md:px-9 md:py-7',
-    md: 'px-10 py-7 md:px-12 md:py-9',
-    lg: 'px-14 py-10 md:px-16 md:py-12'
+    sm: 'p-4',
+    md: 'p-6',
+    lg: 'p-8'
   };
 
   return (
@@ -37,13 +32,7 @@ export const GenericCard: React.FC<GenericCardProps> = ({
       variant={variant}
       color={color}
       neonRing={neonRing}
-      className={`
-        ${paddingClasses[padding]} 
-        ${className} 
-        ${hover && adminBoardStyle ? 'transition-all duration-200 hover:scale-105 hover:shadow-2xl' : ''}
-      `}
-      adminBoardStyle={adminBoardStyle}
-      onClick={onClick} // <--- تمرير الخاصية لمكون BaseCard
+      className={`${paddingClasses[padding]} ${className}`}
     >
       {children}
     </BaseCard>

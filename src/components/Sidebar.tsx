@@ -1,3 +1,4 @@
+
 import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -9,12 +10,12 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const menuItems = [
-    { icon: Home, label: 'الرئيسية', active: true, link: "/" },
-    { icon: FolderOpen, label: 'المشاريع', active: false, link: "#" },
-    { icon: CheckSquare, label: 'المهام', active: false, link: "#" },
-    { icon: Building, label: 'الإدارات', active: false, link: "/administrations" },
-    { icon: Users, label: 'التخطيط التشاركي', active: false, link: "#" },
-    { icon: Archive, label: 'الأرشيف', active: false, link: "#" }
+    { icon: Home, label: 'الرئيسية', active: true },
+    { icon: FolderOpen, label: 'المشاريع', active: false },
+    { icon: CheckSquare, label: 'المهام', active: false },
+    { icon: Building, label: 'الإدارات', active: false },
+    { icon: Users, label: 'التخطيط التشاركي', active: false },
+    { icon: Archive, label: 'الأرشيف', active: false }
   ];
 
   const toggleSidebar = () => {
@@ -39,6 +40,7 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
         {/* Menu Title Section with Toggle - Synchronized Animation */}
         <div className={`text-center mb-2 rounded-full mx-0 px-0 py-[24px] my-[24px] sync-transition ${isCollapsed ? 'flex justify-center' : ''}`}>
           <div className={`flex items-center rounded-lg sync-transition ${isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[20px]'}`}>
+            {/* Title container - Perfect synchronization */}
             <div 
               className={`flex-1 overflow-hidden`}
               style={{
@@ -54,6 +56,7 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
               </h2>
             </div>
             
+            {/* Toggle button - Smooth scaling and rotation */}
             <button 
               onClick={toggleSidebar}
               className="group w-[60px] h-[60px] rounded-full flex items-center justify-center border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/20 hover:shadow-lg flex-shrink-0 sync-transition-fast"
@@ -84,9 +87,8 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
           {menuItems.map((item, index) => {
             const IconComponent = item.icon;
             return (
-              <a
+              <button
                 key={index}
-                href={item.link}
                 className={`
                   flex items-center gap-3 text-right group relative overflow-hidden sync-transition
                   ${item.active 
@@ -100,6 +102,7 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
                   transitionDelay: isCollapsed ? '0ms' : `calc(var(--stagger-delay) * ${index})`
                 }}
               >
+                {/* Icon container - synchronized with main animation */}
                 <div className={`
                     w-[60px] h-[60px] flex items-center justify-center flex-shrink-0 border-2 rounded-full sync-transition-fast
                     ${item.active 
@@ -115,6 +118,8 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
                       }
                     `} />
                 </div>
+                
+                {/* Label - Perfect synchronization with staggered appearance */}
                 <div 
                   className="flex-1 flex items-center overflow-hidden"
                   style={{
@@ -129,7 +134,7 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
                     {item.label}
                   </span>
                 </div>
-              </a>
+              </button>
             );
           })}
         </div>
