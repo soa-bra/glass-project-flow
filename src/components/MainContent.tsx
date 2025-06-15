@@ -3,7 +3,7 @@ import { useState } from 'react';
 import ProjectWorkspace from './ProjectWorkspace';
 const MainContent = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  return <div className="flex h-screen pt-[var(--header-height)] overflow-hidden mx-0 px-0 bg-slate-200 bg-[dfecf2]">
+  return <div className="flex h-screen pt-[var(--header-height)] overflow-hidden mx-0 px-0  bg-[dfecf2]">
       {/* Sidebar */}
       <div style={{
       transition: 'all var(--animation-duration-main) var(--animation-easing)'
