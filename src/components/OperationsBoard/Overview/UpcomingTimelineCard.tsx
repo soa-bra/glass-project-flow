@@ -50,7 +50,7 @@ const events = [
 // القياسات الأصلية والفعلية
 const originalCardHeight = 104.2626;
 const currentCardHeight = 272;
-const scale = currentCardHeight / originalCardHeight;
+const scale = currentCardHeight / originalCardHeight; // تقريبًا 2.6
 
 // القياسات بعد التناسب
 const sizes = {
@@ -59,10 +59,10 @@ const sizes = {
   month: 3.5 * scale, // الشهر
   title: 3.5 * scale, // وصف مختصر للحدث
   location: 5.5 * scale, // الجهة
-  circle: 18.76 * scale, // قطر الدائرة
+  circle: 18.76 * scale, // قطر الدائرة = 48.78 تقريبًا
   vertLineWidth: 0.18 * 1.333 * scale, // إعطاء سماكة متناسقة بالشاشات العريضة (pt -> px)
-  vertLineHeight: 54 * scale, // تقريباً طول مناسب كخط رأسي بين العنصرين
-  horizLineHeight: 0.18 * 1.333 * scale,
+  vertLineLength: (18.76 * scale) / 2, // الخط الطولي من الأعلى حتى منتصف الدائرة
+  horizLineHeight: 0.18 * 1.333 * scale, // نفس سماكة الخط الأفقي
 };
 
 export const UpcomingTimelineCard = ({ className = "" }: { className?: string }) => (
@@ -92,148 +92,175 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
         الأحداث القادمة
       </span>
     </div>
-    {/* الخط الزمني -- توزيع أفقي حُر */}
+    {/* الخط الأفقي الموحد (مقطوع عند الدوائر) */}
     <div
-      className="flex flex-row-reverse justify-between items-end w-full h-full pb-0 pt-20 pr-[50px] pl-[35px] relative z-10 select-text"
+      className="absolute left-0 right-0 bottom-[37px] z-0 flex flex-row-reverse items-center"
+      style={{
+        width: "100%",
+        height: `${sizes.horizLineHeight}px`,
+        pointerEvents: "none",
+        userSelect: "none",
+      }}
+    >
+      {/* لكل دائرة، نرسم جزء من الخط بين كل دائرتين فقط */}
+      {Array.from({ length: events.length - 1 }).map((_, idx) => {
+        const gaps = 100 / (events.length - 1);
+        return (
+          <div
+            key={idx}
+            style={{
+              height: `${sizes.horizLineHeight}px`,
+              background: "#181b29",
+              opacity: 0.78,
+              // النسبة بين كل دائرتين
+              width: `calc(${gaps}% - ${sizes.circle / 2}px)`,
+              marginLeft: `${sizes.circle / 2}px`,
+              marginRight: idx === 0 ? `${sizes.circle / 2}px` : 0,
+            }}
+          />
+        );
+      })}
+    </div>
+    {/* الخط الزمني وأحداثه */}
+    <div
+      className="flex flex-row-reverse justify-between items-end w-full h-full pb-0 pt-20 pr-[50px] pl-[35px] relative z-10"
       style={{
         minHeight: "215px",
         gap: 0,
       }}
     >
-      {/* عناصر الأحداث */}
-      {events.map((event) => (
+      {events.map((event, i) => (
         <div
           key={event.id}
-          className="flex flex-col items-end min-w-0 flex-1 px-1"
+          className="flex flex-col items-center min-w-0 flex-1 px-1"
           style={{
             alignSelf: "flex-end",
-            zIndex: 20,
+            zIndex: 2,
             fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
             height: "100%",
-            // توزيع العناصر إلى يمين الخط الرأسي والدائرة
+            position: "relative"
           }}
         >
-          {/* الخط الرأسي والدائرة */}
+          {/* معلومات الحدث فوق الدائرة */}
           <div
-            className="flex flex-row items-end justify-end w-full relative"
-            style={{ minHeight: sizes.vertLineHeight + sizes.circle }}
+            className="flex flex-col items-end mb-3"
+            style={{
+              width: "100%",
+              maxWidth: "176px",
+              textAlign: "right",
+              direction: "rtl",
+              minHeight: `${sizes.circle * 2.3}px`
+            }}
           >
-            <div className="flex flex-col items-center" style={{ position: "relative" }}>
-              {/* الخط الرأسي فوق الدائرة */}
-              <div
+            {/* اليوم والشهر*/}
+            <div
+              className="flex flex-row-reverse items-end gap-1 w-full"
+              style={{
+                marginBottom: "0.15em",
+                marginTop: 0,
+                alignItems: "flex-end"
+              }}
+            >
+              <span
                 style={{
-                  width: `${sizes.vertLineWidth}px`,
-                  height: `${sizes.vertLineHeight}px`,
-                  background: "#181b29",
-                  opacity: 0.68,
-                  marginBottom: "0",
-                  marginTop: "0",
-                  display: "block",
-                  zIndex: 8,
+                  fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
+                  fontWeight: 700,
+                  fontSize: `${sizes.day}px`,
+                  color: "#181b29",
+                  lineHeight: 1,
+                  marginRight: "2px",
+                  letterSpacing: 0,
                 }}
-              />
-              {/* دائرة الحدث */}
-              <div
-                style={{
-                  width: `${sizes.circle}px`,
-                  height: `${sizes.circle}px`,
-                  borderRadius: "50%",
-                  border: `${sizes.vertLineWidth * 2}px solid #181b29`,
-                  background: "transparent",
-                  marginTop: "-1.4px",
-                  marginBottom: "0",
-                  zIndex: 10,
-                  boxSizing: "border-box",
-                  position: "relative",
-                  backgroundClip: "padding-box",
-                }}
-              />
-              {/* الخط الرأسي بعد الدائرة (ممتد للأسفل إذا احتجت) */}
-              {/* يمكن تمديده هنا لو في قيم أعلى أو إضافة زخرفة */}
-            </div>
-            {/* محتوى البيانات على يمين الخط والدائرة بمحاذاة اليسار */}
-            <div className="flex flex-col items-start ml-4" style={{ textAlign: "left", minWidth: 0, flex: 1 }}>
-              {/* اليوم والشهر "على نفس السطر" */}
-              <div className="flex flex-row-reverse items-end gap-2 w-full mb-0" style={{ direction: "ltr" }}>
-                <span
-                  style={{
-                    fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-                    fontWeight: 400,
-                    fontSize: `${sizes.day}px`,
-                    color: "#181b29",
-                    marginBottom: "0",
-                    lineHeight: 1.02,
-                  }}
-                >
-                  {event.day}
-                </span>
-                <span
-                  style={{
-                    fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-                    fontWeight: 700,
-                    fontSize: `${sizes.month}px`,
-                    color: "#181b29",
-                    marginBottom: "2.5px",
-                    lineHeight: 1,
-                  }}
-                >
-                  {event.month}
-                </span>
-              </div>
-              {/* التعريف القصير */}
-              <div
+              >
+                {event.day}
+              </span>
+              <span
                 style={{
                   fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
                   fontWeight: 400,
-                  fontSize: `${sizes.title}px`,
-                  color: "#111",
-                  margin: "0 0 0.5em 0",
-                  lineHeight: 1.13,
-                  textAlign: "left",
-                  whiteSpace: "nowrap",
-                  width: "100%",
-                  maxWidth: "160px",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {event.title}
-              </div>
-              {/* السطر الثالث فارغ */}
-              <div style={{ height: `${sizes.title * 0.9}px` }}/>
-              {/* الجهة أو المكان */}
-              <div
-                style={{
-                  fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-                  fontWeight: 600,
-                  fontSize: `${sizes.location}px`,
+                  fontSize: `${sizes.month}px`,
                   color: "#181b29",
-                  margin: "0 0 0.5em 0",
-                  textAlign: "left",
-                  lineHeight: 1.18,
-                  whiteSpace: "nowrap",
+                  lineHeight: 1.1,
+                  marginBottom: "5px",
+                  letterSpacing: 0,
                 }}
               >
-                {event.dept}
-              </div>
+                {event.month}
+              </span>
             </div>
+            {/* التعريف القصير */}
+            <div
+              style={{
+                fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
+                fontWeight: 400,
+                fontSize: `${sizes.title}px`,
+                color: "#111",
+                margin: ".2em 0 .3em 0",
+                lineHeight: 1.3,
+                textAlign: "right",
+                whiteSpace: "normal",
+                width: "100%",
+                maxWidth: "172px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {event.title}
+            </div>
+            {/* السطر الثالث فارغ */}
+            <div style={{ height: `${sizes.title * .4}px` }} />
+            {/* الجهة أو المكان */}
+            <div
+              style={{
+                fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
+                fontWeight: 600,
+                fontSize: `${sizes.location}px`,
+                color: "#181b29",
+                margin: ".1em 0 0 0",
+                textAlign: "right",
+                lineHeight: 1.2,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {event.dept}
+            </div>
+          </div>
+          {/* الدائرة بالخط الطولي فقط (بدون تغطية الخط الأفقي) */}
+          <div className="relative flex flex-col items-center" style={{ width: `${sizes.circle}px` }}>
+            {/* الخط الطولي من الأعلى حتى منتصف الدائرة */}
+            <div
+              style={{
+                width: `${sizes.vertLineWidth}px`,
+                height: `${sizes.vertLineLength}px`,
+                background: "#181b29",
+                opacity: 0.74,
+                position: "absolute",
+                top: 0,
+                left: "50%",
+                transform: "translateX(-50%)",
+                zIndex: 2,
+              }}
+            />
+            {/* الدائرة نفسها */}
+            <div
+              style={{
+                width: `${sizes.circle}px`,
+                height: `${sizes.circle}px`,
+                borderRadius: "50%",
+                border: `${sizes.vertLineWidth * 2}px solid #181b29`,
+                background: "#e9f8fa",
+                zIndex: 3,
+                boxSizing: "border-box",
+                position: "relative",
+                backgroundClip: "padding-box",
+              }}
+            />
           </div>
         </div>
       ))}
     </div>
-    {/* الخط الأفقي الموحد */}
-    <div
-      className="absolute left-0 right-0 bottom-[27px]"
-      style={{
-        background: "#181b29",
-        opacity: 0.78,
-        zIndex: 1,
-        width: "99.7%",
-        margin: "0 auto",
-        height: `${sizes.horizLineHeight}px`,
-      }}
-    />
   </div>
 );
 
 export default UpcomingTimelineCard;
+
