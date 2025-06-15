@@ -5,6 +5,8 @@ import { TAB_ITEMS } from './types';
 import { useTabData } from './useTabData';
 import { TabNavigation } from './TabNavigation';
 import { TabContentWrapper } from './TabContentWrapper';
+import { InstantStats } from './InstantStats';
+import { QuickActions } from './QuickActions';
 
 export const OperationsBoard = ({
   isSidebarCollapsed
@@ -31,14 +33,18 @@ export const OperationsBoard = ({
       }}
     >
       <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col mx-0 px-0">
-        {/* عنوان اللوحة */}
-        <div className="text-right px-6 py-[24px] my-[24px]">
-          <h2 className="font-medium text-[#2A3437] font-arabic text-3xl">
-            لوحة الإدارة والتشغيل
-          </h2>
+        {/* Header section */}
+        <div className="flex justify-between items-start px-6 pt-6 pb-2">
+          <div className="flex flex-col items-start gap-y-4">
+            <h2 className="font-medium text-[#2A3437] font-arabic text-3xl">
+              لوحة الإدارة والتشغيل
+            </h2>
+            <InstantStats />
+          </div>
+          <QuickActions />
         </div>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col mx-0 px-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col mx-0 px-0 mt-2">
           <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
           <div className="flex-1 overflow-hidden my-0 px-0">
             <TabContentWrapper tabData={tabData} loading={loading} />
