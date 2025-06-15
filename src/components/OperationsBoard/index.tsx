@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs } from '@/components/ui/tabs';
 import { TAB_ITEMS } from './types';
@@ -126,9 +125,12 @@ export const OperationsBoard = ({
       <div className="w-full flex-1 px-6 py-4">
         <div className="grid grid-cols-3 grid-rows-3 gap-5 h-full w-full">
           {/* عمود 1, صف 1&2: النظرة المالية */}
-          <div className="row-span-2 rounded-3xl shadow-inner bg-[#f2ffff]/80 border border-[#e2f3f8] p-6 flex flex-col justify-between animate-fade-in" style={{
+          <div className="row-span-2 rounded-3xl shadow-inner bg-[#f2ffff] border border-[#e2f3f8] p-6 flex flex-col justify-between animate-fade-in" style={{
             boxShadow: '0 4px 30px 0 rgba(60,160,200,0.05) inset',
-            minHeight: '280px'
+            minHeight: '280px',
+            // Glassmorphism
+            background: 'rgba(242,255,255,0.97)',
+            backdropFilter: 'blur(20px)'
           }}>
             <div className="text-lg font-arabic font-extrabold text-black mb-2">النظرة المالية</div>
             <div className="flex items-center justify-between flex-1 w-full gap-0">
@@ -157,7 +159,10 @@ export const OperationsBoard = ({
             </div>
           </div>
           {/* عمود 2, صف 1: ملخص المهام */}
-          <div className="rounded-3xl shadow-inner bg-[#f2ffff]/80 border border-[#e2f3f8] p-6 min-h-[130px] flex flex-col animate-fade-in delay-100">
+          <div className="rounded-3xl shadow-inner bg-[#f2ffff] border border-[#e2f3f8] p-6 min-h-[130px] flex flex-col animate-fade-in delay-100" style={{
+            background: 'rgba(242,255,255,0.97)',
+            backdropFilter: 'blur(20px)'
+          }}>
             <div className="text-lg font-arabic font-extrabold text-black mb-2">ملخّص المهام</div>
             <div className="flex items-center justify-between gap-4">
               <div className="flex flex-col items-center">
@@ -175,7 +180,10 @@ export const OperationsBoard = ({
             </div>
           </div>
           {/* عمود 3, صف 1: مقياس الأداء */}
-          <div className="rounded-3xl shadow-inner bg-[#f2ffff]/80 border border-[#e2f3f8] p-6 min-h-[130px] flex flex-col animate-fade-in delay-200">
+          <div className="rounded-3xl shadow-inner bg-[#f2ffff] border border-[#e2f3f8] p-6 min-h-[130px] flex flex-col animate-fade-in delay-200" style={{
+            background: 'rgba(242,255,255,0.97)',
+            backdropFilter: 'blur(20px)'
+          }}>
             <div className="text-lg font-arabic font-extrabold text-black mb-2">مقياس الأداء</div>
             <div className="flex flex-row-reverse items-center flex-1 h-full w-full gap-3 mt-2 justify-between">
               <div className="flex flex-col justify-end gap-2 items-end">
@@ -201,7 +209,10 @@ export const OperationsBoard = ({
             </div>
           </div>
           {/* عمود 2, صف 2: بطاقة رسم خطي */}
-          <div className="rounded-3xl shadow-inner bg-[#f2ffff]/80 border border-[#e2f3f8] p-6 min-h-[130px] flex flex-col animate-fade-in delay-150">
+          <div className="rounded-3xl shadow-inner bg-[#f2ffff] border border-[#e2f3f8] p-6 min-h-[130px] flex flex-col animate-fade-in delay-150" style={{
+            background: 'rgba(242,255,255,0.97)',
+            backdropFilter: 'blur(20px)'
+          }}>
             <div className="text-lg font-arabic font-extrabold text-black mb-2">تحليل الطلبات</div>
             <div className="flex items-center gap-3 flex-1">
               <svg width="80" height="36" viewBox="0 0 80 36">
@@ -219,7 +230,10 @@ export const OperationsBoard = ({
             </div>
           </div>
           {/* عمود 3, صف 2: دائرة بيانات + تعليق */}
-          <div className="rounded-3xl shadow-inner bg-[#f2ffff]/80 border border-[#e2f3f8] p-6 min-h-[130px] flex flex-col animate-fade-in delay-200">
+          <div className="rounded-3xl shadow-inner bg-[#f2ffff] border border-[#e2f3f8] p-6 min-h-[130px] flex flex-col animate-fade-in delay-200" style={{
+            background: 'rgba(242,255,255,0.97)',
+            backdropFilter: 'blur(20px)'
+          }}>
             <div className="text-lg font-arabic font-extrabold text-black mb-2">بيانات <span className="text-black font-normal">اقترحها الذكاء الصناعي</span></div>
             <div className="flex items-center gap-5 flex-1">
               <div className="relative">
@@ -240,12 +254,18 @@ export const OperationsBoard = ({
             </div>
           </div>
           {/* عمود 1, صف 3: تنبيهات (يشارك جزء من العمود الثاني) */}
-          <div className="col-span-2 rounded-3xl shadow-inner bg-[#f2ffff]/80 border border-[#e2f3f8] min-h-[110px] flex flex-col p-6 animate-fade-in delay-300">
+          <div className="col-span-2 rounded-3xl shadow-inner bg-[#f2ffff] border border-[#e2f3f8] min-h-[110px] flex flex-col p-6 animate-fade-in delay-300" style={{
+            background: 'rgba(242,255,255,0.97)',
+            backdropFilter: 'blur(20px)'
+          }}>
             <div className="text-lg font-arabic font-extrabold text-black mb-2">التنبيهات</div>
             <div className="text-black/80 font-arabic text-sm mt-5">لا توجد تنبيهات حاليا...</div>
           </div>
           {/* عمود 3, صف 3: ملخص المشاريع (مخطط بياني) */}
-          <div className="rounded-3xl shadow-inner bg-[#a4e2f6]/80 border border-[#d1ecf8] min-h-[110px] flex flex-col p-6 items-center justify-center animate-fade-in delay-350">
+          <div className="rounded-3xl shadow-inner bg-[#a4e2f6]/80 border border-[#d1ecf8] min-h-[110px] flex flex-col p-6 items-center justify-center animate-fade-in delay-350" style={{
+            background: 'rgba(242,255,255,0.97)',
+            backdropFilter: 'blur(20px)'
+          }}>
             <div className="text-base font-arabic font-extrabold text-black mb-2">ملخص المشاريع</div>
             <div className="flex items-end gap-3 w-full justify-between mt-2 px-2">
               {[24, 32, 20, 17, 27].map((h, i) => (
@@ -283,4 +303,3 @@ export const OperationsBoard = ({
 };
 
 export default OperationsBoard;
-
