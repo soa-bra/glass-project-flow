@@ -14,4 +14,5 @@ export type Project = {
   team?: { name: string; avatar?: string }[];
   progress?: number;
   links?: { label: string; url: string }[];
+  milestones?: { key: string; label?: string; percent: number }[];
 };
