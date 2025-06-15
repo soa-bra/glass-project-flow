@@ -48,12 +48,12 @@ export const OperationsBoard = ({
     direction: 'rtl'
   }}>
       {/* رأس اللوحة (العنوان + أزرار التبويب) */}
-      <div className="w-full px-8 pt-8 pb-2 flex items-center justify-between">
+      <div className="w-full px-8 pt-8 pb-2 flex items-center justify-between py-[42px]">
         <div>
-          <h2 className="text-[2rem] md:text-[2.1rem] font-black tracking-tight m-0 pb-1 font-arabic" style={{
+          <h2 style={{
           color: '#181b29',
           fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif'
-        }}>لوحة الإدارة والتشغيل</h2>
+        }} className="text-[2rem] tracking-tight m-0 pb-1 font-arabic md:text-3xl font-medium">لوحة الإدارة والتشغيل</h2>
         </div>
         {/* أزرار التبويبات */}
         <div className="flex gap-2.5 mt-1 mb-1">
