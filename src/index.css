@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -334,9 +335,9 @@
 @layer utilities {
   /* ... keep existing code (all utility classes) */
   .advanced-glass-card {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(30px) saturate(180%);
-    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1.5px solid rgba(255, 255, 255, 0.3);
     box-shadow: 
       0 4px 16px rgba(0, 0, 0, 0.06),
@@ -345,6 +346,7 @@
     transition: all 0.2s ease-in-out;
     position: relative;
     overflow: hidden;
+    border-radius: 16px;
   }
   
   .advanced-glass-card::before {
@@ -390,7 +392,7 @@
       0 0 10px rgba(157, 203, 255, 0.15);
   }
   
-  /* ... keep existing code (gradient cards) */
+  /* ... keep existing code (gradient cards, flat cards, card sizes, typography) the same ... */
   .grad-pinkblue {
     background: linear-gradient(135deg, 
       rgba(236, 72, 153, 0.8) 0%, 
@@ -441,7 +443,6 @@
     box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
   }
   
-  /* ... keep existing code (flat cards) */
   .flat-crimson {
     background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
     color: white;
@@ -477,7 +478,6 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  /* ... keep existing code (card sizes and typography) */
   .card-sm {
     @apply min-h-[120px];
   }
