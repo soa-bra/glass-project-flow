@@ -11,6 +11,7 @@ interface GenericCardProps {
   color?: 'pinkblue' | 'orange' | 'crimson' | 'success' | 'warning' | 'info';
   neonRing?: 'success' | 'warning' | 'error' | 'info' | null;
   adminBoardStyle?: boolean;
+  onClick?: () => void; // <--- أضفنا الخاصية هنا
 }
 
 export const GenericCard: React.FC<GenericCardProps> = ({
@@ -21,7 +22,8 @@ export const GenericCard: React.FC<GenericCardProps> = ({
   variant = 'glass',
   color = 'pinkblue',
   neonRing = null,
-  adminBoardStyle = false
+  adminBoardStyle = false,
+  onClick // <--- وتمريرها هنا
 }) => {
   // تحديث هوامش البطاقة لجعلها أكثر راحة خاصة في اللوحة الرئيسية
   const paddingClasses = {
@@ -41,6 +43,7 @@ export const GenericCard: React.FC<GenericCardProps> = ({
         ${hover && adminBoardStyle ? 'transition-all duration-200 hover:scale-105 hover:shadow-2xl' : ''}
       `}
       adminBoardStyle={adminBoardStyle}
+      onClick={onClick} // <--- تمرير الخاصية لمكون BaseCard
     >
       {children}
     </BaseCard>
