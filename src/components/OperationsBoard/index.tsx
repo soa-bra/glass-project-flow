@@ -1,94 +1,50 @@
 
 import React, { useState } from 'react';
-
-import { OverviewTab } from './OverviewTab';
-import { ClientsTab } from './ClientsTab';
-import { FinanceTab } from './FinanceTab';
-import { ProjectsTab } from './ProjectsTab';
-import { MarketingTab } from './MarketingTab';
-import { ReportsTab } from './ReportsTab';
-import { OperationsBoardHeader } from './OperationsBoardHeader';
-import { TopStats } from './TopStats';
-import { QuickActionButtons } from './QuickActionButtons';
+import { Tabs } from '@/components/ui/tabs';
+import { TAB_ITEMS } from './types';
+import { useTabData } from './useTabData';
+import { TabNavigation } from './TabNavigation';
+import { TabContentWrapper } from './TabContentWrapper';
 
 export const OperationsBoard = ({
-  isSidebarCollapsed,
-  isPanelOpen
+  isSidebarCollapsed
 }: {
   isSidebarCollapsed: boolean;
-  isPanelOpen?: boolean;
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
-
-  const renderActiveTab = () => {
-    switch (activeTab) {
-      case 'overview':
-        return <OverviewTab />;
-      case 'finance':
-        return <FinanceTab data={undefined} loading={true} />;
-      case 'projects':
-        return <ProjectsTab data={undefined} loading={true} />;
-      case 'marketing':
-          return <MarketingTab data={undefined} loading={true} />;
-      case 'clients':
-        // NOTE: I am mocking the data for clients tab to avoid it being in a loading state
-        return <ClientsTab data={{ active: [{id: 1, name: "مشروع وهمي", projects: 2}], nps: [{id: 1, score: 9, client: "عميل وهمي"}] }} loading={false} />;
-      case 'reports':
-        return <ReportsTab data={undefined} loading={true} />;
-      default:
-        return <OverviewTab />;
-    }
-  };
-  
-  // A crude way to not play animation on first render
-  const [isInitialRender, setIsInitialRender] = useState(true);
-  React.useEffect(() => {
-    const timer = setTimeout(() => setIsInitialRender(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const animationClass = isInitialRender ? '' : isPanelOpen ? 'animate-slide-out-right' : 'animate-slide-in-right';
+  const {
+    tabData,
+    loading
+  } = useTabData(activeTab, true);
 
   return (
-    <div
-      className={`fixed transition-all duration-500 ease-in-out operations-board-expanded ${animationClass}`}
+    <div 
+      className={`fixed transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'}`} 
       style={{
         height: 'calc(100vh - 60px)',
         top: 'var(--sidebar-top-offset)',
-        borderRadius: '28px',
-        background: '#d6e8eb',
+        borderRadius: '20px',
+        background: 'linear-gradient(135deg, #e7fde4 0%, #eafae1 50%, #beedd6 100%)',
         backdropFilter: 'blur(20px)',
         overflow: 'hidden',
-        zIndex: 30,
-        fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-        direction: 'rtl'
+        zIndex: 30
       }}
     >
-      <OperationsBoardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
-      
-      <TopStats />
-      
-      {/* منطقة عرض محتوى التبويب النشط */}
-      <div className="w-full flex-1 px-1.5 h-[calc(100%-190px)]">
-        {renderActiveTab()}
+      <div className="w-full h-full rounded-t-[20px] bg-white/40 backdrop-blur-sm flex flex-col mx-0 px-0">
+        {/* عنوان اللوحة */}
+        <div className="text-right px-6 py-[24px] my-[24px]">
+          <h2 className="font-medium text-[#2A3437] font-arabic text-3xl">
+            لوحة الإدارة والتشغيل
+          </h2>
+        </div>
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col mx-0 px-0">
+          <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
+          <div className="flex-1 overflow-hidden my-0 px-0">
+            <TabContentWrapper tabData={tabData} loading={loading} />
+          </div>
+        </Tabs>
       </div>
-
-      <QuickActionButtons />
-
-      <style>{`
-        .animate-fade-in {
-          animation: fade-in-card 0.60s cubic-bezier(.36,.2,.05,1.05) both;
-        }
-        .animate-fade-in.delay-100 { animation-delay: .08s }
-        .animate-fade-in.delay-150 { animation-delay: .13s }
-        .animate-fade-in.delay-200 { animation-delay: .18s }
-        .animate-fade-in.delay-300 { animation-delay: .27s }
-        .animate-fade-in.delay-350 { animation-delay: .33s }
-        @keyframes fade-in-card {
-          0% { opacity: 0; transform: translateY(18px);}
-          100% { opacity: 1; transform: translateY(0);}
-        }
-      `}</style>
     </div>
   );
 };

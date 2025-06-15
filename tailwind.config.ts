@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -135,8 +136,8 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'slide-in-right': 'slide-in-right 500ms cubic-bezier(0.22, 1, 0.36, 1)',
-				'slide-out-right': 'slide-out-right 500ms cubic-bezier(0.22, 1, 0.36, 1)'
+				'slide-in-right': 'slide-in-right 300ms ease-out',
+				'slide-out-right': 'slide-out-right 300ms ease-out'
 			},
 			spacing: {
 				'18': '4.5rem',
