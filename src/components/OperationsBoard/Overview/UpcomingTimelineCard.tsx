@@ -1,18 +1,7 @@
 
 import React from "react";
 
-const CARD_ORIG_W = 514.0982;
-const CARD_ORIG_H = 104.2626;
-const CARD_TARGET_W = 620; // تقريبًا، يفضل التعديل لو كان القياس الفعلي مختلف
-const CARD_TARGET_H = 131; // ارتفاع البطاقة تقريبًا في التطبيق
-const SCALE = CARD_TARGET_W / CARD_ORIG_W; // النسبة للتكبير وهي ~1.206 أو 1.21
-
-// تحويل القياس الأصلي إلى النسبي
-function scale(val: number) {
-  return val * SCALE;
-}
-
-// البيانات كما هي
+// نفس البيانات!
 const events = [
   {
     id: 1,
@@ -32,7 +21,7 @@ const events = [
     id: 3,
     day: "25",
     month: "May",
-    title: "اجتماع مناقشة الشراكة الوقفية",
+    title: "اجتماع لمناقشة الشراكة الوقفية",
     dept: "جامعة الملك سعود",
   },
   {
@@ -60,49 +49,30 @@ const events = [
 
 export const UpcomingTimelineCard = ({ className = "" }: { className?: string }) => (
   <div
-    className={`relative w-full h-[${Math.round(CARD_TARGET_H)}px] rounded-[${scale(24)}px] flex flex-col justify-end overflow-visible border-0 font-arabic ${className}`}
+    className={`relative w-full h-[272px] bg-[#e9f8fa] rounded-[41px] p-0 flex flex-col justify-end overflow-visible border-0 font-arabic ${className}`}
     style={{
       fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
       direction: "rtl",
-      background: "rgba(233, 248, 250, 0.92)",
+      background: "rgba(233, 248, 250, 0.95)",
       backdropFilter: "blur(20px)",
-      borderRadius: `${scale(24)}px`,
+      borderRadius: "41px",
       boxShadow: "none",
-      padding: 0,
-      minHeight: `${CARD_TARGET_H}px`,
-      maxHeight: `${CARD_TARGET_H}px`,
     }}
   >
-    {/* عنوان البطاقة */}
-    <div
-      className="absolute top-0 right-0 z-20 select-none"
-      style={{
-        paddingRight: scale(24),
-        paddingTop: scale(10),
-        fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-      }}
-    >
+    {/* العنوان */}
+    <div className="absolute top-0 right-0 px-14 pt-7 pb-0 flex items-center z-20 select-none">
       <span
-        style={{
-          fontSize: `${scale(10.63)}px`, // العنوان
-          fontWeight: 500,
-          letterSpacing: 0,
-          color: "#181b29",
-          lineHeight: 1.2,
-        }}
+        className="text-[2.35rem] font-black tracking-tight text-[#181b29] font-arabic"
+        style={{ fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif' }}
       >
         الأحداث القادمة
       </span>
     </div>
-    {/* الخط الزمني */}
+    {/* الخط الزمني -- توزيع أفقي حُر */}
     <div
-      className="flex flex-row-reverse justify-between items-end w-full h-full relative z-10 select-text"
+      className="flex flex-row-reverse justify-between items-end w-full h-full pb-0 pt-20 pr-[50px] pl-[35px] relative z-10 select-text"
       style={{
-        minHeight: scale(86),
-        paddingRight: scale(24),
-        paddingLeft: scale(14),
-        paddingTop: scale(28),
-        paddingBottom: scale(8),
+        minHeight: "215px",
         gap: 0,
       }}
     >
@@ -110,125 +80,96 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
       {events.map((event, idx) => (
         <div
           key={event.id}
-          className="flex flex-col items-end min-w-0 max-w-[120px] flex-1 px-0"
+          className="flex flex-col items-center min-w-0 max-w-[230px] flex-1 px-1"
           style={{
             alignSelf: "flex-end",
-            fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-            textAlign: "right",
             zIndex: 20,
+            fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
           }}
         >
           {/* التاريخ */}
-          <div
-            className="flex flex-row-reverse items-end mb-0 w-full pb-0"
-            style={{
-              marginBottom: scale(-2),
-              paddingRight: scale(1),
-              width: "100%",
-            }}
-          >
-            {/* اليوم */}
-            <span
-              style={{
-                fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
-                fontSize: `${scale(15)}px`, // اليوم
-                fontWeight: 400,
-                color: "#181b29",
-                lineHeight: 1,
-                marginLeft: scale(5),
-                verticalAlign: "bottom",
-                paddingTop: 0,
-              }}
-            >
-              {event.day}
-            </span>
-            {/* الشهر */}
-            <span
-              style={{
-                fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
-                fontSize: `${scale(3.5)}px`, // الشهر 3.5 * النسبة
-                fontWeight: 700,
-                color: "#181b29",
-                letterSpacing: 0.3,
-                marginBottom: scale(1), // slight offset
-                verticalAlign: "bottom",
-                marginRight: scale(2),
-              }}
-            >
-              {event.month}
-            </span>
+          <div className="flex flex-col items-center mb-[8px] w-full">
+            <div className="flex flex-row items-end gap-2 w-full justify-center">
+              <span
+                className="text-[1.04rem] font-normal text-[#181b29] leading-5"
+                style={{
+                  fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
+                  letterSpacing: 0.2,
+                  color: "#181b29"
+                }}
+              >
+                {event.month}
+              </span>
+              <span
+                className="text-[2.95rem] font-black text-[#181b29] leading-[1.03] mb-[2px]"
+                style={{
+                  fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
+                  color: "#181b29",
+                  fontWeight: 900,
+                  lineHeight: 1.09,
+                }}
+              >
+                {event.day}
+              </span>
+            </div>
           </div>
-          {/* سطر تعريف الحدث */}
+          {/* عنوان الحدث */}
           <div
+            className="w-full text-[1.04rem] text-[#111] font-normal font-arabic text-center mb-[5px] leading-normal"
             style={{
               fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-              fontSize: `${scale(3.5)}px`, // ٣٫٥ بكسل
               fontWeight: 400,
-              textAlign: "right",
-              color: "#111",
-              whiteSpace: "normal",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              maxWidth: scale(85),
-              marginTop: scale(2.2),
+              marginTop: "4px",
+              marginBottom: "3px",
             }}
           >
             {event.title}
           </div>
-          {/* سطر فارغ */}
-          <div style={{ height: scale(3.5), minHeight: scale(3), maxHeight: scale(6) }} />
           {/* جهة الحدث */}
           <div
+            className="w-full text-[1.35rem] font-black font-arabic text-center leading-tight text-[#181b29] mb-0"
             style={{
               fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-              fontSize: `${scale(5.5)}px`,
-              fontWeight: 500,
-              color: "#181b29",
-              textAlign: "right",
-              marginBottom: 0,
-              marginTop: scale(2.7),
-              maxWidth: scale(85),
+              fontWeight: 900,
+              marginBottom: "0px",
             }}
           >
             {event.dept}
           </div>
           {/* خط رأسي يصل الدائرة */}
-          <div
-            style={{
-              width: `${scale(0.24)}px`,
-              background: "#181b29",
-              height: scale(24),
-              margin: `${scale(1)}px 0 0 0`,
-              alignSelf: "center",
-              opacity: 0.93,
-            }}
-          />
+          <div style={{
+            width: "2px",
+            background: "#181b29",
+            height: "42px",
+            marginTop: "3px",
+            marginBottom: "0",
+            display: "block"
+          }} />
           {/* الدائرة السفلية الكبيرة */}
           <div
+            className="flex items-center justify-center"
             style={{
-              width: scale(18.76),
-              height: scale(18.76),
+              width: "65px",
+              height: "65px",
               borderRadius: "50%",
-              border: `${scale(0.18)}px solid #181b29`,
-              background: "rgba(255,255,255,0.5)",
-              margin: "0 auto",
-              marginTop: scale(-0.5),
+              border: "2.2px solid #181b29",
+              background: "transparent",
+              marginTop: "-2px",
+              marginBottom: "0",
             }}
-          />
+          ></div>
         </div>
       ))}
     </div>
-    {/* الخط الأفقي أسفل الدوائر */}
+    {/* الخط الأفقي الموحد */}
     <div
-      className="absolute left-0 right-0"
+      className="absolute left-0 right-0 bottom-[27px] h-[2.2px]"
       style={{
-        bottom: scale(10),
         background: "#181b29",
-        opacity: 0.85,
+        opacity: 0.78,
         zIndex: 1,
-        width: "100%",
+        width: "99.7%",
         margin: "0 auto",
-        height: `${scale(0.24)}px`,
       }}
     />
   </div>
