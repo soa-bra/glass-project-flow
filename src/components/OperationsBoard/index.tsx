@@ -1,38 +1,15 @@
 
 import React, { useState } from 'react';
-import { TAB_ITEMS } from './types';
-import { ChevronLeft, Plus, Zap, Edit3 } from 'lucide-react';
 
 import { OverviewTab } from './OverviewTab';
 import { ClientsTab } from './ClientsTab';
-import FinanceTab from './FinanceTab';
-import ProjectsTab from './ProjectsTab';
-import MarketingTab from './MarketingTab';
-import ReportsTab from './ReportsTab';
-
-// new topStats from JSON
-const topStats = [
-  {
-    label: 'الإيرادات اليومية',
-    value: '12,500 ﷼',
-    icon: <ChevronLeft size={22} strokeWidth={1.5} />,
-  },
-  {
-    label: 'المشاريع الجارية',
-    value: 8,
-    icon: <ChevronLeft size={22} strokeWidth={1.5} />,
-  },
-  {
-    label: 'الشكـاوى',
-    value: 2,
-    icon: <ChevronLeft size={22} strokeWidth={1.5} />,
-  },
-];
-
-const tabClass = (active: boolean) =>
-  `font-arabic rounded-full px-7 py-2.5 text-base transition-all 
-   ${active ? 'bg-black text-white shadow-sm' : 'bg-white/0 border border-gray-300 text-black'} 
-   font-semibold`;
+import { FinanceTab } from './FinanceTab';
+import { ProjectsTab } from './ProjectsTab';
+import { MarketingTab } from './MarketingTab';
+import { ReportsTab } from './ReportsTab';
+import { OperationsBoardHeader } from './OperationsBoardHeader';
+import { TopStats } from './TopStats';
+import { QuickActionButtons } from './QuickActionButtons';
 
 export const OperationsBoard = ({
   isSidebarCollapsed,
@@ -87,73 +64,16 @@ export const OperationsBoard = ({
         direction: 'rtl'
       }}
     >
-      {/* رأس اللوحة (العنوان + أزرار التبويب) */}
-      <div className="w-full px-8 pt-8 pb-2 flex items-center justify-between">
-        <div>
-          <h2 className="text-[2rem] md:text-[2.1rem] font-black tracking-tight m-0 pb-1 font-arabic"
-            style={{
-              color: '#181b29',
-              fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif'
-            }}>لوحة الإدارة والتشغيل</h2>
-        </div>
-        {/* أزرار التبويبات */}
-        <div className="flex gap-2.5 mt-1 mb-1">
-          {TAB_ITEMS.map(tab =>
-            <button
-              type="button"
-              key={tab.value}
-              className={tabClass(activeTab === tab.value)}
-              onClick={() => setActiveTab(tab.value)}
-            >
-              {tab.label}
-            </button>
-          )}
-        </div>
-      </div>
-      {/* سطر الإحصائيات الفورية */}
-      <div className="w-full flex justify-between items-center gap-4 px-8 pb-2">
-        {topStats.map((stat) => (
-          <div
-            key={stat.label}
-            className="flex items-center justify-end gap-3 flex-1 min-w-0"
-            style={{
-              background: 'none',
-              boxShadow: 'none'
-            }}
-          >
-            <div className="flex flex-col items-end text-right">
-              <span className="text-[1.3rem] font-extrabold font-arabic leading-tight block text-black mb-0">
-                {stat.value}
-              </span>
-              <span className="text-[14px] text-black/75 font-medium font-arabic">{stat.label}</span>
-            </div>
-            <span className="bg-white/45 rounded-full p-2.5 flex items-center justify-center ml-2 border border-gray-300 shadow-sm"
-                  style={{
-                    boxShadow: 'inset 0 1px 5px 0 rgba(40,90,150,0.10)'
-                  }}>
-              {stat.icon}
-            </span>
-          </div>
-        ))}
-      </div>
+      <OperationsBoardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+      
+      <TopStats />
       
       {/* منطقة عرض محتوى التبويب النشط */}
       <div className="w-full flex-1 px-1.5 h-[calc(100%-190px)]">
         {renderActiveTab()}
       </div>
 
-      {/* أزرار الإجراءات السريعة */}
-      <div className="absolute top-[120px] left-8 flex flex-col gap-3 z-50">
-        <button className="w-12 h-12 rounded-full bg-[#4AB5FF] text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
-          <Plus size={24} />
-        </button>
-        <button className="w-12 h-12 rounded-full bg-[#FFCC55] text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
-          <Zap size={24} />
-        </button>
-        <button className="w-12 h-12 rounded-full bg-[#999999] text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
-          <Edit3 size={24} />
-        </button>
-      </div>
+      <QuickActionButtons />
 
       <style>{`
         .animate-fade-in {
