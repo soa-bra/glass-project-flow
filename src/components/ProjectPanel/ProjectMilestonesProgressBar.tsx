@@ -9,239 +9,246 @@ export interface Milestone {
   percent: number; // نسبة الوصول (مثلاً: 25, 50, 75, 100)
 }
 
-// خصائص المكون
 interface ProjectMilestonesProgressBarProps {
   progress: number; // القيمة بين 0-100
   milestones: Milestone[];
-  stepsCount?: number; // كم شريحة (افتراضي)
+  stepsCount?: number; // غير مستخدم الآن
 }
 
-/**
- * دالة تولّد لك تدرج ألوان سلس بين مجموعة من ألوان، وتعيد لون كل خطوة بالترتيب الصحيح للطيف
- * points: مصفوفة فيها ترتيب النقاط {position: number, color: string}
- * الخطوة نفسها لونها color في الفورمات hex فقط
- */
-function generateStripeColors(steps: number, gradientStops: { stop: number, color: string }[]) {
-  // gradientStops مثال:
-  // [
-  //   {stop: 0, color: "#DBFB9A"},  // أخضر فاتح
-  //   {stop: 0.33, color: "#77E8FF"}, // أزرق
-  //   {stop: 0.51, color: "#F79597"}, // أحمر وردي
-  //   {stop: 0.70, color: "#E5E6EF"}, // بنفسجي/رمادي
-  //   {stop: 1, color: "#E5E6EF"}, // بنفسجي/رمادي
-  // ]
-  const result: string[] = [];
-  for (let i = 0; i < steps; i++) {
-    const pos = i / (steps - 1); // من 0 إلى 1
-    // ابحث عن مقطع التدرج المناسب لهذه الخطوة
-    const fromIdx = gradientStops.findIndex((g, idx) => pos < g.stop && idx > 0) - 1;
-    if (fromIdx < 0) {
-      result.push(gradientStops[0].color);
-      continue;
-    }
-    const from = gradientStops[fromIdx], to = gradientStops[fromIdx + 1];
-    const rel = (pos - from.stop) / (to.stop - from.stop);
-    // interpolate كل لون (hex → rgb → interpolate → rgb → hex)
-    const color = interpolateHex(from.color, to.color, rel);
-    result.push(color);
-  }
-  return result;
-}
+const GRADIENT =
+  "linear-gradient(90deg, #DBFB9A 0%, #A0EDA9 24%, #6DDFFD 44%, #77B6FE 52%, #E9A3A9 58%, #E5E6EF 69%, #E5E6EF 100%)";
 
-// تحويل hex إلى rgb
-function hexToRgb(hex: string) {
-  let c = hex.replace("#", "");
-  if (c.length === 3) c = c.split("").map((v) => v + v).join("");
-  const n = parseInt(c, 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-}
+const FONT = "'IBM Plex Sans Arabic', Arial, Tahoma, sans-serif";
 
-// تحويل rgb إلى hex
-function rgbToHex(r: number, g: number, b: number) {
-  return "#" + [r,g,b].map(x=>x.toString(16).padStart(2, "0")).join("");
-}
-
-// تدرج خطي بين لونين
-function interpolateHex(a: string, b: string, t: number) {
-  const [r1,g1,b1] = hexToRgb(a), [r2,g2,b2] = hexToRgb(b);
-  const r = Math.round(r1 + (r2 - r1) * t);
-  const g = Math.round(g1 + (g2 - g1) * t);
-  const b_ = Math.round(b1 + (b2 - b1) * t);
-  return rgbToHex(r, g, b_);
+// تأثير glass وكذلك الخط - قابل للتعديل بسهوله حسب التصميم
+function glassShadow(enabled: boolean) {
+  return enabled
+    ? "0 2px 24px 0 rgba(140,255,143,0.07)"
+    : "0 2px 14px 0 rgba(163,163,208,0.05)";
 }
 
 export const ProjectMilestonesProgressBar: React.FC<ProjectMilestonesProgressBarProps> = ({
   progress,
   milestones,
-  stepsCount = 96
 }) => {
-  // مصفوفة الشرائح (كل شريحة عمود صغير)
-  const steps = Array.from({ length: stepsCount });
-  // حدد توزيع المايل ستونز بالضبط مع الشرائح
-  const milestonePositions = milestones.map((m) => {
-    const idx = Math.round((m.percent / 100) * (stepsCount - 1));
-    return { ...m, idx };
-  });
+  // ترتيب الـ milestones بحسب النسبة، وتعيين موضعها على الشريط
+  // 固定 المعايير: bar height 22px, bar radius 18px, دائرة milestone 38px
+  const BAR_HEIGHT = 22;
+  const BAR_RADIUS = 18;
+  const CIRCLE_SIZE = 38;
+  const TOP_OFFSET = 18; // كم تبعد الدوائر عن أعلى العنصر (لضبط تراكب الدوائر على البار)
 
-  // توزيع الألوان: مطابق للصورة بدقة!
-  const stripeColors = generateStripeColors(
-    stepsCount,
-    [
-      { stop: 0, color: "#DBFB9A" },   // أخضر
-      { stop: 0.24, color: "#A0EDA9" }, // أخضر مزرق
-      { stop: 0.44, color: "#6DDFFD" }, // سماوي/أزرق
-      { stop: 0.52, color: "#77B6FE" }, // أزرق (باب السماء 😅)
-      { stop: 0.58, color: "#E9A3A9" }, // وردي-أحمر
-      { stop: 0.69, color: "#E5E6EF" }, // بني-بنفسجي فاتح
-      { stop: 1, color: "#E5E6EF" }     // نهاية بالبنفسجي/رمادي فاتح
-    ]
-  );
+  // يتحكّم في الزجاجية والتناسق بين البار والدوائر
+  // استخدم الخط/الزجاج/الـ RTL كما طلبت
 
-  // ريندر الشريط وكامل العناصر
+  // المايل ستونز: رتّبهم تصاعدياً بالنسب
+  const milestonesSorted = [...milestones].sort((a, b) => a.percent - b.percent);
+  // موضع كل دائرة على البار: (m.percent%) في الاتجاه الصحيح (يمين لليسار)
+  // المسافة من اليمين: left = (100 - percent)%
+  // سنستخدم position: absolute
+
+  // يجب التأكد أن أول milestone دائماً عند 0%، وآخرها عند 100%
+  // -------- UI رسمة البار متكونة من: ------ 
+  // - مستطيل خلفية متدرج
+  // - طبقة فوقه لتعبئة progress (زجاجية شفاف)
+  // - دوائر milestones فوق الشريط 
+  // - أرقام / علامات الوصول / عناوين milestones
+
   return (
     <div
-      data-testid="milestones-bar"
-      className="w-full"
+      dir="rtl"
       style={{
         position: "relative",
-        minHeight: 56,
-        margin: 0,
+        fontFamily: FONT,
+        width: "100%",
+        minHeight: CIRCLE_SIZE + TOP_OFFSET + 2,
         padding: 0,
-        fontFamily: "'IBM Plex Sans Arabic', Arial, Tahoma, sans-serif",
+        margin: 0,
         userSelect: "none",
         direction: "rtl",
       }}
     >
-      {/* شريط كامل عرض الشاشة ـ بدون بطاقة أو ظل */}
       <div
         style={{
-          width: "100%",
-          height: 44,
-          display: "flex",
-          alignItems: "center",
           position: "relative",
+          width: "100%",
+          height: BAR_HEIGHT,
+          background: GRADIENT,
+          borderRadius: BAR_RADIUS,
+          overflow: "hidden",
+          boxShadow: glassShadow(false),
+          marginTop: CIRCLE_SIZE / 2,
         }}
       >
-        {/* شرائح تدرج الألوان تحت الدوائر */}
-        {steps.map((_, i) => {
-          // كل شريحة لها لونها من التدرج
-          const color = stripeColors[i];
-          const percent = (i / (stepsCount - 1)) * 100;
-          const isActive = progress >= percent;
-          const isMilestone = milestonePositions.some((m) => m.idx === i);
-          // الشريحة أعرض تحت الدائرة
-          const specialWidth = isMilestone ? 5 : 2.1;
-          return (
+        {/* طبقة progress glass فوق البار */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            height: BAR_HEIGHT,
+            width: `${progress}%`,
+            background:
+              "linear-gradient(90deg, rgba(255,255,255,0.37) 0%, rgba(255,255,255,0.15) 68%, rgba(255,255,255,0) 100%)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            borderRadius: BAR_RADIUS,
+            borderTopRightRadius: BAR_RADIUS,
+            borderBottomRightRadius: BAR_RADIUS,
+            boxShadow: glassShadow(true),
+            zIndex: 2,
+            transition: "width 0.5s cubic-bezier(0.4,0,0.2,1)",
+            pointerEvents: "none",
+          }}
+        ></div>
+        {/* شريط خلفي لتكملة الزوايا وتناسق الحواف */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: BAR_RADIUS,
+            border: "1.2px solid rgba(255,255,255,0.33)",
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        />
+      </div>
+      {/* دوائر milestones فوق الشريط */}
+      {milestonesSorted.map((m, idx) => {
+        // احسب موضع الدائرة على الحافة اليمنى (RTL)
+        const isFirst = idx === 0;
+        const isLast = idx === milestonesSorted.length - 1;
+        // موقع الدائرة كنسبة مئوية
+        const circleRight =
+          isLast
+            ? `0%`
+            : isFirst
+            ? `calc(100% - ${CIRCLE_SIZE / 2}px)`
+            : `calc(${100 - m.percent}% - ${CIRCLE_SIZE / 2}px)`;
+        // تحقق هل تم تجاوز الـ milestone أم لا
+        const reached = progress >= m.percent - 1.8; // حتى 1.8% قبل الميلستون لاعتبارات الدقة
+        // شكل علامة الإنجاز أو الرقم
+        return (
+          <div
+            key={m.key}
+            style={{
+              position: "absolute",
+              top: 0,
+              right: circleRight,
+              width: CIRCLE_SIZE,
+              height: CIRCLE_SIZE,
+              transform: "translateY(0%)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              zIndex: reached ? 30 : 22,
+              pointerEvents: "none",
+            }}
+          >
+            {/* دائرة زجاجية ملونة مع حافة */}
             <div
-              key={i}
               style={{
-                width: specialWidth,
-                height: 34,
-                borderRadius: 3.5,
-                marginLeft: i === steps.length - 1 ? 0 : 1.9,
-                marginRight: i === 0 ? 0 : 1.9,
-                background: color,
-                opacity: isActive
-                  ? isMilestone ? 1 : 0.97
-                  : isMilestone ? 0.42 : 0.42,
-                boxShadow: isActive
-                  ? "0 1px 4px 0 rgba(120,210,255,0.10)"
-                  : "none",
-                filter: "blur(0.06px)",
-                transition: "all 0.22s cubic-bezier(.4,0,.2,1)",
-                border: "none",
-                position: "relative",
-                zIndex: isMilestone ? 3 : 2,
-                display: "inline-block",
-                pointerEvents: "none",
-              }}
-            />
-          );
-        })}
-
-        {/* دوائر المايل ستون - زجاجية فوق الشريط بالضبط */}
-        {milestonePositions.map((m, j) => {
-          const left = (m.idx / (stepsCount - 1)) * 100;
-          const reached = progress >= m.percent - 99 / stepsCount;
-          return (
-            <div
-              key={m.key}
-              style={{
-                position: "absolute",
-                right: `calc(${left}% - 23px)`, // + نصف دائرة (عرض الدائرة ~46px)
-                top: "-10px",
-                width: 46,
-                height: 56,
-                zIndex: 10,
+                width: CIRCLE_SIZE,
+                height: CIRCLE_SIZE,
+                borderRadius: "50%",
+                background: reached
+                  ? "rgba(211,255,172,0.93)"
+                  : "rgba(239,241,249,0.91)",
+                border: reached
+                  ? "2.7px solid #B2ED73"
+                  : "2.4px solid #E2E3E9",
+                boxShadow: reached
+                  ? "0 0 12px 7px rgba(164,255,86,0.08)"
+                  : "0 0 6px 3.5px rgba(201,204,220,0.04)",
+                backdropFilter: "blur(11px)",
+                WebkitBackdropFilter: "blur(11px)",
                 display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
-                pointerEvents: "none"
+                justifyContent: "center",
+                transition: "all 0.18s cubic-bezier(.36,0,.3,1)",
+                marginBottom: 0,
+                marginTop: -TOP_OFFSET,
+                position: "relative",
               }}
             >
-              <div
-                style={{
-                  width: 46,
-                  height: 46,
-                  background: reached
-                    ? "rgba(211,255,172,0.80)"
-                    : "rgba(239,241,249,0.71)",
-                  borderRadius: "50%",
-                  border: reached
-                    ? "2.2px solid #B3EF77"
-                    : "2.3px solid #E2E3E9",
-                  boxShadow: reached
-                    ? "0 0 0 7px rgba(140,233,85,0.13)"
-                    : "0 0 0 4px rgba(215,220,218,0.045)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginBottom: 2,
-                  marginTop: 0,
-                  transition: "all 0.18s cubic-bezier(.36,0,.3,1)",
-                  backdropFilter: "blur(10px)",
-                  WebkitBackdropFilter: "blur(10px)",
-                  position: "relative",
-                }}
-              >
-                {reached ? (
-                  <Check size={26} strokeWidth={2.2} color="#72C000" className="drop-shadow" />
-                ) : (
-                  <span
-                    style={{
-                      display: "block",
-                      width: 17,
-                      height: 17,
-                      borderRadius: "50%",
-                      background: "rgba(236,238,244,0.73)",
-                      border: "1.3px solid #DDDDFF",
-                    }}
-                  />
-                )}
-              </div>
-              {m.label && (
-                <span
-                  className="font-bold text-gray-600"
-                  dir="rtl"
+              {reached ? (
+                <Check
+                  size={22}
+                  strokeWidth={2.5}
+                  color="#69AB38"
                   style={{
-                    fontSize: 15.5,
-                    marginTop: 0,
-                    textAlign: "center",
-                    width: 70,
-                    lineHeight: 1.2,
-                    letterSpacing: "-0.01em",
-                    textShadow: reached
-                      ? "0 2.7px 7px rgba(164,255,86,0.10)"
-                      : undefined,
+                    boxShadow:
+                      "0 2.7px 14px 0 rgba(137, 220, 40, 0.07)",
+                  }}
+                  className="drop-shadow"
+                />
+              ) : (
+                <span
+                  style={{
+                    fontSize: 17,
+                    fontWeight: 800,
+                    color: "#C9CFD4",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  {m.label}
+                  {idx + 1}
                 </span>
               )}
             </div>
-          );
-        })}
-      </div>
+            {/* تسمية milestone تحت الدائرة */}
+            {m.label && (
+              <span
+                className="font-bold text-gray-600"
+                dir="rtl"
+                style={{
+                  fontFamily: FONT,
+                  fontSize: 15.5,
+                  marginTop: 3,
+                  textAlign: "center",
+                  width: 85,
+                  lineHeight: 1.35,
+                  letterSpacing: "-0.01em",
+                  background: "rgba(255,255,255,0.68)",
+                  borderRadius: 6,
+                  padding: "3.6px 7.5px",
+                  boxShadow: reached
+                    ? "0 2.7px 7px rgba(164,255,86,0.055)"
+                    : undefined,
+                  backdropFilter: "blur(9px)",
+                  border: "0.5px solid #EBEDD5",
+                  WebkitBackdropFilter: "blur(9px)",
+                  fontWeight: reached ? 800 : 700,
+                  transition: "all 0.18s cubic-bezier(.36,0,.3,1)",
+                }}
+              >
+                {m.label}
+              </span>
+            )}
+          </div>
+        );
+      })}
+      {/* مؤشر progress متداخل أعلى الشريط (دبوس صغير أو خط علوي زجاجي) */}
+      <div
+        style={{
+          position: "absolute",
+          top: CIRCLE_SIZE / 2 + BAR_HEIGHT / 2 - 13,
+          right: `calc(${100 - Math.min(progress, 100)}% - 7px)`,
+          width: 15,
+          height: 26,
+          borderRadius: 6,
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.41) 88%)",
+          boxShadow:
+            "0 10px 25px rgba(164,255,86,0.05), 0 1.5px 8px 2px rgba(90,235,250,0.12)",
+          border: "1.2px solid rgba(195,220,240,0.23)",
+          pointerEvents: "none",
+          zIndex: 31,
+          transform: "translateY(-50%)",
+          display: progress < 4 ? "none" : undefined,
+        }}
+      />
     </div>
   );
 };
