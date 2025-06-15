@@ -2,7 +2,7 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 
-export const ExtraWidgetFour: React.FC<{ className?: string }> = ({ className }) => {
+export const ExtraWidgetFour: React.FC = () => {
   return (
     <BaseCard 
       size="sm"
@@ -13,7 +13,7 @@ export const ExtraWidgetFour: React.FC<{ className?: string }> = ({ className })
           إحصائية 4
         </h3>
       }
-      className={`h-[180px] px-6 py-6 flex flex-col justify-between ${className}`}
+      className="h-[180px] px-6 py-6 flex flex-col justify-between"
     >
       <div className="flex-1 flex items-center justify-between">
         <div className="text-lg font-bold text-orange-600">67</div>

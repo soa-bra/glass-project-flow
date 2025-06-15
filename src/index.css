@@ -255,30 +255,6 @@
     filter: blur(1px);
   }
 
-  /* تخصيص خصائص glass الجديدة */
-  .custom-glass {
-    background: rgba(255,255,255,0.40) !important;
-    backdrop-filter: blur(20px) saturate(135%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(135%) !important;
-    border: 1.6px solid rgba(255,255,255,0.18) !important;
-    box-shadow: 0 8px 38px rgba(31,38,135,0.13),0 2px 12px rgba(0,0,0,0.04);
-  }
-
-  /* تحكم إضافي لكروت المشاريع */
-  .glass-card-project {
-    background: rgba(255,255,255,0.40) !important;
-    border: 1.2px solid rgba(255,255,255,0.15) !important;
-    backdrop-filter: blur(20px) saturate(135%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(135%) !important;
-    box-shadow: 0 10px 26px rgba(31,38,135,0.08),0 2px 9px rgba(0,0,0,0.03);
-    transition: all 0.30s cubic-bezier(0.4,0,0.2,1);
-  }
-  .glass-card-project:hover {
-    transform: scale(1.03) translateY(-2px);
-    box-shadow: 0 18px 45px rgba(31,38,135,0.18);
-    border-color: rgba(255,255,255,0.19);
-  }
-
   /* RTL Layout Classes with Synchronized Animation */
   .sidebar-layout {
     right: var(--sidebar-right);
@@ -666,5 +642,3 @@
   z-index: 0;
   right: var(--operations-right-expanded);
 }
-
-/* بفضل طول الملف، يُنصح بطلب إعادة هيكلته مستقبلًا. */

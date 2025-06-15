@@ -1,7 +1,7 @@
 
 import Sidebar from '@/components/Sidebar';
 import { useState } from 'react';
-import OperationsBoard from '@/components/OperationsBoard';
+import ProjectWorkspace from './ProjectWorkspace';
 
 const MainContent = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -16,7 +16,7 @@ const MainContent = () => {
         <Sidebar onToggle={setIsSidebarCollapsed} />
       </div>
 
-      <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
+      <ProjectWorkspace isSidebarCollapsed={isSidebarCollapsed} />
     </div>
   );
 };
