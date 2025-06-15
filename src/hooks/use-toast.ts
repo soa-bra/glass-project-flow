@@ -1,4 +1,3 @@
-
 import * as React from "react"
 
 import type {
@@ -170,12 +169,6 @@ function toast({ ...props }: Toast) {
 }
 
 function useToast() {
-  // Debug: detect accidental usage outside component
-  if (typeof React.useState !== "function") {
-    throw new Error("useToast must be called inside a React component.")
-  }
-
-  // This prevents effect from re-running on every state change
   const [state, setState] = React.useState<State>(memoryState)
 
   React.useEffect(() => {
@@ -186,8 +179,7 @@ function useToast() {
         listeners.splice(index, 1)
       }
     }
-    // only subscribe/unsubscribe on mount/unmount, not on state change
-  }, [])
+  }, [state])
 
   return {
     ...state,
@@ -197,4 +189,3 @@ function useToast() {
 }
 
 export { useToast, toast }
-
