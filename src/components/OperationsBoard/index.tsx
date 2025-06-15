@@ -51,7 +51,7 @@ export const OperationsBoard = ({
         height: 'calc(100vh - 60px)',
         top: 'var(--sidebar-top-offset)',
         borderRadius: '28px',
-        background: 'linear-gradient(135deg, #e7fde4 0%, #f2ffff 100%)',
+        background: '#d6e8eb', // تم تغيير اللون هنا
         backdropFilter: 'blur(20px)',
         overflow: 'hidden',
         zIndex: 30,
