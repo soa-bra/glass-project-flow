@@ -49,24 +49,29 @@ const events = [
 
 export const UpcomingTimelineCard = ({ className = "" }: { className?: string }) => (
   <div
-    className={`relative w-full h-[272px] rounded-[41px] p-0 flex flex-col justify-end overflow-visible border-0 font-arabic ${className}`}
+    className={`relative w-full h-[106px] rounded-[24px] flex flex-col justify-end overflow-visible border-0 font-arabic ${className}`}
     style={{
       fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
       direction: "rtl",
-      background: "rgba(233, 248, 250, 0.95)",
+      background: "rgba(233, 248, 250, 0.92)",
       backdropFilter: "blur(20px)",
-      borderRadius: "41px",
+      borderRadius: "24px",
       boxShadow: "none",
+      padding: "0",
     }}
   >
     {/* عنوان البطاقة */}
-    <div className="absolute top-0 right-0 px-14 pt-7 pb-0 flex items-center z-20 select-none">
+    <div className="absolute top-0 right-0 z-20 select-none"
+      style={{
+        paddingRight: "24px",
+        paddingTop: "10px",
+        fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif'
+      }}
+    >
       <span
-        className="font-arabic"
         style={{
-          fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-          fontSize: "10.63px", // px حسب المواصفة
-          fontWeight: 500, // Medium
+          fontSize: "9px", // أصغر قليلا
+          fontWeight: 500,
           letterSpacing: 0,
           color: "#181b29"
         }}
@@ -76,9 +81,13 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
     </div>
     {/* الخط الزمني */}
     <div
-      className="flex flex-row-reverse justify-between items-end w-full h-full pb-0 pt-16 pr-[50px] pl-[26px] relative z-10 select-text"
+      className="flex flex-row-reverse justify-between items-end w-full h-full relative z-10 select-text"
       style={{
-        minHeight: "215px",
+        minHeight: "86px",
+        paddingRight: "24px",
+        paddingLeft: "14px",
+        paddingTop: "25px",
+        paddingBottom: "8px",
         gap: 0,
       }}
     >
@@ -86,7 +95,7 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
       {events.map((event, idx) => (
         <div
           key={event.id}
-          className="flex flex-col items-end min-w-0 max-w-[170px] flex-1 px-1"
+          className="flex flex-col items-end min-w-0 max-w-[86px] flex-1 px-0"
           style={{
             alignSelf: "flex-end",
             zIndex: 20,
@@ -95,17 +104,22 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
           }}
         >
           {/* التاريخ */}
-          <div className="flex flex-row-reverse items-end mb-0 w-full pr-1 pb-2" style={{marginBottom: "-2px"}}>
+          <div
+            className="flex flex-row-reverse items-end mb-0 w-full pb-0"
+            style={{
+              marginBottom: "-2px",
+              paddingRight: "1px"
+            }}
+          >
             {/* اليوم */}
             <span
               style={{
                 fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
-                fontSize: "15px",
-                fontWeight: 400, // Regular
+                fontSize: "11px",
+                fontWeight: 400,
                 color: "#181b29",
                 lineHeight: 1,
-                display: "inline-block",
-                marginLeft: "7px",
+                marginLeft: "3.5px",
                 verticalAlign: "bottom",
               }}
             >
@@ -115,12 +129,11 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
             <span
               style={{
                 fontFamily: '"IBM Plex Sans", Arial, Tahoma, sans-serif',
-                fontSize: "3.5px",
-                fontWeight: 700, // Bold
+                fontSize: "2.5px",
+                fontWeight: 700,
                 color: "#181b29",
                 letterSpacing: 0.3,
-                display: "inline-block",
-                marginBottom: "2px",
+                marginBottom: "1px",
                 verticalAlign: "bottom",
               }}
             >
@@ -131,26 +144,28 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
           <div
             style={{
               fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-              fontSize: "3.5px",
+              fontSize: "3px",
               fontWeight: 400,
               textAlign: "right",
               color: "#111",
               whiteSpace: "normal",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: "78px"
             }}
           >
             {event.title}
           </div>
-          {/* سطر فارغ */}
-          <div style={{height: "7px"}} />
           {/* جهة الحدث */}
           <div
             style={{
               fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-              fontSize: "5.5px",
-              fontWeight: 500, // Medium
+              fontSize: "4px",
+              fontWeight: 500,
               textAlign: "right",
               color: "#181b29",
-              marginBottom: "1px",
+              marginTop: "4px",
+              marginBottom: "0px",
             }}
           >
             {event.dept}
@@ -158,23 +173,23 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
           {/* خط رأسي يصل الدائرة */}
           <div
             style={{
-              width: "0.24px", // 0.1801pt تقريب تقريبًا
+              width: "0.18px",
               background: "#181b29",
-              height: "25px",
-              margin: "2px 0 0 0",
+              height: "14px",
+              margin: "1px 0 0 0",
               alignSelf: "center",
             }}
           />
           {/* الدائرة السفلية الصغيرة */}
           <div
             style={{
-              width: "18.76px",
-              height: "18.76px",
+              width: "11px",
+              height: "11px",
               borderRadius: "50%",
-              border: "0.24px solid #181b29",
+              border: "0.18px solid #181b29",
               background: "transparent",
               margin: "0 auto",
-              marginTop: "-1px",
+              marginTop: "-0.5px",
             }}
           />
         </div>
@@ -182,14 +197,15 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
     </div>
     {/* الخط الأفقي أسفل الدوائر */}
     <div
-      className="absolute left-0 right-0 bottom-[17px] h-[0.24px]"
+      className="absolute left-0 right-0"
       style={{
+        bottom: "9px",
         background: "#181b29",
-        opacity: 0.95,
+        opacity: 0.85,
         zIndex: 1,
         width: "100%",
         margin: "0 auto",
-        height: "0.24px",
+        height: "0.18px",
       }}
     />
   </div>
