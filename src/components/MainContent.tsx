@@ -7,7 +7,7 @@ const MainContent = () => {
       {/* Sidebar */}
       <div style={{
       transition: 'all var(--animation-duration-main) var(--animation-easing)'
-    }} className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar sidebar-layout px-0 mx-0">
+    }} className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] bg-soabra-solid-bg z-sidebar sidebar-layout px-0 mx-0 bg-[dfecf2]">
         <Sidebar onToggle={setIsSidebarCollapsed} />
       </div>
 
