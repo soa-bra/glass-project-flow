@@ -18,7 +18,6 @@ const ProjectCardLayout = ({
 }: ProjectCardLayoutProps) => {
   const handleClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    
     if (onProjectSelect) {
       onProjectSelect(id);
     }
@@ -26,15 +25,12 @@ const ProjectCardLayout = ({
 
   const getCardClasses = () => {
     let baseClasses = 'project-card-glass project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer';
-    
     if (isSelected) {
       return `${baseClasses} project-card-selected`;
     }
-    
     if (isOtherSelected) {
       return `${baseClasses} project-card-dimmed`;
     }
-    
     return baseClasses;
   };
 
@@ -42,8 +38,19 @@ const ProjectCardLayout = ({
     <div
       onClick={handleClick}
       className={getCardClasses()}
+      dir="rtl"
+      style={{
+        direction: 'rtl',
+        fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
+        textAlign: "right",
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end', // كل شي يلف لليمين
+        justifyContent: 'flex-start'
+      }}
     >
-      <div className="pointer-events-none">
+      {/* لانريد pointer-events-none هنا حتى تتيح التحكم للكل */}
+      <div className="w-full flex flex-col items-end text-right">
         {children}
       </div>
     </div>
