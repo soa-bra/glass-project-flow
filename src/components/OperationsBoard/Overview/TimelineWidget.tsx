@@ -28,14 +28,10 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
         ${className}
         flex flex-col rounded-3xl font-arabic min-h-[220px] mb-0
         bg-white/45
-      `}
-      style={{
-        fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
-        direction: 'rtl',
-      }}
+        `}
     >
       {/* رأس البطاقة */}
-      <header className="flex items-center justify-between mb-5">
+      <header className="flex items-center justify-between mb-5" style={{fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif', direction: 'rtl'}}>
         <h3 className="text-xl font-arabic font-bold text-[#23272f]">
           الأحداث القادمة
         </h3>
@@ -46,9 +42,8 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
           onScrollRight={() => scroll(200)}
         />
       </header>
-
       {/* محتوى الخط الزمني */}
-      <div className="flex-1 relative min-h-0 py-[35px]">
+      <div className="flex-1 relative min-h-0 py-[35px]" style={{fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif', direction: 'rtl'}}>
         <TimelineScrollContainer timeline={timeline} onEventClick={openEvent} />
       </div>
     </GenericCard>
