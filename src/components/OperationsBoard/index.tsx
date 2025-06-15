@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabs } from '@/components/ui/tabs';
 import { TAB_ITEMS } from './types';
 import { TrendingUp, TrendingDown, Clock, FileText, ListCheck } from 'lucide-react';
+import { UpcomingTimelineCard } from './Overview/UpcomingTimelineCard';
 
 // عناصر الإحصاءات العلوية كما في التصميم
 const topStats = [
@@ -110,16 +111,8 @@ export const OperationsBoard = ({
       </div>
       {/* شريط الأحداث القادمة */}
       <div className="w-full px-6 pt-3 pb-2">
-        <div style={{
-          background: '#f2ffff',
-          borderRadius: 24,
-          boxShadow: '0 1px 10px 0 rgba(100,180,200,0.04) inset',
-          border: '1px solid #e6ecef'
-        }} className="w-full py-6 px-8 flex flex-col gap-1 backdrop-blur-[10px]">
-          <div className="text-xl font-arabic font-bold mb-4 text-black">الأحداث القادمة</div>
-          {/* عناصر الخط الزمني الحقيقي تُدرج هنا وليس عنصر placeholder */}
-          {/* إذا لم يكن هناك بيانات بعد اترك المساحة فارغة (بدون عناصر اختبار أو مكونات سوف تطور لاحقا) */}
-        </div>
+        {/* استخدم لوحة الأحداث القادمة بشكل نهائي */}
+        <UpcomingTimelineCard />
       </div>
       {/* شبكة البطاقات الرئيسية */}
       <div className="w-full flex-1 px-6 py-4">
