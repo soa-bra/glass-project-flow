@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { FileText, Clock } from 'lucide-react';
 import { GenericCard } from '@/components/ui/GenericCard';
 
 interface ContractsData {
@@ -13,47 +12,49 @@ interface ContractsWidgetProps {
   className?: string;
 }
 
-export const ContractsWidget: React.FC<ContractsWidgetProps> = ({ 
-  contracts, 
+export const ContractsWidget: React.FC<ContractsWidgetProps> = ({
+  contracts,
   className = ''
 }) => {
-  const hasExpired = contracts.expired > 0;
+  const total = contracts.signed + contracts.expired;
+  const signedPercentage = total > 0 ? (contracts.signed / total) * 100 : 0;
 
   return (
     <GenericCard
       adminBoardStyle
+      hover={false}
       padding="md"
-      color={hasExpired ? 'warning' : 'success'}
-      className={`h-full w-full ${className} min-h-[180px] flex flex-col justify-between`}
+      className={`${className} flex flex-col`}
     >
-      <div className="w-full flex flex-col h-full justify-between items-end text-right">
-        <h3 className="text-lg font-arabic font-bold text-gray-800 mb-1 w-full leading-tight mt-1">
-          العقود
+      <header className="mb-4">
+        <h3 className="text-lg font-arabic font-bold text-[#23272f]">
+          إدارة العقود
         </h3>
-        <div className="space-y-5 flex-1 w-full mt-1">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2.5">
-              <FileText size={18} className="text-green-500" />
-              <span className="text-base text-gray-700">موقعة</span>
-            </div>
-            <span className="text-2xl font-bold text-green-500">
-              {contracts.signed}
-            </span>
+      </header>
+      
+      <div className="flex-1 space-y-4">
+        <div className="text-center p-4 bg-green-50 rounded-xl">
+          <p className="text-sm text-gray-600 mb-1">العقود السارية</p>
+          <p className="text-3xl font-bold text-green-600">{contracts.signed}</p>
+        </div>
+        
+        <div className="text-center p-4 bg-red-50 rounded-xl">
+          <p className="text-sm text-gray-600 mb-1">العقود المنتهية</p>
+          <p className="text-3xl font-bold text-red-600">{contracts.expired}</p>
+        </div>
+        
+        {/* مؤشر النسبة */}
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>نسبة العقود السارية</span>
+            <span className="font-bold">{signedPercentage.toFixed(0)}%</span>
           </div>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2.5">
-              <Clock size={18} className="text-orange-500" />
-              <span className="text-base text-gray-700">منتهية</span>
-            </div>
-            <span className="text-2xl font-bold text-orange-500">
-              {contracts.expired}
-            </span>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="h-2 rounded-full bg-green-500 transition-all duration-1000"
+              style={{ width: `${signedPercentage}%` }}
+            />
           </div>
-          {hasExpired && (
-            <div className="mt-4 p-3 bg-[#f9e2a9]/60 rounded-xl font-arabic text-xs text-orange-800 text-center shadow border border-yellow-200/60 w-full">
-              يوجد عقود بحاجة تجديد
-            </div>
-          )}
         </div>
       </div>
     </GenericCard>

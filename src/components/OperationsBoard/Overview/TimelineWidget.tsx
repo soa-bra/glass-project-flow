@@ -15,25 +15,22 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
     canScrollRight,
     scroll
   } = useTimelineScroll();
+  
   const openEvent = (event: TimelineEvent) => {
     console.log('فتح الحدث:', event);
-    // مستقبلاً يمكن إضافة modal أو popover هنا
   };
+
   return (
     <GenericCard
       adminBoardStyle
       hover={false}
       padding="md"
-      className={`
-        ${className}
-        flex flex-col rounded-3xl font-arabic min-h-[220px] mb-0
-        bg-white/45
-        `}
+      className={`${className} flex flex-col rounded-3xl font-arabic min-h-[220px] mb-0`}
     >
-      {/* رأس البطاقة */}
-      <header className="flex items-center justify-between mb-5" style={{fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif', direction: 'rtl'}}>
-        <h3 className="text-xl font-arabic font-bold text-[#23272f]">
-          الأحداث القادمة
+      {/* رأس البطاقة المحدث */}
+      <header className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-arabic font-bold text-[#23272f]">
+          الأحداث والمواعيد القادمة
         </h3>
         <TimelineNavigation
           canScrollLeft={canScrollLeft}
@@ -42,8 +39,9 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
           onScrollRight={() => scroll(200)}
         />
       </header>
-      {/* محتوى الخط الزمني */}
-      <div className="flex-1 relative min-h-0 py-[35px]" style={{fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif', direction: 'rtl'}}>
+      
+      {/* محتوى الخط الزمني المبسط */}
+      <div className="flex-1 relative min-h-0 py-4">
         <TimelineScrollContainer timeline={timeline} onEventClick={openEvent} />
       </div>
     </GenericCard>
