@@ -47,7 +47,7 @@ const events = [
   }
 ];
 
-const CARD_BG = "rgba(233, 248, 250, 1)";
+const CARD_BG = "linear-gradient(105deg,rgba(233,248,250,1) 68%,rgba(176,211,234,0.85) 100%)";
 
 export const UpcomingTimelineCard = ({ className = "" }: { className?: string }) => {
   return (
@@ -55,8 +55,9 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
       className={`
         glass-enhanced border border-white/40
         rounded-3xl overflow-hidden
-        relative w-full mb-5 h-[272px] min-h-[230px]
+        relative w-full h-[272px] min-h-[230px]
         flex flex-row items-stretch
+        px-2 md:px-5
         ${className}
         animate-fade-in
       `}
@@ -66,12 +67,10 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
         direction: "rtl"
       }}
     >
-      {/* شريط الأحداث الجانبي */}
-      <div className="w-[90px] bg-white/0 py-7 px-5 flex flex-col items-center justify-center">
+      <div className="w-[90px] bg-white/0 py-7 px-4 flex flex-col items-center justify-center">
         <div className="font-bold text-lg text-[#23272f] tracking-widest mb-1">الأحداث</div>
         <div className="text-xs text-[#6B7280] font-medium">القادمة</div>
       </div>
-      {/* القسم الرأسي لكل حدث */}
       <div className="flex-1 py-5 flex flex-col justify-end">
         <div className="flex flex-row-reverse gap-8 h-full items-end overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-[#d6e8eb]/50 pb-2">
           {events.map((event, idx) => (
@@ -80,7 +79,6 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
               className="flex flex-col items-center w-[92px] min-w-[92px] max-w-[92px] relative group"
               style={{ animationDelay: `${0.1 + idx * 0.05}s` }}
             >
-              {/* الخط الرأسي */}
               {idx > 0 && (
                 <div
                   className="absolute bg-slate-200"
@@ -93,7 +91,6 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
                   }}
                 ></div>
               )}
-              {/* الدائرة */}
               <div
                 className="w-16 h-16 bg-white/90 rounded-full flex flex-col items-center justify-center shadow-lg border-2 border-[#DCF5FC] mb-1"
                 style={{
@@ -104,9 +101,7 @@ export const UpcomingTimelineCard = ({ className = "" }: { className?: string })
                 <span className="text-[#181b29] text-[2.1rem] font-bold leading-tight block">{event.day}</span>
                 <span className="text-[#0077CC] text-xs font-semibold tracking-widest block -mt-2">{event.month}</span>
               </div>
-              {/* اسم الجهة */}
               <div className="mt-2 text-[1.13rem] font-bold text-[#0858A6]">{event.dept}</div>
-              {/* وصف أو عنوان الحدث */}
               <div
                 className="mt-1 text-center px-1 text-[1rem] font-arabic text-[#23272f] font-medium leading-tight"
                 style={{ maxWidth: "100%", wordBreak: "break-word" }}
