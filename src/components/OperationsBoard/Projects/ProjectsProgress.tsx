@@ -28,23 +28,21 @@ const ProgressTooltip = ({ active, payload }: any) =>
 
 export const ProjectsProgress: React.FC = () => (
   <GenericCard adminBoardStyle hover className="relative group overflow-visible">
-    <div className="flex flex-col items-end text-right w-full h-full">
+    <div className="flex flex-col items-end text-right w-full">
       <h4 className="text-lg font-bold mb-2 text-[#23272f] w-full">تقدم المشاريع</h4>
       <div className="text-soabra-text-secondary text-sm mb-4 text-[#23272f] w-full">مخططات تقدم المشاريع</div>
-      <div className="h-24 w-full flex flex-row-reverse items-start justify-end pr-2 relative">
-        <div className="w-[90%] min-w-[180px] max-w-[340px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart layout="vertical" data={progressData}>
-              <XAxis type="number" domain={[0, 100]} hide />
-              <Tooltip content={ProgressTooltip} />
-              <Bar dataKey="progress" radius={[12, 12, 12, 12]}>
-                {progressData.map((entry, idx) => (
-                  <Cell key={entry.name} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+      <div className="h-24 w-full relative">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart layout="vertical" data={progressData}>
+            <XAxis type="number" domain={[0, 100]} hide />
+            <Tooltip content={ProgressTooltip} />
+            <Bar dataKey="progress" radius={[12, 12, 12, 12]}>
+              {progressData.map((entry, idx) => (
+                <Cell key={entry.name} fill={entry.color} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
       </div>
       {/* Hover details */}
       <div className="absolute left-4 top-2 opacity-0 group-hover:opacity-100 

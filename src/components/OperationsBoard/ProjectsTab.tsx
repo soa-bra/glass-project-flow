@@ -54,10 +54,9 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
       <div
         className="
           rounded-3xl glass-enhanced
-          p-0 overflow-x-auto mx-auto
+          p-0 overflow-x-auto
           border border-white/40 shadow-xl
           bg-white/40 backdrop-blur-[20px] font-arabic
-          max-w-[670px]
         "
         style={{
           fontFamily: '"IBM Plex Sans Arabic", Arial, Tahoma, sans-serif',
