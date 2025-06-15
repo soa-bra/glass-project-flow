@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ProjectStatsSection } from './Overview/ProjectStatsSection';
 import { ProjectPhaseProgress } from './Overview/ProjectPhaseProgress';
@@ -9,9 +8,9 @@ import { DataVisualizationPanel } from './Overview/DataVisualizationPanel';
 
 interface OverviewData {
   stats: {
-    budget: number;
-    team: number;
-    deliveryDate: string;
+    expectedRevenue: number;
+    complaints: number;
+    delayedProjects: number;
   };
   phases: Array<{
     name: string;
@@ -52,12 +51,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading }) => {
     return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
 
-  // بيانات تجريبية لتطابق التصميم
+  // بيانات تجريبية محدثة لتطابق التصميم المطلوب
   const mockData: OverviewData = {
     stats: {
-      budget: 15,
-      team: 5,
-      deliveryDate: '2024-08-08'
+      expectedRevenue: 150, // 150 ألف ريال سعودي
+      complaints: 5, // 05 شكاوى
+      delayedProjects: 3 // 03 مشاريع متأخرة
     },
     phases: [
       { name: 'المرحلة التحضيرية', isCompleted: true, isCurrent: false },
@@ -89,7 +88,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading }) => {
 
   return (
     <div className="h-full overflow-auto p-6 space-y-6">
-      {/* الصف الأول - إحصائيات المشروع */}
+      {/* الصف الأول - المؤشرات الإحصائية بدون خلفية */}
       <ProjectStatsSection stats={mockData.stats} />
       
       {/* الصف الثاني - مراحل التقدم */}
