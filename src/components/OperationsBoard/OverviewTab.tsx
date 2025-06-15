@@ -9,6 +9,10 @@ import { LeadScoreWidget } from './Overview/LeadScoreWidget';
 import { CircularProgressWidget } from './Overview/CircularProgressWidget';
 import { StatCard } from './Overview/StatCard';
 import { SimpleChartWidget } from './Overview/SimpleChartWidget';
+import { NewsFeedWidget } from './Overview/NewsFeedWidget';
+import { QuickActionsWidget } from './Overview/QuickActionsWidget';
+import { ProjectProgressWidget } from './Overview/ProjectProgressWidget';
+import { KPIWidget } from './Overview/KPIWidget';
 import { Users, Clock, Star, TrendingUp } from 'lucide-react';
 
 interface TimelineEvent {
@@ -54,14 +58,6 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
     return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
 
-  // بيانات وهمية للمخططات الجديدة
-  const chartData = [
-    { label: 'المبيعات', value: 85, color: '#3B82F6' },
-    { label: 'التسويق', value: 72, color: '#10B981' },
-    { label: 'الدعم', value: 68, color: '#F59E0B' },
-    { label: 'التطوير', value: 91, color: '#8B5CF6' }
-  ];
-
   return (
     <div className="h-full overflow-auto px-1">
       <section className="
@@ -70,79 +66,74 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         auto-rows-min
         max-h-full
       ">
-        {/* الصف الأول - إحصائيات سريعة */}
+        {/* الصف الأول - الإحصائيات السريعة */}
         <StatCard
-          title="العملاء النشطون" 
-          value={data.widgets.hr.members}
+          title="إجمالي المشاريع" 
+          value="24"
           icon={Users}
           color="#3B82F6"
-          className="col-span-3 h-[140px]"
+          className="col-span-3 h-[120px]"
         />
         <StatCard
-          title="المهام المكتملة" 
-          value="124"
+          title="المشاريع النشطة" 
+          value="18"
           icon={Clock}
           color="#10B981"
-          className="col-span-3 h-[140px]"
+          className="col-span-3 h-[120px]"
         />
         <StatCard
-          title="التقييم العام" 
-          value={`${data.widgets.satisfaction}%`}
+          title="المشاريع المكتملة" 
+          value="6"
           icon={Star}
           color="#F59E0B"
-          className="col-span-3 h-[140px]"
+          className="col-span-3 h-[120px]"
         />
         <StatCard
-          title="النمو الشهري" 
-          value="+12%"
+          title="الميزانية المتاحة" 
+          value="2.4M ر.س"
           icon={TrendingUp}
-          color="#EF4444"
-          className="col-span-3 h-[140px]"
+          color="#8B5CF6"
+          className="col-span-3 h-[120px]"
         />
 
-        {/* الصف الثاني - الخط الزمني */}
+        {/* الصف الثاني - المؤشرات الأساسية والأخبار */}
+        <KPIWidget className="col-span-4 h-[240px]" />
+        <NewsFeedWidget className="col-span-5 h-[240px]" />
+        <QuickActionsWidget className="col-span-3 h-[240px]" />
+
+        {/* الصف الثالث - الخط الزمني */}
         <TimelineWidget
           timeline={data.timeline}
-          className="col-span-12 h-[220px]"
+          className="col-span-12 h-[180px]"
         />
 
-        {/* الصف الثالث - البيانات الرئيسية */}
-        <LeadScoreWidget className="col-span-4 h-[280px]" />
-        
-        <SimpleChartWidget
-          title="أداء الأقسام"
-          data={chartData}
-          className="col-span-4 h-[280px]"
-        />
-        
-        <BudgetWidget
-          budget={data.widgets.budget}
-          className="col-span-4 h-[280px]"
-        />
-
-        {/* الصف الرابع - مؤشرات دائرية وإحصائيات */}
+        {/* الصف الرابع - تقدم المشاريع والمؤشرات */}
+        <ProjectProgressWidget className="col-span-6 h-[220px]" />
         <CircularProgressWidget
-          title="إنجاز المشاريع"
-          percentage={75}
-          color="#3B82F6"
-          className="col-span-3 h-[200px]"
+          title="معدل الإنجاز"
+          percentage={78}
+          color="#10B981"
+          className="col-span-3 h-[220px]"
         />
-        
         <CircularProgressWidget
           title="رضا العملاء"
           percentage={data.widgets.satisfaction}
-          color="#10B981"
-          className="col-span-3 h-[200px]"
+          color="#3B82F6"
+          className="col-span-3 h-[220px]"
         />
-        
+
+        {/* الصف الخامس - البيانات التفصيلية */}
+        <BudgetWidget
+          budget={data.widgets.budget}
+          className="col-span-4 h-[200px]"
+        />
         <HRWidget
           hr={data.widgets.hr}
-          className="col-span-3 h-[200px]"
+          className="col-span-4 h-[200px]"
         />
-        
         <ContractsWidget
           contracts={data.widgets.contracts}
-          className="col-span-3 h-[200px]"
+          className="col-span-4 h-[200px]"
         />
       </section>
     </div>

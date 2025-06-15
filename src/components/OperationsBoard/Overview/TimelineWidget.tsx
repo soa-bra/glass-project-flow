@@ -25,12 +25,12 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
       adminBoardStyle
       hover={false}
       padding="md"
-      className={`${className} flex flex-col rounded-3xl font-arabic min-h-[220px] mb-0`}
+      className={`${className} flex flex-col rounded-3xl font-arabic`}
     >
-      {/* رأس البطاقة المحدث */}
-      <header className="flex items-center justify-between mb-4">
+      {/* رأس البطاقة */}
+      <header className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-arabic font-bold text-[#23272f]">
-          الأحداث والمواعيد القادمة
+          الجدول الزمني للأحداث
         </h3>
         <TimelineNavigation
           canScrollLeft={canScrollLeft}
@@ -41,7 +41,7 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
       </header>
       
       {/* محتوى الخط الزمني المبسط */}
-      <div className="flex-1 relative min-h-0 py-4">
+      <div className="flex-1 relative min-h-0 py-2">
         <TimelineScrollContainer timeline={timeline} onEventClick={openEvent} />
       </div>
     </GenericCard>

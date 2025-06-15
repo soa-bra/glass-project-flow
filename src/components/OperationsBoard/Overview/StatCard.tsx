@@ -23,20 +23,20 @@ export const StatCard: React.FC<StatCardProps> = ({
       adminBoardStyle
       hover={false}
       padding="md"
-      className={`${className} flex items-center justify-between`}
+      className={`${className} flex flex-col justify-center text-center`}
     >
-      <div>
-        <p className="text-sm text-gray-600 mb-2">{title}</p>
-        <p className="text-3xl font-bold text-[#23272f]">{value}</p>
-      </div>
       {Icon && (
         <div 
-          className="w-12 h-12 rounded-full flex items-center justify-center"
+          className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
           style={{ backgroundColor: `${color}20`, color }}
         >
           <Icon size={24} />
         </div>
       )}
+      <div>
+        <p className="text-2xl font-bold text-[#23272f] mb-1">{value}</p>
+        <p className="text-sm text-gray-600 font-medium">{title}</p>
+      </div>
     </GenericCard>
   );
 };
