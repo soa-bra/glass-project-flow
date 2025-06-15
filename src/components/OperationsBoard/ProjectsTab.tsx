@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ProjectsOverview } from './Projects/ProjectsOverview';
 import { ProjectsProgress } from './Projects/ProjectsProgress';
@@ -29,7 +30,7 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
   }
 
   return (
-    <div className="h-full w-full space-y-5 font-arabic px-1">
+    <div className="h-full w-full space-y-6 font-arabic px-1">
       <div className="text-right">
         <h2 className="text-2xl font-arabic font-semibold text-[#23272F] mb-1">
           إدارة المشاريع
@@ -43,7 +44,7 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
       <ProjectKPICards />
 
       {/* شبكة البطاقات - المكونات الجديدة */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 xl:gap-7 mb-4">
         <ProjectsOverview />
         <ProjectsProgress />
         <TasksDistribution />

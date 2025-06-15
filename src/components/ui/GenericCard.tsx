@@ -10,7 +10,7 @@ interface GenericCardProps {
   variant?: 'glass' | 'gradient' | 'flat';
   color?: 'pinkblue' | 'orange' | 'crimson' | 'success' | 'warning' | 'info';
   neonRing?: 'success' | 'warning' | 'error' | 'info' | null;
-  adminBoardStyle?: boolean; // جديد: لتنسيق البطاقات داخل لوحة الإدارة فقط
+  adminBoardStyle?: boolean;
 }
 
 export const GenericCard: React.FC<GenericCardProps> = ({
@@ -23,11 +23,11 @@ export const GenericCard: React.FC<GenericCardProps> = ({
   neonRing = null,
   adminBoardStyle = false
 }) => {
-  // الهوامش الداخلية الافتراضية أكثر راحة
+  // تحديث هوامش البطاقة لجعلها أكثر راحة خاصة في اللوحة الرئيسية
   const paddingClasses = {
-    sm: 'px-5 py-4',
-    md: 'px-8 py-6',
-    lg: 'px-12 py-8'
+    sm: 'px-7 py-5 md:px-9 md:py-7',
+    md: 'px-10 py-7 md:px-12 md:py-9',
+    lg: 'px-14 py-10 md:px-16 md:py-12'
   };
 
   return (
