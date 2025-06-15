@@ -5,15 +5,7 @@ import { BudgetWidget } from './Overview/BudgetWidget';
 import { HRWidget } from './Overview/HRWidget';
 import { SatisfactionWidget } from './Overview/SatisfactionWidget';
 import { ContractsWidget } from './Overview/ContractsWidget';
-import { LeadScoreWidget } from './Overview/LeadScoreWidget';
-import { CircularProgressWidget } from './Overview/CircularProgressWidget';
-import { StatCard } from './Overview/StatCard';
-import { SimpleChartWidget } from './Overview/SimpleChartWidget';
-import { NewsFeedWidget } from './Overview/NewsFeedWidget';
-import { QuickActionsWidget } from './Overview/QuickActionsWidget';
-import { ProjectProgressWidget } from './Overview/ProjectProgressWidget';
-import { KPIWidget } from './Overview/KPIWidget';
-import { Users, Clock, Star, TrendingUp } from 'lucide-react';
+import { AISuggestedWidget } from './Overview/AISuggestedWidget';
 
 interface TimelineEvent {
   id: number;
@@ -57,7 +49,6 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   if (loading || !data) {
     return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
-
   return (
     <div className="h-full overflow-auto px-1">
       <section className="
@@ -66,74 +57,48 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         auto-rows-min
         max-h-full
       ">
-        {/* الصف الأول - الإحصائيات السريعة */}
-        <StatCard
-          title="إجمالي المشاريع" 
-          value="24"
-          icon={Users}
-          color="#3B82F6"
-          className="col-span-3 h-[120px]"
-        />
-        <StatCard
-          title="المشاريع النشطة" 
-          value="18"
-          icon={Clock}
-          color="#10B981"
-          className="col-span-3 h-[120px]"
-        />
-        <StatCard
-          title="المشاريع المكتملة" 
-          value="6"
-          icon={Star}
-          color="#F59E0B"
-          className="col-span-3 h-[120px]"
-        />
-        <StatCard
-          title="الميزانية المتاحة" 
-          value="2.4M ر.س"
-          icon={TrendingUp}
-          color="#8B5CF6"
-          className="col-span-3 h-[120px]"
-        />
-
-        {/* الصف الثاني - المؤشرات الأساسية والأخبار */}
-        <KPIWidget className="col-span-4 h-[240px]" />
-        <NewsFeedWidget className="col-span-5 h-[240px]" />
-        <QuickActionsWidget className="col-span-3 h-[240px]" />
-
-        {/* الصف الثالث - الخط الزمني */}
+        {/* خط الزمن (عرض كامل) */}
         <TimelineWidget
           timeline={data.timeline}
-          className="col-span-12 h-[180px]"
+          className="col-span-12 h-[220px]"
         />
-
-        {/* الصف الرابع - تقدم المشاريع والمؤشرات */}
-        <ProjectProgressWidget className="col-span-6 h-[220px]" />
-        <CircularProgressWidget
-          title="معدل الإنجاز"
-          percentage={78}
-          color="#10B981"
-          className="col-span-3 h-[220px]"
-        />
-        <CircularProgressWidget
-          title="رضا العملاء"
-          percentage={data.widgets.satisfaction}
-          color="#3B82F6"
-          className="col-span-3 h-[220px]"
-        />
-
-        {/* الصف الخامس - البيانات التفصيلية */}
-        <BudgetWidget
-          budget={data.widgets.budget}
-          className="col-span-4 h-[200px]"
-        />
-        <HRWidget
-          hr={data.widgets.hr}
-          className="col-span-4 h-[200px]"
-        />
+        {/* العقود والميزانية */}
         <ContractsWidget
           contracts={data.widgets.contracts}
-          className="col-span-4 h-[200px]"
+          className="col-span-4 h-[260px]"
+        />
+        <BudgetWidget
+          budget={data.widgets.budget}
+          className="col-span-8 h-[260px]"
+        />
+        {/* الموارد البشرية والرضا ومؤشرات الأداء */}
+        <HRWidget
+          hr={data.widgets.hr}
+          className="col-span-4 h-[220px]"
+        />
+        <SatisfactionWidget
+          satisfaction={data.widgets.satisfaction}
+          className="col-span-4 h-[220px]"
+        />
+        <AISuggestedWidget
+          type="kpi"
+          title="مؤشرات الأداء الرئيسية"
+          className="col-span-4 h-[220px]"
+        />
+        <AISuggestedWidget
+          type="reports"
+          title="التقارير التنفيذية"
+          className="col-span-4 h-[220px]"
+        />
+        <AISuggestedWidget
+          type="goals"
+          title="الأهداف والإنجازات"
+          className="col-span-4 h-[220px]"
+        />
+        <AISuggestedWidget
+          type="team"
+          title="إدارة الفريق"
+          className="col-span-4 h-[220px]"
         />
       </section>
     </div>

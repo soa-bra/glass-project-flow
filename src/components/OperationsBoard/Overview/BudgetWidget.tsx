@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Progress } from '@/components/ui/progress';
 import { GenericCard } from '@/components/ui/GenericCard';
 
 interface BudgetData {
@@ -16,55 +17,62 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({
   budget,
   className = ''
 }) => {
-  const percentage = (budget.spent / budget.total) * 100;
+  const formatCurrency = (num: number) => {
+    return new Intl.NumberFormat('ar-SA').format(num);
+  };
+
   const remaining = budget.total - budget.spent;
+  const percentage = Math.round((budget.spent / budget.total) * 100);
+  const isHealthy = remaining >= 0 && percentage <= 80;
+
+  // لون موحد (أخضر للفائض - أحمر للعجز)
+  const visualColor = isHealthy ? 'success' : 'crimson';
 
   return (
     <GenericCard
       adminBoardStyle
-      hover={false}
       padding="md"
-      className={`${className} flex flex-col`}
+      color={visualColor}
+      className={`h-full w-full ${className} min-h-[180px] flex flex-col justify-between`}
     >
-      <header className="mb-6">
-        <h3 className="text-lg font-arabic font-bold text-[#23272f]">
+      <div className="w-full flex flex-col h-full justify-between items-end text-right">
+        <h3 className="text-lg font-arabic font-bold mb-1 text-[#222a29] w-full leading-tight mt-1">
           الميزانية والمصروفات
         </h3>
-      </header>
-      
-      <div className="flex-1 space-y-6">
-        {/* الإجمالي والمصروف */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-4 bg-blue-50 rounded-2xl">
-            <p className="text-sm text-gray-600 mb-1">الميزانية الإجمالية</p>
-            <p className="text-2xl font-bold text-blue-600">
-              {budget.total.toLocaleString()} ر.س
-            </p>
+        <div className="mb-2 w-full">
+          <span className="text-2xl font-bold text-[#29936c]">{formatCurrency(budget.total)}</span>
+          <span className="text-base text-gray-600 mr-2">ريال - الميزانية الإجمالية</span>
+        </div>
+        <div className="flex flex-col gap-1 my-2 w-full">
+          <div className="flex justify-between items-center w-full">
+            <span className="text-base text-gray-700">المصروفات:</span>
+            <span className="font-semibold text-gray-900">
+              {formatCurrency(budget.spent)} ريال
+            </span>
           </div>
-          <div className="text-center p-4 bg-green-50 rounded-2xl">
-            <p className="text-sm text-gray-600 mb-1">المبلغ المتبقي</p>
-            <p className="text-2xl font-bold text-green-600">
-              {remaining.toLocaleString()} ر.س
-            </p>
+          <div className="flex justify-between items-center w-full">
+            <span className="text-base text-gray-700">المتبقي:</span>
+            <span className="font-semibold text-gray-900">
+              {formatCurrency(remaining)} ريال
+            </span>
           </div>
         </div>
-
-        {/* شريط التقدم */}
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-gray-700">المبلغ المصروف</span>
-            <span className="text-sm font-bold text-[#23272f]">{percentage.toFixed(1)}%</span>
+        <div className="mt-3 w-full">
+          <div className="flex justify-between text-base mb-1 text-gray-500">
+            <span>{percentage}%</span>
+            <span>مستخدم من الميزانية</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
-            <div
-              className="h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-1000 ease-out"
-              style={{ width: `${percentage}%` }}
-            />
-          </div>
-          <p className="text-center text-sm text-gray-600">
-            {budget.spent.toLocaleString()} ر.س من أصل {budget.total.toLocaleString()} ر.س
-          </p>
+          <Progress
+            value={percentage}
+            className="h-3 bg-white/40 rounded-full"
+            indicatorClassName="bg-[#29936c] rounded-full"
+          />
         </div>
+        {!isHealthy && (
+          <div className="mt-4 p-3 bg-[#fcd8ce]/70 rounded-xl font-arabic text-xs text-red-700 text-center border border-red-300/50 shadow w-full">
+            ⚠️ تحذير: تم تجاوز الميزانية المخططة
+          </div>
+        )}
       </div>
     </GenericCard>
   );
