@@ -2,6 +2,7 @@
 import React from 'react';
 import { OperationStatsSection } from './OperationStatsSection';
 import { OverviewGrid } from './OverviewGrid';
+import { TimelineCard } from './TimelineCard';
 import { OverviewData } from './OverviewData';
 
 interface OverviewLayoutProps {
@@ -19,6 +20,11 @@ export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
       {/* قسم الإحصائيات الرئيسية */}
       <div className="mb-6 py-0 px-0">
         <OperationStatsSection stats={data.stats} />
+      </div>
+
+      {/* بطاقة الأحداث القادمة */}
+      <div className="mb-6">
+        <TimelineCard />
       </div>
 
       {/* شبكة البطاقات التفاعلية */}
