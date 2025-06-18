@@ -16,7 +16,7 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
         <div className="mb-2">
           <span className="text-sm text-black font-arabic font-medium">الإيرادات المتوقعة</span>
         </div>
-        <div className="flex items-baseline justify-end gap-2 mb-1 px-0">
+        <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
             {stats.expectedRevenue}
           </div>
@@ -44,7 +44,7 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
         <div className="mb-2">
           <span className="text-sm text-black font-arabic font-medium">المشاريع المتأخرة</span>
         </div>
-        <div className="flex items-baseline justify-end gap-2 mb-1 mx-0 px-0">
+        <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
             {String(stats.delayedProjects).padStart(2, '0')}
           </div>
