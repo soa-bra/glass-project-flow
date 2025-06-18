@@ -47,17 +47,9 @@ export const OverviewGrid: React.FC = () => {
       <AlertsCard />
 
       {/* الصف الثالث */}
-      <div className="col-span-2">
+      <div className="col-span-3">
         <ProjectSummaryCard />
       </div>
-      
-      <StatisticsCard 
-        title="إضافي" 
-        value="28" 
-        unit="نقطة" 
-        description="هذا النص مثال للشكل البياني" 
-        chartType="simple"
-      />
     </div>
   );
 };
