@@ -1,12 +1,9 @@
-
 import React from 'react';
-
 interface ProjectStats {
   expectedRevenue: number;
   complaints: number;
   delayedProjects: number;
 }
-
 interface OperationStatsSectionProps {
   stats: ProjectStats;
 }
@@ -18,8 +15,7 @@ interface OperationStatsSectionProps {
 export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
   stats
 }) => {
-  return (
-    <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[2px]">
+  return <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[2px]">
       {/* الإيرادات المتوقعة */}
       <div className="text-right p-6 py-0 my-[15px]">
         <div className="mb-2">
@@ -45,7 +41,7 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
           </div>
           <div className="text-xs text-black font-arabic font-bold">شكاوى</div>
         </div>
-        <div className="text-xs font-Regular text-black font-arabic">الشكاوى والملاحظات التي كرروها</div>
+        <div className="text-xs font-Regular text-black font-arabic">الشكاوى والملاحظات التي المكررة</div>
       </div>
 
       {/* المشاريع المتأخرة */}
@@ -61,6 +57,5 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
         </div>
         <div className="text-xs font-Regular text-black font-arabic">تحتاج إلى تدخل ومعالجة</div>
       </div>
-    </div>
-  );
+    </div>;
 };
