@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { OperationStatsSection } from './OperationStatsSection';
+import { OverviewGrid } from './OverviewGrid';
 import { OverviewData } from './OverviewData';
 
 interface OverviewLayoutProps {
@@ -8,7 +9,7 @@ interface OverviewLayoutProps {
 }
 
 /**
- * تخطيط النظرة العامة - يعرض الإحصائيات الرئيسية فقط
+ * تخطيط النظرة العامة - يعرض الإحصائيات الرئيسية والشبكة التفاعلية
  */
 export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
   data
@@ -18,6 +19,11 @@ export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
       {/* قسم الإحصائيات الرئيسية */}
       <div className="mb-6 py-0 px-0">
         <OperationStatsSection stats={data.stats} />
+      </div>
+
+      {/* شبكة البطاقات التفاعلية */}
+      <div className="flex-1 min-h-0">
+        <OverviewGrid />
       </div>
     </div>
   );
