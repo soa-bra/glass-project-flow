@@ -5,6 +5,9 @@ import { NotificationsCard } from './cards/NotificationsCard';
 import { BudgetCard } from './cards/BudgetCard';
 import { AICard } from './cards/AICard';
 import { TaskListCard } from './cards/TaskListCard';
+import { ProgressStagesCard } from './cards/ProgressStagesCard';
+import { DataVisualizationCard } from './cards/DataVisualizationCard';
+import { FinancialOverviewCard } from './cards/FinancialOverviewCard';
 
 interface ProjectCardGridProps {
   project: Project;
@@ -12,26 +15,96 @@ interface ProjectCardGridProps {
 
 export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({ project }) => {
   return (
-    <div className="grid grid-cols-3 grid-rows-4 gap-4 h-full">
-      {/* الصف الأول */}
-      {/* العمود 1-2، الصف 1 - التنبيهات */}
-      <div className="col-span-2">
-        <NotificationsCard />
+    <div className="h-full">
+      {/* شريط التقدم العلوي */}
+      <div className="mb-6">
+        <ProgressStagesCard progress={project.progress || 65} />
       </div>
 
-      {/* العمود 3، الصف 1-4 - قائمة المهام */}
-      <div className="row-span-4">
-        <TaskListCard project={project} />
-      </div>
+      {/* الشبكة الرئيسية */}
+      <div className="grid grid-cols-4 grid-rows-3 gap-4 h-[calc(100%-120px)]">
+        {/* الصف الأول */}
+        <div className="col-span-1">
+          <NotificationsCard />
+        </div>
+        
+        <div className="col-span-1">
+          <DataVisualizationCard 
+            title="النظرة المالية" 
+            value="20" 
+            unit="الآف ريال"
+            chartType="donut"
+          />
+        </div>
+        
+        <div className="col-span-1">
+          <DataVisualizationCard 
+            title="بيانات" 
+            value="17" 
+            unit="مليار"
+            chartType="bar"
+          />
+        </div>
+        
+        <div className="col-span-1 row-span-3">
+          <TaskListCard project={project} />
+        </div>
 
-      {/* العمود 1، الصف 2-3 - الميزانية */}
-      <div className="row-span-2">
-        <BudgetCard project={project} />
-      </div>
+        {/* الصف الثاني */}
+        <div className="col-span-1">
+          <DataVisualizationCard 
+            title="بيانات" 
+            value="03" 
+            unit="مليار"
+            chartType="line"
+          />
+        </div>
+        
+        <div className="col-span-1">
+          <DataVisualizationCard 
+            title="بيانات" 
+            value="03" 
+            unit="مليار"
+            chartType="trend"
+          />
+        </div>
+        
+        <div className="col-span-1">
+          <DataVisualizationCard 
+            title="بيانات" 
+            value="03" 
+            unit="مليار"
+            chartType="chart"
+          />
+        </div>
 
-      {/* العمود 2، الصف 2-4 - اقتراحات الذكاء الاصطناعي */}
-      <div className="row-span-3">
-        <AICard project={project} />
+        {/* الصف الثالث */}
+        <div className="col-span-1">
+          <DataVisualizationCard 
+            title="بيانات" 
+            value="20" 
+            unit="حالي جاري"
+            chartType="circular"
+          />
+        </div>
+        
+        <div className="col-span-1">
+          <DataVisualizationCard 
+            title="بيانات" 
+            value="03" 
+            unit="مليار"
+            chartType="simple"
+          />
+        </div>
+        
+        <div className="col-span-1">
+          <DataVisualizationCard 
+            title="بيانات" 
+            value="03" 
+            unit="مليار"
+            chartType="column"
+          />
+        </div>
       </div>
     </div>
   );
