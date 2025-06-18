@@ -25,14 +25,14 @@ const ProjectCardLayout = ({
   };
 
   const getCardClasses = () => {
-    let baseClasses = 'project-card-glass project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer';
+    let baseClasses = 'w-full bg-white/90 backdrop-blur-xl rounded-[32px] p-6 mx-auto my-3 cursor-pointer border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300';
     
     if (isSelected) {
-      return `${baseClasses} project-card-selected`;
+      return `${baseClasses} ring-2 ring-blue-400/50 shadow-2xl`;
     }
     
     if (isOtherSelected) {
-      return `${baseClasses} project-card-dimmed`;
+      return `${baseClasses} opacity-60`;
     }
     
     return baseClasses;
