@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -224,18 +223,24 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     <>
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent 
-          className="max-w-4xl h-[90vh] p-0 overflow-hidden font-arabic"
+          className="max-w-4xl h-[65vh] p-0 overflow-hidden font-arabic"
           style={{
-            background: 'rgba(255,255,255,0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.2)',
+            background: 'rgba(255,255,255,0.25)',
+            backdropFilter: 'blur(30px)',
+            WebkitBackdropFilter: 'blur(30px)',
+            border: '1px solid rgba(255,255,255,0.3)',
             borderRadius: '24px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            zIndex: 9999,
           }}
         >
           <button
             onClick={handleClose}
-            className="absolute top-4 left-4 rounded-full bg-white/70 hover:bg-white/100 shadow-lg border border-white/30 w-[32px] h-[32px] flex items-center justify-center transition z-10"
+            className="absolute top-4 left-4 rounded-full bg-white/60 hover:bg-white/80 shadow-lg border border-white/40 w-[32px] h-[32px] flex items-center justify-center transition z-10"
+            style={{
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+            }}
           >
             <X className="text-gray-700" size={18} />
           </button>
@@ -251,31 +256,31 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
               <TabsList className="bg-transparent gap-2 mb-6 justify-end">
                 <TabsTrigger 
                   value="basic" 
-                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:border data-[state=inactive]:border-black data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic"
+                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/20 data-[state=inactive]:border data-[state=inactive]:border-white/40 data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic backdrop-blur-sm"
                 >
                   المعلومات الأساسية
                 </TabsTrigger>
                 <TabsTrigger 
                   value="client" 
-                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:border data-[state=inactive]:border-black data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic"
+                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/20 data-[state=inactive]:border data-[state=inactive]:border-white/40 data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic backdrop-blur-sm"
                 >
                   بيانات العميل
                 </TabsTrigger>
                 <TabsTrigger 
                   value="tasks" 
-                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:border data-[state=inactive]:border-black data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic"
+                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/20 data-[state=inactive]:border data-[state=inactive]:border-white/40 data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic backdrop-blur-sm"
                 >
                   المهام
                 </TabsTrigger>
                 <TabsTrigger 
                   value="partnerships" 
-                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:border data-[state=inactive]:border-black data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic"
+                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/20 data-[state=inactive]:border data-[state=inactive]:border-white/40 data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic backdrop-blur-sm"
                 >
                   الشراكات
                 </TabsTrigger>
                 <TabsTrigger 
                   value="contract" 
-                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:border data-[state=inactive]:border-black data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic"
+                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/20 data-[state=inactive]:border data-[state=inactive]:border-white/40 data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic backdrop-blur-sm"
                 >
                   العقد
                 </TabsTrigger>
@@ -393,7 +398,11 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
                   </div>
 
                   {projectData.clientType === 'external' && (
-                    <div className="space-y-6 p-6 rounded-lg bg-white/20 border border-white/30">
+                    <div className="space-y-6 p-6 rounded-lg border border-white/40" style={{
+                      background: 'rgba(255,255,255,0.15)',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)',
+                    }}>
                       <h3 className="text-lg font-bold font-arabic text-right">بيانات العميل</h3>
                       
                       <div className="grid grid-cols-2 gap-6">
@@ -479,7 +488,11 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
                     ) : (
                       <div className="space-y-3">
                         {projectData.tasks.map((task, index) => (
-                          <div key={index} className="p-4 bg-white/20 border border-white/30 rounded-lg">
+                          <div key={index} className="p-4 border border-white/40 rounded-lg" style={{
+                            background: 'rgba(255,255,255,0.15)',
+                            backdropFilter: 'blur(10px)',
+                            WebkitBackdropFilter: 'blur(10px)',
+                          }}>
                             <h4 className="font-bold font-arabic text-right">{task.title}</h4>
                             <p className="text-sm text-gray-600 font-arabic text-right mt-1">{task.description}</p>
                             <div className="flex justify-between items-center mt-2 text-sm text-gray-500 font-arabic">
@@ -521,7 +534,11 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
                     </div>
 
                     {projectData.hasContract && (
-                      <div className="space-y-6 p-6 rounded-lg bg-white/20 border border-white/30">
+                      <div className="space-y-6 p-6 rounded-lg border border-white/40" style={{
+                        background: 'rgba(255,255,255,0.15)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                      }}>
                         <div className="space-y-2">
                           <Label className="font-arabic text-right">قيمة العقد (ر.س)</Label>
                           <Input
@@ -604,7 +621,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
                 </TabsContent>
               </div>
 
-              <div className="flex gap-4 justify-start pt-6 border-t border-white/20">
+              <div className="flex gap-4 justify-start pt-6 border-t border-white/30">
                 <Button
                   type="button"
                   variant="outline"
