@@ -22,7 +22,7 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
           </div>
           <div className="text-xs text-black font-arabic font-bold">الف</div>
         </div>
-        <div className="text-xs  font-Regular text-black font-arabic">text-xs  font-Regular text-black font-arabic</div>
+        <div className="text-xs  font-Regular text-black font-arabic">عن الربع الآول</div>
       </div>
 
       {/* الشكاوى */}
