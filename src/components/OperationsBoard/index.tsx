@@ -28,16 +28,14 @@ export const OperationsBoard = ({
     }}>
       <div className="w-full h-full rounded-[20px] flex flex-col mx-0 px-0">
         {/* رأس اللوحة مع العنوان والتبويبات */}
-        <div className="flex flex-col px-6 py-[24px] my-[24px] gap-4">
-          <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap text-right">
+        <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
+          <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap">
             لوحة الإدارة والتشغيل
           </h2>
-          <div className="flex justify-end">
-            <div className="w-fit">
-              <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
-                <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
-              </Tabs>
-            </div>
+          <div className="w-fit">
+            <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
+              <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
+            </Tabs>
           </div>
         </div>
         
