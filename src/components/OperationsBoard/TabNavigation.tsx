@@ -47,13 +47,13 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
           direction: "rtl",
           width: "fit-content"
         }} 
-        className="gap-1 justify-start bg-transparent min-w-max flex-nowrap py-0 h-auto"
+        className="gap-1 justify-end bg-transparent min-w-max flex-nowrap py-0 h-auto"
       >
         {tabItems.map(tab => (
           <TabsTrigger 
             key={tab.value} 
             value={tab.value} 
-            className="text-sm font-arabic rounded-full py-2 px-6 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-400 hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
+            className="text-sm font-arabic rounded-full py-2 px-6 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
           >
             {tab.label}
           </TabsTrigger>
