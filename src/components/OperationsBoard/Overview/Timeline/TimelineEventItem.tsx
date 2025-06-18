@@ -12,23 +12,19 @@ export const TimelineEventItem: React.FC<TimelineEventItemProps> = ({
   onEventClick
 }) => {
   return (
-    <div className="relative flex flex-col items-center min-w-fit group px-6">
+    <div className="relative flex flex-col items-center min-w-fit group px-0">
       {/* التاريخ في الأعلى */}
-      <div className="text-center mb-4 whitespace-nowrap">
-        <div className="text-lg font-bold text-gray-800 font-arabic">
-          {new Date(event.date).toLocaleDateString('ar-EG', {
-            month: 'short'
-          })}
-        </div>
-        <div className="text-2xl font-bold text-gray-900 font-arabic">
-          {new Date(event.date).getDate().toString().padStart(2, '0')}
-        </div>
+      <div className="text-sm font-bold text-gray-800 mb-4 whitespace-nowrap bg-white/90 rounded-lg backdrop-blur-sm border border-white/60 shadow-sm transition-all duration-200 group-hover:bg-white group-hover:shadow-md py-0 px-0">
+        {new Date(event.date).toLocaleDateString('ar-EG', {
+          month: 'short',
+          day: 'numeric'
+        })}
       </div>
 
-      {/* الدائرة البيضاء - تتوسط الخط */}
+      {/* الدائرة السوداء البسيطة - تتوسط الخط */}
       <button 
         className="
-          w-6 h-6 rounded-full bg-white border-2 border-gray-300 
+          w-6 h-6 rounded-full bg-gray-800 border-2 border-white 
           shadow-md hover:shadow-lg
           transition-all duration-200 
           hover:scale-110 active:scale-95
@@ -40,11 +36,11 @@ export const TimelineEventItem: React.FC<TimelineEventItemProps> = ({
       />
 
       {/* تفاصيل الحدث تحت الخط */}
-      <div className="text-center mt-4 max-w-40 transition-all duration-200 group-hover:scale-105">
-        <div className="text-sm font-bold text-gray-900 mb-2 leading-tight font-arabic">
+      <div className="text-center mt-4 max-w-36 transition-all duration-200 group-hover:scale-105 my-[5px]">
+        <div className="text-sm font-bold text-gray-900 mb-2 bg-white/90 rounded-lg backdrop-blur-sm border border-white/60 shadow-sm transition-all duration-200 group-hover:bg-white group-hover:shadow-md leading-tight py-0 px-0">
           {event.title}
         </div>
-        <div className="text-xs font-medium text-gray-600 font-arabic">
+        <div className="text-xs font-medium text-gray-700 bg-white/80 rounded-md backdrop-blur-sm border border-white/50 transition-all duration-200 group-hover:bg-white/95 py-0 px-0">
           {event.department}
         </div>
       </div>
