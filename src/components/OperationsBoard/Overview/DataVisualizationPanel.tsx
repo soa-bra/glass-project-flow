@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { MoreHorizontal, TrendingUp, RefreshCw } from 'lucide-react';
 
 interface DataVisualizationPanelProps {
   title: string;
@@ -89,12 +90,31 @@ export const DataVisualizationPanel: React.FC<DataVisualizationPanelProps> = ({
 
   return (
     <div className="operations-board-card">
-      <h3 className="text-lg font-bold text-gray-800 font-arabic mb-2">{title}</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-gray-800 font-arabic">{title}</h3>
+        <div className="flex gap-2">
+          {/* أيقونة دائرية للاتجاه */}
+          <button className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+            <TrendingUp className="w-4 h-4 text-gray-600" />
+          </button>
+          {/* أيقونة دائرية للتحديث */}
+          <button className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+            <RefreshCw className="w-4 h-4 text-gray-600" />
+          </button>
+          {/* أيقونة دائرية للمزيد */}
+          <button className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+            <MoreHorizontal className="w-4 h-4 text-gray-600" />
+          </button>
+        </div>
+      </div>
+      
       <div className="text-center mb-4">
         <div className="text-3xl font-bold text-gray-800 font-arabic mb-1">{value}</div>
         <div className="text-xs text-gray-600 font-arabic">{description}</div>
       </div>
+      
       {renderChart()}
+      
       <div className="mt-4 text-center">
         <p className="text-xs text-gray-500 font-arabic">هذا النص هنا للشكل المرئي</p>
       </div>
