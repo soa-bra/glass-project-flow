@@ -8,13 +8,20 @@ interface OverviewTabProps {
   loading: boolean;
 }
 
+/**
+ * تبويب النظرة العامة - يعرض الإحصائيات الأساسية للمشاريع
+ */
 export const OverviewTab: React.FC<OverviewTabProps> = ({
   data,
   loading
 }) => {
   if (loading || !data) {
-    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
+    return (
+      <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
+        جارٍ التحميل...
+      </div>
+    );
   }
 
-  return <OverviewLayout data={mockOverviewData} />;
+  return <OverviewLayout data={data} />;
 };

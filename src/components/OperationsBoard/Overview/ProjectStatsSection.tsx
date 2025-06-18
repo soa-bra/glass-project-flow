@@ -1,16 +1,25 @@
+
 import React from 'react';
+
 interface ProjectStats {
   expectedRevenue: number;
   complaints: number;
   delayedProjects: number;
 }
+
 interface ProjectStatsSectionProps {
   stats: ProjectStats;
 }
+
+/**
+ * مكون عرض الإحصائيات الرئيسية للمشاريع
+ * يعرض الإيرادات المتوقعة، الشكاوى، والمشاريع المتأخرة
+ */
 export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
   stats
 }) => {
-  return <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[2px]">
+  return (
+    <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[2px]">
       {/* الإيرادات المتوقعة */}
       <div className="text-right p-6 py-0 my-[15px]">
         <div className="mb-2">
@@ -22,7 +31,7 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
           </div>
           <div className="text-xs text-black font-arabic font-bold">الف</div>
         </div>
-        <div className="text-xs  font-Regular text-black font-arabic">ريال سعودي عن الربع الأول</div>
+        <div className="text-xs font-Regular text-black font-arabic">ريال سعودي عن الربع الأول</div>
       </div>
 
       {/* الشكاوى */}
@@ -36,7 +45,7 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
           </div>
           <div className="text-xs text-black font-arabic font-bold">شكاوى</div>
         </div>
-        <div className="text-xs  font-Regular text-black font-arabic">الشكاوى والملاحظات التي كرروها</div>
+        <div className="text-xs font-Regular text-black font-arabic">الشكاوى والملاحظات التي كرروها</div>
       </div>
 
       {/* المشاريع المتأخرة */}
@@ -50,7 +59,8 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
           </div>
           <div className="text-xs text-black font-arabic font-bold">مشاريع</div>
         </div>
-        <div className="text-xs  font-Regular text-black font-arabic">تحتاج إلى تدخل ومعالجة</div>
+        <div className="text-xs font-Regular text-black font-arabic">تحتاج إلى تدخل ومعالجة</div>
       </div>
-    </div>;
+    </div>
+  );
 };
