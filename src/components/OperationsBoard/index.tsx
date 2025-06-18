@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { Tabs } from '@/components/ui/tabs';
 import { TAB_ITEMS } from './types';
 import { useTabData } from './useTabData';
 import { TabNavigation } from './TabNavigation';
 import { TabContentWrapper } from './TabContentWrapper';
-import { X } from 'lucide-react';
+
 export const OperationsBoard = ({
   isSidebarCollapsed
 }: {
@@ -26,19 +27,14 @@ export const OperationsBoard = ({
       <div className="w-full h-full rounded-[20px] flex flex-col mx-0 px-0">
         {/* رأس اللوحة مع العنوان والتبويبات */}
         <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
-          <div className="flex items-center gap-8">
-            <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap">
-              لوحة الإدارة والتشغيل
-            </h2>
-            <div className="flex-1">
-              <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
-                <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
-              </Tabs>
-            </div>
+          <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap">
+            لوحة الإدارة والتشغيل
+          </h2>
+          <div className="flex-1 mr-8">
+            <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
+              <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
+            </Tabs>
           </div>
-          <button className="p-2 hover:bg-black/10 rounded-full transition-colors">
-            <X className="w-6 h-6 text-gray-600" />
-          </button>
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col mx-0 px-0">
