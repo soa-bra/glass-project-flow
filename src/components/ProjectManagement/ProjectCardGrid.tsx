@@ -7,7 +7,6 @@ import { AICard } from './cards/AICard';
 import { TaskListCard } from './cards/TaskListCard';
 import { ProgressStagesCard } from './cards/ProgressStagesCard';
 import { DataVisualizationCard } from './cards/DataVisualizationCard';
-import { FinancialOverviewCard } from './cards/FinancialOverviewCard';
 
 interface ProjectCardGridProps {
   project: Project;
