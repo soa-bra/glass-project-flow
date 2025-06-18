@@ -30,10 +30,6 @@
     --visual-data-secondary-3: #d9d2fd;
     --visual-data-secondary-4: #a4e2f6;
     --visual-data-secondary-5: #fbe2aa;
-    --visual-data-donut-slice-1: #dbf4aa;
-    --visual-data-donut-slice-2: #e3e9f7;
-    --visual-data-main-bar-project-summary: #000000;
-    --visual-data-other-bars-project-summary: #f2ffff;
 
     --project-card-elements-task-count: #d1e1ea;
     --project-card-elements-day-count: transparent;
@@ -167,42 +163,10 @@
   }
 }
 
-/* Enhanced Glassmorphism Components */
+/* Essential Components */
 @layer components {
   .operations-board-card {
     background: var(--backgrounds-cards-admin-ops);
-    border-radius: 24px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .timeline-card {
-    background: var(--backgrounds-timeline-bg);
-    border-radius: 24px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .financial-card-profit {
-    background: var(--backgrounds-financial-card-profit);
-    border-radius: 24px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .financial-card-loss {
-    background: var(--backgrounds-financial-card-loss);
-    border-radius: 24px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .project-summary-card {
-    background: var(--backgrounds-project-summary-card);
     border-radius: 24px;
     padding: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -234,7 +198,7 @@
     transform: scale(0.98);
   }
 
-  /* RTL Layout Classes with Synchronized Animation */
+  /* RTL Layout Classes */
   .sidebar-layout {
     right: var(--sidebar-right);
     transition: all var(--animation-duration-main) var(--animation-easing);
@@ -276,19 +240,6 @@
     transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
-  /* Synchronized Animation Helpers */
-  .sync-transition {
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .sync-transition-fast {
-    transition: all var(--animation-duration-fast) var(--animation-easing);
-  }
-
-  .sync-transition-slow {
-    transition: all var(--animation-duration-slow) var(--animation-easing);
-  }
-
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
@@ -309,7 +260,7 @@
   }
 }
 
-/* Animation frames for project panel */
+/* Project Panel Animation Frames */
 .project-panel-frame1 {
   width: 320px !important;
   height: 110px !important;
