@@ -10,9 +10,9 @@ interface ProjectStatsSectionProps {
 export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
   stats
 }) => {
-  return <div className="grid grid-cols-3 gap-6 mb-6">
+  return <div className="grid grid-cols-3 gap-6 mb-6 my-0">
       {/* الإيرادات المتوقعة */}
-      <div className="text-right p-6">
+      <div className="text-right p-6 py-0 my-[15px]">
         <div className="mb-2">
           <span className="text-sm text-black font-arabic font-medium">الإيرادات المتوقعة</span>
         </div>
@@ -22,11 +22,11 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
           </div>
           <div className="text-xs text-black font-arabic font-bold">الف</div>
         </div>
-        <div className="text-xs  font-Regular text-black font-arabic">عن الربع الأول</div>
+        <div className="text-xs  font-Regular text-black font-arabic">ريال سعودي عن الربع الأول</div>
       </div>
 
       {/* الشكاوى */}
-      <div className="text-right p-6 mx-0 px-[24px]">
+      <div className="text-right p-6 mx-0 px-[24px] py-0 my-[15px]">
         <div className="mb-2">
           <span className="text-sm text-black font-arabic font-medium">الشكاوى</span>
         </div>
@@ -40,7 +40,7 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
       </div>
 
       {/* المشاريع المتأخرة */}
-      <div className="text-right p-6">
+      <div className="text-right p-6 py-0 my-[15px]">
         <div className="mb-2">
           <span className="text-sm text-black font-arabic font-medium">المشاريع المتأخرة</span>
         </div>
