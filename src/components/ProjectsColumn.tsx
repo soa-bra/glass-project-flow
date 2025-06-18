@@ -5,7 +5,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import React, { useState } from 'react';
 import { Project } from '@/types/project';
 import { AddProjectModal } from './ProjectsColumn/AddProjectModal';
-import { Plus } from 'lucide-react';
 
 type ProjectsColumnProps = {
   projects: Project[];
@@ -35,17 +34,8 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
       >
         {/* شريط الأدوات ثابت في الأعلى */}
         <div className="flex-shrink-0 px-4 pt-4">
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => setShowAddProjectModal(true)}
-              className="rounded-full bg-white/70 hover:bg-white/90 shadow-lg border border-white/30 w-[36px] h-[36px] flex items-center justify-center transition-all duration-200"
-              title="إضافة مشروع جديد"
-            >
-              <Plus className="text-gray-700" size={20} />
-            </button>
-            <div className="flex-1">
-              <ProjectsToolbar />
-            </div>
+          <div className="mb-4">
+            <ProjectsToolbar onAddProject={() => setShowAddProjectModal(true)} />
           </div>
         </div>
         
