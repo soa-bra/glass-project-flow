@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { X, Edit, ChevronDown } from 'lucide-react';
-import { TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Project } from '@/types/project';
 
@@ -11,8 +10,6 @@ interface ProjectManagementHeaderProps {
   onDelete: () => void;
   onArchive: () => void;
   onEdit: () => void;
-  activeTab: string;
-  onTabChange: (value: string) => void;
 }
 
 export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = ({
@@ -20,12 +17,8 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
   onClose,
   onDelete,
   onArchive,
-  onEdit,
-  activeTab,
-  onTabChange
+  onEdit
 }) => {
-  const [showEditMenu, setShowEditMenu] = useState(false);
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'on-plan': return 'bg-green-100 border-green-300 text-green-800';
@@ -53,54 +46,8 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
           لوحة إدارة المشروع
         </h1>
 
-        {/* الأزرار والتبويبات على اليمين */}
+        {/* الأزرار على اليمين */}
         <div className="flex items-center gap-4">
-          {/* التبويبات */}
-          <TabsList className="bg-transparent p-0 h-auto gap-1">
-            <TabsTrigger 
-              value="overview" 
-              className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-            >
-              نظرة عامة
-            </TabsTrigger>
-            <TabsTrigger 
-              value="tasks" 
-              className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-            >
-              إدارة المهام
-            </TabsTrigger>
-            <TabsTrigger 
-              value="finance" 
-              className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-            >
-              الوضع المالي
-            </TabsTrigger>
-            <TabsTrigger 
-              value="attachments" 
-              className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-            >
-              المرفقات
-            </TabsTrigger>
-            <TabsTrigger 
-              value="client" 
-              className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-            >
-              العميل
-            </TabsTrigger>
-            <TabsTrigger 
-              value="team" 
-              className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-            >
-              الفريق
-            </TabsTrigger>
-            <TabsTrigger 
-              value="reports" 
-              className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-            >
-              التقارير
-            </TabsTrigger>
-          </TabsList>
-
           {/* قائمة التعديل */}
           <div className="relative">
             <Select onValueChange={(value) => {

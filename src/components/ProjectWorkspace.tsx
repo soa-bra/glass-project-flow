@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
@@ -17,7 +16,6 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     selectedProjectId,
     displayedProjectId,
     operationsBoardClass,
-    projectPanelClass,
     projectsColumnClass,
     handleProjectSelect,
     closePanel,
