@@ -3,15 +3,13 @@ import React from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import ProjectPanel from '@/components/ProjectPanel';
+import { ProjectManagementBoard } from '@/components/ProjectManagement';
 import { mockProjects } from '@/data/mockProjects';
 import { useProjectPanelAnimation } from '@/hooks/useProjectPanelAnimation';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
 }
-// Helper to return px value as string from a CSS calc variable
-const getVar = (v: string) =>
-  typeof window !== "undefined" ? getComputedStyle(document.documentElement).getPropertyValue(v) : "";
 
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
   const {
@@ -77,20 +75,17 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
       </div>
 
-      {/* Project Panel: slides in/out and crossfades content */}
-      <ProjectPanel
-        frameClass={projectPanelClass}
-        project={shownProject}
-        showFull={panelStage === "open" || panelStage === "changing-content"}
-        crossfade={panelStage === "changing-content"}
-        onClose={closePanel}
-        style={{
-          right: projectPanelRight,
-          width: projectPanelWidth,
-        }}
-      />
+      {/* Project Management Board: slides in/out and crossfades content */}
+      {shownProject && (
+        <ProjectManagementBoard
+          project={shownProject}
+          isVisible={panelStage === "open" || panelStage === "changing-content"}
+          onClose={closePanel}
+          isSidebarCollapsed={isSidebarCollapsed}
+        />
+      )}
     </>
   );
 };
-export default ProjectWorkspace;
 
+export default ProjectWorkspace;

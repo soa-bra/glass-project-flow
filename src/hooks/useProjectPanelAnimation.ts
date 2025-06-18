@@ -46,23 +46,19 @@ export const useProjectPanelAnimation = () => {
   // Animation classes
   let operationsBoardClass = "";
   let projectsColumnClass = "";
-  let projectPanelClass = "";
   let slidePanel = stage === "sliding-in" || stage === "open" || stage === "changing-content";
   let slideOutPanel = stage === "sliding-out";
 
-  // Operations board, projects column, panel transitions based on open/collapsed/sidebar
+  // Operations board, projects column transitions based on open/collapsed/sidebar
   if (slidePanel) {
     operationsBoardClass = "sync-transition operations-board-slid";
     projectsColumnClass = "sync-transition projects-column-slid";
-    projectPanelClass = "sync-transition project-panel-slid-in";
   } else if (slideOutPanel) {
     operationsBoardClass = "sync-transition";
     projectsColumnClass = "sync-transition";
-    projectPanelClass = "sync-transition project-panel-slid-out";
   } else {
     operationsBoardClass = "sync-transition";
     projectsColumnClass = "sync-transition";
-    projectPanelClass = "sync-transition project-panel-hidden";
   }
 
   return {
@@ -71,9 +67,7 @@ export const useProjectPanelAnimation = () => {
     displayedProjectId,
     operationsBoardClass,
     projectsColumnClass,
-    projectPanelClass,
     handleProjectSelect,
     closePanel,
   };
 };
-
