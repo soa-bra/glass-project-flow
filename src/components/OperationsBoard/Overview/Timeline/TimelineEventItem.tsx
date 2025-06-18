@@ -11,36 +11,20 @@ export const TimelineEventItem: React.FC<TimelineEventItemProps> = ({
   event,
   onEventClick
 }) => {
-  const eventDate = new Date(event.date);
-  const day = eventDate.getDate().toString().padStart(2, '0');
-  const month = eventDate.toLocaleDateString('en-US', { month: 'short' });
-
   return (
-    <div className="relative flex flex-col items-center min-w-fit group px-4">
+    <div className="relative flex flex-col items-center min-w-fit group px-0">
       {/* التاريخ في الأعلى */}
-      <div className="text-center mb-4">
-        <div className="text-2xl font-bold text-gray-800 mb-1 font-arabic">
-          {day}
-        </div>
-        <div className="text-sm text-gray-600 font-arabic">
-          {month}
-        </div>
-      </div>
-
-      {/* وصف الحدث */}
-      <div className="text-center mb-4 max-w-40">
-        <div className="text-xs text-gray-700 mb-2 font-arabic leading-tight">
-          {event.title}
-        </div>
-        <div className="text-xs font-bold text-gray-900 font-arabic">
-          {event.department}
-        </div>
+      <div className="text-sm font-bold text-gray-800 mb-4 whitespace-nowrap bg-white/90 rounded-lg backdrop-blur-sm border border-white/60 shadow-sm transition-all duration-200 group-hover:bg-white group-hover:shadow-md py-0 px-0">
+        {new Date(event.date).toLocaleDateString('ar-EG', {
+          month: 'short',
+          day: 'numeric'
+        })}
       </div>
 
       {/* الدائرة السوداء البسيطة - تتوسط الخط */}
       <button 
         className="
-          w-8 h-8 rounded-full bg-white border-2 border-gray-400 
+          w-6 h-6 rounded-full bg-gray-800 border-2 border-white 
           shadow-md hover:shadow-lg
           transition-all duration-200 
           hover:scale-110 active:scale-95
@@ -50,6 +34,16 @@ export const TimelineEventItem: React.FC<TimelineEventItemProps> = ({
         onClick={() => onEventClick(event)} 
         onPointerDown={e => e.stopPropagation()} 
       />
+
+      {/* تفاصيل الحدث تحت الخط */}
+      <div className="text-center mt-4 max-w-36 transition-all duration-200 group-hover:scale-105 my-[5px]">
+        <div className="text-sm font-bold text-gray-900 mb-2 bg-white/90 rounded-lg backdrop-blur-sm border border-white/60 shadow-sm transition-all duration-200 group-hover:bg-white group-hover:shadow-md leading-tight py-0 px-0">
+          {event.title}
+        </div>
+        <div className="text-xs font-medium text-gray-700 bg-white/80 rounded-md backdrop-blur-sm border border-white/50 transition-all duration-200 group-hover:bg-white/95 py-0 px-0">
+          {event.department}
+        </div>
+      </div>
     </div>
   );
 };

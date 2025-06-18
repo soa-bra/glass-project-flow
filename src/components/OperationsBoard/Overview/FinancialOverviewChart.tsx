@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { ChevronLeft, MoreHorizontal } from 'lucide-react';
-import { CircularIconButton } from '@/components/ui/CircularIconButton';
 
 interface FinancialOverviewChartProps {
   title: string;
@@ -9,85 +8,92 @@ interface FinancialOverviewChartProps {
     total: number;
     segments: { label: string; value: number; color: string }[];
   };
-  isProfit?: boolean;
 }
 
-export const FinancialOverviewChart: React.FC<FinancialOverviewChartProps> = ({ 
-  title, 
-  data, 
-  isProfit = true 
-}) => {
-  const backgroundColor = isProfit ? '#96d8d0' : '#f1b5b9';
+export const FinancialOverviewChart: React.FC<FinancialOverviewChartProps> = ({ title, data }) => {
+  const centerValue = data.segments.reduce((sum, segment) => sum + segment.value, 0);
   
   return (
-    <div 
-      className="h-full p-6 rounded-3xl shadow-lg border border-white/40"
-      style={{ background: backgroundColor }}
-    >
-      <div className="flex items-center justify-between mb-8">
-        <h3 className="text-xl font-bold text-gray-800 font-arabic">{title}</h3>
+    <div className="financial-card-profit">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-bold text-gray-800 font-arabic">{title}</h3>
         <div className="flex gap-2">
-          <CircularIconButton icon={ChevronLeft} size="sm" />
-          <CircularIconButton icon={MoreHorizontal} size="sm" />
+          <button className="p-2 hover:bg-gray-100 rounded-full">
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button className="p-2 hover:bg-gray-100 rounded-full">
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
         </div>
       </div>
       
-      <div className="flex items-center justify-center mb-8">
-        {/* دائرة مع خطوط شعاعية */}
-        <div className="relative w-40 h-40">
-          {/* الخطوط الشعاعية الخارجية */}
-          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 160 160">
-            {Array.from({ length: 60 }).map((_, i) => {
-              const angle = (i * 6) * Math.PI / 180;
-              const x1 = 80 + Math.cos(angle) * 65;
-              const y1 = 80 + Math.sin(angle) * 65;
-              const x2 = 80 + Math.cos(angle) * 75;
-              const y2 = 80 + Math.sin(angle) * 75;
+      <div className="flex items-center justify-center mb-6">
+        {/* دائرة تقدم مبسطة */}
+        <div className="relative w-32 h-32">
+          <svg className="w-32 h-32 transform -rotate-90">
+            <circle 
+              cx="64" 
+              cy="64" 
+              r="56" 
+              stroke="#e5e7eb" 
+              strokeWidth="8" 
+              fill="transparent"
+            />
+            {/* الشرائح الملونة */}
+            {data.segments.map((segment, index) => {
+              const circumference = 2 * Math.PI * 56;
+              const segmentLength = (segment.value / data.total) * circumference;
+              const offset = data.segments.slice(0, index).reduce((sum, prev) => 
+                sum + (prev.value / data.total) * circumference, 0
+              );
+              
+              const colors = [
+                'var(--visual-data-donut-slice-1)',
+                'var(--visual-data-donut-slice-2)',
+                'var(--visual-data-secondary-2)',
+                'var(--visual-data-secondary-5)'
+              ];
               
               return (
-                <line
-                  key={i}
-                  x1={x1}
-                  y1={y1}
-                  x2={x2}
-                  y2={y2}
-                  stroke="#fbe2aa"
-                  strokeWidth="2"
-                  opacity="0.8"
+                <circle
+                  key={index}
+                  cx="64"
+                  cy="64"
+                  r="56"
+                  stroke={colors[index] || segment.color}
+                  strokeWidth="8"
+                  fill="transparent"
+                  strokeDasharray={`${segmentLength} ${circumference - segmentLength}`}
+                  strokeDashoffset={-offset}
+                  className="transition-all duration-300"
                 />
               );
             })}
           </svg>
-          
-          {/* الرقم المركزي */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-5xl font-bold text-gray-800 font-arabic mb-2">78</span>
-            <span className="text-sm text-gray-700 font-arabic text-center">
-              اجمالي الأرباح والخسائر
-            </span>
+            <span className="text-xs text-gray-600 font-arabic">المعدل الأرباح والخسائر</span>
+            <span className="text-2xl font-bold text-gray-800 font-arabic">{centerValue}</span>
+            <div className="flex gap-4 mt-2">
+              <div className="text-center">
+                <div className="text-lg font-bold font-arabic">78</div>
+                <div className="text-xs text-gray-600 font-arabic">مليار</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold font-arabic">02</div>
+                <div className="text-xs text-gray-600 font-arabic">مليار</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold font-arabic">14</div>
+                <div className="text-xs text-gray-600 font-arabic">مليار</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* القيم الجانبية */}
-      <div className="flex flex-col gap-6 items-end">
-        <div className="text-right">
-          <div className="text-3xl font-bold text-gray-800 font-arabic">02</div>
-          <div className="text-sm text-gray-700 font-arabic">مثال</div>
-        </div>
-        <div className="text-right">
-          <div className="text-3xl font-bold text-gray-800 font-arabic">14</div>
-          <div className="text-sm text-gray-700 font-arabic">مثال</div>
-        </div>
-        <div className="text-right">
-          <div className="text-3xl font-bold text-gray-800 font-arabic">78</div>
-          <div className="text-sm text-gray-700 font-arabic">مثال</div>
-        </div>
-      </div>
       
-      <div className="mt-6 text-center space-y-2">
-        <p className="text-xs text-gray-700 font-arabic">هذا النص مثال للشكل النهائي</p>
-        <p className="text-xs text-gray-700 font-arabic">هذا النص مثال للشكل النهائي</p>
+      <div className="mt-4 text-center">
+        <p className="text-xs text-gray-600 font-arabic">هذا النص هنا للشكل البرئي</p>
+        <p className="text-xs text-gray-600 font-arabic">هذا النص هنا للشكل البرئي</p>
       </div>
     </div>
   );

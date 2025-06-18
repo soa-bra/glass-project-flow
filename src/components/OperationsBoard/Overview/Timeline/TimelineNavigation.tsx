@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { CircularIconButton } from '@/components/ui/CircularIconButton';
 
 interface TimelineNavigationProps {
   canScrollLeft: boolean;
@@ -18,18 +17,34 @@ export const TimelineNavigation: React.FC<TimelineNavigationProps> = ({
 }) => {
   return (
     <div className="flex gap-2">
-      <CircularIconButton 
-        icon={ChevronRight}
+      <button 
         onClick={onScrollRight}
         disabled={!canScrollRight}
-        variant={canScrollRight ? 'default' : 'subtle'}
-      />
-      <CircularIconButton 
-        icon={ChevronLeft}
+        className={`
+          p-3 rounded-xl transition-all duration-300 
+          backdrop-blur-sm border border-white/40
+          ${canScrollRight 
+            ? 'bg-white/60 hover:bg-white/80 text-gray-700 hover:scale-105 active:scale-95 shadow-sm hover:shadow-md' 
+            : 'bg-white/25 text-gray-400 cursor-not-allowed opacity-50'
+          }
+        `}
+      >
+        <ChevronRight size={18} />
+      </button>
+      <button 
         onClick={onScrollLeft}
         disabled={!canScrollLeft}
-        variant={canScrollLeft ? 'default' : 'subtle'}
-      />
+        className={`
+          p-3 rounded-xl transition-all duration-300 
+          backdrop-blur-sm border border-white/40
+          ${canScrollLeft 
+            ? 'bg-white/60 hover:bg-white/80 text-gray-700 hover:scale-105 active:scale-95 shadow-sm hover:shadow-md' 
+            : 'bg-white/25 text-gray-400 cursor-not-allowed opacity-50'
+          }
+        `}
+      >
+        <ChevronLeft size={18} />
+      </button>
     </div>
   );
 };

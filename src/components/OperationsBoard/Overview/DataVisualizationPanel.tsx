@@ -8,15 +8,6 @@ interface DataVisualizationPanelProps {
   chart?: 'bar' | 'line' | 'circle';
 }
 
-const COLORS = {
-  primary: '#000000',
-  secondary_1: '#bdeed3',
-  secondary_2: '#f1b5b9', 
-  secondary_3: '#d9d2fd',
-  secondary_4: '#a4e2f6',
-  secondary_5: '#fbe2aa'
-};
-
 export const DataVisualizationPanel: React.FC<DataVisualizationPanelProps> = ({ 
   title, 
   value, 
@@ -26,88 +17,85 @@ export const DataVisualizationPanel: React.FC<DataVisualizationPanelProps> = ({
   const renderChart = () => {
     if (chart === 'bar') {
       return (
-        <div className="flex items-end justify-center gap-1 h-16 mb-4">
-          {[40, 30, 50, 20, 35].map((height, index) => (
-            <div
-              key={index}
-              className="rounded-sm transition-all duration-300"
-              style={{ 
-                width: '12px',
-                height: `${height}px`,
-                backgroundColor: index === 2 ? COLORS.secondary_1 : COLORS.secondary_4
-              }}
-            />
+        <div className="space-y-2">
+          {[90, 70, 85, 60].map((height, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <div className="w-2 bg-gray-300 rounded-full h-2"></div>
+              <div 
+                className="rounded-full h-2 transition-all duration-300"
+                style={{ 
+                  width: `${height}%`,
+                  backgroundColor: 'var(--visual-data-secondary-1)'
+                }}
+              ></div>
+            </div>
           ))}
         </div>
       );
     } else if (chart === 'circle') {
       return (
-        <div className="flex items-center justify-center mb-4">
-          <div className="relative w-20 h-20">
-            <svg className="w-20 h-20 transform -rotate-90">
+        <div className="flex items-center justify-center h-16">
+          <div className="relative w-16 h-16">
+            <svg className="w-16 h-16 transform -rotate-90">
               <circle 
-                cx="40" 
-                cy="40" 
-                r="32" 
+                cx="32" 
+                cy="32" 
+                r="28" 
                 stroke="#e5e7eb" 
-                strokeWidth="6" 
+                strokeWidth="4" 
                 fill="transparent"
               />
               <circle
-                cx="40"
-                cy="40"
-                r="32"
-                stroke={COLORS.primary}
-                strokeWidth="6"
+                cx="32"
+                cy="32"
+                r="28"
+                stroke="var(--visual-data-primary)"
+                strokeWidth="4"
                 fill="transparent"
-                strokeDasharray={`${(75/100) * 201} 201`}
+                strokeDasharray={`${(75/100) * 176} 176`}
                 className="transition-all duration-300"
               />
             </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-lg font-bold font-arabic">75%</span>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-sm font-bold">75%</span>
             </div>
+          </div>
+          <div className="mr-4">
+            <div className="text-xs font-arabic">نسبة</div>
+            <div className="text-xs text-gray-600 font-arabic">هذا النص هنا للشكل المرئي</div>
           </div>
         </div>
       );
     } else {
       return (
-        <div className="h-16 relative mb-4">
+        <div className="h-16 relative">
           <svg className="w-full h-full">
             <path
               d="M 0 40 Q 20 20 40 35 T 80 30 T 120 25"
-              stroke={COLORS.secondary_4}
-              strokeWidth="3"
+              stroke="var(--visual-data-secondary-4)"
+              strokeWidth="2"
               fill="none"
-              className="opacity-80"
+              className="opacity-70"
             />
-            {/* نقاط البيانات */}
-            <circle cx="0" cy="40" r="3" fill={COLORS.primary} />
-            <circle cx="40" cy="35" r="3" fill={COLORS.primary} />
-            <circle cx="80" cy="30" r="3" fill={COLORS.primary} />
-            <circle cx="120" cy="25" r="3" fill={COLORS.primary} />
           </svg>
+          <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-500">
+            <span>يناير</span>
+            <span>مارس</span>
+          </div>
         </div>
       );
     }
   };
 
   return (
-    <div 
-      className="h-full p-6 rounded-3xl shadow-lg border border-white/40"
-      style={{ background: '#f2ffff' }}
-    >
-      <h3 className="text-lg font-bold text-gray-800 font-arabic mb-4">{title}</h3>
-      
+    <div className="operations-board-card">
+      <h3 className="text-lg font-bold text-gray-800 font-arabic mb-2">{title}</h3>
       <div className="text-center mb-4">
-        <div className="text-xs text-gray-600 font-arabic mb-2">{description}</div>
-        <div className="text-3xl font-bold text-gray-800 font-arabic">{value}</div>
-        <div className="text-xs text-gray-600 font-arabic">مثال</div>
+        <div className="text-3xl font-bold text-gray-800 font-arabic mb-1">{value}</div>
+        <div className="text-xs text-gray-600 font-arabic">{description}</div>
       </div>
-      
       {renderChart()}
-      
-      <div className="text-center">
+      <div className="mt-4 text-center">
         <p className="text-xs text-gray-500 font-arabic">هذا النص هنا للشكل المرئي</p>
       </div>
     </div>
