@@ -15,6 +15,7 @@ interface BaseCardProps {
   color?: Color;
   neonRing?: NeonRing;
   header?: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 export const BaseCard: React.FC<BaseCardProps> = ({
@@ -24,7 +25,8 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   variant = 'glass',
   color,
   neonRing,
-  header
+  header,
+  style
 }) => {
   const sizeClasses = {
     sm: 'p-4',
@@ -53,14 +55,17 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   };
 
   return (
-    <div className={cn(
-      'rounded-3xl shadow-lg transition-all duration-300',
-      sizeClasses[size],
-      variantClasses[variant],
-      color && colorClasses[color],
-      neonRing && neonRingClasses[neonRing],
-      className
-    )}>
+    <div 
+      className={cn(
+        'rounded-3xl shadow-lg transition-all duration-300',
+        sizeClasses[size],
+        variantClasses[variant],
+        color && colorClasses[color],
+        neonRing && neonRingClasses[neonRing],
+        className
+      )}
+      style={style}
+    >
       {header && (
         <div className="mb-4">
           {header}

@@ -87,6 +87,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
       variant="glass" 
       size="md"
       className="h-[200px]"
+      style={{ backgroundColor: '#f2ffff' }}
       header={
         <h3 className="text-sm font-bold text-gray-800 font-arabic">{title}</h3>
       }

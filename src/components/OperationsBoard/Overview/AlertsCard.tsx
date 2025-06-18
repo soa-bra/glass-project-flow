@@ -8,6 +8,7 @@ export const AlertsCard: React.FC = () => {
       variant="glass" 
       size="md"
       className="h-[200px] col-span-2"
+      style={{ backgroundColor: '#f2ffff' }}
       header={
         <h3 className="text-lg font-bold text-gray-800 font-arabic">التنبيهات</h3>
       }

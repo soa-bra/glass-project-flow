@@ -5,12 +5,12 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { BarChart, Bar, ResponsiveContainer, XAxis } from 'recharts';
 
 const projectData = [
-  { name: '1', value: 20, color: '#f2ffff' },
-  { name: '2', value: 35, color: '#f2ffff' },
-  { name: '3', value: 25, color: '#f2ffff' },
-  { name: '4', value: 80, color: '#000000' }, // الشريط الرئيسي
-  { name: '5', value: 30, color: '#f2ffff' },
-  { name: '6', value: 15, color: '#f2ffff' },
+  { name: '1', value: 20 },
+  { name: '2', value: 35 },
+  { name: '3', value: 25 },
+  { name: '4', value: 80 },
+  { name: '5', value: 30 },
+  { name: '6', value: 15 },
 ];
 
 export const ProjectSummaryCard: React.FC = () => {
@@ -19,7 +19,7 @@ export const ProjectSummaryCard: React.FC = () => {
       variant="glass" 
       size="md"
       className="h-[200px]"
-      style={{ backgroundColor: '#a4e2f6' }}
+      style={{ backgroundColor: '#f2ffff' }}
       header={
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-800 font-arabic">ملخص للمشاريع</h3>
@@ -52,13 +52,13 @@ export const ProjectSummaryCard: React.FC = () => {
                   tickLine={false}
                   tick={{ fontSize: 10, fill: '#666' }}
                 />
-                <Bar 
-                  dataKey="value" 
-                  radius={[2, 2, 0, 0]}
-                  fill={(entry: any) => entry.color}
-                >
+                <Bar dataKey="value" radius={[2, 2, 0, 0]}>
                   {projectData.map((entry, index) => (
-                    <Bar key={`bar-${index}`} fill={entry.color} />
+                    <Bar 
+                      key={`bar-${index}`} 
+                      dataKey="value"
+                      fill={index === 3 ? '#000000' : '#f2ffff'} 
+                    />
                   ))}
                 </Bar>
                 <ChartTooltip content={<ChartTooltipContent />} />

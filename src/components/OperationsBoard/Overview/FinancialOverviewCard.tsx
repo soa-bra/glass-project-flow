@@ -19,7 +19,7 @@ export const FinancialOverviewCard: React.FC = () => {
       variant="glass" 
       size="md"
       className="row-span-2 h-[420px]"
-      style={{ backgroundColor: isProfit ? '#96d8d0' : '#f1b5b9' }}
+      style={{ backgroundColor: '#f2ffff' }}
       header={
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-800 font-arabic">النظرة المالية</h3>
