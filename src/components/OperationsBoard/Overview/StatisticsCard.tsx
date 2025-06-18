@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from 'recharts';
-
 interface StatisticsCardProps {
   title: string;
   value: string;
@@ -12,22 +10,35 @@ interface StatisticsCardProps {
   chartType?: 'line' | 'bar' | 'simple';
   chartData?: any[];
 }
-
-const sampleLineData = [
-  { name: 'Jan', value: 30 },
-  { name: 'Feb', value: 45 },
-  { name: 'Mar', value: 35 },
-  { name: 'Apr', value: 50 },
-  { name: 'May', value: 40 },
-];
-
-const sampleBarData = [
-  { name: 'A', value: 20 },
-  { name: 'B', value: 35 },
-  { name: 'C', value: 25 },
-  { name: 'D', value: 15 },
-];
-
+const sampleLineData = [{
+  name: 'Jan',
+  value: 30
+}, {
+  name: 'Feb',
+  value: 45
+}, {
+  name: 'Mar',
+  value: 35
+}, {
+  name: 'Apr',
+  value: 50
+}, {
+  name: 'May',
+  value: 40
+}];
+const sampleBarData = [{
+  name: 'A',
+  value: 20
+}, {
+  name: 'B',
+  value: 35
+}, {
+  name: 'C',
+  value: 25
+}, {
+  name: 'D',
+  value: 15
+}];
 export const StatisticsCard: React.FC<StatisticsCardProps> = ({
   title,
   value,
@@ -38,36 +49,30 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
 }) => {
   const renderChart = () => {
     if (chartType === 'line') {
-      return (
-        <div className="h-12 mt-2">
-          <ChartContainer
-            config={{ value: { label: "القيمة", color: "#d9d2fd" } }}
-            className="w-full h-full"
-          >
+      return <div className="h-16 mt-2">
+          <ChartContainer config={{
+          value: {
+            label: "القيمة",
+            color: "#d9d2fd"
+          }
+        }} className="w-full h-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData || sampleLineData}>
-                <Line 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke="#d9d2fd" 
-                  strokeWidth={2}
-                  dot={false}
-                />
+                <Line type="monotone" dataKey="value" stroke="#d9d2fd" strokeWidth={2} dot={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
               </LineChart>
             </ResponsiveContainer>
           </ChartContainer>
-        </div>
-      );
+        </div>;
     }
-
     if (chartType === 'bar') {
-      return (
-        <div className="h-12 mt-2">
-          <ChartContainer
-            config={{ value: { label: "القيمة", color: "#bdeed3" } }}
-            className="w-full h-full"
-          >
+      return <div className="h-16 mt-2">
+          <ChartContainer config={{
+          value: {
+            label: "القيمة",
+            color: "#bdeed3"
+          }
+        }} className="w-full h-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData || sampleBarData}>
                 <Bar dataKey="value" fill="#bdeed3" radius={[2, 2, 0, 0]} />
@@ -75,26 +80,16 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>
-        </div>
-      );
+        </div>;
     }
-
     return null;
   };
-
-  return (
-    <BaseCard 
-      variant="glass" 
-      size="sm"
-      className="h-[170px]"
-      style={{ backgroundColor: '#f2ffff' }}
-      header={
-        <h3 className="text-sm font-bold text-gray-800 font-arabic">{title}</h3>
-      }
-    >
-      <div className="flex-1 flex flex-col justify-between">
+  return <BaseCard variant="glass" size="md" className="h-[200px]" style={{
+    backgroundColor: '#f2ffff'
+  }} header={<h3 className="text-sm font-bold text-gray-800 font-arabic">{title}</h3>}>
+      <div className="flex-1 flex flex-col justify-between py-0">
         <div className="flex items-baseline gap-2 mb-2">
-          <div className="text-2xl font-bold text-black font-arabic">
+          <div className="text-3xl font-bold text-black font-arabic">
             {value}
           </div>
           <div className="text-sm font-bold text-gray-700 font-arabic">
@@ -108,6 +103,5 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
 
         {renderChart()}
       </div>
-    </BaseCard>
-  );
+    </BaseCard>;
 };

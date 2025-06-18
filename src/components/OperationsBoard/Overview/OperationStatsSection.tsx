@@ -15,7 +15,7 @@ interface OperationStatsSectionProps {
 export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
   stats
 }) => {
-  return <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[2px]">
+  return <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[4px] mx-[10px]">
       {/* الإيرادات المتوقعة */}
       <div className="text-right p-6 py-0 my-[15px]">
         <div className="mb-2">

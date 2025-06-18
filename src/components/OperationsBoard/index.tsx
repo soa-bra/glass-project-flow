@@ -22,7 +22,7 @@ export const OperationsBoard = ({
     overflow: 'hidden',
     zIndex: 30
   }}>
-      <div className="w-full h-full rounded-[20px] flex flex-col mx-0 px-0">
+      <div className="mx-0 px-0">
         {/* رأس اللوحة مع العنوان والتبويبات */}
         <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
           <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -35,8 +35,8 @@ export const OperationsBoard = ({
           </div>
         </div>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col mx-0 px-0">
-          <div className="flex-1 overflow-hidden my-0 px-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className=" mx-0 px-0">
+          <div className=" px-0 my-0">
             <TabContentWrapper tabData={tabData} loading={loading} />
           </div>
         </Tabs>

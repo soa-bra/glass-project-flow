@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { OperationStatsSection } from './OperationStatsSection';
 import { OverviewGrid } from './OverviewGrid';
 import { TimelineCard } from './TimelineCard';
 import { OverviewData } from './OverviewData';
-
 interface OverviewLayoutProps {
   data: OverviewData;
 }
@@ -15,10 +13,9 @@ interface OverviewLayoutProps {
 export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
   data
 }) => {
-  return (
-    <div className="h-full flex flex-col font-arabic overflow-hidden py-0 px-[24px]">
+  return <div className=" font-arabic px-[15px] py-0">
       {/* قسم الإحصائيات الرئيسية */}
-      <div className="mb-6 py-0 px-0">
+      <div className="mb-6 py-0 px-0 my-0">
         <OperationStatsSection stats={data.stats} />
       </div>
 
@@ -28,9 +25,8 @@ export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
       </div>
 
       {/* شبكة البطاقات التفاعلية */}
-      <div className="flex-1 min-h-0">
+      <div className="py-0">
         <OverviewGrid />
       </div>
-    </div>
-  );
+    </div>;
 };
