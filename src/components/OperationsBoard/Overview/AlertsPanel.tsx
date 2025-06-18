@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Plus, MoreHorizontal, Star } from 'lucide-react';
+import { CircularIconButton } from '@/components/ui/CircularIconButton';
 
 interface Alert {
   id: number;
@@ -16,40 +17,40 @@ interface AlertsPanelProps {
 export const AlertsPanel: React.FC<AlertsPanelProps> = ({ alerts }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return '#f1b5b9';
+      case 'medium': return '#fbe2aa';
+      case 'low': return '#bdeed3';
+      default: return '#d9d2fd';
+    }
+  };
+
   return (
-    <div className="operations-board-card mb-6">
-      <div className="flex items-center justify-between mb-4">
+    <div 
+      className="h-full p-6 rounded-3xl shadow-lg border border-white/40"
+      style={{ background: '#f2ffff' }}
+    >
+      <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-gray-800 font-arabic">التنبيهات</h3>
         <div className="flex gap-2">
-          <button className="p-2 hover:bg-gray-100 rounded-full">
-            <Plus className="w-4 h-4" />
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded-full">
-            <MoreHorizontal className="w-4 h-4" />
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded-full">
-            <Star className="w-4 h-4" />
-          </button>
+          <CircularIconButton icon={Plus} size="sm" />
+          <CircularIconButton icon={MoreHorizontal} size="sm" />
+          <CircularIconButton icon={Star} size="sm" />
         </div>
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-4">
         {alerts.slice(0, isExpanded ? alerts.length : 3).map((alert) => (
-          <div key={alert.id} className="flex items-center justify-between p-3 bg-white/50 rounded-lg">
-            <div className="flex items-center gap-3">
-              <div 
-                className="w-2 h-2 rounded-full"
-                style={{
-                  backgroundColor: alert.priority === 'high' 
-                    ? 'var(--priority-colors-urgent-important)' 
-                    : alert.priority === 'medium' 
-                    ? 'var(--priority-colors-not-urgent-important)' 
-                    : 'var(--status-colors-on-plan)'
-                }}
-              ></div>
-              <span className="font-arabic text-sm">{alert.title}</span>
+          <div key={alert.id} className="flex items-center gap-3 p-3 bg-white/60 rounded-lg backdrop-blur-sm">
+            <div 
+              className="w-3 h-3 rounded-full flex-shrink-0"
+              style={{ backgroundColor: getPriorityColor(alert.priority) }}
+            />
+            <div className="flex-1">
+              <div className="font-arabic text-sm font-medium text-gray-800">{alert.title}</div>
+              <div className="text-xs text-gray-600 font-arabic mt-1">{alert.status}</div>
             </div>
-            <span className="text-xs text-gray-500 font-arabic">{alert.status}</span>
           </div>
         ))}
       </div>
@@ -57,7 +58,7 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({ alerts }) => {
       {alerts.length > 3 && (
         <button 
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full mt-3 text-center text-sm text-blue-600 hover:text-blue-800 font-arabic"
+          className="w-full mt-4 text-center text-sm text-blue-600 hover:text-blue-800 font-arabic transition-colors"
         >
           {isExpanded ? 'عرض أقل' : 'عرض المزيد'}
         </button>
