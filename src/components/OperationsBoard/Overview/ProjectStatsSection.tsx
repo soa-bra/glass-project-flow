@@ -14,7 +14,7 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
       {/* الإيرادات المتوقعة */}
       <div className="text-right p-6">
         <div className="mb-2">
-          <span className="text-sm text-gray-600 font-arabic font-medium">الإيرادات المتوقعة</span>
+          <span className="text-sm text-black font-arabic font-medium">الإيرادات المتوقعة</span>
         </div>
         <div className="flex items-baseline justify-end gap-2 mb-1 px-0">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
@@ -28,7 +28,7 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
       {/* الشكاوى */}
       <div className="text-right p-6 mx-0 px-[24px]">
         <div className="mb-2">
-          <span className="text-sm text-gray-600 font-arabic font-medium">الشكاوى</span>
+          <span className="text-sm text-black font-arabic font-medium">الشكاوى</span>
         </div>
         <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
