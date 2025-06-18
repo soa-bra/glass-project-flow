@@ -44,24 +44,46 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   };
 
   return (
-    <div className="w-full h-full bg-white/90 backdrop-blur-[20px] border border-white/20 overflow-hidden flex flex-col">
-      {/* الهيدر */}
-      <div className="flex-shrink-0 p-6 pb-4">
-        <ProjectManagementHeader
-          project={project}
-          onClose={onClose}
-          onDelete={() => setShowDeleteDialog(true)}
-          onArchive={() => setShowArchiveDialog(true)}
-          onEdit={handleEditProject}
-        />
+    <div
+      className={`fixed z-[1200] sync-transition ${
+        isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'
+      }`}
+      style={{
+        top: "var(--sidebar-top-offset)",
+        height: "calc(100vh - var(--sidebar-top-offset))",
+        borderRadius: "32px",
+        background: "var(--backgrounds-project-mgmt-board-bg)",
+        boxShadow: "0 8px 32px rgba(31,38,135,0.14), inset 0 1px 0 rgba(255,255,255,0.4)",
+        backdropFilter: "blur(20px) saturate(180%)",
+        WebkitBackdropFilter: "blur(20px) saturate(180%)",
+        border: "1px solid rgba(255,255,255,0.2)",
+        transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
+        padding: "32px 40px",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
+      {/* الرأس */}
+      <ProjectManagementHeader
+        project={project}
+        onClose={onClose}
+        onDelete={() => setShowDeleteDialog(true)}
+        onArchive={() => setShowArchiveDialog(true)}
+        onEdit={handleEditProject}
+      />
+
+      {/* شريط تقدم المراحل */}
+      <div className="mb-6 flex-shrink-0">
+        <ProjectProgressBar progress={project.progress || 65} />
       </div>
 
       {/* التبويبات والمحتوى */}
-      <div className="flex-1 min-h-0 px-6">
+      <div className="flex-1 min-h-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
           {/* شريط التبويبات */}
-          <div className="flex-shrink-0 mb-6">
-            <TabsList className="bg-transparent p-0 h-auto gap-1 w-full justify-start">
+          <div className="flex justify-between items-center mb-4 flex-shrink-0">
+            <TabsList className="bg-transparent p-0 h-auto gap-1">
               <TabsTrigger 
                 value="overview" 
                 className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
@@ -108,8 +130,8 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
           </div>
 
           {/* محتوى التبويبات */}
-          <div className="flex-1 min-h-0 pb-6">
-            <TabsContent value="overview" className="m-0 p-0 h-full">
+          <div className="flex-1 min-h-0">
+            <TabsContent value="overview" className="flex-1 m-0 p-0 h-full">
               <ProjectCardGrid project={project} />
             </TabsContent>
             
