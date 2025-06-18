@@ -31,18 +31,24 @@ export const OperationsBoard = ({
       }}
     >
       <div className="w-full h-full rounded-[20px] flex flex-col mx-0 px-0">
-        {/* رأس اللوحة مع زر الإغلاق */}
+        {/* رأس اللوحة مع العنوان والتبويبات */}
         <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
-          <h2 className="font-medium text-[#2A3437] font-arabic text-3xl">
-            لوحة الإدارة والتشغيل
-          </h2>
+          <div className="flex items-center gap-8">
+            <h2 className="font-medium text-[#2A3437] font-arabic text-3xl whitespace-nowrap">
+              لوحة الإدارة والتشغيل
+            </h2>
+            <div className="flex-1">
+              <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
+                <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
+              </Tabs>
+            </div>
+          </div>
           <button className="p-2 hover:bg-black/10 rounded-full transition-colors">
             <X className="w-6 h-6 text-gray-600" />
           </button>
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full h-full flex flex-col mx-0 px-0">
-          <TabNavigation tabItems={TAB_ITEMS} activeTab={activeTab} onTabChange={setActiveTab} />
           <div className="flex-1 overflow-hidden my-0 px-0">
             <TabContentWrapper tabData={tabData} loading={loading} />
           </div>
