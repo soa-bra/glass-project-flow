@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { TimelineCard } from './Timeline/TimelineCard';
 import { StatisticsCard } from './StatisticsCard';
 import { FinancialOverviewCard } from './FinancialOverviewCard';
 import { ProjectSummaryCard } from './ProjectSummaryCard';
@@ -9,10 +8,7 @@ import { AlertsCard } from './AlertsCard';
 export const OverviewGrid: React.FC = () => {
   return (
     <div className="grid grid-cols-3 gap-6 h-[calc(100vh-320px)] overflow-hidden">
-      {/* الصف الأول: الأحداث القادمة */}
-      <TimelineCard />
-
-      {/* الصف الثاني */}
+      {/* الصف الأول */}
       <StatisticsCard
         title="بيانات"
         value="46"
@@ -32,7 +28,7 @@ export const OverviewGrid: React.FC = () => {
       {/* النظرة المالية - تمتد على صفين */}
       <FinancialOverviewCard />
 
-      {/* الصف الثالث */}
+      {/* الصف الثاني */}
       <StatisticsCard
         title="بيانات"
         value="03"
@@ -48,7 +44,7 @@ export const OverviewGrid: React.FC = () => {
         description="هذا النص مثال للشكل البياني"
       />
 
-      {/* الصف الرابع */}
+      {/* الصف الثالث */}
       <ProjectSummaryCard />
       
       {/* التنبيهات - تمتد على عمودين */}
