@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { LucideIconType } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 interface CircularIconButtonProps {
-  icon: LucideIconType;
+  icon: LucideIcon;
   onClick?: () => void;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'subtle';

@@ -106,91 +106,90 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   };
 
   return (
-    <div 
-      className="h-full overflow-hidden p-6 font-arabic"
-      style={{ 
-        maxHeight: 'calc(100vh - var(--sidebar-top-offset) - 120px)',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gridTemplateRows: 'auto auto auto',
-        gap: '16px'
-      }}
-    >
-      {/* الصف الأول - الأحداث القادمة (3 أعمدة) */}
-      <div style={{ gridColumn: '1 / 4', gridRow: '1' }}>
-        <TimelineWidget 
-          timeline={mockData.timeline}
-          className="h-full"
-        />
+    <div className="h-full flex flex-col font-arabic overflow-hidden">
+      {/* الإحصائيات العلوية */}
+      <div className="mb-6">
+        <ProjectStatsSection stats={mockData.stats} />
       </div>
 
-      {/* بطاقة بيانات 1 */}
-      <div style={{ gridColumn: '4', gridRow: '1' }}>
-        <DataVisualizationPanel 
-          title="بيانات" 
-          value={46} 
-          description="هذا النص هنا للشكل المرئي" 
-          chart="bar" 
-        />
-      </div>
+      {/* الخط الزمني والبطاقات */}
+      <div 
+        className="flex-1 grid gap-4 p-4"
+        style={{ 
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateRows: 'auto auto auto'
+        }}
+      >
+        {/* الصف الأول - الأحداث القادمة (3 أعمدة) + بطاقة بيانات */}
+        <div style={{ gridColumn: '1 / 4', gridRow: '1' }}>
+          <TimelineWidget 
+            timeline={mockData.timeline}
+            className="h-full"
+          />
+        </div>
 
-      {/* بطاقة بيانات 2 */}
-      <div style={{ gridColumn: '1', gridRow: '2' }}>
-        <DataVisualizationPanel 
-          title="بيانات" 
-          value={46} 
-          description="هذا النص هنا للشكل المرئي" 
-          chart="bar" 
-        />
-      </div>
+        <div style={{ gridColumn: '4', gridRow: '1' }}>
+          <DataVisualizationPanel 
+            title="بيانات" 
+            value={46} 
+            description="هذا النص مثال للشكل المرئي" 
+            chart="bar" 
+          />
+        </div>
 
-      {/* بطاقة بيانات 3 */}
-      <div style={{ gridColumn: '2', gridRow: '2' }}>
-        <DataVisualizationPanel 
-          title="بيانات" 
-          value={17} 
-          description="هذا النص هنا للشكل المرئي" 
-          chart="bar" 
-        />
-      </div>
+        {/* الصف الثاني */}
+        <div style={{ gridColumn: '1', gridRow: '2' }}>
+          <DataVisualizationPanel 
+            title="بيانات" 
+            value={46} 
+            description="هذا النص مثال للشكل المرئي" 
+            chart="bar" 
+          />
+        </div>
 
-      {/* النظرة المالية (ممتدة عبر صفين) */}
-      <div style={{ gridColumn: '3', gridRow: '2 / 4' }}>
-        <FinancialOverviewChart 
-          title="النظرة المالية" 
-          data={mockData.financial}
-          isProfit={true}
-        />
-      </div>
+        <div style={{ gridColumn: '2', gridRow: '2' }}>
+          <DataVisualizationPanel 
+            title="بيانات" 
+            value={17} 
+            description="هذا النص مثال للشكل المرئي" 
+            chart="bar" 
+          />
+        </div>
 
-      {/* بطاقة بيانات 4 */}
-      <div style={{ gridColumn: '4', gridRow: '2' }}>
-        <DataVisualizationPanel 
-          title="بيانات" 
-          value={3} 
-          description="هذا النص هنا للشكل المرئي" 
-          chart="line" 
-        />
-      </div>
+        <div style={{ gridColumn: '3', gridRow: '2 / 4' }}>
+          <FinancialOverviewChart 
+            title="النظرة المالية" 
+            data={mockData.financial}
+            isProfit={true}
+          />
+        </div>
 
-      {/* بطاقة بيانات 5 */}
-      <div style={{ gridColumn: '1', gridRow: '3' }}>
-        <DataVisualizationPanel 
-          title="بيانات" 
-          value={75} 
-          description="نسبة" 
-          chart="circle" 
-        />
-      </div>
+        <div style={{ gridColumn: '4', gridRow: '2' }}>
+          <DataVisualizationPanel 
+            title="بيانات" 
+            value={3} 
+            description="هذا النص مثال للشكل المرئي" 
+            chart="line" 
+          />
+        </div>
 
-      {/* التنبيهات */}
-      <div style={{ gridColumn: '2', gridRow: '3' }}>
-        <AlertsPanel alerts={mockData.alerts} />
-      </div>
+        {/* الصف الثالث */}
+        <div style={{ gridColumn: '1', gridRow: '3' }}>
+          <DataVisualizationPanel 
+            title="بيانات" 
+            value={75} 
+            description="نسبة" 
+            chart="circle" 
+          />
+        </div>
 
-      {/* ملخص المشاريع */}
-      <div style={{ gridColumn: '4', gridRow: '3' }}>
-        <ProjectSummaryPanel projects={mockData.projects} />
+        <div style={{ gridColumn: '2', gridRow: '3' }}>
+          <AlertsPanel alerts={mockData.alerts} />
+        </div>
+
+        <div style={{ gridColumn: '4', gridRow: '3' }}>
+          <ProjectSummaryPanel projects={mockData.projects} />
+        </div>
       </div>
     </div>
   );
