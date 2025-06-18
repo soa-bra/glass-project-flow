@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProjectStatsSection } from './Overview/ProjectStatsSection';
+import { ProjectStatsContainer } from './Overview/ProjectStatsContainer';
 import { ProjectPhaseProgress } from './Overview/ProjectPhaseProgress';
 import { AlertsPanel } from './Overview/AlertsPanel';
 import { ProjectSummaryPanel } from './Overview/ProjectSummaryPanel';
@@ -145,7 +145,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   };
   return <div className="h-full overflow-auto p-6 space-y-6 py-0">
       {/* الصف الأول - المؤشرات الإحصائية */}
-      <ProjectStatsSection stats={mockData.stats} />
+      <ProjectStatsContainer stats={mockData.stats} />
       
       {/* الصف الثاني - الشريط الزمني للأحداث القادمة */}
       <ProjectPhaseProgress phases={mockData.phases} />
