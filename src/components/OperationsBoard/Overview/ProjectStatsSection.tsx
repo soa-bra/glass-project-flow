@@ -15,7 +15,7 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({ stats 
   return (
     <div className="grid grid-cols-3 gap-6 mb-6">
       {/* الإيرادات المتوقعة */}
-      <div className="text-center p-6">
+      <div className="text-center p-6 operations-board-card">
         <div className="mb-2">
           <span className="text-sm text-gray-600 font-arabic">الإيرادات المتوقعة</span>
         </div>
@@ -26,7 +26,7 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({ stats 
       </div>
 
       {/* الشكاوى */}
-      <div className="text-center p-6">
+      <div className="text-center p-6 operations-board-card">
         <div className="mb-2">
           <span className="text-sm text-gray-600 font-arabic">الشكاوى</span>
         </div>
@@ -37,7 +37,7 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({ stats 
       </div>
 
       {/* المشاريع المتأخرة */}
-      <div className="text-center p-6">
+      <div className="text-center p-6 operations-board-card">
         <div className="mb-2">
           <span className="text-sm text-gray-600 font-arabic">المشاريع المتأخرة</span>
         </div>

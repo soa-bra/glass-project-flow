@@ -1,3 +1,4 @@
+
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -16,7 +17,12 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
   onProjectSelect,
 }) => {
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl bg-soabra-projects-bg mx-0">
+    <div 
+      className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl mx-0"
+      style={{
+        background: 'var(--backgrounds-project-column-bg)'
+      }}
+    >
       {/* شريط الأدوات ثابت في الأعلى */}
       <div className="flex-shrink-0 px-4 pt-4">
         <ProjectsToolbar />
@@ -40,4 +46,5 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
     </div>
   );
 };
+
 export default ProjectsColumn;

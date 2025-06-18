@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
 import { Plus, MoreHorizontal, Star } from 'lucide-react';
 
 interface Alert {
@@ -18,7 +17,7 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({ alerts }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <BaseCard variant="glass" className="p-6 mb-6">
+    <div className="operations-board-card mb-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-gray-800 font-arabic">التنبيهات</h3>
         <div className="flex gap-2">
@@ -36,12 +35,18 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({ alerts }) => {
       
       <div className="space-y-3">
         {alerts.slice(0, isExpanded ? alerts.length : 3).map((alert) => (
-          <div key={alert.id} className="flex items-center justify-between p-3 bg-white/30 rounded-lg">
+          <div key={alert.id} className="flex items-center justify-between p-3 bg-white/50 rounded-lg">
             <div className="flex items-center gap-3">
-              <div className={`w-2 h-2 rounded-full ${
-                alert.priority === 'high' ? 'bg-red-500' : 
-                alert.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-              }`}></div>
+              <div 
+                className="w-2 h-2 rounded-full"
+                style={{
+                  backgroundColor: alert.priority === 'high' 
+                    ? 'var(--priority-colors-urgent-important)' 
+                    : alert.priority === 'medium' 
+                    ? 'var(--priority-colors-not-urgent-important)' 
+                    : 'var(--status-colors-on-plan)'
+                }}
+              ></div>
               <span className="font-arabic text-sm">{alert.title}</span>
             </div>
             <span className="text-xs text-gray-500 font-arabic">{alert.status}</span>
@@ -57,6 +62,6 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({ alerts }) => {
           {isExpanded ? 'عرض أقل' : 'عرض المزيد'}
         </button>
       )}
-    </BaseCard>
+    </div>
   );
 };

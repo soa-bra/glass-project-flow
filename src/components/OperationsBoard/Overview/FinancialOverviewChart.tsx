@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
 import { ChevronLeft, MoreHorizontal } from 'lucide-react';
 
 interface FinancialOverviewChartProps {
@@ -15,7 +14,7 @@ export const FinancialOverviewChart: React.FC<FinancialOverviewChartProps> = ({ 
   const centerValue = data.segments.reduce((sum, segment) => sum + segment.value, 0);
   
   return (
-    <BaseCard variant="glass" className="p-6">
+    <div className="financial-card-profit">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-gray-800 font-arabic">{title}</h3>
         <div className="flex gap-2">
@@ -48,13 +47,20 @@ export const FinancialOverviewChart: React.FC<FinancialOverviewChartProps> = ({ 
                 sum + (prev.value / data.total) * circumference, 0
               );
               
+              const colors = [
+                'var(--visual-data-donut-slice-1)',
+                'var(--visual-data-donut-slice-2)',
+                'var(--visual-data-secondary-2)',
+                'var(--visual-data-secondary-5)'
+              ];
+              
               return (
                 <circle
                   key={index}
                   cx="64"
                   cy="64"
                   r="56"
-                  stroke={segment.color}
+                  stroke={colors[index] || segment.color}
                   strokeWidth="8"
                   fill="transparent"
                   strokeDasharray={`${segmentLength} ${circumference - segmentLength}`}
@@ -65,32 +71,30 @@ export const FinancialOverviewChart: React.FC<FinancialOverviewChartProps> = ({ 
             })}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-xs text-gray-600 font-arabic">المعدل الأرباح والخسائر</span>
             <span className="text-2xl font-bold text-gray-800 font-arabic">{centerValue}</span>
-            <span className="text-xs text-gray-600 font-arabic">الباقي من الميزانية</span>
+            <div className="flex gap-4 mt-2">
+              <div className="text-center">
+                <div className="text-lg font-bold font-arabic">78</div>
+                <div className="text-xs text-gray-600 font-arabic">مليار</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold font-arabic">02</div>
+                <div className="text-xs text-gray-600 font-arabic">مليار</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold font-arabic">14</div>
+                <div className="text-xs text-gray-600 font-arabic">مليار</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       
-      {/* شرح البيانات */}
-      <div className="grid grid-cols-2 gap-4">
-        {data.segments.map((segment, index) => (
-          <div key={index} className="flex items-center gap-2">
-            <div 
-              className="w-3 h-3 rounded-full" 
-              style={{ backgroundColor: segment.color }}
-            ></div>
-            <div>
-              <p className="text-lg font-bold text-gray-800 font-arabic">{segment.value}</p>
-              <p className="text-xs text-gray-600 font-arabic">{segment.label}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      
       <div className="mt-4 text-center">
-        <p className="text-xs text-gray-500 font-arabic">هذا النص هنا للشكل المرئي</p>
-        <p className="text-xs text-gray-500 font-arabic">هذا النص هنا للشكل المرئي</p>
+        <p className="text-xs text-gray-600 font-arabic">هذا النص هنا للشكل البرئي</p>
+        <p className="text-xs text-gray-600 font-arabic">هذا النص هنا للشكل البرئي</p>
       </div>
-    </BaseCard>
+    </div>
   );
 };

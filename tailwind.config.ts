@@ -23,7 +23,53 @@ export default {
 				'arabic': ['IBM Plex Sans Arabic', 'sans-serif'],
 			},
 			colors: {
-				// SoaBra Custom Colors
+				// Updated SoaBra Color Palette
+				'soabra-new': {
+					// Backgrounds
+					'main-dashboard': '#dfecf2',
+					'project-column': '#d1e1ea',
+					'project-cards': '#f2f9fb',
+					'admin-ops-board': '#d0e0e2',
+					'active-tab-admin': '#000000',
+					'timeline': '#f2ffff',
+					'cards-admin-ops': '#f2ffff',
+					'financial-profit': '#96d8d0',
+					'financial-loss': '#f1b5b9',
+					'project-summary': '#a4e2f6',
+					'project-mgmt-board': '#f9fbfc',
+					'project-mgmt-cards': '#ecf2f7',
+					
+					// Visual Data Colors
+					'primary': '#000000',
+					'secondary-1': '#bdeed3',
+					'secondary-2': '#f1b5b9',
+					'secondary-3': '#d9d2fd',
+					'secondary-4': '#a4e2f6',
+					'secondary-5': '#fbe2aa',
+					'donut-slice-1': '#dbf4aa',
+					'donut-slice-2': '#e3e9f7',
+					
+					// Project Card Elements
+					'task-count': '#d1e1ea',
+					'title-text': '#000000',
+					'secondary-text': '#858789',
+					'info-bubbles': '#e9eff4',
+					
+					// Status Colors
+					'on-plan': '#bdeed3',
+					'in-preparation': '#a4e2f6',
+					'in-progress': '#d9d2fd',
+					'delayed': '#fbe2aa',
+					'stopped': '#f1b5b9',
+					
+					// Priority Colors
+					'urgent-important': '#f1b5b9',
+					'not-urgent-important': '#fbe2aa',
+					'urgent-not-important': '#a4e2f6',
+					'not-urgent-not-important': '#d9d2fd',
+				},
+				
+				// Original colors for compatibility
 				'soabra': {
 					'solid-bg': '#CCD4D7',
 					'sidebar-bg': '#CCD4D7',
@@ -152,7 +198,6 @@ export default {
 				'dashboard-panel': '950',
 				'modal': '1100'
 			},
-			// Add support for CSS variables in spacing
 			width: {
 				'sidebar-expanded': 'var(--sidebar-width-expanded)',
 				'sidebar-collapsed': 'var(--sidebar-width-collapsed)',

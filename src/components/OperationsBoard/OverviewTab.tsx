@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ProjectStatsSection } from './Overview/ProjectStatsSection';
 import { ProjectPhaseProgress } from './Overview/ProjectPhaseProgress';
@@ -88,10 +89,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading }) => {
 
   return (
     <div className="h-full overflow-auto p-6 space-y-6">
-      {/* الصف الأول - المؤشرات الإحصائية بدون خلفية */}
+      {/* الصف الأول - المؤشرات الإحصائية */}
       <ProjectStatsSection stats={mockData.stats} />
       
-      {/* الصف الثاني - مراحل التقدم */}
+      {/* الصف الثاني - الشريط الزمني للأحداث القادمة */}
       <ProjectPhaseProgress phases={mockData.phases} />
       
       {/* الصف الثالث - التنبيهات وملخص المشاريع */}
@@ -108,15 +109,15 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading }) => {
         />
         <DataVisualizationPanel 
           title="بيانات" 
-          value={17} 
+          value={46} 
           description="هذا النص هنا للشكل المرئي"
           chart="bar"
         />
         <DataVisualizationPanel 
           title="بيانات" 
-          value={3} 
+          value={17} 
           description="هذا النص هنا للشكل المرئي"
-          chart="line"
+          chart="bar"
         />
       </div>
       
@@ -126,13 +127,13 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading }) => {
           title="بيانات" 
           value={3} 
           description="هذا النص هنا للشكل المرئي"
-          chart="bar"
+          chart="line"
         />
         <DataVisualizationPanel 
           title="بيانات" 
-          value={3} 
-          description="هذا النص هنا للشكل المرئي"
-          chart="line"
+          value={75} 
+          description="نسبة"
+          chart="circle"
         />
       </div>
     </div>

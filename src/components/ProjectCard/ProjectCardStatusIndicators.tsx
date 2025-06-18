@@ -1,10 +1,9 @@
 
-
 const statusColors = {
-  success: '#00bb88',
-  warning: '#ffb500',
-  error: '#f4767f',
-  info: '#2f6ead'
+  success: 'var(--status-colors-on-plan)',
+  warning: 'var(--status-colors-delayed)',
+  error: 'var(--status-colors-stopped)',
+  info: 'var(--status-colors-in-preparation)'
 };
 
 interface ProjectCardStatusIndicatorsProps {
@@ -35,36 +34,51 @@ const ProjectCardStatusIndicators = ({
       <div className="flex items-center gap-[3px] flex-1 justify-end mx-0 px-0">
         {/* التاريخ */}
         <div 
-          style={{
-            backgroundColor: '#E3E3E3'
-          }} 
           className="rounded-full py-[2px] flex items-center px-[15px]"
+          style={{
+            backgroundColor: 'var(--project-card-elements-info-bubbles)'
+          }}
         >
-          <span className="text-sm font-arabic text-gray-700">
+          <span 
+            className="text-sm font-arabic"
+            style={{
+              color: 'var(--project-card-elements-secondary-text)'
+            }}
+          >
             {date}
           </span>
         </div>
 
         {/* المالك */}
         <div 
-          style={{
-            backgroundColor: '#E3E3E3'
-          }} 
           className="rounded-full justify-between flex items-center py-[2px] px-[8px] mx-[5px]"
+          style={{
+            backgroundColor: 'var(--project-card-elements-info-bubbles)'
+          }}
         >
-          <span className="text-sm font-arabic text-gray-700 px-[3px]">
+          <span 
+            className="text-sm font-arabic px-[3px]"
+            style={{
+              color: 'var(--project-card-elements-secondary-text)'
+            }}
+          >
             {owner}
           </span>
         </div>
 
         {/* القيمة - محاذاة مع حد عنوان المشروع */}
         <div 
-          className="rounded-full py-[2px] px-[21px] flex items-center mr-[14px]" 
+          className="rounded-full py-[2px] px-[21px] flex items-center mr-[14px]"
           style={{
-            backgroundColor: '#E3E3E3'
+            backgroundColor: 'var(--project-card-elements-info-bubbles)'
           }}
         >
-          <span className="text-sm font-arabic text-gray-700">
+          <span 
+            className="text-sm font-arabic"
+            style={{
+              color: 'var(--project-card-elements-secondary-text)'
+            }}
+          >
             {value}
           </span>
         </div>
@@ -74,4 +88,3 @@ const ProjectCardStatusIndicators = ({
 };
 
 export default ProjectCardStatusIndicators;
-

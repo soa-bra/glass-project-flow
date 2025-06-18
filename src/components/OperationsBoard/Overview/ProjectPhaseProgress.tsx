@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
 
 interface Phase {
   name: string;
@@ -14,40 +13,86 @@ interface ProjectPhaseProgressProps {
 
 export const ProjectPhaseProgress: React.FC<ProjectPhaseProgressProps> = ({ phases }) => {
   return (
-    <BaseCard variant="glass" className="p-6 mb-6">
+    <div className="timeline-card mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-gray-800 font-arabic">مراحل تقدم المشروع</h3>
+        <h3 className="text-lg font-bold text-gray-800 font-arabic">الأحداث القادمة</h3>
         <div className="flex gap-2">
-          <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-arabic">
+          <button 
+            className="text-white px-3 py-1 rounded-full text-xs font-arabic"
+            style={{ backgroundColor: 'var(--status-colors-on-plan)' }}
+          >
             وفق الخطة
           </button>
-          <button className="text-gray-600 bg-gray-100 px-3 py-1 rounded-full text-xs font-arabic">
+          <button 
+            className="text-black px-3 py-1 rounded-full text-xs font-arabic"
+            style={{ backgroundColor: 'var(--status-colors-in-preparation)' }}
+          >
             1 أسابيع
           </button>
         </div>
       </div>
       
       <div className="relative">
-        {/* شريط التقدم الملون */}
-        <div className="h-2 bg-gray-200 rounded-full mb-4 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-red-400 via-blue-400 via-cyan-400 to-green-400 rounded-full w-3/4"></div>
+        {/* الشريط الزمني */}
+        <div className="h-1 bg-gray-200 rounded-full mb-6 overflow-hidden">
+          <div 
+            className="h-full rounded-full w-3/4"
+            style={{ backgroundColor: 'var(--visual-data-primary)' }}
+          ></div>
         </div>
         
-        {/* المراحل */}
-        <div className="flex justify-between">
-          {phases.map((phase, index) => (
-            <div key={index} className="flex flex-col items-center">
-              <div className={`w-4 h-4 rounded-full mb-2 ${
-                phase.isCompleted ? 'bg-green-500' : 
-                phase.isCurrent ? 'bg-blue-500' : 'bg-gray-300'
-              }`}></div>
-              <span className="text-xs text-gray-600 font-arabic text-center max-w-16">
-                {phase.name}
-              </span>
-            </div>
-          ))}
+        {/* الأحداث */}
+        <div className="flex justify-between items-center">
+          {/* الأحداث بالترتيب من اليمين إلى اليسار */}
+          <div className="flex flex-col items-center text-center">
+            <div className="text-lg font-bold font-arabic mb-1">07</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">يون</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">جلسة ملاحظة النموذج المدخل</div>
+            <div className="text-xs font-bold font-arabic">داخلي</div>
+            <div className="w-8 h-8 rounded-full bg-gray-200 mt-2"></div>
+          </div>
+          
+          <div className="flex flex-col items-center text-center">
+            <div className="text-lg font-bold font-arabic mb-1">02</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">يون</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">للبحث الجديدة</div>
+            <div className="text-xs font-bold font-arabic">داخلي</div>
+            <div className="w-8 h-8 rounded-full bg-gray-200 mt-2"></div>
+          </div>
+          
+          <div className="flex flex-col items-center text-center">
+            <div className="text-lg font-bold font-arabic mb-1">25</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">May</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">تجربة قاعدة البيانات المترية</div>
+            <div className="text-xs font-bold font-arabic">جامعة الملك سعود</div>
+            <div className="w-8 h-8 rounded-full bg-gray-200 mt-2"></div>
+          </div>
+          
+          <div className="flex flex-col items-center text-center">
+            <div className="text-lg font-bold font-arabic mb-1">20</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">May</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">نسليم الطدراج الترية</div>
+            <div className="text-xs font-bold font-arabic">المحيط للتدريب</div>
+            <div className="w-8 h-8 rounded-full bg-gray-200 mt-2"></div>
+          </div>
+          
+          <div className="flex flex-col items-center text-center">
+            <div className="text-lg font-bold font-arabic mb-1">16</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">May</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">متابعة الملصقة مع سندي النعجمة</div>
+            <div className="text-xs font-bold font-arabic">مسك الخيرية</div>
+            <div className="w-8 h-8 rounded-full bg-gray-200 mt-2"></div>
+          </div>
+          
+          <div className="flex flex-col items-center text-center">
+            <div className="text-lg font-bold font-arabic mb-1">12</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">May</div>
+            <div className="text-xs text-gray-600 font-arabic mb-2">الإجتماع التصرح مع التدوية الدقة</div>
+            <div className="text-xs font-bold font-arabic">داخلي</div>
+            <div className="w-8 h-8 rounded-full bg-gray-200 mt-2"></div>
+          </div>
         </div>
       </div>
-    </BaseCard>
+    </div>
   );
 };

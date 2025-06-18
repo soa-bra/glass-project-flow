@@ -1,12 +1,11 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
 
 interface DataVisualizationPanelProps {
   title: string;
   value: number;
   description: string;
-  chart?: 'bar' | 'line';
+  chart?: 'bar' | 'line' | 'circle';
 }
 
 export const DataVisualizationPanel: React.FC<DataVisualizationPanelProps> = ({ 
@@ -23,11 +22,48 @@ export const DataVisualizationPanel: React.FC<DataVisualizationPanelProps> = ({
             <div key={index} className="flex items-center gap-2">
               <div className="w-2 bg-gray-300 rounded-full h-2"></div>
               <div 
-                className="bg-green-400 rounded-full h-2 transition-all duration-300"
-                style={{ width: `${height}%` }}
+                className="rounded-full h-2 transition-all duration-300"
+                style={{ 
+                  width: `${height}%`,
+                  backgroundColor: 'var(--visual-data-secondary-1)'
+                }}
               ></div>
             </div>
           ))}
+        </div>
+      );
+    } else if (chart === 'circle') {
+      return (
+        <div className="flex items-center justify-center h-16">
+          <div className="relative w-16 h-16">
+            <svg className="w-16 h-16 transform -rotate-90">
+              <circle 
+                cx="32" 
+                cy="32" 
+                r="28" 
+                stroke="#e5e7eb" 
+                strokeWidth="4" 
+                fill="transparent"
+              />
+              <circle
+                cx="32"
+                cy="32"
+                r="28"
+                stroke="var(--visual-data-primary)"
+                strokeWidth="4"
+                fill="transparent"
+                strokeDasharray={`${(75/100) * 176} 176`}
+                className="transition-all duration-300"
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-sm font-bold">75%</span>
+            </div>
+          </div>
+          <div className="mr-4">
+            <div className="text-xs font-arabic">نسبة</div>
+            <div className="text-xs text-gray-600 font-arabic">هذا النص هنا للشكل المرئي</div>
+          </div>
         </div>
       );
     } else {
@@ -36,7 +72,7 @@ export const DataVisualizationPanel: React.FC<DataVisualizationPanelProps> = ({
           <svg className="w-full h-full">
             <path
               d="M 0 40 Q 20 20 40 35 T 80 30 T 120 25"
-              stroke="#8b5cf6"
+              stroke="var(--visual-data-secondary-4)"
               strokeWidth="2"
               fill="none"
               className="opacity-70"
@@ -52,7 +88,7 @@ export const DataVisualizationPanel: React.FC<DataVisualizationPanelProps> = ({
   };
 
   return (
-    <BaseCard variant="glass" className="p-6">
+    <div className="operations-board-card">
       <h3 className="text-lg font-bold text-gray-800 font-arabic mb-2">{title}</h3>
       <div className="text-center mb-4">
         <div className="text-3xl font-bold text-gray-800 font-arabic mb-1">{value}</div>
@@ -62,6 +98,6 @@ export const DataVisualizationPanel: React.FC<DataVisualizationPanelProps> = ({
       <div className="mt-4 text-center">
         <p className="text-xs text-gray-500 font-arabic">هذا النص هنا للشكل المرئي</p>
       </div>
-    </BaseCard>
+    </div>
   );
 };
