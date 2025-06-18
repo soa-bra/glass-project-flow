@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs } from '@/components/ui/tabs';
 import { TAB_ITEMS } from './types';
@@ -6,7 +5,6 @@ import { useTabData } from './useTabData';
 import { TabNavigation } from './TabNavigation';
 import { TabContentWrapper } from './TabContentWrapper';
 import { X } from 'lucide-react';
-
 export const OperationsBoard = ({
   isSidebarCollapsed
 }: {
@@ -17,24 +15,19 @@ export const OperationsBoard = ({
     tabData,
     loading
   } = useTabData(activeTab, true);
-
-  return (
-    <div 
-      className={`fixed transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'}`} 
-      style={{
-        height: 'calc(100vh - 60px)',
-        top: 'var(--sidebar-top-offset)',
-        borderRadius: '20px',
-        background: 'var(--backgrounds-admin-ops-board-bg)',
-        overflow: 'hidden',
-        zIndex: 30
-      }}
-    >
+  return <div className={`fixed transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'operations-board-collapsed' : 'operations-board-expanded'}`} style={{
+    height: 'calc(100vh - 60px)',
+    top: 'var(--sidebar-top-offset)',
+    borderRadius: '20px',
+    background: 'var(--backgrounds-admin-ops-board-bg)',
+    overflow: 'hidden',
+    zIndex: 30
+  }}>
       <div className="w-full h-full rounded-[20px] flex flex-col mx-0 px-0">
         {/* رأس اللوحة مع العنوان والتبويبات */}
         <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
           <div className="flex items-center gap-8">
-            <h2 className="font-medium text-[#2A3437] font-arabic text-3xl whitespace-nowrap">
+            <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap">
               لوحة الإدارة والتشغيل
             </h2>
             <div className="flex-1">
@@ -54,8 +47,6 @@ export const OperationsBoard = ({
           </div>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default OperationsBoard;
