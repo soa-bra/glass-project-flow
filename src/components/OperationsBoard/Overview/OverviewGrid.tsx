@@ -47,7 +47,7 @@ export const OverviewGrid: React.FC = () => {
       <AlertsCard />
 
       {/* الصف الثالث */}
-      <div className="col-span-3">
+      <div className="col-span-2">
         <ProjectSummaryCard />
       </div>
     </div>
