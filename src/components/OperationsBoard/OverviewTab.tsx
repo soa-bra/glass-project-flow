@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TimelineWidget } from './Overview/TimelineWidget';
 import { ProjectStatsSection } from './Overview/ProjectStatsSection';
@@ -5,6 +6,7 @@ import { AlertsPanel } from './Overview/AlertsPanel';
 import { ProjectSummaryPanel } from './Overview/ProjectSummaryPanel';
 import { FinancialOverviewChart } from './Overview/FinancialOverviewChart';
 import { DataVisualizationPanel } from './Overview/DataVisualizationPanel';
+
 interface OverviewData {
   stats: {
     expectedRevenue: number;
@@ -46,10 +48,12 @@ interface OverviewData {
     color: string;
   }>;
 }
+
 interface OverviewTabProps {
   data?: OverviewData;
   loading: boolean;
 }
+
 export const OverviewTab: React.FC<OverviewTabProps> = ({
   data,
   loading
@@ -58,7 +62,6 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
     return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
 
-  // بيانات تجريبية محدثة لتطابق التصميم المطلوب
   const mockData: OverviewData = {
     stats: {
       expectedRevenue: 150,
@@ -185,37 +188,64 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
       color: '#000000'
     }]
   };
-  return <div className="h-full flex flex-col font-arabic overflow-hidden py-0 px-[24px]">
-      {/* الإحصائيات العلوية */}
+
+  return (
+    <div className="h-full flex flex-col font-arabic overflow-hidden py-0 px-[24px]">
       <div className="mb-6 py-0 px-0">
         <ProjectStatsSection stats={mockData.stats} />
       </div>
 
-      {/* الخط الزمني والبطاقات */}
       <div className="flex-1 grid gap-4 p-4" style={{
-      gridTemplateColumns: 'repeat(4, 1fr)',
-      gridTemplateRows: 'auto auto auto'
-    }}>
-        {/* الصف الأول - الأحداث القادمة (3 أعمدة) + بطاقة بيانات */}
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateRows: 'auto auto auto'
+      }}>
+        <div style={{ gridColumn: '1 / 4', gridRow: '1' }}>
+          <TimelineWidget timeline={mockData.timeline} />
+        </div>
         
+        <div style={{ gridColumn: '4', gridRow: '1' }}>
+          <DataVisualizationPanel 
+            title="البيانات" 
+            value={75} 
+            description="نسبة الإنجاز"
+            chart="circle"
+          />
+        </div>
 
-        
+        <div style={{ gridColumn: '1', gridRow: '2' }}>
+          <AlertsPanel alerts={mockData.alerts} />
+        </div>
 
-        {/* الصف الثاني */}
-        
+        <div style={{ gridColumn: '2', gridRow: '2' }}>
+          <ProjectSummaryPanel projects={mockData.projects} />
+        </div>
 
-        
+        <div style={{ gridColumn: '3 / 5', gridRow: '2' }}>
+          <FinancialOverviewChart 
+            title="النظرة المالية العامة"
+            data={mockData.financial}
+            isProfit={true}
+          />
+        </div>
 
-        
+        <div style={{ gridColumn: '1 / 3', gridRow: '3' }}>
+          <DataVisualizationPanel 
+            title="الأداء الشهري" 
+            value={85} 
+            description="معدل النمو"
+            chart="bar"
+          />
+        </div>
 
-        
-
-        {/* الصف الثالث */}
-        
-
-        
-
-        
+        <div style={{ gridColumn: '3 / 5', gridRow: '3' }}>
+          <DataVisualizationPanel 
+            title="اتجاه المبيعات" 
+            value={92} 
+            description="نسبة التحسن"
+            chart="line"
+          />
+        </div>
       </div>
-    </div>;
+    </div>
+  );
 };

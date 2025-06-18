@@ -22,12 +22,12 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
   return (
     <div className={`h-full flex flex-col ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">الجدول الزمني</h3>
+        <h3 className="text-lg font-semibold font-arabic">الجدول الزمني</h3>
         <TimelineNavigation 
           canScrollLeft={canScrollLeft}
           canScrollRight={canScrollRight}
-          onScrollLeft={() => scroll('left')}
-          onScrollRight={() => scroll('right')}
+          onScrollLeft={() => scroll(-200)}
+          onScrollRight={() => scroll(200)}
         />
       </div>
       
