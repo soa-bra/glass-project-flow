@@ -33,7 +33,7 @@ export const OverviewGrid: React.FC = () => {
         value="03" 
         unit="مليار" 
         description="هذا النص مثال للشكل البياني" 
-        chartType="area" 
+        chartType="line" 
       />
 
       <StatisticsCard 
@@ -41,7 +41,7 @@ export const OverviewGrid: React.FC = () => {
         value="75" 
         unit="مئوية" 
         description="هذا النص مثال للشكل البياني" 
-        chartType="pie"
+        chartType="simple"
       />
 
       {/* الصف الثالث */}
