@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -204,17 +205,17 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute  h-8 w-8 rounded-full",
+        "absolute h-8 w-8 rounded-full",
         orientation === "horizontal"
-          ? "-left-12 top-1/2 -translate-y-1/2"
-          : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+          ? "right-4 top-1/2 -translate-y-1/2" // تعديل من -left-12 إلى right-4 للدعم العربي
+          : "-top-12 right-1/2 translate-x-1/2 rotate-90", // تعديل من left-1/2 إلى right-1/2 للدعم العربي
         className
       )}
       disabled={!canScrollPrev}
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft className="h-4 w-4" />
+      <ArrowRight className="h-4 w-4" /> {/* تغيير من ArrowLeft إلى ArrowRight للغة العربية */}
       <span className="sr-only">Previous slide</span>
     </Button>
   )
@@ -235,15 +236,15 @@ const CarouselNext = React.forwardRef<
       className={cn(
         "absolute h-8 w-8 rounded-full",
         orientation === "horizontal"
-          ? "-right-12 top-1/2 -translate-y-1/2"
-          : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
+          ? "left-4 top-1/2 -translate-y-1/2" // تعديل من -right-12 إلى left-4 للدعم العربي
+          : "-bottom-12 right-1/2 translate-x-1/2 rotate-90", // تعديل من left-1/2 إلى right-1/2 للدعم العربي
         className
       )}
       disabled={!canScrollNext}
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRight className="h-4 w-4" />
+      <ArrowLeft className="h-4 w-4" /> {/* تغيير من ArrowRight إلى ArrowLeft للغة العربية */}
       <span className="sr-only">Next slide</span>
     </Button>
   )
