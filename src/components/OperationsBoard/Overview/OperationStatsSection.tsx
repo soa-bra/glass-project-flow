@@ -7,15 +7,15 @@ interface ProjectStats {
   delayedProjects: number;
 }
 
-interface ProjectStatsSectionProps {
+interface OperationStatsSectionProps {
   stats: ProjectStats;
 }
 
 /**
- * مكون عرض الإحصائيات الرئيسية للمشاريع
+ * مكون عرض الإحصائيات الرئيسية للعمليات
  * يعرض الإيرادات المتوقعة، الشكاوى، والمشاريع المتأخرة
  */
-export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({
+export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
   stats
 }) => {
   return (

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ProjectStatsSection } from './ProjectStatsSection';
+import { OperationStatsSection } from './OperationStatsSection';
 import { OverviewData } from './OverviewData';
 
 interface OverviewLayoutProps {
@@ -17,7 +17,7 @@ export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
     <div className="h-full flex flex-col font-arabic overflow-hidden py-0 px-[24px]">
       {/* قسم الإحصائيات الرئيسية */}
       <div className="mb-6 py-0 px-0">
-        <ProjectStatsSection stats={data.stats} />
+        <OperationStatsSection stats={data.stats} />
       </div>
     </div>
   );
