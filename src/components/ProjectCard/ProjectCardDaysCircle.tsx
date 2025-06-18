@@ -8,7 +8,7 @@ const ProjectCardDaysCircle = ({
 }: ProjectCardDaysCircleProps) => {
   return (
     <div 
-      className="w-[75px] h-[75px] rounded-full border-2 flex flex-col items-center justify-center bg-transparent"
+      className="w-[75px] h-[75px] rounded-full border flex flex-col items-center justify-center bg-transparent"
       style={{
         borderColor: 'var(--project-card-elements-title-text)'
       }}
