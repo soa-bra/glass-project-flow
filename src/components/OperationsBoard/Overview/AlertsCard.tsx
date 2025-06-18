@@ -7,7 +7,7 @@ export const AlertsCard: React.FC = () => {
     <BaseCard 
       variant="glass" 
       size="md" 
-      className="h-[200px]" 
+      className="h-[180px]" 
       style={{
         backgroundColor: '#f2ffff'
       }} 

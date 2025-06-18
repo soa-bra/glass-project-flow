@@ -18,7 +18,7 @@ export const ProjectSummaryCard: React.FC = () => {
     <BaseCard 
       variant="glass" 
       size="sm"
-      className="h-[170px]"
+      className="h-[180px] w-full"
       style={{ backgroundColor: '#f2ffff' }}
       header={
         <div className="flex items-center justify-between">

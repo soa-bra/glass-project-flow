@@ -89,11 +89,11 @@ export const TimelineCard: React.FC = () => {
     <BaseCard 
       variant="glass" 
       size="sm" 
-      className="col-span-3 h-[160px] overflow-hidden" 
+      className="col-span-3 h-[320px] overflow-hidden" 
       style={{
         backgroundColor: '#f2ffff'
       }} 
-      header={<h2 className="text-xl font-medium text-black font-arabic mb-4">الأحداث القادمة</h2>}
+      header={<h2 className="text-xl font-medium text-black font-arabic mb-6">الأحداث القادمة</h2>}
     >
       <div className="relative h-full">
         <Carousel className="w-full h-full">
@@ -104,22 +104,22 @@ export const TimelineCard: React.FC = () => {
                   {/* الدائرة والخط */}
                   <div className="relative flex flex-col items-center">
                     {/* الدائرة */}
-                    <div className="w-3 h-3 bg-black rounded-full z-10 mb-2"></div>
+                    <div className="w-4 h-4 bg-black rounded-full z-10 mb-4"></div>
                     
                     {/* التاريخ */}
-                    <div className="text-center mb-3">
-                      <div className="text-2xl font-bold text-black">{event.date.day}</div>
-                      <div className="text-xs text-gray-600">{event.date.month}</div>
+                    <div className="text-center mb-6">
+                      <div className="text-3xl font-bold text-black">{event.date.day}</div>
+                      <div className="text-sm text-gray-600">{event.date.month}</div>
                     </div>
                     
                     {/* العنوان */}
-                    <div className="text-center mb-2">
-                      <p className="text-xs font-medium text-black leading-tight">{event.title}</p>
+                    <div className="text-center mb-4">
+                      <p className="text-sm font-medium text-black leading-tight px-2">{event.title}</p>
                     </div>
                     
                     {/* الموقع */}
                     <div className="text-center">
-                      <span className={`inline-block px-2 py-1 rounded text-xs ${
+                      <span className={`inline-block px-3 py-2 rounded text-sm ${
                         event.location.type === 'internal' 
                           ? 'bg-blue-100 text-blue-800' 
                           : 'bg-green-100 text-green-800'
@@ -131,7 +131,7 @@ export const TimelineCard: React.FC = () => {
                   
                   {/* الخط الأفقي - يظهر فقط بين العناصر */}
                   {index < timelineEvents.length - 1 && (
-                    <div className="absolute top-[15px] right-0 w-full h-[1px] bg-black opacity-30 z-0"></div>
+                    <div className="absolute top-[20px] right-0 w-full h-[1px] bg-black opacity-30 z-0"></div>
                   )}
                 </div>
               </CarouselItem>

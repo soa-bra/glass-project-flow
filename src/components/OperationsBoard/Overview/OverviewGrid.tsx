@@ -44,10 +44,20 @@ export const OverviewGrid: React.FC = () => {
         chartType="simple"
       />
 
-      {/* الصف الثالث */}
       <AlertsCard />
+
+      {/* الصف الثالث */}
+      <div className="col-span-2">
+        <ProjectSummaryCard />
+      </div>
       
-      <ProjectSummaryCard />
+      <StatisticsCard 
+        title="إضافي" 
+        value="28" 
+        unit="نقطة" 
+        description="هذا النص مثال للشكل البياني" 
+        chartType="simple"
+      />
     </div>
   );
 };
