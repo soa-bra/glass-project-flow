@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { ProjectStatsSection } from './Overview/ProjectStatsSection';
-import { ProjectPhaseProgress } from './Overview/ProjectPhaseProgress';
 import { AlertsPanel } from './Overview/AlertsPanel';
 import { ProjectSummaryPanel } from './Overview/ProjectSummaryPanel';
 import { FinancialOverviewChart } from './Overview/FinancialOverviewChart';
@@ -56,7 +55,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
     return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
 
-  // بيانات تجريبية محدثة لتطابق التصميم المطلوب
+  // بيانات محدثة لتطابق التصميم المطلوب
   const mockData: OverviewData = {
     stats: {
       expectedRevenue: 150,
@@ -91,7 +90,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
     }
   };
 
-  // بيانات الأحداث القادمة من الصورة
+  // بيانات الأحداث القادمة
   const timelineData = [
     {
       id: 1,
@@ -137,20 +136,17 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
     }
   ];
 
-  // تحديد لون الخلفية للنظرة المالية بناءً على الربح/الخسارة
-  const isProfit = mockData.financial.total > 50; // مثال على تحديد الربح/الخسارة
+  const isProfit = mockData.financial.total > 50;
 
   return (
     <div className="h-full overflow-auto p-6 space-y-6">
-      {/* الصف الأول - 4 أعمدة */}
+      {/* الصف الأول - إحصائيات المشاريع + بطاقة البيانات */}
       <div className="grid grid-cols-4 gap-6">
         <ProjectStatsSection stats={mockData.stats} />
         <DataVisualizationPanel title="بيانات" value={46} description="هذا النص هنا للشكل المرئي" chart="bar" />
-        <DataVisualizationPanel title="بيانات" value={17} description="هذا النص هنا للشكل المرئي" chart="bar" />
-        <DataVisualizationPanel title="بيانات" value={3} description="هذا النص هنا للشكل المرئي" chart="line" />
       </div>
 
-      {/* الصف الثاني - بطاقة الأحداث القادمة (تمتد على كامل العرض) */}
+      {/* الصف الثاني - بطاقة الأحداث القادمة */}
       <TimelineWidget timeline={timelineData} />
 
       {/* الصف الثالث - 4 أعمدة */}

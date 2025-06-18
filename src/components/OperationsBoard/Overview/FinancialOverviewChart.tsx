@@ -22,23 +22,20 @@ export const FinancialOverviewChart: React.FC<FinancialOverviewChartProps> = ({
   data,
   isProfit = true
 }) => {
-  // تحديد لون الخلفية بناءً على الربح/الخسارة
-  const backgroundColor = isProfit ? '#96d8d0' : '#f1b5b9';
-
   return (
-    <div 
-      className="rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/40 backdrop-blur-[20px]"
-      style={{ background: backgroundColor }}
-    >
+    <div className={`
+      operations-board-card
+      ${isProfit ? 'financial-card-profit' : 'financial-card-loss'}
+    `}>
       {/* رأس البطاقة */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-arabic font-bold text-gray-800">
+        <h3 className="text-lg font-arabic font-bold text-gray-800">
           {title}
         </h3>
       </div>
 
       {/* المحتوى الرئيسي */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         {/* الرقم الكبير */}
         <div className="flex flex-col">
           <span className="text-4xl font-bold text-gray-900 font-arabic">
@@ -50,15 +47,15 @@ export const FinancialOverviewChart: React.FC<FinancialOverviewChartProps> = ({
         </div>
 
         {/* الرسم البياني الدائري */}
-        <div className="w-24 h-24">
+        <div className="w-20 h-20">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={data.segments}
                 cx="50%"
                 cy="50%"
-                innerRadius={25}
-                outerRadius={40}
+                innerRadius={20}
+                outerRadius={35}
                 paddingAngle={2}
                 dataKey="value"
               >
@@ -72,17 +69,17 @@ export const FinancialOverviewChart: React.FC<FinancialOverviewChartProps> = ({
       </div>
 
       {/* قائمة العناصر */}
-      <div className="mt-4 space-y-2">
+      <div className="space-y-2">
         {data.segments.map((segment, index) => (
           <div key={index} className="flex items-center gap-2">
             <div 
               className="w-3 h-3 rounded-full" 
               style={{ backgroundColor: segment.color }}
             />
-            <span className="text-xs text-gray-700 font-arabic">
+            <span className="text-xs text-gray-700 font-arabic flex-1">
               {segment.label}
             </span>
-            <span className="text-xs font-bold text-gray-800 mr-auto">
+            <span className="text-xs font-bold text-gray-800">
               {segment.value}%
             </span>
           </div>

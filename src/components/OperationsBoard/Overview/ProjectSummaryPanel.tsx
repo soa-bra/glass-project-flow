@@ -17,10 +17,10 @@ interface ProjectSummaryPanelProps {
 export const ProjectSummaryPanel: React.FC<ProjectSummaryPanelProps> = ({ projects }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'var(--status-colors-in-progress)';
-      case 'completed': return 'var(--status-colors-on-plan)';
-      case 'delayed': return 'var(--status-colors-delayed)';
-      default: return 'var(--status-colors-in-preparation)';
+      case 'active': return '#d9d2fd';
+      case 'completed': return '#bdeed3';
+      case 'delayed': return '#fbe2aa';
+      default: return '#a4e2f6';
     }
   };
 
@@ -38,36 +38,36 @@ export const ProjectSummaryPanel: React.FC<ProjectSummaryPanelProps> = ({ projec
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-gray-800 font-arabic">ملخص المشاريع</h3>
         <div className="text-right">
-          <div className="text-sm text-gray-600 font-arabic">هذا النص هنا للشكل المرئي - 140</div>
-          <div className="text-sm text-gray-600 font-arabic">هذا النص هنا للشكل المرئي - 50</div>
-          <div className="text-sm text-gray-600 font-arabic">النص هنا - 02</div>
+          <div className="text-xs text-gray-600 font-arabic">هذا النص هنا للشكل المرئي - 140</div>
+          <div className="text-xs text-gray-600 font-arabic">هذا النص هنا للشكل المرئي - 50</div>
+          <div className="text-xs text-gray-600 font-arabic">النص هنا - 02</div>
         </div>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-3">
         {projects.map((project, index) => (
-          <div key={project.id} className="flex items-center justify-between p-4 bg-white/50 rounded-lg">
+          <div key={project.id} className="flex items-center justify-between p-3 bg-white/50 rounded-xl">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-sm">
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-sm shadow-sm">
                 {getStatusIcon(project.status)}
               </div>
               <div>
-                <h4 className="font-bold text-sm font-arabic">{project.title}</h4>
+                <h4 className="font-bold text-sm font-arabic text-gray-900">{project.title}</h4>
                 <p className="text-xs text-gray-600 font-arabic">{project.type}</p>
               </div>
             </div>
             <div className="text-left flex items-center gap-4">
               {/* شريط التقدم البصري */}
-              <div className="w-20 h-4 flex items-center gap-1">
+              <div className="w-16 h-3 flex items-center gap-1">
                 {Array.from({ length: 5 }).map((_, barIndex) => (
                   <div
                     key={barIndex}
-                    className="flex-1 h-2 rounded-full"
+                    className="flex-1 rounded-full"
                     style={{
                       backgroundColor: index === 1 && barIndex === 2 
-                        ? 'var(--visual-data-main-bar-project-summary)'
-                        : 'var(--visual-data-other-bars-project-summary)',
-                      height: index === 1 && barIndex === 2 ? '12px' : '4px'
+                        ? '#000000'
+                        : 'rgba(242,255,255,0.8)',
+                      height: index === 1 && barIndex === 2 ? '8px' : '3px'
                     }}
                   />
                 ))}

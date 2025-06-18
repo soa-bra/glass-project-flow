@@ -17,23 +17,23 @@ export const TimelineWidget: React.FC<TimelineWidgetProps> = ({
 
   const openEvent = (event: TimelineEvent) => {
     console.log('فتح الحدث:', event);
-    // يمكن إضافة modal أو popover هنا
   };
 
   return (
     <div className={`
+      col-span-4
       ${className}
       rounded-3xl p-6
-      bg-[#f2ffff] backdrop-blur-[20px] border border-white/40
+      bg-[rgba(242,255,255,1)] backdrop-blur-[20px] border border-white/40
       shadow-lg hover:shadow-xl transition-all duration-300
       flex flex-col
       font-arabic
       overflow-hidden
-      min-h-[280px]
+      min-h-[300px]
     `}>
       
       {/* رأس البطاقة */}
-      <header className="flex items-center justify-between mb-5">
+      <header className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-arabic font-bold text-gray-800">
           الأحداث القادمة
         </h3>
