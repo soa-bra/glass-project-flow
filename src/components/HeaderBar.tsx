@@ -1,15 +1,23 @@
 import { Bell, CircleUser, Search, RefreshCcw, Settings } from 'lucide-react';
 import { useState } from 'react';
+
 const HeaderBar = () => {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+
   const handleImageError = () => {
     setImageError(true);
   };
+
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
-  return <header className="fixed top-0 right-0 left-0 h-[60px] bg-soabra-sidebar-bg z-header my-0 py-[65px] px-[5px]">
+
+  return (
+    <header 
+      className="fixed top-0 right-0 left-0 h-[60px] z-header my-0 py-[65px] px-[5px]"
+      style={{ background: '#dfecf2' }}
+    >
       <div className="flex items-center justify-between h-full px-0">
         {/* Logo/Brand - Left Side aligned with sidebar menu */}
         <div className="text-right ml-4 mx-[5px] flex items-center">
@@ -55,6 +63,8 @@ const HeaderBar = () => {
           </button>
         </div>
       </div>
-    </header>;
+    </header>
+  );
 };
+
 export default HeaderBar;

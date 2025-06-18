@@ -32,9 +32,10 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
     <aside 
       style={{
         width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)',
-        transition: 'all var(--animation-duration-main) var(--animation-easing)'
+        transition: 'all var(--animation-duration-main) var(--animation-easing)',
+        background: '#dfecf2'
       }}
-      className="bg-soabra-solid-bg z-sidebar h-full backdrop-blur-xl rounded-3xl mx-0 overflow-hidden px-0"
+      className="z-sidebar h-full backdrop-blur-xl rounded-3xl mx-0 overflow-hidden px-0"
     >
       <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0">
         {/* Menu Title Section with Toggle - Synchronized Animation */}
