@@ -17,8 +17,8 @@ export const ProjectSummaryCard: React.FC = () => {
   return (
     <BaseCard 
       variant="glass" 
-      size="md"
-      className="h-[200px]"
+      size="sm"
+      className="h-[170px]"
       style={{ backgroundColor: '#f2ffff' }}
       header={
         <div className="flex items-center justify-between">
@@ -45,7 +45,7 @@ export const ProjectSummaryCard: React.FC = () => {
             className="w-full h-full"
           >
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={projectData} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+              <BarChart data={projectData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                 <XAxis 
                   dataKey="name" 
                   axisLine={false}
@@ -68,17 +68,17 @@ export const ProjectSummaryCard: React.FC = () => {
         </div>
 
         {/* البيانات الجانبية */}
-        <div className="w-24 flex flex-col justify-center gap-2 mr-4">
+        <div className="w-20 flex flex-col justify-center gap-1 mr-3">
           <div className="text-right">
-            <div className="text-lg font-bold text-black font-arabic">140</div>
+            <div className="text-base font-bold text-black font-arabic">140</div>
             <div className="text-xs text-gray-700 font-arabic">هذا النص مثال</div>
           </div>
           <div className="text-right">
-            <div className="text-lg font-bold text-black font-arabic">50</div>
+            <div className="text-base font-bold text-black font-arabic">50</div>
             <div className="text-xs text-gray-700 font-arabic">هذا النص مثال</div>
           </div>
           <div className="text-right">
-            <div className="text-lg font-bold text-black font-arabic">02</div>
+            <div className="text-base font-bold text-black font-arabic">02</div>
             <div className="text-xs text-gray-700 font-arabic">النص مثال</div>
           </div>
         </div>

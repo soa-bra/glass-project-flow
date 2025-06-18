@@ -16,14 +16,14 @@ export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
   data
 }) => {
   return (
-    <div className="h-full flex flex-col font-arabic overflow-hidden py-0 px-[32px]">
+    <div className="h-full flex flex-col font-arabic overflow-hidden py-0 px-[24px]">
       {/* قسم الإحصائيات الرئيسية */}
-      <div className="mb-8 py-0 px-0">
+      <div className="mb-6 py-0 px-0">
         <OperationStatsSection stats={data.stats} />
       </div>
 
       {/* بطاقة الأحداث القادمة */}
-      <div className="mb-8">
+      <div className="mb-6">
         <TimelineCard />
       </div>
 

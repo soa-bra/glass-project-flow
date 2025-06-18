@@ -7,7 +7,7 @@ import { AlertsCard } from './AlertsCard';
 
 export const OverviewGrid: React.FC = () => {
   return (
-    <div className="grid grid-cols-3 gap-8 h-[calc(100vh-320px)] overflow-hidden">
+    <div className="grid grid-cols-3 gap-6 h-[calc(100vh-280px)] overflow-hidden">
       {/* الصف الأول */}
       <StatisticsCard
         title="بيانات"

@@ -39,7 +39,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
   const renderChart = () => {
     if (chartType === 'line') {
       return (
-        <div className="h-16 mt-2">
+        <div className="h-12 mt-2">
           <ChartContainer
             config={{ value: { label: "القيمة", color: "#d9d2fd" } }}
             className="w-full h-full"
@@ -63,7 +63,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
 
     if (chartType === 'bar') {
       return (
-        <div className="h-16 mt-2">
+        <div className="h-12 mt-2">
           <ChartContainer
             config={{ value: { label: "القيمة", color: "#bdeed3" } }}
             className="w-full h-full"
@@ -85,8 +85,8 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
   return (
     <BaseCard 
       variant="glass" 
-      size="md"
-      className="h-[200px]"
+      size="sm"
+      className="h-[170px]"
       style={{ backgroundColor: '#f2ffff' }}
       header={
         <h3 className="text-sm font-bold text-gray-800 font-arabic">{title}</h3>
@@ -94,7 +94,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
     >
       <div className="flex-1 flex flex-col justify-between">
         <div className="flex items-baseline gap-2 mb-2">
-          <div className="text-3xl font-bold text-black font-arabic">
+          <div className="text-2xl font-bold text-black font-arabic">
             {value}
           </div>
           <div className="text-sm font-bold text-gray-700 font-arabic">

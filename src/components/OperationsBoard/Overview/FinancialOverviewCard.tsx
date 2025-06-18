@@ -17,8 +17,8 @@ export const FinancialOverviewCard: React.FC = () => {
   return (
     <BaseCard 
       variant="glass" 
-      size="md"
-      className="row-span-2 h-[420px]"
+      size="sm"
+      className="row-span-2 h-[352px]"
       style={{ backgroundColor: '#f2ffff' }}
       header={
         <div className="flex items-center justify-between">
@@ -35,7 +35,7 @@ export const FinancialOverviewCard: React.FC = () => {
       }
     >
       <div className="flex-1 flex flex-col items-center justify-center relative">
-        <div className="relative w-48 h-48 mb-4">
+        <div className="relative w-40 h-40 mb-3">
           <ChartContainer
             config={{
               profits: { label: "الأرباح", color: "#000000" },
@@ -50,8 +50,8 @@ export const FinancialOverviewCard: React.FC = () => {
                   data={financialData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
+                  innerRadius={50}
+                  outerRadius={75}
                   startAngle={90}
                   endAngle={450}
                   dataKey="value"
@@ -67,32 +67,32 @@ export const FinancialOverviewCard: React.FC = () => {
           
           {/* النص في وسط الدائرة */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="text-4xl font-bold text-black font-arabic mb-1">
+            <div className="text-3xl font-bold text-black font-arabic mb-1">
               {totalRevenue}
             </div>
-            <div className="text-sm text-gray-700 font-arabic">
+            <div className="text-xs text-gray-700 font-arabic text-center">
               إجمالي الأرباح والخسائر
             </div>
           </div>
         </div>
 
         {/* التفاصيل السفلية */}
-        <div className="grid grid-cols-3 gap-4 w-full mt-4">
+        <div className="grid grid-cols-3 gap-3 w-full mt-3">
           <div className="text-center">
-            <div className="text-xl font-bold text-black font-arabic">02</div>
+            <div className="text-lg font-bold text-black font-arabic">02</div>
             <div className="text-xs text-gray-700 font-arabic">مليار</div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-black font-arabic">14</div>
+            <div className="text-lg font-bold text-black font-arabic">14</div>
             <div className="text-xs text-gray-700 font-arabic">مليار</div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-black font-arabic">78</div>
+            <div className="text-lg font-bold text-black font-arabic">78</div>
             <div className="text-xs text-gray-700 font-arabic">مليار</div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 w-full mt-2">
+        <div className="grid grid-cols-2 gap-3 w-full mt-2">
           <div className="text-xs text-gray-700 font-arabic text-center">
             هذا النص مثال للشكل البياني
           </div>
