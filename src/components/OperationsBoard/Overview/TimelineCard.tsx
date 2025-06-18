@@ -89,37 +89,37 @@ export const TimelineCard: React.FC = () => {
     <BaseCard 
       variant="glass" 
       size="md" 
-      className="col-span-3 h-[180px] overflow-hidden" 
+      className="col-span-3 h-[200px] overflow-hidden" 
       style={{
         backgroundColor: '#f2ffff'
       }} 
-      header={<h2 className="text-2xl font-medium text-black font-arabic mb-6">الأحداث القادمة</h2>}
+      header={<h2 className="text-2xl font-medium text-black font-arabic mb-8">الأحداث القادمة</h2>}
     >
-      <div className="relative h-full">
+      <div className="relative h-full -mt-2">
         <Carousel className="w-full h-full">
           <CarouselContent className="h-full">
             {timelineEvents.map((event, index) => (
               <CarouselItem key={index} className="basis-1/3 h-full">
-                <div className="relative h-full flex flex-col items-center justify-center px-4">
+                <div className="relative h-full flex flex-col items-center justify-center px-6">
                   {/* الدائرة والخط */}
                   <div className="relative flex flex-col items-center">
                     {/* الدائرة */}
-                    <div className="w-4 h-4 bg-black rounded-full z-10 mb-2"></div>
+                    <div className="w-4 h-4 bg-black rounded-full z-10 mb-3"></div>
                     
                     {/* التاريخ */}
-                    <div className="text-center mb-4">
+                    <div className="text-center mb-5">
                       <div className="text-3xl font-bold text-black">{event.date.day}</div>
                       <div className="text-sm text-gray-600">{event.date.month}</div>
                     </div>
                     
                     {/* العنوان */}
-                    <div className="text-center mb-2">
+                    <div className="text-center mb-3">
                       <p className="text-sm font-medium text-black leading-tight">{event.title}</p>
                     </div>
                     
                     {/* الموقع */}
                     <div className="text-center">
-                      <span className={`inline-block px-2 py-1 rounded text-xs ${
+                      <span className={`inline-block px-3 py-1 rounded text-xs ${
                         event.location.type === 'internal' 
                           ? 'bg-blue-100 text-blue-800' 
                           : 'bg-green-100 text-green-800'

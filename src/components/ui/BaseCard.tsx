@@ -30,8 +30,8 @@ export const BaseCard: React.FC<BaseCardProps> = ({
 }) => {
   const sizeClasses = {
     sm: 'p-4',
-    md: 'p-6',
-    lg: 'p-8'
+    md: 'p-8',
+    lg: 'p-10'
   };
 
   const variantClasses = {
@@ -67,7 +67,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
       style={style}
     >
       {header && (
-        <div className="mb-4">
+        <div className="mb-6">
           {header}
         </div>
       )}
