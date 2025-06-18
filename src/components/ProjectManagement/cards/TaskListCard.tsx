@@ -2,6 +2,7 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Project } from '@/types/project';
+import { Plus } from 'lucide-react';
 
 interface TaskListCardProps {
   project: Project;
@@ -12,108 +13,109 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ project }) => {
     {
       id: 1,
       title: 'تصميم الواجهة',
-      assignee: 'أحمد محمد',
-      daysLeft: 2,
-      status: 'in-progress',
-      value: '5,000'
+      description: 'تطوير موقع سوبرا',
+      status: 'وفق الخطة',
+      statusColor: 'bg-green-100 text-green-800',
+      progress: 'دقيقة',
+      date: '28 May',
+      number: '01',
+      priority: 'عاجل وهام'
     },
     {
       id: 2,
       title: 'كتابة الكود',
-      assignee: 'سارة أحمد',
-      daysLeft: 5,
-      status: 'pending',
-      value: '8,000'
+      description: 'تطوير موقع سوبرا',
+      status: 'عاجل وهام',
+      statusColor: 'bg-red-100 text-red-800',
+      progress: 'عتين',
+      date: '29 May',
+      number: '01',
+      priority: 'عاجل وهام'
     },
     {
       id: 3,
       title: 'تطوير قواعد البيانات',
-      assignee: 'محمد علي',
-      daysLeft: 1,
-      status: 'urgent',
-      value: '3,000'
+      description: 'تطوير موقع سوبرا',
+      status: 'غير عاجل وهام',
+      statusColor: 'bg-yellow-100 text-yellow-800',
+      progress: 'عتين',
+      date: '01 Jun',
+      number: '01',
+      priority: 'غير عاجل وهام'
     },
     {
       id: 4,
-      title: 'الاختبار والمراجعة',
-      assignee: 'فاطمة سالم',
-      daysLeft: 7,
-      status: 'pending',
-      value: '2,000'
-    },
-    {
-      id: 5,
-      title: 'التسليم النهائي',
-      assignee: 'عمر حسن',
-      daysLeft: 10,
-      status: 'pending',
-      value: '1,000'
+      title: 'التسليم',
+      description: 'تسليم الموقع النهائي',
+      status: 'غير عاجل وغير هام',
+      statusColor: 'bg-purple-100 text-purple-800',
+      progress: 'منتجة',
+      date: '',
+      number: '01',
+      priority: 'غير عاجل وغير هام'
     }
   ];
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-500';
-      case 'in-progress': return 'bg-blue-500';
-      case 'urgent': return 'bg-red-500';
-      case 'pending': return 'bg-gray-400';
-      default: return 'bg-gray-400';
-    }
-  };
-
-  const getDaysColor = (days: number) => {
-    if (days <= 1) return 'text-red-600 bg-red-50';
-    if (days <= 3) return 'text-yellow-600 bg-yellow-50';
-    return 'text-green-600 bg-green-50';
-  };
-
   return (
-    <BaseCard className="h-full">
-      <h3 className="text-lg font-arabic font-semibold mb-4">قائمة المهام</h3>
-      
-      <div className="space-y-3 max-h-96 overflow-y-auto">
-        {tasks.map((task, index) => (
-          <div 
-            key={task.id} 
-            className="bg-gray-50/50 rounded-xl p-4 border border-gray-100 transition-all duration-300 hover:shadow-md"
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
-            <div className="flex items-start gap-3">
-              {/* دائرة الحالة */}
-              <div className={`w-3 h-3 rounded-full ${getStatusColor(task.status)} mt-1.5 flex-shrink-0`}></div>
-              
-              <div className="flex-1 min-w-0">
-                {/* العنوان */}
-                <h4 className="font-arabic font-semibold text-gray-800 mb-1 truncate">
-                  {task.title}
-                </h4>
-                
-                {/* المكلف والقيمة */}
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-arabic text-gray-600">{task.assignee}</span>
-                  <span className="text-sm font-arabic text-gray-700 font-semibold">
-                    {task.value} ر.س
-                  </span>
+    <BaseCard className="h-full p-6">
+      {/* الرأس */}
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-arabic font-semibold text-gray-800">قائمة المهام</h3>
+        <div className="flex items-center gap-2">
+          <button className="w-8 h-8 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50">
+            <Plus className="w-4 h-4 text-gray-600" />
+          </button>
+          <button className="w-8 h-8 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50">
+            <Plus className="w-4 h-4 text-gray-600" />
+          </button>
+          <button className="w-8 h-8 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50">
+            <span className="text-sm">•••</span>
+          </button>
+        </div>
+      </div>
+
+      {/* قائمة المهام */}
+      <div className="space-y-4 max-h-[calc(100%-120px)] overflow-y-auto">
+        {tasks.map((task) => (
+          <div key={task.id} className="bg-white/60 rounded-xl p-4 border border-gray-100">
+            <div className="flex items-start gap-4">
+              {/* رقم المهمة */}
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-bold text-gray-700">{task.number}</span>
+                <span className="text-xs text-gray-500 mr-1">%</span>
+              </div>
+
+              {/* محتوى المهمة */}
+              <div className="flex-1">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h4 className="font-arabic font-semibold text-gray-800 mb-1">
+                      {task.title}
+                    </h4>
+                    <p className="text-sm text-gray-600 font-arabic">
+                      {task.description}
+                    </p>
+                  </div>
+                  
+                  {/* الحالة */}
+                  <div className={`px-3 py-1 rounded-full text-xs font-arabic ${task.statusColor}`}>
+                    {task.status}
+                  </div>
                 </div>
-                
-                {/* الأيام المتبقية */}
-                <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-arabic ${getDaysColor(task.daysLeft)}`}>
-                  {task.daysLeft === 1 ? 'يوم واحد' : `${task.daysLeft} أيام`} متبقية
+
+                {/* التفاصيل السفلية */}
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-4 text-gray-500 font-arabic">
+                    <span>وفق الخطة</span>
+                    <span>{task.progress}</span>
+                    <span>دقيقة</span>
+                    {task.date && <span>{task.date}</span>}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         ))}
-      </div>
-      
-      {/* إجمالي المهام */}
-      <div className="mt-4 pt-4 border-t border-gray-200">
-        <div className="flex justify-between items-center text-sm font-arabic">
-          <span className="text-gray-600">إجمالي المهام: {tasks.length}</span>
-          <span className="text-gray-700 font-semibold">
-            {tasks.reduce((sum, task) => sum + parseInt(task.value.replace(/,/g, '')), 0).toLocaleString()} ر.س
-          </span>
-        </div>
       </div>
     </BaseCard>
   );

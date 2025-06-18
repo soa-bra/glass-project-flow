@@ -1,8 +1,6 @@
+
 import React, { useState } from 'react';
-import { X, Edit, ChevronDown } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProjectManagementHeader } from './ProjectManagementHeader';
 import { ProjectProgressBar } from './ProjectProgressBar';
 import { ProjectCardGrid } from './ProjectCardGrid';
@@ -21,7 +19,6 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   onClose,
   isSidebarCollapsed
 }) => {
-  const [activeTab, setActiveTab] = useState('overview');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 
@@ -58,7 +55,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         WebkitBackdropFilter: "blur(20px) saturate(180%)",
         border: "1px solid rgba(255,255,255,0.2)",
         transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
-        padding: "32px 40px",
+        padding: "32px",
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
@@ -78,118 +75,34 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         <ProjectProgressBar progress={project.progress || 65} />
       </div>
 
-      {/* التبويبات والمحتوى */}
-      <div className="flex-1 min-h-0">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-          {/* شريط التبويبات */}
-          <div className="flex justify-between items-center mb-4 flex-shrink-0">
-            <TabsList className="bg-transparent p-0 h-auto gap-1">
-              <TabsTrigger 
-                value="overview" 
-                className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-              >
-                نظرة عامة
-              </TabsTrigger>
-              <TabsTrigger 
-                value="tasks" 
-                className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-              >
-                إدارة المهام
-              </TabsTrigger>
-              <TabsTrigger 
-                value="finance" 
-                className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-              >
-                الوضع المالي
-              </TabsTrigger>
-              <TabsTrigger 
-                value="attachments" 
-                className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-              >
-                المرفقات
-              </TabsTrigger>
-              <TabsTrigger 
-                value="client" 
-                className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-              >
-                العميل
-              </TabsTrigger>
-              <TabsTrigger 
-                value="team" 
-                className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-              >
-                الفريق
-              </TabsTrigger>
-              <TabsTrigger 
-                value="reports" 
-                className="text-base font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2"
-              >
-                التقارير
-              </TabsTrigger>
-            </TabsList>
-          </div>
+      {/* التبويبات */}
+      <div className="flex gap-2 mb-6 flex-shrink-0">
+        <div className="bg-black text-white px-6 py-2 rounded-full font-arabic text-sm">
+          نظرة عامة
+        </div>
+        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
+          التقارير
+        </div>
+        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
+          الفريق
+        </div>
+        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
+          العميل
+        </div>
+        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
+          المرفقات
+        </div>
+        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
+          الوضع المالي
+        </div>
+        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
+          إدارة المهام
+        </div>
+      </div>
 
-          {/* محتوى التبويبات */}
-          <div className="flex-1 min-h-0">
-            <TabsContent value="overview" className="flex-1 m-0 p-0 h-full">
-              <ProjectCardGrid project={project} />
-            </TabsContent>
-            
-            <TabsContent value="tasks" className="flex-1 m-0 p-0 h-full">
-              <div className="h-full flex items-center justify-center">
-                <div className="text-center text-gray-500 font-arabic">
-                  <h3 className="text-xl font-semibold mb-2">إدارة المهام</h3>
-                  <p>محتوى إدارة المهام قيد التطوير</p>
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="finance" className="flex-1 m-0 p-0 h-full">
-              <div className="h-full flex items-center justify-center">
-                <div className="text-center text-gray-500 font-arabic">
-                  <h3 className="text-xl font-semibold mb-2">الوضع المالي</h3>
-                  <p>محتوى الوضع المالي قيد التطوير</p>
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="attachments" className="flex-1 m-0 p-0 h-full">
-              <div className="h-full flex items-center justify-center">
-                <div className="text-center text-gray-500 font-arabic">
-                  <h3 className="text-xl font-semibold mb-2">المرفقات</h3>
-                  <p>محتوى المرفقات قيد التطوير</p>
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="client" className="flex-1 m-0 p-0 h-full">
-              <div className="h-full flex items-center justify-center">
-                <div className="text-center text-gray-500 font-arabic">
-                  <h3 className="text-xl font-semibold mb-2">العميل</h3>
-                  <p>محتوى العميل قيد التطوير</p>
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="team" className="flex-1 m-0 p-0 h-full">
-              <div className="h-full flex items-center justify-center">
-                <div className="text-center text-gray-500 font-arabic">
-                  <h3 className="text-xl font-semibold mb-2">الفريق</h3>
-                  <p>محتوى الفريق قيد التطوير</p>
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="reports" className="flex-1 m-0 p-0 h-full">
-              <div className="h-full flex items-center justify-center">
-                <div className="text-center text-gray-500 font-arabic">
-                  <h3 className="text-xl font-semibold mb-2">التقارير</h3>
-                  <p>محتوى التقارير قيد التطوير</p>
-                </div>
-              </div>
-            </TabsContent>
-          </div>
-        </Tabs>
+      {/* المحتوى الرئيسي */}
+      <div className="flex-1 min-h-0">
+        <ProjectCardGrid project={project} />
       </div>
 
       {/* حوارات التأكيد */}
