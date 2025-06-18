@@ -215,12 +215,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
         
 
-        <div style={{
-        gridColumn: '4',
-        gridRow: '3'
-      }}>
-          <ProjectSummaryPanel projects={mockData.projects} />
-        </div>
+        
       </div>
     </div>;
 };
