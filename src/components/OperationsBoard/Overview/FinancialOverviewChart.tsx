@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChevronLeft, MoreHorizontal, TrendingUp, Download } from 'lucide-react';
+import { ChevronLeft, MoreHorizontal } from 'lucide-react';
 
 interface FinancialOverviewChartProps {
   title: string;
@@ -18,17 +18,11 @@ export const FinancialOverviewChart: React.FC<FinancialOverviewChartProps> = ({ 
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-gray-800 font-arabic">{title}</h3>
         <div className="flex gap-2">
-          {/* أيقونة دائرية للاتجاه */}
-          <button className="w-8 h-8 rounded-full bg-white/60 hover:bg-white/80 flex items-center justify-center transition-colors">
-            <TrendingUp className="w-4 h-4 text-gray-600" />
+          <button className="p-2 hover:bg-gray-100 rounded-full">
+            <ChevronLeft className="w-4 h-4" />
           </button>
-          {/* أيقونة دائرية للتحميل */}
-          <button className="w-8 h-8 rounded-full bg-white/60 hover:bg-white/80 flex items-center justify-center transition-colors">
-            <Download className="w-4 h-4 text-gray-600" />
-          </button>
-          {/* أيقونة دائرية للمزيد */}
-          <button className="w-8 h-8 rounded-full bg-white/60 hover:bg-white/80 flex items-center justify-center transition-colors">
-            <MoreHorizontal className="w-4 h-4 text-gray-600" />
+          <button className="p-2 hover:bg-gray-100 rounded-full">
+            <MoreHorizontal className="w-4 h-4" />
           </button>
         </div>
       </div>
