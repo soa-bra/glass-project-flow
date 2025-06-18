@@ -15,36 +15,42 @@ export const ProjectStatsSection: React.FC<ProjectStatsSectionProps> = ({ stats 
   return (
     <div className="grid grid-cols-3 gap-6 mb-6">
       {/* الإيرادات المتوقعة */}
-      <div className="text-center p-6 operations-board-card">
+      <div className="text-right p-6">
         <div className="mb-2">
-          <span className="text-sm text-gray-600 font-arabic">الإيرادات المتوقعة</span>
+          <span className="text-sm text-gray-600 font-arabic font-medium">الإيرادات المتوقعة</span>
         </div>
-        <div className="text-3xl font-bold text-gray-800 mb-1 font-arabic">
-          {stats.expectedRevenue}
+        <div className="flex items-baseline justify-end gap-2 mb-1">
+          <div className="text-xs text-gray-500 font-arabic font-light">ألف ريال سعودي</div>
+          <div className="text-3xl font-normal text-gray-800 font-arabic">
+            {stats.expectedRevenue}
+          </div>
         </div>
-        <div className="text-xs text-gray-500 font-arabic">ألف ريال سعودي</div>
       </div>
 
       {/* الشكاوى */}
-      <div className="text-center p-6 operations-board-card">
+      <div className="text-right p-6">
         <div className="mb-2">
-          <span className="text-sm text-gray-600 font-arabic">الشكاوى</span>
+          <span className="text-sm text-gray-600 font-arabic font-medium">الشكاوى</span>
         </div>
-        <div className="text-3xl font-bold text-gray-800 mb-1 font-arabic">
-          {String(stats.complaints).padStart(2, '0')}
+        <div className="flex items-baseline justify-end gap-2 mb-1">
+          <div className="text-xs text-gray-500 font-arabic font-light">شكاوى</div>
+          <div className="text-3xl font-normal text-gray-800 font-arabic">
+            {String(stats.complaints).padStart(2, '0')}
+          </div>
         </div>
-        <div className="text-xs text-gray-500 font-arabic">شكاوى</div>
       </div>
 
       {/* المشاريع المتأخرة */}
-      <div className="text-center p-6 operations-board-card">
+      <div className="text-right p-6">
         <div className="mb-2">
-          <span className="text-sm text-gray-600 font-arabic">المشاريع المتأخرة</span>
+          <span className="text-sm text-gray-600 font-arabic font-medium">المشاريع المتأخرة</span>
         </div>
-        <div className="text-3xl font-bold text-gray-800 mb-1 font-arabic">
-          {String(stats.delayedProjects).padStart(2, '0')}
+        <div className="flex items-baseline justify-end gap-2 mb-1">
+          <div className="text-xs text-gray-500 font-arabic font-light">مشاريع</div>
+          <div className="text-3xl font-normal text-gray-800 font-arabic">
+            {String(stats.delayedProjects).padStart(2, '0')}
+          </div>
         </div>
-        <div className="text-xs text-gray-500 font-arabic">مشاريع</div>
       </div>
     </div>
   );
