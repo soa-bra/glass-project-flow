@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
@@ -6,6 +7,7 @@ import LegalTab from './LegalTab';
 import HRTab from './HRTab';
 import { ClientsTab } from './ClientsTab';
 import { ReportsTab } from './ReportsTab';
+
 export const TabContentWrapper = ({
   tabData,
   loading
@@ -21,9 +23,17 @@ export const TabContentWrapper = ({
       <TabsContent value="finance" className="w-full h-full overflow-auto p-4 m-0">
         <FinanceTab data={tabData.finance} loading={loading} />
       </TabsContent>
-      
-      <TabsContent value="legal" className="w-full h-full overflow-auto p-4 m-0">
-        <LegalTab data={tabData.legal} loading={loading} />
+
+      <TabsContent value="projects" className="w-full h-full overflow-auto p-4 m-0">
+        <div className="text-center py-8 text-gray-500 font-arabic">
+          محتوى إدارة المشاريع قيد التطوير
+        </div>
+      </TabsContent>
+
+      <TabsContent value="marketing" className="w-full h-full overflow-auto p-4 m-0">
+        <div className="text-center py-8 text-gray-500 font-arabic">
+          محتوى التسويق قيد التطوير
+        </div>
       </TabsContent>
       
       <TabsContent value="hr" className="w-full h-full overflow-auto p-4 m-0">

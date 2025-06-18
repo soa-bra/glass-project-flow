@@ -15,10 +15,11 @@ export interface TabItem {
 }
 
 export const TAB_ITEMS: TabItem[] = [
-  { value: 'overview', label: 'نظرة عامّة' },
-  { value: 'finance', label: 'مالية' },
-  { value: 'legal', label: 'قانونية' },
-  { value: 'hr', label: 'موارد بشرية' },
-  { value: 'clients', label: 'عملاء' },
-  { value: 'reports', label: 'تقارير' },
+  { value: 'overview', label: 'نظرة عامة' },
+  { value: 'finance', label: 'الوضع المالي' },
+  { value: 'projects', label: 'إدارة المشاريع' },
+  { value: 'marketing', label: 'التسويق' },
+  { value: 'hr', label: 'الموارد البشرية' },
+  { value: 'clients', label: 'العملاء' },
+  { value: 'reports', label: 'التقارير' },
 ];
