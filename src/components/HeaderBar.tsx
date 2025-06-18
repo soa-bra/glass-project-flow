@@ -1,3 +1,4 @@
+
 import { Bell, CircleUser, Search, RefreshCcw, Settings } from 'lucide-react';
 import { useState } from 'react';
 
@@ -37,28 +38,28 @@ const HeaderBar = () => {
         {/* Action Icons - Right Side: بحث ← تحديث ← تنبيهات ← مستخدم ← إعدادات */}
         <div className="flex items-center gap-0 px-0 mx-0">
           <button className="p-2 hover:bg-white/20 transition-colors group rounded-full">
-            <div className="w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
-              <Search className="w-6 h-6 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+            <div className="w-[50px] h-[50px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <Search className="w-[19px] h-[19px] text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
             </div>
           </button>
           <button className="p-2 hover:bg-white/20 transition-colors group rounded-full">
-            <div className="w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
-              <RefreshCcw className="w-6 h-6 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+            <div className="w-[50px] h-[50px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <RefreshCcw className="w-[19px] h-[19px] text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
             </div>
           </button>
           <button className="p-2 hover:bg-white/20 transition-colors group rounded-full">
-            <div className="w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
-              <Bell className="w-6 h-6 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+            <div className="w-[50px] h-[50px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <Bell className="w-[19px] h-[19px] text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
             </div>
           </button>
           <button className="p-2 hover:bg-white/20 transition-colors group rounded-full">
-            <div className="w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
-              <CircleUser className="w-6 h-6 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+            <div className="w-[50px] h-[50px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <CircleUser className="w-[19px] h-[19px] text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
             </div>
           </button>
           <button className="p-2 hover:bg-white/20 rounded-full transition-colors group">
-            <div className="w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
-              <Settings className="w-6 h-6 text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
+            <div className="w-[50px] h-[50px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#3e494c]/50">
+              <Settings className="w-[19px] h-[19px] text-soabra-text-primary group-hover:scale-110 transition-all duration-300" />
             </div>
           </button>
         </div>

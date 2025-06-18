@@ -1,5 +1,4 @@
-
-import { Home, FolderOpen, CheckSquare, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface SidebarProps {
@@ -11,8 +10,6 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
 
   const menuItems = [
     { icon: Home, label: 'الرئيسية', active: true },
-    { icon: FolderOpen, label: 'المشاريع', active: false },
-    { icon: CheckSquare, label: 'المهام', active: false },
     { icon: Building, label: 'الإدارات', active: false },
     { icon: Users, label: 'التخطيط التشاركي', active: false },
     { icon: Archive, label: 'الأرشيف', active: false }
