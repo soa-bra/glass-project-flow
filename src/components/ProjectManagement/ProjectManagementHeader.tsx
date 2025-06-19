@@ -60,15 +60,15 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
 
         {/* التبويبات في المنتصف - مطابقة لتصميم لوحة الإدارة والتشغيل */}
         <div className="flex-1 flex justify-center mx-8">
-          <div className="w-full overflow-x-auto overflow-y-hidden no-scrollbar px-0" dir="rtl" style={{
+          <div dir="rtl" style={{
           WebkitOverflowScrolling: 'touch',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none'
-        }}>
+        }} className="w-full overflow-x-auto overflow-y-hidden no-scrollbar px-[19px] mx-0">
             <div style={{
             direction: "rtl",
             width: "fit-content"
-          }} className="gap-1 justify-end bg-transparent min-w-max flex-nowrap py-0 h-auto flex px-[50px] mx-[210px]">
+          }} className="gap-1 justify-end bg-transparent min-w-max flex-nowrap py-0 h-auto flex px-[50px] mx-[70px]">
               {tabs.map(tab => <button key={tab.id} onClick={() => onTabChange(tab.id)} className={`px-4 py-2 rounded-md font-arabic text-sm transition-all duration-200 ${activeTab === tab.id ? 'bg-black text-white shadow-sm' : 'text-gray-700 hover:bg-white/50'}`}>
                   {tab.label}
                 </button>)}
