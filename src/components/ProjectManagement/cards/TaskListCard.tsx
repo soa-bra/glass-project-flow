@@ -1,67 +1,56 @@
-
 import React from 'react';
 import { Project } from '@/types/project';
 import { Plus } from 'lucide-react';
-
 interface TaskListCardProps {
   project: Project;
 }
-
-export const TaskListCard: React.FC<TaskListCardProps> = ({ project }) => {
-  const tasks = [
-    {
-      id: 1,
-      title: 'تصميم الواجهة',
-      description: 'تطوير موقع سوبرا',
-      status: 'وفق الخطة',
-      statusColor: 'bg-soabra-new-on-plan text-gray-800',
-      progress: 'دقيقة',
-      date: '28 May',
-      number: '01',
-      priority: 'عاجل وهام'
-    },
-    {
-      id: 2,
-      title: 'كتابة الكود',
-      description: 'تطوير موقع سوبرا',
-      status: 'عاجل وهام',
-      statusColor: 'bg-soabra-new-secondary-2 text-gray-800',
-      progress: 'ساعتين',
-      date: '29 May',
-      number: '02',
-      priority: 'عاجل وهام'
-    },
-    {
-      id: 3,
-      title: 'تطوير قواعد البيانات',
-      description: 'تطوير موقع سوبرا',
-      status: 'غير عاجل وهام',
-      statusColor: 'bg-soabra-new-secondary-5 text-gray-800',
-      progress: 'ساعتين',
-      date: '01 Jun',
-      number: '03',
-      priority: 'غير عاجل وهام'
-    },
-    {
-      id: 4,
-      title: 'التسليم',
-      description: 'تسليم الموقع النهائي',
-      status: 'غير عاجل وغير هام',
-      statusColor: 'bg-soabra-new-secondary-3 text-gray-800',
-      progress: 'منجزة',
-      date: '',
-      number: '04',
-      priority: 'غير عاجل وغير هام'
-    }
-  ];
-
-  return (
-    <div 
-      className="h-full p-6 rounded-3xl border border-white/20"
-      style={{
-        background: 'var(--backgrounds-cards-admin-ops)',
-      }}
-    >
+export const TaskListCard: React.FC<TaskListCardProps> = ({
+  project
+}) => {
+  const tasks = [{
+    id: 1,
+    title: 'تصميم الواجهة',
+    description: 'تطوير موقع سوبرا',
+    status: 'وفق الخطة',
+    statusColor: 'bg-soabra-new-on-plan text-gray-800',
+    progress: 'دقيقة',
+    date: '28 May',
+    number: '01',
+    priority: 'عاجل وهام'
+  }, {
+    id: 2,
+    title: 'كتابة الكود',
+    description: 'تطوير موقع سوبرا',
+    status: 'عاجل وهام',
+    statusColor: 'bg-soabra-new-secondary-2 text-gray-800',
+    progress: 'ساعتين',
+    date: '29 May',
+    number: '02',
+    priority: 'عاجل وهام'
+  }, {
+    id: 3,
+    title: 'تطوير قواعد البيانات',
+    description: 'تطوير موقع سوبرا',
+    status: 'غير عاجل وهام',
+    statusColor: 'bg-soabra-new-secondary-5 text-gray-800',
+    progress: 'ساعتين',
+    date: '01 Jun',
+    number: '03',
+    priority: 'غير عاجل وهام'
+  }, {
+    id: 4,
+    title: 'التسليم',
+    description: 'تسليم الموقع النهائي',
+    status: 'غير عاجل وغير هام',
+    statusColor: 'bg-soabra-new-secondary-3 text-gray-800',
+    progress: 'منجزة',
+    date: '',
+    number: '04',
+    priority: 'غير عاجل وغير هام'
+  }];
+  return <div style={{
+    background: 'var(--backgrounds-cards-admin-ops)'
+  }} className="h-full p-6 rounded-3xl border border-white/20">
       {/* الرأس */}
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-arabic font-semibold text-gray-800">قائمة المهام</h3>
@@ -77,8 +66,7 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ project }) => {
 
       {/* قائمة المهام */}
       <div className="space-y-4 max-h-[calc(100%-120px)] overflow-y-auto">
-        {tasks.map((task) => (
-          <div key={task.id} className="bg-white/40 backdrop-filter backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+        {tasks.map(task => <div key={task.id} className="bg-white/40 backdrop-filter backdrop-blur-lg rounded-2xl p-4 border border-white/20">
             <div className="flex items-start gap-4">
               {/* رقم المهمة */}
               <div className="w-12 h-12 bg-white/60 backdrop-filter backdrop-blur-lg rounded-xl flex items-center justify-center flex-shrink-0 border border-white/20">
@@ -110,9 +98,7 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ project }) => {
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          </div>)}
       </div>
-    </div>
-  );
+    </div>;
 };
