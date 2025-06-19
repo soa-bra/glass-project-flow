@@ -102,14 +102,14 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
 
         {/* الأزرار على اليمين */}
         <div className="flex items-center gap-3">
-          {/* قائمة التعديل */}
+          {/* قائمة التعديل - مطابقة لأيقونة الإغلاق */}
           <div className="relative">
             <Select onValueChange={(value) => {
               if (value === 'delete') onDelete();
               else if (value === 'archive') onArchive();
               else if (value === 'edit') onEdit();
             }}>
-              <SelectTrigger className="w-auto border-none bg-white/60 backdrop-filter backdrop-blur-lg rounded-lg p-2 h-auto">
+              <SelectTrigger className="w-[50px] h-[50px] rounded-full border-2 border-[#3e494c]/50 bg-transparent flex items-center justify-center transition-all duration-300 group p-0">
                 <Edit className="w-5 h-5 text-gray-700" />
               </SelectTrigger>
               <SelectContent className="font-arabic bg-white backdrop-filter backdrop-blur-lg border border-white/20">
