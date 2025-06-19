@@ -10,9 +10,9 @@ import { ReportsTab } from './ReportsTab';
 
 export const TabContentWrapper = ({
   tabData,
-  loading
+  loading,
 }: {
-  tabData: any;
+  tabData: Record<string, unknown>;
   loading: boolean;
 }) => {
   return <>

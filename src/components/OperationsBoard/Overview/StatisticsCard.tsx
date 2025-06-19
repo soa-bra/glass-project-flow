@@ -10,7 +10,7 @@ interface StatisticsCardProps {
   unit: string;
   description: string;
   chartType?: 'line' | 'bar' | 'simple';
-  chartData?: any[];
+  chartData?: Array<{ name: string; value: number }>;
 }
 
 const sampleLineData = [
