@@ -54,7 +54,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
     backdropFilter: 'blur(20px)',
     WebkitBackdropFilter: 'blur(20px)',
     fontFamily: 'IBM Plex Sans Arabic, sans-serif'
-  }} className="rounded-3xl p-6  bg-transparent py-0 px-[25px]">
+  }} className="rounded-3xl p-6  ">
       {/* العنوان */}
       <div className="flex justify-between items-center mb-8">
         <div className="bg-green-100 text-green-800 px-6 py-3 rounded-full text-base font-medium" style={{
