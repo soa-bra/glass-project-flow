@@ -2,53 +2,62 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 
-interface Stage {
+export interface Stage {
   key: string;
   label: string;
-  position: number; // value from 0 to 1, fraction along the bar
+  position: number; // من 0 إلى 1
 }
 
-interface ProjectProgressBarProps {
+export interface ProjectProgressBarProps {
+  /** عدد الشرائح الكلية */
+  totalSegments?: number;
+  /** النسبة المكتملة بين 0 و 100 */
   progress: number;
+  /** قائمة المراحل (position من 0–1) */
+  stages?: Stage[];
+  /** مفتاح المرحلة الحالية */
+  currentStage?: string;
 }
 
-export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress }) => {
-  // تحديد المراحل
-  const stages: Stage[] = [
+export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
+  totalSegments = 40,
+  progress,
+  stages = [
     { key: 'preparation', label: 'التحضير', position: 0.1 },
     { key: 'initial-implementation', label: 'التنفيذ المبدئي', position: 0.25 },
     { key: 'initial-review', label: 'المراجعة الأولية', position: 0.4 },
     { key: 'initial-processing', label: 'المعالجة الأولية', position: 0.55 },
     { key: 'final-review', label: 'المراجعة النهائية', position: 0.75 },
     { key: 'final-processing', label: 'المعالجة النهائية', position: 0.9 }
-  ];
-
-  // إعدادات الشرائح
-  const segments = 40;
+  ],
+  currentStage
+}) => {
+  // تحويل النسبة من 0-100 إلى 0-1
   const completion = progress / 100;
-  const litCount = Math.round(segments * completion);
+  
+  // عدد الشرائح المضيئة
+  const litCount = Math.round(totalSegments * completion);
 
-  // ألوان قوس قزح للشرائح المضيئة
-  const rainbow = useMemo(
-    () => [
-      '#FF3CAC',
-      '#784BA0', 
-      '#2B86C5',
-      '#22D9C3',
-      '#A5FF43',
-      '#FFEB3B',
-    ],
-    []
-  );
+  // لوحة ألوان الطيف
+  const rainbow = useMemo(() => [
+    '#FF3CAC', // وردي
+    '#784BA0', // بنفسجي
+    '#2B86C5', // أزرق
+    '#22D9C3', // تركواز
+    '#A5FF43', // أخضر فاقع
+    '#FFEB3B', // أصفر
+  ], []);
 
   // مصفوفة الشرائح
   const segmentArray = useMemo(
-    () => Array.from({ length: segments }, (_, i) => i),
-    [segments]
+    () => Array.from({ length: totalSegments }, (_, i) => i),
+    [totalSegments]
   );
 
-  // تحديد المرحلة الحالية
+  // تحديد المرحلة الحالية تلقائياً إذا لم يتم تمريرها
   const getCurrentStage = () => {
+    if (currentStage) return currentStage;
+    
     if (completion >= 0.9) return 'final-processing';
     if (completion >= 0.75) return 'final-review';
     if (completion >= 0.55) return 'initial-processing';
@@ -57,7 +66,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress
     return 'preparation';
   };
 
-  const currentStageKey = getCurrentStage();
+  const activeStage = getCurrentStage();
 
   return (
     <div className="bg-white/40 backdrop-blur-[20px] rounded-3xl p-6 border border-white/20">
@@ -67,11 +76,11 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress
           مقياس مراحل تقدم المشروع
         </div>
         <div className="text-sm text-gray-600 font-arabic">
-          المهمة الحالية: {stages.find(s => s.key === currentStageKey)?.label}
+          المهمة الحالية: {stages.find(s => s.key === activeStage)?.label}
         </div>
       </div>
 
-      {/* شريط التقدم الجديد */}
+      {/* شريط التقدم الجديد - LED Strip */}
       <div style={{
         position: 'relative',
         width: '100%',
@@ -80,7 +89,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress
         display: 'flex',
         alignItems: 'center',
       }}>
-        {/* شريط الشرائح */}
+        {/* الشريط الرئيسي */}
         <div style={{
           flex: 1,
           display: 'flex',
@@ -91,7 +100,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress
         }}>
           {segmentArray.map(idx => {
             const isLit = idx < litCount;
-            // اختيار اللون حسب فهرس الشريحة
+            // اختيار اللون حسب فهرس الشريحة من الطيف
             const color = isLit
               ? rainbow[Math.floor((idx / Math.max(litCount, 1)) * (rainbow.length - 1))]
               : 'transparent';
@@ -102,7 +111,13 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress
                 layout
                 initial={{ opacity: 0.2 }}
                 animate={{ opacity: isLit ? 1 : 0.2 }}
-                transition={{ duration: 0.3, delay: idx * 0.02 }}
+                transition={{ 
+                  duration: 0.3, 
+                  delay: idx * 0.02,
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 20
+                }}
                 style={{
                   flex: 1,
                   height: '100%',
@@ -118,7 +133,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress
         {/* دوائر المراحل والتسميات */}
         {stages.map(stage => {
           const leftPerc = stage.position * 100;
-          const isCurrent = stage.key === currentStageKey;
+          const isCurrent = stage.key === activeStage;
           const isCompleted = completion > stage.position;
 
           return (
@@ -139,7 +154,12 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress
                   scale: isCurrent ? 1.3 : 1,
                   opacity: isCurrent ? 1 : (isCompleted ? 0.8 : 0.5),
                 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                transition={{ 
+                  type: 'spring', 
+                  stiffness: 300, 
+                  damping: 20,
+                  duration: 0.4
+                }}
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ${
                   isCompleted 
                     ? 'bg-green-500 text-white' 
@@ -164,9 +184,13 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress
       <div className="mt-6 text-center">
         <motion.div 
           className="text-lg font-bold text-gray-800 font-arabic"
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200 }}
+          initial={{ scale: 0.9, opacity: 0.7 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ 
+            type: 'spring', 
+            stiffness: 200,
+            duration: 0.5
+          }}
         >
           {Math.round(progress)}% مكتمل
         </motion.div>
