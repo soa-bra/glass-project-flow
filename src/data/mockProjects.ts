@@ -13,7 +13,8 @@ export const mockProjects: Project[] = [
     owner: 'د. أسامة',
     value: '15K',
     isOverBudget: false,
-    hasOverdueTasks: false
+    hasOverdueTasks: false,
+    progress: 65
   }, {
     id: '2',
     title: 'حملة التعريف',
@@ -25,7 +26,8 @@ export const mockProjects: Project[] = [
     owner: 'د. أسامة',
     value: '15K',
     isOverBudget: false,
-    hasOverdueTasks: false
+    hasOverdueTasks: false,
+    progress: 85
   }, {
     id: '3',
     title: 'صفحات التواصل',
@@ -37,7 +39,8 @@ export const mockProjects: Project[] = [
     owner: 'د. أسامة',
     value: '15K',
     isOverBudget: false,
-    hasOverdueTasks: true
+    hasOverdueTasks: true,
+    progress: 42
   }, {
     id: '4',
     title: 'المؤتمرات الثقافية',
@@ -49,7 +52,8 @@ export const mockProjects: Project[] = [
     owner: 'د. أسامة',
     value: '15K',
     isOverBudget: false,
-    hasOverdueTasks: false
+    hasOverdueTasks: false,
+    progress: 78
   }, {
     id: '5',
     title: 'العلامة الثقافية للعميل',
@@ -61,7 +65,8 @@ export const mockProjects: Project[] = [
     owner: 'د. أسامة',
     value: '15K',
     isOverBudget: true,
-    hasOverdueTasks: false
+    hasOverdueTasks: false,
+    progress: 30
   }, {
     id: '6',
     title: 'تطبيق الهاتف المحمول',
@@ -73,7 +78,8 @@ export const mockProjects: Project[] = [
     owner: 'م. سارة',
     value: '25K',
     isOverBudget: false,
-    hasOverdueTasks: false
+    hasOverdueTasks: false,
+    progress: 15
   }, {
     id: '7',
     title: 'نظام إدارة المحتوى',
@@ -85,7 +91,8 @@ export const mockProjects: Project[] = [
     owner: 'م. أحمد',
     value: '30K',
     isOverBudget: true,
-    hasOverdueTasks: true
+    hasOverdueTasks: true,
+    progress: 92
   }, {
     id: '8',
     title: 'استراتيجية التسويق الرقمي',
@@ -97,7 +104,8 @@ export const mockProjects: Project[] = [
     owner: 'أ. فاطمة',
     value: '20K',
     isOverBudget: false,
-    hasOverdueTasks: false
+    hasOverdueTasks: false,
+    progress: 56
   }, {
     id: '9',
     title: 'تحليل البيانات والذكاء الاصطناعي',
@@ -109,6 +117,7 @@ export const mockProjects: Project[] = [
     owner: 'د. محمد',
     value: '50K',
     isOverBudget: false,
-    hasOverdueTasks: false
+    hasOverdueTasks: false,
+    progress: 25
   }
 ];

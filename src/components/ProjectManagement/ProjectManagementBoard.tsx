@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProjectManagementHeader } from './ProjectManagementHeader';
@@ -80,7 +79,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
       {/* شريط تقدم المراحل */}
       <div className="mb-6 flex-shrink-0">
-        <ProjectProgressBar progress={project.progress || 65} />
+        <ProjectProgressBar progress={project.progress || 0} />
       </div>
 
       {/* التبويبات - مطابقة لتصميم لوحة الإدارة والتشغيل */}

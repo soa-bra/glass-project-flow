@@ -32,20 +32,23 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   ],
   currentStage
 }) => {
+  // التأكد من أن النسبة في النطاق الصحيح
+  const safeProgress = Math.max(0, Math.min(100, progress || 0));
+  
   // تحويل النسبة من 0-100 إلى 0-1
-  const completion = progress / 100;
+  const completion = safeProgress / 100;
   
   // عدد الشرائح المضيئة
   const litCount = Math.round(totalSegments * completion);
 
-  // لوحة ألوان الطيف
+  // لوحة ألوان الطيف المحسنة
   const rainbow = useMemo(() => [
-    '#FF3CAC', // وردي
-    '#784BA0', // بنفسجي
-    '#2B86C5', // أزرق
-    '#22D9C3', // تركواز
-    '#A5FF43', // أخضر فاقع
-    '#FFEB3B', // أصفر
+    '#FF6B6B', // أحمر فاقع
+    '#4ECDC4', // تركواز
+    '#45B7D1', // أزرق
+    '#96CEB4', // أخضر فاتح
+    '#FFEAA7', // أصفر ذهبي
+    '#DDA0DD', // بنفسجي فاتح
   ], []);
 
   // مصفوفة الشرائح
@@ -68,14 +71,32 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
 
   const activeStage = getCurrentStage();
 
+  // دالة لحساب لون الشريحة
+  const getSegmentColor = (segmentIndex: number) => {
+    if (segmentIndex >= litCount) return 'transparent';
+    
+    // حساب النسبة للشريحة الحالية
+    const ratio = segmentIndex / Math.max(litCount - 1, 1);
+    const colorIndex = Math.floor(ratio * (rainbow.length - 1));
+    
+    return rainbow[colorIndex] || rainbow[0];
+  };
+
   return (
-    <div className="bg-white/40 backdrop-blur-[20px] rounded-3xl p-6 border border-white/20">
+    <div 
+      className="rounded-3xl p-6 border border-white/20"
+      style={{
+        background: 'rgba(255, 255, 255, 0.4)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+      }}
+    >
       {/* العنوان والوصف */}
       <div className="flex justify-between items-center mb-6">
-        <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full font-arabic text-sm">
+        <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm" style={{ fontFamily: 'IBM Plex Sans Arabic, sans-serif' }}>
           مقياس مراحل تقدم المشروع
         </div>
-        <div className="text-sm text-gray-600 font-arabic">
+        <div className="text-sm text-gray-600" style={{ fontFamily: 'IBM Plex Sans Arabic, sans-serif' }}>
           المهمة الحالية: {stages.find(s => s.key === activeStage)?.label}
         </div>
       </div>
@@ -95,35 +116,37 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
           display: 'flex',
           overflow: 'hidden',
           borderRadius: 6,
-          backgroundColor: '#E0E0E0',
+          backgroundColor: '#E5E7EB',
           padding: 2,
+          gap: '1px',
         }}>
           {segmentArray.map(idx => {
             const isLit = idx < litCount;
-            // اختيار اللون حسب فهرس الشريحة من الطيف
-            const color = isLit
-              ? rainbow[Math.floor((idx / Math.max(litCount, 1)) * (rainbow.length - 1))]
-              : 'transparent';
+            const segmentColor = getSegmentColor(idx);
 
             return (
               <motion.div
                 key={idx}
                 layout
-                initial={{ opacity: 0.2 }}
-                animate={{ opacity: isLit ? 1 : 0.2 }}
+                initial={{ opacity: 0.2, scale: 0.8 }}
+                animate={{ 
+                  opacity: isLit ? 1 : 0.3,
+                  scale: isLit ? 1 : 0.9,
+                  backgroundColor: segmentColor
+                }}
                 transition={{ 
-                  duration: 0.3, 
-                  delay: idx * 0.02,
+                  duration: 0.4, 
+                  delay: idx * 0.015,
                   type: 'spring',
                   stiffness: 300,
-                  damping: 20
+                  damping: 25
                 }}
                 style={{
                   flex: 1,
                   height: '100%',
-                  margin: '0 0.5px',
-                  background: color,
-                  borderRadius: 1,
+                  borderRadius: 2,
+                  backgroundColor: segmentColor,
+                  minWidth: '2px',
                 }}
               />
             );
@@ -141,38 +164,51 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
               style={{
                 position: 'absolute',
                 left: `calc(${leftPerc}% - 16px)`,
-                top: -16,
+                top: -20,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 pointerEvents: 'none',
+                zIndex: 10,
               }}
             >
               <motion.div
                 initial={{ scale: 0.8, opacity: 0.5 }}
                 animate={{
-                  scale: isCurrent ? 1.3 : 1,
-                  opacity: isCurrent ? 1 : (isCompleted ? 0.8 : 0.5),
+                  scale: isCurrent ? 1.4 : 1.1,
+                  opacity: isCurrent ? 1 : (isCompleted ? 0.9 : 0.6),
                 }}
                 transition={{ 
                   type: 'spring', 
                   stiffness: 300, 
-                  damping: 20,
-                  duration: 0.4
+                  damping: 25,
+                  duration: 0.5
                 }}
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ${
                   isCompleted 
-                    ? 'bg-green-500 text-white' 
+                    ? 'bg-green-500 text-white shadow-lg' 
                     : isCurrent 
-                      ? 'bg-purple-500 text-white' 
-                      : 'bg-gray-100 text-gray-400'
+                      ? 'bg-blue-500 text-white shadow-lg' 
+                      : 'bg-gray-300 text-gray-500'
                 }`}
+                style={{
+                  boxShadow: isCurrent ? '0 4px 12px rgba(59, 130, 246, 0.4)' : isCompleted ? '0 4px 12px rgba(34, 197, 94, 0.4)' : 'none'
+                }}
               >
-                {isCompleted ? '✓' : isCurrent ? '⟳' : '🔒'}
+                {isCompleted ? '✓' : isCurrent ? '●' : '○'}
               </motion.div>
               
               {/* التسمية */}
-              <div className="text-xs font-arabic text-gray-600 text-center mt-2 whitespace-nowrap">
+              <div 
+                className="text-xs text-gray-700 text-center mt-3 whitespace-nowrap px-2 py-1 rounded-md"
+                style={{ 
+                  fontFamily: 'IBM Plex Sans Arabic, sans-serif',
+                  background: 'rgba(255, 255, 255, 0.8)',
+                  backdropFilter: 'blur(10px)',
+                  fontSize: '11px',
+                  fontWeight: '500'
+                }}
+              >
                 {stage.label}
               </div>
             </div>
@@ -181,19 +217,26 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
       </div>
 
       {/* نسبة التقدم */}
-      <div className="mt-6 text-center">
+      <div className="mt-8 text-center">
         <motion.div 
-          className="text-lg font-bold text-gray-800 font-arabic"
+          className="text-xl font-bold text-gray-800"
+          style={{ fontFamily: 'IBM Plex Sans Arabic, sans-serif' }}
           initial={{ scale: 0.9, opacity: 0.7 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ 
             type: 'spring', 
             stiffness: 200,
-            duration: 0.5
+            duration: 0.6
           }}
         >
-          {Math.round(progress)}% مكتمل
+          {Math.round(safeProgress)}% مكتمل
         </motion.div>
+        <div 
+          className="text-sm text-gray-600 mt-1"
+          style={{ fontFamily: 'IBM Plex Sans Arabic, sans-serif' }}
+        >
+          {litCount} من {totalSegments} مهمة مكتملة
+        </div>
       </div>
     </div>
   );

@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* استيراد خط IBM Plex Sans Arabic */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+
 /* SoaBra Design System - Updated Color Palette */
 
 @layer base {
@@ -47,6 +50,13 @@
     --priority-colors-not-urgent-important: #fbe2aa;
     --priority-colors-urgent-not-important: #a4e2f6;
     --priority-colors-not-urgent-not-important: #d9d2fd;
+    
+    /* Progress Bar Colors */
+    --progress-segment-active: #4F46E5;
+    --progress-segment-inactive: #E5E7EB;
+    --progress-stage-completed: #10B981;
+    --progress-stage-current: #3B82F6;
+    --progress-stage-pending: #9CA3AF;
     
     /* Z-Index Hierarchy */
     --z-modal-backdrop: 9998;
@@ -183,6 +193,13 @@
     direction: rtl;
     scroll-behavior: smooth;
   }
+  
+  /* خط عربي محسن */
+  .font-arabic {
+    font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+  }
 }
 
 /* Essential Components */
@@ -266,6 +283,21 @@
   .project-card-dimmed {
     opacity: 0.6;
     transform: scale(0.98);
+  }
+
+  /* Progress Bar Styles */
+  .progress-segment {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 2px;
+  }
+  
+  .progress-segment-active {
+    background: var(--progress-segment-active);
+    box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+  }
+  
+  .progress-segment-inactive {
+    background: var(--progress-segment-inactive);
   }
 
   /* RTL Layout Classes */
