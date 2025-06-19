@@ -68,7 +68,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
             <div style={{
             direction: "rtl",
             width: "fit-content"
-          }} className="gap-1 justify-end bg-transparent min-w-max flex-nowrap py-0 h-auto flex px-[50px] mx-[70px]">
+          }} className="gap-1 justify-end bg-transparent min-w-max flex-nowrap py-0 h-auto flex mx-0 px-0">
               {tabs.map(tab => <button key={tab.id} onClick={() => onTabChange(tab.id)} className={`px-4 py-2 rounded-md font-arabic text-sm transition-all duration-200 ${activeTab === tab.id ? 'bg-black text-white shadow-sm' : 'text-gray-700 hover:bg-white/50'}`}>
                   {tab.label}
                 </button>)}
