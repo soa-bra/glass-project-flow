@@ -1,15 +1,19 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
 
 export const FinancialOverviewCard: React.FC = () => {
   return (
-    <BaseCard className="h-full p-6">
+    <div 
+      className="h-full p-6 rounded-3xl border border-white/20"
+      style={{
+        background: 'var(--backgrounds-cards-admin-ops)',
+      }}
+    >
       {/* العنوان */}
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-sm font-arabic text-gray-600">النظرة المالية</h3>
-        <button className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded font-arabic">
-          ###
+        <h3 className="text-sm font-arabic font-semibold text-gray-800">النظرة المالية</h3>
+        <button className="text-xs bg-white/40 backdrop-filter backdrop-blur-lg text-gray-600 px-3 py-1 rounded-lg font-arabic border border-white/20 hover:bg-white/60 transition-colors">
+          تفاصيل
         </button>
       </div>
 
@@ -32,7 +36,7 @@ export const FinancialOverviewCard: React.FC = () => {
               cx="50"
               cy="50"
               r="40"
-              stroke="#ef4444"
+              stroke="#f1b5b9"
               strokeWidth="8"
               fill="transparent"
               strokeDasharray="15 235"
@@ -43,7 +47,7 @@ export const FinancialOverviewCard: React.FC = () => {
               cx="50"
               cy="50"
               r="40"
-              stroke="#3b82f6"
+              stroke="#a4e2f6"
               strokeWidth="8"
               fill="transparent"
               strokeDasharray="40 210"
@@ -54,7 +58,7 @@ export const FinancialOverviewCard: React.FC = () => {
               cx="50"
               cy="50"
               r="40"
-              stroke="#10b981"
+              stroke="#bdeed3"
               strokeWidth="8"
               fill="transparent"
               strokeDasharray="80 170"
@@ -65,7 +69,7 @@ export const FinancialOverviewCard: React.FC = () => {
               cx="50"
               cy="50"
               r="40"
-              stroke="#86efac"
+              stroke="#96d8d0"
               strokeWidth="8"
               fill="transparent"
               strokeDasharray="115 135"
@@ -77,7 +81,7 @@ export const FinancialOverviewCard: React.FC = () => {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <div className="text-2xl font-bold text-gray-800">20</div>
-              <div className="text-xs text-gray-500 font-arabic">الف ريال</div>
+              <div className="text-xs text-gray-500 font-arabic">ألف ريال</div>
             </div>
           </div>
         </div>
@@ -87,42 +91,42 @@ export const FinancialOverviewCard: React.FC = () => {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            <span className="text-xs text-gray-600 font-arabic">02</span>
+            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#f1b5b9' }}></div>
+            <span className="text-sm text-gray-700 font-arabic font-medium">02</span>
           </div>
-          <span className="text-xs text-gray-500 font-arabic">مليون</span>
+          <span className="text-sm text-gray-500 font-arabic">مليون</span>
         </div>
         
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <span className="text-xs text-gray-600 font-arabic">14</span>
+            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#a4e2f6' }}></div>
+            <span className="text-sm text-gray-700 font-arabic font-medium">14</span>
           </div>
-          <span className="text-xs text-gray-500 font-arabic">مليون</span>
+          <span className="text-sm text-gray-500 font-arabic">مليون</span>
         </div>
         
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-xs text-gray-600 font-arabic">78</span>
+            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#bdeed3' }}></div>
+            <span className="text-sm text-gray-700 font-arabic font-medium">78</span>
           </div>
-          <span className="text-xs text-gray-500 font-arabic">مليون</span>
+          <span className="text-sm text-gray-500 font-arabic">مليون</span>
         </div>
         
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-300 rounded-full"></div>
-            <span className="text-xs text-gray-600 font-arabic">03</span>
+            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#96d8d0' }}></div>
+            <span className="text-sm text-gray-700 font-arabic font-medium">03</span>
           </div>
-          <span className="text-xs text-gray-500 font-arabic">مليون</span>
+          <span className="text-sm text-gray-500 font-arabic">مليون</span>
         </div>
       </div>
 
       {/* النص السفلي */}
-      <div className="mt-4 text-center">
-        <p className="text-xs text-gray-500 font-arabic">هذا النص هو مثال للشكل الحالي</p>
+      <div className="mt-6 text-center">
+        <p className="text-xs text-gray-500 font-arabic leading-relaxed">هذا النص هو مثال للشكل الحالي</p>
         <p className="text-xs text-gray-500 font-arabic">هذا النص هو مثال</p>
       </div>
-    </BaseCard>
+    </div>
   );
 };

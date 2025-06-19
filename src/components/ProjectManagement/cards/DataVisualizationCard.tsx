@@ -1,136 +1,78 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { LineChart, Line, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+
+const chartData = [
+  { name: 'Jan', value: 30 },
+  { name: 'Feb', value: 45 },
+  { name: 'Mar', value: 35 },
+  { name: 'Apr', value: 50 },
+  { name: 'May', value: 40 },
+  { name: 'Jun', value: 60 }
+];
 
 export const DataVisualizationCard: React.FC = () => {
   return (
-    <div className="h-full space-y-4">
-      {/* بطاقة البيانات الأولى */}
-      <BaseCard className="p-4">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-sm font-arabic text-gray-800 font-semibold">بيانات</h3>
-          <span className="text-lg font-bold text-gray-800">17</span>
-        </div>
-        <p className="text-xs text-gray-500 font-arabic mb-3">هذا النص هو مثال للشكل الحالي</p>
-        
-        {/* الخطوط الأفقية */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-full bg-green-500 rounded-full" style={{ width: '70%' }}></div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-full bg-green-400 rounded-full" style={{ width: '85%' }}></div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-full bg-green-300 rounded-full" style={{ width: '60%' }}></div>
-            </div>
-          </div>
-        </div>
-        <p className="text-xs text-gray-500 font-arabic mt-2">هذا النص هو مثال للشكل الحالي</p>
-      </BaseCard>
+    <div 
+      className="h-full p-6 rounded-3xl border border-white/20"
+      style={{
+        background: 'var(--backgrounds-cards-admin-ops)',
+      }}
+    >
+      {/* العنوان */}
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-sm font-arabic font-semibold text-gray-800">التحليل البياني</h3>
+        <button className="text-xs bg-white/40 backdrop-filter backdrop-blur-lg text-gray-600 px-3 py-1 rounded-lg font-arabic border border-white/20 hover:bg-white/60 transition-colors">
+          تفاصيل
+        </button>
+      </div>
 
-      {/* بطاقة البيانات الثانية */}
-      <BaseCard className="p-4">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-sm font-arabic text-gray-800 font-semibold">بيانات</h3>
-          <span className="text-lg font-bold text-gray-800">03</span>
-        </div>
-        <p className="text-xs text-gray-500 font-arabic mb-3">هذا النص هو مثال للشكل الحالي</p>
-        
-        {/* الرسم البياني المتعرج */}
-        <div className="h-12 mb-2">
-          <svg className="w-full h-full" viewBox="0 0 200 48">
-            <path
-              d="M0,24 Q25,8 50,20 T100,16 T150,28 T200,12"
-              stroke="#a855f7"
-              strokeWidth="2"
-              fill="none"
-            />
-            <path
-              d="M0,32 Q25,16 50,28 T100,24 T150,36 T200,20"
-              stroke="#c084fc"
-              strokeWidth="2"
-              fill="none"
-              opacity="0.7"
-            />
-          </svg>
-        </div>
-        <p className="text-xs text-gray-500 font-arabic">هذا النص هو مثال للشكل الحالي</p>
-        <p className="text-xs text-gray-400 font-arabic">هذا النص هو مثال</p>
-      </BaseCard>
+      {/* الرقم الرئيسي */}
+      <div className="text-center mb-6">
+        <div className="text-3xl font-bold text-gray-800 font-arabic">46</div>
+        <div className="text-sm text-gray-500 font-arabic">مليار</div>
+      </div>
 
-      {/* بطاقة البيانات الثالثة */}
-      <BaseCard className="p-4">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-sm font-arabic text-gray-800 font-semibold">بيانات</h3>
-          <span className="text-lg font-bold text-gray-800">03</span>
-        </div>
-        <p className="text-xs text-gray-500 font-arabic mb-3">هذا النص هو مثال للشكل الحالي</p>
-        
-        {/* الرسم البياني العمودي */}
-        <div className="flex items-end justify-between h-12 gap-1 mb-2">
-          <div className="bg-yellow-400 w-4 h-8 rounded-t"></div>
-          <div className="bg-yellow-300 w-4 h-6 rounded-t"></div>
-          <div className="bg-yellow-500 w-4 h-10 rounded-t"></div>
-          <div className="bg-yellow-400 w-4 h-7 rounded-t"></div>
-          <div className="bg-yellow-300 w-4 h-9 rounded-t"></div>
-          <div className="bg-yellow-400 w-4 h-5 rounded-t"></div>
-          <div className="bg-yellow-500 w-4 h-8 rounded-t"></div>
-        </div>
-        <div className="flex justify-between text-xs text-gray-400 font-arabic">
-          <span>Sun</span>
-          <span>Mon</span>
-          <span>Tue</span>
-          <span>Wed</span>
-          <span>Thu</span>
-          <span>Fri</span>
-          <span>Sat</span>
-        </div>
-      </BaseCard>
-
-      {/* بطاقة البيانات الرابعة - الدائرة */}
-      <BaseCard className="p-4">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-sm font-arabic text-gray-800 font-semibold">بيانات</h3>
-          <span className="text-lg font-bold text-gray-800">03</span>
-        </div>
-        <p className="text-xs text-gray-500 font-arabic mb-3">هذا النص هو مثال للشكل الحالي</p>
-        
-        {/* الدائرة */}
-        <div className="flex justify-center">
-          <div className="relative w-16 h-16">
-            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-              <circle
-                cx="50"
-                cy="50"
-                r="35"
-                stroke="#e5e7eb"
-                strokeWidth="10"
-                fill="transparent"
+      {/* الرسم البياني */}
+      <div className="h-32 mb-4">
+        <ChartContainer
+          config={{
+            value: {
+              label: "القيمة",
+              color: "#a4e2f6"
+            }
+          }}
+          className="w-full h-full"
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <XAxis 
+                dataKey="name" 
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: '#6b7280' }}
               />
-              <circle
-                cx="50"
-                cy="50"
-                r="35"
-                stroke="#06b6d4"
-                strokeWidth="10"
-                fill="transparent"
-                strokeDasharray="44 176"
-                strokeDashoffset="0"
+              <YAxis hide />
+              <Line 
+                type="monotone" 
+                dataKey="value" 
+                stroke="#a4e2f6" 
+                strokeWidth={3} 
+                dot={{ fill: '#a4e2f6', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, fill: '#a4e2f6' }}
               />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-sm font-bold text-gray-800">20%</span>
-            </div>
-          </div>
-        </div>
-        <p className="text-xs text-gray-500 font-arabic text-center mt-2">هذا النص هو مثال للشكل الحالي</p>
-      </BaseCard>
+              <ChartTooltip content={<ChartTooltipContent />} />
+            </LineChart>
+          </ResponsiveContainer>
+        </ChartContainer>
+      </div>
+
+      {/* النص السفلي */}
+      <div className="text-center">
+        <p className="text-xs text-gray-500 font-arabic leading-relaxed">هذا النص مثال للشكل البياني</p>
+        <p className="text-xs text-gray-500 font-arabic">تحليل الأداء الشهري</p>
+      </div>
     </div>
   );
 };

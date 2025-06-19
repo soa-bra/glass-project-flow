@@ -21,6 +21,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   if (!isVisible) return null;
 
@@ -40,22 +41,29 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     console.log('تعديل المشروع:', project.id);
   };
 
+  const tabs = [
+    { id: 'overview', label: 'نظرة عامة' },
+    { id: 'reports', label: 'التقارير' },
+    { id: 'team', label: 'الفريق' },
+    { id: 'client', label: 'العميل' },
+    { id: 'files', label: 'المرفقات' },
+    { id: 'finance', label: 'الوضع المالي' },
+    { id: 'tasks', label: 'إدارة المهام' }
+  ];
+
   return (
     <div
-      className={`fixed z-[1200] sync-transition ${
+      className={`fixed z-[1200] ${
         isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'
       }`}
       style={{
         top: "var(--sidebar-top-offset)",
         height: "calc(100vh - var(--sidebar-top-offset))",
-        borderRadius: "32px",
-        background: "var(--backgrounds-project-mgmt-board-bg)",
-        boxShadow: "0 8px 32px rgba(31,38,135,0.14), inset 0 1px 0 rgba(255,255,255,0.4)",
-        backdropFilter: "blur(20px) saturate(180%)",
-        WebkitBackdropFilter: "blur(20px) saturate(180%)",
+        borderRadius: "24px",
+        background: "var(--backgrounds-admin-ops-board-bg)",
         border: "1px solid rgba(255,255,255,0.2)",
         transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
-        padding: "32px",
+        padding: "24px",
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
@@ -75,29 +83,21 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         <ProjectProgressBar progress={project.progress || 65} />
       </div>
 
-      {/* التبويبات */}
-      <div className="flex gap-2 mb-6 flex-shrink-0">
-        <div className="bg-black text-white px-6 py-2 rounded-full font-arabic text-sm">
-          نظرة عامة
-        </div>
-        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
-          التقارير
-        </div>
-        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
-          الفريق
-        </div>
-        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
-          العميل
-        </div>
-        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
-          المرفقات
-        </div>
-        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
-          الوضع المالي
-        </div>
-        <div className="bg-white/30 text-gray-700 px-6 py-2 rounded-full font-arabic text-sm cursor-pointer hover:bg-white/40 transition-colors">
-          إدارة المهام
-        </div>
+      {/* التبويبات - مطابقة لتصميم لوحة الإدارة والتشغيل */}
+      <div className="flex gap-1 mb-6 flex-shrink-0 bg-white/40 backdrop-filter backdrop-blur-lg p-1 rounded-lg border border-white/20">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-2 rounded-md font-arabic text-sm transition-all duration-200 ${
+              activeTab === tab.id
+                ? 'bg-black text-white shadow-sm'
+                : 'text-gray-700 hover:bg-white/50'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* المحتوى الرئيسي */}
@@ -107,23 +107,23 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
       {/* حوارات التأكيد */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="font-arabic">
+        <DialogContent className="font-arabic bg-white backdrop-filter backdrop-blur-lg border border-white/20">
           <DialogHeader>
-            <DialogTitle>تأكيد حذف المشروع</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-gray-800">تأكيد حذف المشروع</DialogTitle>
+            <DialogDescription className="text-gray-600">
               هل أنت متأكد من أنك تريد حذف هذا المشروع نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-3 justify-end mt-4">
             <button
               onClick={() => setShowDeleteDialog(false)}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 bg-white/60 backdrop-filter backdrop-blur-lg border border-white/20 rounded-lg hover:bg-white/80 transition-colors font-arabic"
             >
               إلغاء
             </button>
             <button
               onClick={handleDeleteProject}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-arabic"
             >
               حذف نهائي
             </button>
@@ -132,23 +132,23 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       </Dialog>
 
       <Dialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
-        <DialogContent className="font-arabic">
+        <DialogContent className="font-arabic bg-white backdrop-filter backdrop-blur-lg border border-white/20">
           <DialogHeader>
-            <DialogTitle>تأكيد أرشفة المشروع</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-gray-800">تأكيد أرشفة المشروع</DialogTitle>
+            <DialogDescription className="text-gray-600">
               هل أنت متأكد من أنك تريد أرشفة هذا المشروع؟ يمكنك استعادته لاحقاً من الأرشيف.
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-3 justify-end mt-4">
             <button
               onClick={() => setShowArchiveDialog(false)}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 bg-white/60 backdrop-filter backdrop-blur-lg border border-white/20 rounded-lg hover:bg-white/80 transition-colors font-arabic"
             >
               إلغاء
             </button>
             <button
               onClick={handleArchiveProject}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-arabic"
             >
               أرشفة
             </button>
