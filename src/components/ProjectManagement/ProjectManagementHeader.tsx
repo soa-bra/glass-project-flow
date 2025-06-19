@@ -1,9 +1,7 @@
-
 import React, { useState } from 'react';
 import { X, Edit, ChevronDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Project } from '@/types/project';
-
 interface ProjectManagementHeaderProps {
   project: Project;
   onClose: () => void;
@@ -11,7 +9,6 @@ interface ProjectManagementHeaderProps {
   onArchive: () => void;
   onEdit: () => void;
 }
-
 export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = ({
   project,
   onClose,
@@ -21,28 +18,33 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
 }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'on-plan': return 'bg-green-100 border-green-300 text-green-800';
-      case 'delayed': return 'bg-red-100 border-red-300 text-red-800';
-      case 'in-progress': return 'bg-blue-100 border-blue-300 text-blue-800';
-      default: return 'bg-gray-100 border-gray-300 text-gray-800';
+      case 'on-plan':
+        return 'bg-green-100 border-green-300 text-green-800';
+      case 'delayed':
+        return 'bg-red-100 border-red-300 text-red-800';
+      case 'in-progress':
+        return 'bg-blue-100 border-blue-300 text-blue-800';
+      default:
+        return 'bg-gray-100 border-gray-300 text-gray-800';
     }
   };
-
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'on-plan': return 'وفق الخطة';
-      case 'delayed': return 'متأخر';
-      case 'in-progress': return 'قيد التنفيذ';
-      default: return 'غير محدد';
+      case 'on-plan':
+        return 'وفق الخطة';
+      case 'delayed':
+        return 'متأخر';
+      case 'in-progress':
+        return 'قيد التنفيذ';
+      default:
+        return 'غير محدد';
     }
   };
-
-  return (
-    <div className="flex-shrink-0 mb-6">
+  return <div className="flex-shrink-0 mb-6">
       {/* الصف الأول */}
       <div className="flex items-center justify-between mb-4">
         {/* العنوان على اليسار */}
-        <h1 className="text-[32px] font-arabic font-bold text-gray-900">
+        <h1 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           لوحة إدارة المشروع
         </h1>
 
@@ -50,11 +52,9 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
         <div className="flex items-center gap-4">
           {/* قائمة التعديل */}
           <div className="relative">
-            <Select onValueChange={(value) => {
-              if (value === 'delete') onDelete();
-              else if (value === 'archive') onArchive();
-              else if (value === 'edit') onEdit();
-            }}>
+            <Select onValueChange={value => {
+            if (value === 'delete') onDelete();else if (value === 'archive') onArchive();else if (value === 'edit') onEdit();
+          }}>
               <SelectTrigger className="w-auto border-none bg-white/30 rounded-full p-2">
                 <Edit className="w-5 h-5" />
               </SelectTrigger>
@@ -67,10 +67,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
           </div>
 
           {/* زر الإغلاق */}
-          <button
-            onClick={onClose}
-            className="rounded-full bg-white/70 hover:bg-white/100 shadow-lg border border-white/30 w-10 h-10 flex items-center justify-center transition-colors"
-          >
+          <button onClick={onClose} className="rounded-full bg-white/70 hover:bg-white/100 shadow-lg border border-white/30 w-10 h-10 flex items-center justify-center transition-colors">
             <X className="w-5 h-5 text-gray-700" />
           </button>
         </div>
@@ -112,6 +109,5 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
       <div className="text-xs text-gray-600 font-arabic leading-relaxed max-w-2xl">
         {project.description || "تطوير موقع إلكتروني متكامل باستخدام أحدث التقنيات وفقاً للمعايير العالمية مع ضمان الأمان والسرعة في الأداء."}
       </div>
-    </div>
-  );
+    </div>;
 };
