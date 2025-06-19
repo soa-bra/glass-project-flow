@@ -13,11 +13,9 @@ interface ProjectManagementBoardProps {
   isSidebarCollapsed: boolean;
 }
 
-export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
-  project,
-  isVisible,
-  onClose,
-  isSidebarCollapsed
+export const ProjectManagementBoard: React.FC<{ project: any; onClose: ()=>void }> = ({
+  project,
+  onClose,
 }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
@@ -43,13 +41,12 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
   const tabs = [
     { id: 'overview', label: 'نظرة عامة' },
-    { id: 'reports', label: 'التقارير' },
-    { id: 'team', label: 'الفريق' },
-    { id: 'client', label: 'العميل' },
-    { id: 'files', label: 'المرفقات' },
-    { id: 'finance', label: 'الوضع المالي' },
     { id: 'tasks', label: 'إدارة المهام' }
-  ];
+    { id: 'finance', label: 'الوضع المالي' },
+    { id: 'client', label: 'العميل' },
+    { id: 'team', label: 'الفريق' },
+    { id: 'files', label: 'المرفقات' },
+    { id: 'reports', label: 'التقارير' },  ];
 
   return (
     <div 
@@ -79,10 +76,20 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         tabs={tabs}
       />
 
-      {/* شريط تقدم المراحل */}
-      <div className="mb-6 flex-shrink-0">
-        <ProjectProgressBar progress={project.progress || 0} />
-      </div>
+     {/* شريط تقدم المراحل الجديد */}
+      <ProjectProgressBar
+        progress={project.progress} 
+        stages={[
+          { label: "التحضير" },
+          { label: "التنفيذ المبدئي" },
+          { label: "المراجعة الأولية" },
+          { label: "المعالجة الأولية" },
+          { label: "المراجعة النهائية" },
+          { label: "المعالجة النهائية" },
+        ]}
+        segmentCount={120}    // تستطيع تغيير عدد الشرائح حسب عرضك
+        widthPct="85%"        // عرض الشريط نسبةً من اللوحة
+      />
 
       {/* المحتوى الرئيسي */}
       <div className="flex-1 min-h-0">
