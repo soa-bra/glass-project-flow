@@ -1,5 +1,5 @@
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
 export type ProjectPanelStage = "closed" | "sliding-in" | "open" | "sliding-out" | "changing-content";
 
@@ -11,8 +11,19 @@ export const useProjectPanelAnimation = () => {
   // To support crossfade when switching between projects while panel open
   const [displayedProjectId, setDisplayedProjectId] = useState<string | null>(null);
 
+  // To close with slide-out
+  const closePanel = useCallback(() => {
+    setStage("sliding-out");
+    setTimeout(() => {
+      setStage("closed");
+      setSelectedProjectId(null);
+      setDisplayedProjectId(null);
+    }, 500); // match animation duration
+  }, []);
+
   // When the panel is opened for a project
-  const handleProjectSelect = useCallback((projectId: string) => {
+  const handleProjectSelect = useCallback(
+    (projectId: string) => {
     // If panel is closed, start slide-in for the project
     if (stage === "closed" || !selectedProjectId) {
       setSelectedProjectId(projectId);
@@ -31,23 +42,14 @@ export const useProjectPanelAnimation = () => {
       // Clicking the same project closes the panel
       closePanel();
     }
-  }, [stage, selectedProjectId, displayedProjectId]);
-
-  // To close with slide-out
-  const closePanel = useCallback(() => {
-    setStage("sliding-out");
-    setTimeout(() => {
-      setStage("closed");
-      setSelectedProjectId(null);
-      setDisplayedProjectId(null);
-    }, 500); // match animation duration
-  }, []);
+  }, [stage, selectedProjectId, displayedProjectId, closePanel]);
 
   // Animation classes
   let operationsBoardClass = "";
   let projectsColumnClass = "";
-  let slidePanel = stage === "sliding-in" || stage === "open" || stage === "changing-content";
-  let slideOutPanel = stage === "sliding-out";
+  const slidePanel =
+    stage === "sliding-in" || stage === "open" || stage === "changing-content";
+  const slideOutPanel = stage === "sliding-out";
 
   // Operations board, projects column transitions based on open/collapsed/sidebar
   if (slidePanel) {

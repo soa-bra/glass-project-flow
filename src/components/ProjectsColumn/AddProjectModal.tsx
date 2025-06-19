@@ -23,7 +23,7 @@ import {
 interface AddProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onProjectAdded: (project: any) => void;
+  onProjectAdded: (project: ProjectData) => void;
 }
 
 interface ProjectData {
@@ -42,11 +42,11 @@ interface ProjectData {
     phone: string;
     email: string;
   };
-  tasks: any[];
-  partnerships: any[];
+  tasks: unknown[];
+  partnerships: unknown[];
   hasContract: boolean;
   contractValue: string;
-  contractPayments: any[];
+  contractPayments: unknown[];
 }
 
 export const AddProjectModal: React.FC<AddProjectModalProps> = ({
@@ -84,7 +84,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     'سارة النجار'
   ];
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: unknown) => {
     setProjectData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -195,7 +195,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     onClose();
   };
 
-  const addTask = (task: any) => {
+  const addTask = (task: unknown) => {
     setProjectData(prev => ({
       ...prev,
       tasks: [...prev.tasks, { ...task, id: Date.now() }]

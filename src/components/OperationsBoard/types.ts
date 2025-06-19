@@ -1,6 +1,6 @@
 
 export type TabData = {
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export interface OperationsBoardProps {

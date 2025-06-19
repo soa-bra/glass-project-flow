@@ -22,7 +22,7 @@ import {
 interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onTaskAdded: (task: any) => void;
+  onTaskAdded: (task: TaskData) => void;
 }
 
 interface TaskData {
