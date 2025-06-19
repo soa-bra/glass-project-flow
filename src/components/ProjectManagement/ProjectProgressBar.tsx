@@ -1,44 +1,63 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { motion } from 'framer-motion';
+
+interface Stage {
+  key: string;
+  label: string;
+  position: number; // value from 0 to 1, fraction along the bar
+}
 
 interface ProjectProgressBarProps {
   progress: number;
 }
 
 export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress }) => {
-  const stages = [
-    { name: 'التحضير', icon: '🔒' },
-    { name: 'التنفيذ المبدئي', icon: '⟳' },
-    { name: 'المراجعة الأولية', icon: '⟳' },
-    { name: 'المعالجة الأولية', icon: '⟳' },
-    { name: 'المراجعة النهائية', icon: '⟳' },
-    { name: 'المعالجة النهائية', icon: '✓' }
+  // تحديد المراحل
+  const stages: Stage[] = [
+    { key: 'preparation', label: 'التحضير', position: 0.1 },
+    { key: 'initial-implementation', label: 'التنفيذ المبدئي', position: 0.25 },
+    { key: 'initial-review', label: 'المراجعة الأولية', position: 0.4 },
+    { key: 'initial-processing', label: 'المعالجة الأولية', position: 0.55 },
+    { key: 'final-review', label: 'المراجعة النهائية', position: 0.75 },
+    { key: 'final-processing', label: 'المعالجة النهائية', position: 0.9 }
   ];
 
-  const getStageStatus = (index: number) => {
-    const stageProgress = (progress / 100) * stages.length;
-    if (stageProgress > index + 1) return 'completed';
-    if (stageProgress > index) return 'in-progress';
-    return 'pending';
+  // إعدادات الشرائح
+  const segments = 40;
+  const completion = progress / 100;
+  const litCount = Math.round(segments * completion);
+
+  // ألوان قوس قزح للشرائح المضيئة
+  const rainbow = useMemo(
+    () => [
+      '#FF3CAC',
+      '#784BA0', 
+      '#2B86C5',
+      '#22D9C3',
+      '#A5FF43',
+      '#FFEB3B',
+    ],
+    []
+  );
+
+  // مصفوفة الشرائح
+  const segmentArray = useMemo(
+    () => Array.from({ length: segments }, (_, i) => i),
+    [segments]
+  );
+
+  // تحديد المرحلة الحالية
+  const getCurrentStage = () => {
+    if (completion >= 0.9) return 'final-processing';
+    if (completion >= 0.75) return 'final-review';
+    if (completion >= 0.55) return 'initial-processing';
+    if (completion >= 0.4) return 'initial-review';
+    if (completion >= 0.25) return 'initial-implementation';
+    return 'preparation';
   };
 
-  const getStageColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-500';
-      case 'in-progress': return 'bg-gradient-to-r from-blue-400 to-purple-500';
-      case 'pending': return 'bg-gray-200';
-      default: return 'bg-gray-200';
-    }
-  };
-
-  const getIconColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'text-white bg-green-500';
-      case 'in-progress': return 'text-white bg-purple-500';
-      case 'pending': return 'text-gray-400 bg-gray-100';
-      default: return 'text-gray-400 bg-gray-100';
-    }
-  };
+  const currentStageKey = getCurrentStage();
 
   return (
     <div className="bg-white/40 backdrop-blur-[20px] rounded-3xl p-6 border border-white/20">
@@ -48,51 +67,109 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress
           مقياس مراحل تقدم المشروع
         </div>
         <div className="text-sm text-gray-600 font-arabic">
-          المهمة الحالية: المراجعة النهائية
+          المهمة الحالية: {stages.find(s => s.key === currentStageKey)?.label}
         </div>
       </div>
 
-      {/* شريط التقدم */}
-      <div className="relative">
-        {/* الخلفية */}
-        <div className="flex h-3 rounded-full overflow-hidden bg-gray-200">
-          {stages.map((stage, index) => {
-            const status = getStageStatus(index);
+      {/* شريط التقدم الجديد */}
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        height: 12,
+        margin: '2rem 0',
+        display: 'flex',
+        alignItems: 'center',
+      }}>
+        {/* شريط الشرائح */}
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          overflow: 'hidden',
+          borderRadius: 6,
+          backgroundColor: '#E0E0E0',
+          padding: 2,
+        }}>
+          {segmentArray.map(idx => {
+            const isLit = idx < litCount;
+            // اختيار اللون حسب فهرس الشريحة
+            const color = isLit
+              ? rainbow[Math.floor((idx / Math.max(litCount, 1)) * (rainbow.length - 1))]
+              : 'transparent';
+
             return (
-              <div
-                key={index}
-                className={`flex-1 ${getStageColor(status)} transition-all duration-500`}
-                style={{ animationDelay: `${index * 100}ms` }}
+              <motion.div
+                key={idx}
+                layout
+                initial={{ opacity: 0.2 }}
+                animate={{ opacity: isLit ? 1 : 0.2 }}
+                transition={{ duration: 0.3, delay: idx * 0.02 }}
+                style={{
+                  flex: 1,
+                  height: '100%',
+                  margin: '0 0.5px',
+                  background: color,
+                  borderRadius: 1,
+                }}
               />
             );
           })}
         </div>
 
-        {/* الأيقونات والتسميات */}
-        <div className="flex justify-between mt-4">
-          {stages.map((stage, index) => {
-            const status = getStageStatus(index);
-            return (
-              <div key={index} className="flex flex-col items-center flex-1">
-                {/* الأيقونة */}
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold mb-2 transition-all duration-500 ${getIconColor(status)}`}>
-                  {status === 'completed' ? '✓' : status === 'in-progress' ? '⟳' : '🔒'}
-                </div>
-                {/* التسمية */}
-                <div className="text-xs font-arabic text-gray-600 text-center">
-                  {stage.name}
-                </div>
+        {/* دوائر المراحل والتسميات */}
+        {stages.map(stage => {
+          const leftPerc = stage.position * 100;
+          const isCurrent = stage.key === currentStageKey;
+          const isCompleted = completion > stage.position;
+
+          return (
+            <div key={stage.key}
+              style={{
+                position: 'absolute',
+                left: `calc(${leftPerc}% - 16px)`,
+                top: -16,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                pointerEvents: 'none',
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0.5 }}
+                animate={{
+                  scale: isCurrent ? 1.3 : 1,
+                  opacity: isCurrent ? 1 : (isCompleted ? 0.8 : 0.5),
+                }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ${
+                  isCompleted 
+                    ? 'bg-green-500 text-white' 
+                    : isCurrent 
+                      ? 'bg-purple-500 text-white' 
+                      : 'bg-gray-100 text-gray-400'
+                }`}
+              >
+                {isCompleted ? '✓' : isCurrent ? '⟳' : '🔒'}
+              </motion.div>
+              
+              {/* التسمية */}
+              <div className="text-xs font-arabic text-gray-600 text-center mt-2 whitespace-nowrap">
+                {stage.label}
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* نسبة التقدم */}
-      <div className="mt-4 text-center">
-        <div className="text-lg font-bold text-gray-800 font-arabic">
+      <div className="mt-6 text-center">
+        <motion.div 
+          className="text-lg font-bold text-gray-800 font-arabic"
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', stiffness: 200 }}
+        >
           {Math.round(progress)}% مكتمل
-        </div>
+        </motion.div>
       </div>
     </div>
   );
