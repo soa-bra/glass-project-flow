@@ -1,86 +1,41 @@
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 
 export interface Stage {
-  key: string;
   label: string;
-  position: number; // من 0 إلى 1
+  /** position along 0–100% of the bar */
+  percent: number;
 }
 
 export interface ProjectProgressBarProps {
-  /** عدد الشرائح الكلية */
-  totalSegments?: number;
-  /** النسبة المكتملة بين 0 و 100 */
+  /** overall completion % (0–100) */
   progress: number;
-  /** قائمة المراحل (position من 0–1) */
+  /** how many little "LEDs" to draw */
+  totalSegments?: number;
+  /** the labeled milestones along the bar */
   stages?: Stage[];
-  /** مفتاح المرحلة الحالية */
-  currentStage?: string;
 }
 
 export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
-  totalSegments = 40,
   progress,
+  totalSegments = 80,
   stages = [
-    { key: 'preparation', label: 'التحضير', position: 0.1 },
-    { key: 'initial-implementation', label: 'التنفيذ المبدئي', position: 0.25 },
-    { key: 'initial-review', label: 'المراجعة الأولية', position: 0.4 },
-    { key: 'initial-processing', label: 'المعالجة الأولية', position: 0.55 },
-    { key: 'final-review', label: 'المراجعة النهائية', position: 0.75 },
-    { key: 'final-processing', label: 'المعالجة النهائية', position: 0.9 }
-  ],
-  currentStage
+    { label: 'التحضير', percent: 0 },
+    { label: 'التنفيذ المبدئي', percent: 20 },
+    { label: 'المراجعة الأولية', percent: 40 },
+    { label: 'المعالجة الأولية', percent: 60 },
+    { label: 'المراجعة النهائية', percent: 80 },
+    { label: 'المعالجة النهائية', percent: 100 },
+  ]
 }) => {
   // التأكد من أن النسبة في النطاق الصحيح
   const safeProgress = Math.max(0, Math.min(100, progress || 0));
   
-  // تحويل النسبة من 0-100 إلى 0-1
-  const completion = safeProgress / 100;
-  
-  // عدد الشرائح المضيئة
-  const litCount = Math.round(totalSegments * completion);
-
-  // لوحة ألوان الطيف المحسنة
-  const rainbow = useMemo(() => [
-    '#FF6B6B', // أحمر فاقع
-    '#4ECDC4', // تركواز
-    '#45B7D1', // أزرق
-    '#96CEB4', // أخضر فاتح
-    '#FFEAA7', // أصفر ذهبي
-    '#DDA0DD', // بنفسجي فاتح
-  ], []);
-
-  // مصفوفة الشرائح
-  const segmentArray = useMemo(
-    () => Array.from({ length: totalSegments }, (_, i) => i),
-    [totalSegments]
-  );
-
-  // تحديد المرحلة الحالية تلقائياً إذا لم يتم تمريرها
-  const getCurrentStage = () => {
-    if (currentStage) return currentStage;
-    
-    if (completion >= 0.9) return 'final-processing';
-    if (completion >= 0.75) return 'final-review';
-    if (completion >= 0.55) return 'initial-processing';
-    if (completion >= 0.4) return 'initial-review';
-    if (completion >= 0.25) return 'initial-implementation';
-    return 'preparation';
-  };
-
-  const activeStage = getCurrentStage();
-
-  // دالة لحساب لون الشريحة
-  const getSegmentColor = (segmentIndex: number) => {
-    if (segmentIndex >= litCount) return 'transparent';
-    
-    // حساب النسبة للشريحة الحالية
-    const ratio = segmentIndex / Math.max(litCount - 1, 1);
-    const colorIndex = Math.floor(ratio * (rainbow.length - 1));
-    
-    return rainbow[colorIndex] || rainbow[0];
-  };
+  // how many segments light up
+  const litCount = Math.round((safeProgress / 100) * totalSegments);
+  // width of each segment in percent
+  const segW = 100 / totalSegments;
 
   return (
     <div 
@@ -89,94 +44,89 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         background: 'rgba(255, 255, 255, 0.4)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
+        fontFamily: 'IBM Plex Sans Arabic, sans-serif'
       }}
     >
       {/* العنوان والوصف */}
       <div className="flex justify-between items-center mb-6">
-        <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm" style={{ fontFamily: 'IBM Plex Sans Arabic, sans-serif' }}>
+        <div 
+          className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm"
+          style={{ fontFamily: 'IBM Plex Sans Arabic, sans-serif' }}
+        >
           مقياس مراحل تقدم المشروع
         </div>
-        <div className="text-sm text-gray-600" style={{ fontFamily: 'IBM Plex Sans Arabic, sans-serif' }}>
-          المهمة الحالية: {stages.find(s => s.key === activeStage)?.label}
+        <div 
+          className="text-sm text-gray-600"
+          style={{ fontFamily: 'IBM Plex Sans Arabic, sans-serif' }}
+        >
+          المهمة الحالية: {stages.find(s => s.percent <= safeProgress && (stages.find(next => next.percent > safeProgress)?.percent || 101) > s.percent)?.label || stages[stages.length - 1]?.label}
         </div>
       </div>
 
       {/* شريط التقدم الجديد - LED Strip */}
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        height: 12,
-        margin: '2rem 0',
-        display: 'flex',
-        alignItems: 'center',
-      }}>
-        {/* الشريط الرئيسي */}
-        <div style={{
-          flex: 1,
-          display: 'flex',
-          overflow: 'hidden',
-          borderRadius: 6,
-          backgroundColor: '#E5E7EB',
-          padding: 2,
-          gap: '1px',
-        }}>
-          {segmentArray.map(idx => {
-            const isLit = idx < litCount;
-            const segmentColor = getSegmentColor(idx);
+      <div className="relative w-full py-8 select-none">
+        {/* the strips */}
+        <div className="relative flex h-3 w-full overflow-hidden rounded-full bg-gray-200 p-0.5">
+          {Array.from({ length: totalSegments }).map((_, i) => {
+            // decide on lit vs unlit
+            const isLit = i < litCount;
+            // generate a subtle rainbow gradient along the lit portion
+            const hue = 200 + Math.round((i / totalSegments) * 120); // from blue→green
+            const bgColor = isLit ? `hsl(${hue}, 70%, 50%)` : '#e0e0e0';
 
             return (
               <motion.div
-                key={idx}
-                layout
-                initial={{ opacity: 0.2, scale: 0.8 }}
+                key={i}
+                className="flex-shrink-0 h-full rounded-sm"
+                style={{
+                  width: `${segW}%`,
+                  background: bgColor,
+                  marginRight: i < totalSegments - 1 ? '1px' : '0'
+                }}
+                initial={{ opacity: 0.3, scale: 0.8 }}
                 animate={{ 
                   opacity: isLit ? 1 : 0.3,
-                  scale: isLit ? 1 : 0.9,
-                  backgroundColor: segmentColor
+                  scale: isLit ? 1 : 0.9
                 }}
                 transition={{ 
-                  duration: 0.4, 
-                  delay: idx * 0.015,
+                  delay: i * 0.005, 
+                  duration: 0.2,
                   type: 'spring',
                   stiffness: 300,
                   damping: 25
-                }}
-                style={{
-                  flex: 1,
-                  height: '100%',
-                  borderRadius: 2,
-                  backgroundColor: segmentColor,
-                  minWidth: '2px',
                 }}
               />
             );
           })}
         </div>
 
-        {/* دوائر المراحل والتسميات */}
-        {stages.map(stage => {
-          const leftPerc = stage.position * 100;
-          const isCurrent = stage.key === activeStage;
-          const isCompleted = completion > stage.position;
-
+        {/* the milestone circles */}
+        {stages.map(({ label, percent }) => {
+          const reached = percent <= safeProgress;
+          const isCurrent = percent > safeProgress && stages.filter(s => s.percent <= safeProgress).length === stages.indexOf(stages.find(s => s.percent === percent)!);
+          
           return (
-            <div key={stage.key}
+            <div
+              key={label}
+              className="absolute top-0"
               style={{
-                position: 'absolute',
-                left: `calc(${leftPerc}% - 16px)`,
-                top: -20,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                pointerEvents: 'none',
-                zIndex: 10,
+                left: `${percent}%`,
+                transform: 'translateX(-50%)',
+                top: '-12px'
               }}
             >
               <motion.div
+                className={`flex h-8 w-8 items-center justify-center rounded-full border-2 ${
+                  reached
+                    ? 'bg-green-500 border-green-500 text-white shadow-lg'
+                    : isCurrent
+                      ? 'bg-blue-500 border-blue-500 text-white shadow-lg'
+                      : 'bg-white border-gray-300 text-gray-500'
+                }`}
                 initial={{ scale: 0.8, opacity: 0.5 }}
                 animate={{
                   scale: isCurrent ? 1.4 : 1.1,
-                  opacity: isCurrent ? 1 : (isCompleted ? 0.9 : 0.6),
+                  opacity: isCurrent ? 1 : (reached ? 0.9 : 0.6),
                 }}
                 transition={{ 
                   type: 'spring', 
@@ -184,18 +134,11 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
                   damping: 25,
                   duration: 0.5
                 }}
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ${
-                  isCompleted 
-                    ? 'bg-green-500 text-white shadow-lg' 
-                    : isCurrent 
-                      ? 'bg-blue-500 text-white shadow-lg' 
-                      : 'bg-gray-300 text-gray-500'
-                }`}
                 style={{
-                  boxShadow: isCurrent ? '0 4px 12px rgba(59, 130, 246, 0.4)' : isCompleted ? '0 4px 12px rgba(34, 197, 94, 0.4)' : 'none'
+                  boxShadow: isCurrent ? '0 4px 12px rgba(59, 130, 246, 0.4)' : reached ? '0 4px 12px rgba(34, 197, 94, 0.4)' : 'none'
                 }}
               >
-                {isCompleted ? '✓' : isCurrent ? '●' : '○'}
+                {reached ? '✓' : isCurrent ? '●' : '○'}
               </motion.div>
               
               {/* التسمية */}
@@ -209,7 +152,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
                   fontWeight: '500'
                 }}
               >
-                {stage.label}
+                {label}
               </div>
             </div>
           );
