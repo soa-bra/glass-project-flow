@@ -1,166 +1,132 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-export interface Stage {
+
+interface Stage {
   label: string;
-  /** position along 0–100% of the bar */
-  percent: number;
 }
-export interface ProjectProgressBarProps {
-  /** overall completion % (0–100) */
+
+interface ProjectProgressBarProps {
+  /** نسبة التقدم من 0 إلى 100 */
   progress: number;
-  /** how many little "LEDs" to draw */
-  totalSegments?: number;
-  /** the labeled milestones along the bar */
-  stages?: Stage[];
+  /** مصفوفة المراحل بترتيبها */
+  stages: Stage[];
+  /** عدد الشرائح الكلي في الشريط */
+  segmentCount?: number;
+  /** طول الشريط كنسبة من الحاوية */
+  widthPct?: string;
 }
+
 export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   progress,
-  totalSegments = 100,
-  stages = [{
-    label: 'التحضير',
-    percent: 0
-  }, {
-    label: 'التنفيذ المبدئي',
-    percent: 25
-  }, {
-    label: 'المراجعة الأولية',
-    percent: 50
-  }, {
-    label: 'التنفيذ البديل',
-    percent: 75
-  }, {
-    label: 'المعالجة النهائية',
-    percent: 100
-  }]
+  stages,
+  segmentCount = 100,
+  widthPct = '80%',
 }) => {
-  // التأكد من أن النسبة في النطاق الصحيح
-  const safeProgress = Math.max(0, Math.min(100, progress || 0));
+  // عدد الشرائح المضيئة بناءً على التقدم
+  const litCount = Math.round((segmentCount * progress) / 100);
+  // نحضّر مصفوفة الشرائح (0 .. segmentCount-1)
+  const segments = Array.from({ length: segmentCount }, (_, i) => i);
+  // شريحة واحدة تحتل نسبة من العرض = 100% / segmentCount
+  const segmentWidthPct = 100 / segmentCount;
 
-  // how many segments light up
-  const litCount = Math.round(safeProgress / 100 * totalSegments);
+  // عدد الفجوات بين المراحل
+  const stageCount = stages.length;
+  // مسافة نقطة المرحلة كنسبة من الشريط
+  const getStageLeft = (index: number) =>
+    (index / (stageCount - 1)) * 100;
 
-  // Generate gradient colors for different sections
-  const getSegmentColor = (index: number, isLit: boolean) => {
-    if (!isLit) return '#e5e7eb'; // gray for unlit segments
-
-    const ratio = index / totalSegments;
-    if (ratio < 0.25) return '#ef4444'; // red
-    if (ratio < 0.5) return '#f97316'; // orange  
-    if (ratio < 0.75) return '#3b82f6'; // blue
-    return '#22c55e'; // green
-  };
-  return <div style={{
-    background: 'rgba(255, 255, 255, 0.4)',
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    fontFamily: 'IBM Plex Sans Arabic, sans-serif'
-  }} className="rounded-3xl p-6 bg-transparent">
-      {/* العنوان */}
-      <div className="flex justify-between items-center mb-8">
-        <div className="bg-green-100 text-green-800 px-6 py-3 rounded-full text-base font-medium" style={{
-        fontFamily: 'IBM Plex Sans Arabic, sans-serif'
-      }}>
-          مقياس مراحل تقدم للمشروع
-        </div>
-        <div className="text-base text-gray-700 font-medium" style={{
-        fontFamily: 'IBM Plex Sans Arabic, sans-serif'
-      }}>
-          المهمة الحالية: تطوير سوبرا
+  return (
+    <div className="relative select-none p-6 bg-white/60 backdrop-blur-lg rounded-2xl">
+      {/* عنوان المقياس */}
+      <div className="absolute top-4 right-4">
+        <div className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
+          مقياس مراحل تقدم المشروع
         </div>
       </div>
 
-      {/* شريط التقدم الرئيسي */}
-      <div className="relative w-full select-none py-0 mx-0 px-0 my-0">
-        {/* الخط الأساسي للشريط */}
-        <div className="relative flex h-4 w-full overflow-hidden rounded-full bg-gray-200 border border-gray-300">
-          {Array.from({
-          length: totalSegments
-        }).map((_, i) => {
-          const isLit = i < litCount;
-          const segmentColor = getSegmentColor(i, isLit);
-          const segmentWidth = 100 / totalSegments;
-          return <motion.div key={i} className="flex-shrink-0 h-full" style={{
-            width: `${segmentWidth}%`,
-            background: segmentColor,
-            borderRight: i < totalSegments - 1 ? '1px solid rgba(255,255,255,0.3)' : 'none'
-          }} initial={{
-            opacity: 0.3
-          }} animate={{
-            opacity: isLit ? 1 : 0.3
-          }} transition={{
-            delay: i * 0.002,
-            duration: 0.3
-          }} />;
-        })}
+      {/* وصف المهمة الحالية */}
+      <div className="absolute top-4 left-4 text-gray-700 text-sm">
+        المهمة الحالية:{" "}
+        <span className="font-semibold">
+          {stages[Math.floor((progress / 100) * (stageCount - 1))].label}
+        </span>
+      </div>
+
+      {/* الشرائح */}
+      <div className="mx-auto" style={{ width: widthPct }}>
+        <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+          {segments.map((idx) => {
+            const isLit = idx < litCount;
+            // حساب لون الطيف
+            const hue = Math.round((360 * idx) / segmentCount);
+            const color = `hsl(${hue}, 70%, 50%)`;
+
+            return (
+              <motion.div
+                key={idx}
+                className="absolute top-0 bottom-0"
+                style={{
+                  left: `${idx * segmentWidthPct}%`,
+                  width: `${segmentWidthPct}%`,
+                  backgroundColor: isLit ? color : undefined,
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isLit ? 1 : 0 }}
+                transition={{ duration: 0.2 }}
+              />
+            );
+          })}
         </div>
 
-        {/* دوائر المراحل */}
-        {stages.map(({
-        label,
-        percent
-      }, stageIndex) => {
-        const isReached = percent <= safeProgress;
-        const isCurrent = !isReached && stageIndex > 0 && stages[stageIndex - 1].percent <= safeProgress;
-        return <div key={label} className="absolute" style={{
-          left: `${percent}%`,
-          transform: 'translateX(-50%)',
-          top: '-8px'
-        }}>
-              {/* الدائرة */}
-              <motion.div className={`flex h-8 w-8 items-center justify-center rounded-full border-3 ${isReached ? 'bg-white border-gray-400 text-gray-700' : isCurrent ? 'bg-white border-gray-400 text-gray-700' : 'bg-white border-gray-300 text-gray-400'}`} initial={{
-            scale: 0.8
-          }} animate={{
-            scale: 1
-          }} transition={{
-            type: 'spring',
-            stiffness: 300,
-            damping: 25,
-            delay: stageIndex * 0.1
-          }} style={{
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-            fontSize: '10px',
-            fontWeight: 'bold'
-          }}>
-                {isReached ? '○' : isCurrent ? '○' : '○'}
-              </motion.div>
-              
-              {/* التسمية */}
-              <div className="absolute top-12 left-1/2 transform -translate-x-1/2 text-xs text-gray-700 text-center whitespace-nowrap px-3 py-1 rounded-md" style={{
-            fontFamily: 'IBM Plex Sans Arabic, sans-serif',
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(10px)',
-            fontSize: '12px',
-            fontWeight: '500',
-            border: '1px solid rgba(0,0,0,0.1)'
-          }}>
-                {label}
+        {/* علامات المراحل */}
+        <div
+          className="absolute top-0 left-0 flex justify-between"
+          style={{ width: widthPct }}
+        >
+          {stages.map((stage, i) => {
+            const reached = progress >= (i / (stageCount - 1)) * 100;
+            return (
+              <div
+                key={i}
+                className="flex flex-col items-center"
+                style={{
+                  position: 'absolute',
+                  left: `${getStageLeft(i)}%`,
+                  transform: 'translateX(-50%)',
+                }}
+              >
+                <motion.div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                    reached
+                      ? 'bg-green-500 text-white'
+                      : 'bg-white border-2 border-gray-300'
+                  }`}
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: reached ? 1 : 0.8 }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                >
+                  {reached && '✓'}
+                </motion.div>
+                <div className="mt-2 px-2 py-1 bg-white rounded-md text-xs text-gray-700 whitespace-nowrap">
+                  {stage.label}
+                </div>
               </div>
-            </div>;
-      })}
-      </div>
-
-      {/* نسبة التقدم */}
-      <div className="mt-8 text-center">
-        <motion.div className="text-2xl font-bold text-gray-800" style={{
-        fontFamily: 'IBM Plex Sans Arabic, sans-serif'
-      }} initial={{
-        scale: 0.9,
-        opacity: 0.7
-      }} animate={{
-        scale: 1,
-        opacity: 1
-      }} transition={{
-        type: 'spring',
-        stiffness: 200,
-        duration: 0.6
-      }}>
-          {Math.round(safeProgress)}% مكتمل
-        </motion.div>
-        <div className="text-sm text-gray-600 mt-2" style={{
-        fontFamily: 'IBM Plex Sans Arabic, sans-serif'
-      }}>
-          {litCount} من {totalSegments} مهمة مكتملة
+            );
+          })}
         </div>
       </div>
-    </div>;
+
+      {/* نسبة الإكمال */}
+      <div className="mt-8 text-center">
+        <motion.div
+          className="text-2xl font-bold text-gray-800"
+          initial={{ scale: 0.9, opacity: 0.7 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+        >
+          {Math.round(progress)}% مكتمل
+        </motion.div>
+      </div>
+    </div>
+  );
 };
