@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react';.٠٠ 
 import { motion } from 'framer-motion';
 
 interface Stage {
@@ -28,6 +28,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   const segments = Array.from({ length: segmentCount }, (_, i) => i);
   // عرض كل شريحة كنسبة من الشريط
   const segmentWidthPct = 100 / segmentCount;
+
   // عدد المراحل
   const stageCount = stages.length;
   // لحساب موقع كل مرحلة على الشريط (0–100%)
