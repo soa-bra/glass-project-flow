@@ -6,7 +6,7 @@ interface Stage {
 }
 
 interface ProjectProgressBarProps {
-  /** نسبة التقدم من 0 إلى 100 */
+  /** نسبة التقدم 0–100 */
   progress: number;
   /** مصفوفة المراحل بترتيبها */
   stages: Stage[];
@@ -22,16 +22,16 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   segmentCount = 100,
   widthPct = '80%',
 }) => {
-  // عدد الشرائح المضيئة بناءً على التقدم
+  // عدد الشرائح "المضيئة" بناءً على التقدم
   const litCount = Math.round((segmentCount * progress) / 100);
-  // نحضّر مصفوفة الشرائح (0 .. segmentCount-1)
+  // مصفوفة الشرائح 0..segmentCount-1
   const segments = Array.from({ length: segmentCount }, (_, i) => i);
-  // شريحة واحدة تحتل نسبة من العرض = 100% / segmentCount
+  // عرض كل شريحة كنسبة من الشريط
   const segmentWidthPct = 100 / segmentCount;
 
-  // عدد الفجوات بين المراحل
+  // عدد المراحل
   const stageCount = stages.length;
-  // مسافة نقطة المرحلة كنسبة من الشريط
+  // لحساب موقع كل مرحلة على الشريط (0–100%)
   const getStageLeft = (index: number) =>
     (index / (stageCount - 1)) * 100;
 
@@ -44,20 +44,21 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         </div>
       </div>
 
-      {/* وصف المهمة الحالية */}
+      {/* المهمة الحالية */}
       <div className="absolute top-4 left-4 text-gray-700 text-sm">
-        المهمة الحالية:{" "}
+        المهمة الحالية:{' '}
         <span className="font-semibold">
-          {stages[Math.floor((progress / 100) * (stageCount - 1))].label}
+          {stages[
+            Math.floor((progress / 100) * (stageCount - 1))
+          ].label}
         </span>
       </div>
 
-      {/* الشرائح */}
+      {/* شريط الشرائح */}
       <div className="mx-auto" style={{ width: widthPct }}>
         <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
           {segments.map((idx) => {
             const isLit = idx < litCount;
-            // حساب لون الطيف
             const hue = Math.round((360 * idx) / segmentCount);
             const color = `hsl(${hue}, 70%, 50%)`;
 
@@ -78,7 +79,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
           })}
         </div>
 
-        {/* علامات المراحل */}
+        {/* دوائر المراحل مع التسمية */}
         <div
           className="absolute top-0 left-0 flex justify-between"
           style={{ width: widthPct }}
@@ -103,7 +104,11 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
                   }`}
                   initial={{ scale: 0.8 }}
                   animate={{ scale: reached ? 1 : 0.8 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 200,
+                    damping: 20,
+                  }}
                 >
                   {reached && '✓'}
                 </motion.div>
@@ -116,13 +121,17 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         </div>
       </div>
 
-      {/* نسبة الإكمال */}
+      {/* نسبة الإكمال المركزية */}
       <div className="mt-8 text-center">
         <motion.div
           className="text-2xl font-bold text-gray-800"
           initial={{ scale: 0.9, opacity: 0.7 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+          transition={{
+            type: 'spring',
+            stiffness: 200,
+            damping: 20,
+          }}
         >
           {Math.round(progress)}% مكتمل
         </motion.div>
