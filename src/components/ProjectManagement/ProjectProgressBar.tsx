@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; 
 import { motion } from 'framer-motion';
 
 interface Stage {
@@ -28,6 +28,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   const segments = Array.from({ length: segmentCount }, (_, i) => i);
   // عرض كل شريحة كنسبة من الشريط
   const segmentWidthPct = 100 / segmentCount;
+
   // عدد المراحل
   const stageCount = stages.length;
   // لحساب موقع كل مرحلة على الشريط (0–100%)
@@ -53,7 +54,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         </span>
       </div>
 
-      {/* شريط الشرائح */}
+      {/* شريط الشرائح */} 
       <div className="mx-auto" style={{ width: widthPct }}>
         <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
           {segments.map((idx) => {
