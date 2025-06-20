@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react';.٠٠ 
 import { motion } from 'framer-motion';
 
 interface Stage {
@@ -61,7 +61,6 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
             const isLit = idx < litCount;
             const hue = Math.round((360 * idx) / segmentCount);
             const color = `hsl(${hue}, 70%, 50%)`;
-
             return (
               <motion.div
                 key={idx}
@@ -85,7 +84,8 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
           style={{ width: widthPct }}
         >
           {stages.map((stage, i) => {
-            const reached = progress >= (i / (stageCount - 1)) * 100;
+            const reached =
+              progress >= (i / (stageCount - 1)) * 100;
             return (
               <div
                 key={i}
