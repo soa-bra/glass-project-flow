@@ -3,26 +3,17 @@ import { HiPlus, HiStar, HiArrowLeft } from 'react-icons/hi';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import TaskCard from './TaskCard';
 
-const tasks = [
   {
     id: 1,
     title: 'تصميم الواجهة',
     description: 'تطوير موقع سوبرا',
     dueDate: '28 May',
-    owner: 'د. أسامة',
-    members: '05 أعضاء',
-    status: 'قيد التنفيذ',
-    priority: 'عاجل غير مهم',
   },
   {
     id: 2,
     title: 'كتابة الكود',
     description: 'تطوير موقع سوبرا',
-    dueDate: '29 May',
-    owner: 'د. أسامة',
-    members: 'عضو',
-    status: 'قيد التنفيذ',
-    priority: 'عاجل مهم',
+    dueDate: '29 May'
   },
 ];
 

@@ -19,6 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import type { ProjectData } from '@/types';
 
 interface AddProjectModalProps {
   isOpen: boolean;
@@ -26,14 +27,10 @@ interface AddProjectModalProps {
   onProjectAdded: (project: ProjectData) => void;
 }
 
-interface ProjectData {
-  name: string;
-  description: string;
+interface ProjectFormData extends ProjectData {
   startDate: string;
   endDate: string;
   manager: string;
-  team: string[];
-  budget: string;
   clientType: 'internal' | 'external';
   clientData?: {
     name: string;
@@ -49,6 +46,7 @@ interface ProjectData {
   contractPayments: unknown[];
 }
 
+
 export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   isOpen,
   onClose,
@@ -59,7 +57,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   
-  const [projectData, setProjectData] = useState<ProjectData>({
+  const [projectData, setProjectData] = useState<ProjectFormData>({
     name: '',
     description: '',
     startDate: '',
