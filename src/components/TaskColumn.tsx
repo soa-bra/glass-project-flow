@@ -2,28 +2,18 @@ import React, { useState } from 'react';
 import { HiPlus, HiStar, HiArrowLeft } from 'react-icons/hi';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import TaskCard from './TaskCard';
-import type { TaskData } from '@/types';
 
-const tasks: TaskData[] = [
   {
     id: 1,
     title: 'تصميم الواجهة',
     description: 'تطوير موقع سوبرا',
     dueDate: '28 May',
-    assignee: 'د. أسامة',
-    priority: 'medium',
-    stage: 'development',
-    attachments: [],
   },
   {
     id: 2,
     title: 'كتابة الكود',
     description: 'تطوير موقع سوبرا',
-    dueDate: '29 May',
-    assignee: 'د. أسامة',
-    priority: 'high',
-    stage: 'planning',
-    attachments: [],
+    dueDate: '29 May'
   },
 ];
 
