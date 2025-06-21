@@ -18,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import type { TaskData } from '@/types';
 
 interface AddTaskModalProps {
   isOpen: boolean;
@@ -25,15 +26,6 @@ interface AddTaskModalProps {
   onTaskAdded: (task: TaskData) => void;
 }
 
-interface TaskData {
-  title: string;
-  description: string;
-  dueDate: string;
-  assignee: string;
-  priority: string;
-  stage: string;
-  attachments: string[];
-}
 
 export const AddTaskModal: React.FC<AddTaskModalProps> = ({
   isOpen,
