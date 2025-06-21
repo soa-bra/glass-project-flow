@@ -37,10 +37,10 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
 
   return (
     <div className="relative select-none p-6 bg-white/60 backdrop-blur-lg rounded-2xl">
-      {/* عنوان المقياس */}
+      {/* عنوان الشريط */}
       <div className="absolute top-4 right-4">
         <div className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
-          مقياس مراحل تقدم المشروع
+          تقدم المشروع
         </div>
       </div>
 
@@ -78,39 +78,39 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
           })}
         </div>
 
-        {/* دوائر المراحل مع التسمية */}
+        {/* دوائر المراحل */}
         <div
-          className="absolute top-0 left-0 flex justify-between"
+          className="absolute top-1/2 left-0 -translate-y-1/2"
           style={{ width: widthPct }}
         >
           {stages.map((stage, i) => {
-            const reached =
-              progress >= (i / (stageCount - 1)) * 100;
+            const reached = progress >= (i / (stageCount - 1)) * 100;
             return (
               <div
                 key={i}
-                className="flex flex-col items-center"
+                className="absolute flex flex-col items-center"
                 style={{
-                  position: 'absolute',
                   left: `${getStageLeft(i)}%`,
                   transform: 'translateX(-50%)',
                 }}
               >
                 <motion.div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                    reached
-                      ? 'bg-green-500 text-white'
-                      : 'bg-white border-2 border-gray-300'
-                  }`}
-                  initial={{ scale: 0.8 }}
-                  animate={{ scale: reached ? 1 : 0.8 }}
-                  transition={{
-                    type: 'spring',
-                    stiffness: 200,
-                    damping: 20,
-                  }}
+                  className={`
+                    w-10 h-10 rounded-full flex items-center justify-center 
+                    border border-white/30 backdrop-blur-sm 
+                    ${reached ? 'bg-green-500 text-white' : 'bg-white/20'}
+                  `}
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 20 }}
                 >
-                  {reached && '✓'}
+                  {reached ? (
+                    <div className="w-4 h-4 rounded-full bg-white text-green-600 font-bold flex items-center justify-center text-xs">
+                      ✓
+                    </div>
+                  ) : (
+                    <div className="w-3 h-3 rounded-full bg-black/80" />
+                  )}
                 </motion.div>
                 <div className="mt-2 px-2 py-1 bg-white rounded-md text-xs text-gray-700 whitespace-nowrap">
                   {stage.label}
@@ -121,7 +121,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         </div>
       </div>
 
-      {/* نسبة الإكمال المركزية */}
+      {/* نسبة الإنجاز */}
       <div className="mt-8 text-center">
         <motion.div
           className="text-2xl font-bold text-gray-800"
