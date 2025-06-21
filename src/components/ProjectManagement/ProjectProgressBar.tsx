@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+// ProjectProgressBar.tsx
+
+import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface Stage {
@@ -6,96 +8,120 @@ interface Stage {
 }
 
 interface ProjectProgressBarProps {
-  progress: number; // النسبة من 0 إلى 100
+  progress: number; // من 0 إلى 100
   stages: Stage[];
 }
 
 export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   progress,
-  stages
+  stages,
 }) => {
-  const barRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [segmentCount, setSegmentCount] = useState(100);
 
-  // مراقبة حجم الشريط لتحديث عدد الشرائح تلقائيًا
   useEffect(() => {
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const width = entry.contentRect.width;
-        const approx = Math.floor(width / 5); // كل شريحة 3px + 2px مسافة
-        setSegmentCount(approx);
-      }
-    });
-
-    if (barRef.current) observer.observe(barRef.current);
-
-    return () => {
-      if (barRef.current) observer.unobserve(barRef.current);
+    const updateCount = () => {
+      const containerWidth = containerRef.current?.offsetWidth || 800;
+      const segmentWidth = 3 + 3; // عرض الشريحة + المسافة
+      const count = Math.floor(containerWidth * 0.8 / segmentWidth);
+      setSegmentCount(count);
     };
+
+    updateCount();
+    const resizeObserver = new ResizeObserver(updateCount);
+    if (containerRef.current) resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
   }, []);
 
   const litCount = Math.round((segmentCount * progress) / 100);
   const segments = Array.from({ length: segmentCount }, (_, i) => i);
   const segmentWidthPct = 100 / segmentCount;
+  const segmentHeight = 25;
+  const segmentGap = 3;
 
   const getStageLeft = (index: number) =>
-    (index / (stages.length - 1)) * 100;
+    ((index / (stages.length - 1)) * (segmentCount - 2) + 1) * segmentWidthPct;
 
   return (
-    <div className="relative w-full p-6 overflow-visible">
-      {/* فقّاعة تقدم المشروع */}
-      <div className="absolute top-0 right-0 z-10 translate-x-[50%] -translate-y-2">
-        <div className="bg-[#B9F3A8] text-black text-sm font-semibold px-4 py-2 rounded-full shadow">
-          تقدم المشروع
-        </div>
-      </div>
+    <div ref={containerRef} className="p-6">
+      <div className="relative w-full h-[80px] flex items-center justify-center">
 
-      {/* الشريط نفسه */}
-      <div ref={barRef} className="relative mx-auto" style={{ width: '80%' }}>
-        {/* الشرائح */}
-        <div className="flex items-center relative overflow-visible h-[25px]">
+        {/* الشريط الرئيسي */}
+        <div className="w-[80%] h-[25px] flex items-center relative overflow-visible">
           {segments.map((idx) => {
             const isLit = idx < litCount;
-            const hue = Math.round((360 * idx) / segmentCount);
-            const color = `hsl(${hue}, 70%, 50%)`;
+            const isStaticLit = idx === 0 || idx === 1;
+            const baseColor = isStaticLit
+              ? '#B9F3A8'
+              : isLit
+              ? `hsl(${Math.round((idx / segmentCount) * 360)}, 70%, 60%)`
+              : 'transparent';
 
             return (
               <motion.div
                 key={idx}
-                className="rounded-[1px] mr-[2px] last:mr-0"
+                className="rounded-sm"
                 style={{
-                  height: '25px',
-                  width: '3px',
-                  backgroundColor: isLit ? color : '#e5e7eb',
-                  opacity: isLit ? 1 : 0.3,
+                  height: segmentHeight,
+                  width: 3,
+                  marginRight: idx === segmentCount - 1 ? 0 : segmentGap,
+                  backgroundColor: baseColor,
+                  boxShadow: isLit ? '0 0 6px rgba(0,0,0,0.1)' : 'none',
+                  transition: 'background-color 0.2s ease',
                 }}
               />
             );
           })}
+
+          {/* الدوائر الزجاجية */}
+          {stages.map((stage, i) => {
+            const stageProgress = (i / (stages.length - 1)) * 100;
+            const reached = progress >= stageProgress;
+            const left = getStageLeft(i);
+
+            return (
+              <div
+                key={i}
+                className="absolute"
+                style={{
+                  left: `${left}%`,
+                  transform: 'translate(-50%, -50%)',
+                  top: '-25px',
+                }}
+              >
+                <div
+                  className={`w-[40px] h-[40px] rounded-full flex items-center justify-center text-black ${
+                    reached ? 'bg-[#B9F3A8]' : 'bg-[#ffffff20] border border-[#B9F3A8]'
+                  }`}
+                  style={{
+                    backdropFilter: 'blur(4px)',
+                    WebkitBackdropFilter: 'blur(4px)',
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                  }}
+                >
+                  {reached ? '✓' : ''}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* الدوائر الزجاجية */}
-        {stages.map((stage, i) => {
-          const reached = progress >= (i / (stages.length - 1)) * 100;
-          return (
-            <div
-              key={i}
-              className="absolute top-1/2 -translate-y-1/2"
-              style={{ left: `${getStageLeft(i)}%`, transform: 'translate(-50%, -50%)' }}
-            >
-              <motion.div
-                className={`w-[40px] h-[40px] rounded-full flex items-center justify-center shadow-md ${
-                  reached ? 'bg-[#B9F3A8] text-black' : 'bg-white text-black border'
-                }`}
-              >
-                {reached ? '✓' : '●'}
-              </motion.div>
-              <div className="mt-1 text-center text-sm text-gray-700 font-medium whitespace-nowrap">
-                {stage.label}
-              </div>
+        {/* فقاعة تقدم المشروع */}
+        <div className="absolute right-[10%] top-[-70px]">
+          <div
+            className="rounded-full px-6 py-3 text-center shadow-md"
+            style={{
+              backgroundColor: '#B9F3A8',
+              minWidth: '160px',
+            }}
+          >
+            <div className="text-black font-bold text-sm">تقدم المشروع</div>
+            <div className="text-black font-light text-xs mt-1">
+              {stages[Math.floor((progress / 100) * (stages.length - 1))].label}
             </div>
-          );
-        })}
+          </div>
+        </div>
       </div>
     </div>
   );
