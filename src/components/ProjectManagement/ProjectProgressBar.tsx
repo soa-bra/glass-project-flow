@@ -49,9 +49,9 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({ progress
   const circleColor = '#B9F3A8';
 
   return (
-    <div className="relative w-full px-6 pt-10 pb-14">
+    <div className="relative w-full px-0 pt-10 pb-14">
       {/* العنوان والفقاعة */}
-      <div className="absolute right-6 top-0 bg-[#B9F3A8] text-black px-4 py-2 rounded-full text-sm font-bold shadow-md z-10">
+      <div className="absolute right-0 top-0 bg-[#B9F3A8] text-black px-0 py-0 rounded-full text-sm font-bold shadow-md z-10">
         <div>تقدم المشروع</div>
         <div className="text-xs font-light">{stages[currentStageIndex]?.label}</div>
       </div>
