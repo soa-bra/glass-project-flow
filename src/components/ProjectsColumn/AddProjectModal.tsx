@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -19,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import type { ProjectData } from '@/types';
+import type { ProjectData, TaskData } from '@/types';
 
 interface AddProjectModalProps {
   isOpen: boolean;
@@ -27,11 +28,19 @@ interface AddProjectModalProps {
   onProjectAdded: (project: ProjectData) => void;
 }
 
-interface ProjectFormData extends ProjectData {
+interface ContractPayment {
+  id: number;
+  amount: string;
+  date: string;
+}
+
+interface ProjectFormData extends Omit<ProjectData, 'id' | 'budget'> {
+  id?: number;
   startDate: string;
   endDate: string;
   manager: string;
   clientType: 'internal' | 'external';
+  budget: string;
   clientData?: {
     name: string;
     type: string;
@@ -39,13 +48,12 @@ interface ProjectFormData extends ProjectData {
     phone: string;
     email: string;
   };
-  tasks: unknown[];
+  tasks: TaskData[];
   partnerships: unknown[];
   hasContract: boolean;
   contractValue: string;
-  contractPayments: unknown[];
+  contractPayments: ContractPayment[];
 }
-
 
 export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   isOpen,
@@ -62,9 +70,13 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     description: '',
     startDate: '',
     endDate: '',
+    deadline: '',
     manager: '',
+    owner: '',
     team: [],
     budget: '',
+    status: 'info',
+    tasksCount: 0,
     clientType: 'internal',
     tasks: [],
     partnerships: [],
@@ -125,20 +137,16 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     if (!validateForm()) return;
 
     try {
-      const newProject = {
-        id: `project-${Date.now()}`,
-        title: projectData.name,
+      const newProject: ProjectData = {
+        id: Date.now(),
+        name: projectData.name,
         description: projectData.description,
         owner: projectData.manager,
-        value: projectData.budget || '0',
-        daysLeft: Math.ceil((new Date(projectData.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
+        deadline: projectData.endDate,
+        team: projectData.team,
+        status: 'info',
+        budget: Number(projectData.budget) || 0,
         tasksCount: projectData.tasks.length,
-        status: 'info' as const,
-        date: new Date().toLocaleDateString('ar-SA'),
-        isOverBudget: false,
-        hasOverdueTasks: false,
-        team: projectData.team.map(name => ({ name })),
-        progress: 0,
       };
 
       onProjectAdded(newProject);
@@ -165,9 +173,13 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
       description: '',
       startDate: '',
       endDate: '',
+      deadline: '',
       manager: '',
+      owner: '',
       team: [],
       budget: '',
+      status: 'info',
+      tasksCount: 0,
       clientType: 'internal',
       tasks: [],
       partnerships: [],
@@ -193,7 +205,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     onClose();
   };
 
-  const addTask = (task: unknown) => {
+  const addTask = (task: TaskData) => {
     setProjectData(prev => ({
       ...prev,
       tasks: [...prev.tasks, { ...task, id: Date.now() }]
@@ -213,7 +225,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   const removePayment = (id: number) => {
     setProjectData(prev => ({
       ...prev,
-      contractPayments: prev.contractPayments.filter(payment => payment.id !== id)
+      contractPayments: prev.contractPayments.filter((payment: ContractPayment) => payment.id !== id)
     }));
   };
 
@@ -561,7 +573,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
                           </div>
 
                           <div className="space-y-3">
-                            {projectData.contractPayments.map((payment) => (
+                            {projectData.contractPayments.map((payment: ContractPayment) => (
                               <div key={payment.id} className="grid grid-cols-3 gap-4 p-3 bg-white/10 rounded-lg">
                                 <Button
                                   type="button"
@@ -581,7 +593,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
                                     onChange={(e) => {
                                       setProjectData(prev => ({
                                         ...prev,
-                                        contractPayments: prev.contractPayments.map(p =>
+                                        contractPayments: prev.contractPayments.map((p: ContractPayment) =>
                                           p.id === payment.id ? { ...p, date: e.target.value } : p
                                         )
                                       }));
@@ -600,7 +612,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
                                     onChange={(e) => {
                                       setProjectData(prev => ({
                                         ...prev,
-                                        contractPayments: prev.contractPayments.map(p =>
+                                        contractPayments: prev.contractPayments.map((p: ContractPayment) =>
                                           p.id === payment.id ? { ...p, amount: e.target.value } : p
                                         )
                                       }));

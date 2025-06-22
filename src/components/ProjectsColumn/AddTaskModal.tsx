@@ -26,7 +26,6 @@ interface AddTaskModalProps {
   onTaskAdded: (task: TaskData) => void;
 }
 
-
 export const AddTaskModal: React.FC<AddTaskModalProps> = ({
   isOpen,
   onClose,
@@ -36,12 +35,13 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   
   const [taskData, setTaskData] = useState<TaskData>({
+    id: 0,
     title: '',
     description: '',
     dueDate: '',
     assignee: '',
-    priority: '',
-    stage: '',
+    priority: 'medium',
+    stage: 'planning',
     attachments: [],
   });
 
@@ -122,12 +122,13 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
 
   const resetForm = () => {
     setTaskData({
+      id: 0,
       title: '',
       description: '',
       dueDate: '',
       assignee: '',
-      priority: '',
-      stage: '',
+      priority: 'medium',
+      stage: 'planning',
       attachments: [],
     });
   };
@@ -225,7 +226,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="font-arabic text-right">الأولوية</Label>
-                <Select value={taskData.priority} onValueChange={(value) => handleInputChange('priority', value)}>
+                <Select value={taskData.priority} onValueChange={(value: 'high' | 'medium' | 'low') => setTaskData(prev => ({ ...prev, priority: value }))}>
                   <SelectTrigger className="text-right font-arabic">
                     <SelectValue placeholder="اختر الأولوية" />
                   </SelectTrigger>
@@ -241,7 +242,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
               
               <div className="space-y-2">
                 <Label className="font-arabic text-right">المرحلة</Label>
-                <Select value={taskData.stage} onValueChange={(value) => handleInputChange('stage', value)}>
+                <Select value={taskData.stage} onValueChange={(value: 'planning' | 'development' | 'testing' | 'review' | 'completed') => setTaskData(prev => ({ ...prev, stage: value }))}>
                   <SelectTrigger className="text-right font-arabic">
                     <SelectValue placeholder="اختر المرحلة" />
                   </SelectTrigger>

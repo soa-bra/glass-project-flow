@@ -4,6 +4,7 @@ import ProjectCard from './ProjectCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import React, { useState } from 'react';
 import { Project } from '@/types/project';
+import { ProjectData } from '@/types';
 import { AddProjectModal } from './ProjectsColumn/AddProjectModal';
 
 type ProjectsColumnProps = {
@@ -20,8 +21,23 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
 
-  const handleProjectAdded = (newProject: Project) => {
-    setProjects(prev => [newProject, ...prev]);
+  const handleProjectAdded = (newProject: ProjectData) => {
+    const projectToAdd: Project = {
+      id: newProject.id.toString(),
+      title: newProject.name,
+      description: newProject.description,
+      owner: newProject.owner,
+      value: newProject.budget.toString(),
+      daysLeft: Math.ceil((new Date(newProject.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
+      tasksCount: newProject.tasksCount,
+      status: newProject.status,
+      date: new Date().toLocaleDateString('ar-SA'),
+      isOverBudget: false,
+      hasOverdueTasks: false,
+      team: newProject.team.map(name => ({ name })),
+      progress: 0,
+    };
+    setProjects(prev => [projectToAdd, ...prev]);
   };
 
   return (
@@ -46,7 +62,17 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
               {projects.map(project => (
                 <ProjectCard
                   key={project.id}
-                  {...project}
+                  id={Number(project.id)}
+                  name={project.title}
+                  description={project.description}
+                  owner={project.owner}
+                  deadline={project.date}
+                  team={project.team?.map(t => t.name) || []}
+                  status={project.status}
+                  budget={Number(project.value)}
+                  tasksCount={project.tasksCount}
+                  daysLeft={project.daysLeft}
+                  value={project.value}
                   isSelected={selectedProjectId === project.id}
                   isOtherSelected={selectedProjectId !== undefined && selectedProjectId !== null && selectedProjectId !== project.id}
                   onProjectSelect={onProjectSelect}
