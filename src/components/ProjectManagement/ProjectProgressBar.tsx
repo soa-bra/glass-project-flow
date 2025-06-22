@@ -1,103 +1,148 @@
+import React, { useEffect, useRef, useState } from 'react';
 
-import React from 'react';
 interface Stage {
   label: string;
 }
+
 interface ProjectProgressBarProps {
-  progress: number; // نسبة التقدم 0-100
+  progress: number; // نسبة التقدم من 0 إلى 100
   stages: Stage[];
 }
+
 export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   progress,
   stages
 }) => {
+  const barRef = useRef<HTMLDivElement>(null);
+  const [segmentCount, setSegmentCount] = useState(100);
+  const segmentWidthPx = 3;
+  const segmentGapPx = 3;
   const segmentHeight = 25;
-  const segmentWidth = 3;
-  const segmentGap = 3;
-  const segmentCount = Math.floor(window.innerWidth * 0.8 / (segmentWidth + segmentGap));
-  const litCount = Math.round(progress / 100 * segmentCount);
-  const segments = Array.from({
-    length: segmentCount
-  }, (_, i) => i);
-  const stageCount = stages.length;
-  const circleSize = segmentHeight * 1.3 * 1.2; // زيادة بنسبة 20%
+
+  useEffect(() => {
+    const calculateSegments = () => {
+      if (barRef.current) {
+        const totalWidth = barRef.current.offsetWidth;
+        const count = Math.floor(totalWidth / (segmentWidthPx + segmentGapPx));
+        setSegmentCount(count);
+      }
+    };
+    calculateSegments();
+    const resizeObserver = new ResizeObserver(calculateSegments);
+    if (barRef.current) resizeObserver.observe(barRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  const litCount = Math.round(segmentCount * progress / 100);
+  const segments = Array.from({ length: segmentCount }, (_, i) => i);
+  const circleSize = segmentHeight * 1.3 * 1.2; // أكبر 20٪ من الحجم العادي
   const bubbleSize = circleSize * 1.2;
-  const getStageLeft = (index: number) => (stageCount - 1 - index) / (stageCount - 1) * 100;
-  
-  return <div style={{
-    background: 'transparent'
-  }} className="relative w-full flex flex-col items-start font-arabic py-0 px-0">
-      {/* الفقاعة */}
-      <div className="absolute right-0 -top-10 z-10 text-black text-right" style={{
-      background: 'linear-gradient(135deg, #B9F3A8, #d4ffd0)',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-      padding: '12px 16px',
-      borderRadius: '28px',
-      minWidth: '160px'
-    }}>
+
+  const currentStageIndex = Math.floor(progress / 100 * (stages.length - 1));
+  const reversedStages = [...stages].reverse(); // لعكس ترتيب المراحل
+
+  const getStageLeft = (index: number) => {
+    const usableWidth = segmentCount - 4; // خصم أول وآخر شرطتين
+    const step = usableWidth / (stages.length - 1);
+    return ((stages.length - 1 - index) * step + 2) / segmentCount * 100; // من اليمين لليسار
+  };
+
+  return (
+    <div className="relative w-full flex flex-col items-start font-arabic pt-12 pb-10 px-6" style={{ background: 'transparent' }}>
+      {/* فقاعة تقدم المشروع */}
+      <div
+        className="absolute z-10 text-black text-right"
+        style={{
+          background: 'linear-gradient(135deg, #B9F3A8, #d4ffd0)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          padding: '14px 20px',
+          borderRadius: '30px',
+          minWidth: '160px',
+          top: `-${circleSize / 1.8}px`,
+          right: `calc(${getStageLeft(currentStageIndex)}% - ${bubbleSize / 1.8}px)`
+        }}
+      >
         <div className="font-bold text-lg">تقدم المشروع</div>
-        <div className="text-sm font-light text-gray-800">المعالجة الأولية</div>
+        <div className="text-sm font-light text-gray-800">{stages[currentStageIndex]?.label}</div>
       </div>
 
-      {/* الشريط */}
-      <div className="relative w-[80%] h-[25px] flex items-center justify-start flex-row-reverse" style={{
-      gap: `${segmentGap}px`
-    }}>
-        {segments.map(idx => {
-        const reversedIdx = segmentCount - 1 - idx;
-        const hue = reversedIdx <= 1 ? null : reversedIdx / segmentCount * 360;
-        const color = reversedIdx <= 1 ? '#B9F3A8' : `hsl(${hue}, 70%, 50%)`;
-        return <div key={idx} style={{
-          width: `${segmentWidth}px`,
-          height: `${segmentHeight}px`,
-          backgroundColor: (segmentCount - 1 - idx) < litCount ? color : '#eee',
-          borderRadius: '2px',
-          transition: 'background-color 0.2s'
-        }} />;
-      })}
+      {/* شريط الشرائح */}
+      <div ref={barRef} className="relative flex items-center justify-start flex-row-reverse gap-[3px] w-[80%] h-[25px]">
+        {segments.map((idx) => {
+          const reversedIdx = segmentCount - 1 - idx;
+          const isLit = reversedIdx < litCount;
+          const isFirstTwo = reversedIdx >= segmentCount - 2;
+          const color = isFirstTwo
+            ? '#B9F3A8'
+            : `hsl(${(reversedIdx / segmentCount) * 360}, 70%, 50%)`;
+          return (
+            <div
+              key={idx}
+              style={{
+                width: `${segmentWidthPx}px`,
+                height: `${segmentHeight}px`,
+                backgroundColor: isLit ? color : '#eee',
+                borderRadius: '2px',
+                boxShadow: isLit ? `0 0 4px ${color}` : undefined,
+                transition: 'background-color 0.2s',
+              }}
+            />
+          );
+        })}
 
-        {/* مراحل (دوائر) */}
-        {stages.map((stage, i) => {
-        const reversedProgress = 100 - progress;
-        const stageProgress = getStageLeft(i);
-        const isCompleted = reversedProgress >= stageProgress;
-        const leftPct = getStageLeft(i);
-        return <div key={i} className="absolute" style={{
-          left: `calc(${leftPct}% - ${circleSize / 2}px)`,
-          top: `-${(circleSize - segmentHeight) / 2}px`
-        }}>
-              <div className="flex items-center justify-center" style={{
-            width: `${circleSize}px`,
-            height: `${circleSize}px`,
-            borderRadius: '50%',
-            backgroundColor: isCompleted ? '#B9F3A8' : 'rgba(255, 255, 255, 0.4)',
-            backdropFilter: 'blur(20px)',
-            border: 'none',
-            boxShadow: isCompleted ? '0 0 6px #B9F3A8' : 'none'
-          }}>
+        {/* دوائر المراحل */}
+        {reversedStages.map((stage, i) => {
+          const stageProgress = getStageLeft(i);
+          const isCompleted = progress >= ((i / (stages.length - 1)) * 100);
+
+          return (
+            <div
+              key={i}
+              className="absolute"
+              style={{
+                left: `calc(${stageProgress}% - ${circleSize / 2}px)`,
+                top: `-${(circleSize - segmentHeight) / 2}px`,
+              }}
+            >
+              <div
+                className="flex items-center justify-center"
+                style={{
+                  width: `${circleSize}px`,
+                  height: `${circleSize}px`,
+                  borderRadius: '50%',
+                  backgroundColor: isCompleted ? '#B9F3A8' : 'rgba(255, 255, 255, 0.3)',
+                  backdropFilter: 'blur(16px)',
+                  border: isCompleted ? 'none' : '2px solid black',
+                  boxShadow: isCompleted
+                    ? '0 0 6px #B9F3A8'
+                    : 'inset 0 0 2px rgba(0,0,0,0.25)',
+                }}
+              >
                 {isCompleted ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
                     <polyline points="5 13 10 18 20 6" />
                   </svg>
                 ) : (
                   <span style={{ fontSize: '18px', color: 'black', fontWeight: 'bold' }}>◯</span>
                 )}
               </div>
-              <div 
+              <div
                 className="text-center mt-2 font-medium text-black"
-                style={{ 
-                  fontSize: '0.675rem', // تصغير 10% من text-xs (0.75rem)
+                style={{
+                  fontSize: '0.675rem',
                   position: 'absolute',
                   left: '50%',
                   transform: 'translateX(-50%)',
                   width: 'max-content',
-                  top: `${circleSize + 8}px`
+                  top: `${circleSize + 8}px`,
                 }}
               >
                 {stage.label}
               </div>
-            </div>;
-      })}
+            </div>
+          );
+        })}
       </div>
-    </div>;
+    </div>
+  );
 };
