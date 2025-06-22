@@ -26,7 +26,7 @@ const ProjectCard = ({
 }: ProjectCardInteractiveProps) => {
   return (
     <ProjectCardLayout
-      id={id}
+      id={id.toString()}
       isSelected={isSelected}
       isOtherSelected={isOtherSelected}
       onProjectSelect={onProjectSelect}
