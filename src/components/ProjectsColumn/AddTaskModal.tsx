@@ -1,11 +1,6 @@
 
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -19,6 +14,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import type { TaskData } from '@/types';
+import { TaskFormFields } from './AddTaskModal/TaskFormFields';
+import { TaskFormActions } from './AddTaskModal/TaskFormActions';
+import { TaskFormData } from './AddTaskModal/types';
 
 interface AddTaskModalProps {
   isOpen: boolean;
@@ -34,7 +32,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
   const { toast } = useToast();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   
-  const [taskData, setTaskData] = useState<TaskData>({
+  const [taskData, setTaskData] = useState<TaskFormData>({
     id: 0,
     title: '',
     description: '',
@@ -44,29 +42,6 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
     stage: 'planning',
     attachments: [],
   });
-
-  const teamMembers = [
-    'أحمد محمد',
-    'فاطمة علي',
-    'خالد الأحمد',
-    'نورا السالم',
-    'محمد العتيبي',
-    'سارة النجار'
-  ];
-
-  const priorities = [
-    { value: 'high', label: 'عالية' },
-    { value: 'medium', label: 'متوسطة' },
-    { value: 'low', label: 'منخفضة' }
-  ];
-
-  const stages = [
-    { value: 'planning', label: 'التخطيط' },
-    { value: 'development', label: 'التطوير' },
-    { value: 'testing', label: 'الاختبار' },
-    { value: 'review', label: 'المراجعة' },
-    { value: 'completed', label: 'مكتملة' }
-  ];
 
   const handleInputChange = (field: string, value: string) => {
     setTaskData(prev => ({ ...prev, [field]: value }));
@@ -96,7 +71,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
     if (!validateForm()) return;
 
     try {
-      const newTask = {
+      const newTask: TaskData = {
         ...taskData,
         id: Date.now(),
         createdAt: new Date().toISOString(),
@@ -174,121 +149,17 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
             </DialogTitle>
           </DialogHeader>
 
-          <div className="px-8 pb-8 space-y-6">
-            <div className="space-y-2">
-              <Label className="font-arabic text-right">عنوان المهمة *</Label>
-              <Input
-                value={taskData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                className="text-right font-arabic"
-                placeholder="أدخل عنوان المهمة"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className="font-arabic text-right">الوصف</Label>
-              <Textarea
-                value={taskData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                className="text-right font-arabic min-h-[100px]"
-                placeholder="أدخل وصف المهمة"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label className="font-arabic text-right">تاريخ الاستحقاق *</Label>
-                <Input
-                  type="date"
-                  value={taskData.dueDate}
-                  onChange={(e) => handleInputChange('dueDate', e.target.value)}
-                  className="text-right font-arabic"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label className="font-arabic text-right">المكلف</Label>
-                <Select value={taskData.assignee} onValueChange={(value) => handleInputChange('assignee', value)}>
-                  <SelectTrigger className="text-right font-arabic">
-                    <SelectValue placeholder="اختر المكلف" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {teamMembers.map((member) => (
-                      <SelectItem key={member} value={member}>
-                        {member}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label className="font-arabic text-right">الأولوية</Label>
-                <Select value={taskData.priority} onValueChange={(value: 'high' | 'medium' | 'low') => setTaskData(prev => ({ ...prev, priority: value }))}>
-                  <SelectTrigger className="text-right font-arabic">
-                    <SelectValue placeholder="اختر الأولوية" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {priorities.map((priority) => (
-                      <SelectItem key={priority.value} value={priority.value}>
-                        {priority.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label className="font-arabic text-right">المرحلة</Label>
-                <Select value={taskData.stage} onValueChange={(value: 'planning' | 'development' | 'testing' | 'review' | 'completed') => setTaskData(prev => ({ ...prev, stage: value }))}>
-                  <SelectTrigger className="text-right font-arabic">
-                    <SelectValue placeholder="اختر المرحلة" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {stages.map((stage) => (
-                      <SelectItem key={stage.value} value={stage.value}>
-                        {stage.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="font-arabic text-right">المرفقات</Label>
-              <Input
-                type="file"
-                multiple
-                className="text-right font-arabic"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  setTaskData(prev => ({
-                    ...prev,
-                    attachments: files.map(file => file.name)
-                  }));
-                }}
-              />
-            </div>
-
-            <div className="flex gap-4 justify-start pt-6 border-t border-white/20">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
-                className="border-black text-black hover:bg-black/10 font-arabic"
-              >
-                إلغاء
-              </Button>
-              <Button
-                onClick={handleSaveTask}
-                className="bg-black text-white hover:bg-gray-800 font-arabic"
-              >
-                حفظ المهمة
-              </Button>
-            </div>
+          <div className="px-8 pb-8">
+            <TaskFormFields
+              taskData={taskData}
+              onInputChange={handleInputChange}
+              onTaskDataChange={setTaskData}
+            />
+            
+            <TaskFormActions
+              onCancel={handleClose}
+              onSave={handleSaveTask}
+            />
           </div>
         </DialogContent>
       </Dialog>

@@ -75,7 +75,7 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
                   value={project.value}
                   isSelected={selectedProjectId === project.id}
                   isOtherSelected={selectedProjectId !== undefined && selectedProjectId !== null && selectedProjectId !== project.id}
-                  onProjectSelect={onProjectSelect}
+                  onProjectSelect={onProjectSelect ? () => onProjectSelect(project.id) : undefined}
                 />
               ))}
             </div>
