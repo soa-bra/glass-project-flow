@@ -20,7 +20,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
     length: segmentCount
   }, (_, i) => i);
   const stageCount = stages.length;
-  const circleSize = segmentHeight * 1.3;
+  const circleSize = segmentHeight * 1.3 * 1.2; // زيادة بنسبة 20%
   const bubbleSize = circleSize * 1.2;
   const getStageLeft = (index: number) => (stageCount - 1 - index) / (stageCount - 1) * 100;
   
@@ -71,8 +71,8 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
             height: `${circleSize}px`,
             borderRadius: '50%',
             backgroundColor: isCompleted ? '#B9F3A8' : 'rgba(255, 255, 255, 0.4)',
-            backdropFilter: 'blur(4px)',
-            border: isCompleted ? 'none' : '2px solid black',
+            backdropFilter: 'blur(20px)',
+            border: 'none',
             boxShadow: isCompleted ? '0 0 6px #B9F3A8' : 'none'
           }}>
                 {isCompleted ? (
@@ -80,7 +80,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
                     <polyline points="5 13 10 18 20 6" />
                   </svg>
                 ) : (
-                  <span style={{ fontSize: '16px', color: 'black', fontWeight: 'bold' }}>◯</span>
+                  <span style={{ fontSize: '18px', color: 'black', fontWeight: 'bold' }}>◯</span>
                 )}
               </div>
               <div 
