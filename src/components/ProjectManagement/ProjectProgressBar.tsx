@@ -41,11 +41,12 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   const bubbleSize = circleSize * 1.2;
 
   const currentStageIndex = Math.floor(progress / 100 * (stages.length - 1));
+  const reversedStages = [...stages].reverse(); // لعكس ترتيب المراحل
 
   const getStageLeft = (index: number) => {
     const usableWidth = segmentCount - 4; // خصم أول وآخر شرطتين
     const step = usableWidth / (stages.length - 1);
-    return (index * step + 2) / segmentCount * 100; // من اليسار لليمين
+    return ((stages.length - 1 - index) * step + 2) / segmentCount * 100; // من اليمين لليسار
   };
 
   return (
@@ -64,17 +65,18 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         }}
       >
         <div className="font-bold text-lg">تقدم المشروع</div>
-        <div className="text-sm font-light text-gray-800">{stages[currentStageIndex]?.label}</div>
+        <div className="text-sm font-light text-gray-800">{reversedStages[currentStageIndex]?.label}</div>
       </div>
 
       {/* شريط الشرائح */}
-      <div ref={barRef} className="relative flex items-center justify-start flex-row gap-[3px] w-[80%] h-[25px]">
+      <div ref={barRef} className="relative flex items-center justify-start flex-row-reverse gap-[3px] w-[80%] h-[25px]">
         {segments.map((idx) => {
-          const isLit = idx < litCount;
-          const isFirstTwo = idx < 2;
+          const reversedIdx = segmentCount - 1 - idx;
+          const isLit = reversedIdx < litCount;
+          const isFirstTwo = reversedIdx >= segmentCount - 2;
           const color = isFirstTwo
             ? '#B9F3A8'
-            : `hsl(${(idx / segmentCount) * 360}, 70%, 50%)`;
+            : `hsl(${(reversedIdx / segmentCount) * 360}, 70%, 50%)`;
           return (
             <div
               key={idx}
@@ -91,7 +93,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         })}
 
         {/* دوائر المراحل */}
-        {stages.map((stage, i) => {
+        {reversedStages.map((stage, i) => {
           const stageProgress = getStageLeft(i);
           const isCompleted = progress >= ((i / (stages.length - 1)) * 100);
 
