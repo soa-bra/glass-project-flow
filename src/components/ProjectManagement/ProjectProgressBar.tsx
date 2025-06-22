@@ -22,12 +22,12 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   const stageCount = stages.length;
   const circleSize = segmentHeight * 1.3;
   const bubbleSize = circleSize * 1.2;
-  const getStageLeft = (index: number) => index / (stageCount - 1) * 100;
+  const getStageLeft = (index: number) => (stageCount - 1 - index) / (stageCount - 1) * 100;
   return <div style={{
     background: 'transparent'
   }} className="relative w-full flex flex-col items-start font-arabic py-0 px-0">
       {/* الفقاعة */}
-      <div className="absolute left-0 -top-10 z-10 text-black text-left" style={{
+      <div className="absolute right-0 -top-10 z-10 text-black text-right" style={{
       background: 'linear-gradient(135deg, #B9F3A8, #d4ffd0)',
       boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
       padding: '12px 16px',
@@ -39,16 +39,17 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
       </div>
 
       {/* الشريط */}
-      <div className="relative w-[80%] h-[25px] flex items-center justify-start flex-row" style={{
+      <div className="relative w-[80%] h-[25px] flex items-center justify-start flex-row-reverse" style={{
       gap: `${segmentGap}px`
     }}>
         {segments.map(idx => {
-        const hue = idx <= 1 ? null : idx / segmentCount * 360;
-        const color = idx <= 1 ? '#B9F3A8' : `hsl(${hue}, 70%, 50%)`;
+        const reversedIdx = segmentCount - 1 - idx;
+        const hue = reversedIdx <= 1 ? null : reversedIdx / segmentCount * 360;
+        const color = reversedIdx <= 1 ? '#B9F3A8' : `hsl(${hue}, 70%, 50%)`;
         return <div key={idx} style={{
           width: `${segmentWidth}px`,
           height: `${segmentHeight}px`,
-          backgroundColor: idx < litCount ? color : '#eee',
+          backgroundColor: (segmentCount - 1 - idx) < litCount ? color : '#eee',
           borderRadius: '2px',
           transition: 'background-color 0.2s'
         }} />;
@@ -56,7 +57,8 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
 
         {/* مراحل (دوائر) */}
         {stages.map((stage, i) => {
-        const isReached = progress >= getStageLeft(i);
+        const reversedProgress = 100 - progress;
+        const isReached = reversedProgress >= getStageLeft(i);
         const leftPct = getStageLeft(i);
         return <div key={i} className="absolute" style={{
           left: `calc(${leftPct}% - ${circleSize / 2}px)`,
