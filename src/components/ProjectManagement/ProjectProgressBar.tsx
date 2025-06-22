@@ -51,17 +51,17 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
 
   return (
     <div className="relative w-full flex flex-col items-start font-arabic pt-12 pb-10 px-6" style={{ background: 'transparent' }}>
-      {/* فقاعة تقدم المشروع */}
+      {/* فقاعة تقدم المشروع - ثابتة في بداية الشريط */}
       <div
         className="absolute z-10 text-black text-right"
         style={{
           background: 'linear-gradient(135deg, #B9F3A8, #d4ffd0)',
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
           padding: '14px 20px',
-          borderRadius: '50px', // تغيير إلى دائري تماماً
+          borderRadius: '50px',
           minWidth: '160px',
           top: `-${circleSize / 1.8}px`,
-          right: `calc(${getStageLeft(currentStageIndex)}% - ${bubbleSize / 1.8}px)`
+          right: `calc(80% - ${bubbleSize / 1.8}px)` // ثابتة في بداية الشريط (اليمين)
         }}
       >
         <div className="font-bold text-lg">تقدم المشروع</div>
