@@ -1,4 +1,3 @@
-
 export interface TaskData {
   id: number;
   title: string;
@@ -18,8 +17,7 @@ export interface ProjectData {
   owner: string;
   deadline: string;
   team: string[];
-  status: 'info' | 'success' | 'warning' | 'error';
+  status: 'وفق الخطة' | 'متأخر' | 'متوقف' | 'مكتمل';
   budget: number;
-  tasksCount: number;
   createdAt?: string;
 }

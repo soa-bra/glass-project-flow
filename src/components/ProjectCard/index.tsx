@@ -12,13 +12,13 @@ interface ProjectCardInteractiveProps extends ProjectCardProps {
 
 const ProjectCard = ({
   id,
-  name,
+  title,
   description,
   tasksCount,
   status,
-  deadline,
+  date,
   owner,
-  budget,
+  value,
   daysLeft,
   isSelected = false,
   isOtherSelected = false,
@@ -26,14 +26,14 @@ const ProjectCard = ({
 }: ProjectCardInteractiveProps) => {
   return (
     <ProjectCardLayout
-      id={id.toString()}
+      id={id}
       isSelected={isSelected}
       isOtherSelected={isOtherSelected}
       onProjectSelect={onProjectSelect}
     >
       <ProjectCardHeader
         daysLeft={daysLeft}
-        title={name}
+        title={title}
         description={description}
         tasksCount={tasksCount}
         status={status}
@@ -41,9 +41,9 @@ const ProjectCard = ({
       
       <ProjectCardFooter
         status={status}
-        date={deadline}
+        date={date}
         owner={owner}
-        value={budget.toString()}
+        value={value}
       />
     </ProjectCardLayout>
   );

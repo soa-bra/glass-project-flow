@@ -82,7 +82,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       {/* شريط تقدم المراحل */}
       <div className="mb-6 flex-shrink-0">
         <ProjectProgressBar
-          progress={project.progress || 0}
+          progress={project.progress}
           stages={[
             { label: 'التحضير' },
             { label: 'التنفيذ المبدئي' },
@@ -91,6 +91,8 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             { label: 'المراجعة النهائية' },
             { label: 'المعالجة النهائية' },
           ]}
+          segmentCount={120}
+          widthPct="85%"
         />
       </div>
 
