@@ -1,3 +1,4 @@
+
 export interface TaskData {
   id: number;
   title: string;
@@ -17,7 +18,4 @@ export interface ProjectData {
   owner: string;
   deadline: string;
   team: string[];
-  status: 'وفق الخطة' | 'متأخر' | 'متوقف' | 'مكتمل';
-  budget: number;
-  createdAt?: string;
 }
