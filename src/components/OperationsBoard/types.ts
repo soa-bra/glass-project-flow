@@ -1,7 +1,5 @@
 
-export type TabData = {
-  [key: string]: unknown;
-};
+export type TabData = Record<string, unknown>;
 
 export interface OperationsBoardProps {
   isVisible: boolean;
