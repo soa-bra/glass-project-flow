@@ -15,11 +15,13 @@ interface OverviewLayoutProps {
 export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
   data
 }) => {
+  console.log('OverviewLayout received data:', data);
+  
   return (
     <div className="font-arabic px-[15px] py-0">
       {/* قسم الإحصائيات الرئيسية */}
       <div className="mb-6 py-0 px-0 my-0">
-        <OperationStatsSection stats={data.stats} />
+        <OperationStatsSection stats={data?.stats} />
       </div>
 
       {/* بطاقة الأحداث القادمة */}

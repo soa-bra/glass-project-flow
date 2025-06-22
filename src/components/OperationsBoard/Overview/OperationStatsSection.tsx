@@ -1,9 +1,12 @@
+
 import React from 'react';
+
 interface ProjectStats {
   expectedRevenue: number;
   complaints: number;
   delayedProjects: number;
 }
+
 interface OperationStatsSectionProps {
   stats: ProjectStats;
 }
@@ -15,7 +18,22 @@ interface OperationStatsSectionProps {
 export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
   stats
 }) => {
-  return <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[4px] mx-[10px]">
+  // إضافة حماية ضد البيانات غير المعرّفة
+  if (!stats) {
+    console.log('OperationStatsSection: stats is undefined');
+    return (
+      <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[4px] mx-[10px]">
+        <div className="text-center py-8 text-gray-500 font-arabic">
+          جارٍ تحميل الإحصائيات...
+        </div>
+      </div>
+    );
+  }
+
+  console.log('OperationStatsSection received stats:', stats);
+
+  return (
+    <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[4px] mx-[10px]">
       {/* الإيرادات المتوقعة */}
       <div className="text-right p-6 py-0 my-[15px]">
         <div className="mb-2">
@@ -23,7 +41,7 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
         </div>
         <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
-            {stats.expectedRevenue}
+            {stats.expectedRevenue || 0}
           </div>
           <div className="text-xs text-black font-arabic font-bold">الف</div>
         </div>
@@ -37,7 +55,7 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
         </div>
         <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
-            {String(stats.complaints).padStart(2, '0')}
+            {String(stats.complaints || 0).padStart(2, '0')}
           </div>
           <div className="text-xs text-black font-arabic font-bold">شكاوى</div>
         </div>
@@ -51,11 +69,12 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
         </div>
         <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
-            {String(stats.delayedProjects).padStart(2, '0')}
+            {String(stats.delayedProjects || 0).padStart(2, '0')}
           </div>
           <div className="text-xs text-black font-arabic font-bold">مشاريع</div>
         </div>
         <div className="text-xs font-Regular text-black font-arabic">تحتاج إلى تدخل ومعالجة</div>
       </div>
-    </div>;
+    </div>
+  );
 };
