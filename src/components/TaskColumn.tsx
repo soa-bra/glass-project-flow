@@ -3,39 +3,24 @@ import React, { useState } from 'react';
 import { HiPlus, HiStar, HiArrowLeft } from 'react-icons/hi';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import TaskCard from './TaskCard';
-import { AddTaskModal } from './ProjectsColumn/AddTaskModal';
-import type { TaskData } from '@/types';
 
-const tasks: TaskData[] = [
+const tasks = [
   {
     id: 1,
     title: 'تصميم الواجهة',
     description: 'تطوير موقع سوبرا',
     dueDate: '28 May',
-    assignee: 'د. أسامة',
-    priority: 'medium',
-    stage: 'development',
-    attachments: [],
   },
   {
     id: 2,
     title: 'كتابة الكود',
     description: 'تطوير موقع سوبرا',
-    dueDate: '29 May',
-    assignee: 'د. أسامة',
-    priority: 'high',
-    stage: 'planning',
-    attachments: [],
+    dueDate: '29 May'
   },
 ];
 
 const TaskColumn: React.FC = () => {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-  const [taskList, setTaskList] = useState<TaskData[]>(tasks);
-
-  const handleTaskAdded = (newTask: TaskData) => {
-    setTaskList(prev => [...prev, newTask]);
-  };
 
   return (
     <>
@@ -50,7 +35,7 @@ const TaskColumn: React.FC = () => {
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold text-gray-800">قائمة المهام</h2>
             <div className="flex gap-2 text-gray-600">
-              <button onClick={() => setShowAddTaskModal(true)}><HiPlus /></button>
+              <button><HiPlus onClick={() => setShowAddTaskModal(true)} /></button>
               <button><HiStar /></button>
               <button><HiArrowLeft /></button>
             </div>
@@ -61,7 +46,7 @@ const TaskColumn: React.FC = () => {
         <div className="flex-1 overflow-hidden rounded-t-3xl">
           <ScrollArea className="h-full w-full">
             <div className="space-y-4 pb-4 px-0 rounded-full mx-[10px]">
-              {taskList.map(task => (
+              {tasks.map(task => (
                 <TaskCard key={task.id} {...task} />
               ))}
             </div>
@@ -69,11 +54,8 @@ const TaskColumn: React.FC = () => {
         </div>
       </div>
 
-      <AddTaskModal 
-        isOpen={showAddTaskModal} 
-        onClose={() => setShowAddTaskModal(false)}
-        onTaskAdded={handleTaskAdded}
-      />
+      {/* نافذة إضافة مهمة - placeholder حالياً */}
+      {/* <AddTaskModal isOpen={showAddTaskModal} onClose={() => setShowAddTaskModal(false)} /> */}
     </>
   );
 };

@@ -13,10 +13,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import type { TaskData } from '@/types';
 import { TaskFormFields } from './AddTaskModal/TaskFormFields';
 import { TaskFormActions } from './AddTaskModal/TaskFormActions';
-import type { TaskFormData } from './AddTaskModal/types';
-import type { TaskData } from '@/types';
+import { TaskFormData } from './AddTaskModal/types';
 
 interface AddTaskModalProps {
   isOpen: boolean;

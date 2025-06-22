@@ -8,13 +8,11 @@ import HRTab from './HRTab';
 import { ClientsTab } from './ClientsTab';
 import { ReportsTab } from './ReportsTab';
 
-import type { TabData } from './types';
-
 export const TabContentWrapper = ({
   tabData,
   loading,
 }: {
-  tabData: TabData;
+  tabData: Record<string, any>;
   loading: boolean;
 }) => {
   return <>
