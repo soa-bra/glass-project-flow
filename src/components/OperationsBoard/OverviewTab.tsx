@@ -15,9 +15,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   data,
   loading
 }) => {
-  console.log('OverviewTab received:', { data, loading });
-
-  if (loading) {
+  if (loading || !data) {
     return (
       <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
         جارٍ التحميل...
@@ -25,10 +23,5 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
     );
   }
 
-  // استخدام البيانات التجريبية إذا لم تكن البيانات متوفرة
-  const finalData = data || mockOverviewData;
-  
-  console.log('OverviewTab using finalData:', finalData);
-
-  return <OverviewLayout data={finalData} />;
+  return <OverviewLayout data={data} />;
 };
