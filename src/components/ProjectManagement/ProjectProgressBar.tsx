@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 
 interface Stage {
@@ -56,7 +57,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
           background: 'linear-gradient(135deg, #B9F3A8, #d4ffd0)',
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
           padding: '14px 20px',
-          borderRadius: '30px',
+          borderRadius: '50px', // تغيير إلى دائري تماماً
           minWidth: '160px',
           top: `-${circleSize / 1.8}px`,
           right: `calc(${getStageLeft(currentStageIndex)}% - ${bubbleSize / 1.8}px)`
