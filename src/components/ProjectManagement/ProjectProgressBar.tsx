@@ -23,6 +23,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   const circleSize = segmentHeight * 1.3;
   const bubbleSize = circleSize * 1.2;
   const getStageLeft = (index: number) => (stageCount - 1 - index) / (stageCount - 1) * 100;
+  
   return <div style={{
     background: 'transparent'
   }} className="relative w-full flex flex-col items-start font-arabic py-0 px-0">
@@ -58,7 +59,8 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         {/* مراحل (دوائر) */}
         {stages.map((stage, i) => {
         const reversedProgress = 100 - progress;
-        const isReached = reversedProgress >= getStageLeft(i);
+        const stageProgress = getStageLeft(i);
+        const isCompleted = reversedProgress >= stageProgress;
         const leftPct = getStageLeft(i);
         return <div key={i} className="absolute" style={{
           left: `calc(${leftPct}% - ${circleSize / 2}px)`,
@@ -68,16 +70,32 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
             width: `${circleSize}px`,
             height: `${circleSize}px`,
             borderRadius: '50%',
-            backgroundColor: isReached ? '#B9F3A8' : 'rgba(255, 255, 255, 0.4)',
+            backgroundColor: isCompleted ? '#B9F3A8' : 'rgba(255, 255, 255, 0.4)',
             backdropFilter: 'blur(4px)',
-            border: isReached ? 'none' : '2px solid black',
-            boxShadow: isReached ? '0 0 6px #B9F3A8' : 'none'
+            border: isCompleted ? 'none' : '2px solid black',
+            boxShadow: isCompleted ? '0 0 6px #B9F3A8' : 'none'
           }}>
-                {isReached ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                {isCompleted ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="5 13 10 18 20 6" />
-                  </svg> : null}
+                  </svg>
+                ) : (
+                  <span style={{ fontSize: '16px', color: 'black', fontWeight: 'bold' }}>◯</span>
+                )}
               </div>
-              <div className="text-center mt-2 text-xs font-medium text-black">{stage.label}</div>
+              <div 
+                className="text-center mt-2 font-medium text-black"
+                style={{ 
+                  fontSize: '0.675rem', // تصغير 10% من text-xs (0.75rem)
+                  position: 'absolute',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 'max-content',
+                  top: `${circleSize + 8}px`
+                }}
+              >
+                {stage.label}
+              </div>
             </div>;
       })}
       </div>
