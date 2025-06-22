@@ -25,7 +25,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   const getStageLeft = (index: number) => index / (stageCount - 1) * 100;
   return <div style={{
     background: 'transparent'
-  }} className="relative w-full flex flex-col items-يسار font-arabic py-0 px-0">
+  }} className="relative w-full flex flex-col items-start font-arabic py-0 px-0">
       {/* الفقاعة */}
       <div className="absolute left-0 -top-10 z-10 text-black text-left" style={{
       background: 'linear-gradient(135deg, #B9F3A8, #d4ffd0)',
@@ -39,7 +39,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
       </div>
 
       {/* الشريط */}
-      <div className="relative w-[80%] h-[25px] flex items-center justify-start" style={{
+      <div className="relative w-[80%] h-[25px] flex items-center justify-start flex-row" style={{
       gap: `${segmentGap}px`
     }}>
         {segments.map(idx => {
