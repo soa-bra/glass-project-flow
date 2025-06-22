@@ -16,13 +16,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import type { ProjectData, TaskData } from '@/types';
-import { BasicInfoForm } from './AddProjectModal/BasicInfoForm';
-import { ClientForm } from './AddProjectModal/ClientForm';
-import { TasksTab } from './AddProjectModal/TasksTab';
-import { ContractForm } from './AddProjectModal/ContractForm';
-import { PartnershipsTab } from './AddProjectModal/PartnershipsTab';
-import type { ProjectFormData, ContractPayment } from './AddProjectModal/types';
 
 interface AddProjectModalProps {
   isOpen: boolean;

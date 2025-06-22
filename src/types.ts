@@ -18,8 +18,4 @@ export interface ProjectData {
   owner: string;
   deadline: string;
   team: string[];
-  status: 'info' | 'success' | 'warning' | 'error';
-  budget: number;
-  tasksCount: number;
-  createdAt?: string;
 }

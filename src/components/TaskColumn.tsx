@@ -4,7 +4,6 @@ import { HiPlus, HiStar, HiArrowLeft } from 'react-icons/hi';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import TaskCard from './TaskCard';
 
-const tasks = [
   {
     id: 1,
     title: 'تصميم الواجهة',
@@ -15,7 +14,6 @@ const tasks = [
     id: 2,
     title: 'كتابة الكود',
     description: 'تطوير موقع سوبرا',
-    dueDate: '29 May'
   },
 ];
 
