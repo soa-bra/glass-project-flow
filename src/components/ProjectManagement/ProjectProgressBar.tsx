@@ -1,5 +1,4 @@
 
-
 import React, { useEffect, useRef, useState } from 'react';
 
 interface Stage {
@@ -40,13 +39,14 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   const circleSize = segmentHeight * 1.3 * 1.2; // أكبر 20٪ من الحجم العادي
   const bubbleSize = circleSize * 1.2;
 
+  // حساب المرحلة الحالية بناءً على التقدم الفعلي
   const currentStageIndex = Math.floor(progress / 100 * (stages.length - 1));
   const reversedStages = [...stages].reverse(); // لعكس ترتيب المراحل
 
   const getStageLeft = (index: number) => {
     const usableWidth = segmentCount - 4; // خصم أول وآخر شرطتين
     const step = usableWidth / (stages.length - 1);
-    return ((stages.length - 1 - index) * step + 2) / segmentCount * 100; // من اليمين لليسار
+    return (index * step + 2) / segmentCount * 100; // موضع المرحلة في الشريط المعكوس
   };
 
   return (
@@ -65,7 +65,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         }}
       >
         <div className="font-bold text-lg">تقدم المشروع</div>
-        <div className="text-sm font-light text-gray-800">{reversedStages[currentStageIndex]?.label}</div>
+        <div className="text-sm font-light text-gray-800">{stages[currentStageIndex]?.label}</div>
       </div>
 
       {/* شريط الشرائح */}
@@ -95,7 +95,10 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         {/* دوائر المراحل */}
         {reversedStages.map((stage, i) => {
           const stageProgress = getStageLeft(i);
-          const isCompleted = progress >= ((i / (stages.length - 1)) * 100);
+          // إصلاح حساب isCompleted للمراحل المعكوسة
+          const originalStageIndex = stages.length - 1 - i;
+          const stageThreshold = (originalStageIndex / (stages.length - 1)) * 100;
+          const isCompleted = progress >= stageThreshold;
 
           return (
             <div
@@ -148,4 +151,3 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
     </div>
   );
 };
-
