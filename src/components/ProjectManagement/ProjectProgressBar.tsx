@@ -1,3 +1,4 @@
+
 import React from 'react';
 interface Stage {
   label: string;
@@ -24,9 +25,9 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   const getStageLeft = (index: number) => index / (stageCount - 1) * 100;
   return <div style={{
     background: 'transparent'
-  }} className="relative w-full flex flex-col items-\u064A\u0633\u0627\u0631 font-arabic py-0 px-0">
+  }} className="relative w-full flex flex-col items-يسار font-arabic py-0 px-0">
       {/* الفقاعة */}
-      <div className="absolute right-0 -top-10 z-10 text-black text-right" style={{
+      <div className="absolute left-0 -top-10 z-10 text-black text-left" style={{
       background: 'linear-gradient(135deg, #B9F3A8, #d4ffd0)',
       boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
       padding: '12px 16px',
@@ -58,7 +59,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         const isReached = progress >= getStageLeft(i);
         const leftPct = getStageLeft(i);
         return <div key={i} className="absolute" style={{
-          left: `calc(${leftPct}% - ${circleSize / 2}px - ${segmentWidth}px)`,
+          left: `calc(${leftPct}% - ${circleSize / 2}px)`,
           top: `-${(circleSize - segmentHeight) / 2}px`
         }}>
               <div className="flex items-center justify-center" style={{
