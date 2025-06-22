@@ -13,6 +13,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { TaskFormFields } from './AddTaskModal/TaskFormFields';
+import { TaskFormActions } from './AddTaskModal/TaskFormActions';
+import type { TaskFormData } from './AddTaskModal/types';
 import type { TaskData } from '@/types';
 
 interface AddTaskModalProps {
