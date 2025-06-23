@@ -1,19 +1,112 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
+
+const financialData = [
+  { name: 'الأرباح', value: 78, color: '#000000' },
+  { name: 'المصاريف', value: 14, color: '#aec2cf' },
+  { name: 'الاحتياطي', value: 8, color: '#f0f0f0' }
+];
+
+const monthlyData = [
+  { month: 'يناير', revenue: 45, expenses: 30 },
+  { month: 'فبراير', revenue: 52, expenses: 28 },
+  { month: 'مارس', revenue: 68, expenses: 35 },
+  { month: 'أبريل', revenue: 78, expenses: 32 }
+];
 
 export const FinancialOverviewCard: React.FC = () => {
   return (
     <div 
-      className="h-full p-6 rounded-3xl border border-white/20"
-      style={{
+      className="h-full p-6 rounded-3xl border border-white/20 flex flex-col"
+      style={{ 
         background: '#f7ffff',
+        fontFamily: 'IBM Plex Sans Arabic'
       }}
     >
-      <h3 className="text-lg font-arabic font-semibold text-gray-800 mb-6">النظرة المالية</h3>
-      
-      <div className="text-center text-gray-500">
-        <p className="text-sm font-arabic">البيانات المالية</p>
+      {/* الرأس */}
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-arabic font-semibold text-gray-800">النظرة المالية</h3>
+        <div className="flex gap-2">
+          <button className="p-1 rounded-full hover:bg-white/20 text-gray-600">
+            <span className="text-sm">←</span>
+          </button>
+          <button className="p-1 rounded-full hover:bg-white/20 text-gray-600">
+            <span className="text-sm">⋯</span>
+          </button>
+        </div>
+      </div>
+
+      {/* الرسم البياني الدائري */}
+      <div className="flex-1 flex items-center justify-center mb-4">
+        <div className="relative w-32 h-32">
+          <ChartContainer
+            config={{
+              profits: { label: "الأرباح", color: "#000000" },
+              expenses: { label: "المصاريف", color: "#aec2cf" },
+              reserves: { label: "الاحتياطي", color: "#f0f0f0" }
+            }}
+            className="w-full h-full"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={financialData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={35}
+                  outerRadius={60}
+                  startAngle={90}
+                  endAngle={450}
+                  dataKey="value"
+                >
+                  {financialData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <ChartTooltip content={<ChartTooltipContent />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+          
+          {/* النص في وسط الدائرة */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="text-xl font-bold text-black font-arabic">
+              78M
+            </div>
+            <div className="text-xs text-gray-700 font-arabic text-center">
+              إجمالي الأرباح
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* المؤشرات السفلية */}
+      <div className="grid grid-cols-3 gap-2 text-center">
+        <div>
+          <div className="text-sm font-bold text-black font-arabic">78M</div>
+          <div className="text-xs text-gray-700 font-arabic">أرباح</div>
+        </div>
+        <div>
+          <div className="text-sm font-bold text-black font-arabic">14M</div>
+          <div className="text-xs text-gray-700 font-arabic">مصاريف</div>
+        </div>
+        <div>
+          <div className="text-sm font-bold text-black font-arabic">8M</div>
+          <div className="text-xs text-gray-700 font-arabic">احتياطي</div>
+        </div>
+      </div>
+
+      {/* الرسم البياني الشريطي الصغير */}
+      <div className="mt-4 h-16">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={monthlyData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+            <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+            <Bar dataKey="revenue" fill="#000000" radius={[2, 2, 0, 0]} />
+            <Bar dataKey="expenses" fill="#aec2cf" radius={[2, 2, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

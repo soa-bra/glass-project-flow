@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, MoreHorizontal, Sparkles } from 'lucide-react';
+import { CircularIconButton } from '@/components/ui/CircularIconButton';
 
 export const TaskListHeader: React.FC = () => {
   return (
@@ -17,32 +18,24 @@ export const TaskListHeader: React.FC = () => {
         قائمة المهام
       </h3>
       <div className="flex items-center gap-2">
-        <button 
-          className="flex items-center justify-center hover:scale-105 transition-transform"
-          style={{
-            width: '36px',
-            height: '36px',
-            backgroundColor: 'rgba(255, 255, 255, 0.6)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            borderRadius: '12px'
-          }}
-        >
-          <Plus className="w-5 h-5 text-gray-600" />
-        </button>
-        <button 
-          className="flex items-center justify-center hover:scale-105 transition-transform"
-          style={{
-            width: '36px',
-            height: '36px',
-            backgroundColor: 'rgba(255, 255, 255, 0.6)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            borderRadius: '12px'
-          }}
-        >
-          <span className="text-lg text-gray-600 font-bold">•••</span>
-        </button>
+        <CircularIconButton 
+          icon={Plus} 
+          size="sm"
+          variant="default"
+          className="hover:scale-105 transition-transform"
+        />
+        <CircularIconButton 
+          icon={Sparkles} 
+          size="sm"
+          variant="default"
+          className="hover:scale-105 transition-transform"
+        />
+        <CircularIconButton 
+          icon={MoreHorizontal} 
+          size="sm"
+          variant="default"
+          className="hover:scale-105 transition-transform"
+        />
       </div>
     </div>
   );
