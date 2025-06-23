@@ -55,7 +55,7 @@ export const TaskListContent: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4 max-h-[calc(100%-120px)] overflow-y-auto">
+    <div className="space-y-3 max-h-[calc(100%-100px)] overflow-y-auto pr-1">
       {tasks.map(task => (
         <TaskCard key={task.id} {...task} />
       ))}

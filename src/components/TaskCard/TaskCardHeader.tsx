@@ -7,7 +7,7 @@ interface TaskCardHeaderProps {
   daysLeft: number;
   title: string;
   description: string;
-  priority: string;
+  priority: 'urgent-important' | 'urgent-not-important' | 'not-urgent-important' | 'not-urgent-not-important';
 }
 
 const TaskCardHeader = ({
@@ -17,11 +17,13 @@ const TaskCardHeader = ({
   priority
 }: TaskCardHeaderProps) => {
   return (
-    <>
+    <div className="relative mb-3">
       <TaskCardDaysCircle daysLeft={daysLeft} />
       <TaskCardPriorityCircle priority={priority} />
-      <TaskCardTitle title={title} description={description} />
-    </>
+      <div style={{ marginTop: '8px', marginLeft: '90px', marginRight: '90px' }}>
+        <TaskCardTitle title={title} description={description} />
+      </div>
+    </div>
   );
 };
 

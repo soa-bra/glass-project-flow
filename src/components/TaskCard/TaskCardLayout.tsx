@@ -16,11 +16,12 @@ const TaskCardLayout = ({
     <div
       className={`mx-auto font-arabic ${className}`}
       style={{
-        width: '360px',
-        minHeight: '160px',
+        width: '100%',
+        maxWidth: '360px',
+        minHeight: '150px',
         backgroundColor: '#EAF2F5',
-        borderRadius: '40px',
-        padding: '16px',
+        borderRadius: '32px',
+        padding: '14px',
         position: 'relative',
         direction: 'rtl'
       }}

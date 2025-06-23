@@ -1,5 +1,4 @@
 
-
 interface TaskCardTitleProps {
   title: string;
   description: string;
@@ -10,23 +9,23 @@ const TaskCardTitle = ({
   description
 }: TaskCardTitleProps) => {
   return (
-    <div style={{ marginTop: '12px', textAlign: 'right' }}>
+    <div style={{ textAlign: 'center' }}>
       <h4 style={{ 
-        fontSize: '18px', 
+        fontSize: '16px', 
         fontWeight: 700, 
         color: '#000000', 
-        marginBottom: '4px',
-        lineHeight: 1.2
+        marginBottom: '2px',
+        lineHeight: 1.3
       }}>
         {title}
       </h4>
       
       <p style={{ 
-        fontSize: '14px', 
+        fontSize: '12px', 
         fontWeight: 400, 
         color: '#858789',
-        marginBottom: '16px',
-        lineHeight: 1.2
+        marginBottom: '8px',
+        lineHeight: 1.3
       }}>
         {description}
       </p>
@@ -35,4 +34,3 @@ const TaskCardTitle = ({
 };
 
 export default TaskCardTitle;
-

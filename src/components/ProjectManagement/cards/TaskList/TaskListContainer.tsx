@@ -9,7 +9,7 @@ export const TaskListContainer: React.FC<TaskListContainerProps> = ({ children }
   return (
     <div 
       style={{ background: '#aec2cf' }} 
-      className="h-full p-6 rounded-3xl"
+      className="h-full p-4 rounded-3xl"
     >
       {children}
     </div>
