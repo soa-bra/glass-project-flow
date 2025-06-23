@@ -3,19 +3,32 @@ import React, { useState } from 'react';
 import { HiPlus, HiStar, HiArrowLeft } from 'react-icons/hi';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import TaskCard from './TaskCard';
+import type { TaskCardProps } from './TaskCard/types';
 
-const tasks = [
+const tasks: TaskCardProps[] = [
   {
     id: 1,
     title: 'تصميم الواجهة',
     description: 'تطوير موقع سوبرا',
-    dueDate: '28 May',
+    status: 'وفق الخطة',
+    statusColor: '#A1E8B8',
+    date: '28 May',
+    assignee: 'د. أسامة',
+    members: 'غير مضيف',
+    daysLeft: 1,
+    priority: 'urgent-not-important'
   },
   {
     id: 2,
     title: 'كتابة الكود',
     description: 'تطوير موقع سوبرا',
-    dueDate: '29 May'
+    status: 'وفق الخطة',
+    statusColor: '#A1E8B8',
+    date: '29 May',
+    assignee: 'د. أسامة',
+    members: 'عضو',
+    daysLeft: 1,
+    priority: 'urgent-important'
   },
 ];
 

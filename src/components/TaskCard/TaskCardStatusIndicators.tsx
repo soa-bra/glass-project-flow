@@ -1,0 +1,85 @@
+
+interface TaskCardStatusIndicatorsProps {
+  status: string;
+  statusColor: string;
+  date: string;
+  assignee: string;
+  members: string;
+}
+
+const TaskCardStatusIndicators = ({
+  status,
+  statusColor,
+  date,
+  assignee,
+  members
+}: TaskCardStatusIndicatorsProps) => {
+  return (
+    <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'flex-end',
+      gap: '12px',
+      flexWrap: 'wrap'
+    }}>
+      {/* كبسولة التاريخ */}
+      <div style={{
+        backgroundColor: '#F7FFFF',
+        borderRadius: '24px',
+        padding: '6px 16px',
+        fontSize: '14px',
+        fontWeight: 500,
+        color: '#000000'
+      }}>
+        {date}
+      </div>
+
+      {/* كبسولة المسؤول */}
+      <div style={{
+        backgroundColor: '#F7FFFF',
+        borderRadius: '24px',
+        padding: '6px 16px',
+        fontSize: '14px',
+        fontWeight: 500,
+        color: '#000000'
+      }}>
+        {assignee}
+      </div>
+
+      {/* كبسولة الأعضاء */}
+      <div style={{
+        backgroundColor: '#F7FFFF',
+        borderRadius: '24px',
+        padding: '6px 16px',
+        fontSize: '14px',
+        fontWeight: 500,
+        color: '#000000'
+      }}>
+        {members}
+      </div>
+
+      {/* كبسولة الحالة مع النقطة */}
+      <div style={{
+        backgroundColor: '#F7FFFF',
+        borderRadius: '24px',
+        padding: '6px 16px',
+        fontSize: '14px',
+        fontWeight: 500,
+        color: '#000000',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        <div style={{
+          width: '12px',
+          height: '12px',
+          borderRadius: '50%',
+          backgroundColor: statusColor
+        }}></div>
+        {status}
+      </div>
+    </div>
+  );
+};
+
+export default TaskCardStatusIndicators;
