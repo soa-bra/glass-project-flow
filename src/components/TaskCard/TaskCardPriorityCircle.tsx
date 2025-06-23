@@ -1,4 +1,5 @@
 
+
 interface TaskCardPriorityCircleProps {
   priority: string;
 }
@@ -52,10 +53,10 @@ const TaskCardPriorityCircle = ({
         justifyContent: 'center'
       }}
     >
-      <span style={{ fontSize: '14px', fontWeight: 600, color: '#000000', lineHeight: 1 }}>
+      <span style={{ fontSize: '12px', fontWeight: 600, color: '#000000', lineHeight: 1 }}>
         {getPriorityText(priority).line1}
       </span>
-      <span style={{ fontSize: '12px', fontWeight: 400, color: '#000000', marginTop: '2px' }}>
+      <span style={{ fontSize: '10px', fontWeight: 400, color: '#000000', marginTop: '1px' }}>
         {getPriorityText(priority).line2}
       </span>
     </div>
@@ -63,3 +64,4 @@ const TaskCardPriorityCircle = ({
 };
 
 export default TaskCardPriorityCircle;
+

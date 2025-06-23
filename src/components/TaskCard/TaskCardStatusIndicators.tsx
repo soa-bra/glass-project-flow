@@ -1,4 +1,5 @@
 
+
 interface TaskCardStatusIndicatorsProps {
   status: string;
   statusColor: string;
@@ -27,9 +28,9 @@ const TaskCardStatusIndicators = ({
         backgroundColor: '#F7FFFF',
         borderRadius: '20px',
         padding: '4px 12px',
-        fontSize: '14px',
+        fontSize: '12px',
         fontWeight: 500,
-        color: '#000000'
+        color: '#858789'
       }}>
         {date}
       </div>
@@ -39,9 +40,9 @@ const TaskCardStatusIndicators = ({
         backgroundColor: '#F7FFFF',
         borderRadius: '20px',
         padding: '4px 12px',
-        fontSize: '14px',
+        fontSize: '12px',
         fontWeight: 500,
-        color: '#000000'
+        color: '#858789'
       }}>
         {assignee}
       </div>
@@ -51,9 +52,9 @@ const TaskCardStatusIndicators = ({
         backgroundColor: '#F7FFFF',
         borderRadius: '20px',
         padding: '4px 12px',
-        fontSize: '14px',
+        fontSize: '12px',
         fontWeight: 500,
-        color: '#000000'
+        color: '#858789'
       }}>
         {members}
       </div>
@@ -63,9 +64,9 @@ const TaskCardStatusIndicators = ({
         backgroundColor: '#F7FFFF',
         borderRadius: '20px',
         padding: '4px 12px',
-        fontSize: '14px',
+        fontSize: '12px',
         fontWeight: 500,
-        color: '#000000',
+        color: '#858789',
         display: 'flex',
         alignItems: 'center',
         gap: '6px'
@@ -83,3 +84,4 @@ const TaskCardStatusIndicators = ({
 };
 
 export default TaskCardStatusIndicators;
+

@@ -1,4 +1,5 @@
 
+
 interface TaskCardDaysCircleProps {
   daysLeft: number;
 }
@@ -23,10 +24,10 @@ const TaskCardDaysCircle = ({
         justifyContent: 'center'
       }}
     >
-      <span style={{ fontSize: '20px', fontWeight: 700, color: '#000000', lineHeight: 1 }}>
+      <span style={{ fontSize: '18px', fontWeight: 700, color: '#000000', lineHeight: 1 }}>
         {daysLeft.toString().padStart(2, '0')}
       </span>
-      <span style={{ fontSize: '12px', fontWeight: 400, color: '#000000', marginTop: '4px' }}>
+      <span style={{ fontSize: '10px', fontWeight: 400, color: '#000000', marginTop: '2px' }}>
         يوم
       </span>
     </div>
@@ -34,3 +35,4 @@ const TaskCardDaysCircle = ({
 };
 
 export default TaskCardDaysCircle;
+

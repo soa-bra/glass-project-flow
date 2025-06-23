@@ -1,4 +1,5 @@
 
+
 interface TaskCardTitleProps {
   title: string;
   description: string;
@@ -11,17 +12,17 @@ const TaskCardTitle = ({
   return (
     <div style={{ marginTop: '12px', textAlign: 'right' }}>
       <h4 style={{ 
-        fontSize: '24px', 
+        fontSize: '18px', 
         fontWeight: 700, 
         color: '#000000', 
-        marginBottom: '6px',
+        marginBottom: '4px',
         lineHeight: 1.2
       }}>
         {title}
       </h4>
       
       <p style={{ 
-        fontSize: '16px', 
+        fontSize: '14px', 
         fontWeight: 400, 
         color: '#858789',
         marginBottom: '16px',
@@ -34,3 +35,4 @@ const TaskCardTitle = ({
 };
 
 export default TaskCardTitle;
+
