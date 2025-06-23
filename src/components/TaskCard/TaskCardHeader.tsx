@@ -17,10 +17,16 @@ const TaskCardHeader = ({
   priority
 }: TaskCardHeaderProps) => {
   return (
-    <div className="relative mb-3">
+    <div className="relative flex-1">
       <TaskCardDaysCircle daysLeft={daysLeft} />
       <TaskCardPriorityCircle priority={priority} />
-      <div style={{ marginTop: '8px', marginLeft: '90px', marginRight: '90px' }}>
+      <div style={{ 
+        marginTop: '0px', 
+        marginLeft: '65px', 
+        marginRight: '65px',
+        textAlign: 'center',
+        paddingTop: '8px'
+      }}>
         <TaskCardTitle title={title} description={description} />
       </div>
     </div>

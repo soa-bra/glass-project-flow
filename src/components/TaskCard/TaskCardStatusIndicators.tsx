@@ -1,5 +1,4 @@
 
-
 interface TaskCardStatusIndicatorsProps {
   status: string;
   statusColor: string;
@@ -19,18 +18,42 @@ const TaskCardStatusIndicators = ({
     <div style={{ 
       display: 'flex', 
       alignItems: 'center', 
-      justifyContent: 'flex-end',
-      gap: '8px',
-      flexWrap: 'wrap'
+      justifyContent: 'center',
+      gap: '6px',
+      flexWrap: 'wrap',
+      marginTop: '8px'
     }}>
+      {/* كبسولة الحالة مع النقطة */}
+      <div style={{
+        backgroundColor: '#F7FFFF',
+        borderRadius: '15px',
+        padding: '3px 8px',
+        fontSize: '10px',
+        fontWeight: 500,
+        color: '#858789',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        fontFamily: 'IBM Plex Sans Arabic'
+      }}>
+        <div style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          backgroundColor: statusColor
+        }}></div>
+        {status}
+      </div>
+
       {/* كبسولة التاريخ */}
       <div style={{
         backgroundColor: '#F7FFFF',
-        borderRadius: '20px',
-        padding: '4px 12px',
-        fontSize: '12px',
+        borderRadius: '15px',
+        padding: '3px 8px',
+        fontSize: '10px',
         fontWeight: 500,
-        color: '#858789'
+        color: '#858789',
+        fontFamily: 'IBM Plex Sans Arabic'
       }}>
         {date}
       </div>
@@ -38,11 +61,12 @@ const TaskCardStatusIndicators = ({
       {/* كبسولة المسؤول */}
       <div style={{
         backgroundColor: '#F7FFFF',
-        borderRadius: '20px',
-        padding: '4px 12px',
-        fontSize: '12px',
+        borderRadius: '15px',
+        padding: '3px 8px',
+        fontSize: '10px',
         fontWeight: 500,
-        color: '#858789'
+        color: '#858789',
+        fontFamily: 'IBM Plex Sans Arabic'
       }}>
         {assignee}
       </div>
@@ -50,38 +74,17 @@ const TaskCardStatusIndicators = ({
       {/* كبسولة الأعضاء */}
       <div style={{
         backgroundColor: '#F7FFFF',
-        borderRadius: '20px',
-        padding: '4px 12px',
-        fontSize: '12px',
-        fontWeight: 500,
-        color: '#858789'
-      }}>
-        {members}
-      </div>
-
-      {/* كبسولة الحالة مع النقطة */}
-      <div style={{
-        backgroundColor: '#F7FFFF',
-        borderRadius: '20px',
-        padding: '4px 12px',
-        fontSize: '12px',
+        borderRadius: '15px',
+        padding: '3px 8px',
+        fontSize: '10px',
         fontWeight: 500,
         color: '#858789',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px'
+        fontFamily: 'IBM Plex Sans Arabic'
       }}>
-        <div style={{
-          width: '12px',
-          height: '12px',
-          borderRadius: '50%',
-          backgroundColor: statusColor
-        }}></div>
-        {status}
+        {members}
       </div>
     </div>
   );
 };
 
 export default TaskCardStatusIndicators;
-
