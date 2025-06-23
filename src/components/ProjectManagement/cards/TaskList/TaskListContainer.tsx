@@ -8,8 +8,18 @@ interface TaskListContainerProps {
 export const TaskListContainer: React.FC<TaskListContainerProps> = ({ children }) => {
   return (
     <div 
-      style={{ background: '#aec2cf' }} 
-      className="h-full p-4 rounded-3xl"
+      className="font-arabic h-full"
+      style={{
+        width: '100%',
+        maxWidth: '100%',
+        backgroundColor: '#aec2cf',
+        borderRadius: '40px',
+        padding: '24px',
+        position: 'relative',
+        direction: 'rtl',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
     >
       {children}
     </div>

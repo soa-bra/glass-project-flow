@@ -25,7 +25,7 @@ export const TaskListContent: React.FC = () => {
       date: '29 May',
       assignee: 'د. أسامة',
       members: 'عضو',
-      daysLeft: 1,
+      daysLeft: 2,
       priority: 'urgent-important' as const
     },
     {
@@ -37,7 +37,7 @@ export const TaskListContent: React.FC = () => {
       date: '01 Jun',
       assignee: 'د. أسامة',
       members: 'عضوين',
-      daysLeft: 1,
+      daysLeft: 5,
       priority: 'not-urgent-important' as const
     },
     {
@@ -49,16 +49,18 @@ export const TaskListContent: React.FC = () => {
       date: '05 Jun',
       assignee: 'د. أسامة',
       members: 'غير مضيف',
-      daysLeft: 1,
+      daysLeft: 10,
       priority: 'not-urgent-not-important' as const
     }
   ];
 
   return (
-    <div className="space-y-3 max-h-[calc(100%-100px)] overflow-y-auto pr-1">
-      {tasks.map(task => (
-        <TaskCard key={task.id} {...task} />
-      ))}
+    <div className="flex-1 overflow-y-auto">
+      <div className="space-y-4 pr-2">
+        {tasks.map(task => (
+          <TaskCard key={task.id} {...task} />
+        ))}
+      </div>
     </div>
   );
 };

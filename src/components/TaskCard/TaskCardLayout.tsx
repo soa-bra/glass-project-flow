@@ -17,7 +17,7 @@ const TaskCardLayout = ({
       className={`mx-auto font-arabic ${className}`}
       style={{
         width: '100%',
-        maxWidth: '310px',
+        maxWidth: '100%',
         height: '140px',
         backgroundColor: '#EAF2F5',
         borderRadius: '40px',
@@ -26,7 +26,8 @@ const TaskCardLayout = ({
         direction: 'rtl',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        fontFamily: 'IBM Plex Sans Arabic'
       }}
     >
       {children}
