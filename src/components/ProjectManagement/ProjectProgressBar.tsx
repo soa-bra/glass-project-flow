@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 
 interface Stage {
@@ -35,20 +36,22 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
 
   const litCount = Math.round(segmentCount * progress / 100);
   const segments = Array.from({ length: segmentCount }, (_, i) => i);
-  const circleSize = segmentHeight * 1.3; // جميع الدوائر أكبر بـ30٪ من الشريط
+  const circleSize = segmentHeight * 1.3 * 1.2; // أكبر 20٪ من الحجم العادي
   const bubbleSize = circleSize * 1.2;
 
+  // حساب المرحلة الحالية بناءً على التقدم الفعلي
   const currentStageIndex = Math.floor(progress / 100 * (stages.length - 1));
-  const reversedStages = [...stages].reverse();
+  const reversedStages = [...stages].reverse(); // لعكس ترتيب المراحل
 
   const getStageLeft = (index: number) => {
-    const usableWidth = segmentCount - 4;
+    const usableWidth = segmentCount - 4; // خصم أول وآخر شرطتين
     const step = usableWidth / (stages.length - 1);
-    return (index * step + 2) / segmentCount * 100;
+    return (index * step + 2) / segmentCount * 100; // موضع المرحلة في الشريط المعكوس
   };
 
   return (
     <div className="relative w-full flex flex-col items-start font-arabic pt-12 pb-10 px-6" style={{ background: 'transparent' }}>
+      {/* فقاعة تقدم المشروع - ثابتة في بداية الشريط */}
       <div
         className="absolute z-10 text-black text-right"
         style={{
@@ -58,13 +61,14 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
           borderRadius: '50px',
           minWidth: '160px',
           top: `-${circleSize / 1.8}px`,
-          right: `calc(80% - ${bubbleSize / 1.8}px)`
+          right: `calc(80% - ${bubbleSize / 1.8}px)` // ثابتة في بداية الشريط (اليمين)
         }}
       >
         <div className="font-bold text-lg">تقدم المشروع</div>
         <div className="text-sm font-light text-gray-800">{stages[currentStageIndex]?.label}</div>
       </div>
 
+      {/* شريط الشرائح */}
       <div ref={barRef} className="relative flex items-center justify-start flex-row-reverse gap-[3px] w-[80%] h-[25px]">
         {segments.map((idx) => {
           const reversedIdx = segmentCount - 1 - idx;
@@ -72,7 +76,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
           const isFirstTwo = reversedIdx >= segmentCount - 2;
           const color = isFirstTwo
             ? '#B9F3A8'
-            : `hsl(${(reversedIdx / segmentCount) * 360}, 40%, 65%)`; // تقليل التشبع
+            : `hsl(${(reversedIdx / segmentCount) * 360}, 70%, 50%)`;
           return (
             <div
               key={idx}
@@ -88,8 +92,10 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
           );
         })}
 
+        {/* دوائر المراحل */}
         {reversedStages.map((stage, i) => {
           const stageProgress = getStageLeft(i);
+          // إصلاح حساب isCompleted للمراحل المعكوسة
           const originalStageIndex = stages.length - 1 - i;
           const stageThreshold = (originalStageIndex / (stages.length - 1)) * 100;
           const isCompleted = progress >= stageThreshold;
@@ -109,9 +115,12 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
                   width: `${circleSize}px`,
                   height: `${circleSize}px`,
                   borderRadius: '50%',
-                  backgroundColor: isCompleted ? '#3f0' : 'rgba(255, 255, 255, 0.08)',
+                  backgroundColor: isCompleted ? '#B9F3A8' : 'rgba(255, 255, 255, 0.3)',
                   backdropFilter: 'blur(16px)',
-                  border: isCompleted ? 'none' : 'none',
+                  border: isCompleted ? 'none' : '2px solid black',
+                  boxShadow: isCompleted
+                    ? '0 0 6px #B9F3A8'
+                    : 'inset 0 0 2px rgba(0,0,0,0.25)',
                 }}
               >
                 {isCompleted ? (
@@ -119,9 +128,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
                     <polyline points="5 13 10 18 20 6" />
                   </svg>
                 ) : (
-                  <svg width="18" height="18">
-                    <circle cx="9" cy="9" r="6" stroke="black" strokeWidth="3" fill="none" />
-                  </svg>
+                  <span style={{ fontSize: '18px', color: 'black', fontWeight: 'bold' }}>◯</span>
                 )}
               </div>
               <div
