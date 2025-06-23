@@ -16,7 +16,7 @@ const tasks: TaskCardProps[] = [
     assignee: 'د. أسامة',
     members: 'غير مضيف',
     daysLeft: 1,
-    priority: 'urgent-not-important'
+    priority: 'urgent-not-important' as const
   },
   {
     id: 2,
@@ -28,7 +28,7 @@ const tasks: TaskCardProps[] = [
     assignee: 'د. أسامة',
     members: 'عضو',
     daysLeft: 1,
-    priority: 'urgent-important'
+    priority: 'urgent-important' as const
   },
 ];
 
