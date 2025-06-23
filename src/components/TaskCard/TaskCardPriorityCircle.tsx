@@ -1,4 +1,3 @@
-
 interface TaskCardPriorityCircleProps {
   priority: string;
 }
@@ -9,7 +8,7 @@ const TaskCardPriorityCircle = ({
   const getPriorityBubbleStyle = (priority: string) => {
     switch (priority) {
       case 'urgent-important':
-        return { backgroundColor: '#F2F9FB' };
+        return { backgroundColor: '#f1b5b9' };
       case 'urgent-not-important':
         return { backgroundColor: '#A4E2F6' };
       case 'not-urgent-important':
