@@ -15,24 +15,24 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({ project }) => 
     <div className="grid grid-cols-4 grid-rows-3 gap-4 h-full">
       {/* الصف الأول */}
       
-      {/* العمود الأول، الصف الأول - التنبيهات */}
-      <div className="col-span-2 row-span-1">
-        <NotificationsCard />
-      </div>
-
-      {/* العمود الثالث والرابع، الصف الأول - قائمة المهام */}
+      {/* العمود الأول والثاني، الصف الأول - قائمة المهام */}
       <div className="col-span-2 row-span-3">
         <TaskListCard project={project} />
       </div>
 
-      {/* الصف الثاني */}
+      {/* العمود الثالث والرابع، الصف الأول - التنبيهات */}
+      <div className="col-span-2 row-span-1">
+        <NotificationsCard />
+      </div>
+
+      {/* الصف الثاني والثالث */}
       
-      {/* العمود الأول، الصف الثاني والثالث - النظرة المالية */}
+      {/* العمود الثالث، الصف الثاني والثالث - النظرة المالية */}
       <div className="col-span-1 row-span-2">
         <FinancialOverviewCard />
       </div>
 
-      {/* العمود الثاني، الصف الثاني والثالث - الرسوم البيانية */}
+      {/* العمود الرابع، الصف الثاني والثالث - الرسوم البيانية */}
       <div className="col-span-1 row-span-2">
         <DataVisualizationCard />
       </div>

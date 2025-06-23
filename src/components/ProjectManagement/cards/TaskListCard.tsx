@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Project } from '@/types/project';
 import { Plus } from 'lucide-react';
@@ -49,7 +50,7 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({
     priority: 'غير عاجل وغير هام'
   }];
   return <div style={{
-    background: 'var(--backgrounds-cards-admin-ops)'
+    background: '#aec2cf'
   }} className="h-full p-6 rounded-3xl border border-white/20">
       {/* الرأس */}
       <div className="flex items-center justify-between mb-6">
