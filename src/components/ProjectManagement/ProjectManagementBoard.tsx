@@ -51,6 +51,13 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     { id: 'reports', label: 'التقارير' }
   ];
 
+  // بيانات وهمية للإحصائيات
+  const mockStats = {
+    expectedRevenue: 250,
+    complaints: 12,
+    delayedProjects: 3
+  };
+
   return (
     <div 
       className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`}
@@ -92,6 +99,55 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             { label: 'المعالجة النهائية' },
           ]}
         />
+      </div>
+
+      {/* مكون الإحصائيات - منسوخ من OperationStatsSection */}
+      <div className="flex justify-center mb-6 flex-shrink-0">
+        <div className="w-1/2">
+          <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[4px] mx-[10px]">
+            {/* الإيرادات المتوقعة */}
+            <div className="text-right p-6 py-0 my-[15px]">
+              <div className="mb-2">
+                <span className="text-sm text-black font-arabic font-medium">الإيرادات المتوقعة</span>
+              </div>
+              <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
+                <div className="text-5xl font-normal text-gray-900 font-arabic">
+                  {mockStats.expectedRevenue || 0}
+                </div>
+                <div className="text-xs text-black font-arabic font-bold">الف</div>
+              </div>
+              <div className="text-xs font-Regular text-black font-arabic">ريال سعودي عن الربع الأول</div>
+            </div>
+
+            {/* الشكاوى */}
+            <div className="text-right p-6 mx-0 px-[24px] py-0 my-[15px]">
+              <div className="mb-2">
+                <span className="text-sm text-black font-arabic font-medium">الشكاوى</span>
+              </div>
+              <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
+                <div className="text-5xl font-normal text-gray-900 font-arabic">
+                  {String(mockStats.complaints || 0).padStart(2, '0')}
+                </div>
+                <div className="text-xs text-black font-arabic font-bold">شكاوى</div>
+              </div>
+              <div className="text-xs font-Regular text-black font-arabic">الشكاوى والملاحظات التي المكررة</div>
+            </div>
+
+            {/* المشاريع المتأخرة */}
+            <div className="text-right p-6 py-0 my-[15px]">
+              <div className="mb-2">
+                <span className="text-sm text-black font-arabic font-medium">المشاريع المتأخرة</span>
+              </div>
+              <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
+                <div className="text-5xl font-normal text-gray-900 font-arabic">
+                  {String(mockStats.delayedProjects || 0).padStart(2, '0')}
+                </div>
+                <div className="text-xs text-black font-arabic font-bold">مشاريع</div>
+              </div>
+              <div className="text-xs font-Regular text-black font-arabic">تحتاج إلى تدخل ومعالجة</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* المحتوى الرئيسي */}
