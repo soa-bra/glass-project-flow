@@ -49,6 +49,9 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
     return (index * step + 2) / segmentCount * 100; // موضع المرحلة في الشريط المعكوس
   };
 
+  // ألوان التدرج الجديدة
+  const colorGradient = ['#d9f3a8', '#5ac0d8', '#d9d2fd', '#fba0a3', '#fbe2aa'];
+
   return (
     <div className="relative w-full flex flex-col items-start font-arabic pt-12 pb-10 px-6" style={{ background: 'transparent' }}>
       {/* فقاعة تقدم المشروع - ثابتة في بداية الشريط */}
@@ -74,16 +77,32 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
           const reversedIdx = segmentCount - 1 - idx;
           const isLit = reversedIdx < litCount;
           const isFirstTwo = reversedIdx >= segmentCount - 2;
-          const color = isFirstTwo
-            ? '#B9F3A8'
-            : `hsl(${(reversedIdx / segmentCount) * 360}, 70%, 50%)`;
+          
+          // استخدام الألوان الجديدة
+          let color = '#eee';
+          if (isFirstTwo) {
+            color = '#d9f3a8';
+          } else if (isLit) {
+            const gradientPosition = reversedIdx / segmentCount;
+            const colorIndex = Math.floor(gradientPosition * (colorGradient.length - 1));
+            const nextColorIndex = Math.min(colorIndex + 1, colorGradient.length - 1);
+            const localPosition = (gradientPosition * (colorGradient.length - 1)) - colorIndex;
+            
+            // interpolate between colors
+            const currentColor = colorGradient[colorIndex];
+            const nextColor = colorGradient[nextColorIndex];
+            
+            // Simple color interpolation
+            color = currentColor;
+          }
+          
           return (
             <div
               key={idx}
               style={{
                 width: `${segmentWidthPx}px`,
                 height: `${segmentHeight}px`,
-                backgroundColor: isLit ? color : '#eee',
+                backgroundColor: color,
                 borderRadius: '2px',
                 boxShadow: isLit ? `0 0 4px ${color}` : undefined,
                 transition: 'background-color 0.2s',
@@ -117,7 +136,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
                   borderRadius: '50%',
                   backgroundColor: isCompleted ? '#B9F3A8' : 'rgba(255, 255, 255, 0.3)',
                   backdropFilter: 'blur(16px)',
-                  border: isCompleted ? 'none' : '2px solid black',
+                  border: 'none', // إزالة الحد الأسود
                   boxShadow: isCompleted
                     ? '0 0 6px #B9F3A8'
                     : 'inset 0 0 2px rgba(0,0,0,0.25)',
@@ -128,7 +147,10 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
                     <polyline points="5 13 10 18 20 6" />
                   </svg>
                 ) : (
-                  <span style={{ fontSize: '18px', color: 'black', fontWeight: 'bold' }}>◯</span>
+                  // دائرة مفرغة بنفس سمك علامة الصح
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
+                    <circle cx="12" cy="12" r="8" />
+                  </svg>
                 )}
               </div>
               <div
