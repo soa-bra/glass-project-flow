@@ -9,12 +9,12 @@ const TaskCardTitle = ({
   description
 }: TaskCardTitleProps) => {
   return (
-    <div style={{ marginTop: '16px', textAlign: 'right' }}>
+    <div style={{ marginTop: '12px', textAlign: 'right' }}>
       <h4 style={{ 
         fontSize: '24px', 
         fontWeight: 700, 
         color: '#000000', 
-        marginBottom: '8px',
+        marginBottom: '6px',
         lineHeight: 1.2
       }}>
         {title}
@@ -24,7 +24,7 @@ const TaskCardTitle = ({
         fontSize: '16px', 
         fontWeight: 400, 
         color: '#858789',
-        marginBottom: '24px',
+        marginBottom: '16px',
         lineHeight: 1.2
       }}>
         {description}

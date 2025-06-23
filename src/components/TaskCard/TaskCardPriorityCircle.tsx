@@ -1,3 +1,4 @@
+
 interface TaskCardPriorityCircleProps {
   priority: string;
 }
@@ -39,10 +40,10 @@ const TaskCardPriorityCircle = ({
     <div 
       style={{
         position: 'absolute',
-        top: '24px',
-        right: '24px',
-        width: '64px',
-        height: '64px',
+        top: '16px',
+        right: '16px',
+        width: '75px',
+        height: '75px',
         borderRadius: '50%',
         ...getPriorityBubbleStyle(priority),
         display: 'flex',

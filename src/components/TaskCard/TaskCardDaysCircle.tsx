@@ -10,10 +10,10 @@ const TaskCardDaysCircle = ({
     <div 
       style={{
         position: 'absolute',
-        top: '24px',
-        left: '24px',
-        width: '80px',
-        height: '80px',
+        top: '16px',
+        left: '16px',
+        width: '75px',
+        height: '75px',
         borderRadius: '50%',
         border: '2px solid #000000',
         backgroundColor: 'transparent',

@@ -19,14 +19,14 @@ const TaskCardStatusIndicators = ({
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'flex-end',
-      gap: '12px',
+      gap: '8px',
       flexWrap: 'wrap'
     }}>
       {/* كبسولة التاريخ */}
       <div style={{
         backgroundColor: '#F7FFFF',
-        borderRadius: '24px',
-        padding: '6px 16px',
+        borderRadius: '20px',
+        padding: '4px 12px',
         fontSize: '14px',
         fontWeight: 500,
         color: '#000000'
@@ -37,8 +37,8 @@ const TaskCardStatusIndicators = ({
       {/* كبسولة المسؤول */}
       <div style={{
         backgroundColor: '#F7FFFF',
-        borderRadius: '24px',
-        padding: '6px 16px',
+        borderRadius: '20px',
+        padding: '4px 12px',
         fontSize: '14px',
         fontWeight: 500,
         color: '#000000'
@@ -49,8 +49,8 @@ const TaskCardStatusIndicators = ({
       {/* كبسولة الأعضاء */}
       <div style={{
         backgroundColor: '#F7FFFF',
-        borderRadius: '24px',
-        padding: '6px 16px',
+        borderRadius: '20px',
+        padding: '4px 12px',
         fontSize: '14px',
         fontWeight: 500,
         color: '#000000'
@@ -61,14 +61,14 @@ const TaskCardStatusIndicators = ({
       {/* كبسولة الحالة مع النقطة */}
       <div style={{
         backgroundColor: '#F7FFFF',
-        borderRadius: '24px',
-        padding: '6px 16px',
+        borderRadius: '20px',
+        padding: '4px 12px',
         fontSize: '14px',
         fontWeight: 500,
         color: '#000000',
         display: 'flex',
         alignItems: 'center',
-        gap: '8px'
+        gap: '6px'
       }}>
         <div style={{
           width: '12px',
