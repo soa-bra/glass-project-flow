@@ -49,8 +49,40 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
     return (index * step + 2) / segmentCount * 100; // موضع المرحلة في الشريط المعكوس
   };
 
-  // ألوان التدرج الجديدة
-  const colorGradient = ['#d9f3a8', '#5ac0d8', '#d9d2fd', '#fba0a3', '#fbe2aa'];
+  // ألوان التدرج الرئيسية
+  const mainColors = ['#d9f3a8', '#5ac0d8', '#d9d2fd', '#fba0a3', '#fbe2aa'];
+
+  // دالة لحساب التدرج بين لونين
+  const interpolateColor = (color1: string, color2: string, factor: number) => {
+    const hex1 = color1.replace('#', '');
+    const hex2 = color2.replace('#', '');
+    
+    const r1 = parseInt(hex1.substr(0, 2), 16);
+    const g1 = parseInt(hex1.substr(2, 2), 16);
+    const b1 = parseInt(hex1.substr(4, 2), 16);
+    
+    const r2 = parseInt(hex2.substr(0, 2), 16);
+    const g2 = parseInt(hex2.substr(2, 2), 16);
+    const b2 = parseInt(hex2.substr(4, 2), 16);
+    
+    const r = Math.round(r1 + (r2 - r1) * factor);
+    const g = Math.round(g1 + (g2 - g1) * factor);
+    const b = Math.round(b1 + (b2 - b1) * factor);
+    
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  };
+
+  // دالة للحصول على اللون مع التدرج
+  const getGradientColor = (position: number) => {
+    const segmentSize = 1 / (mainColors.length - 1);
+    const segmentIndex = Math.floor(position / segmentSize);
+    const localPosition = (position % segmentSize) / segmentSize;
+    
+    const colorIndex1 = Math.min(segmentIndex, mainColors.length - 1);
+    const colorIndex2 = Math.min(segmentIndex + 1, mainColors.length - 1);
+    
+    return interpolateColor(mainColors[colorIndex1], mainColors[colorIndex2], localPosition);
+  };
 
   return (
     <div className="relative w-full flex flex-col items-start font-arabic pt-12 pb-10 px-6" style={{ background: 'transparent' }}>
@@ -58,7 +90,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
       <div
         className="absolute z-10 text-black text-right"
         style={{
-          background: 'linear-gradient(135deg, #B9F3A8, #d4ffd0)',
+          background: 'linear-gradient(135deg, #b9f3a8, #d4ffd0)',
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
           padding: '14px 20px',
           borderRadius: '50px',
@@ -78,22 +110,12 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
           const isLit = reversedIdx < litCount;
           const isFirstTwo = reversedIdx >= segmentCount - 2;
           
-          // استخدام الألوان الجديدة
           let color = '#eee';
           if (isFirstTwo) {
             color = '#d9f3a8';
           } else if (isLit) {
             const gradientPosition = reversedIdx / segmentCount;
-            const colorIndex = Math.floor(gradientPosition * (colorGradient.length - 1));
-            const nextColorIndex = Math.min(colorIndex + 1, colorGradient.length - 1);
-            const localPosition = (gradientPosition * (colorGradient.length - 1)) - colorIndex;
-            
-            // interpolate between colors
-            const currentColor = colorGradient[colorIndex];
-            const nextColor = colorGradient[nextColorIndex];
-            
-            // Simple color interpolation
-            color = currentColor;
+            color = getGradientColor(gradientPosition);
           }
           
           return (
@@ -134,11 +156,11 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
                   width: `${circleSize}px`,
                   height: `${circleSize}px`,
                   borderRadius: '50%',
-                  backgroundColor: isCompleted ? '#B9F3A8' : 'rgba(255, 255, 255, 0.3)',
+                  backgroundColor: isCompleted ? '#b9f3a8' : 'rgba(255, 255, 255, 0.3)',
                   backdropFilter: 'blur(16px)',
                   border: 'none', // إزالة الحد الأسود
                   boxShadow: isCompleted
-                    ? '0 0 6px #B9F3A8'
+                    ? '0 0 6px #b9f3a8'
                     : 'inset 0 0 2px rgba(0,0,0,0.25)',
                 }}
               >
