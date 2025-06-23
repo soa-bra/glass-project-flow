@@ -17,7 +17,7 @@ export const DataVisualizationCard: React.FC = () => {
     <div 
       className="h-full p-6 rounded-3xl border border-white/20"
       style={{
-        background: 'var(--backgrounds-cards-admin-ops)',
+        background: '#f7ffff',
       }}
     >
       {/* العنوان */}

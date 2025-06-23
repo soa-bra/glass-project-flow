@@ -7,7 +7,7 @@ export const NotificationsCard: React.FC = () => {
     <div 
       className="h-full p-6 rounded-3xl border border-white/20"
       style={{
-        background: 'var(--backgrounds-cards-admin-ops)',
+        background: '#f7ffff',
       }}
     >
       <h3 className="text-lg font-arabic font-semibold text-gray-800 mb-6">التنبيهات</h3>
