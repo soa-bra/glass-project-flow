@@ -1,14 +1,11 @@
-
 import React, { useState } from 'react';
 import { X, MoreHorizontal, ChevronDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Project } from '@/types/project';
-
 interface TabItem {
   id: string;
   label: string;
 }
-
 interface ProjectManagementHeaderProps {
   project: Project;
   onClose: () => void;
@@ -19,7 +16,6 @@ interface ProjectManagementHeaderProps {
   onTabChange: (tab: string) => void;
   tabs: TabItem[];
 }
-
 export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = ({
   project,
   onClose,
@@ -42,7 +38,6 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
         return 'bg-gray-100 border-gray-300 text-gray-800';
     }
   };
-
   const getStatusText = (status: string) => {
     switch (status) {
       case 'on-plan':
@@ -55,9 +50,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
         return 'غير محدد';
     }
   };
-
-  return (
-    <div className="flex-shrink-0 mb-6">
+  return <div className="flex-shrink-0 mb-6">
       {/* الصف الأول */}
       <div className="flex items-center justify-between mb-6 py-0 my-[18px]">
         {/* العنوان على اليسار */}
@@ -67,35 +60,18 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
 
         {/* التبويبات في المنتصف - مطابقة لتصميم لوحة الإدارة والتشغيل */}
         <div className="flex-1 flex justify-center mx-8">
-          <div 
-            dir="rtl" 
-            style={{
-              WebkitOverflowScrolling: 'touch',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none'
-            }} 
-            className="w-full overflow-x-auto overflow-y-hidden no-scrollbar px-[19px] mx-0"
-          >
-            <div 
-              style={{
-                direction: "rtl",
-                width: "fit-content"
-              }} 
-              className="gap-1 justify-end bg-transparent min-w-max flex-nowrap py-0 h-auto flex mx-0 px-0"
-            >
-              {tabs.map(tab => (
-                <button 
-                  key={tab.id} 
-                  onClick={() => onTabChange(tab.id)} 
-                  className={`px-4 py-2 rounded-full font-arabic text-sm transition-all duration-200 border ${
-                    activeTab === tab.id 
-                      ? 'bg-black text-white border-black shadow-sm' 
-                      : 'bg-transparent text-gray-700 border-black hover:bg-white/50'
-                  }`}
-                >
+          <div dir="rtl" style={{
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
+        }} className="w-full overflow-x-auto overflow-y-hidden no-scrollbar px-[19px] mx-0">
+            <div style={{
+            direction: "rtl",
+            width: "fit-content"
+          }} className="gap-1 justify-end bg-transparent min-w-max flex-nowrap py-0 h-auto flex mx-0 px-0">
+              {tabs.map(tab => <button key={tab.id} onClick={() => onTabChange(tab.id)} className={`px-4 py-2 rounded-full font-arabic text-sm transition-all duration-200 border ${activeTab === tab.id ? 'bg-black text-white border-black shadow-sm' : 'bg-transparent text-gray-700 border-black hover:bg-white/50'}`}>
                   {tab.label}
-                </button>
-              ))}
+                </button>)}
             </div>
           </div>
         </div>
@@ -104,11 +80,9 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
         <div className="flex items-center gap-3">
           {/* قائمة التعديل */}
           <div className="relative">
-            <Select onValueChange={(value) => {
-              if (value === 'delete') onDelete();
-              else if (value === 'archive') onArchive();
-              else if (value === 'edit') onEdit();
-            }}>
+            <Select onValueChange={value => {
+            if (value === 'delete') onDelete();else if (value === 'archive') onArchive();else if (value === 'edit') onEdit();
+          }}>
               <SelectTrigger className="w-[50px] h-[50px] rounded-full border-2 border-[#3e494c]/50 flex items-center justify-center transition-all duration-300 group bg-transparent">
                 <MoreHorizontal className="w-5 h-5 text-gray-700" />
               </SelectTrigger>
@@ -121,46 +95,14 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
           </div>
 
           {/* زر الإغلاق */}
-          <button 
-            onClick={onClose} 
-            className="w-[50px] h-[50px] rounded-full border-2 border-[#3e494c]/50 flex items-center justify-center transition-all duration-300 group bg-transparent"
-          >
+          <button onClick={onClose} className="w-[50px] h-[50px] rounded-full border-2 border-[#3e494c]/50 flex items-center justify-center transition-all duration-300 group bg-transparent">
             <X className="w-5 h-5 text-gray-700" />
           </button>
         </div>
       </div>
 
       {/* الصف الثاني */}
-      <div className="flex items-center gap-4 mb-4">
-        {/* اسم المشروع */}
-        <h2 className="text-xl font-arabic font-semibold text-gray-800">
-          {project.title}
-        </h2>
-
-        {/* مدير المشروع */}
-        <div className="px-3 py-1.5 bg-transparent border-2 border-black rounded-full font-arabic text-sm text-gray-700">
-          {project.owner}
-        </div>
-
-        {/* حالة المشروع */}
-        <div className="px-3 py-1.5 bg-transparent border-2 border-black rounded-full font-arabic text-sm flex items-center gap-2 text-gray-700">
-          <div className="w-2 h-2 rounded-full bg-current"></div>
-          {getStatusText(project.status || 'in-progress')}
-        </div>
-
-        {/* بيانات التعريف السريعة */}
-        <div className="flex items-center gap-4 mr-4">
-          <div className="text-sm font-arabic text-gray-600">
-            <span className="font-medium">الميزانية:</span> {project.value} ر.س
-          </div>
-          <div className="text-sm font-arabic text-gray-600">
-            <span className="font-medium">الفريق:</span> 08 أشخاص
-          </div>
-          <div className="text-sm font-arabic text-gray-600">
-            <span className="font-medium">التسليم:</span> 03 يوم
-          </div>
-        </div>
-      </div>
+      
 
       {/* الصف الثالث - النبذة التعريفية */}
       <div className="text-sm text-gray-600 font-arabic leading-relaxed max-w-2xl">
@@ -176,6 +118,5 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
           display: none !important;
         }
       `}</style>
-    </div>
-  );
+    </div>;
 };
