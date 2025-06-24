@@ -1,15 +1,11 @@
-
 import React, { useEffect, useRef, useState } from 'react';
-
 interface Stage {
   label: string;
 }
-
 interface ProjectProgressBarProps {
   progress: number; // نسبة التقدم من 0 إلى 100
   stages: Stage[];
 }
-
 export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   progress,
   stages
@@ -19,7 +15,6 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   const segmentWidthPx = 3;
   const segmentGapPx = 3;
   const segmentHeight = 25;
-
   useEffect(() => {
     const calculateSegments = () => {
       if (barRef.current) {
@@ -33,9 +28,10 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
     if (barRef.current) resizeObserver.observe(barRef.current);
     return () => resizeObserver.disconnect();
   }, []);
-
   const litCount = Math.round(segmentCount * progress / 100);
-  const segments = Array.from({ length: segmentCount }, (_, i) => i);
+  const segments = Array.from({
+    length: segmentCount
+  }, (_, i) => i);
   const circleSize = segmentHeight * 1.3 * 1.2; // أكبر 20٪ من الحجم العادي
   const bubbleSize = circleSize * 1.2;
 
@@ -56,19 +52,15 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   const interpolateColor = (color1: string, color2: string, factor: number) => {
     const hex1 = color1.replace('#', '');
     const hex2 = color2.replace('#', '');
-    
     const r1 = parseInt(hex1.substr(0, 2), 16);
     const g1 = parseInt(hex1.substr(2, 2), 16);
     const b1 = parseInt(hex1.substr(4, 2), 16);
-    
     const r2 = parseInt(hex2.substr(0, 2), 16);
     const g2 = parseInt(hex2.substr(2, 2), 16);
     const b2 = parseInt(hex2.substr(4, 2), 16);
-    
     const r = Math.round(r1 + (r2 - r1) * factor);
     const g = Math.round(g1 + (g2 - g1) * factor);
     const b = Math.round(b1 + (b2 - b1) * factor);
-    
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
   };
 
@@ -76,122 +68,92 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   const getGradientColor = (position: number) => {
     const segmentSize = 1 / (mainColors.length - 1);
     const segmentIndex = Math.floor(position / segmentSize);
-    const localPosition = (position % segmentSize) / segmentSize;
-    
+    const localPosition = position % segmentSize / segmentSize;
     const colorIndex1 = Math.min(segmentIndex, mainColors.length - 1);
     const colorIndex2 = Math.min(segmentIndex + 1, mainColors.length - 1);
-    
     return interpolateColor(mainColors[colorIndex1], mainColors[colorIndex2], localPosition);
   };
-
-  return (
-    <div className="relative w-full flex flex-col items-start font-arabic pt-12 pb-10 px-6" style={{ background: 'transparent' }}>
+  return <div style={{
+    background: 'transparent'
+  }} className="relative w-full flex flex-col items-start font-arabic pt-0 pb-20 py-0 mx-0 px-0">
       {/* فقاعة تقدم المشروع - ثابتة في بداية الشريط */}
-      <div
-        className="absolute z-10 text-black text-right"
-        style={{
-          background: 'linear-gradient(135deg, #b9f3a8, #d4ffd0)',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          padding: '14px 20px',
-          borderRadius: '50px',
-          minWidth: '160px',
-          top: `-${circleSize / 1.8}px`,
-          right: `calc(80% - ${bubbleSize / 1.8}px)` // ثابتة في بداية الشريط (اليمين)
-        }}
-      >
+      <div className="absolute z-10 text-black text-right" style={{
+      background: 'linear-gradient(135deg, #b9f3a8, #d4ffd0)',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+      padding: '14px 20px',
+      borderRadius: '50px',
+      minWidth: '160px',
+      top: `-${circleSize / 1.8}px`,
+      right: `calc(80% - ${bubbleSize / 1.8}px)` // ثابتة في بداية الشريط (اليمين)
+    }}>
         <div className="font-bold text-lg">تقدم المشروع</div>
         <div className="text-sm font-light text-gray-800">{stages[currentStageIndex]?.label}</div>
       </div>
 
       {/* شريط الشرائح */}
       <div ref={barRef} className="relative flex items-center justify-start flex-row-reverse gap-[3px] w-[80%] h-[25px]">
-        {segments.map((idx) => {
-          const reversedIdx = segmentCount - 1 - idx;
-          const isLit = reversedIdx < litCount;
-          const isFirstTwo = reversedIdx >= segmentCount - 2;
-          
-          let color = '#eee';
-          if (isFirstTwo) {
-            color = '#d9f3a8';
-          } else if (isLit) {
-            const gradientPosition = reversedIdx / segmentCount;
-            color = getGradientColor(gradientPosition);
-          }
-          
-          return (
-            <div
-              key={idx}
-              style={{
-                width: `${segmentWidthPx}px`,
-                height: `${segmentHeight}px`,
-                backgroundColor: color,
-                borderRadius: '2px',
-                boxShadow: isLit ? `0 0 4px ${color}` : undefined,
-                transition: 'background-color 0.2s',
-              }}
-            />
-          );
-        })}
+        {segments.map(idx => {
+        const reversedIdx = segmentCount - 1 - idx;
+        const isLit = reversedIdx < litCount;
+        const isFirstTwo = reversedIdx >= segmentCount - 2;
+        let color = '#eee';
+        if (isFirstTwo) {
+          color = '#d9f3a8';
+        } else if (isLit) {
+          const gradientPosition = reversedIdx / segmentCount;
+          color = getGradientColor(gradientPosition);
+        }
+        return <div key={idx} style={{
+          width: `${segmentWidthPx}px`,
+          height: `${segmentHeight}px`,
+          backgroundColor: color,
+          borderRadius: '2px',
+          boxShadow: isLit ? `0 0 4px ${color}` : undefined,
+          transition: 'background-color 0.2s'
+        }} />;
+      })}
 
         {/* دوائر المراحل */}
         {reversedStages.map((stage, i) => {
-          const stageProgress = getStageLeft(i);
-          // إصلاح حساب isCompleted للمراحل المعكوسة
-          const originalStageIndex = stages.length - 1 - i;
-          const stageThreshold = (originalStageIndex / (stages.length - 1)) * 100;
-          const isCompleted = progress >= stageThreshold;
-
-          return (
-            <div
-              key={i}
-              className="absolute"
-              style={{
-                left: `calc(${stageProgress}% - ${circleSize / 2}px)`,
-                top: `-${(circleSize - segmentHeight) / 2}px`,
-              }}
-            >
-              <div
-                className="flex items-center justify-center"
-                style={{
-                  width: `${circleSize}px`,
-                  height: `${circleSize}px`,
-                  borderRadius: '50%',
-                  backgroundColor: isCompleted ? '#b9f3a8' : 'rgba(255, 255, 255, 0.3)',
-                  backdropFilter: 'blur(16px)',
-                  border: 'none', // إزالة الحد الأسود
-                  boxShadow: isCompleted
-                    ? '0 0 6px #b9f3a8'
-                    : 'inset 0 0 2px rgba(0,0,0,0.25)',
-                }}
-              >
-                {isCompleted ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
+        const stageProgress = getStageLeft(i);
+        // إصلاح حساب isCompleted للمراحل المعكوسة
+        const originalStageIndex = stages.length - 1 - i;
+        const stageThreshold = originalStageIndex / (stages.length - 1) * 100;
+        const isCompleted = progress >= stageThreshold;
+        return <div key={i} className="absolute" style={{
+          left: `calc(${stageProgress}% - ${circleSize / 2}px)`,
+          top: `-${(circleSize - segmentHeight) / 2}px`
+        }}>
+              <div className="flex items-center justify-center" style={{
+            width: `${circleSize}px`,
+            height: `${circleSize}px`,
+            borderRadius: '50%',
+            backgroundColor: isCompleted ? '#b9f3a8' : 'rgba(255, 255, 255, 0.3)',
+            backdropFilter: 'blur(16px)',
+            border: 'none',
+            // إزالة الحد الأسود
+            boxShadow: isCompleted ? '0 0 6px #b9f3a8' : 'inset 0 0 2px rgba(0,0,0,0.25)'
+          }}>
+                {isCompleted ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
                     <polyline points="5 13 10 18 20 6" />
-                  </svg>
-                ) : (
-                  // دائرة مفرغة بنفس سمك علامة الصح
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
+                  </svg> :
+            // دائرة مفرغة بنفس سمك علامة الصح
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
                     <circle cx="12" cy="12" r="8" />
-                  </svg>
-                )}
+                  </svg>}
               </div>
-              <div
-                className="text-center mt-2 font-medium text-black"
-                style={{
-                  fontSize: '0.675rem',
-                  position: 'absolute',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: 'max-content',
-                  top: `${circleSize + 8}px`,
-                }}
-              >
+              <div className="text-center mt-2 font-medium text-black" style={{
+            fontSize: '0.675rem',
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 'max-content',
+            top: `${circleSize + 8}px`
+          }}>
                 {stage.label}
               </div>
-            </div>
-          );
-        })}
+            </div>;
+      })}
       </div>
-    </div>
-  );
+    </div>;
 };

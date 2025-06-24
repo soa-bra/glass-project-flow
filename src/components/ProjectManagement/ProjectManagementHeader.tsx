@@ -64,7 +64,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
           WebkitOverflowScrolling: 'touch',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none'
-        }} className="w-full overflow-x-auto overflow-y-hidden no-scrollbar px-[19px] mx-0">
+        }} className="w-full overflow-x-auto overflow-y-hidden no-scrollbar mx-0 px-[500px]">
             <div style={{
             direction: "rtl",
             width: "fit-content"
@@ -105,9 +105,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
       
 
       {/* الصف الثالث - النبذة التعريفية */}
-      <div className="text-sm text-gray-600 font-arabic leading-relaxed max-w-2xl">
-        {project.description || "تطوير موقع إلكتروني متكامل باستخدام أحدث التقنيات وفقاً للمعايير العالمية مع ضمان الأمان والسرعة في الأداء."}
-      </div>
+      
 
       <style>{`
         .no-scrollbar {

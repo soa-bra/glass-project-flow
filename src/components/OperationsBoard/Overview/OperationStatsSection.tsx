@@ -1,12 +1,9 @@
-
 import React from 'react';
-
 interface ProjectStats {
   expectedRevenue: number;
   complaints: number;
   delayedProjects: number;
 }
-
 interface OperationStatsSectionProps {
   stats: ProjectStats;
 }
@@ -21,19 +18,14 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
   // إضافة حماية ضد البيانات غير المعرّفة
   if (!stats) {
     console.log('OperationStatsSection: stats is undefined');
-    return (
-      <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[4px] mx-[10px]">
+    return <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[4px] mx-[10px]">
         <div className="text-center py-8 text-gray-500 font-arabic">
           جارٍ تحميل الإحصائيات...
         </div>
-      </div>
-    );
+      </div>;
   }
-
   console.log('OperationStatsSection received stats:', stats);
-
-  return (
-    <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[4px] mx-[10px]">
+  return <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-0 mx-[5px]">
       {/* الإيرادات المتوقعة */}
       <div className="text-right p-6 py-0 my-[15px]">
         <div className="mb-2">
@@ -75,6 +67,5 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
         </div>
         <div className="text-xs font-Regular text-black font-arabic">تحتاج إلى تدخل ومعالجة</div>
       </div>
-    </div>
-  );
+    </div>;
 };
