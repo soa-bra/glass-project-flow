@@ -1,18 +1,15 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProjectManagementHeader } from './ProjectManagementHeader';
 import { ProjectProgressBar } from './ProjectProgressBar';
 import { ProjectCardGrid } from './ProjectCardGrid';
 import { Project } from '@/types/project';
-
 interface ProjectManagementBoardProps {
   project: Project;
   isVisible: boolean;
   onClose: () => void;
   isSidebarCollapsed: boolean;
 }
-
 export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   project,
   isVisible,
@@ -22,34 +19,42 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
-
   if (!isVisible) return null;
-
   const handleDeleteProject = () => {
     console.log('حذف المشروع:', project.id);
     setShowDeleteDialog(false);
     onClose();
   };
-
   const handleArchiveProject = () => {
     console.log('أرشفة المشروع:', project.id);
     setShowArchiveDialog(false);
     onClose();
   };
-
   const handleEditProject = () => {
     console.log('تعديل المشروع:', project.id);
   };
-
-  const tabs = [
-    { id: 'overview', label: 'نظرة عامة' },
-    { id: 'tasks', label: 'إدارة المهام' },
-    { id: 'finance', label: 'الوضع المالي' },
-    { id: 'team', label: 'الفريق' },
-    { id: 'client', label: 'العميل' },
-    { id: 'files', label: 'المرفقات' },
-    { id: 'reports', label: 'التقارير' }
-  ];
+  const tabs = [{
+    id: 'overview',
+    label: 'نظرة عامة'
+  }, {
+    id: 'tasks',
+    label: 'إدارة المهام'
+  }, {
+    id: 'finance',
+    label: 'الوضع المالي'
+  }, {
+    id: 'team',
+    label: 'الفريق'
+  }, {
+    id: 'client',
+    label: 'العميل'
+  }, {
+    id: 'files',
+    label: 'المرفقات'
+  }, {
+    id: 'reports',
+    label: 'التقارير'
+  }];
 
   // بيانات وهمية للإحصائيات
   const mockStats = {
@@ -57,39 +62,25 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     complaints: 12,
     delayedProjects: 3
   };
-
-  return (
-    <div 
-      className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`}
-      style={{
-        top: "var(--sidebar-top-offset)",
-        height: "calc(100vh - var(--sidebar-top-offset))",
-        borderRadius: "24px",
-        background: "#e4f3f7",
-        border: "1px solid rgba(255,255,255,0.2)",
-        transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
-        padding: "24px",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden"
-      }}
-    >
+  return <div className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
+    top: "var(--sidebar-top-offset)",
+    height: "calc(100vh - var(--sidebar-top-offset))",
+    borderRadius: "24px",
+    background: "#e4f3f7",
+    border: "1px solid rgba(255,255,255,0.2)",
+    transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
+    padding: "24px",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden"
+  }}>
       {/* الرأس */}
-      <ProjectManagementHeader 
-        project={project} 
-        onClose={onClose} 
-        onDelete={() => setShowDeleteDialog(true)} 
-        onArchive={() => setShowArchiveDialog(true)} 
-        onEdit={handleEditProject}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        tabs={tabs}
-      />
+      <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
       {/* الإحصائيات - منقولة لتكون مع معلومات المشروع */}
       <div className="flex justify-between items-start mb-6 flex-shrink-0">
         {/* معلومات المشروع الأساسية */}
-        <div className="flex-1">
+        <div className="flex-1 mx-[15px]">
           <div className="flex items-center gap-4 mb-4">
             {/* اسم المشروع */}
             <h2 className="text-xl font-arabic font-semibold text-gray-800">
@@ -176,18 +167,20 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       </div>
 
       {/* شريط تقدم المراحل */}
-      <div className="mb-6 flex-shrink-0">
-        <ProjectProgressBar
-          progress={project.progress || 0}
-          stages={[
-            { label: 'التحضير' },
-            { label: 'التنفيذ المبدئي' },
-            { label: 'المراجعة الأولية' },
-            { label: 'المعالجة الأولية' },
-            { label: 'المراجعة النهائية' },
-            { label: 'المعالجة النهائية' },
-          ]}
-        />
+      <div className=" flex-shrink-10 mx-[10px] my-0 ">
+        <ProjectProgressBar progress={project.progress || 0} stages={[{
+        label: 'التحضير'
+      }, {
+        label: 'التنفيذ المبدئي'
+      }, {
+        label: 'المراجعة الأولية'
+      }, {
+        label: 'المعالجة الأولية'
+      }, {
+        label: 'المراجعة النهائية'
+      }, {
+        label: 'المعالجة النهائية'
+      }]} />
       </div>
 
       {/* المحتوى الرئيسي */}
@@ -205,16 +198,10 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-3 justify-end mt-4">
-            <button 
-              onClick={() => setShowDeleteDialog(false)} 
-              className="px-4 py-2 bg-white/60 backdrop-filter backdrop-blur-lg border border-white/20 rounded-lg hover:bg-white/80 transition-colors font-arabic"
-            >
+            <button onClick={() => setShowDeleteDialog(false)} className="px-4 py-2 bg-white/60 backdrop-filter backdrop-blur-lg border border-white/20 rounded-lg hover:bg-white/80 transition-colors font-arabic">
               إلغاء
             </button>
-            <button 
-              onClick={handleDeleteProject} 
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-arabic"
-            >
+            <button onClick={handleDeleteProject} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-arabic">
               حذف نهائي
             </button>
           </div>
@@ -230,21 +217,14 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-3 justify-end mt-4">
-            <button 
-              onClick={() => setShowArchiveDialog(false)} 
-              className="px-4 py-2 bg-white/60 backdrop-filter backdrop-blur-lg border border-white/20 rounded-lg hover:bg-white/80 transition-colors font-arabic"
-            >
+            <button onClick={() => setShowArchiveDialog(false)} className="px-4 py-2 bg-white/60 backdrop-filter backdrop-blur-lg border border-white/20 rounded-lg hover:bg-white/80 transition-colors font-arabic">
               إلغاء
             </button>
-            <button 
-              onClick={handleArchiveProject} 
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-arabic"
-            >
+            <button onClick={handleArchiveProject} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-arabic">
               أرشفة
             </button>
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 };
