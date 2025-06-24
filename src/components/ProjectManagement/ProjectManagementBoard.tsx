@@ -78,7 +78,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
       {/* الإحصائيات - منقولة لتكون مع معلومات المشروع */}
-      <div className="flex justify-between items-start mb-6 flex-shrink-0">
+      <div className="flex justify-between items-start mb-6 flex-shrink-0 my-[2px] py-[35px]">
         {/* معلومات المشروع الأساسية */}
         <div className="flex-1 mx-[15px]">
           <div className="flex items-center gap-4 mb-4">
@@ -99,17 +99,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             </div>
 
             {/* بيانات التعريف السريعة */}
-            <div className="flex items-center gap-4 mr-4">
-              <div className="text-sm font-arabic text-gray-600">
-                <span className="font-medium">الميزانية:</span> {project.value} ر.س
-              </div>
-              <div className="text-sm font-arabic text-gray-600">
-                <span className="font-medium">الفريق:</span> 08 أشخاص
-              </div>
-              <div className="text-sm font-arabic text-gray-600">
-                <span className="font-medium">التسليم:</span> 03 يوم
-              </div>
-            </div>
+            
           </div>
 
           {/* النبذة التعريفية */}
@@ -120,7 +110,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
         {/* الإحصائيات - منقولة من تحت شريط التقدم */}
         <div className="flex-shrink-0">
-          <div className="grid grid-cols-3 gap-6 px-[4px]">
+          <div className="grid grid-cols-3 gap-6 px-[45px] my-0">
             {/* الإيرادات المتوقعة */}
             <div className="text-right p-6 py-0">
               <div className="mb-2">
