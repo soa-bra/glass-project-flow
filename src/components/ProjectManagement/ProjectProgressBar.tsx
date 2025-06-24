@@ -136,22 +136,22 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
 
           {/* دوائر المراحل */}
           {reversedStages.map((stage, i) => {
+            const stageProgress = getStageLeft(i);
             // إصلاح حساب isCompleted للمراحل المعكوسة
             const originalStageIndex = stages.length - 1 - i;
             const stageThreshold = (originalStageIndex / (stages.length - 1)) * 100;
             const isCompleted = progress >= stageThreshold;
 
-            // تحديد الموضع: الدائرة الأولى (تحت "التحضير") ثابتة في اليسار والأخيرة في اليمين
+            // تحديد الموضع: الأولى في اليسار والأخيرة في اليمين
             let circlePosition;
-            if (i === reversedStages.length - 1) {
-              // الدائرة الأولى (تحت "التحضير") ثابتة في اليسار
+            if (i === 0) {
+              // الدائرة الأولى ثابتة في اليسار
               circlePosition = `${circleSize / 2}px`;
-            } else if (i === 0) {
+            } else if (i === reversedStages.length - 1) {
               // الدائرة الأخيرة ثابتة في اليمين
               circlePosition = `calc(100% - ${circleSize / 2}px)`;
             } else {
               // الدوائر الوسطى متجاوبة
-              const stageProgress = getStageLeft(i);
               circlePosition = `calc(${stageProgress}% - ${circleSize / 2}px)`;
             }
 
