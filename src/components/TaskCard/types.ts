@@ -1,6 +1,4 @@
 
-export type Priority = 'high' | 'medium' | 'low';
-
 export interface TaskCardProps {
   id: number;
   title: string;
@@ -11,5 +9,5 @@ export interface TaskCardProps {
   assignee: string;
   members: string;
   daysLeft: number;
-  priority: Priority;
+  priority: 'urgent-important' | 'urgent-not-important' | 'not-urgent-important' | 'not-urgent-not-important';
 }

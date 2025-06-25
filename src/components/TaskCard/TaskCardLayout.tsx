@@ -5,28 +5,16 @@ interface TaskCardLayoutProps {
   children: ReactNode;
   id: string;
   className?: string;
-  isDimmed?: boolean;
 }
 
 const TaskCardLayout = ({
   children,
   id,
-  className = '',
-  isDimmed = false
+  className = ''
 }: TaskCardLayoutProps) => {
-  const getCardClasses = () => {
-    const baseClasses = `mx-auto font-arabic ${className}`;
-    
-    if (isDimmed) {
-      return `${baseClasses} opacity-30 pointer-events-none`;
-    }
-    
-    return baseClasses;
-  };
-
   return (
     <div
-      className={getCardClasses()}
+      className={`mx-auto font-arabic ${className}`}
       style={{
         width: '100%',
         maxWidth: '100%',
@@ -39,8 +27,7 @@ const TaskCardLayout = ({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        fontFamily: 'IBM Plex Sans Arabic',
-        transition: 'all 0.3s ease'
+        fontFamily: 'IBM Plex Sans Arabic'
       }}
     >
       {children}

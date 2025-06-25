@@ -1,12 +1,11 @@
+
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { BulkActionsBar } from '@/components/ui/BulkActionsBar';
 import React, { useState } from 'react';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { AddProjectModal } from './ProjectsColumn/AddProjectModal';
-import { useMultiSelection } from '@/hooks/useMultiSelection';
 
 type ProjectsColumnProps = {
   projects: Project[];
@@ -21,16 +20,6 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
 }) => {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
-  
-  const {
-    selectedItems,
-    isSelectionMode,
-    activeColumn,
-    toggleSelection,
-    isSelected,
-    bulkDelete,
-    bulkArchive
-  } = useMultiSelection();
 
   const handleProjectAdded = (newProject: ProjectData) => {
     const projectToAdd: Project = {
@@ -51,26 +40,6 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
     setProjects(prev => [projectToAdd, ...prev]);
   };
 
-  const handleProjectSelect = (projectId: string) => {
-    toggleSelection(projectId, 'projects');
-  };
-
-  const handleEdit = (projectId: string) => {
-    console.log('تعديل المشروع:', projectId);
-  };
-
-  const handleArchive = (projectId: string) => {
-    console.log('أرشفة المشروع:', projectId);
-  };
-
-  const handleDelete = (projectId: string) => {
-    console.log('حذف المشروع:', projectId);
-  };
-
-  const isDimmed = (projectId: string) => {
-    return isSelectionMode && activeColumn !== 'projects';
-  };
-
   return (
     <>
       <div 
@@ -83,11 +52,6 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
         <div className="flex-shrink-0 px-4 pt-4">
           <div className="mb-4">
             <ProjectsToolbar onAddProject={() => setShowAddProjectModal(true)} />
-            <BulkActionsBar
-              selectedCount={activeColumn === 'projects' ? selectedItems.length : 0}
-              onDelete={bulkDelete}
-              onArchive={bulkArchive}
-            />
           </div>
         </div>
         
@@ -109,14 +73,9 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
                   tasksCount={project.tasksCount}
                   daysLeft={project.daysLeft}
                   value={project.value}
-                  isSelected={selectedProjectId === project.id || isSelected(project.id)}
+                  isSelected={selectedProjectId === project.id}
                   isOtherSelected={selectedProjectId !== undefined && selectedProjectId !== null && selectedProjectId !== project.id}
-                  isDimmed={isDimmed(project.id)}
                   onProjectSelect={onProjectSelect ? () => onProjectSelect(project.id) : undefined}
-                  onSelect={() => handleProjectSelect(project.id)}
-                  onEdit={() => handleEdit(project.id)}
-                  onArchive={() => handleArchive(project.id)}
-                  onDelete={() => handleDelete(project.id)}
                 />
               ))}
             </div>

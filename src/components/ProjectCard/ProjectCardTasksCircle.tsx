@@ -3,22 +3,31 @@ interface ProjectCardTasksCircleProps {
   tasksCount: number;
 }
 
-const ProjectCardTasksCircle = ({ tasksCount }: ProjectCardTasksCircleProps) => {
+const ProjectCardTasksCircle = ({
+  tasksCount
+}: ProjectCardTasksCircleProps) => {
   return (
     <div 
-      className="rounded-full flex items-center justify-center mx-1"
+      className="w-[75px] h-[75px] rounded-full flex flex-col items-center justify-center px-0 py-0 my-0"
       style={{
-        width: '40px',
-        height: '40px',
-        backgroundColor: 'var(--project-card-elements-tasks-count-circle)',
-        color: 'var(--project-card-elements-tasks-count-text)'
+        backgroundColor: '#d1e1ea'
       }}
     >
       <span 
-        className="text-sm font-bold font-arabic"
-        style={{ fontFamily: 'IBM Plex Sans Arabic' }}
+        className="text-sm font-bold leading-none"
+        style={{
+          color: 'var(--project-card-elements-title-text)'
+        }}
       >
-        {tasksCount}
+        {tasksCount.toString().padStart(2, '0')}
+      </span>
+      <span 
+        className="text-xs leading-none my-[5px] py-0"
+        style={{
+          color: 'var(--project-card-elements-title-text)'
+        }}
+      >
+        مهام
       </span>
     </div>
   );

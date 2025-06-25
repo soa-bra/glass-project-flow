@@ -1,47 +1,30 @@
 
-import React from 'react';
-import ProjectCardTitle from './ProjectCardTitle';
 import ProjectCardDaysCircle from './ProjectCardDaysCircle';
+import ProjectCardTitle from './ProjectCardTitle';
 import ProjectCardTasksCircle from './ProjectCardTasksCircle';
-import { CardDropdownMenu } from '@/components/ui/CardDropdownMenu';
 
 interface ProjectCardHeaderProps {
   daysLeft: number;
   title: string;
   description: string;
   tasksCount: number;
-  status: string;
-  onSelect?: () => void;
-  onEdit?: () => void;
-  onArchive?: () => void;
-  onDelete?: () => void;
+  status: 'success' | 'warning' | 'error' | 'info';
 }
 
-const ProjectCardHeader: React.FC<ProjectCardHeaderProps> = ({
+const ProjectCardHeader = ({
   daysLeft,
   title,
   description,
   tasksCount,
-  onSelect = () => {},
-  onEdit = () => {},
-  onArchive = () => {},
-  onDelete = () => {}
-}) => {
+  status
+}: ProjectCardHeaderProps) => {
   return (
-    <div className="flex justify-between items-start mb-4">
-      <div className="flex items-center gap-3 flex-1">
+    <div className="flex items-start justify-between mb-2 mx-0 relative py-0 my-0 px-0">
+      <div className="relative">
         <ProjectCardDaysCircle daysLeft={daysLeft} />
-        <ProjectCardTitle title={title} description={description} />
-        <ProjectCardTasksCircle tasksCount={tasksCount} />
       </div>
-      <div className="flex-shrink-0 ml-2">
-        <CardDropdownMenu
-          onSelect={onSelect}
-          onEdit={onEdit}
-          onArchive={onArchive}
-          onDelete={onDelete}
-        />
-      </div>
+      <ProjectCardTitle title={title} description={description} />
+      <ProjectCardTasksCircle tasksCount={tasksCount} />
     </div>
   );
 };

@@ -5,15 +5,7 @@ import TaskCardHeader from './TaskCard/TaskCardHeader';
 import TaskCardFooter from './TaskCard/TaskCardFooter';
 import type { TaskCardProps } from './TaskCard/types';
 
-interface TaskCardWithActionsProps extends TaskCardProps {
-  isDimmed?: boolean;
-  onSelect?: () => void;
-  onEdit?: () => void;
-  onArchive?: () => void;
-  onDelete?: () => void;
-}
-
-const TaskCard: React.FC<TaskCardWithActionsProps> = ({
+const TaskCard: React.FC<TaskCardProps> = ({
   id,
   title,
   description,
@@ -23,24 +15,15 @@ const TaskCard: React.FC<TaskCardWithActionsProps> = ({
   assignee,
   members,
   daysLeft,
-  priority,
-  isDimmed = false,
-  onSelect = () => {},
-  onEdit = () => {},
-  onArchive = () => {},
-  onDelete = () => {}
+  priority
 }) => {
   return (
-    <TaskCardLayout id={id.toString()} isDimmed={isDimmed}>
+    <TaskCardLayout id={id.toString()}>
       <TaskCardHeader
         daysLeft={daysLeft}
         title={title}
         description={description}
         priority={priority}
-        onSelect={onSelect}
-        onEdit={onEdit}
-        onArchive={onArchive}
-        onDelete={onDelete}
       />
       
       <TaskCardFooter
