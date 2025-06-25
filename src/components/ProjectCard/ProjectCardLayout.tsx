@@ -6,6 +6,7 @@ interface ProjectCardLayoutProps {
   id: string;
   isSelected?: boolean;
   isOtherSelected?: boolean;
+  isDimmed?: boolean;
   onProjectSelect?: (projectId: string) => void;
 }
 
@@ -14,6 +15,7 @@ const ProjectCardLayout = ({
   id,
   isSelected = false,
   isOtherSelected = false,
+  isDimmed = false,
   onProjectSelect,
 }: ProjectCardLayoutProps) => {
   const handleClick = (event: React.MouseEvent) => {
@@ -26,10 +28,14 @@ const ProjectCardLayout = ({
 
   const getCardClasses = () => {
     const baseClasses =
-      'project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer';
+      'project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer transition-all duration-300';
+    
+    if (isDimmed) {
+      return `${baseClasses} opacity-30 pointer-events-none`;
+    }
     
     if (isSelected) {
-      return `${baseClasses} project-card-selected`;
+      return `${baseClasses} project-card-selected ring-2 ring-blue-500`;
     }
     
     if (isOtherSelected) {

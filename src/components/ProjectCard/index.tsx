@@ -7,7 +7,12 @@ import type { ProjectCardProps } from './types';
 interface ProjectCardInteractiveProps extends ProjectCardProps {
   isSelected?: boolean;
   isOtherSelected?: boolean;
+  isDimmed?: boolean;
   onProjectSelect?: (projectId: string) => void;
+  onSelect?: () => void;
+  onEdit?: () => void;
+  onArchive?: () => void;
+  onDelete?: () => void;
 }
 
 const ProjectCard = ({
@@ -22,13 +27,19 @@ const ProjectCard = ({
   daysLeft,
   isSelected = false,
   isOtherSelected = false,
-  onProjectSelect
+  isDimmed = false,
+  onProjectSelect,
+  onSelect = () => {},
+  onEdit = () => {},
+  onArchive = () => {},
+  onDelete = () => {}
 }: ProjectCardInteractiveProps) => {
   return (
     <ProjectCardLayout
       id={id.toString()}
       isSelected={isSelected}
       isOtherSelected={isOtherSelected}
+      isDimmed={isDimmed}
       onProjectSelect={onProjectSelect}
     >
       <ProjectCardHeader
@@ -37,6 +48,10 @@ const ProjectCard = ({
         description={description}
         tasksCount={tasksCount}
         status={status}
+        onSelect={onSelect}
+        onEdit={onEdit}
+        onArchive={onArchive}
+        onDelete={onDelete}
       />
       
       <ProjectCardFooter

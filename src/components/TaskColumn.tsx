@@ -1,9 +1,10 @@
-
 import React, { useState } from 'react';
 import { HiPlus, HiStar, HiArrowLeft } from 'react-icons/hi';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { BulkActionsBar } from '@/components/ui/BulkActionsBar';
 import TaskCard from './TaskCard';
 import type { TaskCardProps } from './TaskCard/types';
+import { useMultiSelection } from '@/hooks/useMultiSelection';
 
 const tasks: TaskCardProps[] = [
   {
@@ -34,6 +35,36 @@ const tasks: TaskCardProps[] = [
 
 const TaskColumn: React.FC = () => {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  
+  const {
+    selectedItems,
+    isSelectionMode,
+    activeColumn,
+    toggleSelection,
+    isSelected,
+    bulkDelete,
+    bulkArchive
+  } = useMultiSelection();
+
+  const handleTaskSelect = (taskId: string) => {
+    toggleSelection(taskId, 'tasks');
+  };
+
+  const handleEdit = (taskId: string) => {
+    console.log('تعديل المهمة:', taskId);
+  };
+
+  const handleArchive = (taskId: string) => {
+    console.log('أرشفة المهمة:', taskId);
+  };
+
+  const handleDelete = (taskId: string) => {
+    console.log('حذف المهمة:', taskId);
+  };
+
+  const isDimmed = (taskId: string) => {
+    return isSelectionMode && activeColumn !== 'tasks';
+  };
 
   return (
     <>
@@ -53,6 +84,11 @@ const TaskColumn: React.FC = () => {
               <button><HiArrowLeft /></button>
             </div>
           </div>
+          <BulkActionsBar
+            selectedCount={activeColumn === 'tasks' ? selectedItems.length : 0}
+            onDelete={bulkDelete}
+            onArchive={bulkArchive}
+          />
         </div>
 
         {/* منطقة التمرير لبطاقات المهام */}
@@ -60,15 +96,20 @@ const TaskColumn: React.FC = () => {
           <ScrollArea className="h-full w-full">
             <div className="space-y-4 pb-4 px-0 rounded-full mx-[10px]">
               {tasks.map(task => (
-                <TaskCard key={task.id} {...task} />
+                <TaskCard 
+                  key={task.id} 
+                  {...task} 
+                  isDimmed={isDimmed(task.id.toString())}
+                  onSelect={() => handleTaskSelect(task.id.toString())}
+                  onEdit={() => handleEdit(task.id.toString())}
+                  onArchive={() => handleArchive(task.id.toString())}
+                  onDelete={() => handleDelete(task.id.toString())}
+                />
               ))}
             </div>
           </ScrollArea>
         </div>
       </div>
-
-      {/* نافذة إضافة مهمة - placeholder حالياً */}
-      {/* <AddTaskModal isOpen={showAddTaskModal} onClose={() => setShowAddTaskModal(false)} /> */}
     </>
   );
 };
