@@ -47,7 +47,7 @@ export const TaskListContent: React.FC = () => {
     priority: 'not-urgent-not-important' as const
   }];
   return <div className="flex-1 overflow-y-auto">
-      <div className="space-y-4 pr-2 py-0 my-[30px]">
+      <div className="space-y-4 pr-2 py-0 my-0">
         {tasks.map(task => <TaskCard key={task.id} {...task} />)}
       </div>
     </div>;
