@@ -14,15 +14,13 @@ const TaskCardLayout = ({
 }: TaskCardLayoutProps) => {
   return (
     <div
-      className={`mx-auto font-arabic ${className}`}
+      className={`font-arabic ${className}`}
       style={{
         width: '100%',
-        maxWidth: '100%',
         height: '140px',
         backgroundColor: '#EAF2F5',
         borderRadius: '40px',
         padding: '16px',
-        position: 'relative',
         direction: 'rtl',
         display: 'flex',
         flexDirection: 'column',

@@ -3,38 +3,18 @@ interface TaskCardPriorityCircleProps {
   priority: string;
 }
 
-const TaskCardPriorityCircle = ({
-  priority
-}: TaskCardPriorityCircleProps) => {
-  const getPriorityBubbleStyle = (priority: string) => {
-    switch (priority) {
-      case 'urgent-important':
-        return { backgroundColor: '#f1b5b9' };
-      case 'urgent-not-important':
-        return { backgroundColor: '#A4E2F6' };
-      case 'not-urgent-important':
-        return { backgroundColor: '#FBE2AA' };
-      case 'not-urgent-not-important':
-        return { backgroundColor: '#D9D2FD' };
-      default:
-        return { backgroundColor: '#F2F9FB' };
-    }
+const TaskCardPriorityCircle = ({ priority }: TaskCardPriorityCircleProps) => {
+  const getPriorityConfig = (priority: string) => {
+    const configs = {
+      'urgent-important': { bg: '#f1b5b9', line1: 'عاجل', line2: 'مهم' },
+      'urgent-not-important': { bg: '#A4E2F6', line1: 'عاجل', line2: 'غير مهم' },
+      'not-urgent-important': { bg: '#FBE2AA', line1: 'غير عاجل', line2: 'مهم' },
+      'not-urgent-not-important': { bg: '#D9D2FD', line1: 'غير عاجل', line2: 'غير مهم' }
+    };
+    return configs[priority as keyof typeof configs] || configs['urgent-important'];
   };
 
-  const getPriorityText = (priority: string) => {
-    switch (priority) {
-      case 'urgent-important':
-        return { line1: 'عاجل', line2: 'مهم' };
-      case 'urgent-not-important':
-        return { line1: 'عاجل', line2: 'غير مهم' };
-      case 'not-urgent-important':
-        return { line1: 'غير عاجل', line2: 'مهم' };
-      case 'not-urgent-not-important':
-        return { line1: 'غير عاجل', line2: 'غير مهم' };
-      default:
-        return { line1: 'عاجل', line2: 'مهم' };
-    }
-  };
+  const config = getPriorityConfig(priority);
 
   return (
     <div 
@@ -45,7 +25,7 @@ const TaskCardPriorityCircle = ({
         width: '60px',
         height: '60px',
         borderRadius: '50%',
-        ...getPriorityBubbleStyle(priority),
+        backgroundColor: config.bg,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -59,7 +39,7 @@ const TaskCardPriorityCircle = ({
         lineHeight: 1,
         fontFamily: 'IBM Plex Sans Arabic'
       }}>
-        {getPriorityText(priority).line1}
+        {config.line1}
       </span>
       <span style={{ 
         fontSize: '8px', 
@@ -68,7 +48,7 @@ const TaskCardPriorityCircle = ({
         marginTop: '1px',
         fontFamily: 'IBM Plex Sans Arabic'
       }}>
-        {getPriorityText(priority).line2}
+        {config.line2}
       </span>
     </div>
   );

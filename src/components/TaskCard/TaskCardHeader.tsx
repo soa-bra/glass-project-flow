@@ -1,30 +1,36 @@
+
 import TaskCardDaysCircle from './TaskCardDaysCircle';
 import TaskCardTitle from './TaskCardTitle';
 import TaskCardPriorityCircle from './TaskCardPriorityCircle';
+
 interface TaskCardHeaderProps {
   daysLeft: number;
   title: string;
   description: string;
   priority: 'urgent-important' | 'urgent-not-important' | 'not-urgent-important' | 'not-urgent-not-important';
 }
+
 const TaskCardHeader = ({
   daysLeft,
   title,
   description,
   priority
 }: TaskCardHeaderProps) => {
-  return <div className="relative flex-1 my-0">
+  return (
+    <div className="relative flex-1">
       <TaskCardDaysCircle daysLeft={daysLeft} />
       <TaskCardPriorityCircle priority={priority} />
       <div style={{
-      marginTop: '0px',
-      marginLeft: '65px',
-      marginRight: '65px',
-      textAlign: 'center',
-      paddingTop: '8px'
-    }}>
+        marginTop: '0px',
+        marginLeft: '65px',
+        marginRight: '65px',
+        textAlign: 'center',
+        paddingTop: '8px'
+      }}>
         <TaskCardTitle title={title} description={description} />
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default TaskCardHeader;

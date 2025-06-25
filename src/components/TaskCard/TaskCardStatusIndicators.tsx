@@ -14,6 +14,16 @@ const TaskCardStatusIndicators = ({
   assignee,
   members
 }: TaskCardStatusIndicatorsProps) => {
+  const pillStyle = {
+    backgroundColor: '#F7FFFF',
+    borderRadius: '15px',
+    padding: '3px 8px',
+    fontSize: '10px',
+    fontWeight: 500,
+    color: '#858789',
+    fontFamily: 'IBM Plex Sans Arabic'
+  };
+
   return (
     <div style={{ 
       display: 'flex', 
@@ -23,18 +33,11 @@ const TaskCardStatusIndicators = ({
       flexWrap: 'wrap',
       marginTop: '8px'
     }}>
-      {/* كبسولة الحالة مع النقطة */}
       <div style={{
-        backgroundColor: '#F7FFFF',
-        borderRadius: '15px',
-        padding: '3px 8px',
-        fontSize: '10px',
-        fontWeight: 500,
-        color: '#858789',
+        ...pillStyle,
         display: 'flex',
         alignItems: 'center',
-        gap: '4px',
-        fontFamily: 'IBM Plex Sans Arabic'
+        gap: '4px'
       }}>
         <div style={{
           width: '8px',
@@ -45,44 +48,9 @@ const TaskCardStatusIndicators = ({
         {status}
       </div>
 
-      {/* كبسولة التاريخ */}
-      <div style={{
-        backgroundColor: '#F7FFFF',
-        borderRadius: '15px',
-        padding: '3px 8px',
-        fontSize: '10px',
-        fontWeight: 500,
-        color: '#858789',
-        fontFamily: 'IBM Plex Sans Arabic'
-      }}>
-        {date}
-      </div>
-
-      {/* كبسولة المسؤول */}
-      <div style={{
-        backgroundColor: '#F7FFFF',
-        borderRadius: '15px',
-        padding: '3px 8px',
-        fontSize: '10px',
-        fontWeight: 500,
-        color: '#858789',
-        fontFamily: 'IBM Plex Sans Arabic'
-      }}>
-        {assignee}
-      </div>
-
-      {/* كبسولة الأعضاء */}
-      <div style={{
-        backgroundColor: '#F7FFFF',
-        borderRadius: '15px',
-        padding: '3px 8px',
-        fontSize: '10px',
-        fontWeight: 500,
-        color: '#858789',
-        fontFamily: 'IBM Plex Sans Arabic'
-      }}>
-        {members}
-      </div>
+      <div style={pillStyle}>{date}</div>
+      <div style={pillStyle}>{assignee}</div>
+      <div style={pillStyle}>{members}</div>
     </div>
   );
 };

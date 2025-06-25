@@ -1,41 +1,44 @@
+
 interface TaskCardDaysCircleProps {
   daysLeft: number;
 }
-const TaskCardDaysCircle = ({
-  daysLeft
-}: TaskCardDaysCircleProps) => {
-  return <div style={{
-    position: 'absolute',
-    top: '0px',
-    left: '0px',
-    width: '60px',
-    height: '60px',
-    borderRadius: '50%',
-    border: '2px solid #000000',
-    backgroundColor: 'transparent',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }}>
+
+const TaskCardDaysCircle = ({ daysLeft }: TaskCardDaysCircleProps) => {
+  return (
+    <div style={{
+      position: 'absolute',
+      top: '0px',
+      left: '0px',
+      width: '60px',
+      height: '60px',
+      borderRadius: '50%',
+      border: '2px solid #000000',
+      backgroundColor: 'transparent',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
       <span style={{
-      fontSize: '16px',
-      fontWeight: 700,
-      color: '#000000',
-      lineHeight: 1,
-      fontFamily: 'IBM Plex Sans Arabic'
-    }} className="text-sm font-semibold px-0">
+        fontSize: '16px',
+        fontWeight: 700,
+        color: '#000000',
+        lineHeight: 1,
+        fontFamily: 'IBM Plex Sans Arabic'
+      }}>
         {daysLeft.toString().padStart(2, '0')}
       </span>
       <span style={{
-      fontSize: '10px',
-      fontWeight: 400,
-      color: '#000000',
-      marginTop: '2px',
-      fontFamily: 'IBM Plex Sans Arabic'
-    }} className="my-0 py-0 text-xs font-normal">
+        fontSize: '10px',
+        fontWeight: 400,
+        color: '#000000',
+        marginTop: '2px',
+        fontFamily: 'IBM Plex Sans Arabic'
+      }}>
         يوم
       </span>
-    </div>;
+    </div>
+  );
 };
+
 export default TaskCardDaysCircle;
