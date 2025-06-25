@@ -18,7 +18,7 @@ export const useProjectPanelAnimation = () => {
       setStage("closed");
       setSelectedProjectId(null);
       setDisplayedProjectId(null);
-    }, 500); // match animation duration
+    }, 600); // increased duration for smoother animation
   }, []);
 
   // When the panel is opened for a project
@@ -29,22 +29,24 @@ export const useProjectPanelAnimation = () => {
       setSelectedProjectId(projectId);
       setDisplayedProjectId(projectId);
       setStage("sliding-in");
-      setTimeout(() => setStage("open"), 500); // match animation duration in css
+      setTimeout(() => setStage("open"), 600); // increased duration for smoother animation
     } else if (stage === "open" && displayedProjectId && displayedProjectId !== projectId) {
       // If panel is open and user selects a new project, use crossfade effect ("changing-content")
       setStage("changing-content");
       setTimeout(() => {
         setDisplayedProjectId(projectId);
         setSelectedProjectId(projectId);
+      }, 200); // quick transition for content change
+      setTimeout(() => {
         setStage("open");
-      }, 350); // crossfade duration
+      }, 500); // total crossfade duration
     } else if (selectedProjectId === projectId) {
       // Clicking the same project closes the panel
       closePanel();
     }
   }, [stage, selectedProjectId, displayedProjectId, closePanel]);
 
-  // Animation classes
+  // Animation classes with enhanced transitions
   let operationsBoardClass = "";
   let projectsColumnClass = "";
   const slidePanel =
@@ -53,14 +55,14 @@ export const useProjectPanelAnimation = () => {
 
   // Operations board, projects column transitions based on open/collapsed/sidebar
   if (slidePanel) {
-    operationsBoardClass = "sync-transition operations-board-slid";
-    projectsColumnClass = "sync-transition projects-column-slid";
+    operationsBoardClass = "sync-transition operations-board-slid transform transition-all duration-500 ease-out";
+    projectsColumnClass = "sync-transition projects-column-slid transform transition-all duration-500 ease-out";
   } else if (slideOutPanel) {
-    operationsBoardClass = "sync-transition";
-    projectsColumnClass = "sync-transition";
+    operationsBoardClass = "sync-transition transform transition-all duration-500 ease-out";
+    projectsColumnClass = "sync-transition transform transition-all duration-500 ease-out";
   } else {
-    operationsBoardClass = "sync-transition";
-    projectsColumnClass = "sync-transition";
+    operationsBoardClass = "sync-transition transform transition-all duration-300 ease-out";
+    projectsColumnClass = "sync-transition transform transition-all duration-300 ease-out";
   }
 
   return {
