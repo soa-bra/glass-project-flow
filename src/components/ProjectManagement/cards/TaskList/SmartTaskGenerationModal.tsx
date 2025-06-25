@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { X, Loader2 } from 'lucide-react';
@@ -33,6 +32,39 @@ const taskTypes = [
   { id: 'review', label: 'مراجعة' },
 ];
 
+const taskTemplates = {
+  financial: [
+    'إعداد الميزانية الشهرية',
+    'مراجعة التكاليف والإيرادات',
+    'تحليل التدفق النقدي',
+    'إعداد التقارير المالية'
+  ],
+  legal: [
+    'مراجعة العقود القانونية',
+    'تحديث الوثائق القانونية',
+    'التأكد من الامتثال التنظيمي',
+    'إعداد اتفاقيات الشراكة'
+  ],
+  technical: [
+    'تطوير الواجهة الأمامية',
+    'برمجة قواعد البيانات',
+    'اختبار الأمان والحماية',
+    'تحسين الأداء والسرعة'
+  ],
+  executive: [
+    'التخطيط الاستراتيجي',
+    'إدارة فريق العمل',
+    'متابعة تقدم المشروع',
+    'اتخاذ القرارات التنفيذية'
+  ],
+  review: [
+    'مراجعة جودة العمل',
+    'تقييم الأداء',
+    'مراجعة المستندات',
+    'فحص المتطلبات'
+  ]
+};
+
 export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> = ({
   isOpen,
   onClose,
@@ -50,7 +82,7 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (error) setError(''); // إزالة رسالة الخطأ عند التعديل
+    if (error) setError('');
   };
 
   const handleTypeChange = (typeId: string, checked: boolean) => {
@@ -67,26 +99,29 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
     setError('');
 
     try {
-      // استخدام القيمة الافتراضية إذا لم يتم إدخال عدد
       const taskCount = formData.taskCount ? parseInt(formData.taskCount) : 5;
       
-      // محاكاة عملية التوليد (يمكن استبدالها بـ Supabase Function لاحقاً)
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // توليد مهام وهمية للاختبار
-      const generatedTasks = Array.from({ length: taskCount }, (_, index) => ({
-        id: Date.now() + index,
-        title: `مهمة مولدة ${index + 1}`,
-        description: `وصف المهمة المولدة تلقائياً`,
-        priority: ['high', 'medium', 'low'][Math.floor(Math.random() * 3)],
-        type: formData.selectedTypes.length > 0 
-          ? formData.selectedTypes[Math.floor(Math.random() * formData.selectedTypes.length)]
-          : 'technical',
-        dueDate: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        stage: 'planning',
-        assignee: '',
-        createdAt: new Date().toISOString(),
-      }));
+      // توليد مهام أكثر واقعية
+      const generatedTasks = Array.from({ length: taskCount }, (_, index) => {
+        const selectedTypes = formData.selectedTypes.length > 0 ? formData.selectedTypes : Object.keys(taskTemplates);
+        const randomType = selectedTypes[Math.floor(Math.random() * selectedTypes.length)] as keyof typeof taskTemplates;
+        const templates = taskTemplates[randomType];
+        const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
+        
+        return {
+          id: Date.now() + index,
+          title: randomTemplate,
+          description: `مهمة ${taskTypes.find(t => t.id === randomType)?.label} - مولدة تلقائياً`,
+          priority: ['urgent-important', 'urgent-not-important', 'not-urgent-important', 'not-urgent-not-important'][Math.floor(Math.random() * 4)],
+          type: randomType,
+          dueDate: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          stage: 'planning',
+          assignee: 'مولد تلقائياً',
+          createdAt: new Date().toISOString(),
+        };
+      });
 
       onTasksGenerated(generatedTasks);
 
@@ -159,7 +194,6 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
 
           <div className="px-8 pb-8">
             <div className="space-y-6">
-              {/* حقل عدد المهام */}
               <div className="space-y-2">
                 <Label className="font-arabic text-right font-bold">عدد المهام التقريبي</Label>
                 <Input
@@ -173,7 +207,6 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
                 />
               </div>
 
-              {/* حقل نوع المهام */}
               <div className="space-y-3">
                 <Label className="font-arabic text-right font-bold">نوع المهام</Label>
                 <div className="grid grid-cols-2 gap-3">
@@ -192,14 +225,12 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
                 </div>
               </div>
 
-              {/* رسالة الخطأ */}
               {error && (
                 <div className="text-red-600 text-sm font-arabic text-right bg-red-50 p-3 rounded-lg border border-red-200">
                   {error}
                 </div>
               )}
 
-              {/* رسالة التوليد */}
               {isGenerating && (
                 <div className="flex items-center gap-2 justify-center text-gray-600 font-arabic">
                   <Loader2 className="animate-spin w-4 h-4" />
@@ -208,7 +239,6 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
               )}
             </div>
 
-            {/* أزرار الإجراءات */}
             <div className="flex gap-4 justify-start pt-6 border-t border-white/20 mt-6">
               <Button
                 type="button"
@@ -224,7 +254,7 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
                 disabled={isGenerating}
                 className="font-arabic"
                 style={{
-                  backgroundColor: '#D4A574', // لون Mustard من لوحة سوبرا
+                  backgroundColor: '#D4A574',
                   color: 'white',
                 }}
               >

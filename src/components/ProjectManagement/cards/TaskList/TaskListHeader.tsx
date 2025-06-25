@@ -1,16 +1,28 @@
-
 import React, { useState } from 'react';
 import { Plus, Filter, Sparkles, RefreshCw } from 'lucide-react';
 import { AddTaskModal } from '@/components/ProjectsColumn/AddTaskModal';
 import { SmartTaskGenerationModal } from './SmartTaskGenerationModal';
 
-export const TaskListHeader: React.FC = () => {
+interface TaskListHeaderProps {
+  onTaskAdded: (task: any) => void;
+  onTasksGenerated: (tasks: any[]) => void;
+}
+
+export const TaskListHeader: React.FC<TaskListHeaderProps> = ({ 
+  onTaskAdded, 
+  onTasksGenerated 
+}) => {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showSmartGenerationModal, setShowSmartGenerationModal] = useState(false);
 
   const handleTaskAdded = (task: any) => {
     console.log('تم إضافة مهمة جديدة:', task);
-    // يمكن إضافة المنطق لتحديث قائمة المهام هنا
+    onTaskAdded(task);
+  };
+
+  const handleTasksGenerated = (tasks: any[]) => {
+    console.log('تم توليد مهام جديدة:', tasks);
+    onTasksGenerated(tasks);
   };
 
   const handleUpdateTasks = () => {
@@ -71,7 +83,7 @@ export const TaskListHeader: React.FC = () => {
       <SmartTaskGenerationModal
         isOpen={showSmartGenerationModal}
         onClose={() => setShowSmartGenerationModal(false)}
-        onTasksGenerated={handleTaskAdded}
+        onTasksGenerated={handleTasksGenerated}
       />
     </>
   );
