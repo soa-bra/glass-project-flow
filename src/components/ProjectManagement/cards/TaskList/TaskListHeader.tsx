@@ -36,18 +36,6 @@ export const TaskListHeader: React.FC = () => {
         </h3>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setShowAddTaskModal(true)}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/20 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95"
-          >
-            <Plus size={16} />
-          </button>
-          <button
-            onClick={() => setShowSmartGenerationModal(true)}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/20 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95"
-          >
-            <Sparkles size={16} />
-          </button>
-          <button
             onClick={handleUpdateTasks}
             className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/20 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95"
           >
@@ -58,6 +46,18 @@ export const TaskListHeader: React.FC = () => {
             className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/20 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95"
           >
             <Filter size={16} />
+          </button>
+          <button
+            onClick={() => setShowSmartGenerationModal(true)}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/20 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95"
+          >
+            <Sparkles size={16} />
+          </button>
+          <button
+            onClick={() => setShowAddTaskModal(true)}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/20 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95"
+          >
+            <Plus size={16} />
           </button>
         </div>
       </div>
