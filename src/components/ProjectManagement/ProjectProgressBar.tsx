@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 
 interface Stage {
@@ -116,10 +117,10 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
                 width: `${circleSize}px`,
                 height: `${circleSize}px`,
                 borderRadius: '50%',
-                backgroundColor: isCompleted ? '#b9f3a8' : 'rgba(255, 255, 255, 0.3)',
+                backgroundColor: isCompleted ? '#B9F3A8' : 'rgba(255, 255, 255, 0.3)',
                 backdropFilter: 'blur(16px)',
                 border: 'none',
-                boxShadow: isCompleted ? '0 0 6px #b9f3a8' : 'inset 0 0 2px rgba(0,0,0,0.25)'
+                boxShadow: isCompleted ? '0 0 6px #B9F3A8' : 'inset 0 0 2px rgba(0,0,0,0.25)'
               }}>
                 {isCompleted ? (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
@@ -153,11 +154,11 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
             width: `${bubbleSize}px`,
             height: `${bubbleSize}px`,
             borderRadius: '50%',
-            backgroundColor: '#d9f3a8',
+            backgroundColor: '#B9F3A8',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 0 12px #d9f3a8'
+            boxShadow: '0 0 12px #B9F3A8'
           }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
               <polyline points="5 13 10 18 20 6" />
@@ -165,7 +166,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
           </div>
 
           <div style={{
-            backgroundColor: '#d9f3a8',
+            backgroundColor: '#B9F3A8',
             borderRadius: '999px',
             padding: '12px 24px',
             fontSize: '1rem',
