@@ -52,7 +52,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
   };
   return <div className="flex-shrink-0 mb-6">
       {/* الصف الأول */}
-      <div className="flex items-center justify-between mb-6 py-0 my-[18px]">
+      <div className="flex items-center justify-between mb-6 py-0 my-0">
         {/* العنوان على اليسار */}
         <h1 className="font-medium text-[#2A3437] font-arabic text-3xl my-[12px]">
           إدارة المشروع
