@@ -52,19 +52,19 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
   };
   return <div className="flex-shrink-0 mb-6">
       {/* الصف الأول */}
-      <div className="flex items-center justify-between mb-6 py-0 my-0">
+      <div className="flex items-center justify-between py-0 my-0">
         {/* العنوان على اليسار */}
         <h1 className="font-medium text-[#2A3437] font-arabic text-3xl my-[12px]">
           إدارة المشروع
         </h1>
 
         {/* التبويبات في المنتصف - مطابقة لتصميم لوحة الإدارة والتشغيل */}
-        <div className="flex-1 flex justify-center mx-8">
+        <div className="flex-1 flex justify-center">
           <div dir="rtl" style={{
           WebkitOverflowScrolling: 'touch',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none'
-        }} className="w-full overflow-x-auto overflow-y-hidden no-scrollbar mx-0 px-[500px]">
+        }} className="w-full overflow-x-auto overflow-y-hidden no-scrollbar px-0 mx-0">
             <div style={{
             direction: "rtl",
             width: "fit-content"
