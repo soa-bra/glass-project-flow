@@ -18,7 +18,7 @@ export const TaskListHeader: React.FC = () => {
     // يمكن إضافة منطق فلترة المهام هنا
   };
   return <>
-      <div className="flex items-center justify-between mb-6 my-[10px]">
+      <div className="flex items-center justify-between mb-6 my-[10px] mx-[6px] px-0">
         <h3 className="font-arabic" style={{
         fontSize: '18px',
         fontWeight: 700,
@@ -27,7 +27,7 @@ export const TaskListHeader: React.FC = () => {
       }}>
           قائمة المهام
         </h3>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 mx-[2px]">
           <button onClick={handleUpdateTasks} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/90 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
             <RefreshCw size={16} />
           </button>
