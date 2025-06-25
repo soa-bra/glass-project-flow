@@ -5,7 +5,7 @@ interface Stage {
 }
 
 interface ProjectProgressBarProps {
-  progress: number; // نسبة التقدم من 0 إلى 100
+  progress: number;
   stages: Stage[];
 }
 
@@ -75,7 +75,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
 
   return (
     <div style={{ background: 'transparent' }} className="relative w-full flex flex-row-reverse items-center font-arabic pt-0 pb-0 py-[4px] my-[30px] px-[35px] mx-[148px]">
-      
+
       {/* شريط الشرائح */}
       <div ref={barRef} className="relative flex items-center justify-start flex-row-reverse gap-[3px] w-[80%] h-[25px]">
         {segments.map(idx => {
@@ -116,10 +116,10 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
                 width: `${circleSize}px`,
                 height: `${circleSize}px`,
                 borderRadius: '50%',
-                backgroundColor: isCompleted ? '#b9f3a8' : 'rgba(255, 255, 255, 0.3)',
+                backgroundColor: isCompleted ? '#d9f3a8' : 'rgba(255, 255, 255, 0.3)',
                 backdropFilter: 'blur(16px)',
                 border: 'none',
-                boxShadow: isCompleted ? '0 0 6px #b9f3a8' : 'inset 0 0 2px rgba(0,0,0,0.25)'
+                boxShadow: isCompleted ? '0 0 6px #d9f3a8' : 'inset 0 0 2px rgba(0,0,0,0.25)'
               }}>
                 {isCompleted ? (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
@@ -146,24 +146,9 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
         })}
       </div>
 
-      {/* فقاعة المرحلة الحالية */}
+      {/* فقاعة المرحلة الحالية - بدون أيقونة ✓ */}
       {stages[currentStageIndex] && (
         <div className="flex items-center gap-3 ml-[30px]">
-          <div style={{
-            width: `${bubbleSize}px`,
-            height: `${bubbleSize}px`,
-            borderRadius: '50%',
-            backgroundColor: '#d9f3a8',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 0 12px #d9f3a8'
-          }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
-              <polyline points="5 13 10 18 20 6" />
-            </svg>
-          </div>
-
           <div style={{
             backgroundColor: '#d9f3a8',
             borderRadius: '999px',
