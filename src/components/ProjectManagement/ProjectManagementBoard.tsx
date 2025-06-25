@@ -78,7 +78,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
       {/* الإحصائيات - منقولة لتكون مع معلومات المشروع */}
-      <div className="flex justify-between items-start mb-6 flex-shrink-0 my-[2px] py-[35px]">
+      <div className="flex justify-between items-start mb-6 flex-shrink-0 py-0 my-0">
         {/* معلومات المشروع الأساسية */}
         <div className="flex-1 mx-[15px]">
           <div className="flex items-center gap-4 mb-4">
@@ -174,7 +174,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       </div>
 
       {/* المحتوى الرئيسي */}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 my-0 py-[12px]">
         <ProjectCardGrid project={project} />
       </div>
 

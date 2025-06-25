@@ -75,7 +75,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   };
   return <div style={{
     background: 'transparent'
-  }} className="relative w-full flex flex-col items-start font-arabic pt-0 pb-0 px-0 my-0 mx-[4px] py-[4px]">
+  }} className="relative w-full flex flex-col items-start font-arabic pt-0 pb-0 px-0 py-[4px] mx-[5px] my-[34px]">
       {/* فقاعة تقدم المشروع - ثابتة في بداية الشريط */}
       <div className="absolute z-10 text-black text-right" style={{
       background: 'linear-gradient(135deg, #b9f3a8, #d4ffd0)',
