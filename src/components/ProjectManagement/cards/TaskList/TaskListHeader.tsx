@@ -4,70 +4,13 @@ import { Plus, Filter, Sparkles, RefreshCw } from 'lucide-react';
 import { AddTaskModal } from '@/components/ProjectsColumn/AddTaskModal';
 import { SmartTaskGenerationModal } from './SmartTaskGenerationModal';
 
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  status: string;
-  statusColor: string;
-  date: string;
-  assignee: string;
-  members: string;
-  daysLeft: number;
-  priority: 'urgent-important' | 'urgent-not-important' | 'not-urgent-important' | 'not-urgent-not-important';
-}
-
-interface TaskListHeaderProps {
-  tasks?: Task[];
-  onTasksChange?: (tasks: Task[]) => void;
-}
-
-export const TaskListHeader: React.FC<TaskListHeaderProps> = ({ tasks = [], onTasksChange }) => {
+export const TaskListHeader: React.FC = () => {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showSmartGenerationModal, setShowSmartGenerationModal] = useState(false);
 
   const handleTaskAdded = (task: any) => {
     console.log('تم إضافة مهمة جديدة:', task);
-    
-    if (onTasksChange) {
-      const newTask: Task = {
-        id: task.id,
-        title: task.title,
-        description: task.description,
-        status: 'وفق الخطة',
-        statusColor: '#A1E8B8',
-        date: new Date(task.dueDate).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' }),
-        assignee: task.assignee || 'غير محدد',
-        members: 'غير مضيف',
-        daysLeft: Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
-        priority: task.priority === 'high' ? 'urgent-important' : 
-                 task.priority === 'medium' ? 'urgent-not-important' : 'not-urgent-not-important'
-      };
-      
-      onTasksChange([...tasks, newTask]);
-    }
-  };
-
-  const handleTasksGenerated = (generatedTasks: any[]) => {
-    console.log('تم توليد مهام جديدة:', generatedTasks);
-    
-    if (onTasksChange) {
-      const newTasks: Task[] = generatedTasks.map(task => ({
-        id: task.id,
-        title: task.title,
-        description: task.description,
-        status: 'وفق الخطة',
-        statusColor: '#A1E8B8',
-        date: new Date(task.dueDate).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' }),
-        assignee: task.assignee || 'غير محدد',
-        members: 'غير مضيف',
-        daysLeft: Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
-        priority: task.priority === 'high' ? 'urgent-important' : 
-                 task.priority === 'medium' ? 'urgent-not-important' : 'not-urgent-not-important'
-      }));
-      
-      onTasksChange([...tasks, ...newTasks]);
-    }
+    // يمكن إضافة المنطق لتحديث قائمة المهام هنا
   };
 
   const handleUpdateTasks = () => {
@@ -128,7 +71,7 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({ tasks = [], onTa
       <SmartTaskGenerationModal
         isOpen={showSmartGenerationModal}
         onClose={() => setShowSmartGenerationModal(false)}
-        onTasksGenerated={handleTasksGenerated}
+        onTasksGenerated={handleTaskAdded}
       />
     </>
   );

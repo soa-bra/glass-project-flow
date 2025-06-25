@@ -1,26 +1,11 @@
 
-import React, { ReactNode, useState } from 'react';
-
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  status: string;
-  statusColor: string;
-  date: string;
-  assignee: string;
-  members: string;
-  daysLeft: number;
-  priority: 'urgent-important' | 'urgent-not-important' | 'not-urgent-important' | 'not-urgent-not-important';
-}
+import React, { ReactNode } from 'react';
 
 interface TaskListContainerProps {
   children: ReactNode;
-  tasks: Task[];
-  onTasksChange: (tasks: Task[]) => void;
 }
 
-export const TaskListContainer: React.FC<TaskListContainerProps> = ({ children, tasks, onTasksChange }) => {
+export const TaskListContainer: React.FC<TaskListContainerProps> = ({ children }) => {
   return (
     <div 
       className="font-arabic h-full"
@@ -36,12 +21,7 @@ export const TaskListContainer: React.FC<TaskListContainerProps> = ({ children, 
         flexDirection: 'column'
       }}
     >
-      {React.Children.map(children, child => {
-        if (React.isValidElement(child)) {
-          return React.cloneElement(child, { tasks, onTasksChange });
-        }
-        return child;
-      })}
+      {children}
     </div>
   );
 };
