@@ -25,10 +25,20 @@ export const CardDropdownMenu: React.FC<CardDropdownMenuProps> = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button 
-          className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/20 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95"
+          className="rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 font-arabic"
+          style={{
+            backgroundColor: '#F7FFFF',
+            padding: '6px 12px',
+            fontSize: '12px',
+            fontWeight: 500,
+            color: '#858789',
+            fontFamily: 'IBM Plex Sans Arabic',
+            border: 'none',
+            cursor: 'pointer'
+          }}
           onClick={(e) => e.stopPropagation()}
         >
-          <MoreHorizontal size={16} />
+          <MoreHorizontal size={14} />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 

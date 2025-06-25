@@ -22,7 +22,6 @@ const ProjectCardHeader: React.FC<ProjectCardHeaderProps> = ({
   title,
   description,
   tasksCount,
-  status,
   onSelect = () => {},
   onEdit = () => {},
   onArchive = () => {},
@@ -33,7 +32,7 @@ const ProjectCardHeader: React.FC<ProjectCardHeaderProps> = ({
       <div className="flex items-center gap-3 flex-1">
         <ProjectCardDaysCircle daysLeft={daysLeft} />
         <ProjectCardTitle title={title} description={description} />
-        <ProjectCardTasksCircle tasksCount={tasksCount} status={status} />
+        <ProjectCardTasksCircle tasksCount={tasksCount} />
       </div>
       <div className="flex-shrink-0 ml-2">
         <CardDropdownMenu
