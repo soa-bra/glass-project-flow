@@ -13,7 +13,7 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
 }) => {
   return <div className="grid grid-cols-3 grid-rows-4 gap-4 h-full my-[20px]">
       {/* العمود الأول - قائمة المهام (بعرض مساوي للأعمدة الأخرى) */}
-      <div className="col-span-1 row-span-4">
+      <div className="col-span-1 row-span-4 px-0 bg-[aec2cf] rounded-lg">
         <TaskListCard project={project} />
       </div>
 
