@@ -80,7 +80,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       {/* الإحصائيات - منقولة لتكون مع معلومات المشروع */}
       <div className="flex justify-between items-start mb-6 flex-shrink-0 py-0 my-0">
         {/* معلومات المشروع الأساسية */}
-        <div className="flex-1 mx-[15px]">
+        <div className="flex-1 mx-0 px-[2px]">
           <div className="flex items-center gap-4 mb-4">
             {/* اسم المشروع */}
             <h2 className="text-xl font-arabic font-semibold text-gray-800">
@@ -110,9 +110,9 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
         {/* الإحصائيات - منقولة من تحت شريط التقدم */}
         <div className="flex-shrink-0">
-          <div className="grid grid-cols-3 gap-6 px-[45px] my-0">
+          <div className="grid grid-cols-3 gap-6 my-0 px-0 mx-0">
             {/* الإيرادات المتوقعة */}
-            <div className="text-right p-6 py-0">
+            <div className="text-right p-6 py-0 px-[20px]">
               <div className="mb-2">
                 <span className="text-sm text-black font-arabic font-medium">الإيرادات المتوقعة</span>
               </div>
