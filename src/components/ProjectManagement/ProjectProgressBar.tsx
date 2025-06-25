@@ -75,20 +75,9 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   };
   return <div style={{
     background: 'transparent'
-  }} className="relative w-full flex flex-col items-start font-arabic pt-0 pb-0 px-0 py-[4px] mx-[5px] my-[34px]">
+  }} className="relative w-full flex flex-col items-start font-arabic pt-0 pb-0 py-[4px] my-[30px] px-[35px] mx-[148px]">
       {/* فقاعة تقدم المشروع - ثابتة في بداية الشريط */}
-      <div className="absolute z-10 text-black text-right" style={{
-      background: 'linear-gradient(135deg, #b9f3a8, #d4ffd0)',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-      padding: '14px 20px',
-      borderRadius: '50px',
-      minWidth: '160px',
-      top: `-${circleSize / 1.8}px`,
-      right: `calc(80% - ${bubbleSize / 1.8}px)` // ثابتة في بداية الشريط (اليمين)
-    }}>
-        <div className="font-bold text-lg">تقدم المشروع</div>
-        <div className="text-sm font-light text-gray-800">{stages[currentStageIndex]?.label}</div>
-      </div>
+      
 
       {/* شريط الشرائح */}
       <div ref={barRef} className="relative flex items-center justify-start flex-row-reverse gap-[3px] w-[80%] h-[25px]">
