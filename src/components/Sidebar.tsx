@@ -1,18 +1,21 @@
+
 import { Home, Building, Users, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface SidebarProps {
   onToggle?: (collapsed: boolean) => void;
+  onDepartmentsClick?: () => void;
+  isDepartmentsSidebarVisible?: boolean;
 }
 
-const Sidebar = ({ onToggle }: SidebarProps) => {
+const Sidebar = ({ onToggle, onDepartmentsClick, isDepartmentsSidebarVisible = false }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const menuItems = [
-    { icon: Home, label: 'الرئيسية', active: true },
-    { icon: Building, label: 'الإدارات', active: false },
-    { icon: Users, label: 'التخطيط التشاركي', active: false },
-    { icon: Archive, label: 'الأرشيف', active: false }
+    { icon: Home, label: 'الرئيسية', active: true, id: 'home' },
+    { icon: Building, label: 'الإدارات', active: false, id: 'departments', onClick: onDepartmentsClick },
+    { icon: Users, label: 'التخطيط التشاركي', active: false, id: 'planning' },
+    { icon: Archive, label: 'الأرشيف', active: false, id: 'archive' }
   ];
 
   const toggleSidebar = () => {
@@ -25,12 +28,17 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
     onToggle?.(isCollapsed);
   }, [isCollapsed, onToggle]);
 
+  // إخفاء الشريط الجانبي عند ظهور شريط الإدارات
+  const shouldHide = isDepartmentsSidebarVisible;
+
   return (
     <aside 
       style={{
         width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)',
         transition: 'all var(--animation-duration-main) var(--animation-easing)',
-        background: '#dfecf2'
+        background: '#dfecf2',
+        transform: shouldHide ? 'translateX(100%)' : 'translateX(0)',
+        opacity: shouldHide ? 0 : 1
       }}
       className="z-sidebar h-full backdrop-blur-xl rounded-3xl mx-0 overflow-hidden px-0"
     >
@@ -87,6 +95,7 @@ const Sidebar = ({ onToggle }: SidebarProps) => {
             return (
               <button
                 key={index}
+                onClick={item.onClick}
                 className={`
                   flex items-center gap-3 text-right group relative overflow-hidden sync-transition
                   ${item.active 
