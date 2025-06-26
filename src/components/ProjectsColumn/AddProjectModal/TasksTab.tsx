@@ -15,7 +15,7 @@ export const TasksTab: React.FC<TasksTabProps> = ({ tasks, onAddTask }) => {
         <div className="flex justify-between items-center">
           <Button
             onClick={onAddTask}
-            className="bg-black text-white hover:bg-gray-800 font-arabic rounded-full"
+            className="bg-black text-white hover:bg-gray-800 font-arabic"
           >
             إضافة مهمة +
           </Button>
@@ -28,8 +28,8 @@ export const TasksTab: React.FC<TasksTabProps> = ({ tasks, onAddTask }) => {
           </div>
         ) : (
           <div className="space-y-3">
-            {tasks.map((task) => (
-              <div key={task.id} className="p-4 border border-white/40 rounded-lg" style={{
+            {tasks.map((task, index) => (
+              <div key={index} className="p-4 border border-white/40 rounded-lg" style={{
                 background: 'rgba(255,255,255,0.15)',
                 backdropFilter: 'blur(10px)',
                 WebkitBackdropFilter: 'blur(10px)',
@@ -37,8 +37,7 @@ export const TasksTab: React.FC<TasksTabProps> = ({ tasks, onAddTask }) => {
                 <h4 className="font-bold font-arabic text-right">{task.title}</h4>
                 <p className="text-sm text-gray-600 font-arabic text-right mt-1">{task.description}</p>
                 <div className="flex justify-between items-center mt-2 text-sm text-gray-500 font-arabic">
-                  <span>الأولوية: {task.priority}</span>
-                  <span>المكلف: {task.assignee || 'غير محدد'}</span>
+                  <span>المكلف: {task.assignee}</span>
                   <span>تاريخ الاستحقاق: {task.dueDate}</span>
                 </div>
               </div>
