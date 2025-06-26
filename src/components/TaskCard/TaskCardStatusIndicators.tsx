@@ -85,7 +85,7 @@ const TaskCardStatusIndicators = ({
       <div style={pillStyle}>{assignee}</div>
       <div style={pillStyle}>{members}</div>
       
-      {/* الكبسولة الجديدة بثلاث نقاط مع القائمة المنسدلة */}
+      {/* الكبسولة الدائرية بثلاث نقاط مع القائمة المنسدلة */}
       <div 
         ref={dropdownRef}
         style={{ position: 'relative', display: 'inline-block' }}
@@ -93,13 +93,19 @@ const TaskCardStatusIndicators = ({
         <button
           onClick={() => setShowDropdown(!showDropdown)}
           style={{
-            ...pillStyle,
+            width: '22px',
+            height: '22px',
+            borderRadius: '50%',
+            backgroundColor: '#F7FFFF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             border: 'none',
             cursor: 'pointer',
-            background: pillStyle.backgroundColor
+            fontSize: '10px',
+            fontWeight: 500,
+            color: '#858789',
+            fontFamily: 'IBM Plex Sans Arabic'
           }}
         >
           <div style={{
