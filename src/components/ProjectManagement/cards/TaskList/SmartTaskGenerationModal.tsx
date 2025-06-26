@@ -33,6 +33,8 @@ const taskTypes = [
   { id: 'review', label: 'مراجعة' },
 ];
 
+const priorities = ['high', 'medium', 'low'] as const;
+
 export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> = ({
   isOpen,
   onClose,
@@ -50,7 +52,7 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (error) setError(''); // إزالة رسالة الخطأ عند التعديل
+    if (error) setError('');
   };
 
   const handleTypeChange = (typeId: string, checked: boolean) => {
@@ -67,18 +69,15 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
     setError('');
 
     try {
-      // استخدام القيمة الافتراضية إذا لم يتم إدخال عدد
       const taskCount = formData.taskCount ? parseInt(formData.taskCount) : 5;
       
-      // محاكاة عملية التوليد (يمكن استبدالها بـ Supabase Function لاحقاً)
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // توليد مهام وهمية للاختبار
       const generatedTasks = Array.from({ length: taskCount }, (_, index) => ({
         id: Date.now() + index,
         title: `مهمة مولدة ${index + 1}`,
         description: `وصف المهمة المولدة تلقائياً`,
-        priority: ['high', 'medium', 'low'][Math.floor(Math.random() * 3)],
+        priority: priorities[Math.floor(Math.random() * priorities.length)],
         type: formData.selectedTypes.length > 0 
           ? formData.selectedTypes[Math.floor(Math.random() * formData.selectedTypes.length)]
           : 'technical',
@@ -159,7 +158,6 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
 
           <div className="px-8 pb-8">
             <div className="space-y-6">
-              {/* حقل عدد المهام */}
               <div className="space-y-2">
                 <Label className="font-arabic text-right font-bold">عدد المهام التقريبي</Label>
                 <Input
@@ -173,7 +171,6 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
                 />
               </div>
 
-              {/* حقل نوع المهام */}
               <div className="space-y-3">
                 <Label className="font-arabic text-right font-bold">نوع المهام</Label>
                 <div className="grid grid-cols-2 gap-3">
@@ -192,14 +189,12 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
                 </div>
               </div>
 
-              {/* رسالة الخطأ */}
               {error && (
                 <div className="text-red-600 text-sm font-arabic text-right bg-red-50 p-3 rounded-lg border border-red-200">
                   {error}
                 </div>
               )}
 
-              {/* رسالة التوليد */}
               {isGenerating && (
                 <div className="flex items-center gap-2 justify-center text-gray-600 font-arabic">
                   <Loader2 className="animate-spin w-4 h-4" />
@@ -208,23 +203,22 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
               )}
             </div>
 
-            {/* أزرار الإجراءات */}
             <div className="flex gap-4 justify-start pt-6 border-t border-white/20 mt-6">
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleClose}
                 disabled={isGenerating}
-                className="border-black text-black hover:bg-black/10 font-arabic"
+                className="border-black text-black hover:bg-black/10 font-arabic rounded-full"
               >
                 إلغاء
               </Button>
               <Button
                 onClick={generateTasks}
                 disabled={isGenerating}
-                className="font-arabic"
+                className="font-arabic rounded-full"
                 style={{
-                  backgroundColor: '#D4A574', // لون Mustard من لوحة سوبرا
+                  backgroundColor: '#D4A574',
                   color: 'white',
                 }}
               >

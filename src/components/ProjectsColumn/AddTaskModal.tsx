@@ -28,7 +28,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
     description: '',
     dueDate: '',
     assignee: '',
-    priority: 'urgent-important',
+    priority: 'high',
     attachments: []
   });
 
@@ -67,7 +67,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
         ...taskData,
         id: Date.now(),
         createdAt: new Date().toISOString(),
-        stage: 'planning' // default stage since it's required in TaskData
+        stage: 'planning'
       };
       
       onTaskAdded(newTask);
@@ -93,7 +93,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
       description: '',
       dueDate: '',
       assignee: '',
-      priority: 'urgent-important',
+      priority: 'high',
       attachments: []
     });
   };
