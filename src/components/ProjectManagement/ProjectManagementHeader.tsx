@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { X, MoreHorizontal } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { Project } from '@/types/project';
 
 interface TabItem {
@@ -57,20 +56,15 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
         </div>
 
         <div className="flex items-center gap-3">
-          <Select onValueChange={(value) => {
-            if (value === 'delete') onDelete();
-            else if (value === 'archive') onArchive();
-            else if (value === 'edit') onEdit();
-          }}>
-            <SelectTrigger className="w-[50px] h-[50px] rounded-full border-2 border-[#3e494c]/50 flex items-center justify-center transition-all duration-300 bg-transparent">
-              <MoreHorizontal className="w-5 h-5 text-gray-700" />
-            </SelectTrigger>
-            <SelectContent className="font-arabic bg-white backdrop-filter backdrop-blur-lg border border-white/20">
-              <SelectItem value="edit">تعديل المشروع</SelectItem>
-              <SelectItem value="archive">أرشفة المشروع</SelectItem>
-              <SelectItem value="delete" className="text-red-600">حذف المشروع</SelectItem>
-            </SelectContent>
-          </Select>
+          <button
+            onClick={() => {
+              // يمكن إضافة منطق القائمة المنسدلة هنا
+              console.log('Options menu clicked');
+            }}
+            className="w-[50px] h-[50px] rounded-full border-2 border-[#3e494c]/50 flex items-center justify-center transition-all duration-300 bg-transparent"
+          >
+            <MoreHorizontal className="w-5 h-5 text-gray-700" />
+          </button>
 
           <button
             onClick={onClose}
