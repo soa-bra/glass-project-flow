@@ -5,7 +5,7 @@ export interface TaskData {
   description: string;
   dueDate: string;
   assignee: string;
-  priority: 'high' | 'medium' | 'low';
+  priority: 'urgent-important' | 'urgent-not-important' | 'not-urgent-important' | 'not-urgent-not-important';
   stage: 'planning' | 'development' | 'testing' | 'review' | 'completed';
   attachments: string[];
   createdAt?: string;
