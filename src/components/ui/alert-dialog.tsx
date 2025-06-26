@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
@@ -44,9 +43,7 @@ const AlertDialogContent = React.forwardRef<
         className
       )}
       style={{
-        background: 'rgba(255,255,255,0.4)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        background: 'rgba(255,255,255,0.9)',
         border: '1px solid rgba(255,255,255,0.2)',
         borderRadius: '24px',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
