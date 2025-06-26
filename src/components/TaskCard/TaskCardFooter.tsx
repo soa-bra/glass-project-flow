@@ -7,6 +7,11 @@ interface TaskCardFooterProps {
   date: string;
   assignee: string;
   members: string;
+  taskId: string;
+  onSelect?: (taskId: string) => void;
+  onEdit?: (taskId: string) => void;
+  onArchive?: (taskId: string) => void;
+  onDelete?: (taskId: string) => void;
 }
 
 const TaskCardFooter = ({
@@ -14,7 +19,12 @@ const TaskCardFooter = ({
   statusColor,
   date,
   assignee,
-  members
+  members,
+  taskId,
+  onSelect,
+  onEdit,
+  onArchive,
+  onDelete
 }: TaskCardFooterProps) => {
   return (
     <TaskCardStatusIndicators 
@@ -23,6 +33,11 @@ const TaskCardFooter = ({
       date={date}
       assignee={assignee}
       members={members}
+      taskId={taskId}
+      onSelect={onSelect}
+      onEdit={onEdit}
+      onArchive={onArchive}
+      onDelete={onDelete}
     />
   );
 };

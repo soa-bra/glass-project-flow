@@ -1,10 +1,34 @@
 
+import React, { useState } from 'react';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { EllipsisVertical } from 'lucide-react';
+
 interface TaskCardStatusIndicatorsProps {
   status: string;
   statusColor: string;
   date: string;
   assignee: string;
   members: string;
+  taskId: string;
+  onSelect?: (taskId: string) => void;
+  onEdit?: (taskId: string) => void;
+  onArchive?: (taskId: string) => void;
+  onDelete?: (taskId: string) => void;
 }
 
 const TaskCardStatusIndicators = ({
@@ -12,8 +36,16 @@ const TaskCardStatusIndicators = ({
   statusColor,
   date,
   assignee,
-  members
+  members,
+  taskId,
+  onSelect,
+  onEdit,
+  onArchive,
+  onDelete
 }: TaskCardStatusIndicatorsProps) => {
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   const pillStyle = {
     backgroundColor: '#F7FFFF',
     borderRadius: '15px',
@@ -21,74 +53,134 @@ const TaskCardStatusIndicators = ({
     fontSize: '10px',
     fontWeight: 500,
     color: '#858789',
-    fontFamily: 'IBM Plex Sans Arabic'
+    fontFamily: 'IBM Plex Sans Arabic',
+    height: '20px'
+  };
+
+  const handleArchive = () => {
+    setShowArchiveDialog(false);
+    onArchive?.(taskId);
+  };
+
+  const handleDelete = () => {
+    setShowDeleteDialog(false);
+    onDelete?.(taskId);
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      gap: '6px',
-      flexWrap: 'wrap',
-      marginTop: '8px'
-    }}>
-      <div style={{
-        ...pillStyle,
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px'
-      }}>
-        <div style={{
-          width: '8px',
-          height: '8px',
-          borderRadius: '50%',
-          backgroundColor: statusColor
-        }}></div>
-        {status}
-      </div>
-
-      <div style={pillStyle}>{date}</div>
-      <div style={pillStyle}>{assignee}</div>
-      <div style={pillStyle}>{members}</div>
-      
-      {/* الكبسولة الجديدة بثلاث نقاط */}
-      <div style={{
-        ...pillStyle,
-        display: 'flex',
-        alignItems: 'center',
+    <>
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
         justifyContent: 'center',
-        width: '30px',
-        height: '30px',
-        borderRadius: '50%',
-        padding: '0'
+        gap: '6px',
+        flexWrap: 'wrap',
+        marginTop: '8px'
       }}>
         <div style={{
+          ...pillStyle,
           display: 'flex',
-          gap: '2px',
-          alignItems: 'center'
+          alignItems: 'center',
+          gap: '4px'
         }}>
           <div style={{
-            width: '3px',
-            height: '3px',
+            width: '8px',
+            height: '8px',
             borderRadius: '50%',
-            backgroundColor: '#858789'
+            backgroundColor: statusColor
           }}></div>
-          <div style={{
-            width: '3px',
-            height: '3px',
-            borderRadius: '50%',
-            backgroundColor: '#858789'
-          }}></div>
-          <div style={{
-            width: '3px',
-            height: '3px',
-            borderRadius: '50%',
-            backgroundColor: '#858789'
-          }}></div>
+          {status}
         </div>
+
+        <div style={pillStyle}>{date}</div>
+        <div style={pillStyle}>{assignee}</div>
+        <div style={pillStyle}>{members}</div>
+        
+        {/* قائمة النقاط الثلاث */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button style={{
+              ...pillStyle,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              padding: '0',
+              border: 'none',
+              cursor: 'pointer'
+            }}>
+              <EllipsisVertical size={12} color="#858789" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            align="end" 
+            className="font-arabic bg-white shadow-lg border rounded-md"
+            style={{ direction: 'rtl', zIndex: 50 }}
+          >
+            <DropdownMenuItem 
+              onClick={() => onSelect?.(taskId)}
+              className="text-right cursor-pointer hover:bg-gray-100"
+            >
+              تحديد
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => onEdit?.(taskId)}
+              className="text-right cursor-pointer hover:bg-gray-100"
+            >
+              تعديل
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => setShowArchiveDialog(true)}
+              className="text-right cursor-pointer hover:bg-gray-100"
+            >
+              أرشفة
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => setShowDeleteDialog(true)}
+              className="text-right cursor-pointer hover:bg-gray-100 text-red-600"
+            >
+              حذف
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-    </div>
+
+      {/* حوار تأكيد الأرشفة */}
+      <AlertDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
+        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد الأرشفة</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من أنك تريد أرشفة هذه المهمة؟ يمكنك استعادتها لاحقاً من الأرشيف.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2">
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={handleArchive}>أرشفة</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* حوار تأكيد الحذف */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من أنك تريد حذف هذه المهمة نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2">
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              حذف نهائي
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 

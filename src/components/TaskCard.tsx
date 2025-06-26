@@ -5,7 +5,14 @@ import TaskCardHeader from './TaskCard/TaskCardHeader';
 import TaskCardFooter from './TaskCard/TaskCardFooter';
 import type { TaskCardProps } from './TaskCard/types';
 
-const TaskCard: React.FC<TaskCardProps> = ({
+interface ExtendedTaskCardProps extends TaskCardProps {
+  onSelect?: (taskId: string) => void;
+  onEdit?: (taskId: string) => void;
+  onArchive?: (taskId: string) => void;
+  onDelete?: (taskId: string) => void;
+}
+
+const TaskCard: React.FC<ExtendedTaskCardProps> = ({
   id,
   title,
   description,
@@ -15,7 +22,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
   assignee,
   members,
   daysLeft,
-  priority
+  priority,
+  onSelect,
+  onEdit,
+  onArchive,
+  onDelete
 }) => {
   return (
     <TaskCardLayout id={id.toString()}>
@@ -32,6 +43,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
         date={date}
         assignee={assignee}
         members={members}
+        taskId={id.toString()}
+        onSelect={onSelect}
+        onEdit={onEdit}
+        onArchive={onArchive}
+        onDelete={onDelete}
       />
     </TaskCardLayout>
   );
