@@ -1,10 +1,16 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle } from 'react';
+import type { TaskData } from '@/types';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import TaskCard from '@/components/TaskCard';
 import { useTaskSelection } from '@/hooks/useTaskSelection';
 
-export const TaskListContent: React.FC = () => {
+export interface TaskListContentRef {
+  addTask: (task: TaskData) => void;
+  addTasks: (tasks: TaskData[]) => void;
+}
+
+export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAttributes<HTMLDivElement>>((_, ref) => {
   const {
     selectedTasks,
     toggleTaskSelection,
@@ -58,6 +64,16 @@ export const TaskListContent: React.FC = () => {
     daysLeft: 10,
     priority: 'not-urgent-not-important' as const
   }]);
+
+  const addTask = (task: TaskData) => {
+    setTasks(prev => [...prev, task]);
+  };
+
+  const addTasks = (newTasks: TaskData[]) => {
+    setTasks(prev => [...prev, ...newTasks]);
+  };
+
+  useImperativeHandle(ref, () => ({ addTask, addTasks }));
 
   // إضافة معالج لضغطة مفتاح Esc
   useEffect(() => {
@@ -126,7 +142,8 @@ export const TaskListContent: React.FC = () => {
     console.log('تم حذف المهام المحددة:', selectedTasks);
   };
 
-  return <>
+  return (
+    <>
       {/* شريط الإجراءات الجماعية */}
       {selectedTasks.length > 0 && <div style={{
       direction: 'rtl',
@@ -222,5 +239,6 @@ export const TaskListContent: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>;
-};
+    </>
+  );
+});

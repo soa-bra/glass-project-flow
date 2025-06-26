@@ -19,10 +19,12 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
+import type { TaskData } from '@/types';
+
 interface SmartTaskGenerationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onTasksGenerated: (tasks: any[]) => void;
+  onTasksGenerated: (tasks: TaskData[]) => void;
 }
 
 const taskTypes = [
