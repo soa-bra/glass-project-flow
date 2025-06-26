@@ -32,13 +32,7 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
   onArchive,
   onDelete
 }) => {
-  const handleCardClick = (e: React.MouseEvent) => {
-    // منع انتشار الحدث إذا كان النقر على القائمة المنسدلة
-    if ((e.target as HTMLElement).closest('[data-dropdown-trigger]') || 
-        (e.target as HTMLElement).closest('[data-radix-popper-content-wrapper]')) {
-      return;
-    }
-
+  const handleCardClick = () => {
     if (isSelectionMode && onSelect) {
       onSelect(id.toString());
     }

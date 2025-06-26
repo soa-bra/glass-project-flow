@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import TaskCard from '@/components/TaskCard';
 import { useTaskSelection } from '@/hooks/useTaskSelection';
-import { X } from 'lucide-react';
 
 export const TaskListContent: React.FC = () => {
   const {
@@ -58,32 +57,12 @@ export const TaskListContent: React.FC = () => {
     daysLeft: 10,
     priority: 'not-urgent-not-important' as const
   }]);
-
-  // إضافة مستمع لمفتاح Esc
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isSelectionMode) {
-        handleClearSelection();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscKey);
-    return () => document.removeEventListener('keydown', handleEscKey);
-  }, [isSelectionMode]);
-
-  // مراقبة تغيير عدد المهام المحددة للخروج من وضع التحديد
-  useEffect(() => {
-    if (selectedTasks.length === 0 && isSelectionMode) {
-      setIsSelectionMode(false);
-    }
-  }, [selectedTasks.length, isSelectionMode]);
-
   const handleTaskSelect = (taskId: string) => {
     console.log('تحديد/إلغاء تحديد المهمة:', taskId);
     toggleTaskSelection(taskId);
 
     // تفعيل نمط التحديد عند تحديد أول مهمة
-    if (!isSelectionMode && !selectedTasks.includes(taskId)) {
+    if (!isSelectionMode) {
       setIsSelectionMode(true);
     }
   };
@@ -129,7 +108,7 @@ export const TaskListContent: React.FC = () => {
       }} className="text-sm">
             تم تحديد {selectedTasks.length} مهمة
           </span>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2">
             <button 
               onClick={() => setShowBulkArchiveDialog(true)} 
               style={{
@@ -148,12 +127,8 @@ export const TaskListContent: React.FC = () => {
             >
               حذف المحدد
             </button>
-            <button 
-              onClick={handleClearSelection} 
-              className="w-[50px] h-[50px] rounded-full border-2 border-[#3e494c]/50 bg-transparent flex items-center justify-center transition-all duration-300 hover:bg-white/20 group"
-              title="إلغاء التحديد"
-            >
-              <X className="w-[19px] h-[19px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+            <button onClick={handleClearSelection} className="px-3 py-1 text-sm transition-colors bg-gray-500 hover:bg-gray-400 rounded-full text-black">
+              إلغاء التحديد
             </button>
           </div>
         </div>}

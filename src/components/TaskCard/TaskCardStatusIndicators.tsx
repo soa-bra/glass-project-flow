@@ -61,8 +61,7 @@ const TaskCardStatusIndicators = ({
     height: '20px'
   };
 
-  const handleSelect = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleSelect = () => {
     console.log('تحديد المهمة:', taskId);
     onSelect?.(taskId);
   };
@@ -126,7 +125,7 @@ const TaskCardStatusIndicators = ({
               height: '20px',
               borderRadius: '50%',
               padding: '0',
-              border: isSelected ? 'none' : '1px solid #858789', // تقليل عرض الحد إلى النصف
+              border: isSelected ? 'none' : '2px solid #858789',
               cursor: 'pointer',
               backgroundColor: isSelected ? '#858789' : 'transparent',
               color: isSelected ? '#fff' : '#858789'
@@ -139,21 +138,18 @@ const TaskCardStatusIndicators = ({
         ) : (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button 
-                data-dropdown-trigger
-                style={{
-                  ...pillStyle,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  padding: '0',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
+              <button style={{
+                ...pillStyle,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                padding: '0',
+                border: 'none',
+                cursor: 'pointer'
+              }}>
                 <EllipsisVertical size={12} color="#858789" />
               </button>
             </DropdownMenuTrigger>
