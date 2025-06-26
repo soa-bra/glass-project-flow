@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
@@ -7,19 +8,19 @@ import type { TaskData } from '@/types';
 import { TaskFormFields } from './AddTaskModal/TaskFormFields';
 import { TaskFormActions } from './AddTaskModal/TaskFormActions';
 import { TaskFormData } from './AddTaskModal/types';
+
 interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   onTaskAdded: (task: TaskData) => void;
 }
+
 export const AddTaskModal: React.FC<AddTaskModalProps> = ({
   isOpen,
   onClose,
   onTaskAdded
 }) => {
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [taskData, setTaskData] = useState<TaskFormData>({
     id: 0,
@@ -27,16 +28,17 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
     description: '',
     dueDate: '',
     assignee: '',
-    priority: 'medium',
-    stage: 'planning',
+    priority: 'urgent-important',
     attachments: []
   });
+
   const handleInputChange = (field: string, value: string) => {
     setTaskData(prev => ({
       ...prev,
       [field]: value
     }));
   };
+
   const validateForm = (): boolean => {
     if (!taskData.title.trim()) {
       toast({
@@ -56,14 +58,18 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
     }
     return true;
   };
+
   const handleSaveTask = () => {
     if (!validateForm()) return;
+
     try {
       const newTask: TaskData = {
         ...taskData,
         id: Date.now(),
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        stage: 'planning' // default stage since it's required in TaskData
       };
+      
       onTaskAdded(newTask);
       toast({
         title: "تم إنشاء المهمة بنجاح",
@@ -79,6 +85,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
       });
     }
   };
+
   const resetForm = () => {
     setTaskData({
       id: 0,
@@ -86,11 +93,11 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
       description: '',
       dueDate: '',
       assignee: '',
-      priority: 'medium',
-      stage: 'planning',
+      priority: 'urgent-important',
       attachments: []
     });
   };
+
   const handleClose = () => {
     if (taskData.title.trim() || taskData.description.trim()) {
       setShowCancelDialog(true);
@@ -99,21 +106,27 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
       onClose();
     }
   };
+
   const confirmClose = () => {
     resetForm();
     setShowCancelDialog(false);
     onClose();
   };
-  return <>
+
+  return (
+    <>
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 font-arabic" style={{
-        background: 'rgba(255,255,255,0.4)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255,255,255,0.2)',
-        borderRadius: '24px'
-      }}>
-          <button onClick={handleClose} className="absolute top-4 left-4 rounded-full bg-white/70 hover:bg-white/100 shadow-lg border border-white/30 w-[32px] h-[32px] flex items-center justify-center transition z-10">
+          background: 'rgba(255,255,255,0.4)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '24px'
+        }}>
+          <button 
+            onClick={handleClose} 
+            className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black/30 w-[32px] h-[32px] flex items-center justify-center transition z-10"
+          >
             <X size={18} className="text-black" />
           </button>
 
@@ -124,7 +137,11 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
           </DialogHeader>
 
           <div className="px-8 pb-8">
-            <TaskFormFields taskData={taskData} onInputChange={handleInputChange} onTaskDataChange={setTaskData} />
+            <TaskFormFields 
+              taskData={taskData} 
+              onInputChange={handleInputChange} 
+              onTaskDataChange={setTaskData} 
+            />
             
             <TaskFormActions onCancel={handleClose} onSave={handleSaveTask} />
           </div>
@@ -147,5 +164,6 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>;
+    </>
+  );
 };

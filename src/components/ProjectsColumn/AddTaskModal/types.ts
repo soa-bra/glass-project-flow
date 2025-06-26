@@ -5,8 +5,7 @@ export interface TaskFormData {
   description: string;
   dueDate: string;
   assignee: string;
-  priority: 'high' | 'medium' | 'low';
-  stage: 'planning' | 'development' | 'testing' | 'review' | 'completed';
+  priority: 'urgent-important' | 'urgent-not-important' | 'not-urgent-important' | 'not-urgent-not-important';
   attachments: string[];
 }
 
@@ -20,15 +19,8 @@ export const teamMembers = [
 ];
 
 export const priorities = [
-  { value: 'high', label: 'عالية' },
-  { value: 'medium', label: 'متوسطة' },
-  { value: 'low', label: 'منخفضة' }
-];
-
-export const stages = [
-  { value: 'planning', label: 'التخطيط' },
-  { value: 'development', label: 'التطوير' },
-  { value: 'testing', label: 'الاختبار' },
-  { value: 'review', label: 'المراجعة' },
-  { value: 'completed', label: 'مكتملة' }
+  { value: 'urgent-important', label: 'عاجل مهم' },
+  { value: 'urgent-not-important', label: 'عاجل غير مهم' },
+  { value: 'not-urgent-important', label: 'غير عاجل مهم' },
+  { value: 'not-urgent-not-important', label: 'غير عاجل غير مهم' }
 ];
