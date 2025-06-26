@@ -18,11 +18,27 @@ import {
 } from "@/components/ui/alert-dialog";
 import { EllipsisVertical } from 'lucide-react';
 
-const statusColors = {
-  success: 'var(--status-colors-on-plan)',
-  warning: 'var(--status-colors-delayed)',
-  error: 'var(--status-colors-stopped)',
-  info: 'var(--status-colors-in-preparation)'
+const statusConfigs = {
+  success: { 
+    color: '#bdeed3', 
+    text: 'وفق الخطة',
+    shadowColor: 'rgba(189, 238, 211, 0.4)'
+  },
+  warning: { 
+    color: '#fbe2aa', 
+    text: 'متأخرة',
+    shadowColor: 'rgba(251, 226, 170, 0.4)'
+  },
+  info: { 
+    color: '#a4e2f6', 
+    text: 'تحت الإعداد',
+    shadowColor: 'rgba(164, 226, 246, 0.4)'
+  },
+  error: { 
+    color: '#f1b5b9', 
+    text: 'متوقفة',
+    shadowColor: 'rgba(241, 181, 185, 0.4)'
+  }
 };
 
 interface ProjectCardStatusIndicatorsProps {
@@ -63,6 +79,25 @@ const ProjectCardStatusIndicators = ({
     justifyContent: 'center'
   };
 
+  const statusConfig = statusConfigs[status];
+
+  const statusCapsuleStyle = {
+    backgroundColor: statusConfig.color,
+    borderRadius: '15px',
+    padding: '4px 12px',
+    fontSize: '10px',
+    fontWeight: 500,
+    color: '#000000',
+    fontFamily: 'IBM Plex Sans Arabic',
+    height: '24px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: `0 2px 8px ${statusConfig.shadowColor}, 0 0 16px ${statusConfig.shadowColor}`,
+    border: 'none',
+    gap: '6px'
+  };
+
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (projectId && onEdit) {
@@ -94,14 +129,19 @@ const ProjectCardStatusIndicators = ({
   return (
     <>
       <div className="flex items-center justify-between py-0 mx-0 px-[28px] my-[24px]">
-        {/* دائرة حالة المشروع - على الجانب الأيسر */}
-        <div 
-          style={{
-            backgroundColor: statusColors[status],
-            boxShadow: `0 2px 6px ${statusColors[status]}20, 0 0 12px ${statusColors[status]}15`
-          }} 
-          className="w-[20px] h-[20px] rounded-full my-0 py-0 px-0 mx-0" 
-        />
+        {/* كبسولة حالة المشروع مع النص - على الجانب الأيسر */}
+        <div style={statusCapsuleStyle}>
+          <div 
+            style={{
+              backgroundColor: statusConfig.color,
+              filter: 'brightness(0.8)',
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%'
+            }} 
+          />
+          <span>{statusConfig.text}</span>
+        </div>
 
         {/* الكبسولات - محاذاة إلى اليمين مع عنوان المشروع */}
         <div style={{ 
@@ -186,7 +226,15 @@ const ProjectCardStatusIndicators = ({
 
       {/* حوار تأكيد الأرشفة */}
       <AlertDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
-        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+        <AlertDialogContent 
+          className="font-arabic backdrop-blur-lg border-0"
+          style={{ 
+            direction: 'rtl',
+            background: 'rgba(255, 255, 255, 0.4)',
+            backdropFilter: 'blur(20px)',
+            boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.12)'
+          }}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الأرشفة</AlertDialogTitle>
             <AlertDialogDescription>
@@ -202,7 +250,15 @@ const ProjectCardStatusIndicators = ({
 
       {/* حوار تأكيد الحذف */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+        <AlertDialogContent 
+          className="font-arabic backdrop-blur-lg border-0"
+          style={{ 
+            direction: 'rtl',
+            background: 'rgba(255, 255, 255, 0.4)',
+            backdropFilter: 'blur(20px)',
+            boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.12)'
+          }}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
             <AlertDialogDescription>

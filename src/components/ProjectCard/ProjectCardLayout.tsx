@@ -1,5 +1,5 @@
 
-import { ReactNode } from 'react';
+import { ReactNode, useRef, useCallback } from 'react';
 
 interface ProjectCardLayoutProps {
   children: ReactNode;
@@ -16,17 +16,55 @@ const ProjectCardLayout = ({
   isOtherSelected = false,
   onProjectSelect,
 }: ProjectCardLayoutProps) => {
-  const handleClick = (event: React.MouseEvent) => {
+  const pressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isPressActiveRef = useRef(false);
+
+  const handleMouseDown = useCallback((event: React.MouseEvent) => {
+    if (event.target && (event.target as HTMLElement).closest('[data-dropdown-trigger]')) {
+      return;
+    }
+
+    isPressActiveRef.current = true;
+    pressTimerRef.current = setTimeout(() => {
+      if (isPressActiveRef.current && onProjectSelect) {
+        console.log('ضغط مطول على المشروع:', id);
+        onProjectSelect(id);
+      }
+    }, 500); // 500ms للضغط المطول
+  }, [id, onProjectSelect]);
+
+  const handleMouseUp = useCallback(() => {
+    if (pressTimerRef.current) {
+      clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
+    isPressActiveRef.current = false;
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    if (pressTimerRef.current) {
+      clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
+    isPressActiveRef.current = false;
+  }, []);
+
+  const handleClick = useCallback((event: React.MouseEvent) => {
     event.stopPropagation();
     
-    if (onProjectSelect) {
+    if (event.target && (event.target as HTMLElement).closest('[data-dropdown-trigger]')) {
+      return;
+    }
+
+    // تحديد عادي عند النقر السريع
+    if (onProjectSelect && !pressTimerRef.current) {
       onProjectSelect(id);
     }
-  };
+  }, [id, onProjectSelect]);
 
   const getCardClasses = () => {
     const baseClasses =
-      'project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer';
+      'project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer select-none';
     
     if (isSelected) {
       return `${baseClasses} project-card-selected`;
@@ -42,6 +80,11 @@ const ProjectCardLayout = ({
   return (
     <div
       onClick={handleClick}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+      onTouchStart={handleMouseDown}
+      onTouchEnd={handleMouseUp}
       className={getCardClasses()}
       style={{
         background: '#e7f1f5',
