@@ -43,7 +43,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
 
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <Button type="button" onClick={onAddPayment} className="bg-black text-white hover:bg-gray-800 font-arabic">
+              <Button type="button" onClick={onAddPayment} className="bg-black text-white hover:bg-gray-800 font-arabic rounded-full">
                 إضافة دفعة +
               </Button>
               <Label className="font-arabic text-right text-lg">دفعات العقد</Label>
@@ -51,9 +51,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
 
             <div className="space-y-3">
               {projectData.contractPayments.map((payment: ContractPayment) => <div key={payment.id} className="grid grid-cols-3 gap-4 p-3 bg-white/10 rounded-lg">
-                  <Button type="button" variant="destructive" size="sm" onClick={() => onRemovePayment(payment.id)} className="w-8 h-8 font-normal rounded-full">
-                    🗑️
-                  </Button>
+                  <Button type="button" variant="destructive" size="sm" onClick={() => onRemovePayment(payment.id)} className="w-8 h-8 font-normal rounded-full">X</Button>
                   
                   <div className="space-y-1">
                     <Label className="text-xs font-arabic">تاريخ الدفع</Label>
