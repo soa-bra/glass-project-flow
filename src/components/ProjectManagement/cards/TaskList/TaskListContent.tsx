@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useImperativeHandle } from 'react';
 import type { TaskData } from '@/types';
+import type { TaskCardProps } from '@/components/TaskCard/types';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import TaskCard from '@/components/TaskCard';
 import { useTaskSelection } from '@/hooks/useTaskSelection';
@@ -65,12 +66,36 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
     priority: 'not-urgent-not-important' as const
   }]);
 
+  const mapTask = (task: TaskData): TaskCardProps => {
+    const dueDate = new Date(task.dueDate);
+    const daysLeft = Math.max(
+      Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+      0
+    );
+
+    return {
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      status: 'وفق الخطة',
+      statusColor: '#A1E8B8',
+      date: dueDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: 'short'
+      }),
+      assignee: task.assignee || 'غير محدد',
+      members: 'غير مضيف',
+      daysLeft,
+      priority: task.priority
+    };
+  };
+
   const addTask = (task: TaskData) => {
-    setTasks(prev => [...prev, task]);
+    setTasks(prev => [...prev, mapTask(task)]);
   };
 
   const addTasks = (newTasks: TaskData[]) => {
-    setTasks(prev => [...prev, ...newTasks]);
+    setTasks(prev => [...prev, ...newTasks.map(mapTask)]);
   };
 
   useImperativeHandle(ref, () => ({ addTask, addTasks }));
