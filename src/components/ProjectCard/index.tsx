@@ -8,9 +8,6 @@ interface ProjectCardInteractiveProps extends ProjectCardProps {
   isSelected?: boolean;
   isOtherSelected?: boolean;
   onProjectSelect?: (projectId: string) => void;
-  onEdit?: (projectId: string) => void;
-  onArchive?: (projectId: string) => void;
-  onDelete?: (projectId: string) => void;
 }
 
 const ProjectCard = ({
@@ -25,10 +22,7 @@ const ProjectCard = ({
   daysLeft,
   isSelected = false,
   isOtherSelected = false,
-  onProjectSelect,
-  onEdit,
-  onArchive,
-  onDelete
+  onProjectSelect
 }: ProjectCardInteractiveProps) => {
   return (
     <ProjectCardLayout
@@ -50,10 +44,6 @@ const ProjectCard = ({
         date={deadline}
         owner={owner}
         value={budget.toString()}
-        projectId={id.toString()}
-        onEdit={onEdit}
-        onArchive={onArchive}
-        onDelete={onDelete}
       />
     </ProjectCardLayout>
   );
