@@ -1,6 +1,10 @@
 
 import { X, Building2, Users, FileText, Calculator, Briefcase, Settings, Database, Shield, Headphones, Globe } from 'lucide-react';
 import { useState } from 'react';
+import { useDepartmentsData } from '@/hooks/useDepartmentsData';
+import DepartmentSearch from './DepartmentSearch';
+import DepartmentKeyboardShortcuts from './DepartmentKeyboardShortcuts';
+import DepartmentNotificationBadge from './DepartmentNotificationBadge';
 
 interface DepartmentsSidebarProps {
   isVisible: boolean;
@@ -9,19 +13,24 @@ interface DepartmentsSidebarProps {
 
 const DepartmentsSidebar = ({ isVisible, onClose }: DepartmentsSidebarProps) => {
   const [hoveredDept, setHoveredDept] = useState<string | null>(null);
+  const {
+    departments,
+    searchQuery,
+    setSearchQuery,
+    selectedDepartmentId,
+    selectDepartment,
+    isLoading
+  } = useDepartmentsData();
 
-  const departments = [
-    { id: 'hr', name: 'الموارد البشرية', icon: Users, color: '#4f46e5' },
-    { id: 'finance', name: 'المالية والمحاسبة', icon: Calculator, color: '#059669' },
-    { id: 'legal', name: 'الشؤون القانونية', icon: FileText, color: '#dc2626' },
-    { id: 'operations', name: 'العمليات', icon: Briefcase, color: '#ea580c' },
-    { id: 'it', name: 'تقنية المعلومات', icon: Database, color: '#7c3aed' },
-    { id: 'security', name: 'الأمن والسلامة', icon: Shield, color: '#be123c' },
-    { id: 'customer', name: 'خدمة العملاء', icon: Headphones, color: '#0891b2' },
-    { id: 'marketing', name: 'التسويق', icon: Globe, color: '#c2410c' },
-    { id: 'admin', name: 'الشؤون الإدارية', icon: Settings, color: '#6b7280' },
-    { id: 'projects', name: 'إدارة المشاريع', icon: Building2, color: '#0d9488' }
-  ];
+  const iconMap = {
+    Users, FileText, Calculator, Briefcase, Settings, 
+    Database, Shield, Headphones, Globe, Building2
+  };
+
+  const handleDepartmentClick = async (deptId: string) => {
+    await selectDepartment(deptId);
+    // يمكن إضافة المزيد من المنطق هنا لفتح صفحة الإدارة
+  };
 
   if (!isVisible) return null;
 
@@ -33,18 +42,39 @@ const DepartmentsSidebar = ({ isVisible, onClose }: DepartmentsSidebarProps) => 
         backdropFilter: 'blur(20px)'
       }}
     >
+      {/* اختصارات لوحة المفاتيح */}
+      <DepartmentKeyboardShortcuts 
+        departments={departments}
+        onDepartmentSelect={handleDepartmentClick}
+      />
+
       {/* شريط الإدارات الجانبي */}
       <aside 
-        className="w-[400px] h-full overflow-hidden animate-slide-in-right"
+        className="w-[400px] h-full overflow-hidden animate-slide-in-right relative"
         style={{
           background: 'rgba(255, 255, 255, 0.4)',
           backdropFilter: 'blur(20px)',
           borderRight: '1px solid rgba(255, 255, 255, 0.2)'
         }}
       >
+        {/* شاشة التحميل */}
+        {isLoading && (
+          <div 
+            className="absolute inset-0 z-10 flex items-center justify-center"
+            style={{ background: 'rgba(255, 255, 255, 0.8)' }}
+          >
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-12 h-12 border-4 border-[#3e494c]/20 border-t-[#3e494c] rounded-full animate-spin"></div>
+              <p className="text-[#3e494c] font-medium" style={{ fontFamily: 'IBM Plex Sans Arabic' }}>
+                جاري التحميل...
+              </p>
+            </div>
+          </div>
+        )}
+
         <nav className="flex flex-col h-full p-6">
           {/* العنوان وزر الإغلاق */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6">
             <h2 className="text-3xl font-bold text-[#3e494c]" style={{ fontFamily: 'IBM Plex Sans Arabic' }}>
               الإدارات
             </h2>
@@ -56,28 +86,42 @@ const DepartmentsSidebar = ({ isVisible, onClose }: DepartmentsSidebarProps) => 
             </button>
           </div>
 
+          {/* مربع البحث */}
+          <DepartmentSearch 
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+
           {/* قائمة الإدارات */}
           <div className="flex-1 space-y-3 overflow-y-auto">
             {departments.map((dept, index) => {
-              const IconComponent = dept.icon;
+              const IconComponent = iconMap[dept.icon as keyof typeof iconMap];
               const isHovered = hoveredDept === dept.id;
+              const isSelected = selectedDepartmentId === dept.id;
               
               return (
                 <button
                   key={dept.id}
-                  className="w-full flex items-center gap-4 p-4 rounded-2xl text-right group transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl text-right group transition-all duration-300 hover:scale-105 hover:shadow-lg relative"
                   style={{
-                    background: isHovered ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.3)',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    background: isSelected 
+                      ? 'rgba(255, 255, 255, 0.8)' 
+                      : isHovered 
+                        ? 'rgba(255, 255, 255, 0.6)' 
+                        : 'rgba(255, 255, 255, 0.3)',
+                    border: isSelected 
+                      ? `2px solid ${dept.color}` 
+                      : '1px solid rgba(255, 255, 255, 0.3)',
                     transform: isHovered ? 'translateX(-8px)' : 'translateX(0)',
                     transitionDelay: `${index * 50}ms`
                   }}
                   onMouseEnter={() => setHoveredDept(dept.id)}
                   onMouseLeave={() => setHoveredDept(null)}
+                  onClick={() => handleDepartmentClick(dept.id)}
                 >
                   {/* أيقونة الإدارة */}
                   <div 
-                    className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300"
+                    className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 relative"
                     style={{
                       background: `${dept.color}20`,
                       border: `2px solid ${dept.color}40`,
@@ -88,19 +132,41 @@ const DepartmentsSidebar = ({ isVisible, onClose }: DepartmentsSidebarProps) => 
                       className="w-7 h-7 transition-all duration-300" 
                       style={{ color: dept.color }}
                     />
+                    
+                    {/* شارة التنبيهات */}
+                    {dept.hasNotification && dept.notificationCount && (
+                      <DepartmentNotificationBadge 
+                        count={dept.notificationCount}
+                        color={dept.color}
+                      />
+                    )}
                   </div>
                   
-                  {/* اسم الإدارة */}
-                  <div className="flex-1">
+                  {/* اسم الإدارة ورقم الاختصار */}
+                  <div className="flex-1 flex items-center justify-between">
                     <span 
-                      className="text-lg font-medium block transition-all duration-300"
+                      className="text-lg font-medium transition-all duration-300"
                       style={{ 
                         fontFamily: 'IBM Plex Sans Arabic',
-                        color: isHovered ? dept.color : '#3e494c'
+                        color: isHovered || isSelected ? dept.color : '#3e494c'
                       }}
                     >
                       {dept.name}
                     </span>
+                    
+                    {/* رقم الاختصار */}
+                    {index < 9 && (
+                      <span 
+                        className="text-xs px-2 py-1 rounded-md opacity-60 transition-all duration-300"
+                        style={{ 
+                          background: `${dept.color}20`,
+                          color: dept.color,
+                          fontFamily: 'IBM Plex Sans Arabic'
+                        }}
+                      >
+                        Alt+{index + 1}
+                      </span>
+                    )}
                   </div>
                 </button>
               );
@@ -109,8 +175,11 @@ const DepartmentsSidebar = ({ isVisible, onClose }: DepartmentsSidebarProps) => 
 
           {/* معلومات إضافية في الأسفل */}
           <div className="mt-6 p-4 rounded-xl" style={{ background: 'rgba(255, 255, 255, 0.3)' }}>
-            <p className="text-sm text-[#3e494c]/70 text-center" style={{ fontFamily: 'IBM Plex Sans Arabic' }}>
+            <p className="text-sm text-[#3e494c]/70 text-center mb-2" style={{ fontFamily: 'IBM Plex Sans Arabic' }}>
               اختر الإدارة للوصول إلى الأدوات والتقارير المخصصة
+            </p>
+            <p className="text-xs text-[#3e494c]/50 text-center" style={{ fontFamily: 'IBM Plex Sans Arabic' }}>
+              استخدم Alt + الرقم للوصول السريع
             </p>
           </div>
         </nav>
