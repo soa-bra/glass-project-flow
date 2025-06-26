@@ -64,13 +64,6 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
     daysLeft: 10,
     priority: 'not-urgent-not-important' as const
   }]);
-
-  const addTask = (task: TaskData) => {
-    setTasks(prev => [...prev, task]);
-  };
-
-  const addTasks = (newTasks: TaskData[]) => {
-    setTasks(prev => [...prev, ...newTasks]);
   };
 
   useImperativeHandle(ref, () => ({ addTask, addTasks }));
