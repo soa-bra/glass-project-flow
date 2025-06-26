@@ -1,23 +1,16 @@
 import React, { useState } from 'react';
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import TaskCard from '@/components/TaskCard';
 import { useTaskSelection } from '@/hooks/useTaskSelection';
-
 export const TaskListContent: React.FC = () => {
-  const { selectedTasks, toggleTaskSelection, clearSelection } = useTaskSelection();
+  const {
+    selectedTasks,
+    toggleTaskSelection,
+    clearSelection
+  } = useTaskSelection();
   const [showBulkArchiveDialog, setShowBulkArchiveDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  
   const [tasks, setTasks] = useState([{
     id: 1,
     title: 'تصميم الواجهة',
@@ -63,37 +56,31 @@ export const TaskListContent: React.FC = () => {
     daysLeft: 10,
     priority: 'not-urgent-not-important' as const
   }]);
-
   const handleTaskSelect = (taskId: string) => {
     console.log('تحديد/إلغاء تحديد المهمة:', taskId);
     toggleTaskSelection(taskId);
-    
+
     // تفعيل نمط التحديد عند تحديد أول مهمة
     if (!isSelectionMode) {
       setIsSelectionMode(true);
     }
   };
-
   const handleClearSelection = () => {
     clearSelection();
     setIsSelectionMode(false);
   };
-
   const handleTaskEdit = (taskId: string) => {
     console.log('تعديل المهمة:', taskId);
     // سيتم تنفيذ modal التعديل لاحقاً
   };
-
   const handleTaskArchive = (taskId: string) => {
     setTasks(prev => prev.filter(task => task.id !== parseInt(taskId)));
     console.log('تم أرشفة المهمة:', taskId);
   };
-
   const handleTaskDelete = (taskId: string) => {
     setTasks(prev => prev.filter(task => task.id !== parseInt(taskId)));
     console.log('تم حذف المهمة:', taskId);
   };
-
   const handleBulkArchive = () => {
     setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id.toString())));
     clearSelection();
@@ -101,7 +88,6 @@ export const TaskListContent: React.FC = () => {
     setShowBulkArchiveDialog(false);
     console.log('تم أرشفة المهام المحددة:', selectedTasks);
   };
-
   const handleBulkDelete = () => {
     setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id.toString())));
     clearSelection();
@@ -109,73 +95,44 @@ export const TaskListContent: React.FC = () => {
     setShowBulkDeleteDialog(false);
     console.log('تم حذف المهام المحددة:', selectedTasks);
   };
-
-  return (
-    <>
+  return <>
       {/* شريط الإجراءات الجماعية */}
-      {selectedTasks.length > 0 && (
-        <div 
-          className="mb-4 p-3 rounded-lg flex justify-between items-center font-arabic" 
-          style={{ 
-            direction: 'rtl',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            border: '1px solid rgba(59, 130, 246, 0.2)'
-          }}
-        >
-          <span className="text-sm" style={{ color: '#1e40af' }}>
+      {selectedTasks.length > 0 && <div style={{
+      direction: 'rtl',
+      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      border: '1px solid rgba(59, 130, 246, 0.2)'
+    }} className="mb-4 p-3 flex justify-between items-center font-arabic">
+          <span style={{
+        color: '#1e40af'
+      }} className="text-sm text-black">
             تم تحديد {selectedTasks.length} مهمة
           </span>
           <div className="flex gap-2">
-            <button 
-              onClick={() => setShowBulkArchiveDialog(true)}
-              className="px-3 py-1 bg-yellow-500 text-white rounded-md text-sm hover:bg-yellow-600 transition-colors"
-            >
+            <button onClick={() => setShowBulkArchiveDialog(true)} className="px-3 py-1 text-sm transition-colors bg-[fbe2aa] rounded-full text-black">
               أرشفة المحدد
             </button>
-            <button 
-              onClick={() => setShowBulkDeleteDialog(true)}
-              className="px-3 py-1 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition-colors"
-            >
+            <button onClick={() => setShowBulkDeleteDialog(true)} className="px-3 py-1 text-sm transition-colors rounded-full text-black bg-rose-400 hover:bg-rose-300">
               حذف المحدد
             </button>
-            <button 
-              onClick={handleClearSelection}
-              className="px-3 py-1 bg-gray-500 text-white rounded-md text-sm hover:bg-gray-600 transition-colors"
-            >
+            <button onClick={handleClearSelection} className="px-3 py-1 text-sm transition-colors bg-gray-500 hover:bg-gray-400 text-black rounded-full">
               إلغاء التحديد
             </button>
           </div>
-        </div>
-      )}
+        </div>}
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 pr-1 py-0 my-0">
-          {tasks.map(task => (
-            <div 
-              key={task.id}
-              className={`transition-all duration-200 ${
-                selectedTasks.includes(task.id.toString()) 
-                  ? 'ring-2 ring-blue-400 ring-opacity-50' 
-                  : ''
-              }`}
-            >
-              <TaskCard 
-                {...task} 
-                isSelected={selectedTasks.includes(task.id.toString())}
-                isSelectionMode={isSelectionMode}
-                onSelect={handleTaskSelect}
-                onEdit={handleTaskEdit}
-                onArchive={handleTaskArchive}
-                onDelete={handleTaskDelete}
-              />
-            </div>
-          ))}
+          {tasks.map(task => <div key={task.id} className={`transition-all duration-200 ${selectedTasks.includes(task.id.toString()) ? 'ring-2 ring-blue-400 ring-opacity-50' : ''}`}>
+              <TaskCard {...task} isSelected={selectedTasks.includes(task.id.toString())} isSelectionMode={isSelectionMode} onSelect={handleTaskSelect} onEdit={handleTaskEdit} onArchive={handleTaskArchive} onDelete={handleTaskDelete} />
+            </div>)}
         </div>
       </div>
 
       {/* حوار تأكيد الأرشفة الجماعية */}
       <AlertDialog open={showBulkArchiveDialog} onOpenChange={setShowBulkArchiveDialog}>
-        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+        <AlertDialogContent className="font-arabic" style={{
+        direction: 'rtl'
+      }}>
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الأرشفة الجماعية</AlertDialogTitle>
             <AlertDialogDescription>
@@ -191,7 +148,9 @@ export const TaskListContent: React.FC = () => {
 
       {/* حوار تأكيد الحذف الجماعي */}
       <AlertDialog open={showBulkDeleteDialog} onOpenChange={setShowBulkDeleteDialog}>
-        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+        <AlertDialogContent className="font-arabic" style={{
+        direction: 'rtl'
+      }}>
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الحذف الجماعي</AlertDialogTitle>
             <AlertDialogDescription>
@@ -206,6 +165,5 @@ export const TaskListContent: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
-  );
+    </>;
 };
