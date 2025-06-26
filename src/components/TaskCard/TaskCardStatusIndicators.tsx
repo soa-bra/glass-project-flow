@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { EllipsisVertical } from 'lucide-react';
+import { EllipsisVertical, Check } from 'lucide-react';
 
 interface TaskCardStatusIndicatorsProps {
   status: string;
@@ -25,6 +25,8 @@ interface TaskCardStatusIndicatorsProps {
   assignee: string;
   members: string;
   taskId: string;
+  isSelected?: boolean;
+  isSelectionMode?: boolean;
   onSelect?: (taskId: string) => void;
   onEdit?: (taskId: string) => void;
   onArchive?: (taskId: string) => void;
@@ -38,6 +40,8 @@ const TaskCardStatusIndicators = ({
   assignee,
   members,
   taskId,
+  isSelected = false,
+  isSelectionMode = false,
   onSelect,
   onEdit,
   onArchive,
@@ -108,10 +112,11 @@ const TaskCardStatusIndicators = ({
         <div style={pillStyle}>{assignee}</div>
         <div style={pillStyle}>{members}</div>
         
-        {/* قائمة النقاط الثلاث */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button style={{
+        {/* أيقونة التحديد أو قائمة النقاط الثلاث */}
+        {isSelectionMode ? (
+          <button 
+            onClick={handleSelect}
+            style={{
               ...pillStyle,
               display: 'flex',
               alignItems: 'center',
@@ -120,48 +125,71 @@ const TaskCardStatusIndicators = ({
               height: '20px',
               borderRadius: '50%',
               padding: '0',
-              border: 'none',
-              cursor: 'pointer'
-            }}>
-              <EllipsisVertical size={12} color="#858789" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            align="end" 
-            className="font-arabic bg-white shadow-lg border rounded-md min-w-[120px]"
-            style={{ 
-              direction: 'rtl', 
-              zIndex: 9999,
-              backgroundColor: 'white',
-              border: '1px solid #e5e7eb'
+              border: isSelected ? 'none' : '2px solid #000',
+              cursor: 'pointer',
+              backgroundColor: isSelected ? '#000' : 'transparent',
+              color: isSelected ? '#fff' : '#858789'
             }}
           >
-            <DropdownMenuItem 
-              onClick={handleSelect}
-              className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
+            {isSelected ? (
+              <Check size={12} color="white" />
+            ) : null}
+          </button>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button style={{
+                ...pillStyle,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                padding: '0',
+                border: 'none',
+                cursor: 'pointer'
+              }}>
+                <EllipsisVertical size={12} color="#858789" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              align="end" 
+              className="font-arabic bg-white shadow-lg border rounded-md min-w-[120px]"
+              style={{ 
+                direction: 'rtl', 
+                zIndex: 9999,
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb'
+              }}
             >
-              تحديد
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={handleEdit}
-              className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
-            >
-              تعديل
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => setShowArchiveDialog(true)}
-              className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
-            >
-              أرشفة
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => setShowDeleteDialog(true)}
-              className="text-right cursor-pointer hover:bg-gray-100 text-red-600 py-2 px-3"
-            >
-              حذف
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuItem 
+                onClick={handleSelect}
+                className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
+              >
+                تحديد
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={handleEdit}
+                className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
+              >
+                تعديل
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => setShowArchiveDialog(true)}
+                className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
+              >
+                أرشفة
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => setShowDeleteDialog(true)}
+                className="text-right cursor-pointer hover:bg-gray-100 text-red-600 py-2 px-3"
+              >
+                حذف
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       {/* حوار تأكيد الأرشفة */}

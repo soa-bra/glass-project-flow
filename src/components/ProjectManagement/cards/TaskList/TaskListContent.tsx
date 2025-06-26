@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   AlertDialog,
@@ -17,6 +16,8 @@ export const TaskListContent: React.FC = () => {
   const { selectedTasks, toggleTaskSelection, clearSelection } = useTaskSelection();
   const [showBulkArchiveDialog, setShowBulkArchiveDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  
   const [tasks, setTasks] = useState([{
     id: 1,
     title: 'تصميم الواجهة',
@@ -66,6 +67,16 @@ export const TaskListContent: React.FC = () => {
   const handleTaskSelect = (taskId: string) => {
     console.log('تحديد/إلغاء تحديد المهمة:', taskId);
     toggleTaskSelection(taskId);
+    
+    // تفعيل نمط التحديد عند تحديد أول مهمة
+    if (!isSelectionMode) {
+      setIsSelectionMode(true);
+    }
+  };
+
+  const handleClearSelection = () => {
+    clearSelection();
+    setIsSelectionMode(false);
   };
 
   const handleTaskEdit = (taskId: string) => {
@@ -86,6 +97,7 @@ export const TaskListContent: React.FC = () => {
   const handleBulkArchive = () => {
     setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id.toString())));
     clearSelection();
+    setIsSelectionMode(false);
     setShowBulkArchiveDialog(false);
     console.log('تم أرشفة المهام المحددة:', selectedTasks);
   };
@@ -93,6 +105,7 @@ export const TaskListContent: React.FC = () => {
   const handleBulkDelete = () => {
     setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id.toString())));
     clearSelection();
+    setIsSelectionMode(false);
     setShowBulkDeleteDialog(false);
     console.log('تم حذف المهام المحددة:', selectedTasks);
   };
@@ -126,7 +139,7 @@ export const TaskListContent: React.FC = () => {
               حذف المحدد
             </button>
             <button 
-              onClick={clearSelection}
+              onClick={handleClearSelection}
               className="px-3 py-1 bg-gray-500 text-white rounded-md text-sm hover:bg-gray-600 transition-colors"
             >
               إلغاء التحديد
@@ -148,6 +161,8 @@ export const TaskListContent: React.FC = () => {
             >
               <TaskCard 
                 {...task} 
+                isSelected={selectedTasks.includes(task.id.toString())}
+                isSelectionMode={isSelectionMode}
                 onSelect={handleTaskSelect}
                 onEdit={handleTaskEdit}
                 onArchive={handleTaskArchive}

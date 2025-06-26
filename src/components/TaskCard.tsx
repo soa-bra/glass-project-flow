@@ -6,6 +6,8 @@ import TaskCardFooter from './TaskCard/TaskCardFooter';
 import type { TaskCardProps } from './TaskCard/types';
 
 interface ExtendedTaskCardProps extends TaskCardProps {
+  isSelected?: boolean;
+  isSelectionMode?: boolean;
   onSelect?: (taskId: string) => void;
   onEdit?: (taskId: string) => void;
   onArchive?: (taskId: string) => void;
@@ -23,33 +25,48 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
   members,
   daysLeft,
   priority,
+  isSelected = false,
+  isSelectionMode = false,
   onSelect,
   onEdit,
   onArchive,
   onDelete
 }) => {
+  const handleCardClick = () => {
+    if (isSelectionMode && onSelect) {
+      onSelect(id.toString());
+    }
+  };
+
   return (
-    <TaskCardLayout id={id.toString()}>
-      <TaskCardHeader
-        daysLeft={daysLeft}
-        title={title}
-        description={description}
-        priority={priority}
-      />
-      
-      <TaskCardFooter
-        status={status}
-        statusColor={statusColor}
-        date={date}
-        assignee={assignee}
-        members={members}
-        taskId={id.toString()}
-        onSelect={onSelect}
-        onEdit={onEdit}
-        onArchive={onArchive}
-        onDelete={onDelete}
-      />
-    </TaskCardLayout>
+    <div 
+      onClick={handleCardClick}
+      style={{ cursor: isSelectionMode ? 'pointer' : 'default' }}
+    >
+      <TaskCardLayout id={id.toString()}>
+        <TaskCardHeader
+          daysLeft={daysLeft}
+          title={title}
+          description={description}
+          priority={priority}
+        />
+        
+        <TaskCardFooter
+          status={status}
+          statusColor={statusColor}
+          date={date}
+          assignee={assignee}
+          members={members}
+          taskId={id.toString()}
+          isSelected={isSelected}
+          isSelectionMode={isSelectionMode}
+          onSelect={onSelect}
+          onEdit={onEdit}
+          onArchive={onArchive}
+          onDelete={onDelete}
+        />
+      </TaskCardLayout>
+    </div>
   );
 };
 
