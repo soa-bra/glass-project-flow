@@ -20,7 +20,7 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
   const [showBulkArchiveDialog, setShowBulkArchiveDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [tasks, setTasks] = useState([{
+  const [tasks, setTasks] = useState([{ 
     id: 1,
     title: 'تصميم الواجهة',
     description: 'تطوير موقع سوبرا',
@@ -66,36 +66,6 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
     priority: 'not-urgent-not-important' as const
   }]);
 
-  const mapTask = (task: TaskData): TaskCardProps => {
-    const dueDate = new Date(task.dueDate);
-    const daysLeft = Math.max(
-      Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
-      0
-    );
-
-    return {
-      id: task.id,
-      title: task.title,
-      description: task.description,
-      status: 'وفق الخطة',
-      statusColor: '#A1E8B8',
-      date: dueDate.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: 'short'
-      }),
-      assignee: task.assignee || 'غير محدد',
-      members: 'غير مضيف',
-      daysLeft,
-      priority: task.priority
-    };
-  };
-
-  const addTask = (task: TaskData) => {
-    setTasks(prev => [...prev, mapTask(task)]);
-  };
-
-  const addTasks = (newTasks: TaskData[]) => {
-    setTasks(prev => [...prev, ...newTasks.map(mapTask)]);
   };
 
   useImperativeHandle(ref, () => ({ addTask, addTasks }));
