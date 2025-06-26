@@ -6,13 +6,21 @@ interface ProjectCardFooterProps {
   date: string;
   owner: string;
   value: string;
+  projectId?: string;
+  onEdit?: (projectId: string) => void;
+  onArchive?: (projectId: string) => void;
+  onDelete?: (projectId: string) => void;
 }
 
 const ProjectCardFooter = ({
   status,
   date,
   owner,
-  value
+  value,
+  projectId,
+  onEdit,
+  onArchive,
+  onDelete
 }: ProjectCardFooterProps) => {
   return (
     <ProjectCardStatusIndicators 
@@ -20,6 +28,10 @@ const ProjectCardFooter = ({
       date={date}
       owner={owner}
       value={value}
+      projectId={projectId}
+      onEdit={onEdit}
+      onArchive={onArchive}
+      onDelete={onDelete}
     />
   );
 };

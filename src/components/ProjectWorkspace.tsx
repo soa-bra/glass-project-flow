@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
@@ -27,6 +26,8 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   const projectsColumnWidth = 'var(--projects-width)';
   const operationsBoardRight = isSidebarCollapsed ? 'var(--operations-right-collapsed)' : 'var(--operations-right-expanded)';
   const operationsBoardWidth = isSidebarCollapsed ? 'var(--operations-width-collapsed)' : 'var(--operations-width-expanded)';
+  const projectPanelRight = operationsBoardRight;
+  const projectPanelWidth = operationsBoardWidth;
 
   // panel content switches: always mount ProjectPanel but swap inner content with fade
   const shownProject = displayedProjectId
@@ -34,7 +35,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     : null;
 
   return (
-    <div className="animate-fade-in">
+    <>
       {/* Projects Column: shifts left when panel slides in */}
       <div
         className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`}
@@ -81,7 +82,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           isSidebarCollapsed={isSidebarCollapsed}
         />
       )}
-    </div>
+    </>
   );
 };
 
