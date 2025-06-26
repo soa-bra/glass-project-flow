@@ -12,7 +12,7 @@ const TaskCardDaysCircle = ({ daysLeft }: TaskCardDaysCircleProps) => {
       width: '60px',
       height: '60px',
       borderRadius: '50%',
-      border: '2px solid #000000',
+      border: '1px solid #000000',
       backgroundColor: 'transparent',
       display: 'flex',
       flexDirection: 'column',
