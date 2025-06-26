@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import TaskCard from '@/components/TaskCard';
 import { useTaskSelection } from '@/hooks/useTaskSelection';
+
 export const TaskListContent: React.FC = () => {
   const {
     selectedTasks,
@@ -108,10 +109,22 @@ export const TaskListContent: React.FC = () => {
             تم تحديد {selectedTasks.length} مهمة
           </span>
           <div className="flex gap-2">
-            <button onClick={() => setShowBulkArchiveDialog(true)} className="px-3 py-1 text-sm transition-colors bg-[fbe2aa] rounded-full text-black">
+            <button 
+              onClick={() => setShowBulkArchiveDialog(true)} 
+              style={{
+                backgroundColor: '#fbe2aa'
+              }}
+              className="px-3 py-1 text-sm transition-colors rounded-full text-black hover:opacity-80"
+            >
               أرشفة المحدد
             </button>
-            <button onClick={() => setShowBulkDeleteDialog(true)} className="px-3 py-1 text-sm transition-colors rounded-full bg-rose-400 hover:bg-rose-300 text-black">
+            <button 
+              onClick={() => setShowBulkDeleteDialog(true)} 
+              style={{
+                backgroundColor: '#f1b5b9'
+              }}
+              className="px-3 py-1 text-sm transition-colors rounded-full text-black hover:opacity-80"
+            >
               حذف المحدد
             </button>
             <button onClick={handleClearSelection} className="px-3 py-1 text-sm transition-colors bg-gray-500 hover:bg-gray-400 rounded-full text-black">

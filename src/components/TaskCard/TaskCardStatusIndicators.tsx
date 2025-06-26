@@ -125,9 +125,9 @@ const TaskCardStatusIndicators = ({
               height: '20px',
               borderRadius: '50%',
               padding: '0',
-              border: isSelected ? 'none' : '2px solid #000',
+              border: isSelected ? 'none' : '2px solid #858789',
               cursor: 'pointer',
-              backgroundColor: isSelected ? '#000' : 'transparent',
+              backgroundColor: isSelected ? '#858789' : 'transparent',
               color: isSelected ? '#fff' : '#858789'
             }}
           >
