@@ -12,7 +12,7 @@ export const TabContentWrapper = ({
   tabData,
   loading,
 }: {
-  tabData: Record<string, any>;
+  tabData: Record<string, unknown>;
   loading: boolean;
 }) => {
   return <>
