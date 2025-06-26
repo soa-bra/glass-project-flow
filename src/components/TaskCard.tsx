@@ -32,8 +32,13 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
   onArchive,
   onDelete
 }) => {
-  const handleCardClick = () => {
-    if (isSelectionMode && onSelect) {
+  const handleCardClick = (e: React.MouseEvent) => {
+    // منع انتشار الحدث إذا تم النقر على قائمة النقاط الثلاث في الوضع العادي
+    if (!isSelectionMode && (e.target as HTMLElement).closest('[data-dropdown-trigger]')) {
+      return;
+    }
+    
+    if (onSelect) {
       onSelect(id.toString());
     }
   };
@@ -41,7 +46,7 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
   return (
     <div 
       onClick={handleCardClick}
-      style={{ cursor: isSelectionMode ? 'pointer' : 'default' }}
+      style={{ cursor: 'pointer' }}
     >
       <TaskCardLayout id={id.toString()}>
         <TaskCardHeader

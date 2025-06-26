@@ -61,12 +61,8 @@ const TaskCardStatusIndicators = ({
     height: '20px'
   };
 
-  const handleSelect = () => {
-    console.log('تحديد المهمة:', taskId);
-    onSelect?.(taskId);
-  };
-
-  const handleEdit = () => {
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
     console.log('تعديل المهمة:', taskId);
     onEdit?.(taskId);
   };
@@ -81,6 +77,10 @@ const TaskCardStatusIndicators = ({
     setShowDeleteDialog(false);
     console.log('حذف المهمة:', taskId);
     onDelete?.(taskId);
+  };
+
+  const handleDropdownClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
   };
 
   return (
@@ -114,8 +114,7 @@ const TaskCardStatusIndicators = ({
         
         {/* أيقونة التحديد أو قائمة النقاط الثلاث */}
         {isSelectionMode ? (
-          <button 
-            onClick={handleSelect}
+          <div
             style={{
               ...pillStyle,
               display: 'flex',
@@ -125,8 +124,7 @@ const TaskCardStatusIndicators = ({
               height: '20px',
               borderRadius: '50%',
               padding: '0',
-              border: isSelected ? 'none' : '2px solid #858789',
-              cursor: 'pointer',
+              border: isSelected ? 'none' : '1px solid #858789',
               backgroundColor: isSelected ? '#858789' : 'transparent',
               color: isSelected ? '#fff' : '#858789'
             }}
@@ -134,22 +132,26 @@ const TaskCardStatusIndicators = ({
             {isSelected ? (
               <Check size={12} color="white" />
             ) : null}
-          </button>
+          </div>
         ) : (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button style={{
-                ...pillStyle,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                padding: '0',
-                border: 'none',
-                cursor: 'pointer'
-              }}>
+              <button 
+                data-dropdown-trigger
+                onClick={handleDropdownClick}
+                style={{
+                  ...pillStyle,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  padding: '0',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
                 <EllipsisVertical size={12} color="#858789" />
               </button>
             </DropdownMenuTrigger>
@@ -164,25 +166,25 @@ const TaskCardStatusIndicators = ({
               }}
             >
               <DropdownMenuItem 
-                onClick={handleSelect}
-                className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
-              >
-                تحديد
-              </DropdownMenuItem>
-              <DropdownMenuItem 
                 onClick={handleEdit}
                 className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
               >
                 تعديل
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => setShowArchiveDialog(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowArchiveDialog(true);
+                }}
                 className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
               >
                 أرشفة
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => setShowDeleteDialog(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDeleteDialog(true);
+                }}
                 className="text-right cursor-pointer hover:bg-gray-100 text-red-600 py-2 px-3"
               >
                 حذف

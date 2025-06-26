@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import TaskCard from '@/components/TaskCard';
 import { useTaskSelection } from '@/hooks/useTaskSelection';
@@ -57,6 +58,28 @@ export const TaskListContent: React.FC = () => {
     daysLeft: 10,
     priority: 'not-urgent-not-important' as const
   }]);
+
+  // إضافة معالج لضغطة مفتاح Esc
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isSelectionMode) {
+        handleClearSelection();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isSelectionMode]);
+
+  // تحديث وضع التحديد بناءً على المهام المحددة
+  useEffect(() => {
+    if (selectedTasks.length === 0 && isSelectionMode) {
+      setIsSelectionMode(false);
+    }
+  }, [selectedTasks.length, isSelectionMode]);
+
   const handleTaskSelect = (taskId: string) => {
     console.log('تحديد/إلغاء تحديد المهمة:', taskId);
     toggleTaskSelection(taskId);
@@ -66,22 +89,27 @@ export const TaskListContent: React.FC = () => {
       setIsSelectionMode(true);
     }
   };
+
   const handleClearSelection = () => {
     clearSelection();
     setIsSelectionMode(false);
   };
+
   const handleTaskEdit = (taskId: string) => {
     console.log('تعديل المهمة:', taskId);
     // سيتم تنفيذ modal التعديل لاحقاً
   };
+
   const handleTaskArchive = (taskId: string) => {
     setTasks(prev => prev.filter(task => task.id !== parseInt(taskId)));
     console.log('تم أرشفة المهمة:', taskId);
   };
+
   const handleTaskDelete = (taskId: string) => {
     setTasks(prev => prev.filter(task => task.id !== parseInt(taskId)));
     console.log('تم حذف المهمة:', taskId);
   };
+
   const handleBulkArchive = () => {
     setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id.toString())));
     clearSelection();
@@ -89,6 +117,7 @@ export const TaskListContent: React.FC = () => {
     setShowBulkArchiveDialog(false);
     console.log('تم أرشفة المهام المحددة:', selectedTasks);
   };
+
   const handleBulkDelete = () => {
     setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id.toString())));
     clearSelection();
@@ -96,12 +125,12 @@ export const TaskListContent: React.FC = () => {
     setShowBulkDeleteDialog(false);
     console.log('تم حذف المهام المحددة:', selectedTasks);
   };
+
   return <>
       {/* شريط الإجراءات الجماعية */}
       {selectedTasks.length > 0 && <div style={{
       direction: 'rtl',
-      backgroundColor: 'transparent',
-      border: '1px solid rgba(59, 130, 246, 0.2)'
+      backgroundColor: 'transparent'
     }} className="mb-4 p-3 flex justify-between items-center font-arabic bg-transparent">
           <span style={{
         color: '#000000'
@@ -127,7 +156,14 @@ export const TaskListContent: React.FC = () => {
             >
               حذف المحدد
             </button>
-            <button onClick={handleClearSelection} className="px-3 py-1 text-sm transition-colors bg-gray-500 hover:bg-gray-400 rounded-full text-black">
+            <button 
+              onClick={handleClearSelection} 
+              style={{
+                backgroundColor: 'transparent',
+                border: '1px solid #000000'
+              }}
+              className="px-3 py-1 text-sm transition-colors rounded-full text-black hover:opacity-80"
+            >
               إلغاء التحديد
             </button>
           </div>
@@ -135,8 +171,16 @@ export const TaskListContent: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 pr-1 py-0 my-0">
-          {tasks.map(task => <div key={task.id} className={`transition-all duration-200 ${selectedTasks.includes(task.id.toString()) ? 'ring-2 ring-blue-400 ring-opacity-50' : ''}`}>
-              <TaskCard {...task} isSelected={selectedTasks.includes(task.id.toString())} isSelectionMode={isSelectionMode} onSelect={handleTaskSelect} onEdit={handleTaskEdit} onArchive={handleTaskArchive} onDelete={handleTaskDelete} />
+          {tasks.map(task => <div key={task.id}>
+              <TaskCard 
+                {...task} 
+                isSelected={selectedTasks.includes(task.id.toString())} 
+                isSelectionMode={isSelectionMode} 
+                onSelect={handleTaskSelect} 
+                onEdit={handleTaskEdit} 
+                onArchive={handleTaskArchive} 
+                onDelete={handleTaskDelete} 
+              />
             </div>)}
         </div>
       </div>
