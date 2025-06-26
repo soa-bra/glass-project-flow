@@ -100,12 +100,12 @@ export const TaskListContent: React.FC = () => {
       {/* شريط الإجراءات الجماعية */}
       {selectedTasks.length > 0 && <div style={{
       direction: 'rtl',
-      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      backgroundColor: 'transparent',
       border: '1px solid rgba(59, 130, 246, 0.2)'
     }} className="mb-4 p-3 flex justify-between items-center font-arabic bg-transparent">
           <span style={{
-        color: '#1e40af'
-      }} className="text-sm text-black">
+        color: '#000000'
+      }} className="text-sm">
             تم تحديد {selectedTasks.length} مهمة
           </span>
           <div className="flex gap-2">
