@@ -11,7 +11,7 @@ const TaskCardTitle = ({
   return (
     <div className="mx-0 px-0 my-[5px]">
       <h4 style={{
-        fontSize: '28px',
+        fontSize: '20px',
         fontWeight: 700,
         color: '#000000',
         marginBottom: '2px',
@@ -22,7 +22,7 @@ const TaskCardTitle = ({
       </h4>
       
       <p style={{
-        fontSize: '20px',
+        fontSize: '14px',
         fontWeight: 400,
         color: '#858789',
         marginBottom: '0px',

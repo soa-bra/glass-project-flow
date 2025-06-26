@@ -55,7 +55,7 @@ const TaskColumn: React.FC = () => {
 
       <div className="flex-1 overflow-hidden rounded-t-3xl">
         <ScrollArea className="h-full w-full">
-          <div className="space-y-4 pb-4 mx-[10px]">
+          <div className="space-y-2 pb-4 mx-[5px]">
             {tasks.map(task => (
               <TaskCard key={task.id} {...task} />
             ))}

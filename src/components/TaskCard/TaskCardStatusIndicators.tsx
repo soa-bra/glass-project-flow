@@ -16,9 +16,9 @@ const TaskCardStatusIndicators = ({
 }: TaskCardStatusIndicatorsProps) => {
   const pillStyle = {
     backgroundColor: '#F7FFFF',
-    borderRadius: '30px',
-    padding: '6px 16px',
-    fontSize: '20px',
+    borderRadius: '15px',
+    padding: '3px 8px',
+    fontSize: '10px',
     fontWeight: 500,
     color: '#858789',
     fontFamily: 'IBM Plex Sans Arabic'
@@ -29,7 +29,7 @@ const TaskCardStatusIndicators = ({
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      gap: '12px',
+      gap: '6px',
       flexWrap: 'wrap',
       marginTop: '8px'
     }}>
@@ -37,11 +37,11 @@ const TaskCardStatusIndicators = ({
         ...pillStyle,
         display: 'flex',
         alignItems: 'center',
-        gap: '8px'
+        gap: '4px'
       }}>
         <div style={{
-          width: '16px',
-          height: '16px',
+          width: '8px',
+          height: '8px',
           borderRadius: '50%',
           backgroundColor: statusColor
         }}></div>
@@ -58,31 +58,31 @@ const TaskCardStatusIndicators = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '60px',
-        height: '60px',
+        width: '30px',
+        height: '30px',
         borderRadius: '50%',
         padding: '0'
       }}>
         <div style={{
           display: 'flex',
-          gap: '4px',
+          gap: '2px',
           alignItems: 'center'
         }}>
           <div style={{
-            width: '6px',
-            height: '6px',
+            width: '3px',
+            height: '3px',
             borderRadius: '50%',
             backgroundColor: '#858789'
           }}></div>
           <div style={{
-            width: '6px',
-            height: '6px',
+            width: '3px',
+            height: '3px',
             borderRadius: '50%',
             backgroundColor: '#858789'
           }}></div>
           <div style={{
-            width: '6px',
-            height: '6px',
+            width: '3px',
+            height: '3px',
             borderRadius: '50%',
             backgroundColor: '#858789'
           }}></div>
