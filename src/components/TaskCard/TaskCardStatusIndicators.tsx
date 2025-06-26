@@ -57,13 +57,25 @@ const TaskCardStatusIndicators = ({
     height: '20px'
   };
 
+  const handleSelect = () => {
+    console.log('تحديد المهمة:', taskId);
+    onSelect?.(taskId);
+  };
+
+  const handleEdit = () => {
+    console.log('تعديل المهمة:', taskId);
+    onEdit?.(taskId);
+  };
+
   const handleArchive = () => {
     setShowArchiveDialog(false);
+    console.log('أرشفة المهمة:', taskId);
     onArchive?.(taskId);
   };
 
   const handleDelete = () => {
     setShowDeleteDialog(false);
+    console.log('حذف المهمة:', taskId);
     onDelete?.(taskId);
   };
 
@@ -116,30 +128,30 @@ const TaskCardStatusIndicators = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent 
             align="end" 
-            className="font-arabic bg-white shadow-lg border rounded-md"
-            style={{ direction: 'rtl', zIndex: 50 }}
+            className="font-arabic bg-white shadow-lg border rounded-md min-w-[120px]"
+            style={{ direction: 'rtl', zIndex: 1000 }}
           >
             <DropdownMenuItem 
-              onClick={() => onSelect?.(taskId)}
-              className="text-right cursor-pointer hover:bg-gray-100"
+              onClick={handleSelect}
+              className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
             >
               تحديد
             </DropdownMenuItem>
             <DropdownMenuItem 
-              onClick={() => onEdit?.(taskId)}
-              className="text-right cursor-pointer hover:bg-gray-100"
+              onClick={handleEdit}
+              className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
             >
               تعديل
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={() => setShowArchiveDialog(true)}
-              className="text-right cursor-pointer hover:bg-gray-100"
+              className="text-right cursor-pointer hover:bg-gray-100 py-2 px-3"
             >
               أرشفة
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={() => setShowDeleteDialog(true)}
-              className="text-right cursor-pointer hover:bg-gray-100 text-red-600"
+              className="text-right cursor-pointer hover:bg-gray-100 text-red-600 py-2 px-3"
             >
               حذف
             </DropdownMenuItem>
