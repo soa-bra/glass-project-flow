@@ -28,16 +28,16 @@ export const TaskListHeader: React.FC = () => {
           قائمة المهام
         </h3>
         <div className="flex items-center gap-1 mx-[2px]">
-          <button onClick={handleUpdateTasks} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/90 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
+          <button onClick={handleUpdateTasks} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
             <RefreshCw size={16} />
           </button>
-          <button onClick={handleFilterTasks} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/90 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
+          <button onClick={handleFilterTasks} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
             <Filter size={16} />
           </button>
-          <button onClick={() => setShowSmartGenerationModal(true)} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/90 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
+          <button onClick={() => setShowSmartGenerationModal(true)} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
             <Sparkles size={16} />
           </button>
-          <button onClick={() => setShowAddTaskModal(true)} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/90 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
+          <button onClick={() => setShowAddTaskModal(true)} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
             <Plus size={16} />
           </button>
         </div>
