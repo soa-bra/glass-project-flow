@@ -17,75 +17,44 @@ const TaskCardStatusIndicators = ({
   const pillStyle = {
     backgroundColor: '#F7FFFF',
     borderRadius: '30px',
-    padding: '6px 16px',
-    fontSize: '20px',
+    padding: '2px 8px',
+    fontSize: '14px',
     fontWeight: 500,
     color: '#858789',
     fontFamily: 'IBM Plex Sans Arabic'
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      gap: '12px',
-      flexWrap: 'wrap',
-      marginTop: '8px'
-    }}>
+    <div className="flex items-center justify-between py-0 mx-0 px-[28px] my-[24px]">
+      {/* دائرة حالة المهمة - على الجانب الأيسر */}
       <div style={{
-        ...pillStyle,
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px'
-      }}>
-        <div style={{
-          width: '16px',
-          height: '16px',
-          borderRadius: '50%',
-          backgroundColor: statusColor
-        }}></div>
-        {status}
-      </div>
-
-      <div style={pillStyle}>{date}</div>
-      <div style={pillStyle}>{assignee}</div>
-      <div style={pillStyle}>{members}</div>
-      
-      {/* الكبسولة الجديدة بثلاث نقاط */}
-      <div style={{
-        ...pillStyle,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '60px',
-        height: '60px',
+        width: '20px',
+        height: '20px',
         borderRadius: '50%',
-        padding: '0'
-      }}>
+        backgroundColor: statusColor
+      }}></div>
+
+      {/* التاريخ + المسؤول + الأعضاء - محاذاة إلى اليمين */}
+      <div className="flex items-center gap-[3px] flex-1 justify-end mx-0 px-0">
+        {/* التاريخ */}
+        <div style={pillStyle}>
+          {date}
+        </div>
+
+        {/* المسؤول */}
         <div style={{
-          display: 'flex',
-          gap: '4px',
-          alignItems: 'center'
+          ...pillStyle,
+          margin: '0 5px'
         }}>
-          <div style={{
-            width: '6px',
-            height: '6px',
-            borderRadius: '50%',
-            backgroundColor: '#858789'
-          }}></div>
-          <div style={{
-            width: '6px',
-            height: '6px',
-            borderRadius: '50%',
-            backgroundColor: '#858789'
-          }}></div>
-          <div style={{
-            width: '6px',
-            height: '6px',
-            borderRadius: '50%',
-            backgroundColor: '#858789'
-          }}></div>
+          {assignee}
+        </div>
+
+        {/* الأعضاء */}
+        <div style={{
+          ...pillStyle,
+          marginRight: '14px'
+        }}>
+          {members}
         </div>
       </div>
     </div>

@@ -20,7 +20,7 @@ const TaskCardLayout = ({
         height: '140px',
         backgroundColor: '#EAF2F5',
         borderRadius: '40px',
-        padding: '8px',
+        padding: '4px',
         direction: 'rtl',
         display: 'flex',
         flexDirection: 'column',
