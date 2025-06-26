@@ -143,7 +143,13 @@ export const TaskListContent: React.FC = () => {
 
       {/* حوار تأكيد الأرشفة الجماعية */}
       <AlertDialog open={showBulkArchiveDialog} onOpenChange={setShowBulkArchiveDialog}>
-        <AlertDialogContent className="font-arabic" dir="rtl">
+        <AlertDialogContent 
+          className="font-arabic" 
+          style={{
+            direction: 'rtl',
+            zIndex: 9999
+          }}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الأرشفة الجماعية</AlertDialogTitle>
             <AlertDialogDescription>
@@ -159,7 +165,13 @@ export const TaskListContent: React.FC = () => {
 
       {/* حوار تأكيد الحذف الجماعي */}
       <AlertDialog open={showBulkDeleteDialog} onOpenChange={setShowBulkDeleteDialog}>
-        <AlertDialogContent className="font-arabic" dir="rtl">
+        <AlertDialogContent 
+          className="font-arabic" 
+          style={{
+            direction: 'rtl',
+            zIndex: 9999
+          }}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الحذف الجماعي</AlertDialogTitle>
             <AlertDialogDescription>

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   DropdownMenu, 
@@ -193,7 +194,13 @@ const TaskCardStatusIndicators = ({
 
       {/* حوار تأكيد الأرشفة */}
       <AlertDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
-        <AlertDialogContent className="font-arabic" dir="rtl">
+        <AlertDialogContent 
+          className="font-arabic" 
+          style={{ 
+            direction: 'rtl',
+            zIndex: 9999
+          }}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الأرشفة</AlertDialogTitle>
             <AlertDialogDescription>
@@ -209,7 +216,13 @@ const TaskCardStatusIndicators = ({
 
       {/* حوار تأكيد الحذف */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="font-arabic" dir="rtl">
+        <AlertDialogContent 
+          className="font-arabic" 
+          style={{ 
+            direction: 'rtl',
+            zIndex: 9999
+          }}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
             <AlertDialogDescription>
