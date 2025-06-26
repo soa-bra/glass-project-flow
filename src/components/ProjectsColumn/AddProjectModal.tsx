@@ -217,12 +217,12 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     <>
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent 
-          className="max-w-4xl h-[65vh] p-0 overflow-hidden font-arabic"
+          className="max-w-4xl max-h-[90vh] p-0 overflow-hidden font-arabic"
           style={{
-            background: 'rgba(255,255,255,0.25)',
-            backdropFilter: 'blur(30px)',
-            WebkitBackdropFilter: 'blur(30px)',
-            border: '1px solid rgba(255,255,255,0.3)',
+            background: 'rgba(255,255,255,0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
             borderRadius: '24px',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
             zIndex: 9999,
@@ -230,57 +230,57 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
         >
           <button
             onClick={handleClose}
-            className="absolute top-4 left-4 rounded-full bg-white/60 hover:bg-white/80 shadow-lg border border-white/40 w-[32px] h-[32px] flex items-center justify-center transition z-10"
-            style={{
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
-            }}
+            className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black/30 w-[32px] h-[32px] flex items-center justify-center transition z-10"
           >
-            <X className="text-gray-700" size={18} />
+            <X className="text-black" size={18} />
           </button>
 
-          <DialogHeader className="px-8 pt-8 pb-4">
+          <DialogHeader className="px-8 pt-8 pb-4 flex-shrink-0">
             <DialogTitle className="text-2xl font-bold text-right font-arabic">
               إضافة مشروع جديد
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex-1 overflow-hidden px-8 pb-8">
-            <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="h-full flex flex-col">
-              <TabsList className="bg-transparent gap-2 mb-6 justify-end">
-                <TabsTrigger 
-                  value="basic" 
-                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/20 data-[state=inactive]:border data-[state=inactive]:border-white/40 data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic backdrop-blur-sm"
-                >
-                  المعلومات الأساسية
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="client" 
-                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/20 data-[state=inactive]:border data-[state=inactive]:border-white/40 data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic backdrop-blur-sm"
-                >
-                  بيانات العميل
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="tasks" 
-                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/20 data-[state=inactive]:border data-[state=inactive]:border-white/40 data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic backdrop-blur-sm"
-                >
-                  المهام
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="partnerships" 
-                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/20 data-[state=inactive]:border data-[state=inactive]:border-white/40 data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic backdrop-blur-sm"
-                >
-                  الشراكات
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="contract" 
-                  className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white/20 data-[state=inactive]:border data-[state=inactive]:border-white/40 data-[state=inactive]:text-black rounded-full px-4 py-2 font-arabic backdrop-blur-sm"
-                >
-                  العقد
-                </TabsTrigger>
-              </TabsList>
+          <div className="flex flex-col h-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="flex flex-col h-full">
+              {/* قائمة التبويبات الثابتة */}
+              <div className="flex-shrink-0 px-8 pb-4 border-b border-white/20">
+                <TabsList className="bg-transparent gap-2 justify-end w-full">
+                  <TabsTrigger 
+                    value="basic" 
+                    className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-black/40 data-[state=inactive]:backdrop-blur-md data-[state=inactive]:border data-[state=inactive]:border-white/20 data-[state=inactive]:text-white rounded-full px-4 py-2 font-arabic"
+                  >
+                    المعلومات الأساسية
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="client" 
+                    className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-black/40 data-[state=inactive]:backdrop-blur-md data-[state=inactive]:border data-[state=inactive]:border-white/20 data-[state=inactive]:text-white rounded-full px-4 py-2 font-arabic"
+                  >
+                    بيانات العميل
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="tasks" 
+                    className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-black/40 data-[state=inactive]:backdrop-blur-md data-[state=inactive]:border data-[state=inactive]:border-white/20 data-[state=inactive]:text-white rounded-full px-4 py-2 font-arabic"
+                  >
+                    المهام
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="partnerships" 
+                    className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-black/40 data-[state=inactive]:backdrop-blur-md data-[state=inactive]:border data-[state=inactive]:border-white/20 data-[state=inactive]:text-white rounded-full px-4 py-2 font-arabic"
+                  >
+                    الشراكات
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="contract" 
+                    className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-black/40 data-[state=inactive]:backdrop-blur-md data-[state=inactive]:border data-[state=inactive]:border-white/20 data-[state=inactive]:text-white rounded-full px-4 py-2 font-arabic"
+                  >
+                    العقد
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-              <div className="flex-1 overflow-y-auto">
+              {/* محتوى التبويبات القابل للتمرير */}
+              <div className="flex-1 overflow-y-auto px-8 py-6">
                 <TabsContent value="basic" className="mt-0">
                   <BasicInfoForm
                     projectData={projectData}
@@ -319,21 +319,24 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
                 </TabsContent>
               </div>
 
-              <div className="flex gap-4 justify-start pt-6 border-t border-white/30">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleClose}
-                  className="border-black text-black hover:bg-black/10 font-arabic"
-                >
-                  إلغاء
-                </Button>
-                <Button
-                  onClick={handleSaveProject}
-                  className="bg-black text-white hover:bg-gray-800 font-arabic"
-                >
-                  حفظ المشروع
-                </Button>
+              {/* أزرار الحفظ والإلغاء الثابتة */}
+              <div className="flex-shrink-0 px-8 pb-8">
+                <div className="flex gap-4 justify-start pt-6 border-t border-white/20">
+                  <Button
+                    onClick={handleSaveProject}
+                    className="bg-black text-white hover:bg-gray-800 font-arabic rounded-full"
+                  >
+                    حفظ المشروع
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleClose}
+                    className="bg-black/40 backdrop-blur-md border-white/20 text-white hover:bg-black/50 font-arabic rounded-full"
+                  >
+                    إلغاء
+                  </Button>
+                </div>
               </div>
             </Tabs>
           </div>
@@ -347,7 +350,17 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
       />
 
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <AlertDialogContent className="font-arabic" dir="rtl">
+        <AlertDialogContent 
+          className="font-arabic" 
+          dir="rtl"
+          style={{
+            background: 'rgba(255,255,255,0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '24px'
+          }}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle className="text-right">تأكيد الإلغاء</AlertDialogTitle>
             <AlertDialogDescription className="text-right">
