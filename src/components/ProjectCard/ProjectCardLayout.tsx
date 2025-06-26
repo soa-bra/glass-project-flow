@@ -49,28 +49,6 @@ const ProjectCardLayout = ({
     isPressActiveRef.current = false;
   }, []);
 
-  const handleTouchStart = useCallback((event: React.TouchEvent) => {
-    if (event.target && (event.target as HTMLElement).closest('[data-dropdown-trigger]')) {
-      return;
-    }
-
-    isPressActiveRef.current = true;
-    pressTimerRef.current = setTimeout(() => {
-      if (isPressActiveRef.current && onProjectSelect) {
-        console.log('ضغط مطول على المشروع:', id);
-        onProjectSelect(id);
-      }
-    }, 500); // 500ms للضغط المطول
-  }, [id, onProjectSelect]);
-
-  const handleTouchEnd = useCallback(() => {
-    if (pressTimerRef.current) {
-      clearTimeout(pressTimerRef.current);
-      pressTimerRef.current = null;
-    }
-    isPressActiveRef.current = false;
-  }, []);
-
   const handleClick = useCallback((event: React.MouseEvent) => {
     event.stopPropagation();
     
@@ -105,8 +83,8 @@ const ProjectCardLayout = ({
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      onTouchStart={handleMouseDown}
+      onTouchEnd={handleMouseUp}
       className={getCardClasses()}
       style={{
         background: '#e7f1f5',
