@@ -1,5 +1,6 @@
 import React from 'react';
 import TaskCard from '@/components/TaskCard';
+
 export const TaskListContent: React.FC = () => {
   const tasks = [{
     id: 1,
@@ -46,8 +47,9 @@ export const TaskListContent: React.FC = () => {
     daysLeft: 10,
     priority: 'not-urgent-not-important' as const
   }];
+
   return <div className="flex-1 overflow-y-auto">
-      <div className="space-y-4 pr-2 py-0 my-0">
+      <div className="space-y-4 pr-1 py-0 my-0">
         {tasks.map(task => <TaskCard key={task.id} {...task} />)}
       </div>
     </div>;
