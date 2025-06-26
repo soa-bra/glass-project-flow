@@ -129,7 +129,12 @@ const TaskCardStatusIndicators = ({
           <DropdownMenuContent 
             align="end" 
             className="font-arabic bg-white shadow-lg border rounded-md min-w-[120px]"
-            style={{ direction: 'rtl', zIndex: 1000 }}
+            style={{ 
+              direction: 'rtl', 
+              zIndex: 9999,
+              backgroundColor: 'white',
+              border: '1px solid #e5e7eb'
+            }}
           >
             <DropdownMenuItem 
               onClick={handleSelect}

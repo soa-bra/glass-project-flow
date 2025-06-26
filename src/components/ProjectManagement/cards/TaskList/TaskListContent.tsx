@@ -64,6 +64,7 @@ export const TaskListContent: React.FC = () => {
   }]);
 
   const handleTaskSelect = (taskId: string) => {
+    console.log('تحديد/إلغاء تحديد المهمة:', taskId);
     toggleTaskSelection(taskId);
   };
 
@@ -100,26 +101,33 @@ export const TaskListContent: React.FC = () => {
     <>
       {/* شريط الإجراءات الجماعية */}
       {selectedTasks.length > 0 && (
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg flex justify-between items-center font-arabic" style={{ direction: 'rtl' }}>
-          <span className="text-sm text-blue-700">
+        <div 
+          className="mb-4 p-3 rounded-lg flex justify-between items-center font-arabic" 
+          style={{ 
+            direction: 'rtl',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            border: '1px solid rgba(59, 130, 246, 0.2)'
+          }}
+        >
+          <span className="text-sm" style={{ color: '#1e40af' }}>
             تم تحديد {selectedTasks.length} مهمة
           </span>
           <div className="flex gap-2">
             <button 
               onClick={() => setShowBulkArchiveDialog(true)}
-              className="px-3 py-1 bg-yellow-500 text-white rounded-md text-sm hover:bg-yellow-600"
+              className="px-3 py-1 bg-yellow-500 text-white rounded-md text-sm hover:bg-yellow-600 transition-colors"
             >
               أرشفة المحدد
             </button>
             <button 
               onClick={() => setShowBulkDeleteDialog(true)}
-              className="px-3 py-1 bg-red-500 text-white rounded-md text-sm hover:bg-red-600"
+              className="px-3 py-1 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition-colors"
             >
               حذف المحدد
             </button>
             <button 
               onClick={clearSelection}
-              className="px-3 py-1 bg-gray-500 text-white rounded-md text-sm hover:bg-gray-600"
+              className="px-3 py-1 bg-gray-500 text-white rounded-md text-sm hover:bg-gray-600 transition-colors"
             >
               إلغاء التحديد
             </button>
@@ -128,11 +136,15 @@ export const TaskListContent: React.FC = () => {
       )}
 
       <div className="flex-1 overflow-y-auto">
-        <div className="space-y-4 pr-1 py-0 my-0"> {/* قللت pr من 2 إلى 1 */}
+        <div className="space-y-4 pr-1 py-0 my-0">
           {tasks.map(task => (
             <div 
               key={task.id}
-              className={`${selectedTasks.includes(task.id.toString()) ? 'ring-2 ring-blue-400' : ''}`}
+              className={`transition-all duration-200 ${
+                selectedTasks.includes(task.id.toString()) 
+                  ? 'ring-2 ring-blue-400 ring-opacity-50' 
+                  : ''
+              }`}
             >
               <TaskCard 
                 {...task} 
