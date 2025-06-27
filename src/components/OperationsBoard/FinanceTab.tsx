@@ -4,20 +4,20 @@ import { ProjectBudgetChart } from './Finance/ProjectBudgetChart';
 import { OverBudgetAlert } from './Finance/OverBudgetAlert';
 import { ExportButton } from './Finance/ExportButton';
 
-interface ProjectBudget {
+export interface ProjectBudget {
   id: number;
   name: string;
   budget: number;
   spent: number;
 }
 
-interface OverBudgetProject {
+export interface OverBudgetProject {
   id: number;
   name: string;
   percentage: number;
 }
 
-interface FinanceData {
+export interface FinanceData {
   projects: ProjectBudget[];
   overBudget: OverBudgetProject[];
 }

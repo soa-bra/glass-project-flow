@@ -7,6 +7,11 @@ import LegalTab from './LegalTab';
 import HRTab from './HRTab';
 import { ClientsTab } from './ClientsTab';
 import { ReportsTab } from './ReportsTab';
+import type { OverviewData } from './Overview/OverviewData';
+import type { FinanceData } from './FinanceTab';
+import type { HRData } from './HRTab';
+import type { ClientsData } from './ClientsTab';
+import type { ReportsData } from './ReportsTab';
 
 export const TabContentWrapper = ({
   tabData,
@@ -17,11 +22,11 @@ export const TabContentWrapper = ({
 }) => {
   return <>
       <TabsContent value="overview" className="overflow-auto p-0 m-0 px-0 my-0 py-0">
-        <OverviewTab data={tabData.overview || { stats: {} }} loading={loading} />
+        <OverviewTab data={tabData.overview as OverviewData | undefined} loading={loading} />
       </TabsContent>
       
       <TabsContent value="finance" className="w-full h-full overflow-auto p-4 m-0">
-        <FinanceTab data={tabData.finance || { projects: [], overBudget: [] }} loading={loading} />
+        <FinanceTab data={tabData.finance as FinanceData | undefined} loading={loading} />
       </TabsContent>
 
       <TabsContent value="projects" className="w-full h-full overflow-auto p-4 m-0">
@@ -37,15 +42,15 @@ export const TabContentWrapper = ({
       </TabsContent>
       
       <TabsContent value="hr" className="w-full h-full overflow-auto p-4 m-0">
-        <HRTab data={tabData.hr || { stats: { active: 0, onLeave: 0, vacancies: 0 }, distribution: [] }} loading={loading} />
+        <HRTab data={tabData.hr as HRData | undefined} loading={loading} />
       </TabsContent>
       
       <TabsContent value="clients" className="w-full h-full overflow-auto p-4 m-0">
-        <ClientsTab data={tabData.clients || { active: [], nps: [] }} loading={loading} />
+        <ClientsTab data={tabData.clients as ClientsData | undefined} loading={loading} />
       </TabsContent>
       
       <TabsContent value="reports" className="w-full h-full overflow-auto p-4 m-0">
-        <ReportsTab data={tabData.reports || { templates: [] }} loading={loading} />
+        <ReportsTab data={tabData.reports as ReportsData | undefined} loading={loading} />
       </TabsContent>
     </>;
 };
