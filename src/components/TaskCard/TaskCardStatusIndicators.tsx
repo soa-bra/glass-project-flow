@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   DropdownMenu, 
@@ -24,7 +25,7 @@ interface TaskCardStatusIndicatorsProps {
   assignee: string;
   members: string;
   taskId: string;
-  taskData?: any; // بيانات المهمة الكاملة للتعديل
+  taskData?: any;
   isSelected?: boolean;
   isSelectionMode?: boolean;
   onSelect?: (taskId: string) => void;

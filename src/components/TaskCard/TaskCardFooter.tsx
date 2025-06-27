@@ -8,10 +8,11 @@ interface TaskCardFooterProps {
   assignee: string;
   members: string;
   taskId: string;
+  taskData?: any;
   isSelected?: boolean;
   isSelectionMode?: boolean;
   onSelect?: (taskId: string) => void;
-  onEdit?: (taskId: string) => void;
+  onEdit?: (taskId: string, taskData?: any) => void;
   onArchive?: (taskId: string) => void;
   onDelete?: (taskId: string) => void;
 }
@@ -23,6 +24,7 @@ const TaskCardFooter = ({
   assignee,
   members,
   taskId,
+  taskData,
   isSelected = false,
   isSelectionMode = false,
   onSelect,
@@ -38,6 +40,7 @@ const TaskCardFooter = ({
       assignee={assignee}
       members={members}
       taskId={taskId}
+      taskData={taskData}
       isSelected={isSelected}
       isSelectionMode={isSelectionMode}
       onSelect={onSelect}
