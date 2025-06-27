@@ -3,19 +3,19 @@ import { Plus, Filter, Sparkles, RefreshCw } from 'lucide-react';
 import { AddTaskModal } from '@/components/ProjectsColumn/AddTaskModal';
 import { SmartTaskGenerationModal } from './SmartTaskGenerationModal';
 import type { TaskData } from '@/types';
-
 interface TaskListHeaderProps {
   onTaskAdded: (task: TaskData) => void;
   onTasksGenerated: (tasks: TaskData[]) => void;
 }
-
-export const TaskListHeader: React.FC<TaskListHeaderProps> = ({ onTaskAdded, onTasksGenerated }) => {
+export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
+  onTaskAdded,
+  onTasksGenerated
+}) => {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showSmartGenerationModal, setShowSmartGenerationModal] = useState(false);
   const handleTaskAdded = (task: TaskData) => {
     onTaskAdded(task);
   };
-
   const handleTasksGenerated = (tasks: TaskData[]) => {
     onTasksGenerated(tasks);
   };
@@ -27,9 +27,8 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({ onTaskAdded, onT
     console.log('فلترة المهام');
     // يمكن إضافة منطق فلترة المهام هنا
   };
-  return (
-    <>
-      <div className="flex items-center justify-between mb-6 my-[10px] mx-[6px] px-0">
+  return <>
+      <div className="flex items-center justify-between mb-6 px-0 mx-[15px] my-[15px]">
         <h3 className="font-arabic" style={{
         fontSize: '18px',
         fontWeight: 700,
@@ -38,7 +37,7 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({ onTaskAdded, onT
       }}>
           قائمة المهام
         </h3>
-        <div className="flex items-center gap-1 mx-[2px]">
+        <div className="flex items-center gap-2 mx-0">
           <button onClick={handleUpdateTasks} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
             <RefreshCw size={16} />
           </button>
@@ -54,17 +53,8 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({ onTaskAdded, onT
         </div>
       </div>
 
-      <AddTaskModal
-        isOpen={showAddTaskModal}
-        onClose={() => setShowAddTaskModal(false)}
-        onTaskAdded={handleTaskAdded}
-      />
+      <AddTaskModal isOpen={showAddTaskModal} onClose={() => setShowAddTaskModal(false)} onTaskAdded={handleTaskAdded} />
 
-        <SmartTaskGenerationModal
-          isOpen={showSmartGenerationModal}
-          onClose={() => setShowSmartGenerationModal(false)}
-          onTasksGenerated={handleTasksGenerated}
-        />
-      </>
-  );
+        <SmartTaskGenerationModal isOpen={showSmartGenerationModal} onClose={() => setShowSmartGenerationModal(false)} onTasksGenerated={handleTasksGenerated} />
+      </>;
 };
