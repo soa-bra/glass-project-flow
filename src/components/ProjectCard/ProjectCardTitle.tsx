@@ -9,7 +9,7 @@ const ProjectCardTitle = ({
   description
 }: ProjectCardTitleProps) => {
   return (
-    <div className="text-center py-0 px-0 mx-0 my-0">
+    <div className="flex-1 text-center py-0 px-0 mx-[14px] my-[17px]">
       <h3 
         className="text-lg font-bold mb-1 font-arabic text-right mx-0 my-0 py-0"
         style={{
