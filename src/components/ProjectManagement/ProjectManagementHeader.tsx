@@ -70,7 +70,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align="end" 
-              className="w-48 bg-white/90 backdrop-blur-lg border border-white/20 shadow-lg font-arabic"
+              className="w-48 bg-white/90 backdrop-blur-lg border border-white/20 shadow-lg font-arabic z-[9999]"
               sideOffset={5}
             >
               <DropdownMenuItem 
