@@ -1,10 +1,5 @@
 
-const statusColors = {
-  success: 'var(--status-colors-on-plan)',
-  warning: 'var(--status-colors-delayed)',
-  error: 'var(--status-colors-stopped)',
-  info: 'var(--status-colors-in-preparation)'
-};
+import { formatDateToMonthDay } from '@/utils/dateFormatter';
 
 interface ProjectCardStatusIndicatorsProps {
   status: 'success' | 'warning' | 'error' | 'info';
@@ -19,70 +14,53 @@ const ProjectCardStatusIndicators = ({
   owner,
   value
 }: ProjectCardStatusIndicatorsProps) => {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'success':
+        return '#10B981';
+      case 'warning':
+        return '#F59E0B';
+      case 'error':
+        return '#EF4444';
+      case 'info':
+      default:
+        return '#3B82F6';
+    }
+  };
+
+  const formattedDate = formatDateToMonthDay(date);
+
   return (
-    <div className="flex items-center justify-between py-0 mx-0 px-[28px] my-[24px]">
-      {/* دائرة حالة المشروع - على الجانب الأيسر */}
-      <div 
-        style={{
-          backgroundColor: statusColors[status],
-          boxShadow: `0 2px 6px ${statusColors[status]}20, 0 0 12px ${statusColors[status]}15`
-        }} 
-        className="w-[20px] h-[20px] rounded-full my-0 py-0 px-0 mx-0" 
-      />
-
-      {/* التاريخ + المالك + القيمة - محاذاة إلى اليمين مع عنوان المشروع */}
-      <div className="flex items-center gap-[3px] flex-1 justify-end mx-0 px-0">
-        {/* التاريخ */}
+    <div className="flex items-center justify-between text-xs px-6 pb-4">
+      {/* Status indicator */}
+      <div className="flex items-center gap-2">
         <div 
-          className="rounded-full py-[2px] flex items-center px-[15px]"
-          style={{
-            backgroundColor: 'var(--project-card-elements-info-bubbles)'
-          }}
+          className="w-2 h-2 rounded-full"
+          style={{ backgroundColor: getStatusColor(status) }}
+        />
+        <span 
+          className="font-arabic"
+          style={{ color: 'var(--project-card-elements-secondary-text)' }}
         >
-          <span 
-            className="text-sm font-arabic"
-            style={{
-              color: 'var(--project-card-elements-secondary-text)'
-            }}
-          >
-            {date}
-          </span>
-        </div>
-
-        {/* المالك */}
-        <div 
-          className="rounded-full justify-between flex items-center py-[2px] px-[8px] mx-[5px]"
-          style={{
-            backgroundColor: 'var(--project-card-elements-info-bubbles)'
-          }}
-        >
-          <span 
-            className="text-sm font-arabic px-[3px]"
-            style={{
-              color: 'var(--project-card-elements-secondary-text)'
-            }}
-          >
-            {owner}
-          </span>
-        </div>
-
-        {/* القيمة - محاذاة مع حد عنوان المشروع */}
-        <div 
-          className="rounded-full py-[2px] px-[21px] flex items-center mr-[14px]"
-          style={{
-            backgroundColor: 'var(--project-card-elements-info-bubbles)'
-          }}
-        >
-          <span 
-            className="text-sm font-arabic"
-            style={{
-              color: 'var(--project-card-elements-secondary-text)'
-            }}
-          >
-            {value}
-          </span>
-        </div>
+          {formattedDate}
+        </span>
       </div>
+
+      {/* Owner */}
+      <span 
+        className="font-arabic"
+        style={{ color: 'var(--project-card-elements-secondary-text)' }}
+      >
+        {owner}
+      </span>
+
+      {/* Value */}
+      <span 
+        className="font-bold font-arabic"
+        style={{ color: 'var(--project-card-elements-title-text)' }}
+      >
+        {value}
+      </span>
     </div>
   );
 };

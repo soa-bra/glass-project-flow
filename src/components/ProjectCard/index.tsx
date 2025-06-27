@@ -20,10 +20,13 @@ const ProjectCard = ({
   owner,
   budget,
   daysLeft,
+  team,
   isSelected = false,
   isOtherSelected = false,
   onProjectSelect
 }: ProjectCardInteractiveProps) => {
+  const teamCount = Array.isArray(team) ? team.length : 0;
+
   return (
     <ProjectCardLayout
       id={id.toString()}
@@ -37,6 +40,7 @@ const ProjectCard = ({
         description={description}
         tasksCount={tasksCount}
         status={status}
+        teamCount={teamCount}
       />
       
       <ProjectCardFooter
