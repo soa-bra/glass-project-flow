@@ -17,14 +17,28 @@ const ProjectCardStatusIndicators = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'success':
-        return '#10B981';
+        return '#bdeed3'; // وفق الخطة
       case 'warning':
-        return '#F59E0B';
+        return '#fbe2aa'; // متأخرة
       case 'error':
-        return '#EF4444';
+        return '#f1b5b9'; // متوقفة
       case 'info':
       default:
-        return '#3B82F6';
+        return '#a4e2f6'; // قيد التحضير
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'success':
+        return 'وفق الخطة';
+      case 'warning':
+        return 'متأخرة';
+      case 'error':
+        return 'متوقفة';
+      case 'info':
+      default:
+        return 'قيد التحضير';
     }
   };
 
@@ -42,9 +56,17 @@ const ProjectCardStatusIndicators = ({
           className="font-arabic"
           style={{ color: 'var(--project-card-elements-secondary-text)' }}
         >
-          {formattedDate}
+          {getStatusText(status)}
         </span>
       </div>
+
+      {/* Date */}
+      <span 
+        className="font-arabic"
+        style={{ color: 'var(--project-card-elements-secondary-text)' }}
+      >
+        {formattedDate}
+      </span>
 
       {/* Owner */}
       <span 

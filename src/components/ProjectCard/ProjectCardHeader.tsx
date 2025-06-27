@@ -32,8 +32,8 @@ const ProjectCardHeader = ({
           <div 
             className="px-3 py-1 rounded-full text-xs font-arabic"
             style={{
-              backgroundColor: '#d1e1ea',
-              color: 'var(--project-card-elements-title-text)'
+              backgroundColor: '#e4f3f7',
+              color: '#000000'
             }}
           >
             {teamCount} عضو فريق
