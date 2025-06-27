@@ -19,7 +19,7 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
   const [showBulkArchiveDialog, setShowBulkArchiveDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [tasks, setTasks] = useState([{
+  const [tasks, setTasks] = useState([{ 
     id: 1,
     title: 'تصميم الواجهة',
     description: 'تطوير موقع سوبرا',
@@ -64,8 +64,16 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
     daysLeft: 10,
     priority: 'not-urgent-not-important' as const
   }]);
+
+  const addTask = (task: TaskData) => {
+    setTasks(prev => [...prev, task]);
   };
 
+  const addTasks = (newTasks: TaskData[]) => {
+    setTasks(prev => [...prev, ...newTasks]);
+  };
+
+  // expose methods so parent components can modify the task list
   useImperativeHandle(ref, () => ({ addTask, addTasks }));
 
   // إضافة معالج لضغطة مفتاح Esc
