@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   DropdownMenu, 
@@ -25,10 +24,11 @@ interface TaskCardStatusIndicatorsProps {
   assignee: string;
   members: string;
   taskId: string;
+  taskData?: any; // بيانات المهمة الكاملة للتعديل
   isSelected?: boolean;
   isSelectionMode?: boolean;
   onSelect?: (taskId: string) => void;
-  onEdit?: (taskId: string) => void;
+  onEdit?: (taskId: string, taskData?: any) => void;
   onArchive?: (taskId: string) => void;
   onDelete?: (taskId: string) => void;
 }
@@ -40,6 +40,7 @@ const TaskCardStatusIndicators = ({
   assignee,
   members,
   taskId,
+  taskData,
   isSelected = false,
   isSelectionMode = false,
   onSelect,
@@ -64,7 +65,7 @@ const TaskCardStatusIndicators = ({
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     console.log('تعديل المهمة:', taskId);
-    onEdit?.(taskId);
+    onEdit?.(taskId, taskData);
   };
 
   const handleArchive = () => {
