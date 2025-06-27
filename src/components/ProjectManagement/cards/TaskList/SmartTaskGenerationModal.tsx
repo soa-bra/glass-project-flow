@@ -80,11 +80,13 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
         id: Date.now() + index,
         title: `مهمة مولدة ${index + 1}`,
         description: `وصف المهمة المولدة تلقائياً`,
-        priority: ['urgent-important', 'urgent-not-important', 'not-urgent-important', 'not-urgent-not-important'][Math.floor(Math.random() * 4)] as 'urgent-important' | 'urgent-not-important' | 'not-urgent-important' | 'not-urgent-not-important',
+        priority: ['high', 'medium', 'low'][Math.floor(Math.random() * 3)],
+        type: formData.selectedTypes.length > 0 
+          ? formData.selectedTypes[Math.floor(Math.random() * formData.selectedTypes.length)]
+          : 'technical',
         dueDate: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        stage: 'planning' as 'planning' | 'development' | 'testing' | 'review' | 'completed',
+        stage: 'planning',
         assignee: '',
-        attachments: [] as string[],
         createdAt: new Date().toISOString(),
       }));
 

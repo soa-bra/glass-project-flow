@@ -3,16 +3,16 @@ import { HRStatsCards } from './HR/HRStatsCards';
 import { TeamFillProgress } from './HR/TeamFillProgress';
 import { ProjectDistribution } from './HR/ProjectDistribution';
 import { AddMemberButton } from './HR/AddMemberButton';
-export interface HRStats {
+interface HRStats {
   active: number;
   onLeave: number;
   vacancies: number;
 }
-export interface ProjectDistribution {
+interface ProjectDistribution {
   project: string;
   members: number;
 }
-export interface HRData {
+interface HRData {
   stats: HRStats;
   distribution: ProjectDistribution[];
 }

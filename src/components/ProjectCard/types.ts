@@ -1,20 +1,9 @@
 
-export interface ProjectCardProps {
-  id: number;
-  name: string;
-  description: string;
-  owner: string;
-  deadline: string;
-  team: string[];
-  status: 'success' | 'warning' | 'error' | 'info';
-  budget: number;
-  tasksCount: number;
+import type { ProjectData } from '@/types';
+
+export interface ProjectCardProps extends ProjectData {
   daysLeft: number;
   value: string;
-  isSelected?: boolean;
-  isOtherSelected?: boolean;
-  onProjectSelect?: () => void;
-  onEdit?: (projectId: number) => void;
-  onArchive?: (projectId: number) => void;
-  onDelete?: (projectId: number) => void;
+  isOverBudget?: boolean;
+  hasOverdueTasks?: boolean;
 }

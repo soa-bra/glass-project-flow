@@ -1,269 +1,380 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { AddTaskModal } from './AddTaskModal';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import type { ProjectData, TaskData } from '@/types';
 import { BasicInfoForm } from './AddProjectModal/BasicInfoForm';
 import { ClientForm } from './AddProjectModal/ClientForm';
-import { ContractForm } from './AddProjectModal/ContractForm';
 import { TasksTab } from './AddProjectModal/TasksTab';
+import { ContractForm } from './AddProjectModal/ContractForm';
 import { PartnershipsTab } from './AddProjectModal/PartnershipsTab';
-import { AddTaskModal } from './AddTaskModal';
-import type { ProjectData, TaskData } from '@/types';
-import { Project } from '@/types/project';
 import type { ProjectFormData, ContractPayment } from './AddProjectModal/types';
 
 interface AddProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   onProjectAdded: (project: ProjectData) => void;
-  editingProject?: Project | null;
 }
 
 export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   isOpen,
   onClose,
   onProjectAdded,
-  editingProject
 }) => {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('basic');
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-  const [tasks, setTasks] = useState<TaskData[]>([]);
-  const [formData, setFormData] = useState<ProjectFormData>({
+  
+  const [projectData, setProjectData] = useState<ProjectFormData>({
     name: '',
     description: '',
-    owner: '',
-    budget: '',
-    deadline: '',
-    status: 'info',
-    team: [],
-    tasksCount: 0,
     startDate: '',
     endDate: '',
+    deadline: '',
     manager: '',
+    owner: '',
+    team: [],
+    budget: '',
+    status: 'info',
+    tasksCount: 0,
     clientType: 'internal',
     tasks: [],
     partnerships: [],
     hasContract: false,
     contractValue: '',
-    contractPayments: []
+    contractPayments: [{ amount: '', date: '', id: 1 }],
   });
 
-  // تحديث البيانات عند تعديل مشروع موجود
-  useEffect(() => {
-    if (editingProject) {
-      setFormData({
-        id: Number(editingProject.id),
-        name: editingProject.title,
-        description: editingProject.description,
-        owner: editingProject.owner,
-        budget: editingProject.value,
-        deadline: editingProject.date,
-        status: editingProject.status,
-        team: editingProject.team?.map(t => t.name) || [],
-        tasksCount: editingProject.tasksCount,
-        startDate: '',
-        endDate: editingProject.date,
-        manager: editingProject.owner,
-        clientType: 'internal',
-        tasks: [],
-        partnerships: [],
-        hasContract: false,
-        contractValue: '',
-        contractPayments: []
-      });
-    } else {
-      // إعادة تعيين البيانات للمشروع الجديد
-      setFormData({
-        name: '',
-        description: '',
-        owner: '',
-        budget: '',
-        deadline: '',
-        status: 'info',
-        team: [],
-        tasksCount: 0,
-        startDate: '',
-        endDate: '',
-        manager: '',
-        clientType: 'internal',
-        tasks: [],
-        partnerships: [],
-        hasContract: false,
-        contractValue: '',
-        contractPayments: []
-      });
-      setTasks([]);
-    }
-  }, [editingProject]);
+  const teamMembers = [
+    'أحمد محمد',
+    'فاطمة علي',
+    'خالد الأحمد',
+    'نورا السالم',
+    'محمد العتيبي',
+    'سارة النجار'
+  ];
 
   const handleInputChange = (field: string, value: unknown) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setProjectData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleClientDataChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setProjectData(prev => ({
       ...prev,
-      clientData: {
-        ...prev.clientData,
-        name: prev.clientData?.name || '',
-        type: prev.clientData?.type || '',
-        responsiblePerson: prev.clientData?.responsiblePerson || '',
-        phone: prev.clientData?.phone || '',
-        email: prev.clientData?.email || '',
-        [field]: value
-      }
+      clientData: { ...prev.clientData!, [field]: value }
     }));
   };
 
-  const handleAddPayment = () => {
-    const newPayment: ContractPayment = {
-      id: Date.now(),
-      amount: '',
-      date: ''
-    };
-    setFormData(prev => ({
+  const validateForm = (): boolean => {
+    if (!projectData.name.trim()) {
+      toast({
+        title: "خطأ في التحقق",
+        description: "اسم المشروع مطلوب",
+        variant: "destructive",
+      });
+      return false;
+    }
+    if (!projectData.manager) {
+      toast({
+        title: "خطأ في التحقق",
+        description: "مدير المشروع مطلوب",
+        variant: "destructive",
+      });
+      return false;
+    }
+    if (!projectData.startDate || !projectData.endDate) {
+      toast({
+        title: "خطأ في التحقق",
+        description: "تواريخ المشروع مطلوبة",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleSaveProject = () => {
+    if (!validateForm()) return;
+
+    try {
+      const newProject: ProjectData = {
+        id: Date.now(),
+        name: projectData.name,
+        description: projectData.description,
+        owner: projectData.manager,
+        deadline: projectData.endDate,
+        team: projectData.team,
+        status: 'info',
+        budget: Number(projectData.budget) || 0,
+        tasksCount: projectData.tasks.length,
+      };
+
+      onProjectAdded(newProject);
+      
+      toast({
+        title: "تم إنشاء المشروع بنجاح",
+        description: `تم إضافة مشروع "${projectData.name}" بنجاح`,
+      });
+      
+      resetForm();
+      onClose();
+    } catch (error) {
+      toast({
+        title: "فشل في إنشاء المشروع",
+        description: "تأكد من البيانات وحاول مرة أخرى",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const resetForm = () => {
+    setProjectData({
+      name: '',
+      description: '',
+      startDate: '',
+      endDate: '',
+      deadline: '',
+      manager: '',
+      owner: '',
+      team: [],
+      budget: '',
+      status: 'info',
+      tasksCount: 0,
+      clientType: 'internal',
+      tasks: [],
+      partnerships: [],
+      hasContract: false,
+      contractValue: '',
+      contractPayments: [{ amount: '', date: '', id: 1 }],
+    });
+    setActiveTab('basic');
+  };
+
+  const handleClose = () => {
+    if (projectData.name.trim() || projectData.description.trim()) {
+      setShowCancelDialog(true);
+    } else {
+      resetForm();
+      onClose();
+    }
+  };
+
+  const confirmClose = () => {
+    resetForm();
+    setShowCancelDialog(false);
+    onClose();
+  };
+
+  const addTask = (task: TaskData) => {
+    setProjectData(prev => ({
       ...prev,
-      contractPayments: [...prev.contractPayments, newPayment]
+      tasks: [...prev.tasks, { ...task, id: Date.now() }]
     }));
   };
 
-  const handleRemovePayment = (id: number) => {
-    setFormData(prev => ({
+  const addPayment = () => {
+    setProjectData(prev => ({
       ...prev,
-      contractPayments: prev.contractPayments.filter(p => p.id !== id)
+      contractPayments: [
+        ...prev.contractPayments,
+        { amount: '', date: '', id: prev.contractPayments.length + 1 }
+      ]
     }));
   };
 
-  const handleUpdatePayment = (id: number, field: string, value: string) => {
-    setFormData(prev => ({
+  const removePayment = (id: number) => {
+    setProjectData(prev => ({
       ...prev,
-      contractPayments: prev.contractPayments.map(p =>
+      contractPayments: prev.contractPayments.filter((payment: ContractPayment) => payment.id !== id)
+    }));
+  };
+
+  const updatePayment = (id: number, field: string, value: string) => {
+    setProjectData(prev => ({
+      ...prev,
+      contractPayments: prev.contractPayments.map((p: ContractPayment) =>
         p.id === id ? { ...p, [field]: value } : p
       )
     }));
   };
 
-  const handleTaskAdded = (newTask: TaskData) => {
-    setTasks(prev => [...prev, newTask]);
-    setFormData(prev => ({
-      ...prev,
-      tasksCount: (prev.tasksCount || 0) + 1
-    }));
-  };
-
-  const handleSubmit = () => {
-    if (formData.name && formData.owner && formData.budget && formData.deadline) {
-      const projectData: ProjectData = {
-        id: editingProject ? Number(editingProject.id) : Date.now(),
-        name: formData.name,
-        description: formData.description || '',
-        owner: formData.owner,
-        budget: Number(formData.budget),
-        deadline: formData.deadline,
-        status: formData.status,
-        team: formData.team || [],
-        tasksCount: formData.tasksCount || 0
-      };
-      
-      onProjectAdded(projectData);
-      onClose();
-    }
-  };
-
-  const teamMembers = ['أحمد محمد', 'فاطمة علي', 'محمد سعد', 'نورا حسن'];
-
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto font-arabic" 
+      <Dialog open={isOpen} onOpenChange={() => {}}>
+        <DialogContent 
+          className="max-w-4xl max-h-[90vh] p-0 overflow-hidden font-arabic"
           style={{
-            background: 'rgba(255,255,255,0.95)',
+            background: 'rgba(255,255,255,0.4)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.4)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '24px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            zIndex: 9999,
           }}
         >
-          <DialogHeader className="flex flex-row items-center justify-between">
-            <DialogTitle className="text-xl font-bold text-right font-arabic">
-              {editingProject ? 'تعديل المشروع' : 'إضافة مشروع جديد'}
+          <button
+            onClick={handleClose}
+            className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black/30 w-[32px] h-[32px] flex items-center justify-center transition z-10"
+          >
+            <X className="text-black" size={18} />
+          </button>
+
+          <DialogHeader className="px-8 pt-8 pb-4 flex-shrink-0">
+            <DialogTitle className="text-2xl font-bold text-right font-arabic">
+              إضافة مشروع جديد
             </DialogTitle>
-            <button
-              onClick={onClose}
-              className="rounded-full p-2 hover:bg-gray-100 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
           </DialogHeader>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
-            <TabsList className="grid w-full grid-cols-5 bg-gray-100/50">
-              <TabsTrigger value="basic" className="font-arabic">المعلومات الأساسية</TabsTrigger>
-              <TabsTrigger value="client" className="font-arabic">معلومات العميل</TabsTrigger>
-              <TabsTrigger value="contract" className="font-arabic">تفاصيل العقد</TabsTrigger>
-              <TabsTrigger value="tasks" className="font-arabic">المهام</TabsTrigger>
-              <TabsTrigger value="partnerships" className="font-arabic">الشراكات</TabsTrigger>
-            </TabsList>
+          <div className="flex flex-col h-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="flex flex-col h-full">
+              {/* قائمة التبويبات الثابتة */}
+              <div className="flex-shrink-0 px-8 pb-4 border-b border-white/20">
+                <TabsList className="bg-transparent gap-2 justify-end w-full">
+                  <TabsTrigger 
+                    value="basic" 
+                    className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-black/40 data-[state=inactive]:backdrop-blur-md data-[state=inactive]:border data-[state=inactive]:border-white/20 data-[state=inactive]:text-white rounded-full px-4 py-2 font-arabic"
+                  >
+                    المعلومات الأساسية
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="client" 
+                    className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-black/40 data-[state=inactive]:backdrop-blur-md data-[state=inactive]:border data-[state=inactive]:border-white/20 data-[state=inactive]:text-white rounded-full px-4 py-2 font-arabic"
+                  >
+                    بيانات العميل
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="tasks" 
+                    className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-black/40 data-[state=inactive]:backdrop-blur-md data-[state=inactive]:border data-[state=inactive]:border-white/20 data-[state=inactive]:text-white rounded-full px-4 py-2 font-arabic"
+                  >
+                    المهام
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="partnerships" 
+                    className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-black/40 data-[state=inactive]:backdrop-blur-md data-[state=inactive]:border data-[state=inactive]:border-white/20 data-[state=inactive]:text-white rounded-full px-4 py-2 font-arabic"
+                  >
+                    الشراكات
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="contract" 
+                    className="data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-black/40 data-[state=inactive]:backdrop-blur-md data-[state=inactive]:border data-[state=inactive]:border-white/20 data-[state=inactive]:text-white rounded-full px-4 py-2 font-arabic"
+                  >
+                    العقد
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-            <TabsContent value="basic" className="mt-6">
-              <BasicInfoForm 
-                projectData={{
-                  name: formData.name,
-                  manager: formData.manager,
-                  description: formData.description,
-                  startDate: formData.startDate,
-                  endDate: formData.endDate,
-                  budget: formData.budget
-                }}
-                onInputChange={handleInputChange}
-                teamMembers={teamMembers}
-              />
-            </TabsContent>
+              {/* محتوى التبويبات القابل للتمرير */}
+              <div className="flex-1 overflow-y-auto px-8 py-6">
+                <TabsContent value="basic" className="mt-0">
+                  <BasicInfoForm
+                    projectData={projectData}
+                    onInputChange={handleInputChange}
+                    teamMembers={teamMembers}
+                  />
+                </TabsContent>
 
-            <TabsContent value="client" className="mt-6">
-              <ClientForm 
-                projectData={{
-                  clientType: formData.clientType,
-                  clientData: formData.clientData
-                }}
-                onInputChange={handleInputChange}
-                onClientDataChange={handleClientDataChange}
-              />
-            </TabsContent>
+                <TabsContent value="client" className="mt-0">
+                  <ClientForm
+                    projectData={projectData}
+                    onInputChange={handleInputChange}
+                    onClientDataChange={handleClientDataChange}
+                  />
+                </TabsContent>
 
-            <TabsContent value="contract" className="mt-6">
-              <ContractForm 
-                projectData={{
-                  hasContract: formData.hasContract,
-                  contractValue: formData.contractValue,
-                  contractPayments: formData.contractPayments
-                }}
-                onInputChange={handleInputChange}
-                onAddPayment={handleAddPayment}
-                onRemovePayment={handleRemovePayment}
-                onUpdatePayment={handleUpdatePayment}
-              />
-            </TabsContent>
+                <TabsContent value="tasks" className="mt-0">
+                  <TasksTab
+                    tasks={projectData.tasks}
+                    onAddTask={() => setShowAddTaskModal(true)}
+                  />
+                </TabsContent>
 
-            <TabsContent value="tasks" className="mt-6">
-              <TasksTab 
-                tasks={tasks}
-                onAddTask={() => setShowAddTaskModal(true)}
-              />
-            </TabsContent>
+                <TabsContent value="partnerships" className="mt-0">
+                  <PartnershipsTab />
+                </TabsContent>
 
-            <TabsContent value="partnerships" className="mt-6">
-              <PartnershipsTab />
-            </TabsContent>
-          </Tabs>
+                <TabsContent value="contract" className="mt-0">
+                  <ContractForm
+                    projectData={projectData}
+                    onInputChange={handleInputChange}
+                    onAddPayment={addPayment}
+                    onRemovePayment={removePayment}
+                    onUpdatePayment={updatePayment}
+                  />
+                </TabsContent>
+              </div>
+
+              {/* أزرار الحفظ والإلغاء الثابتة */}
+              <div className="flex-shrink-0 px-8 pb-8">
+                <div className="flex gap-4 justify-start pt-6 border-t border-white/20">
+                  <Button
+                    onClick={handleSaveProject}
+                    className="bg-black text-white hover:bg-gray-800 font-arabic rounded-full"
+                  >
+                    حفظ المشروع
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleClose}
+                    className="bg-black/40 backdrop-blur-md border-white/20 text-white hover:bg-black/50 font-arabic rounded-full"
+                  >
+                    إلغاء
+                  </Button>
+                </div>
+              </div>
+            </Tabs>
+          </div>
         </DialogContent>
       </Dialog>
 
       <AddTaskModal
         isOpen={showAddTaskModal}
         onClose={() => setShowAddTaskModal(false)}
-        onTaskAdded={handleTaskAdded}
+        onTaskAdded={addTask}
       />
+
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent 
+          className="font-arabic" 
+          dir="rtl"
+          style={{
+            background: 'rgba(255,255,255,0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '24px'
+          }}
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-right">تأكيد الإلغاء</AlertDialogTitle>
+            <AlertDialogDescription className="text-right">
+              هل أنت متأكد من إلغاء إضافة المشروع؟ سيتم فقدان جميع البيانات المدخلة.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2">
+            <AlertDialogCancel className="font-arabic">العودة</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmClose} className="font-arabic">
+              تأكيد الإلغاء
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

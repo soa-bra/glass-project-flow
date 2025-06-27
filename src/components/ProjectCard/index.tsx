@@ -1,82 +1,49 @@
 
-import React from 'react';
 import ProjectCardLayout from './ProjectCardLayout';
-import { ProjectCardHeader } from './ProjectCardHeader';
-import ProjectCardTitle from './ProjectCardTitle';
+import ProjectCardHeader from './ProjectCardHeader';
 import ProjectCardFooter from './ProjectCardFooter';
-import ProjectCardStatusIndicators from './ProjectCardStatusIndicators';
-import { ProjectCardDropdown } from './ProjectCardDropdown';
 import type { ProjectCardProps } from './types';
 
-const ProjectCard: React.FC<ProjectCardProps> = ({
+interface ProjectCardInteractiveProps extends ProjectCardProps {
+  isSelected?: boolean;
+  isOtherSelected?: boolean;
+  onProjectSelect?: (projectId: string) => void;
+}
+
+const ProjectCard = ({
   id,
   name,
   description,
-  owner,
-  deadline,
-  team,
-  status,
-  budget,
   tasksCount,
+  status,
+  deadline,
+  owner,
+  budget,
   daysLeft,
-  value,
   isSelected = false,
   isOtherSelected = false,
-  onProjectSelect,
-  onEdit,
-  onArchive,
-  onDelete,
-}) => {
-  const handleCardClick = () => {
-    if (onProjectSelect) {
-      onProjectSelect();
-    }
-  };
-
-  const handleEdit = (projectId: number) => {
-    if (onEdit) {
-      onEdit(projectId);
-    }
-  };
-
-  const handleArchive = (projectId: number) => {
-    if (onArchive) {
-      onArchive(projectId);
-    }
-  };
-
-  const handleDelete = (projectId: number) => {
-    if (onDelete) {
-      onDelete(projectId);
-    }
-  };
-
+  onProjectSelect
+}: ProjectCardInteractiveProps) => {
   return (
     <ProjectCardLayout
       id={id.toString()}
       isSelected={isSelected}
       isOtherSelected={isOtherSelected}
-      onProjectSelect={handleCardClick}
+      onProjectSelect={onProjectSelect}
     >
-      <ProjectCardHeader 
-        owner={owner}
-        deadline={deadline}
-        dropdown={
-          <ProjectCardDropdown
-            projectId={id}
-            projectName={name}
-            onEdit={handleEdit}
-            onArchive={handleArchive}
-            onDelete={handleDelete}
-          />
-        }
+      <ProjectCardHeader
+        daysLeft={daysLeft}
+        title={name}
+        description={description}
+        tasksCount={tasksCount}
+        status={status}
       />
-      <ProjectCardTitle title={name} description={description} />
+      
       <ProjectCardFooter
         status={status}
         date={deadline}
         owner={owner}
-        value={value}
+        value={budget.toString()}
       />
     </ProjectCardLayout>
   );
