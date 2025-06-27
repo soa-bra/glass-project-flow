@@ -17,7 +17,7 @@ export const TabContentWrapper = ({
 }) => {
   return <>
       <TabsContent value="overview" className="overflow-auto p-0 m-0 px-0 my-0 py-0">
-        <OverviewTab data={tabData.overview || {}} loading={loading} />
+        <OverviewTab data={tabData.overview || { stats: { expectedRevenue: 0, complaints: 0, delayedProjects: 0 } }} loading={loading} />
       </TabsContent>
       
       <TabsContent value="finance" className="w-full h-full overflow-auto p-4 m-0">
