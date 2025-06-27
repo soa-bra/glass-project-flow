@@ -1,51 +1,52 @@
 
 import React from 'react';
-import { TabsContent } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
 import { FinanceTab } from './FinanceTab';
-import LegalTab from './LegalTab';
-import HRTab from './HRTab';
+import { HRTab } from './HRTab';
 import { ClientsTab } from './ClientsTab';
+import { LegalTab } from './LegalTab';
 import { ReportsTab } from './ReportsTab';
+import type { TabType } from './types';
 
-export const TabContentWrapper = ({
-  tabData,
-  loading,
-}: {
-  tabData: Record<string, unknown>;
-  loading: boolean;
-}) => {
-  return <>
-      <TabsContent value="overview" className="overflow-auto p-0 m-0 px-0 my-0 py-0">
-        <OverviewTab data={tabData.overview || { stats: { expectedRevenue: 0, complaints: 0, delayedProjects: 0 } }} loading={loading} />
-      </TabsContent>
-      
-      <TabsContent value="finance" className="w-full h-full overflow-auto p-4 m-0">
-        <FinanceTab data={tabData.finance || { projects: [], overBudget: [] }} loading={loading} />
-      </TabsContent>
+interface TabContentWrapperProps {
+  activeTab: TabType;
+}
 
-      <TabsContent value="projects" className="w-full h-full overflow-auto p-4 m-0">
-        <div className="text-center py-8 text-gray-500 font-arabic">
-          محتوى إدارة المشاريع قيد التطوير
-        </div>
-      </TabsContent>
+const TabContentWrapper: React.FC<TabContentWrapperProps> = ({ activeTab }) => {
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return <OverviewTab data={{ 
+          stats: { totalProjects: 0, activeProjects: 0, completedProjects: 0, totalBudget: 0 }
+        }} />;
+      case 'finance':
+        return <FinanceTab data={{ projects: [], overBudget: [] }} />;
+      case 'legal':
+        return <LegalTab data={{
+          contracts: { active: 0, pending: 0, expired: 0 },
+          upcoming: []
+        }} />;
+      case 'hr':
+        return <HRTab data={{
+          stats: { totalMembers: 0, activeProjects: 0, utilizationRate: 0 },
+          distribution: []
+        }} />;
+      case 'clients':
+        return <ClientsTab data={{ active: [], nps: { score: 0, responses: 0 } }} />;
+      case 'reports':
+        return <ReportsTab data={{ templates: [] }} />;
+      default:
+        return <OverviewTab data={{ 
+          stats: { totalProjects: 0, activeProjects: 0, completedProjects: 0, totalBudget: 0 }
+        }} />;
+    }
+  };
 
-      <TabsContent value="marketing" className="w-full h-full overflow-auto p-4 m-0">
-        <div className="text-center py-8 text-gray-500 font-arabic">
-          محتوى التسويق قيد التطوير
-        </div>
-      </TabsContent>
-      
-      <TabsContent value="hr" className="w-full h-full overflow-auto p-4 m-0">
-        <HRTab data={tabData.hr || { stats: { active: 0, onLeave: 0, vacancies: 0 }, distribution: [] }} loading={loading} />
-      </TabsContent>
-      
-      <TabsContent value="clients" className="w-full h-full overflow-auto p-4 m-0">
-        <ClientsTab data={tabData.clients || { active: [], nps: [] }} loading={loading} />
-      </TabsContent>
-      
-      <TabsContent value="reports" className="w-full h-full overflow-auto p-4 m-0">
-        <ReportsTab data={tabData.reports || { templates: [] }} loading={loading} />
-      </TabsContent>
-    </>;
+  return (
+    <div className="flex-1 overflow-auto">
+      {renderTabContent()}
+    </div>
+  );
 };
+
+export default TabContentWrapper;
