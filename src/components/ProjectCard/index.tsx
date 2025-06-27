@@ -56,7 +56,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       id={id.toString()}
       isSelected={isSelected}
       isOtherSelected={isOtherSelected}
-      onClick={handleCardClick}
+      onProjectSelect={handleCardClick}
     >
       <ProjectCardHeader 
         owner={owner}
@@ -71,19 +71,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           />
         }
       />
-      <ProjectCardTitle name={name} description={description} />
+      <ProjectCardTitle title={name} description={description} />
       <ProjectCardFooter
-        team={team}
         status={status}
-        budget={budget}
-        tasksCount={tasksCount}
-        daysLeft={daysLeft}
+        date={deadline}
+        owner={owner}
         value={value}
-      />
-      <ProjectCardStatusIndicators 
-        status={status}
-        isOverBudget={false}
-        hasOverdueTasks={false}
       />
     </ProjectCardLayout>
   );

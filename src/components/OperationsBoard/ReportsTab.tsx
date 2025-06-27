@@ -3,12 +3,12 @@ import React from 'react';
 import { TemplatesList } from './Reports/TemplatesList';
 import { CustomReportForm } from './Reports/CustomReportForm';
 
-interface ReportTemplate {
+export interface ReportTemplate {
   id: number;
   name: string;
 }
 
-interface ReportsData {
+export interface ReportsData {
   templates: ReportTemplate[];
 }
 

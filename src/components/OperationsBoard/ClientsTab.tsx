@@ -4,19 +4,19 @@ import { ActiveClientsList } from './Clients/ActiveClientsList';
 import { NPSScores } from './Clients/NPSScores';
 import { AddClientButton } from './Clients/AddClientButton';
 
-interface ActiveClient {
+export interface ActiveClient {
   id: number;
   name: string;
   projects: number;
 }
 
-interface NPSScore {
+export interface NPSScore {
   id: number;
   score: number;
   client: string;
 }
 
-interface ClientsData {
+export interface ClientsData {
   active: ActiveClient[];
   nps: NPSScore[];
 }

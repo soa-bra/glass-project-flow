@@ -6,7 +6,7 @@ export interface ProjectCardProps {
   owner: string;
   deadline: string;
   team: string[];
-  status: string;
+  status: 'success' | 'warning' | 'error' | 'info';
   budget: number;
   tasksCount: number;
   daysLeft: number;
