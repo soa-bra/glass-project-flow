@@ -1,4 +1,3 @@
-
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -35,9 +34,17 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
       isOverBudget: false,
       hasOverdueTasks: false,
       team: newProject.team.map(name => ({ name })),
-      progress: 0,
+      progress: 25, // تقدم افتراضي للمشروع الجديد
     };
+    
     setProjects(prev => [projectToAdd, ...prev]);
+    
+    // فتح لوحة إدارة المشروع الجديد تلقائياً
+    if (onProjectSelect) {
+      setTimeout(() => {
+        onProjectSelect(projectToAdd.id);
+      }, 300); // تأخير قصير للسماح بإضافة المشروع أولاً
+    }
   };
 
   return (
