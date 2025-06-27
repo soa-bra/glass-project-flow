@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { ProjectCardLayout } from './ProjectCardLayout';
+import ProjectCardLayout from './ProjectCardLayout';
 import { ProjectCardHeader } from './ProjectCardHeader';
-import { ProjectCardTitle } from './ProjectCardTitle';
-import { ProjectCardFooter } from './ProjectCardFooter';
-import { ProjectCardStatusIndicators } from './ProjectCardStatusIndicators';
+import ProjectCardTitle from './ProjectCardTitle';
+import ProjectCardFooter from './ProjectCardFooter';
+import ProjectCardStatusIndicators from './ProjectCardStatusIndicators';
 import { ProjectCardDropdown } from './ProjectCardDropdown';
 import type { ProjectCardProps } from './types';
 

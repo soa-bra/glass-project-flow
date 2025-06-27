@@ -11,6 +11,7 @@ import { PartnershipsTab } from './AddProjectModal/PartnershipsTab';
 import { AddTaskModal } from './AddTaskModal';
 import type { ProjectData, TaskData } from '@/types';
 import { Project } from '@/types/project';
+import type { ProjectFormData, ContractPayment } from './AddProjectModal/types';
 
 interface AddProjectModalProps {
   isOpen: boolean;
@@ -28,15 +29,24 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   const [activeTab, setActiveTab] = useState('basic');
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [tasks, setTasks] = useState<TaskData[]>([]);
-  const [formData, setFormData] = useState<Partial<ProjectData>>({
+  const [formData, setFormData] = useState<ProjectFormData>({
     name: '',
     description: '',
     owner: '',
-    budget: 0,
+    budget: '',
     deadline: '',
-    status: 'active',
+    status: 'info',
     team: [],
-    tasksCount: 0
+    tasksCount: 0,
+    startDate: '',
+    endDate: '',
+    manager: '',
+    clientType: 'internal',
+    tasks: [],
+    partnerships: [],
+    hasContract: false,
+    contractValue: '',
+    contractPayments: []
   });
 
   // تحديث البيانات عند تعديل مشروع موجود
@@ -47,11 +57,20 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
         name: editingProject.title,
         description: editingProject.description,
         owner: editingProject.owner,
-        budget: Number(editingProject.value),
+        budget: editingProject.value,
         deadline: editingProject.date,
         status: editingProject.status,
         team: editingProject.team?.map(t => t.name) || [],
-        tasksCount: editingProject.tasksCount
+        tasksCount: editingProject.tasksCount,
+        startDate: '',
+        endDate: editingProject.date,
+        manager: editingProject.owner,
+        clientType: 'internal',
+        tasks: [],
+        partnerships: [],
+        hasContract: false,
+        contractValue: '',
+        contractPayments: []
       });
     } else {
       // إعادة تعيين البيانات للمشروع الجديد
@@ -59,15 +78,71 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
         name: '',
         description: '',
         owner: '',
-        budget: 0,
+        budget: '',
         deadline: '',
-        status: 'active',
+        status: 'info',
         team: [],
-        tasksCount: 0
+        tasksCount: 0,
+        startDate: '',
+        endDate: '',
+        manager: '',
+        clientType: 'internal',
+        tasks: [],
+        partnerships: [],
+        hasContract: false,
+        contractValue: '',
+        contractPayments: []
       });
       setTasks([]);
     }
   }, [editingProject]);
+
+  const handleInputChange = (field: string, value: unknown) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleClientDataChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      clientData: {
+        ...prev.clientData,
+        name: prev.clientData?.name || '',
+        type: prev.clientData?.type || '',
+        responsiblePerson: prev.clientData?.responsiblePerson || '',
+        phone: prev.clientData?.phone || '',
+        email: prev.clientData?.email || '',
+        [field]: value
+      }
+    }));
+  };
+
+  const handleAddPayment = () => {
+    const newPayment: ContractPayment = {
+      id: Date.now(),
+      amount: '',
+      date: ''
+    };
+    setFormData(prev => ({
+      ...prev,
+      contractPayments: [...prev.contractPayments, newPayment]
+    }));
+  };
+
+  const handleRemovePayment = (id: number) => {
+    setFormData(prev => ({
+      ...prev,
+      contractPayments: prev.contractPayments.filter(p => p.id !== id)
+    }));
+  };
+
+  const handleUpdatePayment = (id: number, field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      contractPayments: prev.contractPayments.map(p =>
+        p.id === id ? { ...p, [field]: value } : p
+      )
+    }));
+  };
 
   const handleTaskAdded = (newTask: TaskData) => {
     setTasks(prev => [...prev, newTask]);
@@ -84,9 +159,9 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
         name: formData.name,
         description: formData.description || '',
         owner: formData.owner,
-        budget: formData.budget,
+        budget: Number(formData.budget),
         deadline: formData.deadline,
-        status: formData.status || 'active',
+        status: formData.status,
         team: formData.team || [],
         tasksCount: formData.tasksCount || 0
       };
@@ -95,6 +170,8 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
       onClose();
     }
   };
+
+  const teamMembers = ['أحمد محمد', 'فاطمة علي', 'محمد سعد', 'نورا حسن'];
 
   return (
     <>
@@ -130,18 +207,42 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
             <TabsContent value="basic" className="mt-6">
               <BasicInfoForm 
-                formData={formData}
-                setFormData={setFormData}
-                onSubmit={handleSubmit}
+                projectData={{
+                  name: formData.name,
+                  manager: formData.manager,
+                  description: formData.description,
+                  startDate: formData.startDate,
+                  endDate: formData.endDate,
+                  budget: formData.budget
+                }}
+                onInputChange={handleInputChange}
+                teamMembers={teamMembers}
               />
             </TabsContent>
 
             <TabsContent value="client" className="mt-6">
-              <ClientForm />
+              <ClientForm 
+                projectData={{
+                  clientType: formData.clientType,
+                  clientData: formData.clientData
+                }}
+                onInputChange={handleInputChange}
+                onClientDataChange={handleClientDataChange}
+              />
             </TabsContent>
 
             <TabsContent value="contract" className="mt-6">
-              <ContractForm />
+              <ContractForm 
+                projectData={{
+                  hasContract: formData.hasContract,
+                  contractValue: formData.contractValue,
+                  contractPayments: formData.contractPayments
+                }}
+                onInputChange={handleInputChange}
+                onAddPayment={handleAddPayment}
+                onRemovePayment={handleRemovePayment}
+                onUpdatePayment={handleUpdatePayment}
+              />
             </TabsContent>
 
             <TabsContent value="tasks" className="mt-6">
