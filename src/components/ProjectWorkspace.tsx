@@ -45,6 +45,8 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       progress: 0,
     };
     setProjects((prev) => [projectToAdd, ...prev]);
+    // Immediately open the management board for the newly added project
+    handleProjectSelect(projectToAdd.id);
   };
 
   // Dynamically set right offsets depending on collapsed state
