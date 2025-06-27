@@ -32,7 +32,24 @@ const ProjectCardStatusIndicators = ({
 
       {/* التاريخ + المالك + القيمة - محاذاة إلى اليمين مع عنوان المشروع */}
       <div className="flex items-center gap-[3px] flex-1 justify-end mx-0 px-0">
-        {/* التاريخ */}
+        {/* التاريخ الأول */}
+        <div 
+          className="rounded-full py-[2px] flex items-center px-[15px]"
+          style={{
+            backgroundColor: 'var(--project-card-elements-info-bubbles)'
+          }}
+        >
+          <span 
+            className="text-sm font-arabic"
+            style={{
+              color: 'var(--project-card-elements-secondary-text)'
+            }}
+          >
+            {date}
+          </span>
+        </div>
+
+        {/* التاريخ المكرر */}
         <div 
           className="rounded-full py-[2px] flex items-center px-[15px]"
           style={{
