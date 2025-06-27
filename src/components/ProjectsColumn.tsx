@@ -11,16 +11,34 @@ type ProjectsColumnProps = {
   projects: Project[];
   selectedProjectId?: string | null;
   onProjectSelect?: (projectId: string) => void;
-  onProjectAdded: (project: ProjectData) => void;
 };
 
 const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
-  projects,
+  projects: initialProjects,
   selectedProjectId,
   onProjectSelect,
-  onProjectAdded,
 }) => {
+  const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
+
+  const handleProjectAdded = (newProject: ProjectData) => {
+    const projectToAdd: Project = {
+      id: newProject.id.toString(),
+      title: newProject.name,
+      description: newProject.description,
+      owner: newProject.owner,
+      value: newProject.budget.toString(),
+      daysLeft: Math.ceil((new Date(newProject.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
+      tasksCount: newProject.tasksCount,
+      status: newProject.status,
+      date: new Date().toLocaleDateString('ar-SA'),
+      isOverBudget: false,
+      hasOverdueTasks: false,
+      team: newProject.team.map(name => ({ name })),
+      progress: 0,
+    };
+    setProjects(prev => [projectToAdd, ...prev]);
+  };
 
   return (
     <>
@@ -68,7 +86,7 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
       <AddProjectModal
         isOpen={showAddProjectModal}
         onClose={() => setShowAddProjectModal(false)}
-        onProjectAdded={onProjectAdded}
+        onProjectAdded={handleProjectAdded}
       />
     </>
   );
