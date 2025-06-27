@@ -68,7 +68,6 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
 
   };
 
-  // expose methods so parent components can modify the task list
   useImperativeHandle(ref, () => ({ addTask, addTasks }));
 
   // إضافة معالج لضغطة مفتاح Esc
