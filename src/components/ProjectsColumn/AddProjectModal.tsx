@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -28,17 +27,24 @@ interface AddProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   onProjectAdded: (project: ProjectData) => void;
+  onProjectUpdated?: (project: ProjectData) => void;
+  editingProject?: ProjectData | null;
+  isEditMode?: boolean;
 }
 
 export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   isOpen,
   onClose,
   onProjectAdded,
+  onProjectUpdated,
+  editingProject,
+  isEditMode = false,
 }) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('basic');
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   
   const [projectData, setProjectData] = useState<ProjectFormData>({
     name: '',
@@ -59,6 +65,31 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     contractValue: '',
     contractPayments: [{ amount: '', date: '', id: 1 }],
   });
+
+  // تعبئة البيانات عند التعديل
+  useEffect(() => {
+    if (isEditMode && editingProject) {
+      setProjectData({
+        name: editingProject.name || '',
+        description: editingProject.description || '',
+        startDate: '',
+        endDate: '',
+        deadline: editingProject.deadline || '',
+        manager: editingProject.owner || '',
+        owner: editingProject.owner || '',
+        team: editingProject.team || [],
+        budget: editingProject.budget?.toString() || '',
+        status: editingProject.status || 'info',
+        tasksCount: editingProject.tasksCount || 0,
+        clientType: 'internal',
+        tasks: [],
+        partnerships: [],
+        hasContract: false,
+        contractValue: '',
+        contractPayments: [{ amount: '', date: '', id: 1 }],
+      });
+    }
+  }, [isEditMode, editingProject]);
 
   const teamMembers = [
     'أحمد محمد',
@@ -97,45 +128,63 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
       });
       return false;
     }
-    if (!projectData.startDate || !projectData.endDate) {
-      toast({
-        title: "خطأ في التحقق",
-        description: "تواريخ المشروع مطلوبة",
-        variant: "destructive",
-      });
-      return false;
-    }
     return true;
   };
 
   const handleSaveProject = () => {
     if (!validateForm()) return;
+    setShowConfirmDialog(true);
+  };
 
+  const confirmSaveProject = () => {
     try {
-      const newProject: ProjectData = {
-        id: Date.now(),
-        name: projectData.name,
-        description: projectData.description,
-        owner: projectData.manager,
-        deadline: projectData.endDate,
-        team: projectData.team,
-        status: 'info',
-        budget: Number(projectData.budget) || 0,
-        tasksCount: projectData.tasks.length,
-      };
+      if (isEditMode && editingProject) {
+        // تحديث المشروع الموجود
+        const updatedProject: ProjectData = {
+          ...editingProject,
+          name: projectData.name,
+          description: projectData.description,
+          owner: projectData.manager,
+          deadline: projectData.endDate || projectData.deadline,
+          team: projectData.team,
+          budget: Number(projectData.budget) || editingProject.budget,
+          tasksCount: projectData.tasks.length || editingProject.tasksCount,
+        };
 
-      onProjectAdded(newProject);
-      
-      toast({
-        title: "تم إنشاء المشروع بنجاح",
-        description: `تم إضافة مشروع "${projectData.name}" بنجاح`,
-      });
+        onProjectUpdated?.(updatedProject);
+        
+        toast({
+          title: "تم تحديث المشروع بنجاح",
+          description: `تم تحديث مشروع "${projectData.name}" بنجاح`,
+        });
+      } else {
+        // إنشاء مشروع جديد
+        const newProject: ProjectData = {
+          id: Date.now(),
+          name: projectData.name,
+          description: projectData.description,
+          owner: projectData.manager,
+          deadline: projectData.endDate,
+          team: projectData.team,
+          status: 'info',
+          budget: Number(projectData.budget) || 0,
+          tasksCount: projectData.tasks.length,
+        };
+
+        onProjectAdded(newProject);
+        
+        toast({
+          title: "تم إنشاء المشروع بنجاح",
+          description: `تم إضافة مشروع "${projectData.name}" بنجاح`,
+        });
+      }
       
       resetForm();
+      setShowConfirmDialog(false);
       onClose();
     } catch (error) {
       toast({
-        title: "فشل في إنشاء المشروع",
+        title: isEditMode ? "فشل في تحديث المشروع" : "فشل في إنشاء المشروع",
         description: "تأكد من البيانات وحاول مرة أخرى",
         variant: "destructive",
       });
@@ -237,7 +286,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
           <DialogHeader className="px-8 pt-8 pb-4 flex-shrink-0">
             <DialogTitle className="text-2xl font-bold text-right font-arabic">
-              إضافة مشروع جديد
+              {isEditMode ? 'تعديل المشروع' : 'إضافة مشروع جديد'}
             </DialogTitle>
           </DialogHeader>
 
@@ -326,7 +375,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
                     onClick={handleSaveProject}
                     className="bg-black text-white hover:bg-gray-800 font-arabic rounded-full"
                   >
-                    حفظ المشروع
+                    {isEditMode ? 'حفظ التعديلات' : 'حفظ المشروع'}
                   </Button>
                   <Button
                     type="button"
@@ -349,6 +398,39 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
         onTaskAdded={addTask}
       />
 
+      {/* حوار تأكيد الحفظ */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent 
+          className="font-arabic" 
+          dir="rtl"
+          style={{
+            background: 'rgba(255,255,255,0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '24px'
+          }}
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-right">
+              {isEditMode ? 'تأكيد التعديل' : 'تأكيد الحفظ'}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-right">
+              {isEditMode 
+                ? 'هل أنت متأكد من حفظ التعديلات على هذا المشروع؟'
+                : 'هل أنت متأكد من إنشاء هذا المشروع؟'
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2">
+            <AlertDialogCancel className="font-arabic">إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmSaveProject} className="font-arabic">
+              {isEditMode ? 'حفظ التعديلات' : 'إنشاء المشروع'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <AlertDialogContent 
           className="font-arabic" 
@@ -364,7 +446,10 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
           <AlertDialogHeader>
             <AlertDialogTitle className="text-right">تأكيد الإلغاء</AlertDialogTitle>
             <AlertDialogDescription className="text-right">
-              هل أنت متأكد من إلغاء إضافة المشروع؟ سيتم فقدان جميع البيانات المدخلة.
+              {isEditMode 
+                ? 'هل أنت متأكد من إلغاء التعديل؟ سيتم فقدان جميع التعديلات.'
+                : 'هل أنت متأكد من إلغاء إضافة المشروع؟ سيتم فقدان جميع البيانات المدخلة.'
+              }
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex gap-2">

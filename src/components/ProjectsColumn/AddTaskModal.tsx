@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -13,15 +13,22 @@ interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   onTaskAdded: (task: TaskData) => void;
+  onTaskUpdated?: (task: TaskData) => void;
+  editingTask?: TaskData | null;
+  isEditMode?: boolean;
 }
 
 export const AddTaskModal: React.FC<AddTaskModalProps> = ({
   isOpen,
   onClose,
-  onTaskAdded
+  onTaskAdded,
+  onTaskUpdated,
+  editingTask,
+  isEditMode = false
 }) => {
   const { toast } = useToast();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [taskData, setTaskData] = useState<TaskFormData>({
     id: 0,
     title: '',
@@ -31,6 +38,21 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
     priority: 'urgent-important',
     attachments: []
   });
+
+  // تعبئة البيانات عند التعديل
+  useEffect(() => {
+    if (isEditMode && editingTask) {
+      setTaskData({
+        id: editingTask.id,
+        title: editingTask.title || '',
+        description: editingTask.description || '',
+        dueDate: editingTask.dueDate || '',
+        assignee: editingTask.assignee || '',
+        priority: editingTask.priority || 'urgent-important',
+        attachments: editingTask.attachments || []
+      });
+    }
+  }, [isEditMode, editingTask]);
 
   const handleInputChange = (field: string, value: string) => {
     setTaskData(prev => ({
@@ -61,25 +83,50 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
 
   const handleSaveTask = () => {
     if (!validateForm()) return;
+    setShowConfirmDialog(true);
+  };
 
+  const confirmSaveTask = () => {
     try {
-      const newTask: TaskData = {
-        ...taskData,
-        id: Date.now(),
-        createdAt: new Date().toISOString(),
-        stage: 'planning' // default stage since it's required in TaskData
-      };
+      if (isEditMode && editingTask) {
+        // تحديث المهمة الموجودة
+        const updatedTask: TaskData = {
+          ...editingTask,
+          title: taskData.title,
+          description: taskData.description,
+          dueDate: taskData.dueDate,
+          assignee: taskData.assignee,
+          priority: taskData.priority,
+          attachments: taskData.attachments,
+        };
+        
+        onTaskUpdated?.(updatedTask);
+        toast({
+          title: "تم تحديث المهمة بنجاح",
+          description: `تم تحديث مهمة "${taskData.title}" بنجاح`
+        });
+      } else {
+        // إنشاء مهمة جديدة
+        const newTask: TaskData = {
+          ...taskData,
+          id: Date.now(),
+          createdAt: new Date().toISOString(),
+          stage: 'planning'
+        };
+        
+        onTaskAdded(newTask);
+        toast({
+          title: "تم إنشاء المهمة بنجاح",
+          description: `تم إضافة مهمة "${taskData.title}" بنجاح`
+        });
+      }
       
-      onTaskAdded(newTask);
-      toast({
-        title: "تم إنشاء المهمة بنجاح",
-        description: `تم إضافة مهمة "${taskData.title}" بنجاح`
-      });
       resetForm();
+      setShowConfirmDialog(false);
       onClose();
     } catch (error) {
       toast({
-        title: "فشل إنشاء المهمة",
+        title: isEditMode ? "فشل تحديث المهمة" : "فشل إنشاء المهمة",
         description: "حاول مرة أخرى",
         variant: "destructive"
       });
@@ -132,7 +179,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
 
           <DialogHeader className="px-8 pt-8 pb-4">
             <DialogTitle className="text-2xl font-bold text-right font-arabic">
-              إضافة مهمة جديدة
+              {isEditMode ? 'تعديل المهمة' : 'إضافة مهمة جديدة'}
             </DialogTitle>
           </DialogHeader>
 
@@ -143,17 +190,47 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
               onTaskDataChange={setTaskData} 
             />
             
-            <TaskFormActions onCancel={handleClose} onSave={handleSaveTask} />
+            <TaskFormActions 
+              onCancel={handleClose} 
+              onSave={handleSaveTask}
+              saveButtonText={isEditMode ? 'حفظ التعديلات' : 'حفظ المهمة'}
+            />
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* حوار تأكيد الحفظ */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent className="font-arabic" dir="rtl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-right">
+              {isEditMode ? 'تأكيد التعديل' : 'تأكيد الحفظ'}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-right">
+              {isEditMode 
+                ? 'هل أنت متأكد من حفظ التعديلات على هذه المهمة؟'
+                : 'هل أنت متأكد من إنشاء هذه المهمة؟'
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2">
+            <AlertDialogCancel className="font-arabic">إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmSaveTask} className="font-arabic">
+              {isEditMode ? 'حفظ التعديلات' : 'إنشاء المهمة'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <AlertDialogContent className="font-arabic" dir="rtl">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-right">تأكيد الإلغاء</AlertDialogTitle>
             <AlertDialogDescription className="text-right">
-              هل أنت متأكد من إلغاء إضافة المهمة؟ سيتم فقدان جميع البيانات المدخلة.
+              {isEditMode 
+                ? 'هل أنت متأكد من إلغاء التعديل؟ سيتم فقدان جميع التعديلات.'
+                : 'هل أنت متأكد من إلغاء إضافة المهمة؟ سيتم فقدان جميع البيانات المدخلة.'
+              }
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex gap-2">
