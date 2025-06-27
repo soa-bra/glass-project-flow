@@ -110,7 +110,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                       </div>
                       <div className="text-xs text-black font-arabic font-bold">الف</div>
                     </div>
-                    <div className="text-xs font-Regular text-black font-arabic">ريال سعودي عن الربع الأول</div>
+                    <div className="text-xs font-Regular text-black font-arabic">ريال سعودي والمتبقي منها 25 الف</div>
                   </div>
 
                   {/* الشكاوى */}
@@ -122,23 +122,23 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                       <div className="text-3xl font-normal text-gray-900 font-arabic">
                         {String(mockStats.complaints || 0).padStart(2, '0')}
                       </div>
-                      <div className="text-xs text-black font-arabic font-bold">شكاوى</div>
+                      <div className="text-xs text-black font-arabic font-bold">يوم</div>
                     </div>
-                    <div className="text-xs font-Regular text-black font-arabic">الشكاوى والملاحظات التي المكررة</div>
+                    <div className="text-xs font-Regular text-black font-arabic">وعدد المهام المتبقية: 5 مهام</div>
                   </div>
 
                   {/* المشاريع المتأخرة */}
                   <div className="text-right p-6 py-0 px-[20px]">
                     <div className="mb-2">
-                      <span className="text-sm text-black font-arabic font-medium">المشاريع المتأخرة</span>
+                      <span className="text-sm text-black font-arabic font-medium">عدد اعضاء فريق المشروع</span>
                     </div>
                     <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
                       <div className="text-3xl font-normal text-gray-900 font-arabic">
                         {String(mockStats.delayedProjects || 0).padStart(2, '0')}
                       </div>
-                      <div className="text-xs text-black font-arabic font-bold">مشاريع</div>
+                      <div className="text-xs text-black font-arabic font-bold">عضو</div>
                     </div>
-                    <div className="text-xs font-Regular text-black font-arabic">تحتاج إلى تدخل ومعالجة</div>
+                    <div className="text-xs font-Regular text-black font-arabic">ومعدل الانجاز العام 94٪</div>
                   </div>
                 </div>
               </div>
