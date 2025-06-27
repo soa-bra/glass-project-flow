@@ -1,3 +1,4 @@
+
 import ProjectsToolbar from './ProjectsToolbar';
 import ProjectCard from './ProjectCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -19,6 +20,7 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
 }) => {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   const handleProjectAdded = (newProject: ProjectData) => {
     const projectToAdd: Project = {
@@ -37,14 +39,40 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
       progress: 25, // تقدم افتراضي للمشروع الجديد
     };
     
-    setProjects(prev => [projectToAdd, ...prev]);
-    
-    // فتح لوحة إدارة المشروع الجديد تلقائياً
-    if (onProjectSelect) {
-      setTimeout(() => {
-        onProjectSelect(projectToAdd.id);
-      }, 300); // تأخير قصير للسماح بإضافة المشروع أولاً
+    if (editingProject) {
+      // تحديث مشروع موجود
+      setProjects(prev => prev.map(p => p.id === editingProject.id ? projectToAdd : p));
+      setEditingProject(null);
+    } else {
+      // إضافة مشروع جديد
+      setProjects(prev => [projectToAdd, ...prev]);
+      
+      // فتح لوحة إدارة المشروع الجديد تلقائياً
+      if (onProjectSelect) {
+        setTimeout(() => {
+          onProjectSelect(projectToAdd.id);
+        }, 300);
+      }
     }
+  };
+
+  const handleEditProject = (projectId: number) => {
+    const project = projects.find(p => p.id === projectId.toString());
+    if (project) {
+      setEditingProject(project);
+      setShowAddProjectModal(true);
+    }
+  };
+
+  const handleArchiveProject = (projectId: number) => {
+    console.log('أرشفة المشروع:', projectId);
+    // يمكن إضافة منطق الأرشفة هنا
+    setProjects(prev => prev.filter(p => p.id !== projectId.toString()));
+  };
+
+  const handleDeleteProject = (projectId: number) => {
+    console.log('حذف المشروع:', projectId);
+    setProjects(prev => prev.filter(p => p.id !== projectId.toString()));
   };
 
   return (
@@ -83,6 +111,9 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
                   isSelected={selectedProjectId === project.id}
                   isOtherSelected={selectedProjectId !== undefined && selectedProjectId !== null && selectedProjectId !== project.id}
                   onProjectSelect={onProjectSelect ? () => onProjectSelect(project.id) : undefined}
+                  onEdit={handleEditProject}
+                  onArchive={handleArchiveProject}
+                  onDelete={handleDeleteProject}
                 />
               ))}
             </div>
@@ -92,8 +123,12 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
 
       <AddProjectModal
         isOpen={showAddProjectModal}
-        onClose={() => setShowAddProjectModal(false)}
+        onClose={() => {
+          setShowAddProjectModal(false);
+          setEditingProject(null);
+        }}
         onProjectAdded={handleProjectAdded}
+        editingProject={editingProject}
       />
     </>
   );

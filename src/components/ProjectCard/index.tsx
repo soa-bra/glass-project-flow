@@ -1,49 +1,89 @@
 
-import ProjectCardLayout from './ProjectCardLayout';
-import ProjectCardHeader from './ProjectCardHeader';
-import ProjectCardFooter from './ProjectCardFooter';
+import React from 'react';
+import { ProjectCardLayout } from './ProjectCardLayout';
+import { ProjectCardHeader } from './ProjectCardHeader';
+import { ProjectCardTitle } from './ProjectCardTitle';
+import { ProjectCardFooter } from './ProjectCardFooter';
+import { ProjectCardStatusIndicators } from './ProjectCardStatusIndicators';
+import { ProjectCardDropdown } from './ProjectCardDropdown';
 import type { ProjectCardProps } from './types';
 
-interface ProjectCardInteractiveProps extends ProjectCardProps {
-  isSelected?: boolean;
-  isOtherSelected?: boolean;
-  onProjectSelect?: (projectId: string) => void;
-}
-
-const ProjectCard = ({
+const ProjectCard: React.FC<ProjectCardProps> = ({
   id,
   name,
   description,
-  tasksCount,
-  status,
-  deadline,
   owner,
+  deadline,
+  team,
+  status,
   budget,
+  tasksCount,
   daysLeft,
+  value,
   isSelected = false,
   isOtherSelected = false,
-  onProjectSelect
-}: ProjectCardInteractiveProps) => {
+  onProjectSelect,
+  onEdit,
+  onArchive,
+  onDelete,
+}) => {
+  const handleCardClick = () => {
+    if (onProjectSelect) {
+      onProjectSelect();
+    }
+  };
+
+  const handleEdit = (projectId: number) => {
+    if (onEdit) {
+      onEdit(projectId);
+    }
+  };
+
+  const handleArchive = (projectId: number) => {
+    if (onArchive) {
+      onArchive(projectId);
+    }
+  };
+
+  const handleDelete = (projectId: number) => {
+    if (onDelete) {
+      onDelete(projectId);
+    }
+  };
+
   return (
     <ProjectCardLayout
       id={id.toString()}
       isSelected={isSelected}
       isOtherSelected={isOtherSelected}
-      onProjectSelect={onProjectSelect}
+      onClick={handleCardClick}
     >
-      <ProjectCardHeader
-        daysLeft={daysLeft}
-        title={name}
-        description={description}
-        tasksCount={tasksCount}
-        status={status}
-      />
-      
-      <ProjectCardFooter
-        status={status}
-        date={deadline}
+      <ProjectCardHeader 
         owner={owner}
-        value={budget.toString()}
+        deadline={deadline}
+        dropdown={
+          <ProjectCardDropdown
+            projectId={id}
+            projectName={name}
+            onEdit={handleEdit}
+            onArchive={handleArchive}
+            onDelete={handleDelete}
+          />
+        }
+      />
+      <ProjectCardTitle name={name} description={description} />
+      <ProjectCardFooter
+        team={team}
+        status={status}
+        budget={budget}
+        tasksCount={tasksCount}
+        daysLeft={daysLeft}
+        value={value}
+      />
+      <ProjectCardStatusIndicators 
+        status={status}
+        isOverBudget={false}
+        hasOverdueTasks={false}
       />
     </ProjectCardLayout>
   );
