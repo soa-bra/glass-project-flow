@@ -24,7 +24,7 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ project }) => {
   return (
     <TaskListContainer>
       <TaskListHeader onTaskAdded={handleTaskAdded} onTasksGenerated={handleTasksGenerated} />
-      <TaskListContent ref={contentRef} />
+      <TaskListContent ref={contentRef} projectId={project.id} />
     </TaskListContainer>
   );
 };

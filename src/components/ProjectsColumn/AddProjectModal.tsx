@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
 import { AddTaskModal } from './AddTaskModal';
 import type { ProjectData, TaskData } from '@/types';
 import { useProjectForm } from './AddProjectModal/hooks/useProjectForm';
@@ -29,6 +30,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   isEditMode = false,
 }) => {
   const { toast } = useToast();
+  const { addTasksToProject } = useProjectTasksContext();
   const [activeTab, setActiveTab] = useState('basic');
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
@@ -84,6 +86,11 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
         onProjectUpdated?.(updatedProject);
         
+        // إضافة المهام للمشروع
+        if (projectData.tasks.length > 0) {
+          addTasksToProject(editingProject.id.toString(), projectData.tasks);
+        }
+        
         toast({
           title: "تم تحديث المشروع بنجاح",
           description: `تم تحديث مشروع "${projectData.name}" بنجاح`,
@@ -103,6 +110,11 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
         };
 
         onProjectAdded(newProject);
+        
+        // إضافة المهام للمشروع الجديد
+        if (projectData.tasks.length > 0) {
+          addTasksToProject(newProject.id.toString(), projectData.tasks);
+        }
         
         toast({
           title: "تم إنشاء المشروع بنجاح",

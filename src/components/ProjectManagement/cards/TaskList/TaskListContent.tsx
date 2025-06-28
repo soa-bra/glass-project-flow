@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useImperativeHandle } from 'react';
 import type { TaskData } from '@/types';
 import type { TaskCardProps } from '@/components/TaskCard/types';
+import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import TaskCard from '@/components/TaskCard';
 import { useTaskSelection } from '@/hooks/useTaskSelection';
@@ -11,7 +12,12 @@ export interface TaskListContentRef {
   addTasks: (tasks: TaskData[]) => void;
 }
 
-export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAttributes<HTMLDivElement>>((_, ref) => {
+interface TaskListContentProps {
+  projectId?: string;
+}
+
+export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListContentProps>(({ projectId }, ref) => {
+  const { getProjectTasks, addTaskToProject, addTasksToProject, updateTaskInProject, removeTaskFromProject } = useProjectTasksContext();
   const {
     selectedTasks,
     toggleTaskSelection,
@@ -20,7 +26,10 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
   const [showBulkArchiveDialog, setShowBulkArchiveDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [tasks, setTasks] = useState([{
+  
+  // الحصول على مهام المشروع من context أو استخدام البيانات الافتراضية
+  const contextTasks = projectId ? getProjectTasks(projectId) : [];
+  const [defaultTasks] = useState([{
     id: 1,
     title: 'تصميم الواجهة',
     description: 'تطوير موقع سوبرا',
@@ -90,12 +99,22 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
     };
   };
 
+  // دمج المهام من context مع المهام الافتراضية
+  const allTasks = [
+    ...defaultTasks,
+    ...contextTasks.map(mapTask)
+  ];
+
   const addTask = (task: TaskData) => {
-    setTasks(prev => [...prev, mapTask(task)]);
+    if (projectId) {
+      addTaskToProject(projectId, task);
+    }
   };
 
   const addTasks = (newTasks: TaskData[]) => {
-    setTasks(prev => [...prev, ...newTasks.map(mapTask)]);
+    if (projectId) {
+      addTasksToProject(projectId, newTasks);
+    }
   };
 
   useImperativeHandle(ref, () => ({ addTask, addTasks }));
@@ -144,26 +163,31 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
   const handleTaskUpdated = (updatedTask: TaskData) => {
     console.log('تحديث المهمة:', updatedTask);
     
-    // تحديث المهمة في القائمة
-    setTasks(prev => prev.map(task => 
-      task.id === updatedTask.id 
-        ? mapTask(updatedTask)
-        : task
-    ));
+    if (projectId) {
+      updateTaskInProject(projectId, updatedTask);
+    }
   };
 
   const handleTaskArchive = (taskId: string) => {
-    setTasks(prev => prev.filter(task => task.id !== parseInt(taskId)));
+    if (projectId) {
+      removeTaskFromProject(projectId, parseInt(taskId));
+    }
     console.log('تم أرشفة المهمة:', taskId);
   };
 
   const handleTaskDelete = (taskId: string) => {
-    setTasks(prev => prev.filter(task => task.id !== parseInt(taskId)));
+    if (projectId) {
+      removeTaskFromProject(projectId, parseInt(taskId));
+    }
     console.log('تم حذف المهمة:', taskId);
   };
 
   const handleBulkArchive = () => {
-    setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id.toString())));
+    if (projectId) {
+      selectedTasks.forEach(taskId => {
+        removeTaskFromProject(projectId, parseInt(taskId));
+      });
+    }
     clearSelection();
     setIsSelectionMode(false);
     setShowBulkArchiveDialog(false);
@@ -171,7 +195,11 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
   };
 
   const handleBulkDelete = () => {
-    setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id.toString())));
+    if (projectId) {
+      selectedTasks.forEach(taskId => {
+        removeTaskFromProject(projectId, parseInt(taskId));
+      });
+    }
     clearSelection();
     setIsSelectionMode(false);
     setShowBulkDeleteDialog(false);
@@ -224,7 +252,7 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 pr-1 py-0 my-0">
-          {tasks.map(task => <div key={task.id}>
+          {allTasks.map(task => <div key={task.id}>
               <TaskCard 
                 {...task} 
                 isSelected={selectedTasks.includes(task.id.toString())} 

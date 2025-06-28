@@ -6,6 +6,7 @@ import ProjectPanel from '@/components/ProjectPanel';
 import { ProjectManagementBoard } from '@/components/ProjectManagement';
 import { mockProjects } from '@/data/mockProjects';
 import { useProjectPanelAnimation } from '@/hooks/useProjectPanelAnimation';
+import { ProjectTasksProvider } from '@/contexts/ProjectTasksContext';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 
@@ -80,7 +81,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     : null;
 
   return (
-    <>
+    <ProjectTasksProvider>
       {/* Projects Column: shifts left when panel slides in */}
       <div
         className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`}
@@ -130,7 +131,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           onProjectUpdated={handleProjectUpdated}
         />
       )}
-    </>
+    </ProjectTasksProvider>
   );
 };
 
