@@ -1,53 +1,52 @@
 
-import { Home, Building, Users, Archive, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 
-interface SidebarProps {
-  onToggle?: (collapsed: boolean) => void;
-  activeSection?: string;
-  onSectionChange?: (section: string) => void;
+interface DepartmentsSidebarProps {
+  selectedDepartment: string | null;
+  onDepartmentSelect: (department: string) => void;
+  isCollapsed: boolean;
+  onToggleCollapse: (collapsed: boolean) => void;
 }
 
-const Sidebar = ({ onToggle, activeSection = 'home', onSectionChange }: SidebarProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const menuItems = [
-    { icon: Home, label: 'الرئيسية', key: 'home' },
-    { icon: Building, label: 'الإدارات', key: 'departments' },
-    { icon: Users, label: 'التخطيط التشاركي', key: 'planning' },
-    { icon: Archive, label: 'الأرشيف', key: 'archive' },
-    { icon: Settings, label: 'الإعدادات', key: 'settings' }
+const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
+  selectedDepartment,
+  onDepartmentSelect,
+  isCollapsed,
+  onToggleCollapse
+}) => {
+  const departments = [
+    { key: 'financial', label: 'إدارة الأوضاع المالية', icon: DollarSign },
+    { key: 'legal', label: 'إدارة الأحوال القانونية', icon: Scale },
+    { key: 'marketing', label: 'إدارة الأنشطة التسويقية', icon: TrendingUp },
+    { key: 'projects', label: 'إدارة المشاريع', icon: Building2 },
+    { key: 'hr', label: 'إدارة الطاقات البشرية', icon: Users },
+    { key: 'clients', label: 'إدارة علاقات العملاء', icon: Heart },
+    { key: 'social', label: 'إدارة المسؤولية الاجتماعية', icon: Heart },
+    { key: 'training', label: 'إدارة التدريب', icon: GraduationCap },
+    { key: 'research', label: 'إدارة المعرفة والنشر والبحث العلمي', icon: BookOpen },
+    { key: 'brand', label: 'إدارة العلامة التجارية', icon: Award }
   ];
 
   const toggleSidebar = () => {
-    const newCollapsedState = !isCollapsed;
-    setIsCollapsed(newCollapsedState);
-    onToggle?.(newCollapsedState);
+    onToggleCollapse(!isCollapsed);
   };
-
-  const handleSectionClick = (sectionKey: string) => {
-    onSectionChange?.(sectionKey);
-  };
-
-  useEffect(() => {
-    onToggle?.(isCollapsed);
-  }, [isCollapsed, onToggle]);
 
   return (
     <aside 
       style={{
         width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)',
         transition: 'all var(--animation-duration-main) var(--animation-easing)',
-        background: '#dfecf2'
+        background: 'var(--backgrounds-project-column-bg)'
       }}
-      className="z-sidebar h-full backdrop-blur-xl rounded-3xl mx-0 overflow-hidden px-0"
+      className="h-full backdrop-blur-xl rounded-3xl overflow-hidden"
     >
       <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0">
-        {/* Menu Title Section with Toggle */}
+        {/* Header with Toggle */}
         <div className={`text-center mb-2 rounded-full mx-0 px-0 py-[24px] my-[24px] sync-transition ${isCollapsed ? 'flex justify-center' : ''}`}>
           <div className={`flex items-center rounded-lg sync-transition ${isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[20px]'}`}>
             <div 
-              className={`flex-1 overflow-hidden`}
+              className="flex-1 overflow-hidden"
               style={{
                 transition: 'all var(--animation-duration-main) var(--animation-easing)',
                 opacity: isCollapsed ? 0 : 1,
@@ -57,7 +56,7 @@ const Sidebar = ({ onToggle, activeSection = 'home', onSectionChange }: SidebarP
               }}
             >
               <h2 className="text-soabra-text-primary text-right font-medium text-3xl px-0 mx-[18px] whitespace-nowrap">
-                القائمة
+                الإدارات
               </h2>
             </div>
             
@@ -76,15 +75,15 @@ const Sidebar = ({ onToggle, activeSection = 'home', onSectionChange }: SidebarP
           </div>
         </div>
 
-        {/* Menu Items */}
-        <div className={`flex flex-col gap-2 px-0 sync-transition ${isCollapsed ? 'mx-[15px]' : 'mx-[15px]'}`}>
-          {menuItems.map((item, index) => {
-            const IconComponent = item.icon;
-            const isActive = activeSection === item.key;
+        {/* Departments List */}
+        <div className="flex flex-col gap-2 px-[15px] flex-1 overflow-y-auto">
+          {departments.map((department, index) => {
+            const IconComponent = department.icon;
+            const isActive = selectedDepartment === department.key;
             return (
               <button
-                key={index}
-                onClick={() => handleSectionClick(item.key)}
+                key={department.key}
+                onClick={() => onDepartmentSelect(department.key)}
                 className={`
                   flex items-center gap-3 text-right group relative overflow-hidden sync-transition
                   ${isActive 
@@ -99,14 +98,14 @@ const Sidebar = ({ onToggle, activeSection = 'home', onSectionChange }: SidebarP
                 }}
               >
                 <div className={`
-                    w-[60px] h-[60px] flex items-center justify-center flex-shrink-0 border-2 rounded-full sync-transition-fast
+                    w-[50px] h-[50px] flex items-center justify-center flex-shrink-0 border-2 rounded-full sync-transition-fast
                     ${isActive 
                       ? 'bg-white/30 border-[#3e494c]/60 shadow-lg scale-105' 
                       : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/60 group-hover:bg-white/20 group-hover:shadow-md group-hover:scale-110 group-active:scale-95'
                     }
                   `}>
                   <IconComponent className={`
-                      w-6 h-6 sync-transition-fast
+                      w-5 h-5 sync-transition-fast
                       ${isActive 
                         ? 'text-[#3e494c] scale-110' 
                         : 'text-soabra-text-secondary group-hover:text-[#3e494c] group-hover:scale-110'
@@ -124,35 +123,17 @@ const Sidebar = ({ onToggle, activeSection = 'home', onSectionChange }: SidebarP
                     transitionDelay: isCollapsed ? '0ms' : `calc(var(--base-delay) + var(--stagger-delay) * ${index})`
                   }}
                 >
-                  <span className={`tracking-wide text-base whitespace-nowrap sync-transition-fast ${isActive ? 'font-semibold' : 'group-hover:font-medium'}`}>
-                    {item.label}
+                  <span className={`tracking-wide text-sm whitespace-nowrap sync-transition-fast ${isActive ? 'font-semibold' : 'group-hover:font-medium'}`}>
+                    {department.label}
                   </span>
                 </div>
               </button>
             );
           })}
         </div>
-
-        {/* Bottom Version */}
-        <div className={`mt-auto pt-2 py-0 sync-transition ${isCollapsed ? 'mx-[15px] flex justify-center' : 'mx-[15px]'}`}>
-          <div 
-            className="px-2 overflow-hidden"
-            style={{
-              opacity: isCollapsed ? 0 : 1,
-              transform: isCollapsed ? 'translateY(24px) scale(0.9)' : 'translateY(0) scale(1)',
-              height: isCollapsed ? '0' : 'auto',
-              transition: 'all var(--animation-duration-main) var(--animation-easing)',
-              transitionDelay: isCollapsed ? '0ms' : 'calc(var(--animation-duration-main) * 0.8)'
-            }}
-          >
-            <div className="text-center text-xs text-soabra-text-secondary/70 font-medium my-[45px] sync-transition-fast hover:text-soabra-text-secondary hover:scale-105 whitespace-nowrap">
-              الإصدار 2.1.0
-            </div>
-          </div>
-        </div>
       </nav>
     </aside>
   );
 };
 
-export default Sidebar;
+export default DepartmentsSidebar;
