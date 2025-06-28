@@ -131,6 +131,49 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     return true;
   };
 
+  const handleGenerateSmartTasks = () => {
+    // توليد مهام ذكية بناءً على بيانات المشروع
+    const smartTasks: TaskData[] = [
+      {
+        id: Date.now() + 1,
+        title: 'تحليل المتطلبات',
+        description: 'تحليل وتوثيق متطلبات المشروع',
+        assignee: projectData.manager || teamMembers[0],
+        dueDate: projectData.startDate || new Date().toISOString().split('T')[0],
+        priority: 'high',
+        status: 'pending'
+      },
+      {
+        id: Date.now() + 2,
+        title: 'إعداد خطة العمل',
+        description: 'وضع خطة زمنية تفصيلية للمشروع',
+        assignee: projectData.manager || teamMembers[0],
+        dueDate: projectData.startDate || new Date().toISOString().split('T')[0],
+        priority: 'high',
+        status: 'pending'
+      },
+      {
+        id: Date.now() + 3,
+        title: 'مراجعة الميزانية',
+        description: 'مراجعة وتوزيع الميزانية على مراحل المشروع',
+        assignee: projectData.team?.[0] || teamMembers[1],
+        dueDate: projectData.startDate || new Date().toISOString().split('T')[0],
+        priority: 'medium',
+        status: 'pending'
+      }
+    ];
+
+    setProjectData(prev => ({
+      ...prev,
+      tasks: [...prev.tasks, ...smartTasks]
+    }));
+
+    toast({
+      title: "تم توليد المهام بنجاح",
+      description: `تم إضافة ${smartTasks.length} مهام جديدة للمشروع`,
+    });
+  };
+
   const handleSaveProject = () => {
     if (!validateForm()) return;
     setShowConfirmDialog(true);
@@ -350,6 +393,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
                   <TasksTab
                     tasks={projectData.tasks}
                     onAddTask={() => setShowAddTaskModal(true)}
+                    onGenerateSmartTasks={handleGenerateSmartTasks}
                   />
                 </TabsContent>
 
