@@ -1,7 +1,18 @@
 
-export type TabData = {
+import type { OverviewData } from './Overview/OverviewData';
+import type { FinanceData } from './FinanceTab';
+import type { HRData } from './HRTab';
+import type { ClientsData } from './ClientsTab';
+import type { ReportsData } from './ReportsTab';
+
+export interface TabData {
+  overview?: OverviewData;
+  finance?: FinanceData;
+  hr?: HRData;
+  clients?: ClientsData;
+  reports?: ReportsData;
   [key: string]: unknown;
-};
+}
 
 export interface OperationsBoardProps {
   isVisible: boolean;

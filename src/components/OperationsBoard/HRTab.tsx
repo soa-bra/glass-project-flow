@@ -12,7 +12,7 @@ interface ProjectDistribution {
   project: string;
   members: number;
 }
-interface HRData {
+export interface HRData {
   stats: HRStats;
   distribution: ProjectDistribution[];
 }
