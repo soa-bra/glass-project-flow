@@ -122,6 +122,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       {/* Project Management Board: slides in/out and crossfades content */}
       {shownProject && (
         <ProjectManagementBoard
+          key={shownProject.id} // إضافة key لإعادة التحديث عند تغيير المشروع
           project={shownProject}
           isVisible={panelStage === "open" || panelStage === "changing-content"}
           onClose={closePanel}

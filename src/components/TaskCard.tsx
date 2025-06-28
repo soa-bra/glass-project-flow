@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TaskCardLayout from './TaskCard/TaskCardLayout';
 import TaskCardHeader from './TaskCard/TaskCardHeader';
 import TaskCardFooter from './TaskCard/TaskCardFooter';
@@ -37,9 +37,7 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
   onTaskUpdated
 }) => {
   const [showEditModal, setShowEditModal] = useState(false);
-
-  // إنشاء كائن بيانات المهمة للتعديل
-  const taskData: TaskData = {
+  const [taskData, setTaskData] = useState<TaskData>({
     id: typeof id === 'string' ? parseInt(id) : id,
     title,
     description: description || '',
@@ -49,7 +47,22 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
     attachments: [],
     stage: 'planning',
     createdAt: new Date().toISOString()
-  };
+  });
+
+  // تحديث البيانات المحلية عند تغيير الخصائص
+  useEffect(() => {
+    setTaskData({
+      id: typeof id === 'string' ? parseInt(id) : id,
+      title,
+      description: description || '',
+      dueDate: date,
+      assignee: assignee || '',
+      priority: priority || 'urgent-important',
+      attachments: [],
+      stage: 'planning',
+      createdAt: new Date().toISOString()
+    });
+  }, [id, title, description, date, assignee, priority]);
 
   const handleCardClick = (e: React.MouseEvent) => {
     // منع انتشار الحدث إذا تم النقر على قائمة النقاط الثلاث في الوضع العادي
@@ -69,6 +82,11 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
 
   const handleTaskUpdate = (updatedTask: TaskData) => {
     console.log('تم تحديث المهمة:', updatedTask);
+    
+    // تحديث البيانات المحلية
+    setTaskData(updatedTask);
+    
+    // إشعار المكون الأب بالتحديث
     onTaskUpdated?.(updatedTask);
     setShowEditModal(false);
   };
@@ -82,16 +100,16 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
         <TaskCardLayout id={id.toString()}>
           <TaskCardHeader
             daysLeft={daysLeft}
-            title={title}
-            description={description}
-            priority={priority}
+            title={taskData.title}
+            description={taskData.description}
+            priority={taskData.priority}
           />
           
           <TaskCardFooter
             status={status}
             statusColor={statusColor}
-            date={date}
-            assignee={assignee}
+            date={taskData.dueDate}
+            assignee={taskData.assignee}
             members={members}
             taskId={id.toString()}
             taskData={taskData}

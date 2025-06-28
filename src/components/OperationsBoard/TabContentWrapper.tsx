@@ -16,7 +16,7 @@ export const TabContentWrapper = ({
   loading: boolean;
 }) => {
   return <>
-      <TabsContent value="overview" className="overflow-auto p-0 m-0 px-0 my-0 py-0">
+      <TabsContent value="overview" className="overflow-auto p-0 m-0 px-0 my-0">
         <OverviewTab data={tabData.overview || { stats: { expectedRevenue: 0, complaints: 0, delayedProjects: 0 } }} loading={loading} />
       </TabsContent>
       

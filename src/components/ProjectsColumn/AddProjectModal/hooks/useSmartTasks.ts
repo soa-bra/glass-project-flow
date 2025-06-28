@@ -20,7 +20,9 @@ export const useSmartTasks = () => {
         description: 'تحليل وتوثيق متطلبات المشروع',
         assignee: projectData.manager || teamMembers[0],
         dueDate: projectData.startDate || new Date().toISOString().split('T')[0],
-        priority: 'urgent-important'
+        priority: 'urgent-important',
+        stage: 'planning',
+        attachments: []
       },
       {
         id: Date.now() + 2,
@@ -28,7 +30,9 @@ export const useSmartTasks = () => {
         description: 'وضع خطة زمنية تفصيلية للمشروع',
         assignee: projectData.manager || teamMembers[0],
         dueDate: projectData.startDate || new Date().toISOString().split('T')[0],
-        priority: 'urgent-important'
+        priority: 'urgent-important',
+        stage: 'planning',
+        attachments: []
       },
       {
         id: Date.now() + 3,
@@ -36,7 +40,9 @@ export const useSmartTasks = () => {
         description: 'مراجعة وتوزيع الميزانية على مراحل المشروع',
         assignee: projectData.team?.[0] || teamMembers[1],
         dueDate: projectData.startDate || new Date().toISOString().split('T')[0],
-        priority: 'not-urgent-important'
+        priority: 'not-urgent-important',
+        stage: 'planning',
+        attachments: []
       }
     ];
 

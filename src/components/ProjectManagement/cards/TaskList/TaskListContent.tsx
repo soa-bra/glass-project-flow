@@ -141,6 +141,17 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
     // سيتم تنفيذ modal التعديل لاحقاً
   };
 
+  const handleTaskUpdated = (updatedTask: TaskData) => {
+    console.log('تحديث المهمة:', updatedTask);
+    
+    // تحديث المهمة في القائمة
+    setTasks(prev => prev.map(task => 
+      task.id === updatedTask.id 
+        ? mapTask(updatedTask)
+        : task
+    ));
+  };
+
   const handleTaskArchive = (taskId: string) => {
     setTasks(prev => prev.filter(task => task.id !== parseInt(taskId)));
     console.log('تم أرشفة المهمة:', taskId);
@@ -222,6 +233,7 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
                 onEdit={handleTaskEdit} 
                 onArchive={handleTaskArchive} 
                 onDelete={handleTaskDelete} 
+                onTaskUpdated={handleTaskUpdated}
               />
             </div>)}
         </div>
@@ -245,7 +257,6 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, React.HTMLAt
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* حوار تأكيد الحذف الجماعي */}
       <AlertDialog open={showBulkDeleteDialog} onOpenChange={setShowBulkDeleteDialog}>
         <AlertDialogContent className="font-arabic" style={{
         direction: 'rtl'
