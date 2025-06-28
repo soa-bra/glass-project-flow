@@ -1,0 +1,151 @@
+
+/* Base styles and CSS variables */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* New SoaBra Color Palette */
+    --backgrounds-main-dashboard-bg: #dfecf2;
+    --backgrounds-project-column-bg: #d1e1ea;
+    --backgrounds-project-cards-bg: #f2f9fb;
+    --backgrounds-admin-ops-board-bg: #d0e0e2;
+    --backgrounds-active-tab-admin-ops: #000000;
+    --backgrounds-inactive-tab-admin-ops: transparent;
+    --backgrounds-timeline-bg: #f2ffff;
+    --backgrounds-cards-admin-ops: #f2ffff;
+    --backgrounds-financial-card-profit: #96d8d0;
+    --backgrounds-financial-card-loss: #f1b5b9;
+    --backgrounds-project-summary-card: #a4e2f6;
+    --backgrounds-project-mgmt-board-bg: #f9fbfc;
+    --backgrounds-project-mgmt-cards-bg: #ecf2f7;
+    --backgrounds-active-tab-project-mgmt: #000000;
+    --backgrounds-inactive-tab-project-mgmt: transparent;
+
+    --visual-data-primary: #000000;
+    --visual-data-secondary-1: #bdeed3;
+    --visual-data-secondary-2: #f1b5b9;
+    --visual-data-secondary-3: #d9d2fd;
+    --visual-data-secondary-4: #a4e2f6;
+    --visual-data-secondary-5: #fbe2aa;
+
+    --project-card-elements-task-count: #d1e1ea;
+    --project-card-elements-day-count: transparent;
+    --project-card-elements-title-text: #000000;
+    --project-card-elements-secondary-text: #858789;
+    --project-card-elements-info-bubbles: #e9eff4;
+
+    --status-colors-on-plan: #bdeed3;
+    --status-colors-in-preparation: #a4e2f6;
+    --status-colors-in-progress: #d9d2fd;
+    --status-colors-delayed: #fbe2aa;
+    --status-colors-stopped: #f1b5b9;
+
+    --priority-colors-urgent-important: #f1b5b9;
+    --priority-colors-not-urgent-important: #fbe2aa;
+    --priority-colors-urgent-not-important: #a4e2f6;
+    --priority-colors-not-urgent-not-important: #d9d2fd;
+    
+    /* Progress Bar Colors */
+    --progress-segment-active: #4F46E5;
+    --progress-segment-inactive: #E5E7EB;
+    --progress-stage-completed: #10B981;
+    --progress-stage-current: #3B82F6;
+    --progress-stage-pending: #9CA3AF;
+    
+    /* Z-Index Hierarchy */
+    --z-modal-backdrop: 9998;
+    --z-modal-content: 9999;
+    --z-dropdown: 10000;
+    --z-tooltip: 10001;
+    --z-toast: 10002;
+    
+    /* Standard shadcn variables */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
+    background: #dfecf2;
+    overflow-x: hidden;
+    font-feature-settings: "kern" 1, "liga" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  html {
+    direction: rtl;
+    scroll-behavior: smooth;
+  }
+  
+  /* خط عربي محسن */
+  .font-arabic {
+    font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+  }
+}
