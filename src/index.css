@@ -1,483 +1,123 @@
 
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* استيراد خط IBM Plex Sans Arabic */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
-
-/* SoaBra Design System - Updated Color Palette */
-
-@layer base {
-  :root {
-    /* New SoaBra Color Palette */
-    --backgrounds-main-dashboard-bg: #dfecf2;
-    --backgrounds-project-column-bg: #d1e1ea;
-    --backgrounds-project-cards-bg: #f2f9fb;
-    --backgrounds-admin-ops-board-bg: #d0e0e2;
-    --backgrounds-active-tab-admin-ops: #000000;
-    --backgrounds-inactive-tab-admin-ops: transparent;
-    --backgrounds-timeline-bg: #f2ffff;
-    --backgrounds-cards-admin-ops: #f2ffff;
-    --backgrounds-financial-card-profit: #96d8d0;
-    --backgrounds-financial-card-loss: #f1b5b9;
-    --backgrounds-project-summary-card: #a4e2f6;
-    --backgrounds-project-mgmt-board-bg: #f9fbfc;
-    --backgrounds-project-mgmt-cards-bg: #ecf2f7;
-    --backgrounds-active-tab-project-mgmt: #000000;
-    --backgrounds-inactive-tab-project-mgmt: transparent;
-
-    --visual-data-primary: #000000;
-    --visual-data-secondary-1: #bdeed3;
-    --visual-data-secondary-2: #f1b5b9;
-    --visual-data-secondary-3: #d9d2fd;
-    --visual-data-secondary-4: #a4e2f6;
-    --visual-data-secondary-5: #fbe2aa;
-
-    --project-card-elements-task-count: #d1e1ea;
-    --project-card-elements-day-count: transparent;
-    --project-card-elements-title-text: #000000;
-    --project-card-elements-secondary-text: #858789;
-    --project-card-elements-info-bubbles: #e9eff4;
-
-    --status-colors-on-plan: #bdeed3;
-    --status-colors-in-preparation: #a4e2f6;
-    --status-colors-in-progress: #d9d2fd;
-    --status-colors-delayed: #fbe2aa;
-    --status-colors-stopped: #f1b5b9;
-
-    --priority-colors-urgent-important: #f1b5b9;
-    --priority-colors-not-urgent-important: #fbe2aa;
-    --priority-colors-urgent-not-important: #a4e2f6;
-    --priority-colors-not-urgent-not-important: #d9d2fd;
-    
-    /* Progress Bar Colors */
-    --progress-segment-active: #4F46E5;
-    --progress-segment-inactive: #E5E7EB;
-    --progress-stage-completed: #10B981;
-    --progress-stage-current: #3B82F6;
-    --progress-stage-pending: #9CA3AF;
-    
-    /* Z-Index Hierarchy */
-    --z-modal-backdrop: 9998;
-    --z-modal-content: 9999;
-    --z-dropdown: 10000;
-    --z-tooltip: 10001;
-    --z-toast: 10002;
-    
-    /* Glassmorphism Variables */
-    --glass-bg: rgba(255, 255, 255, 0.25);
-    --glass-blur: 30px;
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
-    
-    --glass-light-bg: rgba(255, 255, 255, 0.15);
-    --glass-light-blur: 20px;
-    --glass-light-border: rgba(255, 255, 255, 0.2);
-    --glass-light-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    
-    --glass-tab-bg: rgba(255, 255, 255, 0.2);
-    --glass-tab-blur: 15px;
-    --glass-tab-border: rgba(255, 255, 255, 0.4);
-    
-    /* Animation Timing Variables for Perfect Synchronization */
-    --animation-duration-main: 500ms;
-    --animation-duration-fast: 300ms;
-    --animation-duration-slow: 700ms;
-    --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
-    --animation-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --stagger-delay: 50ms;
-    --base-delay: 100ms;
-    
-    /* Layout Constants for Consistent Spacing */
-    --sidebar-margin: 15px;
-    --content-margin: 20px;
-    --sidebar-width-expanded: 255px;
-    --sidebar-width-collapsed: 115px;
-    --header-height: 60px;
-    --sidebar-top-offset: 137px;
-    
-    /* RTL Layout Variables */
-    --sidebar-right: 8px;
-    --projects-right-expanded: calc(var(--sidebar-width-expanded) + 8px);
-    --projects-right-collapsed: calc(var(--sidebar-width-collapsed) + 8px);
-    --projects-width: 480px;
-    --operations-right-expanded: calc(var(--projects-right-expanded) + var(--projects-width) + 8px);
-    --operations-right-collapsed: calc(var(--projects-right-collapsed) + var(--projects-width) + 8px);
-    --operations-width-expanded: calc(100vw - var(--operations-right-expanded) - 8px);
-    --operations-width-collapsed: calc(100vw - var(--operations-right-collapsed) - 8px);
-    --project-details-width-expanded: var(--operations-width-expanded);
-    --project-details-width-collapsed: var(--operations-width-collapsed);
-    --project-details-right-expanded: var(--operations-right-expanded);
-    --project-details-right-collapsed: var(--operations-right-collapsed);
-    
-    /* Standard shadcn variables */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+:root {
+  /* Sidebar Variables */
+  --sidebar-width-expanded: 280px;
+  --sidebar-width-collapsed: 94px;
+  --sidebar-top-offset: 90px;
+  --header-height: 88px;
+  
+  /* Animation Variables */
+  --animation-duration-main: 600ms;
+  --animation-duration-fast: 300ms;
+  --animation-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --base-delay: 150ms;
+  --stagger-delay: 60ms;
+  
+  /* Z-Index Variables */
+  --z-sidebar: 40;
+  --z-header: 50;
+  
+  /* Background Variables */
+  --backgrounds-admin-ops-board-bg: rgba(255, 255, 255, 0.4);
 }
 
+/* Departments positioning classes */
+.department-panel-expanded {
+  left: calc(var(--sidebar-width-expanded) + 320px + 66px);
+  right: 22px;
+}
+
+.department-panel-collapsed {
+  left: calc(var(--sidebar-width-collapsed) + 320px + 66px);
+  right: 22px;
+}
+
+/* Operations Board positioning classes */
+.operations-board-expanded {
+  left: calc(var(--sidebar-width-expanded) + 22px);
+  right: 22px;
+}
+
+.operations-board-collapsed {
+  left: calc(var(--sidebar-width-collapsed) + 22px);
+  right: 22px;
+}
+
+/* Sidebar positioning class */
+.sidebar-layout {
+  left: 22px;
+}
+
+/* Sync transition classes for consistent animation timing */
+.sync-transition {
+  transition: all var(--animation-duration-main) var(--animation-easing);
+}
+
+.sync-transition-fast {
+  transition: all var(--animation-duration-fast) var(--animation-easing);
+}
+
+/* Font classes */
+.font-arabic {
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+/* Custom z-index utilities */
+.z-sidebar {
+  z-index: var(--z-sidebar);
+}
+
+.z-header {
+  z-index: var(--z-header);
+}
+
+/* Glassmorphism effect utilities */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Scrollbar styling for Arabic content */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Base styles */
 @layer base {
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground;
-    font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
-    background: #dfecf2;
-    overflow-x: hidden;
-    font-feature-settings: "kern" 1, "liga" 1;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  html {
-    direction: rtl;
-    scroll-behavior: smooth;
-  }
-  
-  /* خط عربي محسن */
-  .font-arabic {
-    font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
-    text-rendering: optimizeLegibility;
+    @apply bg-background text-foreground font-arabic;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* Essential Components */
-@layer components {
-  .glass-modal {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    z-index: var(--z-modal-content);
-  }
-  
-  .glass-backdrop {
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: var(--z-modal-backdrop);
-  }
-  
-  .glass-section {
-    background: var(--glass-light-bg);
-    backdrop-filter: blur(var(--glass-light-blur));
-    -webkit-backdrop-filter: blur(var(--glass-light-blur));
-    border: 1px solid var(--glass-light-border);
-    box-shadow: var(--glass-light-shadow);
-  }
-  
-  .glass-tab {
-    background: var(--glass-tab-bg);
-    backdrop-filter: blur(var(--glass-tab-blur));
-    -webkit-backdrop-filter: blur(var(--glass-tab-blur));
-    border: 1px solid var(--glass-tab-border);
-  }
-  
-  .glass-tab-active {
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-  }
-  
-  .glass-dropdown {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    z-index: var(--z-dropdown);
-  }
-
-  .operations-board-card {
-    background: var(--backgrounds-cards-admin-ops);
-    border-radius: 24px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .project-card-glass {
-    background: var(--backgrounds-project-cards-bg);
-    border-radius: 40px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .project-card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  }
-
-  .project-card-selected {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  }
-
-  .project-card-dimmed {
-    opacity: 0.6;
-    transform: scale(0.98);
-  }
-
-  /* Progress Bar Styles */
-  .progress-segment {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 2px;
-  }
-  
-  .progress-segment-active {
-    background: var(--progress-segment-active);
-    box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
-  }
-  
-  .progress-segment-inactive {
-    background: var(--progress-segment-inactive);
-  }
-
-  /* RTL Layout Classes */
-  .sidebar-layout {
-    right: var(--sidebar-right);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .projects-layout-expanded {
-    right: var(--projects-right-expanded);
-    width: var(--projects-width);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .projects-layout-collapsed {
-    right: var(--projects-right-collapsed);
-    width: var(--projects-width);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .operations-board-expanded {
-    right: var(--operations-right-expanded);
-    width: var(--operations-width-expanded);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .operations-board-collapsed {
-    right: var(--operations-right-collapsed);
-    width: var(--operations-width-collapsed);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .project-details-expanded {
-    right: var(--project-details-right-expanded);
-    width: var(--project-details-width-expanded);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  .project-details-collapsed {
-    right: var(--project-details-right-collapsed);
-    width: var(--project-details-width-collapsed);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-  }
-
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(0, 0, 0, 0.4);
-  }
+/* Custom color definitions */
+.text-soabra-text-primary {
+  color: #2c3539;
 }
 
-/* Project Panel Animation Frames */
-.project-panel-frame1 {
-  width: 320px !important;
-  height: 110px !important;
-  border-radius: 38px;
-  right: calc(var(--operations-right-expanded) + 158px);
-  top: calc(var(--sidebar-top-offset) + 100px);
-  background: var(--backgrounds-project-cards-bg);
-  box-shadow:0 2px 14px rgba(111,111,155,0.08);
-  opacity:0.90;
-  transition: all 0.09s cubic-bezier(0.4,0,0.2,1);
-  pointer-events:none;
-  z-index:1001;
-}
-
-.project-panel-frame2 {
-  width: 470px !important;
-  height: 124px !important;
-  border-radius: 36px;
-  right: calc(var(--operations-right-expanded) + 115px);
-  background: var(--backgrounds-project-cards-bg);
-  transition: all 0.12s cubic-bezier(0.4,0,0.2,1);
-  opacity: 0.99;
-  pointer-events:none;
-  z-index:1001;
-}
-
-.project-panel-frame3 {
-  width: 650px !important;
-  height: 230px !important;
-  border-radius: 32px;
-  right: calc(var(--operations-right-expanded) + 54px);
-  background: var(--backgrounds-project-cards-bg);
-  opacity:1;
-  transition: all 0.12s cubic-bezier(0.4,0,0.2,1);
-  pointer-events:none;
-  z-index:1001;
-}
-
-.project-panel-frame4 {
-  width: 810px !important;
-  height: 315px !important;
-  border-radius: 30px;
-  right: calc(var(--operations-right-expanded) + 18px);
-  background: var(--backgrounds-project-mgmt-board-bg);
-  transition: all 0.17s cubic-bezier(0.4,0,0.2,1);
-  opacity:1;
-  pointer-events:none;
-  z-index:1002;
-}
-
-.project-panel-frame5 {
-  width: var(--operations-width-expanded);
-  height: calc(100vh - var(--sidebar-top-offset) - 18px);
-  border-radius: 28px;
-  right: var(--operations-right-expanded);
-  background: var(--backgrounds-project-mgmt-board-bg);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  opacity:1;
-  pointer-events:auto;
-  transition: all 0.16s cubic-bezier(0.4,0,0.2,1);
-  z-index:1003;
-}
-
-.project-panel-frame6 {
-  width: var(--operations-width-expanded);
-  height: calc(100vh - var(--sidebar-top-offset));
-  border-radius: 32px;
-  right: var(--operations-right-expanded);
-  top: var(--sidebar-top-offset);
-  background: var(--backgrounds-project-mgmt-board-bg);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
-  opacity:1;
-  pointer-events: auto;
-  transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
-  z-index:1004;
-}
-
-.rtl-fix-panel {
-  direction: rtl;
-}
-
-.operations-board-slid {
-  right: calc(var(--operations-right-expanded) - 60vw);
-  width: 0px !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
-}
-
-.projects-column-slid {
-  right: calc(var(--projects-right-expanded) + 30vw);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
-  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
-}
-
-.project-panel-slid-in {
-  opacity: 1;
-  right: var(--operations-right-expanded);
-  pointer-events: auto;
-  z-index: 1200;
-  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
-}
-
-.project-panel-slid-out {
-  opacity: 0;
-  right: calc(100vw + 80px);
-  pointer-events: none;
-  z-index: 1199;
-  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
-}
-
-.project-panel-hidden {
-  display: none;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 0;
-  right: var(--operations-right-expanded);
+.text-soabra-text-secondary {
+  color: #6b7780;
 }
