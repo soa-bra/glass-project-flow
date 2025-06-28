@@ -47,6 +47,25 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     setProjects(prev => [projectToAdd, ...prev]);
   };
 
+  // دالة لتحديث مشروع موجود
+  const handleProjectUpdated = (updatedProject: ProjectData) => {
+    setProjects(prev => prev.map(project => 
+      project.id === updatedProject.id.toString() 
+        ? {
+            ...project,
+            title: updatedProject.name,
+            description: updatedProject.description,
+            owner: updatedProject.owner,
+            value: updatedProject.budget.toString(),
+            daysLeft: Math.ceil((new Date(updatedProject.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
+            tasksCount: updatedProject.tasksCount,
+            status: updatedProject.status,
+            team: updatedProject.team.map(name => ({ name })),
+          }
+        : project
+    ));
+  };
+
   // Dynamically set right offsets depending on collapsed state
   const projectsColumnRight = isSidebarCollapsed ? 'var(--projects-right-collapsed)' : 'var(--projects-right-expanded)';
   const projectsColumnWidth = 'var(--projects-width)';
@@ -107,6 +126,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           isVisible={panelStage === "open" || panelStage === "changing-content"}
           onClose={closePanel}
           isSidebarCollapsed={isSidebarCollapsed}
+          onProjectUpdated={handleProjectUpdated}
         />
       )}
     </>
