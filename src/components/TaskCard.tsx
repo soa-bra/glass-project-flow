@@ -75,7 +75,7 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
     }
   };
 
-  const handleEdit = (taskId: string, taskData?: any) => {
+  const handleEdit = (taskId: string, taskData?: TaskData) => {
     console.log('فتح لوحة تعديل المهمة:', taskId);
     setShowEditModal(true);
   };

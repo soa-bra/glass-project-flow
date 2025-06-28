@@ -7,12 +7,13 @@ import LegalTab from './LegalTab';
 import HRTab from './HRTab';
 import { ClientsTab } from './ClientsTab';
 import { ReportsTab } from './ReportsTab';
+import type { TabData } from './types';
 
 export const TabContentWrapper = ({
   tabData,
   loading,
 }: {
-  tabData: Record<string, unknown>;
+  tabData: TabData;
   loading: boolean;
 }) => {
   return <>

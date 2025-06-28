@@ -17,7 +17,7 @@ interface OverBudgetProject {
   percentage: number;
 }
 
-interface FinanceData {
+export interface FinanceData {
   projects: ProjectBudget[];
   overBudget: OverBudgetProject[];
 }

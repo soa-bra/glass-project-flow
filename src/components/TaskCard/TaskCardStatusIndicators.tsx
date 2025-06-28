@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { EllipsisVertical, Check } from 'lucide-react';
 
+import type { TaskData } from '@/types';
+
 interface TaskCardStatusIndicatorsProps {
   status: string;
   statusColor: string;
@@ -25,11 +27,11 @@ interface TaskCardStatusIndicatorsProps {
   assignee: string;
   members: string;
   taskId: string;
-  taskData?: any;
+  taskData?: TaskData;
   isSelected?: boolean;
   isSelectionMode?: boolean;
   onSelect?: (taskId: string) => void;
-  onEdit?: (taskId: string, taskData?: any) => void;
+  onEdit?: (taskId: string, taskData?: TaskData) => void;
   onArchive?: (taskId: string) => void;
   onDelete?: (taskId: string) => void;
 }

@@ -1,5 +1,6 @@
 
 import TaskCardStatusIndicators from './TaskCardStatusIndicators';
+import type { TaskData } from '@/types';
 
 interface TaskCardFooterProps {
   status: string;
@@ -8,11 +9,11 @@ interface TaskCardFooterProps {
   assignee: string;
   members: string;
   taskId: string;
-  taskData?: any;
+  taskData?: TaskData;
   isSelected?: boolean;
   isSelectionMode?: boolean;
   onSelect?: (taskId: string) => void;
-  onEdit?: (taskId: string, taskData?: any) => void;
+  onEdit?: (taskId: string, taskData?: TaskData) => void;
   onArchive?: (taskId: string) => void;
   onDelete?: (taskId: string) => void;
 }
