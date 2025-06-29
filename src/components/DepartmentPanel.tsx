@@ -32,7 +32,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
           background: 'var(--backgrounds-admin-ops-board-bg)',
           width: getPanelWidth(),
           left: getPanelLeft(),
-          transition: 'all var(--animation-duration-main) var(--animation-easing)'
+          transition: 'width var(--animation-duration-main) var(--animation-easing)'
         }} 
         className="h-full rounded-3xl flex items-center justify-center bg-slate-400 absolute"
       >
@@ -101,7 +101,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         background: 'var(--backgrounds-project-mgmt-board-bg)',
         width: getPanelWidth(),
         left: getPanelLeft(),
-        transition: 'all var(--animation-duration-main) var(--animation-easing)'
+        transition: 'width var(--animation-duration-main) var(--animation-easing)'
       }} 
       className="h-full rounded-3xl p-6 overflow-hidden bg-[soabra-new-admin-ops-board] bg-slate-400 absolute"
     >
