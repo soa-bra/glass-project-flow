@@ -1,9 +1,13 @@
+
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import '../styles/sidebar.css';
+
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
   isSidebarCollapsed: boolean;
 }
+
 const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   selectedDepartment,
   isSidebarCollapsed
@@ -13,12 +17,12 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       background: 'var(--backgrounds-admin-ops-board-bg)'
     }} className="h-full rounded-3xl flex items-center justify-center bg-slate-400">
         <div className="text-center text-gray-600 font-arabic">
-          
           <h3 className="text-2xl font-semibold mb-2">اختر إدارة للبدء</h3>
           <p className="text-lg">قم بتحديد إدارة من القائمة الجانبية لعرض المحتوى</p>
         </div>
       </div>;
   }
+
   const getDepartmentContent = (department: string) => {
     const departmentData = {
       financial: {
@@ -62,45 +66,63 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         tabs: ['الهوية', 'التسويق', 'المحتوى', 'الشراكات']
       }
     };
+
     return departmentData[department as keyof typeof departmentData] || {
       title: 'إدارة غير محددة',
       tabs: ['عام']
     };
   };
+
   const content = getDepartmentContent(selectedDepartment);
-  return <div style={{
-    background: 'var(--backgrounds-project-mgmt-board-bg)'
-  }} className="h-full rounded-3xl p-6 overflow-hidden bg-[soabra-new-admin-ops-board] bg-slate-400">
+
+  return (
+    <div 
+      style={{
+        background: 'var(--backgrounds-project-mgmt-board-bg)'
+      }} 
+      className="h-full rounded-3xl p-6 overflow-hidden relative"
+    >
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-right text-soabra-text-primary mb-2 font-arabic my-[39px]">
             {content.title}
           </h1>
-          
         </div>
 
         {/* Tabs */}
         <Tabs defaultValue={content.tabs[0]} className="flex-1 flex flex-col" dir="rtl">
           <TabsList className="grid w-full grid-cols-4 mb-6 bg-white/20 rounded-full p-1">
-            {content.tabs.map(tab => <TabsTrigger key={tab} value={tab} className="rounded-full font-arabic text-sm data-[state=active]:bg-black data-[state=active]:text-white">
+            {content.tabs.map(tab => (
+              <TabsTrigger 
+                key={tab} 
+                value={tab} 
+                className="rounded-full font-arabic text-sm data-[state=active]:bg-black data-[state=active]:text-white"
+              >
                 {tab}
-              </TabsTrigger>)}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
-          {content.tabs.map(tab => <TabsContent key={tab} value={tab} className="flex-1 mt-0">
-              <div className="h-full rounded-2xl p-6 operations-board-card" style={{
-            background: 'var(--backgrounds-cards-admin-ops)'
-          }}>
+          {content.tabs.map(tab => (
+            <TabsContent key={tab} value={tab} className="flex-1 mt-0">
+              <div 
+                className="h-full rounded-2xl p-6 operations-board-card" 
+                style={{
+                  background: 'var(--backgrounds-cards-admin-ops)'
+                }}
+              >
                 <div className="text-center text-gray-600 font-arabic">
-                  
                   <h3 className="text-xl font-semibold mb-2">{tab}</h3>
                   <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
                 </div>
               </div>
-            </TabsContent>)}
+            </TabsContent>
+          ))}
         </Tabs>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default DepartmentPanel;

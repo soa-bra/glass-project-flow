@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight } from 'lucide-react';
+import '../styles/sidebar.css';
 
 interface DepartmentsSidebarProps {
   selectedDepartment: string | null;
@@ -31,6 +32,8 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   const toggleSidebar = () => {
     onToggleCollapse(!isCollapsed);
   };
+
+  const activeIndex = departments.findIndex(dept => dept.key === selectedDepartment);
 
   return (
     <aside 
@@ -75,8 +78,13 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
           </div>
         </div>
 
-        {/* Departments List */}
-        <div className="flex flex-col gap-2 px-[15px] flex-1 overflow-y-auto">
+        {/* Departments List with Tab Notch Effect */}
+        <div 
+          className="departments-panel relative overflow-visible flex flex-col gap-2 px-[15px] flex-1 overflow-y-auto"
+          style={{ 
+            '--notch-top': activeIndex >= 0 ? `${activeIndex * 80 + 140}px` : '0px' 
+          } as React.CSSProperties}
+        >
           {departments.map((department, index) => {
             const IconComponent = department.icon;
             const isActive = selectedDepartment === department.key;
