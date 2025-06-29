@@ -1,16 +1,12 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
   isSidebarCollapsed: boolean;
-  isDepartmentsSidebarCollapsed: boolean;
 }
-
 const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   selectedDepartment,
-  isSidebarCollapsed,
-  isDepartmentsSidebarCollapsed
+  isSidebarCollapsed
 }) => {
   if (!selectedDepartment) {
     return <div style={{
@@ -74,7 +70,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   const content = getDepartmentContent(selectedDepartment);
   return <div style={{
     background: 'var(--backgrounds-project-mgmt-board-bg)'
-  }} className="h-full rounded-3xl p-6 overflow-hidden bg-[DCE8EE]">
+  }} className="h-full rounded-3xl p-6 overflow-hidden bg-[soabra-new-admin-ops-board] bg-slate-400">
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="mb-6">
@@ -107,5 +103,4 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       </div>
     </div>;
 };
-
 export default DepartmentPanel;
