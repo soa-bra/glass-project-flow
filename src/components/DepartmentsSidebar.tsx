@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useLayoutEffect, useRef } from 'react';
 import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface DepartmentsSidebarProps {
@@ -7,14 +7,20 @@ interface DepartmentsSidebarProps {
   onDepartmentSelect: (department: string) => void;
   isCollapsed: boolean;
   onToggleCollapse: (collapsed: boolean) => void;
+  onNotchTopChange?: (notchTop: number) => void;
 }
 
 const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   selectedDepartment,
   onDepartmentSelect,
   isCollapsed,
-  onToggleCollapse
+  onToggleCollapse,
+  onNotchTopChange
 }) => {
+  const [notchTop, setNotchTop] = useState<number>(0);
+  const itemsRef = useRef<Array<HTMLButtonElement | null>>([]);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
   const departments = [
     { key: 'financial', label: 'إدارة الأوضاع المالية', icon: DollarSign },
     { key: 'legal', label: 'إدارة الأحوال القانونية', icon: Scale },
@@ -28,18 +34,38 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
     { key: 'brand', label: 'إدارة العلامة التجارية', icon: Award }
   ];
 
+  // احسب موقع العنصر النشط بعد كل رندر
+  useLayoutEffect(() => {
+    if (!selectedDepartment || !sidebarRef.current) return;
+
+    const activeIndex = departments.findIndex(dept => dept.key === selectedDepartment);
+    const activeElement = itemsRef.current[activeIndex];
+    
+    if (activeElement && sidebarRef.current) {
+      const sidebarRect = sidebarRef.current.getBoundingClientRect();
+      const elementRect = activeElement.getBoundingClientRect();
+      
+      // احسب الموقع النسبي للعنصر داخل الشريط الجانبي
+      const relativeTop = elementRect.top - sidebarRect.top + (elementRect.height / 2);
+      
+      setNotchTop(relativeTop);
+      onNotchTopChange?.(relativeTop);
+    }
+  }, [selectedDepartment, isCollapsed, departments, onNotchTopChange]);
+
   const toggleSidebar = () => {
     onToggleCollapse(!isCollapsed);
   };
 
   return (
     <aside 
+      ref={sidebarRef}
       style={{
         width: isCollapsed ? 'var(--departments-sidebar-width-collapsed)' : 'var(--departments-sidebar-width-expanded)',
         transition: 'all var(--animation-duration-main) var(--animation-easing)',
         background: 'var(--backgrounds-project-column-bg)'
       }}
-      className="h-full backdrop-blur-xl rounded-3xl overflow-hidden"
+      className="h-full backdrop-blur-xl rounded-3xl overflow-hidden relative"
     >
       <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0">
         {/* Header with Toggle */}
@@ -83,6 +109,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
             return (
               <button
                 key={department.key}
+                ref={el => (itemsRef.current[index] = el)}
                 onClick={() => onDepartmentSelect(department.key)}
                 className={`
                   flex items-center gap-3 text-right group relative overflow-hidden sync-transition

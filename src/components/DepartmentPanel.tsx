@@ -1,24 +1,38 @@
-import React from 'react';
+
+import React, { useLayoutEffect, useRef } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
   isSidebarCollapsed: boolean;
+  notchTop?: number;
 }
+
 const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   selectedDepartment,
-  isSidebarCollapsed
+  isSidebarCollapsed,
+  notchTop = 0
 }) => {
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // تحديث متغير CSS للموقع الديناميكي
+  useLayoutEffect(() => {
+    if (panelRef.current && selectedDepartment) {
+      panelRef.current.style.setProperty('--notch-top', `${notchTop}px`);
+    }
+  }, [notchTop, selectedDepartment]);
+
   if (!selectedDepartment) {
     return <div style={{
       background: 'var(--backgrounds-admin-ops-board-bg)'
     }} className="h-full rounded-3xl flex items-center justify-center bg-slate-400">
         <div className="text-center text-gray-600 font-arabic">
-          
           <h3 className="text-2xl font-semibold mb-2">اختر إدارة للبدء</h3>
           <p className="text-lg">قم بتحديد إدارة من القائمة الجانبية لعرض المحتوى</p>
         </div>
       </div>;
   }
+
   const getDepartmentContent = (department: string) => {
     const departmentData = {
       financial: {
@@ -67,17 +81,41 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       tabs: ['عام']
     };
   };
+
   const content = getDepartmentContent(selectedDepartment);
-  return <div style={{
-    background: 'var(--backgrounds-project-mgmt-board-bg)'
-  }} className="h-full rounded-3xl p-6 overflow-hidden bg-[soabra-new-admin-ops-board] bg-slate-400">
+
+  return <div 
+    ref={panelRef}
+    style={{
+      background: 'var(--backgrounds-project-mgmt-board-bg)'
+    }} 
+    className="h-full rounded-3xl p-6 overflow-hidden bg-[soabra-new-admin-ops-board] bg-slate-400 relative department-panel-with-notch">
+      {/* اللسان الديناميكي */}
+      {selectedDepartment && (
+        <div 
+          className="department-notch"
+          style={{
+            position: 'absolute',
+            right: '-1rem',
+            width: '1rem',
+            height: '3rem',
+            top: 'var(--notch-top, 0px)',
+            transform: 'translate(100%, -50%)',
+            background: 'var(--backgrounds-project-mgmt-board-bg)',
+            borderRadius: '0 1.5rem 1.5rem 0',
+            transition: 'top 0.3s ease',
+            zIndex: 10,
+            opacity: isSidebarCollapsed ? 0 : 1
+          }}
+        />
+      )}
+
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-right text-soabra-text-primary mb-2 font-arabic my-[39px]">
             {content.title}
           </h1>
-          
         </div>
 
         {/* Tabs */}
@@ -93,7 +131,6 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
             background: 'var(--backgrounds-cards-admin-ops)'
           }}>
                 <div className="text-center text-gray-600 font-arabic">
-                  
                   <h3 className="text-xl font-semibold mb-2">{tab}</h3>
                   <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
                 </div>
@@ -103,4 +140,5 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       </div>
     </div>;
 };
+
 export default DepartmentPanel;
