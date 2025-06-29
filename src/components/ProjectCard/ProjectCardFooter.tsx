@@ -6,13 +6,15 @@ interface ProjectCardFooterProps {
   date: string;
   owner: string;
   value: string;
+  teamMembersCount?: number;
 }
 
 const ProjectCardFooter = ({
   status,
   date,
   owner,
-  value
+  value,
+  teamMembersCount
 }: ProjectCardFooterProps) => {
   return (
     <ProjectCardStatusIndicators 
@@ -20,6 +22,7 @@ const ProjectCardFooter = ({
       date={date}
       owner={owner}
       value={value}
+      teamMembersCount={teamMembersCount}
     />
   );
 };

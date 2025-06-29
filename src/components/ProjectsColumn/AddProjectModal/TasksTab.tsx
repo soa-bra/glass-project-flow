@@ -1,30 +1,52 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Plus, Sparkles } from 'lucide-react';
 import type { TaskData } from '@/types';
 
 interface TasksTabProps {
   tasks: TaskData[];
   onAddTask: () => void;
+  onGenerateSmartTasks?: () => void;
 }
 
-export const TasksTab: React.FC<TasksTabProps> = ({ tasks, onAddTask }) => {
+export const TasksTab: React.FC<TasksTabProps> = ({ 
+  tasks, 
+  onAddTask, 
+  onGenerateSmartTasks 
+}) => {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <Button
-            onClick={onAddTask}
-            className="bg-black text-white hover:bg-gray-800 font-arabic"
-          >
-            إضافة مهمة +
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={onAddTask}
+              className="bg-black text-white hover:bg-gray-800 font-arabic rounded-full"
+            >
+              <Plus size={16} className="ml-1" />
+              إضافة مهمة
+            </Button>
+            {onGenerateSmartTasks && (
+              <Button
+                onClick={onGenerateSmartTasks}
+                variant="outline"
+                className="bg-black/40 backdrop-blur-md border-white/20 text-white hover:bg-black/50 font-arabic rounded-full"
+              >
+                <Sparkles size={16} className="ml-1" />
+                توليد ذكي
+              </Button>
+            )}
+          </div>
           <h3 className="text-lg font-bold font-arabic">مهام المشروع</h3>
         </div>
         
         {tasks.length === 0 ? (
           <div className="text-center py-8 text-gray-500 font-arabic">
             لا توجد مهام مضافة بعد
+            <div className="text-sm mt-2">
+              يمكنك إضافة مهام يدوياً أو استخدام التوليد الذكي
+            </div>
           </div>
         ) : (
           <div className="space-y-3">

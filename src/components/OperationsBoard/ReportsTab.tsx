@@ -8,7 +8,7 @@ interface ReportTemplate {
   name: string;
 }
 
-interface ReportsData {
+export interface ReportsData {
   templates: ReportTemplate[];
 }
 

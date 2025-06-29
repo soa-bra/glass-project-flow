@@ -1,10 +1,23 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle } from 'react';
+import type { TaskData } from '@/types';
+import type { TaskCardProps } from '@/components/TaskCard/types';
+import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import TaskCard from '@/components/TaskCard';
 import { useTaskSelection } from '@/hooks/useTaskSelection';
 
-export const TaskListContent: React.FC = () => {
+export interface TaskListContentRef {
+  addTask: (task: TaskData) => void;
+  addTasks: (tasks: TaskData[]) => void;
+}
+
+interface TaskListContentProps {
+  projectId?: string;
+}
+
+export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListContentProps>(({ projectId }, ref) => {
+  const { getProjectTasks, addTaskToProject, addTasksToProject, updateTaskInProject, removeTaskFromProject } = useProjectTasksContext();
   const {
     selectedTasks,
     toggleTaskSelection,
@@ -13,7 +26,10 @@ export const TaskListContent: React.FC = () => {
   const [showBulkArchiveDialog, setShowBulkArchiveDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [tasks, setTasks] = useState([{
+  
+  // الحصول على مهام المشروع من context أو استخدام البيانات الافتراضية
+  const contextTasks = projectId ? getProjectTasks(projectId) : [];
+  const [defaultTasks] = useState([{
     id: 1,
     title: 'تصميم الواجهة',
     description: 'تطوير موقع سوبرا',
@@ -59,6 +75,50 @@ export const TaskListContent: React.FC = () => {
     priority: 'not-urgent-not-important' as const
   }]);
 
+  const mapTask = (task: TaskData): TaskCardProps => {
+    const dueDate = new Date(task.dueDate);
+    const daysLeft = Math.max(
+      Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+      0
+    );
+
+    return {
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      status: 'وفق الخطة',
+      statusColor: '#A1E8B8',
+      date: dueDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: 'short'
+      }),
+      assignee: task.assignee || 'غير محدد',
+      members: 'غير مضيف',
+      daysLeft,
+      priority: task.priority
+    };
+  };
+
+  // دمج المهام من context مع المهام الافتراضية
+  const allTasks = [
+    ...defaultTasks,
+    ...contextTasks.map(mapTask)
+  ];
+
+  const addTask = (task: TaskData) => {
+    if (projectId) {
+      addTaskToProject(projectId, task);
+    }
+  };
+
+  const addTasks = (newTasks: TaskData[]) => {
+    if (projectId) {
+      addTasksToProject(projectId, newTasks);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({ addTask, addTasks }));
+
   // إضافة معالج لضغطة مفتاح Esc
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -100,18 +160,34 @@ export const TaskListContent: React.FC = () => {
     // سيتم تنفيذ modal التعديل لاحقاً
   };
 
+  const handleTaskUpdated = (updatedTask: TaskData) => {
+    console.log('تحديث المهمة:', updatedTask);
+    
+    if (projectId) {
+      updateTaskInProject(projectId, updatedTask);
+    }
+  };
+
   const handleTaskArchive = (taskId: string) => {
-    setTasks(prev => prev.filter(task => task.id !== parseInt(taskId)));
+    if (projectId) {
+      removeTaskFromProject(projectId, parseInt(taskId));
+    }
     console.log('تم أرشفة المهمة:', taskId);
   };
 
   const handleTaskDelete = (taskId: string) => {
-    setTasks(prev => prev.filter(task => task.id !== parseInt(taskId)));
+    if (projectId) {
+      removeTaskFromProject(projectId, parseInt(taskId));
+    }
     console.log('تم حذف المهمة:', taskId);
   };
 
   const handleBulkArchive = () => {
-    setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id.toString())));
+    if (projectId) {
+      selectedTasks.forEach(taskId => {
+        removeTaskFromProject(projectId, parseInt(taskId));
+      });
+    }
     clearSelection();
     setIsSelectionMode(false);
     setShowBulkArchiveDialog(false);
@@ -119,14 +195,19 @@ export const TaskListContent: React.FC = () => {
   };
 
   const handleBulkDelete = () => {
-    setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id.toString())));
+    if (projectId) {
+      selectedTasks.forEach(taskId => {
+        removeTaskFromProject(projectId, parseInt(taskId));
+      });
+    }
     clearSelection();
     setIsSelectionMode(false);
     setShowBulkDeleteDialog(false);
     console.log('تم حذف المهام المحددة:', selectedTasks);
   };
 
-  return <>
+  return (
+    <>
       {/* شريط الإجراءات الجماعية */}
       {selectedTasks.length > 0 && <div style={{
       direction: 'rtl',
@@ -171,7 +252,7 @@ export const TaskListContent: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 pr-1 py-0 my-0">
-          {tasks.map(task => <div key={task.id}>
+          {allTasks.map(task => <div key={task.id}>
               <TaskCard 
                 {...task} 
                 isSelected={selectedTasks.includes(task.id.toString())} 
@@ -180,6 +261,7 @@ export const TaskListContent: React.FC = () => {
                 onEdit={handleTaskEdit} 
                 onArchive={handleTaskArchive} 
                 onDelete={handleTaskDelete} 
+                onTaskUpdated={handleTaskUpdated}
               />
             </div>)}
         </div>
@@ -203,7 +285,6 @@ export const TaskListContent: React.FC = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* حوار تأكيد الحذف الجماعي */}
       <AlertDialog open={showBulkDeleteDialog} onOpenChange={setShowBulkDeleteDialog}>
         <AlertDialogContent className="font-arabic" style={{
         direction: 'rtl'
@@ -222,5 +303,6 @@ export const TaskListContent: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>;
-};
+    </>
+  );
+});

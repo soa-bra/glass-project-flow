@@ -111,6 +111,17 @@
     --project-details-right-expanded: var(--operations-right-expanded);
     --project-details-right-collapsed: var(--operations-right-collapsed);
     
+    /* Departments Layout Variables - Same Width as Main Sidebar */
+    --departments-gap: 10px;
+    --departments-sidebar-width-expanded: var(--sidebar-width-expanded);
+    --departments-sidebar-width-collapsed: var(--sidebar-width-collapsed);
+    --departments-sidebar-right-expanded: calc(var(--sidebar-width-expanded) + 8px);
+    --departments-sidebar-right-collapsed: calc(var(--sidebar-width-collapsed) + 8px);
+    --departments-panel-right-expanded: calc(var(--departments-sidebar-right-expanded) + var(--departments-sidebar-width-expanded) + var(--departments-gap));
+    --departments-panel-right-collapsed: calc(var(--departments-sidebar-right-collapsed) + var(--departments-sidebar-width-collapsed) + var(--departments-gap));
+    --departments-panel-width-expanded: calc(100vw - var(--departments-panel-right-expanded) - 8px);
+    --departments-panel-width-collapsed: calc(100vw - var(--departments-panel-right-collapsed) - 8px);
+    
     /* Standard shadcn variables */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -342,6 +353,31 @@
     transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
+  /* Departments Layout Classes - Same Width as Main Sidebar */
+  .departments-sidebar-expanded {
+    right: var(--departments-sidebar-right-expanded);
+    width: var(--departments-sidebar-width-expanded);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .departments-sidebar-collapsed {
+    right: var(--departments-sidebar-right-collapsed);
+    width: var(--departments-sidebar-width-collapsed);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .departments-panel-expanded {
+    right: var(--departments-panel-right-expanded);
+    width: var(--departments-panel-width-expanded);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .departments-panel-collapsed {
+    right: var(--departments-panel-right-collapsed);
+    width: var(--departments-panel-width-collapsed);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
@@ -480,4 +516,36 @@
   pointer-events: none;
   z-index: 0;
   right: var(--operations-right-expanded);
+}
+
+/* Departments specific animations and transitions */
+.sync-transition {
+  transition: all var(--animation-duration-main) var(--animation-easing);
+}
+
+.sync-transition-fast {
+  transition: all var(--animation-duration-fast) var(--animation-easing);
+}
+
+/* Department panel smooth transitions */
+.department-panel-enter {
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+.department-panel-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all var(--animation-duration-main) var(--animation-easing);
+}
+
+.department-panel-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.department-panel-exit-active {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: all var(--animation-duration-main) var(--animation-easing);
 }
