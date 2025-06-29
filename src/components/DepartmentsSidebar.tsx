@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useLayoutEffect, useRef } from 'react';
 import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 import '../styles/sidebar.css';
 
@@ -8,14 +8,20 @@ interface DepartmentsSidebarProps {
   onDepartmentSelect: (department: string) => void;
   isCollapsed: boolean;
   onToggleCollapse: (collapsed: boolean) => void;
+  onNotchPositionChange?: (top: number) => void;
 }
 
 const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   selectedDepartment,
   onDepartmentSelect,
   isCollapsed,
-  onToggleCollapse
+  onToggleCollapse,
+  onNotchPositionChange
 }) => {
+  const [notchTop, setNotchTop] = useState<number>(0);
+  const itemsRef = useRef<Array<HTMLButtonElement | null>>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const departments = [
     { key: 'financial', label: 'إدارة الأوضاع المالية', icon: DollarSign },
     { key: 'legal', label: 'إدارة الأحوال القانونية', icon: Scale },
@@ -29,11 +35,32 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
     { key: 'brand', label: 'إدارة العلامة التجارية', icon: Award }
   ];
 
+  // احسب موقع العنصر النشط بعد كل رندر
+  useLayoutEffect(() => {
+    const activeIndex = departments.findIndex(dept => dept.key === selectedDepartment);
+    if (activeIndex >= 0 && itemsRef.current[activeIndex] && containerRef.current) {
+      const activeElement = itemsRef.current[activeIndex];
+      const container = containerRef.current;
+      
+      // احسب الموقع النسبي للعنصر النشط داخل الحاوي
+      const elementTop = activeElement.offsetTop;
+      const elementHeight = activeElement.offsetHeight;
+      
+      // احسب منتصف العنصر
+      const notchPosition = elementTop + (elementHeight / 2);
+      
+      setNotchTop(notchPosition);
+      
+      // مرر القيمة للمكون الأب إذا كان مطلوب
+      if (onNotchPositionChange) {
+        onNotchPositionChange(notchPosition);
+      }
+    }
+  }, [selectedDepartment, isCollapsed, departments, onNotchPositionChange]);
+
   const toggleSidebar = () => {
     onToggleCollapse(!isCollapsed);
   };
-
-  const activeIndex = departments.findIndex(dept => dept.key === selectedDepartment);
 
   return (
     <aside 
@@ -80,9 +107,10 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
 
         {/* Departments List with Tab Notch Effect */}
         <div 
+          ref={containerRef}
           className="departments-panel relative overflow-visible flex flex-col gap-2 px-[15px] flex-1 overflow-y-auto"
           style={{ 
-            '--notch-top': activeIndex >= 0 ? `${activeIndex * 80 + 140}px` : '0px' 
+            '--notch-top': `${notchTop}px` 
           } as React.CSSProperties}
         >
           {departments.map((department, index) => {
@@ -91,6 +119,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
             return (
               <button
                 key={department.key}
+                ref={el => (itemsRef.current[index] = el)}
                 onClick={() => onDepartmentSelect(department.key)}
                 className={`
                   flex items-center gap-3 text-right group relative overflow-hidden sync-transition

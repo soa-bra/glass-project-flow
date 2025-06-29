@@ -6,11 +6,13 @@ import '../styles/sidebar.css';
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
   isSidebarCollapsed: boolean;
+  notchTop?: number;
 }
 
 const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   selectedDepartment,
-  isSidebarCollapsed
+  isSidebarCollapsed,
+  notchTop = 0
 }) => {
   if (!selectedDepartment) {
     return <div style={{
@@ -78,9 +80,10 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   return (
     <div 
       style={{
-        background: 'var(--backgrounds-project-mgmt-board-bg)'
-      }} 
-      className="h-full rounded-3xl p-6 overflow-hidden relative"
+        background: 'var(--backgrounds-project-mgmt-board-bg)',
+        '--notch-top': `${notchTop}px`
+      } as React.CSSProperties}
+      className="h-full rounded-3xl p-6 overflow-hidden relative departments-panel-content"
     >
       <div className="h-full flex flex-col">
         {/* Header */}

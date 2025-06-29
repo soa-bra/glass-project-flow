@@ -10,6 +10,11 @@ interface DepartmentsWorkspaceProps {
 const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCollapsed }) => {
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [isDepartmentsSidebarCollapsed, setIsDepartmentsSidebarCollapsed] = useState(false);
+  const [notchTop, setNotchTop] = useState<number>(0);
+
+  const handleNotchPositionChange = (top: number) => {
+    setNotchTop(top);
+  };
 
   return (
     <>
@@ -28,6 +33,7 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
           onDepartmentSelect={setSelectedDepartment}
           isCollapsed={isDepartmentsSidebarCollapsed}
           onToggleCollapse={setIsDepartmentsSidebarCollapsed}
+          onNotchPositionChange={handleNotchPositionChange}
         />
       </div>
 
@@ -40,6 +46,7 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
         <DepartmentPanel 
           selectedDepartment={selectedDepartment}
           isSidebarCollapsed={isSidebarCollapsed}
+          notchTop={notchTop}
         />
       </div>
     </>
