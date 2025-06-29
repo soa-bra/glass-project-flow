@@ -23,14 +23,12 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
           zIndex: 110,
         }}
       >
-        <div className="w-full h-full p-2 py-0 mx-0 px-[5px]">
-          <DepartmentsSidebar
-            selectedDepartment={selectedDepartment}
-            onDepartmentSelect={setSelectedDepartment}
-            isCollapsed={isDepartmentsSidebarCollapsed}
-            onToggleCollapse={setIsDepartmentsSidebarCollapsed}
-          />
-        </div>
+        <DepartmentsSidebar
+          selectedDepartment={selectedDepartment}
+          onDepartmentSelect={setSelectedDepartment}
+          isCollapsed={isDepartmentsSidebarCollapsed}
+          onToggleCollapse={setIsDepartmentsSidebarCollapsed}
+        />
       </div>
 
       {/* العمود الثالث: لوحة الإدارة */}
