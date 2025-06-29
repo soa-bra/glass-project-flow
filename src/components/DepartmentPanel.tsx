@@ -70,7 +70,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   const content = getDepartmentContent(selectedDepartment);
   return <div style={{
     background: 'var(--backgrounds-project-mgmt-board-bg)'
-  }} className="h-full rounded-3xl p-6 overflow-hidden bg-[soabra-new-admin-ops-board] bg-slate-400">
+  }} className="h-full rounded-3xl p-6 overflow-hidden bg-[soabra-new-admin-ops-board] bg-slate-100">
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="mb-6">
@@ -89,9 +89,9 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
           </TabsList>
 
           {content.tabs.map(tab => <TabsContent key={tab} value={tab} className="flex-1 mt-0">
-              <div className="h-full rounded-2xl p-6 operations-board-card" style={{
+              <div style={{
             background: 'var(--backgrounds-cards-admin-ops)'
-          }}>
+          }} className="h-full rounded-2xl p-6 operations-board-card bg-slate-200">
                 <div className="text-center text-gray-600 font-arabic">
                   
                   <h3 className="text-xl font-semibold mb-2">{tab}</h3>
