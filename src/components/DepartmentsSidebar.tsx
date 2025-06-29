@@ -60,8 +60,8 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
     width: isCollapsed ? 'var(--departments-sidebar-width-collapsed)' : 'var(--departments-sidebar-width-expanded)',
     transition: 'all var(--animation-duration-main) var(--animation-easing)',
     background: 'var(--backgrounds-project-column-bg)'
-  }} className="h-full backdrop-blur-xl rounded-3xl overflow-hidden my-[45px] mx-[140px]">
-      <nav className="flex flex-col gap-2 h-full py-0 px-0 bg-gray-900 mx-0">
+  }} className="h-full backdrop-blur-xl rounded-3xl overflow-hidden">
+      <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0 bg-gray-900">
         {/* Header with Toggle */}
         <div className={`text-center mb-2 rounded-full mx-0 px-0 py-[24px] my-[24px] sync-transition ${isCollapsed ? 'flex justify-center' : ''}`}>
           <div className={`flex items-center rounded-lg sync-transition ${isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[20px]'}`}>
