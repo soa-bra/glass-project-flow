@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight } from 'lucide-react';
-import DepartmentPanel from './DepartmentPanel';
 
 interface DepartmentsSidebarProps {
   selectedDepartment: string | null;
@@ -35,12 +34,12 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
 
   return (
     <aside 
-      className="relative h-full backdrop-blur-xl rounded-3xl overflow-hidden"
       style={{
         width: isCollapsed ? 'var(--departments-sidebar-width-collapsed)' : 'var(--departments-sidebar-width-expanded)',
         transition: 'all var(--animation-duration-main) var(--animation-easing)',
         background: 'var(--backgrounds-project-column-bg)'
       }}
+      className="h-full backdrop-blur-xl rounded-3xl overflow-hidden"
     >
       <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0">
         {/* Header with Toggle */}
@@ -133,12 +132,6 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
           })}
         </div>
       </nav>
-
-      {/* لوحة الإدارات الزجاجية تنزلق فوق المحتوى */}
-      <DepartmentPanel
-        selectedDepartment={selectedDepartment}
-        isSidebarCollapsed={isCollapsed}
-      />
     </aside>
   );
 };
