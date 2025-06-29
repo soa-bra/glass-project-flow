@@ -40,6 +40,7 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
         <DepartmentPanel 
           selectedDepartment={selectedDepartment}
           isSidebarCollapsed={isSidebarCollapsed}
+          isDepartmentsSidebarCollapsed={isDepartmentsSidebarCollapsed}
         />
       </div>
     </>
