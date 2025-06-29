@@ -9,9 +9,9 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   isSidebarCollapsed
 }) => {
   if (!selectedDepartment) {
-    return <div className="h-full rounded-3xl flex items-center justify-center" style={{
+    return <div style={{
       background: 'var(--backgrounds-admin-ops-board-bg)'
-    }}>
+    }} className="h-full rounded-3xl flex items-center justify-center bg-slate-400">
         <div className="text-center text-gray-600 font-arabic">
           
           <h3 className="text-2xl font-semibold mb-2">اختر إدارة للبدء</h3>
