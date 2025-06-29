@@ -11,11 +11,11 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [isDepartmentsSidebarCollapsed, setIsDepartmentsSidebarCollapsed] = useState(false);
 
-  // حساب المواضع بناءً على حالة الانطواء
+  // حساب المواضع بناءً على حالة الانطواء مع هامش 10 بكسل
   const departmentsSidebarRight = isSidebarCollapsed ? 'var(--projects-right-collapsed)' : 'var(--projects-right-expanded)';
   const departmentsSidebarWidth = 'var(--projects-width)';
-  const departmentPanelRight = isSidebarCollapsed ? 'var(--operations-right-collapsed)' : 'var(--operations-right-expanded)';
-  const departmentPanelWidth = isSidebarCollapsed ? 'var(--operations-width-collapsed)' : 'var(--operations-width-expanded)';
+  const departmentPanelRight = isSidebarCollapsed ? 'calc(var(--projects-right-collapsed) + var(--projects-width) + 10px)' : 'calc(var(--projects-right-expanded) + var(--projects-width) + 10px)';
+  const departmentPanelWidth = isSidebarCollapsed ? 'calc(100vw - var(--projects-right-collapsed) - var(--projects-width) - 18px)' : 'calc(100vw - var(--projects-right-expanded) - var(--projects-width) - 18px)';
 
   return (
     <>
