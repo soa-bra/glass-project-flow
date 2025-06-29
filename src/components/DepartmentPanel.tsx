@@ -1,12 +1,17 @@
+
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
-  isSidebarCollapsed: boolean;
+  isMainSidebarCollapsed: boolean;
+  isDepartmentsSidebarCollapsed: boolean;
 }
+
 const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   selectedDepartment,
-  isSidebarCollapsed
+  isMainSidebarCollapsed,
+  isDepartmentsSidebarCollapsed
 }) => {
   if (!selectedDepartment) {
     return <div style={{
@@ -19,6 +24,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         </div>
       </div>;
   }
+
   const getDepartmentContent = (department: string) => {
     const departmentData = {
       financial: {
@@ -62,12 +68,15 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         tabs: ['الهوية', 'التسويق', 'المحتوى', 'الشراكات']
       }
     };
+
     return departmentData[department as keyof typeof departmentData] || {
       title: 'إدارة غير محددة',
       tabs: ['عام']
     };
   };
+
   const content = getDepartmentContent(selectedDepartment);
+
   return <div style={{
     background: 'var(--backgrounds-project-mgmt-board-bg)'
   }} className="h-full rounded-3xl p-6 overflow-hidden bg-[soabra-new-admin-ops-board] bg-slate-400">
@@ -103,4 +112,5 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       </div>
     </div>;
 };
+
 export default DepartmentPanel;

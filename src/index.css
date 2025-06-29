@@ -122,6 +122,17 @@
     --departments-panel-width-expanded: calc(100vw - var(--departments-panel-right-expanded) - 8px);
     --departments-panel-width-collapsed: calc(100vw - var(--departments-panel-right-collapsed) - 8px);
     
+    /* Departments Panel State Combinations */
+    --departments-panel-right-both-expanded: calc(var(--departments-sidebar-right-expanded) + var(--departments-sidebar-width-expanded) + var(--departments-gap));
+    --departments-panel-right-main-collapsed: calc(var(--departments-sidebar-right-collapsed) + var(--departments-sidebar-width-expanded) + var(--departments-gap));
+    --departments-panel-right-departments-collapsed: calc(var(--departments-sidebar-right-expanded) + var(--departments-sidebar-width-collapsed) + var(--departments-gap));
+    --departments-panel-right-both-collapsed: calc(var(--departments-sidebar-right-collapsed) + var(--departments-sidebar-width-collapsed) + var(--departments-gap));
+    
+    --departments-panel-width-both-expanded: calc(100vw - var(--departments-panel-right-both-expanded) - 8px);
+    --departments-panel-width-main-collapsed: calc(100vw - var(--departments-panel-right-main-collapsed) - 8px);
+    --departments-panel-width-departments-collapsed: calc(100vw - var(--departments-panel-right-departments-collapsed) - 8px);
+    --departments-panel-width-both-collapsed: calc(100vw - var(--departments-panel-right-both-collapsed) - 8px);
+    
     /* Standard shadcn variables */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -375,6 +386,31 @@
   .departments-panel-collapsed {
     right: var(--departments-panel-right-collapsed);
     width: var(--departments-panel-width-collapsed);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  /* New Departments Panel State Combinations */
+  .departments-panel-both-expanded {
+    right: var(--departments-panel-right-both-expanded);
+    width: var(--departments-panel-width-both-expanded);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .departments-panel-main-collapsed {
+    right: var(--departments-panel-right-main-collapsed);
+    width: var(--departments-panel-width-main-collapsed);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .departments-panel-departments-collapsed {
+    right: var(--departments-panel-right-departments-collapsed);
+    width: var(--departments-panel-width-departments-collapsed);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .departments-panel-both-collapsed {
+    right: var(--departments-panel-right-both-collapsed);
+    width: var(--departments-panel-width-both-collapsed);
     transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
