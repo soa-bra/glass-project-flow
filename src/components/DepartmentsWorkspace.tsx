@@ -33,7 +33,7 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
 
       {/* العمود الثالث: لوحة الإدارة - مربوطة بحالة شريط الإدارات */}
       <div
-        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))]`}
+        className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))]"
         style={{
           right: '22px',
           left: isDepartmentsSidebarCollapsed 
@@ -49,6 +49,7 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
         <DepartmentPanel 
           selectedDepartment={selectedDepartment}
           isSidebarCollapsed={isSidebarCollapsed}
+          isDepartmentsSidebarCollapsed={isDepartmentsSidebarCollapsed}
         />
       </div>
     </>

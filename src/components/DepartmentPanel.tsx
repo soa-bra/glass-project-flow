@@ -1,12 +1,16 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
   isSidebarCollapsed: boolean;
+  isDepartmentsSidebarCollapsed: boolean;
 }
+
 const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   selectedDepartment,
-  isSidebarCollapsed
+  isSidebarCollapsed,
+  isDepartmentsSidebarCollapsed
 }) => {
   if (!selectedDepartment) {
     return <div style={{
@@ -103,4 +107,5 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       </div>
     </div>;
 };
+
 export default DepartmentPanel;
