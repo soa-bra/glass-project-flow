@@ -110,11 +110,11 @@
     --project-details-right-expanded: var(--operations-right-expanded);
     --project-details-right-collapsed: var(--operations-right-collapsed);
     
-    /* Departments Layout Variables - New with Accurate Calculations */
+    /* Departments Layout Variables - Fixed with Exact 10px Gap */
     --departments-gap: 10px;
-    --departments-sidebar-width: var(--projects-width);
-    --departments-sidebar-right-expanded: var(--projects-right-expanded);
-    --departments-sidebar-right-collapsed: var(--projects-right-collapsed);
+    --departments-sidebar-width: 480px;
+    --departments-sidebar-right-expanded: calc(var(--sidebar-width-expanded) + 8px);
+    --departments-sidebar-right-collapsed: calc(var(--sidebar-width-collapsed) + 8px);
     --departments-panel-right-expanded: calc(var(--departments-sidebar-right-expanded) + var(--departments-sidebar-width) + var(--departments-gap));
     --departments-panel-right-collapsed: calc(var(--departments-sidebar-right-collapsed) + var(--departments-sidebar-width) + var(--departments-gap));
     --departments-panel-width-expanded: calc(100vw - var(--departments-panel-right-expanded) - 8px);
@@ -351,7 +351,7 @@
     transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
-  /* Departments Layout Classes - Updated with Accurate Calculations */
+  /* Departments Layout Classes - Fixed with Exact Calculations */
   .departments-sidebar-expanded {
     right: var(--departments-sidebar-right-expanded);
     width: var(--departments-sidebar-width);
