@@ -11,22 +11,15 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [isDepartmentsSidebarCollapsed, setIsDepartmentsSidebarCollapsed] = useState(false);
 
-  // حساب المواضع بناءً على حالة الانطواء مع هامش 10 بكسل
-  const departmentsSidebarRight = isSidebarCollapsed ? 'var(--projects-right-collapsed)' : 'var(--projects-right-expanded)';
-  const departmentsSidebarWidth = 'var(--projects-width)';
-  const departmentPanelRight = isSidebarCollapsed ? 'calc(var(--projects-right-collapsed) + var(--projects-width) + 10px)' : 'calc(var(--projects-right-expanded) + var(--projects-width) + 10px)';
-  const departmentPanelWidth = isSidebarCollapsed ? 'calc(100vw - var(--projects-right-collapsed) - var(--projects-width) - 18px)' : 'calc(100vw - var(--projects-right-expanded) - var(--projects-width) - 18px)';
-
   return (
     <>
       {/* العمود الثاني: سايدبار الإدارات */}
       <div
-        className="fixed h-[calc(100vh-var(--sidebar-top-offset))]"
+        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${
+          isSidebarCollapsed ? 'departments-sidebar-collapsed' : 'departments-sidebar-expanded'
+        }`}
         style={{
           top: 'var(--sidebar-top-offset)',
-          right: departmentsSidebarRight,
-          width: departmentsSidebarWidth,
-          transition: 'all var(--animation-duration-main) var(--animation-easing)',
           zIndex: 110,
         }}
       >
@@ -42,12 +35,9 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
 
       {/* العمود الثالث: لوحة الإدارة */}
       <div
-        style={{
-          right: departmentPanelRight,
-          width: departmentPanelWidth,
-          transition: 'all var(--animation-duration-main) var(--animation-easing)'
-        }}
-        className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0"
+        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0 ${
+          isSidebarCollapsed ? 'departments-panel-collapsed' : 'departments-panel-expanded'
+        }`}
       >
         <DepartmentPanel 
           selectedDepartment={selectedDepartment}
