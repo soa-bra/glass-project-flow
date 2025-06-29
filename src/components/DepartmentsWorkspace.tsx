@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import DepartmentsSidebar from './DepartmentsSidebar';
 import DepartmentPanel from './DepartmentPanel';
+import { DepartmentsPanelProvider } from '@/contexts/DepartmentsPanelContext';
 
 interface DepartmentsWorkspaceProps {
   isSidebarCollapsed: boolean;
@@ -12,7 +13,7 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
   const [isDepartmentsSidebarCollapsed, setIsDepartmentsSidebarCollapsed] = useState(false);
 
   return (
-    <>
+    <DepartmentsPanelProvider>
       {/* العمود الثاني: سايدبار الإدارات */}
       <div
         className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${
@@ -42,7 +43,7 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
           isSidebarCollapsed={isSidebarCollapsed}
         />
       </div>
-    </>
+    </DepartmentsPanelProvider>
   );
 };
 
