@@ -1,25 +1,17 @@
 
-import React, { useState, useLayoutEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface DepartmentsSidebarProps {
   selectedDepartment: string | null;
   onDepartmentSelect: (department: string) => void;
-  isCollapsed: boolean;
-  onToggleCollapse: (collapsed: boolean) => void;
-  onNotchTopChange?: (notchTop: number) => void;
 }
 
 const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   selectedDepartment,
   onDepartmentSelect,
-  isCollapsed,
-  onToggleCollapse,
-  onNotchTopChange
 }) => {
-  const [notchTop, setNotchTop] = useState<number>(0);
-  const itemsRef = useRef<Array<HTMLButtonElement | null>>([]);
-  const sidebarRef = useRef<HTMLDivElement>(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const departments = [
     { key: 'financial', label: 'إدارة الأوضاع المالية', icon: DollarSign },
@@ -34,32 +26,12 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
     { key: 'brand', label: 'إدارة العلامة التجارية', icon: Award }
   ];
 
-  // احسب موقع العنصر النشط بعد كل رندر
-  useLayoutEffect(() => {
-    if (!selectedDepartment || !sidebarRef.current) return;
-
-    const activeIndex = departments.findIndex(dept => dept.key === selectedDepartment);
-    const activeElement = itemsRef.current[activeIndex];
-    
-    if (activeElement && sidebarRef.current) {
-      const sidebarRect = sidebarRef.current.getBoundingClientRect();
-      const elementRect = activeElement.getBoundingClientRect();
-      
-      // احسب الموقع النسبي للعنصر داخل الشريط الجانبي
-      const relativeTop = elementRect.top - sidebarRect.top + (elementRect.height / 2);
-      
-      setNotchTop(relativeTop);
-      onNotchTopChange?.(relativeTop);
-    }
-  }, [selectedDepartment, isCollapsed, departments, onNotchTopChange]);
-
   const toggleSidebar = () => {
-    onToggleCollapse(!isCollapsed);
+    setIsCollapsed(!isCollapsed);
   };
 
   return (
     <aside 
-      ref={sidebarRef}
       style={{
         width: isCollapsed ? 'var(--departments-sidebar-width-collapsed)' : 'var(--departments-sidebar-width-expanded)',
         transition: 'all var(--animation-duration-main) var(--animation-easing)',
@@ -109,7 +81,6 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
             return (
               <button
                 key={department.key}
-                ref={el => (itemsRef.current[index] = el)}
                 onClick={() => onDepartmentSelect(department.key)}
                 className={`
                   flex items-center gap-3 text-right group relative overflow-hidden sync-transition
