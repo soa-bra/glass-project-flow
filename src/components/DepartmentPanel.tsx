@@ -68,9 +68,9 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
     };
   };
   const content = getDepartmentContent(selectedDepartment);
-  return <div className="h-full rounded-3xl p-6 overflow-hidden" style={{
+  return <div style={{
     background: 'var(--backgrounds-project-mgmt-board-bg)'
-  }}>
+  }} className="h-full rounded-3xl p-6 overflow-hidden bg-[soabra-new-admin-ops-board]">
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="mb-6">
