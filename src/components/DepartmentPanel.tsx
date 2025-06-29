@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, circOut, circIn } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 interface DepartmentPanelProps {
@@ -70,12 +70,12 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
     open: {
       x: 0,
       opacity: 1,
-      transition: { duration: 0.3, ease: 'circOut' }
+      transition: { duration: 0.3, ease: circOut }
     },
     closed: {
       x: '100%',
       opacity: 0,
-      transition: { duration: 0.25, ease: 'circIn' }
+      transition: { duration: 0.25, ease: circIn }
     }
   };
 
