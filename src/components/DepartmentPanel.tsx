@@ -1,6 +1,12 @@
 
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { 
+  FinancialOverviewTab, 
+  BudgetManagementTab, 
+  PaymentsInvoicesTab, 
+  FinancialAnalysisTab 
+} from './DepartmentTabs/Financial';
 
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
@@ -18,7 +24,6 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       background: 'var(--backgrounds-admin-ops-board-bg)'
     }} className="h-full rounded-3xl flex items-center justify-center bg-slate-400">
         <div className="text-center text-gray-600 font-arabic">
-          
           <h3 className="text-2xl font-semibold mb-2">اختر إدارة للبدء</h3>
           <p className="text-lg">قم بتحديد إدارة من القائمة الجانبية لعرض المحتوى</p>
         </div>
@@ -29,7 +34,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
     const departmentData = {
       financial: {
         title: 'إدارة الأوضاع المالية',
-        tabs: ['الميزانية', 'التقارير المالية', 'التدفق النقدي', 'الاستثمارات']
+        tabs: ['النظرة العامة', 'إدارة الميزانيات', 'المدفوعات والفواتير', 'التحليل المالي']
       },
       legal: {
         title: 'إدارة الأحوال القانونية',
@@ -77,37 +82,70 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
 
   const content = getDepartmentContent(selectedDepartment);
 
+  const renderTabContent = (tab: string, department: string) => {
+    if (department === 'financial') {
+      switch (tab) {
+        case 'النظرة العامة':
+          return <FinancialOverviewTab />;
+        case 'إدارة الميزانيات':
+          return <BudgetManagementTab />;
+        case 'المدفوعات والفواتير':
+          return <PaymentsInvoicesTab />;
+        case 'التحليل المالي':
+          return <FinancialAnalysisTab />;
+        default:
+          return (
+            <div className="text-center text-gray-600 font-arabic p-8">
+              <h3 className="text-xl font-semibold mb-2">{tab}</h3>
+              <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
+            </div>
+          );
+      }
+    }
+
+    // محتوى افتراضي للإدارات الأخرى
+    return (
+      <div className="text-center text-gray-600 font-arabic p-8">
+        <h3 className="text-xl font-semibold mb-2">{tab}</h3>
+        <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
+      </div>
+    );
+  };
+
   return <div style={{
     background: 'var(--backgrounds-project-mgmt-board-bg)'
-  }} className="h-full rounded-3xl p-6 overflow-hidden bg-[soabra-new-admin-ops-board] bg-slate-400">
+  }} className="h-full rounded-3xl overflow-hidden bg-slate-400">
       <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-right text-soabra-text-primary mb-2 font-arabic my-[39px]">
+        <div className="p-6 pb-0">
+          <h1 className="text-3xl font-bold text-right text-soabra-text-primary mb-2 font-arabic">
             {content.title}
           </h1>
-          
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue={content.tabs[0]} className="flex-1 flex flex-col" dir="rtl">
+        <Tabs defaultValue={content.tabs[0]} className="flex-1 flex flex-col p-6" dir="rtl">
           <TabsList className="grid w-full grid-cols-4 mb-6 bg-white/20 rounded-full p-1">
-            {content.tabs.map(tab => <TabsTrigger key={tab} value={tab} className="rounded-full font-arabic text-sm data-[state=active]:bg-black data-[state=active]:text-white">
+            {content.tabs.map(tab => 
+              <TabsTrigger 
+                key={tab} 
+                value={tab} 
+                className="rounded-full font-arabic text-sm data-[state=active]:bg-black data-[state=active]:text-white"
+              >
                 {tab}
-              </TabsTrigger>)}
+              </TabsTrigger>
+            )}
           </TabsList>
 
-          {content.tabs.map(tab => <TabsContent key={tab} value={tab} className="flex-1 mt-0">
-              <div className="h-full rounded-2xl p-6 operations-board-card" style={{
-            background: 'var(--backgrounds-cards-admin-ops)'
-          }}>
-                <div className="text-center text-gray-600 font-arabic">
-                  
-                  <h3 className="text-xl font-semibold mb-2">{tab}</h3>
-                  <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
-                </div>
+          {content.tabs.map(tab => 
+            <TabsContent key={tab} value={tab} className="flex-1 mt-0 overflow-auto">
+              <div className="h-full rounded-2xl operations-board-card" style={{
+                background: 'var(--backgrounds-cards-admin-ops)'
+              }}>
+                {renderTabContent(tab, selectedDepartment)}
               </div>
-            </TabsContent>)}
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </div>;
