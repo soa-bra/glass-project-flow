@@ -7,13 +7,15 @@ interface DepartmentsSidebarProps {
   onDepartmentSelect: (department: string) => void;
   isCollapsed: boolean;
   onToggleCollapse: (collapsed: boolean) => void;
+  enableTabNotch?: boolean;
 }
 
 const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   selectedDepartment,
   onDepartmentSelect,
   isCollapsed,
-  onToggleCollapse
+  onToggleCollapse,
+  enableTabNotch = true
 }) => {
   const departments = [
     { key: 'financial', label: 'إدارة الأوضاع المالية', icon: DollarSign },
@@ -87,7 +89,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
                 className={`
                   flex items-center gap-3 text-right group relative overflow-hidden sync-transition
                   ${isActive 
-                    ? 'bg-white/25 text-[#3e494c] font-medium rounded-full shadow-lg border border-white/50 scale-[1.02]' 
+                    ? `bg-white/25 text-[#3e494c] font-medium rounded-full shadow-lg border border-white/50 scale-[1.02] ${enableTabNotch ? 'departments-tab-notch-active' : ''}` 
                     : 'text-soabra-text-secondary hover:bg-white/15 hover:text-[#3e494c] font-light rounded-full hover:shadow-md border border-transparent hover:border-white/30 hover:scale-[1.02] active:scale-95'
                   }
                   ${isCollapsed ? 'justify-center px-[12px] py-3' : 'px-2 py-3'}
