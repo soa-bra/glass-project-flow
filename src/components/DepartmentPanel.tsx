@@ -1,10 +1,6 @@
 
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { FinancialOverviewTab } from './DepartmentTabs/Financial/FinancialOverviewTab';
-import { BudgetManagementTab } from './DepartmentTabs/Financial/BudgetManagementTab';
-import { PaymentInvoiceTab } from './DepartmentTabs/Financial/PaymentInvoiceTab';
-import { FinancialAnalysisTab } from './DepartmentTabs/Financial/FinancialAnalysisTab';
 
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
@@ -33,7 +29,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
     const departmentData = {
       financial: {
         title: 'إدارة الأوضاع المالية',
-        tabs: ['النظرة العامة', 'إدارة الميزانيات', 'المدفوعات والفواتير', 'التحليل المالي']
+        tabs: ['الميزانية', 'التقارير المالية', 'التدفق النقدي', 'الاستثمارات']
       },
       legal: {
         title: 'إدارة الأحوال القانونية',
@@ -81,30 +77,6 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
 
   const content = getDepartmentContent(selectedDepartment);
 
-  const renderFinancialTabs = () => {
-    if (selectedDepartment !== 'financial') return null;
-
-    return (
-      <>
-        <TabsContent value="النظرة العامة" className="flex-1 mt-0">
-          <FinancialOverviewTab />
-        </TabsContent>
-
-        <TabsContent value="إدارة الميزانيات" className="flex-1 mt-0">
-          <BudgetManagementTab />
-        </TabsContent>
-
-        <TabsContent value="المدفوعات والفواتير" className="flex-1 mt-0">
-          <PaymentInvoiceTab />
-        </TabsContent>
-
-        <TabsContent value="التحليل المالي" className="flex-1 mt-0">
-          <FinancialAnalysisTab />
-        </TabsContent>
-      </>
-    );
-  };
-
   return <div style={{
     background: 'var(--backgrounds-project-mgmt-board-bg)'
   }} className="h-full rounded-3xl p-6 overflow-hidden bg-[soabra-new-admin-ops-board] bg-slate-400">
@@ -125,23 +97,17 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
               </TabsTrigger>)}
           </TabsList>
 
-          {/* Financial Department Specific Tabs */}
-          {renderFinancialTabs()}
-
-          {/* Generic tabs for other departments */}
-          {selectedDepartment !== 'financial' && content.tabs.map(tab => 
-            <TabsContent key={tab} value={tab} className="flex-1 mt-0">
+          {content.tabs.map(tab => <TabsContent key={tab} value={tab} className="flex-1 mt-0">
               <div className="h-full rounded-2xl p-6 operations-board-card" style={{
-                background: 'var(--backgrounds-cards-admin-ops)'
-              }}>
+            background: 'var(--backgrounds-cards-admin-ops)'
+          }}>
                 <div className="text-center text-gray-600 font-arabic">
                   
                   <h3 className="text-xl font-semibold mb-2">{tab}</h3>
                   <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
                 </div>
               </div>
-            </TabsContent>
-          )}
+            </TabsContent>)}
         </Tabs>
       </div>
     </div>;
