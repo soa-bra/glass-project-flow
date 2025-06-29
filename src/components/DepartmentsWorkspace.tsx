@@ -28,6 +28,7 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
           onDepartmentSelect={setSelectedDepartment}
           isCollapsed={isDepartmentsSidebarCollapsed}
           onToggleCollapse={setIsDepartmentsSidebarCollapsed}
+          enableTabNotch={true}
         />
       </div>
 
