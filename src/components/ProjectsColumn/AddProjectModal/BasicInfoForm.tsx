@@ -4,7 +4,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 
 interface BasicInfoFormProps {
   projectData: {
@@ -14,7 +13,6 @@ interface BasicInfoFormProps {
     startDate: string;
     endDate: string;
     budget: string;
-    team: string[];
   };
   onInputChange: (field: string, value: unknown) => void;
   teamMembers: string[];
@@ -25,17 +23,6 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   onInputChange,
   teamMembers,
 }) => {
-  const handleTeamMemberToggle = (member: string) => {
-    const currentTeam = projectData.team || [];
-    const isSelected = currentTeam.includes(member);
-    
-    if (isSelected) {
-      onInputChange('team', currentTeam.filter(m => m !== member));
-    } else {
-      onInputChange('team', [...currentTeam, member]);
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-6">
@@ -107,33 +94,6 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           className="text-right font-arabic"
           placeholder="0"
         />
-      </div>
-
-      <div className="space-y-4">
-        <Label className="font-arabic text-right">أعضاء الفريق</Label>
-        <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
-          {teamMembers.map((member) => (
-            <div key={member} className="flex items-center space-x-2 space-x-reverse">
-              <Checkbox
-                id={`team-${member}`}
-                checked={projectData.team?.includes(member) || false}
-                onCheckedChange={() => handleTeamMemberToggle(member)}
-                className="data-[state=checked]:bg-black data-[state=checked]:border-black"
-              />
-              <Label 
-                htmlFor={`team-${member}`} 
-                className="font-arabic text-sm cursor-pointer"
-              >
-                {member}
-              </Label>
-            </div>
-          ))}
-        </div>
-        {projectData.team && projectData.team.length > 0 && (
-          <div className="text-sm text-gray-600 font-arabic text-right">
-            تم اختيار {projectData.team.length} من أعضاء الفريق
-          </div>
-        )}
       </div>
     </div>
   );

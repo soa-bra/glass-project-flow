@@ -16,7 +16,7 @@ interface NPSScore {
   client: string;
 }
 
-export interface ClientsData {
+interface ClientsData {
   active: ActiveClient[];
   nps: NPSScore[];
 }

@@ -18,8 +18,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { EllipsisVertical, Check } from 'lucide-react';
 
-import type { TaskData } from '@/types';
-
 interface TaskCardStatusIndicatorsProps {
   status: string;
   statusColor: string;
@@ -27,11 +25,10 @@ interface TaskCardStatusIndicatorsProps {
   assignee: string;
   members: string;
   taskId: string;
-  taskData?: TaskData;
   isSelected?: boolean;
   isSelectionMode?: boolean;
   onSelect?: (taskId: string) => void;
-  onEdit?: (taskId: string, taskData?: TaskData) => void;
+  onEdit?: (taskId: string) => void;
   onArchive?: (taskId: string) => void;
   onDelete?: (taskId: string) => void;
 }
@@ -43,7 +40,6 @@ const TaskCardStatusIndicators = ({
   assignee,
   members,
   taskId,
-  taskData,
   isSelected = false,
   isSelectionMode = false,
   onSelect,
@@ -68,7 +64,7 @@ const TaskCardStatusIndicators = ({
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     console.log('تعديل المهمة:', taskId);
-    onEdit?.(taskId, taskData);
+    onEdit?.(taskId);
   };
 
   const handleArchive = () => {

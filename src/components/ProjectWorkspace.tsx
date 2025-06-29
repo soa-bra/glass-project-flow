@@ -1,23 +1,16 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import ProjectPanel from '@/components/ProjectPanel';
 import { ProjectManagementBoard } from '@/components/ProjectManagement';
 import { mockProjects } from '@/data/mockProjects';
 import { useProjectPanelAnimation } from '@/hooks/useProjectPanelAnimation';
-import { ProjectTasksProvider } from '@/contexts/ProjectTasksContext';
-import { Project } from '@/types/project';
-import { ProjectData } from '@/types';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
 }
 
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
-  // إدارة حالة المشاريع على مستوى ProjectWorkspace
-  const [projects, setProjects] = useState<Project[]>(mockProjects);
-
   const {
     panelStage,
     selectedProjectId,
@@ -27,45 +20,6 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     handleProjectSelect,
     closePanel,
   } = useProjectPanelAnimation();
-
-  // دالة لإضافة مشروع جديد
-  const handleProjectAdded = (newProject: ProjectData) => {
-    const projectToAdd: Project = {
-      id: newProject.id.toString(),
-      title: newProject.name,
-      description: newProject.description,
-      owner: newProject.owner,
-      value: newProject.budget.toString(),
-      daysLeft: Math.ceil((new Date(newProject.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
-      tasksCount: newProject.tasksCount,
-      status: newProject.status,
-      date: new Date().toLocaleDateString('ar-SA'),
-      isOverBudget: false,
-      hasOverdueTasks: false,
-      team: newProject.team.map(name => ({ name })),
-      progress: 0,
-    };
-    setProjects(prev => [projectToAdd, ...prev]);
-  };
-
-  // دالة لتحديث مشروع موجود
-  const handleProjectUpdated = (updatedProject: ProjectData) => {
-    setProjects(prev => prev.map(project => 
-      project.id === updatedProject.id.toString() 
-        ? {
-            ...project,
-            title: updatedProject.name,
-            description: updatedProject.description,
-            owner: updatedProject.owner,
-            value: updatedProject.budget.toString(),
-            daysLeft: Math.ceil((new Date(updatedProject.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
-            tasksCount: updatedProject.tasksCount,
-            status: updatedProject.status,
-            team: updatedProject.team.map(name => ({ name })),
-          }
-        : project
-    ));
-  };
 
   // Dynamically set right offsets depending on collapsed state
   const projectsColumnRight = isSidebarCollapsed ? 'var(--projects-right-collapsed)' : 'var(--projects-right-expanded)';
@@ -77,11 +31,11 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
 
   // panel content switches: always mount ProjectPanel but swap inner content with fade
   const shownProject = displayedProjectId
-    ? projects.find((p) => p.id === displayedProjectId)
+    ? mockProjects.find((p) => p.id === displayedProjectId)
     : null;
 
   return (
-    <ProjectTasksProvider>
+    <>
       {/* Projects Column: shifts left when panel slides in */}
       <div
         className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`}
@@ -100,10 +54,9 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           className="w-full h-full p-2 py-0 mx-0 px-[5px]"
         >
           <ProjectsColumn
-            projects={projects}
+            projects={mockProjects}
             selectedProjectId={selectedProjectId}
             onProjectSelect={handleProjectSelect}
-            onProjectAdded={handleProjectAdded}
           />
         </div>
       </div>
@@ -123,15 +76,13 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       {/* Project Management Board: slides in/out and crossfades content */}
       {shownProject && (
         <ProjectManagementBoard
-          key={shownProject.id} // إضافة key لإعادة التحديث عند تغيير المشروع
           project={shownProject}
           isVisible={panelStage === "open" || panelStage === "changing-content"}
           onClose={closePanel}
           isSidebarCollapsed={isSidebarCollapsed}
-          onProjectUpdated={handleProjectUpdated}
         />
       )}
-    </ProjectTasksProvider>
+    </>
   );
 };
 

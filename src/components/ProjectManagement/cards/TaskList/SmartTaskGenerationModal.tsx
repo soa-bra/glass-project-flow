@@ -19,12 +19,10 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-import type { TaskData } from '@/types';
-
 interface SmartTaskGenerationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onTasksGenerated: (tasks: TaskData[]) => void;
+  onTasksGenerated: (tasks: any[]) => void;
 }
 
 const taskTypes = [
@@ -76,15 +74,17 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       // توليد مهام وهمية للاختبار
-      const generatedTasks: TaskData[] = Array.from({ length: taskCount }, (_, index) => ({
+      const generatedTasks = Array.from({ length: taskCount }, (_, index) => ({
         id: Date.now() + index,
         title: `مهمة مولدة ${index + 1}`,
         description: `وصف المهمة المولدة تلقائياً`,
-        priority: (['urgent-important', 'urgent-not-important', 'not-urgent-important', 'not-urgent-not-important'] as const)[Math.floor(Math.random() * 4)],
+        priority: ['high', 'medium', 'low'][Math.floor(Math.random() * 3)],
+        type: formData.selectedTypes.length > 0 
+          ? formData.selectedTypes[Math.floor(Math.random() * formData.selectedTypes.length)]
+          : 'technical',
         dueDate: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        stage: 'planning' as const,
+        stage: 'planning',
         assignee: '',
-        attachments: [], // إضافة الخاصية المطلوبة
         createdAt: new Date().toISOString(),
       }));
 

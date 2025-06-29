@@ -11,15 +11,13 @@ interface ProjectCardStatusIndicatorsProps {
   date: string;
   owner: string;
   value: string;
-  teamMembersCount?: number;
 }
 
 const ProjectCardStatusIndicators = ({
   status,
   date,
   owner,
-  value,
-  teamMembersCount = 3
+  value
 }: ProjectCardStatusIndicatorsProps) => {
   return (
     <div className="flex items-center justify-between py-0 mx-0 px-[28px] my-[24px]">
@@ -48,23 +46,6 @@ const ProjectCardStatusIndicators = ({
             }}
           >
             {date}
-          </span>
-        </div>
-
-        {/* عدد أعضاء الفريق */}
-        <div 
-          className="rounded-full py-[2px] flex items-center px-[15px]"
-          style={{
-            backgroundColor: 'var(--project-card-elements-info-bubbles)'
-          }}
-        >
-          <span 
-            className="text-sm font-arabic"
-            style={{
-              color: 'var(--project-card-elements-secondary-text)'
-            }}
-          >
-            {teamMembersCount} أعضاء
           </span>
         </div>
 
