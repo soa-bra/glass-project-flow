@@ -1,16 +1,17 @@
-
 import React, { useLayoutEffect, useRef } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
   isSidebarCollapsed: boolean;
+  isDepartmentsSidebarCollapsed?: boolean;
   notchTop?: number;
 }
 
 const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   selectedDepartment,
   isSidebarCollapsed,
+  isDepartmentsSidebarCollapsed = false,
   notchTop = 0
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -105,7 +106,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
             borderRadius: '0 1.5rem 1.5rem 0',
             transition: 'top 0.3s ease',
             zIndex: 10,
-            opacity: isSidebarCollapsed ? 0 : 1
+            opacity: isDepartmentsSidebarCollapsed ? 0 : 1
           }}
         />
       )}
