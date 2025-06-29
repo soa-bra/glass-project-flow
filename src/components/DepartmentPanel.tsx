@@ -74,10 +74,10 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-right text-soabra-text-primary mb-2 font-arabic">
+          <h1 className="text-3xl font-bold text-right text-soabra-text-primary mb-2 font-arabic my-[39px]">
             {content.title}
           </h1>
-          <div className="h-1 bg-gradient-to-l from-blue-500 to-purple-500 rounded-full w-32 mr-auto"></div>
+          
         </div>
 
         {/* Tabs */}
