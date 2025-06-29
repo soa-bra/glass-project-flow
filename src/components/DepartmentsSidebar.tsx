@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight, Eye, EyeOff } from 'lucide-react';
-import { useDepartmentsPanel } from '@/contexts/DepartmentsPanelContext';
+import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface DepartmentsSidebarProps {
   selectedDepartment: string | null;
@@ -16,8 +15,6 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   isCollapsed,
   onToggleCollapse
 }) => {
-  const { isPanelOpen, togglePanel } = useDepartmentsPanel();
-
   const departments = [
     { key: 'financial', label: 'إدارة الأوضاع المالية', icon: DollarSign },
     { key: 'legal', label: 'إدارة الأحوال القانونية', icon: Scale },
@@ -33,13 +30,6 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
 
   const toggleSidebar = () => {
     onToggleCollapse(!isCollapsed);
-  };
-
-  const handleDepartmentSelect = (departmentKey: string) => {
-    onDepartmentSelect(departmentKey);
-    if (!isPanelOpen) {
-      togglePanel();
-    }
   };
 
   return (
@@ -70,41 +60,18 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
               </h2>
             </div>
             
-            <div className="flex gap-2">
-              {/* Panel Toggle Button */}
-              {!isCollapsed && (
-                <button 
-                  onClick={togglePanel}
-                  className={`group w-[60px] h-[60px] rounded-full flex items-center justify-center border-2 flex-shrink-0 sync-transition-fast ${
-                    isPanelOpen 
-                      ? 'border-[#3e494c]/60 bg-white/25 shadow-lg' 
-                      : 'border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/20 hover:shadow-lg'
-                  }`}
-                >
-                  <div className="sync-transition-fast">
-                    {isPanelOpen ? (
-                      <EyeOff className="w-6 h-6 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
-                    ) : (
-                      <Eye className="w-6 h-6 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
-                    )}
-                  </div>
-                </button>
-              )}
-              
-              {/* Sidebar Toggle Button */}
-              <button 
-                onClick={toggleSidebar}
-                className="group w-[60px] h-[60px] rounded-full flex items-center justify-center border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/20 hover:shadow-lg flex-shrink-0 sync-transition-fast"
-              >
-                <div className="sync-transition-fast">
-                  {isCollapsed ? (
-                    <ChevronRight className="w-6 h-6 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
-                  ) : (
-                    <ChevronLeft className="w-6 h-6 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
-                  )}
-                </div>
-              </button>
-            </div>
+            <button 
+              onClick={toggleSidebar}
+              className="group w-[60px] h-[60px] rounded-full flex items-center justify-center border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/20 hover:shadow-lg flex-shrink-0 sync-transition-fast"
+            >
+              <div className="sync-transition-fast">
+                {isCollapsed ? (
+                  <ChevronRight className="w-6 h-6 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
+                ) : (
+                  <ChevronLeft className="w-6 h-6 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
+                )}
+              </div>
+            </button>
           </div>
         </div>
 
@@ -116,7 +83,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
             return (
               <button
                 key={department.key}
-                onClick={() => handleDepartmentSelect(department.key)}
+                onClick={() => onDepartmentSelect(department.key)}
                 className={`
                   flex items-center gap-3 text-right group relative overflow-hidden sync-transition
                   ${isActive 
