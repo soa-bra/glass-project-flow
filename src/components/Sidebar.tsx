@@ -1,3 +1,4 @@
+/* src/styles/sidebar.css */
 .departments-panel::before {
   content: "";
   position: absolute;
@@ -8,11 +9,10 @@
   transform: translate(-100%, -50%);
   background: #E5EFF5;
   border-radius: 1.5rem 0 0 1.5rem;
-  transition: top 0.2s ease;   /* حركة ناعمة */
+  transition: top 0.2s ease;
   z-index: 10;
 }
 
-/* لما ينطوي الشريط، أخفي اللسان */
 .departments-panel.collapsed::before {
   opacity: 0;
 }
