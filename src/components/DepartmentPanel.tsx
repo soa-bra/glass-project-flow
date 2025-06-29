@@ -93,7 +93,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
             background: 'var(--backgrounds-cards-admin-ops)'
           }}>
                 <div className="text-center text-gray-600 font-arabic">
-                  <div className="text-4xl mb-4">📊</div>
+                  
                   <h3 className="text-xl font-semibold mb-2">{tab}</h3>
                   <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
                 </div>
