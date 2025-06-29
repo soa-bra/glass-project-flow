@@ -18,7 +18,6 @@ const MainContent = () => {
           onToggle={setIsSidebarCollapsed} 
           activeSection={activeSection}
           onSectionChange={setActiveSection}
-          enableTabNotch={true}
         />
       </div>
 

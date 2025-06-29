@@ -15,11 +15,12 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
     <>
       {/* العمود الثاني: سايدبار الإدارات */}
       <div
-        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] z-[110] ${
+        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${
           isSidebarCollapsed ? 'departments-sidebar-collapsed' : 'departments-sidebar-expanded'
         }`}
         style={{
           top: 'var(--sidebar-top-offset)',
+          zIndex: 110,
         }}
       >
         <DepartmentsSidebar
@@ -27,13 +28,12 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
           onDepartmentSelect={setSelectedDepartment}
           isCollapsed={isDepartmentsSidebarCollapsed}
           onToggleCollapse={setIsDepartmentsSidebarCollapsed}
-          enableTabNotch={true}
         />
       </div>
 
       {/* العمود الثالث: لوحة الإدارة */}
       <div
-        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] z-[105] ${
+        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] ${
           isSidebarCollapsed ? 'departments-panel-collapsed' : 'departments-panel-expanded'
         }`}
       >
