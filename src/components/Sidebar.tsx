@@ -6,10 +6,9 @@ interface SidebarProps {
   onToggle?: (collapsed: boolean) => void;
   activeSection?: string;
   onSectionChange?: (section: string) => void;
-  enableTabNotch?: boolean;
 }
 
-const Sidebar = ({ onToggle, activeSection = 'home', onSectionChange, enableTabNotch = true }: SidebarProps) => {
+const Sidebar = ({ onToggle, activeSection = 'home', onSectionChange }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const menuItems = [
@@ -89,7 +88,7 @@ const Sidebar = ({ onToggle, activeSection = 'home', onSectionChange, enableTabN
                 className={`
                   flex items-center gap-3 text-right group relative overflow-hidden sync-transition
                   ${isActive 
-                    ? `bg-white/25 text-[#3e494c] font-medium rounded-full shadow-lg border border-white/50 scale-[1.02] ${enableTabNotch ? 'tab-notch-active' : ''}` 
+                    ? 'bg-white/25 text-[#3e494c] font-medium rounded-full shadow-lg border border-white/50 scale-[1.02]' 
                     : 'text-soabra-text-secondary hover:bg-white/15 hover:text-[#3e494c] font-light rounded-full hover:shadow-md border border-transparent hover:border-white/30 hover:scale-[1.02] active:scale-95'
                   }
                   ${isCollapsed ? 'justify-center px-[12px] py-3' : 'px-2 py-3'}

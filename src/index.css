@@ -263,66 +263,6 @@
     z-index: var(--z-dropdown);
   }
 
-  /* Tab Notch Effect - تأثير اللسان المحسن */
-  .tab-notch-active {
-    position: relative;
-    z-index: 100;
-  }
-  
-  .tab-notch-active::before {
-    content: '';
-    position: absolute;
-    right: -25px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 30px;
-    height: 80%;
-    background: linear-gradient(90deg, 
-      rgba(255, 255, 255, 0.8) 0%, 
-      rgba(255, 255, 255, 0.9) 50%, 
-      rgba(255, 255, 255, 1) 100%
-    );
-    border-radius: 15px 0 0 15px;
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    border-right: none;
-    box-shadow: 
-      inset 0 2px 8px rgba(255, 255, 255, 0.3),
-      0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-  
-  /* Departments Tab Notch - لسان الإدارات */
-  .departments-tab-notch-active {
-    position: relative;
-    z-index: 100;
-  }
-  
-  .departments-tab-notch-active::before {
-    content: '';
-    position: absolute;
-    right: -25px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 30px;
-    height: 80%;
-    background: linear-gradient(90deg, 
-      rgba(249, 251, 252, 0.8) 0%, 
-      rgba(249, 251, 252, 0.9) 50%, 
-      rgba(249, 251, 252, 1) 100%
-    );
-    border-radius: 15px 0 0 15px;
-    border: 2px solid rgba(249, 251, 252, 0.8);
-    border-right: none;
-    box-shadow: 
-      inset 0 2px 8px rgba(255, 255, 255, 0.4),
-      0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: all var(--animation-duration-main) var(--animation-easing);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-
   .operations-board-card {
     background: var(--backgrounds-cards-admin-ops);
     border-radius: 24px;
@@ -413,7 +353,7 @@
     transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
-  /* Departments Layout Classes - محسنة للحركة الصحيحة */
+  /* Departments Layout Classes - Same Width as Main Sidebar */
   .departments-sidebar-expanded {
     right: var(--departments-sidebar-right-expanded);
     width: var(--departments-sidebar-width-expanded);
@@ -458,7 +398,127 @@
   }
 }
 
-/* حركة اللوحات المحسنة */
+/* Project Panel Animation Frames */
+.project-panel-frame1 {
+  width: 320px !important;
+  height: 110px !important;
+  border-radius: 38px;
+  right: calc(var(--operations-right-expanded) + 158px);
+  top: calc(var(--sidebar-top-offset) + 100px);
+  background: var(--backgrounds-project-cards-bg);
+  box-shadow:0 2px 14px rgba(111,111,155,0.08);
+  opacity:0.90;
+  transition: all 0.09s cubic-bezier(0.4,0,0.2,1);
+  pointer-events:none;
+  z-index:1001;
+}
+
+.project-panel-frame2 {
+  width: 470px !important;
+  height: 124px !important;
+  border-radius: 36px;
+  right: calc(var(--operations-right-expanded) + 115px);
+  background: var(--backgrounds-project-cards-bg);
+  transition: all 0.12s cubic-bezier(0.4,0,0.2,1);
+  opacity: 0.99;
+  pointer-events:none;
+  z-index:1001;
+}
+
+.project-panel-frame3 {
+  width: 650px !important;
+  height: 230px !important;
+  border-radius: 32px;
+  right: calc(var(--operations-right-expanded) + 54px);
+  background: var(--backgrounds-project-cards-bg);
+  opacity:1;
+  transition: all 0.12s cubic-bezier(0.4,0,0.2,1);
+  pointer-events:none;
+  z-index:1001;
+}
+
+.project-panel-frame4 {
+  width: 810px !important;
+  height: 315px !important;
+  border-radius: 30px;
+  right: calc(var(--operations-right-expanded) + 18px);
+  background: var(--backgrounds-project-mgmt-board-bg);
+  transition: all 0.17s cubic-bezier(0.4,0,0.2,1);
+  opacity:1;
+  pointer-events:none;
+  z-index:1002;
+}
+
+.project-panel-frame5 {
+  width: var(--operations-width-expanded);
+  height: calc(100vh - var(--sidebar-top-offset) - 18px);
+  border-radius: 28px;
+  right: var(--operations-right-expanded);
+  background: var(--backgrounds-project-mgmt-board-bg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  opacity:1;
+  pointer-events:auto;
+  transition: all 0.16s cubic-bezier(0.4,0,0.2,1);
+  z-index:1003;
+}
+
+.project-panel-frame6 {
+  width: var(--operations-width-expanded);
+  height: calc(100vh - var(--sidebar-top-offset));
+  border-radius: 32px;
+  right: var(--operations-right-expanded);
+  top: var(--sidebar-top-offset);
+  background: var(--backgrounds-project-mgmt-board-bg);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
+  opacity:1;
+  pointer-events: auto;
+  transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+  z-index:1004;
+}
+
+.rtl-fix-panel {
+  direction: rtl;
+}
+
+.operations-board-slid {
+  right: calc(var(--operations-right-expanded) - 60vw);
+  width: 0px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+
+.projects-column-slid {
+  right: calc(var(--projects-right-expanded) + 30vw);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+
+.project-panel-slid-in {
+  opacity: 1;
+  right: var(--operations-right-expanded);
+  pointer-events: auto;
+  z-index: 1200;
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+
+.project-panel-slid-out {
+  opacity: 0;
+  right: calc(100vw + 80px);
+  pointer-events: none;
+  z-index: 1199;
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+
+.project-panel-hidden {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  right: var(--operations-right-expanded);
+}
+
+/* Departments specific animations and transitions */
 .sync-transition {
   transition: all var(--animation-duration-main) var(--animation-easing);
 }
