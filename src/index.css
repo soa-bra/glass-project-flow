@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -110,13 +111,14 @@
     --project-details-right-expanded: var(--operations-right-expanded);
     --project-details-right-collapsed: var(--operations-right-collapsed);
     
-    /* Departments Layout Variables - Fixed with Exact 10px Gap */
+    /* Departments Layout Variables - Same Width as Main Sidebar */
     --departments-gap: 10px;
-    --departments-sidebar-width: 480px;
+    --departments-sidebar-width-expanded: var(--sidebar-width-expanded);
+    --departments-sidebar-width-collapsed: var(--sidebar-width-collapsed);
     --departments-sidebar-right-expanded: calc(var(--sidebar-width-expanded) + 8px);
     --departments-sidebar-right-collapsed: calc(var(--sidebar-width-collapsed) + 8px);
-    --departments-panel-right-expanded: calc(var(--departments-sidebar-right-expanded) + var(--departments-sidebar-width) + var(--departments-gap));
-    --departments-panel-right-collapsed: calc(var(--departments-sidebar-right-collapsed) + var(--departments-sidebar-width) + var(--departments-gap));
+    --departments-panel-right-expanded: calc(var(--departments-sidebar-right-expanded) + var(--departments-sidebar-width-expanded) + var(--departments-gap));
+    --departments-panel-right-collapsed: calc(var(--departments-sidebar-right-collapsed) + var(--departments-sidebar-width-collapsed) + var(--departments-gap));
     --departments-panel-width-expanded: calc(100vw - var(--departments-panel-right-expanded) - 8px);
     --departments-panel-width-collapsed: calc(100vw - var(--departments-panel-right-collapsed) - 8px);
     
@@ -351,16 +353,16 @@
     transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
-  /* Departments Layout Classes - Fixed with Exact Calculations */
+  /* Departments Layout Classes - Same Width as Main Sidebar */
   .departments-sidebar-expanded {
     right: var(--departments-sidebar-right-expanded);
-    width: var(--departments-sidebar-width);
+    width: var(--departments-sidebar-width-expanded);
     transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
   .departments-sidebar-collapsed {
     right: var(--departments-sidebar-right-collapsed);
-    width: var(--departments-sidebar-width);
+    width: var(--departments-sidebar-width-collapsed);
     transition: all var(--animation-duration-main) var(--animation-easing);
   }
 

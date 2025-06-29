@@ -35,7 +35,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   return (
     <aside 
       style={{
-        width: 'var(--departments-sidebar-width)',
+        width: isCollapsed ? 'var(--departments-sidebar-width-collapsed)' : 'var(--departments-sidebar-width-expanded)',
         transition: 'all var(--animation-duration-main) var(--animation-easing)',
         background: 'var(--backgrounds-project-column-bg)'
       }}
