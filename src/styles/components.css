@@ -1,0 +1,71 @@
+
+/* Component-specific styles */
+
+@layer components {
+  .operations-board-card {
+    background: var(--backgrounds-cards-admin-ops);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .project-card-glass {
+    background: var(--backgrounds-project-cards-bg);
+    border-radius: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .project-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .project-card-selected {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .project-card-dimmed {
+    opacity: 0.6;
+    transform: scale(0.98);
+  }
+
+  /* Progress Bar Styles */
+  .progress-segment {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 2px;
+  }
+  
+  .progress-segment-active {
+    background: var(--progress-segment-active);
+    box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+  }
+  
+  .progress-segment-inactive {
+    background: var(--progress-segment-inactive);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+}

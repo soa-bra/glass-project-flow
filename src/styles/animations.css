@@ -1,0 +1,49 @@
+
+/* Animation timing and utilities */
+
+@layer base {
+  :root {
+    /* Animation Timing Variables for Perfect Synchronization */
+    --animation-duration-main: 500ms;
+    --animation-duration-fast: 300ms;
+    --animation-duration-slow: 700ms;
+    --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --animation-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --stagger-delay: 50ms;
+    --base-delay: 100ms;
+  }
+}
+
+@layer components {
+  /* Departments specific animations and transitions */
+  .sync-transition {
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .sync-transition-fast {
+    transition: all var(--animation-duration-fast) var(--animation-easing);
+  }
+
+  /* Department panel smooth transitions */
+  .department-panel-enter {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+
+  .department-panel-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .department-panel-exit {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .department-panel-exit-active {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+}

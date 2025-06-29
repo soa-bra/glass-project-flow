@@ -1,0 +1,76 @@
+
+/* Layout constants and RTL positioning */
+
+@layer base {
+  :root {
+    /* Layout Constants for Consistent Spacing */
+    --sidebar-margin: 15px;
+    --content-margin: 20px;
+    --sidebar-width-expanded: 255px;
+    --sidebar-width-collapsed: 115px;
+    --header-height: 60px;
+    --sidebar-top-offset: 137px;
+    
+    /* RTL Layout Variables */
+    --sidebar-right: 8px;
+    --projects-right-expanded: calc(var(--sidebar-width-expanded) + 8px);
+    --projects-right-collapsed: calc(var(--sidebar-width-collapsed) + 8px);
+    --projects-width: 480px;
+    --operations-right-expanded: calc(var(--projects-right-expanded) + var(--projects-width) + 8px);
+    --operations-right-collapsed: calc(var(--projects-right-collapsed) + var(--projects-width) + 8px);
+    --operations-width-expanded: calc(100vw - var(--operations-right-expanded) - 8px);
+    --operations-width-collapsed: calc(100vw - var(--operations-right-collapsed) - 8px);
+    --project-details-width-expanded: var(--operations-width-expanded);
+    --project-details-width-collapsed: var(--operations-width-collapsed);
+    --project-details-right-expanded: var(--operations-right-expanded);
+    --project-details-right-collapsed: var(--operations-right-collapsed);
+  }
+}
+
+@layer components {
+  /* RTL Layout Classes */
+  .sidebar-layout {
+    right: var(--sidebar-right);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .projects-layout-expanded {
+    right: var(--projects-right-expanded);
+    width: var(--projects-width);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .projects-layout-collapsed {
+    right: var(--projects-right-collapsed);
+    width: var(--projects-width);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .operations-board-expanded {
+    right: var(--operations-right-expanded);
+    width: var(--operations-width-expanded);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .operations-board-collapsed {
+    right: var(--operations-right-collapsed);
+    width: var(--operations-width-collapsed);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .project-details-expanded {
+    right: var(--project-details-right-expanded);
+    width: var(--project-details-width-expanded);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .project-details-collapsed {
+    right: var(--project-details-right-collapsed);
+    width: var(--project-details-width-collapsed);
+    transition: all var(--animation-duration-main) var(--animation-easing);
+  }
+
+  .rtl-fix-panel {
+    direction: rtl;
+  }
+}
