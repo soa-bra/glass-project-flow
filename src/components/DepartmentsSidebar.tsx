@@ -1,18 +1,20 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface DepartmentsSidebarProps {
   selectedDepartment: string | null;
   onDepartmentSelect: (department: string) => void;
+  isCollapsed: boolean;
+  onToggleCollapse: (collapsed: boolean) => void;
 }
 
 const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   selectedDepartment,
   onDepartmentSelect,
+  isCollapsed,
+  onToggleCollapse
 }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
   const departments = [
     { key: 'financial', label: 'إدارة الأوضاع المالية', icon: DollarSign },
     { key: 'legal', label: 'إدارة الأحوال القانونية', icon: Scale },
@@ -27,7 +29,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   ];
 
   const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+    onToggleCollapse(!isCollapsed);
   };
 
   return (
@@ -37,7 +39,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
         transition: 'all var(--animation-duration-main) var(--animation-easing)',
         background: 'var(--backgrounds-project-column-bg)'
       }}
-      className="h-full backdrop-blur-xl rounded-3xl overflow-hidden relative"
+      className="h-full backdrop-blur-xl rounded-3xl overflow-hidden"
     >
       <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0">
         {/* Header with Toggle */}

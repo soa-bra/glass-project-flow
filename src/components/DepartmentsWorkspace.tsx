@@ -1,23 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import DepartmentsSidebar from './DepartmentsSidebar';
 import DepartmentPanel from './DepartmentPanel';
-import { useDepartmentPanelAnimation } from '@/hooks/useDepartmentPanelAnimation';
 
 interface DepartmentsWorkspaceProps {
   isSidebarCollapsed: boolean;
 }
 
 const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCollapsed }) => {
-  const {
-    panelStage,
-    selectedDepartmentId,
-    displayedDepartmentId,
-    operationsBoardClass,
-    departmentsColumnClass,
-    handleDepartmentSelect,
-    closePanel,
-  } = useDepartmentPanelAnimation();
+  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
+  const [isDepartmentsSidebarCollapsed, setIsDepartmentsSidebarCollapsed] = useState(false);
 
   return (
     <>
@@ -25,15 +17,17 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
       <div
         className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${
           isSidebarCollapsed ? 'departments-sidebar-collapsed' : 'departments-sidebar-expanded'
-        } ${departmentsColumnClass}`}
+        }`}
         style={{
           top: 'var(--sidebar-top-offset)',
           zIndex: 110,
         }}
       >
         <DepartmentsSidebar
-          selectedDepartment={selectedDepartmentId}
-          onDepartmentSelect={handleDepartmentSelect}
+          selectedDepartment={selectedDepartment}
+          onDepartmentSelect={setSelectedDepartment}
+          isCollapsed={isDepartmentsSidebarCollapsed}
+          onToggleCollapse={setIsDepartmentsSidebarCollapsed}
         />
       </div>
 
@@ -41,12 +35,11 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
       <div
         className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] ${
           isSidebarCollapsed ? 'departments-panel-collapsed' : 'departments-panel-expanded'
-        } ${operationsBoardClass}`}
+        }`}
       >
         <DepartmentPanel 
-          selectedDepartment={displayedDepartmentId}
-          panelStage={panelStage}
-          onClose={closePanel}
+          selectedDepartment={selectedDepartment}
+          isSidebarCollapsed={isSidebarCollapsed}
         />
       </div>
     </>
