@@ -11,13 +11,13 @@ import { ReportsTab } from './ReportsTab';
 
 export const LegalDashboard: React.FC = () => {
   const tabs = [
-    { key: 'overview', label: 'النظرة العامة' },
-    { key: 'contracts', label: 'العقود والاتفاقيات' },
-    { key: 'compliance', label: 'الامتثال' },
-    { key: 'risks', label: 'المخاطر والنزاعات' },
-    { key: 'licenses', label: 'التراخيص والملكية الفكرية' },
-    { key: 'templates', label: 'النماذج والقوالب' },
-    { key: 'reports', label: 'التقارير' }
+    { key: 'overview', label: 'النظرة العامة', component: OverviewTab },
+    { key: 'contracts', label: 'العقود والاتفاقيات', component: ContractsTab },
+    { key: 'compliance', label: 'الامتثال', component: ComplianceTab },
+    { key: 'risks', label: 'المخاطر والنزاعات', component: RisksTab },
+    { key: 'licenses', label: 'التراخيص والملكية الفكرية', component: LicensesTab },
+    { key: 'templates', label: 'النماذج والقوالب', component: TemplatesTab },
+    { key: 'reports', label: 'التقارير', component: ReportsTab }
   ];
 
   return (
@@ -41,33 +41,21 @@ export const LegalDashboard: React.FC = () => {
                 </TabsTrigger>
               ))}
             </TabsList>
+
+            {/* Tab Content */}
+            <div className="mt-6">
+              {tabs.map(tab => {
+                const TabComponent = tab.component;
+                return (
+                  <TabsContent key={tab.key} value={tab.key} className="h-full mt-0">
+                    <TabComponent />
+                  </TabsContent>
+                );
+              })}
+            </div>
           </Tabs>
         </div>
       </div>
-
-      <Tabs defaultValue="overview" className="h-full" dir="rtl">
-        <TabsContent value="overview" className="h-full mt-0">
-          <OverviewTab />
-        </TabsContent>
-        <TabsContent value="contracts" className="h-full mt-0">
-          <ContractsTab />
-        </TabsContent>
-        <TabsContent value="compliance" className="h-full mt-0">
-          <ComplianceTab />
-        </TabsContent>
-        <TabsContent value="risks" className="h-full mt-0">
-          <RisksTab />
-        </TabsContent>
-        <TabsContent value="licenses" className="h-full mt-0">
-          <LicensesTab />
-        </TabsContent>
-        <TabsContent value="templates" className="h-full mt-0">
-          <TemplatesTab />
-        </TabsContent>
-        <TabsContent value="reports" className="h-full mt-0">
-          <ReportsTab />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };
