@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,126 +7,238 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  DollarSign, 
-  TrendingUp, 
-  TrendingDown, 
-  AlertTriangle, 
-  CheckCircle,
-  Clock,
-  FileText,
-  BarChart,
-  Settings,
-  Download,
-  Upload,
-  Eye,
-  Calculator,
-  CreditCard,
-  Receipt,
-  PieChart,
-  Target,
-  Wallet,
-  BookOpen,
-  Database,
-  Bell
-} from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Clock, FileText, BarChart, Settings, Download, Upload, Eye, Calculator, CreditCard, Receipt, PieChart, Target, Wallet, BookOpen, Database, Bell } from 'lucide-react';
 import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RechartsPieChart, Cell, Pie } from 'recharts';
 import { BaseCard } from '@/components/ui/BaseCard';
 
 // Mock data for financial dashboard
 const mockKPIData = {
-  revenue: { value: 2450000, change: 12.5, trend: 'up' },
-  expenses: { value: 1850000, change: -8.3, trend: 'down' },
-  netProfit: { value: 600000, change: 45.2, trend: 'up' },
-  cashFlow: { value: 420000, change: 23.1, trend: 'up' }
-};
-
-const mockBudgetData = [
-  { month: 'يناير', budget: 200000, actual: 185000 },
-  { month: 'فبراير', budget: 220000, actual: 210000 },
-  { month: 'مارس', budget: 250000, actual: 245000 },
-  { month: 'أبريل', budget: 230000, actual: 255000 },
-  { month: 'مايو', budget: 240000, actual: 235000 },
-  { month: 'يونيو', budget: 260000, actual: 270000 }
-];
-
-const mockCashFlowData = [
-  { month: 'يناير', inflow: 300000, outflow: 250000 },
-  { month: 'فبراير', inflow: 320000, outflow: 280000 },
-  { month: 'مارس', inflow: 350000, outflow: 290000 },
-  { month: 'أبريل', inflow: 330000, outflow: 310000 },
-  { month: 'مايو', inflow: 380000, outflow: 320000 },
-  { month: 'يونيو', inflow: 400000, outflow: 330000 }
-];
-
-const mockBudgetTree = [
-  {
-    id: 1,
-    name: 'الميزانية العامة 2024',
-    amount: 5000000,
-    status: 'approved',
-    children: [
-      { id: 11, name: 'مشاريع التطوير', amount: 2000000, status: 'approved' },
-      { id: 12, name: 'التشغيل والصيانة', amount: 1500000, status: 'pending' },
-      { id: 13, name: 'الموارد البشرية', amount: 1200000, status: 'approved' },
-      { id: 14, name: 'التسويق والإعلان', amount: 300000, status: 'review' }
-    ]
+  revenue: {
+    value: 2450000,
+    change: 12.5,
+    trend: 'up'
+  },
+  expenses: {
+    value: 1850000,
+    change: -8.3,
+    trend: 'down'
+  },
+  netProfit: {
+    value: 600000,
+    change: 45.2,
+    trend: 'up'
+  },
+  cashFlow: {
+    value: 420000,
+    change: 23.1,
+    trend: 'up'
   }
-];
-
-const mockTransactions = [
-  { id: 1, date: '2024-06-29', description: 'دفع راتب الموظفين', amount: -120000, type: 'expense', category: 'HR', status: 'completed' },
-  { id: 2, date: '2024-06-28', description: 'إيراد من مشروع ABC', amount: 250000, type: 'revenue', category: 'Projects', status: 'completed' },
-  { id: 3, date: '2024-06-27', description: 'مصاريف تسويقية', amount: -15000, type: 'expense', category: 'Marketing', status: 'pending' },
-  { id: 4, date: '2024-06-26', description: 'دفع فواتير الخدمات', amount: -8500, type: 'expense', category: 'Operations', status: 'completed' }
-];
-
-const mockInvoices = [
-  { id: 'INV-001', client: 'شركة الأمل', amount: 150000, status: 'paid', dueDate: '2024-06-15' },
-  { id: 'INV-002', client: 'مؤسسة الرؤية', amount: 75000, status: 'pending', dueDate: '2024-07-01' },
-  { id: 'INV-003', client: 'شركة النجاح', amount: 200000, status: 'overdue', dueDate: '2024-06-20' },
-  { id: 'INV-004', client: 'مجموعة التقدم', amount: 125000, status: 'draft', dueDate: '2024-07-15' }
-];
-
-const mockExpenseCategories = [
-  { name: 'الموارد البشرية', value: 45, color: '#8884d8' },
-  { name: 'التشغيل', value: 25, color: '#82ca9d' },
-  { name: 'التسويق', value: 15, color: '#ffc658' },
-  { name: 'التطوير', value: 10, color: '#ff7c7c' },
-  { name: 'أخرى', value: 5, color: '#8dd1e1' }
-];
-
+};
+const mockBudgetData = [{
+  month: 'يناير',
+  budget: 200000,
+  actual: 185000
+}, {
+  month: 'فبراير',
+  budget: 220000,
+  actual: 210000
+}, {
+  month: 'مارس',
+  budget: 250000,
+  actual: 245000
+}, {
+  month: 'أبريل',
+  budget: 230000,
+  actual: 255000
+}, {
+  month: 'مايو',
+  budget: 240000,
+  actual: 235000
+}, {
+  month: 'يونيو',
+  budget: 260000,
+  actual: 270000
+}];
+const mockCashFlowData = [{
+  month: 'يناير',
+  inflow: 300000,
+  outflow: 250000
+}, {
+  month: 'فبراير',
+  inflow: 320000,
+  outflow: 280000
+}, {
+  month: 'مارس',
+  inflow: 350000,
+  outflow: 290000
+}, {
+  month: 'أبريل',
+  inflow: 330000,
+  outflow: 310000
+}, {
+  month: 'مايو',
+  inflow: 380000,
+  outflow: 320000
+}, {
+  month: 'يونيو',
+  inflow: 400000,
+  outflow: 330000
+}];
+const mockBudgetTree = [{
+  id: 1,
+  name: 'الميزانية العامة 2024',
+  amount: 5000000,
+  status: 'approved',
+  children: [{
+    id: 11,
+    name: 'مشاريع التطوير',
+    amount: 2000000,
+    status: 'approved'
+  }, {
+    id: 12,
+    name: 'التشغيل والصيانة',
+    amount: 1500000,
+    status: 'pending'
+  }, {
+    id: 13,
+    name: 'الموارد البشرية',
+    amount: 1200000,
+    status: 'approved'
+  }, {
+    id: 14,
+    name: 'التسويق والإعلان',
+    amount: 300000,
+    status: 'review'
+  }]
+}];
+const mockTransactions = [{
+  id: 1,
+  date: '2024-06-29',
+  description: 'دفع راتب الموظفين',
+  amount: -120000,
+  type: 'expense',
+  category: 'HR',
+  status: 'completed'
+}, {
+  id: 2,
+  date: '2024-06-28',
+  description: 'إيراد من مشروع ABC',
+  amount: 250000,
+  type: 'revenue',
+  category: 'Projects',
+  status: 'completed'
+}, {
+  id: 3,
+  date: '2024-06-27',
+  description: 'مصاريف تسويقية',
+  amount: -15000,
+  type: 'expense',
+  category: 'Marketing',
+  status: 'pending'
+}, {
+  id: 4,
+  date: '2024-06-26',
+  description: 'دفع فواتير الخدمات',
+  amount: -8500,
+  type: 'expense',
+  category: 'Operations',
+  status: 'completed'
+}];
+const mockInvoices = [{
+  id: 'INV-001',
+  client: 'شركة الأمل',
+  amount: 150000,
+  status: 'paid',
+  dueDate: '2024-06-15'
+}, {
+  id: 'INV-002',
+  client: 'مؤسسة الرؤية',
+  amount: 75000,
+  status: 'pending',
+  dueDate: '2024-07-01'
+}, {
+  id: 'INV-003',
+  client: 'شركة النجاح',
+  amount: 200000,
+  status: 'overdue',
+  dueDate: '2024-06-20'
+}, {
+  id: 'INV-004',
+  client: 'مجموعة التقدم',
+  amount: 125000,
+  status: 'draft',
+  dueDate: '2024-07-15'
+}];
+const mockExpenseCategories = [{
+  name: 'الموارد البشرية',
+  value: 45,
+  color: '#8884d8'
+}, {
+  name: 'التشغيل',
+  value: 25,
+  color: '#82ca9d'
+}, {
+  name: 'التسويق',
+  value: 15,
+  color: '#ffc658'
+}, {
+  name: 'التطوير',
+  value: 10,
+  color: '#ff7c7c'
+}, {
+  name: 'أخرى',
+  value: 5,
+  color: '#8dd1e1'
+}];
 export const FinancialDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const [alerts, setAlerts] = useState([
-    { id: 1, type: 'warning', message: 'تجاوز ميزانية التسويق بنسبة 15%', priority: 'high' },
-    { id: 2, type: 'info', message: 'موعد دفع الرواتب خلال 3 أيام', priority: 'medium' },
-    { id: 3, type: 'success', message: 'تم استلام دفعة من مشروع XYZ', priority: 'low' }
-  ]);
-
+  const [alerts, setAlerts] = useState([{
+    id: 1,
+    type: 'warning',
+    message: 'تجاوز ميزانية التسويق بنسبة 15%',
+    priority: 'high'
+  }, {
+    id: 2,
+    type: 'info',
+    message: 'موعد دفع الرواتب خلال 3 أيام',
+    priority: 'medium'
+  }, {
+    id: 3,
+    type: 'success',
+    message: 'تم استلام دفعة من مشروع XYZ',
+    priority: 'low'
+  }]);
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ar-SA', { 
-      style: 'currency', 
+    return new Intl.NumberFormat('ar-SA', {
+      style: 'currency',
       currency: 'SAR',
       maximumFractionDigits: 0
     }).format(amount);
   };
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'review': return 'bg-blue-100 text-blue-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      case 'paid': return 'bg-green-100 text-green-800';
-      case 'overdue': return 'bg-red-100 text-red-800';
-      case 'draft': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'approved':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'review':
+        return 'bg-blue-100 text-blue-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
+      case 'paid':
+        return 'bg-green-100 text-green-800';
+      case 'overdue':
+        return 'bg-red-100 text-red-800';
+      case 'draft':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
-
   const getStatusText = (status: string) => {
-    const statusMap: { [key: string]: string } = {
+    const statusMap: {
+      [key: string]: string;
+    } = {
       'approved': 'معتمد',
       'pending': 'في الانتظار',
       'review': 'قيد المراجعة',
@@ -141,8 +252,7 @@ export const FinancialDashboard: React.FC = () => {
   };
 
   // KPI Cards Component
-  const KPICards = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  const KPICards = () => <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <BaseCard variant="operations" className="p-6">
         <div className="flex items-center justify-between">
           <div>
@@ -206,13 +316,10 @@ export const FinancialDashboard: React.FC = () => {
           <BarChart className="h-8 w-8 text-purple-600" />
         </div>
       </BaseCard>
-    </div>
-  );
-
-  return (
-    <div className="space-y-6 p-6 bg-transparent">
+    </div>;
+  return <div className="space-y-6 p-6 bg-transparent">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
-        <TabsList className="grid w-full grid-cols-8 mb-6">
+        <TabsList className="grid w-full bg-transparent rounded-full p-1">
           <TabsTrigger value="overview">نظرة عامة</TabsTrigger>
           <TabsTrigger value="budgets">الميزانيات</TabsTrigger>
           <TabsTrigger value="transactions">النفقات والإيرادات</TabsTrigger>
@@ -242,7 +349,7 @@ export const FinancialDashboard: React.FC = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
-                    <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                    <Tooltip formatter={value => formatCurrency(Number(value))} />
                     <Legend />
                     <Bar dataKey="budget" fill="#8884d8" name="الميزانية" />
                     <Bar dataKey="actual" fill="#82ca9d" name="الفعلي" />
@@ -265,7 +372,7 @@ export const FinancialDashboard: React.FC = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
-                    <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                    <Tooltip formatter={value => formatCurrency(Number(value))} />
                     <Legend />
                     <Line type="monotone" dataKey="inflow" stroke="#8884d8" name="التدفق الداخل" />
                     <Line type="monotone" dataKey="outflow" stroke="#82ca9d" name="التدفق الخارج" />
@@ -285,12 +392,7 @@ export const FinancialDashboard: React.FC = () => {
             </CardHeader>
             <CardContent className="px-0">
               <div className="space-y-3">
-                {alerts.map((alert) => (
-                  <div key={alert.id} className={`p-4 rounded-lg border ${
-                    alert.type === 'warning' ? 'bg-yellow-50 border-yellow-200' :
-                    alert.type === 'info' ? 'bg-blue-50 border-blue-200' :
-                    'bg-green-50 border-green-200'
-                  }`}>
+                {alerts.map(alert => <div key={alert.id} className={`p-4 rounded-lg border ${alert.type === 'warning' ? 'bg-yellow-50 border-yellow-200' : alert.type === 'info' ? 'bg-blue-50 border-blue-200' : 'bg-green-50 border-green-200'}`}>
                     <div className="flex items-center gap-3">
                       {alert.type === 'warning' && <AlertTriangle className="h-5 w-5 text-yellow-600" />}
                       {alert.type === 'info' && <Clock className="h-5 w-5 text-blue-600" />}
@@ -300,8 +402,7 @@ export const FinancialDashboard: React.FC = () => {
                         {alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض'}
                       </Badge>
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </CardContent>
           </BaseCard>
@@ -322,8 +423,7 @@ export const FinancialDashboard: React.FC = () => {
               <CardTitle>شجرة الميزانيات</CardTitle>
             </CardHeader>
             <CardContent className="px-0">
-              {mockBudgetTree.map((budget) => (
-                <div key={budget.id} className="space-y-4">
+              {mockBudgetTree.map(budget => <div key={budget.id} className="space-y-4">
                   <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-3">
                       <BookOpen className="h-5 w-5" />
@@ -338,8 +438,7 @@ export const FinancialDashboard: React.FC = () => {
                   </div>
                   
                   <div className="ml-8 space-y-2">
-                    {budget.children.map((child) => (
-                      <div key={child.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    {budget.children.map(child => <div key={child.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center gap-3">
                           <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
                           <div>
@@ -350,11 +449,9 @@ export const FinancialDashboard: React.FC = () => {
                         <Badge className={getStatusColor(child.status)}>
                           {getStatusText(child.status)}
                         </Badge>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
-                </div>
-              ))}
+                </div>)}
             </CardContent>
           </BaseCard>
         </TabsContent>
@@ -381,16 +478,10 @@ export const FinancialDashboard: React.FC = () => {
             </CardHeader>
             <CardContent className="px-0">
               <div className="space-y-3">
-                {mockTransactions.map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg">
+                {mockTransactions.map(transaction => <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                        transaction.type === 'revenue' ? 'bg-green-100' : 'bg-red-100'
-                      }`}>
-                        {transaction.type === 'revenue' ? 
-                          <TrendingUp className="h-6 w-6 text-green-600" /> :
-                          <TrendingDown className="h-6 w-6 text-red-600" />
-                        }
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${transaction.type === 'revenue' ? 'bg-green-100' : 'bg-red-100'}`}>
+                        {transaction.type === 'revenue' ? <TrendingUp className="h-6 w-6 text-green-600" /> : <TrendingDown className="h-6 w-6 text-red-600" />}
                       </div>
                       <div>
                         <h4 className="font-medium">{transaction.description}</h4>
@@ -398,17 +489,14 @@ export const FinancialDashboard: React.FC = () => {
                       </div>
                     </div>
                     <div className="text-left">
-                      <p className={`text-lg font-bold ${
-                        transaction.amount > 0 ? 'text-green-600' : 'text-red-600'
-                      }`}>
+                      <p className={`text-lg font-bold ${transaction.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
                         {formatCurrency(Math.abs(transaction.amount))}
                       </p>
                       <Badge className={getStatusColor(transaction.status)}>
                         {getStatusText(transaction.status)}
                       </Badge>
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </CardContent>
           </BaseCard>
@@ -430,8 +518,7 @@ export const FinancialDashboard: React.FC = () => {
             </CardHeader>
             <CardContent className="px-0">
               <div className="space-y-3">
-                {mockInvoices.map((invoice) => (
-                  <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
+                {mockInvoices.map(invoice => <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
                         <Receipt className="h-6 w-6 text-blue-600" />
@@ -448,8 +535,7 @@ export const FinancialDashboard: React.FC = () => {
                         {getStatusText(invoice.status)}
                       </Badge>
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </CardContent>
           </BaseCard>
@@ -477,19 +563,11 @@ export const FinancialDashboard: React.FC = () => {
               <CardContent className="px-0">
                 <ResponsiveContainer width="100%" height={300}>
                   <RechartsPieChart>
-                    <Pie
-                      data={mockExpenseCategories}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {mockExpenseCategories.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
+                    <Pie data={mockExpenseCategories} cx="50%" cy="50%" labelLine={false} label={({
+                    name,
+                    percent
+                  }) => `${name} ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
+                      {mockExpenseCategories.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                     </Pie>
                     <Tooltip />
                   </RechartsPieChart>
@@ -612,15 +690,31 @@ export const FinancialDashboard: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { name: 'قالب الميزانية السنوية', type: 'Excel', downloads: 45 },
-              { name: 'نموذج طلب صرف', type: 'PDF', downloads: 32 },
-              { name: 'قالب الفاتورة الموحدة', type: 'Word', downloads: 78 },
-              { name: 'نموذج تقرير مالي شهري', type: 'Excel', downloads: 23 },
-              { name: 'قالب عقد مالي', type: 'PDF', downloads: 19 },
-              { name: 'نموذج طلب ميزانية', type: 'Word', downloads: 56 }
-            ].map((template, index) => (
-              <BaseCard key={index} variant="operations" className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
+            {[{
+            name: 'قالب الميزانية السنوية',
+            type: 'Excel',
+            downloads: 45
+          }, {
+            name: 'نموذج طلب صرف',
+            type: 'PDF',
+            downloads: 32
+          }, {
+            name: 'قالب الفاتورة الموحدة',
+            type: 'Word',
+            downloads: 78
+          }, {
+            name: 'نموذج تقرير مالي شهري',
+            type: 'Excel',
+            downloads: 23
+          }, {
+            name: 'قالب عقد مالي',
+            type: 'PDF',
+            downloads: 19
+          }, {
+            name: 'نموذج طلب ميزانية',
+            type: 'Word',
+            downloads: 56
+          }].map((template, index) => <BaseCard key={index} variant="operations" className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-4">
                   <FileText className="h-8 w-8 text-blue-600" />
                   <div>
@@ -635,8 +729,7 @@ export const FinancialDashboard: React.FC = () => {
                     تحميل
                   </Button>
                 </div>
-              </BaseCard>
-            ))}
+              </BaseCard>)}
           </div>
         </TabsContent>
 
@@ -651,15 +744,31 @@ export const FinancialDashboard: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { name: 'تقرير الأرباح والخسائر', period: 'شهري', lastGenerated: '2024-06-29' },
-              { name: 'تقرير المركز المالي', period: 'ربع سنوي', lastGenerated: '2024-06-28' },
-              { name: 'تقرير التدفق النقدي', period: 'أسبوعي', lastGenerated: '2024-06-30' },
-              { name: 'تقرير تحليل المصروفات', period: 'شهري', lastGenerated: '2024-06-29' },
-              { name: 'تقرير أداء الميزانية', period: 'شهري', lastGenerated: '2024-06-29' },
-              { name: 'تقرير حسابات العملاء', period: 'أسبوعي', lastGenerated: '2024-06-30' }
-            ].map((report, index) => (
-              <BaseCard key={index} variant="operations" className="p-6">
+            {[{
+            name: 'تقرير الأرباح والخسائر',
+            period: 'شهري',
+            lastGenerated: '2024-06-29'
+          }, {
+            name: 'تقرير المركز المالي',
+            period: 'ربع سنوي',
+            lastGenerated: '2024-06-28'
+          }, {
+            name: 'تقرير التدفق النقدي',
+            period: 'أسبوعي',
+            lastGenerated: '2024-06-30'
+          }, {
+            name: 'تقرير تحليل المصروفات',
+            period: 'شهري',
+            lastGenerated: '2024-06-29'
+          }, {
+            name: 'تقرير أداء الميزانية',
+            period: 'شهري',
+            lastGenerated: '2024-06-29'
+          }, {
+            name: 'تقرير حسابات العملاء',
+            period: 'أسبوعي',
+            lastGenerated: '2024-06-30'
+          }].map((report, index) => <BaseCard key={index} variant="operations" className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <BarChart className="h-8 w-8 text-green-600" />
                   <div>
@@ -680,11 +789,9 @@ export const FinancialDashboard: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-              </BaseCard>
-            ))}
+              </BaseCard>)}
           </div>
         </TabsContent>
       </Tabs>
-    </div>
-  );
+    </div>;
 };
