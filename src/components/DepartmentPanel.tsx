@@ -1,11 +1,15 @@
+
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab } from './DepartmentTabs/Financial';
+import { GeneralOverviewTab } from './DepartmentTabs/GeneralOverviewTab';
+
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
   isMainSidebarCollapsed: boolean;
   isDepartmentsSidebarCollapsed: boolean;
 }
+
 const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   selectedDepartment,
   isMainSidebarCollapsed,
@@ -21,6 +25,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         </div>
       </div>;
   }
+
   const getDepartmentContent = (department: string) => {
     const departmentData = {
       financial: {
@@ -29,52 +34,59 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       },
       legal: {
         title: 'إدارة الأحوال القانونية',
-        tabs: ['العقود', 'القضايا', 'الاستشارات', 'التراخيص']
+        tabs: ['النظرة العامة', 'العقود', 'القضايا', 'الاستشارات', 'التراخيص']
       },
       marketing: {
         title: 'إدارة الأنشطة التسويقية',
-        tabs: ['الحملات', 'التحليلات', 'المحتوى', 'العلاقات العامة']
+        tabs: ['النظرة العامة', 'الحملات', 'التحليلات', 'المحتوى', 'العلاقات العامة']
       },
       projects: {
         title: 'إدارة المشاريع',
-        tabs: ['المشاريع النشطة', 'التخطيط', 'الموارد', 'التقارير']
+        tabs: ['النظرة العامة', 'المشاريع النشطة', 'التخطيط', 'الموارد', 'التقارير']
       },
       hr: {
         title: 'إدارة الطاقات البشرية',
-        tabs: ['الموظفين', 'التوظيف', 'التدريب', 'الأداء']
+        tabs: ['النظرة العامة', 'الموظفين', 'التوظيف', 'التدريب', 'الأداء']
       },
       clients: {
         title: 'إدارة علاقات العملاء',
-        tabs: ['قاعدة العملاء', 'الخدمات', 'الشكاوى', 'الرضا']
+        tabs: ['النظرة العامة', 'قاعدة العملاء', 'الخدمات', 'الشكاوى', 'الرضا']
       },
       social: {
         title: 'إدارة المسؤولية الاجتماعية',
-        tabs: ['المبادرات', 'التطوع', 'المجتمع', 'التقارير']
+        tabs: ['النظرة العامة', 'المبادرات', 'التطوع', 'المجتمع', 'التقارير']
       },
       training: {
         title: 'إدارة التدريب',
-        tabs: ['البرامج', 'المدربين', 'المتدربين', 'التقييم']
+        tabs: ['النظرة العامة', 'البرامج', 'المدربين', 'المتدربين', 'التقييم']
       },
       research: {
         title: 'إدارة المعرفة والنشر والبحث العلمي',
-        tabs: ['الأبحاث', 'المنشورات', 'المعرفة', 'المؤتمرات']
+        tabs: ['النظرة العامة', 'الأبحاث', 'المنشورات', 'المعرفة', 'المؤتمرات']
       },
       brand: {
         title: 'إدارة العلامة التجارية',
-        tabs: ['الهوية', 'التسويق', 'المحتوى', 'الشراكات']
+        tabs: ['النظرة العامة', 'الهوية', 'التسويق', 'المحتوى', 'الشراكات']
       }
     };
+
     return departmentData[department as keyof typeof departmentData] || {
       title: 'إدارة غير محددة',
-      tabs: ['عام']
+      tabs: ['النظرة العامة', 'عام']
     };
   };
+
   const content = getDepartmentContent(selectedDepartment);
+
   const renderTabContent = (tab: string, department: string) => {
+    // تبويب النظرة العامة لجميع الإدارات
+    if (tab === 'النظرة العامة') {
+      return <GeneralOverviewTab departmentTitle={content.title} />;
+    }
+
+    // محتوى خاص بالإدارة المالية
     if (department === 'financial') {
       switch (tab) {
-        case 'النظرة العامة':
-          return <FinancialOverviewTab />;
         case 'إدارة الميزانيات':
           return <BudgetManagementTab />;
         case 'المدفوعات والفواتير':
@@ -95,6 +107,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
       </div>;
   };
+
   return <div style={{
     background: 'var(--backgrounds-admin-ops-board-bg)'
   }} className="h-full rounded-3xl overflow-hidden">
@@ -132,4 +145,5 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       </div>
     </div>;
 };
+
 export default DepartmentPanel;
