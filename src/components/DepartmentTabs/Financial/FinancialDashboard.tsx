@@ -31,7 +31,7 @@ import {
   Database,
   Bell
 } from 'lucide-react';
-import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RechartsPieChart, Cell } from 'recharts';
+import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RechartsPieChart, Cell, Pie } from 'recharts';
 import { BaseCard } from '@/components/ui/BaseCard';
 
 // Mock data for financial dashboard
