@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Eye, Users, FileText, Clock, TrendingUp, AlertTriangle, Calendar, Award, Settings, BarChart } from 'lucide-react';
+import { Eye, Users, FileText, Clock, TrendingUp, AlertTriangle, Calendar, Award, Settings, BarChart, Globe, Shield, Database, Zap } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -99,6 +100,38 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({
     icon: BarChart,
     color: 'text-teal-600'
   }];
+
+  // الصف الخامس الجديد - بطاقات إضافية
+  const fifthRowStats = [{
+    title: 'الشبكات المتصلة',
+    value: '12',
+    change: 18.3,
+    trend: 'up' as const,
+    icon: Globe,
+    color: 'text-blue-500'
+  }, {
+    title: 'مستوى الأمان',
+    value: '96%',
+    change: 4.2,
+    trend: 'up' as const,
+    icon: Shield,
+    color: 'text-green-500'
+  }, {
+    title: 'قواعد البيانات',
+    value: '7',
+    change: 12.8,
+    trend: 'up' as const,
+    icon: Database,
+    color: 'text-purple-500'
+  }, {
+    title: 'الأداء المحسن',
+    value: '94%',
+    change: 6.5,
+    trend: 'up' as const,
+    icon: Zap,
+    color: 'text-orange-500'
+  }];
+
   return <div className="space-y-6 p-6 bg-transparent">
       {/* إحصائيات الإدارة */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -180,6 +213,20 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({
       {/* الصف الرابع - إحصائيات إضافية */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {additionalStats.map((stat, index) => <BaseCard key={index} variant="operations" size="sm" className="text-center">
+            <div className="flex items-center justify-between mb-3">
+              <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              <Badge variant={stat.trend === 'up' ? 'default' : 'destructive'} className="text-xs">
+                {stat.change > 0 ? '+' : ''}{stat.change}%
+              </Badge>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{stat.value}</h3>
+            <p className="text-sm text-gray-600 font-arabic">{stat.title}</p>
+          </BaseCard>)}
+      </div>
+
+      {/* الصف الخامس - إحصائيات تقنية إضافية */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {fifthRowStats.map((stat, index) => <BaseCard key={index} variant="operations" size="sm" className="text-center">
             <div className="flex items-center justify-between mb-3">
               <stat.icon className={`h-6 w-6 ${stat.color}`} />
               <Badge variant={stat.trend === 'up' ? 'default' : 'destructive'} className="text-xs">

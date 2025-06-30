@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { TrendingUp, DollarSign, CreditCard, Target, AlertTriangle, Calendar, Users, FileText, Award } from 'lucide-react';
+import { TrendingUp, DollarSign, CreditCard, Target, AlertTriangle, Calendar, Users, FileText, Award, PieChart, Banknote, Calculator, Briefcase } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -114,6 +115,33 @@ export const FinancialOverviewTab: React.FC = () => {
     change: 25.0,
     trend: 'up',
     icon: Award
+  }];
+
+  // الصف الخامس الجديد - مؤشرات مالية متقدمة
+  const fifthRowFinancialKPIs: KPI[] = [{
+    title: 'التحليلات المالية',
+    value: '24',
+    change: 16.7,
+    trend: 'up',
+    icon: PieChart
+  }, {
+    title: 'إجمالي الأصول',
+    value: '3.2M',
+    change: 9.4,
+    trend: 'up',
+    icon: Banknote
+  }, {
+    title: 'العمليات المحاسبية',
+    value: '156',
+    change: 22.1,
+    trend: 'up',
+    icon: Calculator
+  }, {
+    title: 'المحافظ الاستثمارية',
+    value: '8',
+    change: 14.3,
+    trend: 'up',
+    icon: Briefcase
   }];
 
   return (
@@ -232,6 +260,22 @@ export const FinancialOverviewTab: React.FC = () => {
       {/* الصف الرابع - مؤشرات مالية إضافية */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {additionalFinancialKPIs.map((kpi, index) => (
+          <BaseCard key={index} variant="operations" size="sm" className="text-center">
+            <div className="flex items-center justify-between mb-3">
+              <kpi.icon className="h-6 w-6 text-blue-600" />
+              <Badge variant={kpi.trend === 'up' ? 'default' : 'destructive'} className="text-xs">
+                {kpi.change > 0 ? '+' : ''}{kpi.change}%
+              </Badge>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{kpi.value}</h3>
+            <p className="text-sm text-gray-600 font-arabic">{kpi.title}</p>
+          </BaseCard>
+        ))}
+      </div>
+
+      {/* الصف الخامس - مؤشرات مالية متقدمة */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {fifthRowFinancialKPIs.map((kpi, index) => (
           <BaseCard key={index} variant="operations" size="sm" className="text-center">
             <div className="flex items-center justify-between mb-3">
               <kpi.icon className="h-6 w-6 text-blue-600" />
