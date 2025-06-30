@@ -16,7 +16,7 @@ export interface LegalCase {
   assignedLawyer: string;
   dateCreated: string;
   lastUpdate: string;
-  riskLevel: 'high' | 'medium' | 'low';
+  riskLevel: 'critical' | 'high' | 'medium' | 'low';
 }
 
 export interface Contract {
@@ -30,7 +30,7 @@ export interface Contract {
   value: number;
   signatories: string[];
   renewalDate?: string;
-  riskLevel: 'high' | 'medium' | 'low';
+  riskLevel: 'critical' | 'high' | 'medium' | 'low';
 }
 
 export interface ComplianceItem {
