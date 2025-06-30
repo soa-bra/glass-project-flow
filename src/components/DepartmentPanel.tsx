@@ -1,7 +1,10 @@
+
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab } from './DepartmentTabs/Financial';
 import { GeneralOverviewTab } from './DepartmentTabs/GeneralOverviewTab';
+import { ReportsTab } from './DepartmentTabs/ReportsTab';
+import { TemplatesTab } from './DepartmentTabs/TemplatesTab';
 
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
@@ -29,49 +32,49 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
     const departmentData = {
       financial: {
         title: 'إدارة الأوضاع المالية',
-        tabs: ['النظرة العامة', 'إدارة الميزانيات', 'المدفوعات والفواتير', 'التحليل المالي']
+        tabs: ['النظرة العامة', 'إدارة الميزانيات', 'المدفوعات والفواتير', 'التحليل المالي', 'النماذج والقوالب', 'التقارير']
       },
       legal: {
         title: 'إدارة الأحوال القانونية',
-        tabs: ['النظرة العامة', 'العقود', 'القضايا', 'الاستشارات', 'التراخيص']
+        tabs: ['النظرة العامة', 'العقود', 'القضايا', 'الاستشارات', 'التراخيص', 'النماذج والقوالب', 'التقارير']
       },
       marketing: {
         title: 'إدارة الأنشطة التسويقية',
-        tabs: ['النظرة العامة', 'الحملات', 'التحليلات', 'المحتوى', 'العلاقات العامة']
+        tabs: ['النظرة العامة', 'الحملات', 'التحليلات', 'المحتوى', 'العلاقات العامة', 'النماذج والقوالب', 'التقارير']
       },
       projects: {
         title: 'إدارة المشاريع',
-        tabs: ['النظرة العامة', 'المشاريع النشطة', 'التخطيط', 'الموارد', 'التقارير']
+        tabs: ['النظرة العامة', 'المشاريع النشطة', 'التخطيط', 'الموارد', 'النماذج والقوالب', 'التقارير']
       },
       hr: {
         title: 'إدارة الطاقات البشرية',
-        tabs: ['النظرة العامة', 'الموظفين', 'التوظيف', 'التدريب', 'الأداء']
+        tabs: ['النظرة العامة', 'الموظفين', 'التوظيف', 'التدريب', 'الأداء', 'النماذج والقوالب', 'التقارير']
       },
       clients: {
         title: 'إدارة علاقات العملاء',
-        tabs: ['النظرة العامة', 'قاعدة العملاء', 'الخدمات', 'الشكاوى', 'الرضا']
+        tabs: ['النظرة العامة', 'قاعدة العملاء', 'الخدمات', 'الشكاوى', 'الرضا', 'النماذج والقوالب', 'التقارير']
       },
       social: {
         title: 'إدارة المسؤولية الاجتماعية',
-        tabs: ['النظرة العامة', 'المبادرات', 'التطوع', 'المجتمع', 'التقارير']
+        tabs: ['النظرة العامة', 'المبادرات', 'التطوع', 'المجتمع', 'النماذج والقوالب', 'التقارير']
       },
       training: {
         title: 'إدارة التدريب',
-        tabs: ['النظرة العامة', 'البرامج', 'المدربين', 'المتدربين', 'التقييم']
+        tabs: ['النظرة العامة', 'البرامج', 'المدربين', 'المتدربين', 'التقييم', 'النماذج والقوالب', 'التقارير']
       },
       research: {
         title: 'إدارة المعرفة والنشر والبحث العلمي',
-        tabs: ['النظرة العامة', 'الأبحاث', 'المنشورات', 'المعرفة', 'المؤتمرات']
+        tabs: ['النظرة العامة', 'الأبحاث', 'المنشورات', 'المعرفة', 'المؤتمرات', 'النماذج والقوالب', 'التقارير']
       },
       brand: {
         title: 'إدارة العلامة التجارية',
-        tabs: ['النظرة العامة', 'الهوية', 'التسويق', 'المحتوى', 'الشراكات']
+        tabs: ['النظرة العامة', 'الهوية', 'التسويق', 'المحتوى', 'الشراكات', 'النماذج والقوالب', 'التقارير']
       }
     };
 
     return departmentData[department as keyof typeof departmentData] || {
       title: 'إدارة غير محددة',
-      tabs: ['النظرة العامة', 'عام']
+      tabs: ['النظرة العامة', 'النماذج والقوالب', 'التقارير']
     };
   };
 
@@ -80,6 +83,14 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   const renderTabContent = (tab: string, department: string) => {
     if (tab === 'النظرة العامة') {
       return <GeneralOverviewTab departmentTitle={content.title} />;
+    }
+
+    if (tab === 'النماذج والقوالب') {
+      return <TemplatesTab departmentTitle={content.title} />;
+    }
+
+    if (tab === 'التقارير') {
+      return <ReportsTab departmentTitle={content.title} />;
     }
 
     if (department === 'financial') {
