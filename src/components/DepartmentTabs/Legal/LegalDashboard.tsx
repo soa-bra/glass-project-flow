@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import React, { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
 import { ContractsTab } from './ContractsTab';
 import { ComplianceTab } from './ComplianceTab';
@@ -10,51 +10,75 @@ import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
 
 export const LegalDashboard: React.FC = () => {
-  const tabs = [
-    { key: 'overview', label: 'النظرة العامة', component: OverviewTab },
-    { key: 'contracts', label: 'العقود والاتفاقيات', component: ContractsTab },
-    { key: 'compliance', label: 'الامتثال', component: ComplianceTab },
-    { key: 'risks', label: 'المخاطر والنزاعات', component: RisksTab },
-    { key: 'licenses', label: 'التراخيص والملكية الفكرية', component: LicensesTab },
-    { key: 'templates', label: 'النماذج والقوالب', component: TemplatesTab },
-    { key: 'reports', label: 'التقارير', component: ReportsTab }
+  const [activeTab, setActiveTab] = useState('overview');
+
+  const tabItems = [
+    { value: 'overview', label: 'النظرة العامة' },
+    { value: 'contracts', label: 'العقود والاتفاقيات' },
+    { value: 'compliance', label: 'الامتثال' },
+    { value: 'risks', label: 'المخاطر والنزاعات' },
+    { value: 'licenses', label: 'التراخيص والملكية الفكرية' },
+    { value: 'templates', label: 'النماذج والقوالب' },
+    { value: 'reports', label: 'التقارير' }
   ];
 
   return (
-    <div className="h-full">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="font-medium text-black font-arabic text-3xl">
+    <div className="h-full flex flex-col bg-transparent">
+      {/* Header with Title and Tabs */}
+      <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
+        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           إدارة الأحوال القانونية
         </h2>
         <div className="w-fit">
-          <Tabs defaultValue="overview" dir="rtl" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
             <TabsList className="grid w-full bg-transparent rounded-full p-1" style={{
-              gridTemplateColumns: `repeat(${tabs.length}, 1fr)`
+              gridTemplateColumns: `repeat(${tabItems.length}, 1fr)`
             }}>
-              {tabs.map(tab => (
+              {tabItems.map(tab => (
                 <TabsTrigger 
-                  key={tab.key} 
-                  value={tab.key} 
-                  className="text-sm font-arabic rounded-full py-2 px-4 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
+                  key={tab.value} 
+                  value={tab.value} 
+                  className="text-sm font-arabic rounded-full py-2 px-6 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
                 >
                   {tab.label}
                 </TabsTrigger>
               ))}
             </TabsList>
-
-            {/* Tab Content */}
-            <div className="mt-6">
-              {tabs.map(tab => {
-                const TabComponent = tab.component;
-                return (
-                  <TabsContent key={tab.key} value={tab.key} className="h-full mt-0">
-                    <TabComponent />
-                  </TabsContent>
-                );
-              })}
-            </div>
           </Tabs>
         </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-auto px-6 pb-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
+          <TabsContent value="overview" className="space-y-6">
+            <OverviewTab />
+          </TabsContent>
+
+          <TabsContent value="contracts" className="space-y-6">
+            <ContractsTab />
+          </TabsContent>
+
+          <TabsContent value="compliance" className="space-y-6">
+            <ComplianceTab />
+          </TabsContent>
+
+          <TabsContent value="risks" className="space-y-6">
+            <RisksTab />
+          </TabsContent>
+
+          <TabsContent value="licenses" className="space-y-6">
+            <LicensesTab />
+          </TabsContent>
+
+          <TabsContent value="templates" className="space-y-6">
+            <TemplatesTab />
+          </TabsContent>
+
+          <TabsContent value="reports" className="space-y-6">
+            <ReportsTab />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
