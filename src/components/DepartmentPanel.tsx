@@ -1,17 +1,14 @@
-
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab } from './DepartmentTabs/Financial';
 import { GeneralOverviewTab } from './DepartmentTabs/GeneralOverviewTab';
 import { ReportsTab } from './DepartmentTabs/ReportsTab';
 import { TemplatesTab } from './DepartmentTabs/TemplatesTab';
-
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
   isMainSidebarCollapsed: boolean;
   isDepartmentsSidebarCollapsed: boolean;
 }
-
 const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   selectedDepartment,
   isMainSidebarCollapsed,
@@ -27,7 +24,6 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         </div>
       </div>;
   }
-
   const getDepartmentContent = (department: string) => {
     const departmentData = {
       financial: {
@@ -71,28 +67,22 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         tabs: ['النظرة العامة', 'الهوية', 'التسويق', 'المحتوى', 'الشراكات', 'النماذج والقوالب', 'التقارير']
       }
     };
-
     return departmentData[department as keyof typeof departmentData] || {
       title: 'إدارة غير محددة',
       tabs: ['النظرة العامة', 'النماذج والقوالب', 'التقارير']
     };
   };
-
   const content = getDepartmentContent(selectedDepartment);
-
   const renderTabContent = (tab: string, department: string) => {
     if (tab === 'النظرة العامة') {
       return <GeneralOverviewTab departmentTitle={content.title} />;
     }
-
     if (tab === 'النماذج والقوالب') {
       return <TemplatesTab departmentTitle={content.title} />;
     }
-
     if (tab === 'التقارير') {
       return <ReportsTab departmentTitle={content.title} />;
     }
-
     if (department === 'financial') {
       switch (tab) {
         case 'إدارة الميزانيات':
@@ -108,13 +98,11 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
             </div>;
       }
     }
-
     return <div className="text-center text-gray-600 font-arabic p-8">
         <h3 className="text-xl font-semibold mb-2">{tab}</h3>
         <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
       </div>;
   };
-
   return <div style={{
     background: 'var(--backgrounds-admin-ops-board-bg)'
   }} className="h-full rounded-3xl overflow-hidden">
@@ -129,7 +117,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
               <TabsList className="grid w-full bg-white/20 rounded-full p-1" style={{
               gridTemplateColumns: `repeat(${content.tabs.length}, 1fr)`
             }}>
-                {content.tabs.map(tab => <TabsTrigger key={tab} value={tab} className="rounded-full font-arabic text-sm whitespace-nowrap px-4 data-[state=active]:bg-black data-[state=active]:text-white">
+                {content.tabs.map(tab => <TabsTrigger key={tab} value={tab} className="text-sm font-arabic rounded-full py-2 px-6 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black">
                     {tab}
                   </TabsTrigger>)}
               </TabsList>
@@ -150,5 +138,4 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       </div>
     </div>;
 };
-
 export default DepartmentPanel;
