@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab } from './DepartmentTabs/Financial';
+import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab, FinancialDashboard } from './DepartmentTabs/Financial';
 import { GeneralOverviewTab } from './DepartmentTabs/GeneralOverviewTab';
 import { ReportsTab } from './DepartmentTabs/ReportsTab';
 import { TemplatesTab } from './DepartmentTabs/TemplatesTab';
@@ -26,12 +27,32 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         </div>
       </div>;
   }
+
+  // Special handling for financial department
+  if (selectedDepartment === 'financial') {
+    return <div style={{
+      background: 'var(--backgrounds-admin-ops-board-bg)'
+    }} className="h-full rounded-3xl overflow-hidden">
+        <div className="h-full flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
+            <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
+              إدارة الأوضاع المالية
+            </h2>
+          </div>
+
+          {/* Content - Financial Dashboard */}
+          <div className="flex-1 overflow-auto px-0 mx-0">
+            <div className="h-full mx-6 mb-6 rounded-2xl overflow-hidden bg-transparent">
+              <FinancialDashboard />
+            </div>
+          </div>
+        </div>
+      </div>;
+  }
+
   const getDepartmentContent = (department: string) => {
     const departmentData = {
-      financial: {
-        title: 'إدارة الأوضاع المالية',
-        tabs: ['النظرة العامة', 'إدارة الميزانيات', 'المدفوعات والفواتير', 'التحليل المالي', 'النماذج والقوالب', 'التقارير']
-      },
       legal: {
         title: 'إدارة الأحوال القانونية',
         tabs: ['النظرة العامة', 'العقود', 'القضايا', 'الاستشارات', 'التراخيص', 'النماذج والقوالب', 'التقارير']
@@ -74,7 +95,9 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       tabs: ['النظرة العامة', 'النماذج والقوالب', 'التقارير']
     };
   };
+
   const content = getDepartmentContent(selectedDepartment);
+
   const renderTabContent = (tab: string, department: string) => {
     if (tab === 'النظرة العامة') {
       return <GeneralOverviewTab departmentTitle={content.title} />;
@@ -85,26 +108,13 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
     if (tab === 'التقارير') {
       return <ReportsTab departmentTitle={content.title} />;
     }
-    if (department === 'financial') {
-      switch (tab) {
-        case 'إدارة الميزانيات':
-          return <BudgetManagementTab />;
-        case 'المدفوعات والفواتير':
-          return <PaymentsInvoicesTab />;
-        case 'التحليل المالي':
-          return <FinancialAnalysisTab />;
-        default:
-          return <div className="text-center text-gray-600 font-arabic p-8">
-              <h3 className="text-xl font-semibold mb-2">{tab}</h3>
-              <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
-            </div>;
-      }
-    }
+    
     return <div className="text-center text-gray-600 font-arabic p-8">
         <h3 className="text-xl font-semibold mb-2">{tab}</h3>
         <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
       </div>;
   };
+
   return <div style={{
     background: 'var(--backgrounds-admin-ops-board-bg)'
   }} className="h-full rounded-3xl overflow-hidden">
