@@ -1,19 +1,11 @@
-
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { 
-  FinancialOverviewTab, 
-  BudgetManagementTab, 
-  PaymentsInvoicesTab, 
-  FinancialAnalysisTab 
-} from './DepartmentTabs/Financial';
-
+import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab } from './DepartmentTabs/Financial';
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
   isMainSidebarCollapsed: boolean;
   isDepartmentsSidebarCollapsed: boolean;
 }
-
 const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   selectedDepartment,
   isMainSidebarCollapsed,
@@ -29,7 +21,6 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         </div>
       </div>;
   }
-
   const getDepartmentContent = (department: string) => {
     const departmentData = {
       financial: {
@@ -73,15 +64,12 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         tabs: ['الهوية', 'التسويق', 'المحتوى', 'الشراكات']
       }
     };
-
     return departmentData[department as keyof typeof departmentData] || {
       title: 'إدارة غير محددة',
       tabs: ['عام']
     };
   };
-
   const content = getDepartmentContent(selectedDepartment);
-
   const renderTabContent = (tab: string, department: string) => {
     if (department === 'financial') {
       switch (tab) {
@@ -94,31 +82,26 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         case 'التحليل المالي':
           return <FinancialAnalysisTab />;
         default:
-          return (
-            <div className="text-center text-gray-600 font-arabic p-8">
+          return <div className="text-center text-gray-600 font-arabic p-8">
               <h3 className="text-xl font-semibold mb-2">{tab}</h3>
               <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
-            </div>
-          );
+            </div>;
       }
     }
 
     // محتوى افتراضي للإدارات الأخرى
-    return (
-      <div className="text-center text-gray-600 font-arabic p-8">
+    return <div className="text-center text-gray-600 font-arabic p-8">
         <h3 className="text-xl font-semibold mb-2">{tab}</h3>
         <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
-      </div>
-    );
+      </div>;
   };
-
   return <div style={{
     background: 'var(--backgrounds-project-mgmt-board-bg)'
   }} className="h-full rounded-3xl overflow-hidden bg-slate-400">
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="p-6 pb-0">
-          <h1 className="text-3xl font-bold text-right text-soabra-text-primary mb-2 font-arabic">
+          <h1 className="text-3xl text-right text-soabra-text-primary mb-2 font-arabic my-[36px] font-medium">
             {content.title}
           </h1>
         </div>
@@ -126,29 +109,20 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
         {/* Tabs */}
         <Tabs defaultValue={content.tabs[0]} className="flex-1 flex flex-col p-6" dir="rtl">
           <TabsList className="grid w-full grid-cols-4 mb-6 bg-white/20 rounded-full p-1">
-            {content.tabs.map(tab => 
-              <TabsTrigger 
-                key={tab} 
-                value={tab} 
-                className="rounded-full font-arabic text-sm data-[state=active]:bg-black data-[state=active]:text-white"
-              >
+            {content.tabs.map(tab => <TabsTrigger key={tab} value={tab} className="rounded-full font-arabic text-sm data-[state=active]:bg-black data-[state=active]:text-white">
                 {tab}
-              </TabsTrigger>
-            )}
+              </TabsTrigger>)}
           </TabsList>
 
-          {content.tabs.map(tab => 
-            <TabsContent key={tab} value={tab} className="flex-1 mt-0 overflow-auto">
+          {content.tabs.map(tab => <TabsContent key={tab} value={tab} className="flex-1 mt-0 overflow-auto">
               <div className="h-full rounded-2xl operations-board-card" style={{
-                background: 'var(--backgrounds-cards-admin-ops)'
-              }}>
+            background: 'var(--backgrounds-cards-admin-ops)'
+          }}>
                 {renderTabContent(tab, selectedDepartment)}
               </div>
-            </TabsContent>
-          )}
+            </TabsContent>)}
         </Tabs>
       </div>
     </div>;
 };
-
 export default DepartmentPanel;
