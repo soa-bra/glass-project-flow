@@ -92,7 +92,7 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({
             <h3 className="text-xl font-bold text-gray-800 font-arabic">الأنشطة الحديثة</h3>
           </div>
           <div className="space-y-3">
-            {recentActivities.map((activity, index) => <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            {recentActivities.map((activity, index) => <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-transparent">
                 <div className="flex-1">
                   <p className="font-medium font-arabic text-sm">{activity.action}</p>
                   <p className="text-xs text-gray-500">{activity.time}</p>
