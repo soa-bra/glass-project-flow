@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab, FinancialDashboard } from './DepartmentTabs/Financial';
@@ -34,16 +33,9 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       background: 'var(--backgrounds-admin-ops-board-bg)'
     }} className="h-full rounded-3xl overflow-hidden">
         <div className="h-full flex flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
-            <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
-              إدارة الأوضاع المالية
-            </h2>
-          </div>
-
           {/* Content - Financial Dashboard */}
           <div className="flex-1 overflow-auto px-0 mx-0">
-            <div className="h-full mx-6 mb-6 rounded-2xl overflow-hidden bg-transparent">
+            <div className="h-full mx-6 my-6 rounded-2xl overflow-hidden bg-transparent">
               <FinancialDashboard />
             </div>
           </div>
