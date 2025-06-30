@@ -3,7 +3,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 type Size = 'sm' | 'md' | 'lg';
-type Variant = 'glass' | 'flat';
+type Variant = 'glass' | 'flat' | 'operations';
 type Color = 'info' | 'success' | 'warning' | 'error' | 'crimson';
 type NeonRing = 'info' | 'success' | 'warning' | 'error';
 
@@ -22,7 +22,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   children,
   className = '',
   size = 'md',
-  variant = 'glass',
+  variant = 'operations',
   color,
   neonRing,
   header,
@@ -30,13 +30,14 @@ export const BaseCard: React.FC<BaseCardProps> = ({
 }) => {
   const sizeClasses = {
     sm: 'p-4',
-    md: 'p-8',
-    lg: 'p-10'
+    md: 'p-6',
+    lg: 'p-8'
   };
 
   const variantClasses = {
     glass: 'bg-white/40 backdrop-blur-[20px] border border-white/20',
-    flat: 'bg-opacity-100'
+    flat: 'bg-opacity-100',
+    operations: 'operations-board-card'
   };
 
   const colorClasses = {
@@ -57,8 +58,8 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   return (
     <div 
       className={cn(
-        'rounded-3xl shadow-lg transition-all duration-300',
-        sizeClasses[size],
+        'rounded-3xl transition-all duration-300',
+        variant !== 'operations' && sizeClasses[size],
         variantClasses[variant],
         color && colorClasses[color],
         neonRing && neonRingClasses[neonRing],

@@ -92,7 +92,7 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departme
       {/* إحصائيات الإدارة */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {departmentStats.map((stat, index) => (
-          <BaseCard key={index} variant="glass" size="sm" className="text-center">
+          <BaseCard key={index} variant="operations" size="sm" className="text-center">
             <div className="flex items-center justify-between mb-3">
               <stat.icon className={`h-6 w-6 ${stat.color}`} />
               <Badge variant={stat.trend === 'up' ? 'default' : 'destructive'} className="text-xs">
@@ -107,7 +107,7 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departme
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* الأنشطة الحديثة */}
-        <BaseCard className="p-6">
+        <BaseCard variant="operations" className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <Eye className="h-5 w-5 text-blue-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">الأنشطة الحديثة</h3>
@@ -135,7 +135,7 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departme
         </BaseCard>
 
         {/* المهام القادمة */}
-        <BaseCard className="p-6">
+        <BaseCard variant="operations" className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="h-5 w-5 text-orange-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">المهام القادمة</h3>
@@ -160,7 +160,7 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departme
       </div>
 
       {/* التنبيهات والملاحظات */}
-      <BaseCard className="p-6">
+      <BaseCard variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <AlertTriangle className="h-5 w-5 text-yellow-600" />
           <h3 className="text-xl font-bold text-gray-800 font-arabic">التنبيهات والملاحظات</h3>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab } from './DepartmentTabs/Financial';
@@ -79,12 +78,10 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   const content = getDepartmentContent(selectedDepartment);
 
   const renderTabContent = (tab: string, department: string) => {
-    // تبويب النظرة العامة لجميع الإدارات
     if (tab === 'النظرة العامة') {
       return <GeneralOverviewTab departmentTitle={content.title} />;
     }
 
-    // محتوى خاص بالإدارة المالية
     if (department === 'financial') {
       switch (tab) {
         case 'إدارة الميزانيات':
@@ -101,7 +98,6 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       }
     }
 
-    // محتوى افتراضي للإدارات الأخرى
     return <div className="text-center text-gray-600 font-arabic p-8">
         <h3 className="text-xl font-semibold mb-2">{tab}</h3>
         <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
@@ -112,7 +108,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
     background: 'var(--backgrounds-admin-ops-board-bg)'
   }} className="h-full rounded-3xl overflow-hidden">
       <div className="h-full flex flex-col">
-        {/* Header - متماشي مع تصميم لوحة الإدارة والتشغيل */}
+        {/* Header */}
         <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
           <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
             {content.title}
@@ -130,13 +126,11 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
           </div>
         </div>
 
-        {/* Content - متماشي مع تصميم باقي اللوحات */}
+        {/* Content - بخلفية شفافة */}
         <Tabs defaultValue={content.tabs[0]} className="flex-1 flex flex-col px-0 mx-0" dir="rtl">
           <div className="px-0 my-0">
             {content.tabs.map(tab => <TabsContent key={tab} value={tab} className="flex-1 mt-0 overflow-auto px-0 mx-0">
-                <div style={{
-              background: 'var(--backgrounds-cards-admin-ops)'
-            }} className="h-full mx-6 mb-6 rounded-2xl overflow-hidden bg-transparent">
+                <div className="h-full mx-6 mb-6 rounded-2xl overflow-hidden bg-transparent">
                   {renderTabContent(tab, selectedDepartment)}
                 </div>
               </TabsContent>)}
