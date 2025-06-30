@@ -112,6 +112,10 @@ export const BudgetManagementTab: React.FC = () => {
     }
   };
 
+  const handleBudgetClick = (budgetId: string) => {
+    setSelectedBudget(selectedBudget === budgetId ? null : budgetId);
+  };
+
   return (
     <div className="space-y-6 p-6">
       {/* أدوات إدارة الميزانية */}
@@ -131,37 +135,38 @@ export const BudgetManagementTab: React.FC = () => {
           const percentage = (budget.spent / budget.totalBudget) * 100;
           
           return (
-            <BaseCard key={budget.id} className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
-                     onClick={() => setSelectedBudget(selectedBudget === budget.id ? null : budget.id)}>
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800 font-arabic mb-2">{budget.name}</h3>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={getStatusBadgeVariant(budget.status)}>
-                      {budget.status === 'active' ? 'نشط' : budget.status === 'completed' ? 'مكتمل' : 'تجاوز الميزانية'}
-                    </Badge>
-                    <span className="text-sm text-gray-600">
-                      {budget.type === 'project' ? 'مشروع' : budget.type === 'department' ? 'قسم' : 'عام'}
-                    </span>
+            <BaseCard key={budget.id} className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
+              <div onClick={() => handleBudgetClick(budget.id)}>
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-800 font-arabic mb-2">{budget.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={getStatusBadgeVariant(budget.status)}>
+                        {budget.status === 'active' ? 'نشط' : budget.status === 'completed' ? 'مكتمل' : 'تجاوز الميزانية'}
+                      </Badge>
+                      <span className="text-sm text-gray-600">
+                        {budget.type === 'project' ? 'مشروع' : budget.type === 'department' ? 'قسم' : 'عام'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm text-gray-600">المتبقي</div>
+                    <div className="font-bold text-lg">{budget.remaining.toLocaleString()} ريال</div>
                   </div>
                 </div>
-                <div className="text-left">
-                  <div className="text-sm text-gray-600">المتبقي</div>
-                  <div className="font-bold text-lg">{budget.remaining.toLocaleString()} ريال</div>
-                </div>
-              </div>
 
-              <div className="mb-4">
-                <div className="flex justify-between text-sm mb-2">
-                  <span>المنفق: {budget.spent.toLocaleString()} ريال</span>
-                  <span>الإجمالي: {budget.totalBudget.toLocaleString()} ريال</span>
+                <div className="mb-4">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>المنفق: {budget.spent.toLocaleString()} ريال</span>
+                    <span>الإجمالي: {budget.totalBudget.toLocaleString()} ريال</span>
+                  </div>
+                  <Progress 
+                    value={percentage} 
+                    className="h-3"
+                    indicatorClassName={getBudgetStatusColor(budget.status, percentage)}
+                  />
+                  <div className="text-right text-sm text-gray-600 mt-1">{percentage.toFixed(1)}%</div>
                 </div>
-                <Progress 
-                  value={percentage} 
-                  className="h-3"
-                  indicatorClassName={getBudgetStatusColor(budget.status, percentage)}
-                />
-                <div className="text-right text-sm text-gray-600 mt-1">{percentage.toFixed(1)}%</div>
               </div>
 
               {selectedBudget === budget.id && (

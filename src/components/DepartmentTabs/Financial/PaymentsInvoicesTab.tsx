@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
-import { FileText, Clock, CheckCircle, AlertTriangle, Download, Send, Eye, Filter } from 'lucide-react';
+import { FileText, DollarSign, Clock, CheckCircle, AlertCircle, Eye, Edit, Download } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 
 interface Invoice {
@@ -11,283 +12,215 @@ interface Invoice {
   client: string;
   amount: number;
   dueDate: string;
-  status: 'draft' | 'sent' | 'paid' | 'overdue';
-  type: 'fixed' | 'hourly' | 'milestone';
-  project: string;
-  issueDate: string;
+  status: 'pending' | 'paid' | 'overdue' | 'draft';
+  description: string;
+  attachments: number;
 }
 
 interface Payment {
   id: string;
-  invoiceNumber: string;
-  client: string;
+  invoiceId: string;
   amount: number;
-  paymentDate: string;
-  method: 'bank_transfer' | 'check' | 'cash' | 'card';
-  status: 'completed' | 'pending' | 'failed';
-  reference: string;
-}
-
-interface Expense {
-  id: string;
-  description: string;
-  amount: number;
-  category: string;
-  project: string;
   date: string;
-  status: 'pending' | 'approved' | 'rejected';
-  approver: string;
-  receipt: boolean;
+  method: string;
+  reference: string;
+  status: 'completed' | 'pending' | 'failed';
 }
 
 export const PaymentsInvoicesTab: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'invoices' | 'payments' | 'expenses'>('invoices');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState<'invoices' | 'payments'>('invoices');
+  const [selectedInvoice, setSelectedInvoice] = useState<string | null>(null);
 
   const invoices: Invoice[] = [
     {
       id: '1',
       number: 'INV-2024-001',
-      client: 'شركة التقنيات المتقدمة',
-      amount: 125000,
+      client: 'شركة النور التجارية',
+      amount: 45000,
       dueDate: '2024-07-15',
-      status: 'sent',
-      type: 'milestone',
-      project: 'تطوير التطبيق الجوال',
-      issueDate: '2024-06-15'
+      status: 'pending',
+      description: 'خدمات استشارية تسويقية',
+      attachments: 2
     },
     {
       id: '2',
       number: 'INV-2024-002',
-      client: 'مؤسسة الإبداع الرقمي',
-      amount: 85000,
+      client: 'مؤسسة الأمل للتطوير',
+      amount: 32000,
       dueDate: '2024-06-20',
       status: 'overdue',
-      type: 'fixed',
-      project: 'تصميم الهوية البصرية',
-      issueDate: '2024-05-20'
+      description: 'تطوير موقع إلكتروني',
+      attachments: 1
     },
     {
       id: '3',
       number: 'INV-2024-003',
-      client: 'شركة النمو الذكي',
-      amount: 95000,
+      client: 'شركة الإبداع المحدودة',
+      amount: 28000,
       dueDate: '2024-07-30',
       status: 'paid',
-      type: 'hourly',
-      project: 'استشارات التسويق الرقمي',
-      issueDate: '2024-06-30'
+      description: 'إدارة حملة إعلانية',
+      attachments: 3
     }
   ];
 
   const payments: Payment[] = [
     {
       id: '1',
-      invoiceNumber: 'INV-2024-003',
-      client: 'شركة النمو الذكي',
-      amount: 95000,
-      paymentDate: '2024-07-25',
-      method: 'bank_transfer',
-      status: 'completed',
-      reference: 'TXN-789456123'
+      invoiceId: '3',
+      amount: 28000,
+      date: '2024-06-25',
+      method: 'تحويل بنكي',
+      reference: 'TXN-789456',
+      status: 'completed'
     },
     {
       id: '2',
-      invoiceNumber: 'INV-2024-004',
-      client: 'مؤسسة التطوير',
-      amount: 45000,
-      paymentDate: '2024-07-20',
-      method: 'check',
-      status: 'pending',
-      reference: 'CHK-456789'
+      invoiceId: '1',
+      amount: 22500,
+      date: '2024-06-28',
+      method: 'شيك',
+      reference: 'CHK-123789',
+      status: 'pending'
     }
   ];
 
-  const expenses: Expense[] = [
-    {
-      id: '1',
-      description: 'اشتراك أدوات التصميم الشهرية',
-      amount: 2500,
-      category: 'أدوات وبرامج',
-      project: 'عام',
-      date: '2024-07-01',
-      status: 'approved',
-      approver: 'أحمد المالكي',
-      receipt: true
-    },
-    {
-      id: '2',
-      description: 'مصروفات سفر للقاء العميل',
-      amount: 3200,
-      category: 'سفر ومواصلات',
-      project: 'تطوير التطبيق الجوال',
-      date: '2024-07-05',
-      status: 'pending',
-      approver: 'سارة أحمد',
-      receipt: true
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'paid':
+      case 'completed':
+        return 'bg-green-500';
+      case 'pending':
+        return 'bg-yellow-500';
+      case 'overdue':
+      case 'failed':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
     }
-  ];
-
-  const getStatusBadge = (status: string, type: 'invoice' | 'payment' | 'expense') => {
-    const statusConfig = {
-      invoice: {
-        draft: { label: 'مسودة', variant: 'secondary' as const },
-        sent: { label: 'مرسلة', variant: 'default' as const },
-        paid: { label: 'مدفوعة', variant: 'default' as const },
-        overdue: { label: 'متأخرة', variant: 'destructive' as const }
-      },
-      payment: {
-        completed: { label: 'مكتملة', variant: 'default' as const },
-        pending: { label: 'قيد المعالجة', variant: 'secondary' as const },
-        failed: { label: 'فاشلة', variant: 'destructive' as const }
-      },
-      expense: {
-        pending: { label: 'قيد المراجعة', variant: 'secondary' as const },
-        approved: { label: 'معتمدة', variant: 'default' as const },
-        rejected: { label: 'مرفوضة', variant: 'destructive' as const }
-      }
-    };
-    
-    const config = statusConfig[type][status as keyof typeof statusConfig[typeof type]];
-    return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
-  const getPaymentMethodLabel = (method: string) => {
-    const methods = {
-      bank_transfer: 'تحويل بنكي',
-      check: 'شيك',
-      cash: 'نقدي',
-      card: 'بطاقة ائتمان'
-    };
-    return methods[method as keyof typeof methods] || method;
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'paid': return 'مدفوعة';
+      case 'pending': return 'معلقة';
+      case 'overdue': return 'متأخرة';
+      case 'draft': return 'مسودة';
+      case 'completed': return 'مكتملة';
+      case 'failed': return 'فاشلة';
+      default: return status;
+    }
   };
+
+  const totalInvoices = invoices.length;
+  const paidInvoices = invoices.filter(inv => inv.status === 'paid').length;
+  const overdueInvoices = invoices.filter(inv => inv.status === 'overdue').length;
+  const totalAmount = invoices.reduce((sum, inv) => sum + inv.amount, 0);
+  const paidAmount = invoices.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
 
   return (
     <div className="space-y-6 p-6">
-      {/* التبويبات */}
-      <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-        {[
-          { key: 'invoices', label: 'الفواتير', icon: FileText },
-          { key: 'payments', label: 'المدفوعات', icon: CheckCircle },
-          { key: 'expenses', label: 'المصروفات', icon: AlertTriangle }
-        ].map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key as any)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all font-arabic ${
-              activeTab === tab.key
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-          >
-            <tab.icon className="h-4 w-4" />
-            {tab.label}
-          </button>
-        ))}
+      {/* إحصائيات سريعة */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <BaseCard variant="glass" size="sm" className="text-center">
+          <div className="flex items-center justify-center mb-2">
+            <FileText className="h-6 w-6 text-blue-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{totalInvoices}</h3>
+          <p className="text-sm text-gray-600 font-arabic">إجمالي الفواتير</p>
+        </BaseCard>
+
+        <BaseCard variant="glass" size="sm" className="text-center">
+          <div className="flex items-center justify-center mb-2">
+            <CheckCircle className="h-6 w-6 text-green-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{paidInvoices}</h3>
+          <p className="text-sm text-gray-600 font-arabic">فواتير مدفوعة</p>
+        </BaseCard>
+
+        <BaseCard variant="glass" size="sm" className="text-center">
+          <div className="flex items-center justify-center mb-2">
+            <AlertCircle className="h-6 w-6 text-red-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{overdueInvoices}</h3>
+          <p className="text-sm text-gray-600 font-arabic">فواتير متأخرة</p>
+        </BaseCard>
+
+        <BaseCard variant="glass" size="sm" className="text-center">
+          <div className="flex items-center justify-center mb-2">
+            <DollarSign className="h-6 w-6 text-purple-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{((paidAmount / totalAmount) * 100).toFixed(0)}%</h3>
+          <p className="text-sm text-gray-600 font-arabic">نسبة التحصيل</p>
+        </BaseCard>
       </div>
 
-      {/* أدوات التحكم */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="flex items-center gap-2">
-            <Filter className="h-4 w-4" />
-            تصفية
-          </Button>
-          {activeTab === 'invoices' && (
-            <select 
-              value={filterStatus} 
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 border rounded-md"
-            >
-              <option value="all">جميع الحالات</option>
-              <option value="draft">مسودة</option>
-              <option value="sent">مرسلة</option>
-              <option value="paid">مدفوعة</option>
-              <option value="overdue">متأخرة</option>
-            </select>
-          )}
-        </div>
-        
-        <Button className="flex items-center gap-2">
-          {activeTab === 'invoices' && <>
-            <FileText className="h-4 w-4" />
-            إنشاء فاتورة جديدة
-          </>}
-          {activeTab === 'payments' && <>
-            <CheckCircle className="h-4 w-4" />
-            تسجيل دفع جديد
-          </>}
-          {activeTab === 'expenses' && <>
-            <AlertTriangle className="h-4 w-4" />
-            إضافة مصروف
-          </>}
-        </Button>
+      {/* تبويبات فرعية */}
+      <div className="flex gap-4 border-b">
+        <button 
+          className={`pb-2 font-arabic ${activeTab === 'invoices' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'}`}
+          onClick={() => setActiveTab('invoices')}
+        >
+          الفواتير
+        </button>
+        <button 
+          className={`pb-2 font-arabic ${activeTab === 'payments' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'}`}
+          onClick={() => setActiveTab('payments')}
+        >
+          المدفوعات
+        </button>
       </div>
 
       {/* محتوى التبويبات */}
       {activeTab === 'invoices' && (
         <div className="space-y-4">
-          {invoices
-            .filter(invoice => filterStatus === 'all' || invoice.status === filterStatus)
-            .map(invoice => (
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-bold text-gray-800 font-arabic">قائمة الفواتير</h3>
+            <Button className="font-arabic">إنشاء فاتورة جديدة</Button>
+          </div>
+
+          {invoices.map((invoice) => (
             <BaseCard key={invoice.id} className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-lg font-bold text-gray-800 font-arabic mb-1">
-                    {invoice.number}
-                  </h3>
+                  <h4 className="text-lg font-bold text-gray-800 font-arabic mb-1">{invoice.number}</h4>
                   <p className="text-gray-600 font-arabic">{invoice.client}</p>
-                  <p className="text-sm text-gray-500">{invoice.project}</p>
+                  <p className="text-sm text-gray-500 font-arabic">{invoice.description}</p>
                 </div>
                 <div className="text-left">
-                  <div className="text-2xl font-bold text-gray-800 mb-1">
-                    {invoice.amount.toLocaleString()} ريال
+                  <div className="text-2xl font-bold text-gray-800 mb-1">{invoice.amount.toLocaleString()} ريال</div>
+                  <Badge className={`${getStatusColor(invoice.status)} text-white`}>
+                    {getStatusText(invoice.status)}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <div className="text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    <span>تاريخ الاستحقاق: {invoice.dueDate}</span>
                   </div>
-                  {getStatusBadge(invoice.status, 'invoice')}
+                  <div className="flex items-center gap-2 mt-1">
+                    <FileText className="h-4 w-4" />
+                    <span>{invoice.attachments} مرفقات</span>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div>
-                  <span className="text-sm text-gray-500">تاريخ الإصدار</span>
-                  <p className="font-medium">{invoice.issueDate}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">تاريخ الاستحقاق</span>
-                  <p className="font-medium">{invoice.dueDate}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">نوع الفوترة</span>
-                  <p className="font-medium">
-                    {invoice.type === 'fixed' ? 'ثابتة' : 
-                     invoice.type === 'hourly' ? 'بالساعة' : 'بالمراحل'}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">الأيام المتبقية</span>
-                  <p className={`font-medium ${
-                    invoice.status === 'overdue' ? 'text-red-600' : 'text-gray-800'
-                  }`}>
-                    {invoice.status === 'overdue' ? 'متأخرة' : '5 أيام'}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex gap-2 justify-end">
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  <Eye className="h-4 w-4" />
-                  عرض
-                </Button>
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  <Download className="h-4 w-4" />
-                  تحميل
-                </Button>
-                {invoice.status === 'draft' && (
-                  <Button size="sm" className="flex items-center gap-1">
-                    <Send className="h-4 w-4" />
-                    إرسال
+
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Eye className="h-4 w-4" />
+                    عرض
                   </Button>
-                )}
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Edit className="h-4 w-4" />
+                    تحرير
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Download className="h-4 w-4" />
+                    تحميل
+                  </Button>
+                </div>
               </div>
             </BaseCard>
           ))}
@@ -296,92 +229,72 @@ export const PaymentsInvoicesTab: React.FC = () => {
 
       {activeTab === 'payments' && (
         <div className="space-y-4">
-          {payments.map(payment => (
-            <BaseCard key={payment.id} className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800 font-arabic mb-1">
-                    {payment.invoiceNumber}
-                  </h3>
-                  <p className="text-gray-600 font-arabic">{payment.client}</p>
-                  <p className="text-sm text-gray-500">مرجع: {payment.reference}</p>
-                </div>
-                <div className="text-left">
-                  <div className="text-2xl font-bold text-gray-800 mb-1">
-                    {payment.amount.toLocaleString()} ريال
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-bold text-gray-800 font-arabic">سجل المدفوعات</h3>
+            <Button className="font-arabic">تسجيل دفعة جديدة</Button>
+          </div>
+
+          {payments.map((payment) => {
+            const relatedInvoice = invoices.find(inv => inv.id === payment.invoiceId);
+            
+            return (
+              <BaseCard key={payment.id} className="p-6">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="text-lg font-bold text-gray-800 font-arabic mb-1">
+                      {payment.amount.toLocaleString()} ريال
+                    </h4>
+                    <p className="text-gray-600 font-arabic">
+                      فاتورة: {relatedInvoice?.number || 'غير محدد'}
+                    </p>
+                    <p className="text-sm text-gray-500">العميل: {relatedInvoice?.client}</p>
+                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                      <span>طريقة الدفع: {payment.method}</span>
+                      <span>المرجع: {payment.reference}</span>
+                      <span>التاريخ: {payment.date}</span>
+                    </div>
                   </div>
-                  {getStatusBadge(payment.status, 'payment')}
+                  
+                  <Badge className={`${getStatusColor(payment.status)} text-white`}>
+                    {getStatusText(payment.status)}
+                  </Badge>
                 </div>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div>
-                  <span className="text-sm text-gray-500">تاريخ الدفع</span>
-                  <p className="font-medium">{payment.paymentDate}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">طريقة الدفع</span>
-                  <p className="font-medium">{getPaymentMethodLabel(payment.method)}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">الحالة</span>
-                  <p className="font-medium">
-                    {payment.status === 'completed' ? 'مكتملة' : 
-                     payment.status === 'pending' ? 'قيد المعالجة' : 'فاشلة'}
-                  </p>
-                </div>
-              </div>
-            </BaseCard>
-          ))}
+              </BaseCard>
+            );
+          })}
         </div>
       )}
 
-      {activeTab === 'expenses' && (
+      {/* تقرير التحصيلات */}
+      <BaseCard className="p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4 font-arabic">تقرير التحصيلات</h3>
         <div className="space-y-4">
-          {expenses.map(expense => (
-            <BaseCard key={expense.id} className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-800 font-arabic mb-1">
-                    {expense.description}
-                  </h3>
-                  <p className="text-gray-600">{expense.category}</p>
-                  <p className="text-sm text-gray-500">المشروع: {expense.project}</p>
-                </div>
-                <div className="text-left">
-                  <div className="text-2xl font-bold text-gray-800 mb-1">
-                    {expense.amount.toLocaleString()} ريال
-                  </div>
-                  {getStatusBadge(expense.status, 'expense')}
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <span className="text-sm text-gray-500">التاريخ</span>
-                  <p className="font-medium">{expense.date}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">المعتمد</span>
-                  <p className="font-medium">{expense.approver}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">الإيصال</span>
-                  <p className="font-medium">{expense.receipt ? 'متوفر' : 'غير متوفر'}</p>
-                </div>
-                <div className="flex items-center">
-                  {expense.receipt && (
-                    <Button variant="outline" size="sm" className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      عرض الإيصال
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </BaseCard>
-          ))}
+          <div className="flex justify-between items-center">
+            <span className="font-arabic">إجمالي المبلغ المستحق</span>
+            <span className="font-bold text-lg">{totalAmount.toLocaleString()} ريال</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="font-arabic">المبلغ المحصل</span>
+            <span className="font-bold text-lg text-green-600">{paidAmount.toLocaleString()} ريال</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="font-arabic">المبلغ المتبقي</span>
+            <span className="font-bold text-lg text-red-600">{(totalAmount - paidAmount).toLocaleString()} ريال</span>
+          </div>
+          
+          <div className="mt-4">
+            <div className="flex justify-between text-sm mb-2">
+              <span>نسبة التحصيل</span>
+              <span>{((paidAmount / totalAmount) * 100).toFixed(1)}%</span>
+            </div>
+            <Progress 
+              value={(paidAmount / totalAmount) * 100} 
+              className="h-3"
+              indicatorClassName="bg-green-500"
+            />
+          </div>
         </div>
-      )}
+      </BaseCard>
     </div>
   );
 };
