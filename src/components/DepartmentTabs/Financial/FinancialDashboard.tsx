@@ -317,18 +317,49 @@ export const FinancialDashboard: React.FC = () => {
         </div>
       </BaseCard>
     </div>;
-  return <div className="space-y-6 p-6 bg-transparent">
+  const tabItems = [
+    { value: 'overview', label: 'نظرة عامة' },
+    { value: 'budgets', label: 'الميزانيات' },
+    { value: 'transactions', label: 'النفقات والإيرادات' },
+    { value: 'invoices', label: 'الفواتير والمدفوعات' },
+    { value: 'analysis', label: 'التحليل والتقارير' },
+    { value: 'settings', label: 'الضبط' },
+    { value: 'templates', label: 'النماذج والقوالب' },
+    { value: 'reports', label: 'التقارير' }
+  ];
+  return (
+    <div className="space-y-6 p-6 bg-transparent">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
-        <TabsList className="grid w-full bg-transparent rounded-full p-1">
-          <TabsTrigger value="overview">نظرة عامة</TabsTrigger>
-          <TabsTrigger value="budgets">الميزانيات</TabsTrigger>
-          <TabsTrigger value="transactions">النفقات والإيرادات</TabsTrigger>
-          <TabsTrigger value="invoices">الفواتير والمدفوعات</TabsTrigger>
-          <TabsTrigger value="analysis">التحليل والتقارير</TabsTrigger>
-          <TabsTrigger value="settings">الضبط</TabsTrigger>
-          <TabsTrigger value="templates">النماذج والقوالب</TabsTrigger>
-          <TabsTrigger value="reports">التقارير</TabsTrigger>
-        </TabsList>
+        {/* Updated TabsList to match other department panels */}
+        <div className="w-full overflow-x-auto overflow-y-hidden no-scrollbar px-0 mb-6" dir="rtl">
+          <TabsList 
+            style={{
+              direction: "rtl",
+              width: "fit-content"
+            }} 
+            className="gap-1 justify-end bg-transparent min-w-max flex-nowrap py-0 h-auto"
+          >
+            {tabItems.map(tab => (
+              <TabsTrigger 
+                key={tab.value} 
+                value={tab.value} 
+                className="text-sm font-arabic rounded-full py-2 px-6 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          
+          <style>{`
+            .no-scrollbar {
+              scrollbar-width: none !important;
+              -ms-overflow-style: none !important;
+            }
+            .no-scrollbar::-webkit-scrollbar {
+              display: none !important;
+            }
+          `}</style>
+        </div>
 
         {/* Tab 1: Overview */}
         <TabsContent value="overview" className="space-y-6">
@@ -793,5 +824,6 @@ export const FinancialDashboard: React.FC = () => {
           </div>
         </TabsContent>
       </Tabs>
-    </div>;
+    </div>
+  );
 };
