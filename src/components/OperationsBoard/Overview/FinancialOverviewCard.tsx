@@ -34,39 +34,10 @@ export const FinancialOverviewCard: React.FC = () => {
         </div>
       }
     >
-      <div className="flex-1 flex flex-col items-center justify-center relative">
-        <div className="relative w-40 h-40 mb-3">
-          <ChartContainer
-            config={{
-              profits: { label: "الأرباح", color: "#000000" },
-              expenses: { label: "المصاريف", color: "#fbe2aa" },
-              reserves: { label: "الاحتياطي", color: "#d9d2fd" }
-            }}
-            className="w-full h-full"
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={financialData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={75}
-                  startAngle={90}
-                  endAngle={450}
-                  dataKey="value"
-                >
-                  {financialData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </PieChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-          
-          {/* النص في وسط الدائرة */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
+      <div className="flex-1 flex gap-4">
+        {/* النصوص والأرقام - النصف الأول */}
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="text-center mb-4">
             <div className="text-3xl font-bold text-black font-arabic mb-1">
               {totalRevenue}
             </div>
@@ -74,30 +45,62 @@ export const FinancialOverviewCard: React.FC = () => {
               إجمالي الأرباح والخسائر
             </div>
           </div>
-        </div>
 
-        {/* التفاصيل السفلية */}
-        <div className="grid grid-cols-3 gap-3 w-full mt-3">
-          <div className="text-center">
-            <div className="text-lg font-bold text-black font-arabic">02</div>
-            <div className="text-xs text-gray-700 font-arabic">مليار</div>
+          {/* التفاصيل */}
+          <div className="grid grid-cols-1 gap-2 text-center mb-4">
+            <div>
+              <div className="text-lg font-bold text-black font-arabic">02</div>
+              <div className="text-xs text-gray-700 font-arabic">مليار</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold text-black font-arabic">14</div>
+              <div className="text-xs text-gray-700 font-arabic">مليار</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold text-black font-arabic">78</div>
+              <div className="text-xs text-gray-700 font-arabic">مليار</div>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-black font-arabic">14</div>
-            <div className="text-xs text-gray-700 font-arabic">مليار</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-black font-arabic">78</div>
-            <div className="text-xs text-gray-700 font-arabic">مليار</div>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-2 gap-3 w-full mt-2">
           <div className="text-xs text-gray-700 font-arabic text-center">
             هذا النص مثال للشكل البياني
           </div>
-          <div className="text-xs text-gray-700 font-arabic text-center">
-            هذا النص مثال للشكل البياني
+        </div>
+
+        {/* الرسم البياني - النصف الثاني بنسبة 9:16 */}
+        <div className="flex-1 flex justify-center items-center">
+          <div 
+            className="w-full max-w-[100px]"
+            style={{ aspectRatio: '9/16' }}
+          >
+            <ChartContainer
+              config={{
+                profits: { label: "الأرباح", color: "#000000" },
+                expenses: { label: "المصاريف", color: "#fbe2aa" },
+                reserves: { label: "الاحتياطي", color: "#d9d2fd" }
+              }}
+              className="w-full h-full"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={financialData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={30}
+                    outerRadius={50}
+                    startAngle={90}
+                    endAngle={450}
+                    dataKey="value"
+                  >
+                    {financialData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartContainer>
           </div>
         </div>
       </div>

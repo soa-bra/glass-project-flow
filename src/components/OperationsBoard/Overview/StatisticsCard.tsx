@@ -39,7 +39,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
   const renderChart = () => {
     if (chartType === 'line') {
       return (
-        <div className="h-16 mt-2">
+        <div className="w-full h-full">
           <ChartContainer
             config={{
               value: {
@@ -62,7 +62,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
 
     if (chartType === 'bar') {
       return (
-        <div className="h-16 mt-2">
+        <div className="w-full h-full">
           <ChartContainer
             config={{
               value: {
@@ -86,6 +86,37 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
     return null;
   };
 
+  if (chartType === 'simple') {
+    return (
+      <BaseCard 
+        variant="glass" 
+        size="md" 
+        className="h-[180px]" 
+        style={{
+          backgroundColor: '#f2ffff'
+        }} 
+        header={
+          <h3 className="text-sm font-bold text-gray-800 font-arabic">{title}</h3>
+        }
+      >
+        <div className="flex-1 flex flex-col justify-center py-0">
+          <div className="flex items-baseline gap-2 mb-2">
+            <div className="text-3xl font-bold text-black font-arabic">
+              {value}
+            </div>
+            <div className="text-sm font-bold text-gray-700 font-arabic">
+              {unit}
+            </div>
+          </div>
+          
+          <div className="text-xs text-gray-600 font-arabic">
+            {description}
+          </div>
+        </div>
+      </BaseCard>
+    );
+  }
+
   return (
     <BaseCard 
       variant="glass" 
@@ -98,21 +129,32 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
         <h3 className="text-sm font-bold text-gray-800 font-arabic">{title}</h3>
       }
     >
-      <div className="flex-1 flex flex-col justify-between py-0">
-        <div className="flex items-baseline gap-2 mb-2">
-          <div className="text-3xl font-bold text-black font-arabic">
-            {value}
+      <div className="flex-1 flex gap-4">
+        {/* النصوص والأرقام - النصف الأول */}
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="flex items-baseline gap-2 mb-2">
+            <div className="text-3xl font-bold text-black font-arabic">
+              {value}
+            </div>
+            <div className="text-sm font-bold text-gray-700 font-arabic">
+              {unit}
+            </div>
           </div>
-          <div className="text-sm font-bold text-gray-700 font-arabic">
-            {unit}
+          
+          <div className="text-xs text-gray-600 font-arabic">
+            {description}
           </div>
-        </div>
-        
-        <div className="text-xs text-gray-600 font-arabic mb-2">
-          {description}
         </div>
 
-        {renderChart()}
+        {/* الرسم البياني - النصف الثاني بنسبة 9:16 */}
+        <div className="flex-1 flex justify-center items-center">
+          <div 
+            className="w-full max-w-[90px]"
+            style={{ aspectRatio: '9/16' }}
+          >
+            {renderChart()}
+          </div>
+        </div>
       </div>
     </BaseCard>
   );

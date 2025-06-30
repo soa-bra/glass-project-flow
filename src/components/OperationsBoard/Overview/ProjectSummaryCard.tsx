@@ -34,41 +34,9 @@ export const ProjectSummaryCard: React.FC = () => {
         </div>
       }
     >
-      <div className="flex-1 flex h-[100px]">
-        {/* الرسم البياني */}
-        <div className="flex-1">
-          <ChartContainer
-            config={{
-              main: { label: "الرئيسي", color: "#000000" },
-              others: { label: "الآخرين", color: "#f2ffff" }
-            }}
-            className="w-full h-full"
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={projectData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 10, fill: '#666' }}
-                />
-                <Bar dataKey="value" radius={[2, 2, 0, 0]}>
-                  {projectData.map((entry, index) => (
-                    <Bar 
-                      key={`bar-${index}`} 
-                      dataKey="value"
-                      fill={index === 3 ? '#000000' : '#f2ffff'} 
-                    />
-                  ))}
-                </Bar>
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </div>
-
-        {/* البيانات الجانبية */}
-        <div className="w-20 flex flex-col justify-center gap-1 mr-3">
+      <div className="flex h-[100px] gap-4">
+        {/* النصوص والأرقام - النصف الأول */}
+        <div className="flex-1 flex flex-col justify-center gap-1">
           <div className="text-right">
             <div className="text-base font-bold text-black font-arabic">140</div>
             <div className="text-xs text-gray-700 font-arabic">هذا النص مثال</div>
@@ -80,6 +48,43 @@ export const ProjectSummaryCard: React.FC = () => {
           <div className="text-right">
             <div className="text-base font-bold text-black font-arabic">02</div>
             <div className="text-xs text-gray-700 font-arabic">النص مثال</div>
+          </div>
+        </div>
+
+        {/* الرسم البياني - النصف الثاني بنسبة 9:16 */}
+        <div className="flex-1 flex justify-center items-center">
+          <div 
+            className="w-full max-w-[80px]"
+            style={{ aspectRatio: '9/16' }}
+          >
+            <ChartContainer
+              config={{
+                main: { label: "الرئيسي", color: "#000000" },
+                others: { label: "الآخرين", color: "#f2ffff" }
+              }}
+              className="w-full h-full"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={projectData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                  <XAxis 
+                    dataKey="name" 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 8, fill: '#666' }}
+                  />
+                  <Bar dataKey="value" radius={[2, 2, 0, 0]}>
+                    {projectData.map((entry, index) => (
+                      <Bar 
+                        key={`bar-${index}`} 
+                        dataKey="value"
+                        fill={index === 3 ? '#000000' : '#f2ffff'} 
+                      />
+                    ))}
+                  </Bar>
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
           </div>
         </div>
       </div>

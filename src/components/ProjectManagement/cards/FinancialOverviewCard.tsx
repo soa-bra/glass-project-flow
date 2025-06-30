@@ -38,40 +38,11 @@ export const FinancialOverviewCard: React.FC = () => {
         </div>
       </div>
 
-      {/* الرسم البياني الدائري */}
-      <div className="flex-1 flex items-center justify-center mb-4">
-        <div className="relative w-32 h-32">
-          <ChartContainer
-            config={{
-              profits: { label: "الأرباح", color: "#000000" },
-              expenses: { label: "المصاريف", color: "#aec2cf" },
-              reserves: { label: "الاحتياطي", color: "#f0f0f0" }
-            }}
-            className="w-full h-full"
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={financialData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={35}
-                  outerRadius={60}
-                  startAngle={90}
-                  endAngle={450}
-                  dataKey="value"
-                >
-                  {financialData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </PieChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-          
-          {/* النص في وسط الدائرة */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
+      {/* المحتوى مقسم لنصفين */}
+      <div className="flex-1 flex gap-4">
+        {/* النصوص والأرقام - النصف الأول */}
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="text-center mb-4">
             <div className="text-xl font-bold text-black font-arabic">
               78M
             </div>
@@ -79,34 +50,60 @@ export const FinancialOverviewCard: React.FC = () => {
               إجمالي الأرباح
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* المؤشرات السفلية */}
-      <div className="grid grid-cols-3 gap-2 text-center">
-        <div>
-          <div className="text-sm font-bold text-black font-arabic">78M</div>
-          <div className="text-xs text-gray-700 font-arabic">أرباح</div>
+          {/* المؤشرات */}
+          <div className="grid grid-cols-1 gap-2 text-center">
+            <div>
+              <div className="text-sm font-bold text-black font-arabic">78M</div>
+              <div className="text-xs text-gray-700 font-arabic">أرباح</div>
+            </div>
+            <div>
+              <div className="text-sm font-bold text-black font-arabic">14M</div>
+              <div className="text-xs text-gray-700 font-arabic">مصاريف</div>
+            </div>
+            <div>
+              <div className="text-sm font-bold text-black font-arabic">8M</div>
+              <div className="text-xs text-gray-700 font-arabic">احتياطي</div>
+            </div>
+          </div>
         </div>
-        <div>
-          <div className="text-sm font-bold text-black font-arabic">14M</div>
-          <div className="text-xs text-gray-700 font-arabic">مصاريف</div>
-        </div>
-        <div>
-          <div className="text-sm font-bold text-black font-arabic">8M</div>
-          <div className="text-xs text-gray-700 font-arabic">احتياطي</div>
-        </div>
-      </div>
 
-      {/* الرسم البياني الشريطي الصغير */}
-      <div className="mt-4 h-16">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={monthlyData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-            <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-            <Bar dataKey="revenue" fill="#000000" radius={[2, 2, 0, 0]} />
-            <Bar dataKey="expenses" fill="#aec2cf" radius={[2, 2, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+        {/* الرسم البياني - النصف الثاني بنسبة 9:16 */}
+        <div className="flex-1 flex justify-center items-center">
+          <div 
+            className="w-full max-w-[90px]"
+            style={{ aspectRatio: '9/16' }}
+          >
+            <ChartContainer
+              config={{
+                profits: { label: "الأرباح", color: "#000000" },
+                expenses: { label: "المصاريف", color: "#aec2cf" },
+                reserves: { label: "الاحتياطي", color: "#f0f0f0" }
+              }}
+              className="w-full h-full"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={financialData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={25}
+                    outerRadius={40}
+                    startAngle={90}
+                    endAngle={450}
+                    dataKey="value"
+                  >
+                    {financialData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
+        </div>
       </div>
     </div>
   );
