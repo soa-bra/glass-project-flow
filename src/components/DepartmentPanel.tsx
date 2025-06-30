@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab, FinancialDashboard } from './DepartmentTabs/Financial';
@@ -6,6 +5,7 @@ import { GeneralOverviewTab } from './DepartmentTabs/GeneralOverviewTab';
 import { ReportsTab } from './DepartmentTabs/ReportsTab';
 import { TemplatesTab } from './DepartmentTabs/TemplatesTab';
 import { LegalDashboard } from './DepartmentTabs/Legal';
+import { MarketingDashboard } from './DepartmentTabs/Marketing';
 
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
@@ -55,6 +55,21 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
           <div className="flex-1 overflow-auto px-0 mx-0">
             <div className="h-full mx-6 my-6 rounded-2xl overflow-hidden bg-transparent">
               <LegalDashboard />
+            </div>
+          </div>
+        </div>
+      </div>;
+  }
+
+  // Special handling for marketing department
+  if (selectedDepartment === 'marketing') {
+    return <div style={{
+      background: 'var(--backgrounds-admin-ops-board-bg)'
+    }} className="h-full rounded-3xl overflow-hidden">
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-auto px-0 mx-0">
+            <div className="h-full mx-6 my-6 rounded-2xl overflow-hidden bg-transparent">
+              <MarketingDashboard />
             </div>
           </div>
         </div>
