@@ -34,9 +34,9 @@ export const FinancialOverviewCard: React.FC = () => {
         </div>
       }
     >
-      <div className="flex-1 flex gap-4">
+      <div className="flex-1 flex gap-4 h-full overflow-hidden">
         {/* النصوص والأرقام - النصف الأول */}
-        <div className="flex-1 flex flex-col justify-center">
+        <div className="flex-1 flex flex-col justify-center overflow-hidden">
           <div className="text-center mb-4">
             <div className="text-3xl font-bold text-black font-arabic mb-1">
               {totalRevenue}
@@ -67,11 +67,11 @@ export const FinancialOverviewCard: React.FC = () => {
           </div>
         </div>
 
-        {/* الرسم البياني - النصف الثاني بنسبة 9:16 */}
-        <div className="flex-1 flex justify-center items-center">
+        {/* الرسم البياني - النصف الثاني بنسبة 16:9 */}
+        <div className="flex-1 flex justify-center items-center overflow-hidden">
           <div 
-            className="w-full max-w-[100px]"
-            style={{ aspectRatio: '9/16' }}
+            className="w-full max-w-[120px]"
+            style={{ aspectRatio: '16/9' }}
           >
             <ChartContainer
               config={{
@@ -87,8 +87,8 @@ export const FinancialOverviewCard: React.FC = () => {
                     data={financialData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={30}
-                    outerRadius={50}
+                    innerRadius={20}
+                    outerRadius={35}
                     startAngle={90}
                     endAngle={450}
                     dataKey="value"

@@ -99,7 +99,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
           <h3 className="text-sm font-bold text-gray-800 font-arabic">{title}</h3>
         }
       >
-        <div className="flex-1 flex flex-col justify-center py-0">
+        <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden">
           <div className="flex items-baseline gap-2 mb-2">
             <div className="text-3xl font-bold text-black font-arabic">
               {value}
@@ -129,9 +129,9 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
         <h3 className="text-sm font-bold text-gray-800 font-arabic">{title}</h3>
       }
     >
-      <div className="flex-1 flex gap-4">
+      <div className="flex-1 flex gap-4 h-full overflow-hidden">
         {/* النصوص والأرقام - النصف الأول */}
-        <div className="flex-1 flex flex-col justify-center">
+        <div className="flex-1 flex flex-col justify-center overflow-hidden">
           <div className="flex items-baseline gap-2 mb-2">
             <div className="text-3xl font-bold text-black font-arabic">
               {value}
@@ -146,11 +146,11 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
           </div>
         </div>
 
-        {/* الرسم البياني - النصف الثاني بنسبة 9:16 */}
-        <div className="flex-1 flex justify-center items-center">
+        {/* الرسم البياني - النصف الثاني بنسبة 16:9 */}
+        <div className="flex-1 flex justify-center items-center overflow-hidden">
           <div 
-            className="w-full max-w-[90px]"
-            style={{ aspectRatio: '9/16' }}
+            className="w-full max-w-[120px]"
+            style={{ aspectRatio: '16/9' }}
           >
             {renderChart()}
           </div>

@@ -15,7 +15,7 @@ const chartData = [
 export const DataVisualizationCard: React.FC = () => {
   return (
     <div 
-      className="h-full p-6 rounded-3xl border border-white/20"
+      className="h-full p-6 rounded-3xl border border-white/20 overflow-hidden"
       style={{
         background: '#f7ffff',
       }}
@@ -29,9 +29,9 @@ export const DataVisualizationCard: React.FC = () => {
       </div>
 
       {/* المحتوى مقسم لنصفين */}
-      <div className="flex gap-4 h-full">
+      <div className="flex gap-4 h-full overflow-hidden">
         {/* النصوص والأرقام - النصف الأول */}
-        <div className="flex-1 flex flex-col justify-center">
+        <div className="flex-1 flex flex-col justify-center overflow-hidden">
           <div className="text-center mb-4">
             <div className="text-3xl font-bold text-gray-800 font-arabic">46</div>
             <div className="text-sm text-gray-500 font-arabic">مليار</div>
@@ -43,11 +43,11 @@ export const DataVisualizationCard: React.FC = () => {
           </div>
         </div>
 
-        {/* الرسم البياني - النصف الثاني بنسبة 9:16 */}
-        <div className="flex-1 flex justify-center items-center">
+        {/* الرسم البياني - النصف الثاني بنسبة 16:9 */}
+        <div className="flex-1 flex justify-center items-center overflow-hidden">
           <div 
-            className="w-full max-w-[90px]"
-            style={{ aspectRatio: '9/16' }}
+            className="w-full max-w-[120px]"
+            style={{ aspectRatio: '16/9' }}
           >
             <ChartContainer
               config={{

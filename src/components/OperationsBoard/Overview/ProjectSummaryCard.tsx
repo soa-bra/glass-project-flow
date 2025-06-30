@@ -34,9 +34,9 @@ export const ProjectSummaryCard: React.FC = () => {
         </div>
       }
     >
-      <div className="flex h-[100px] gap-4">
+      <div className="flex h-[100px] gap-4 overflow-hidden">
         {/* النصوص والأرقام - النصف الأول */}
-        <div className="flex-1 flex flex-col justify-center gap-1">
+        <div className="flex-1 flex flex-col justify-center gap-1 overflow-hidden">
           <div className="text-right">
             <div className="text-base font-bold text-black font-arabic">140</div>
             <div className="text-xs text-gray-700 font-arabic">هذا النص مثال</div>
@@ -51,11 +51,11 @@ export const ProjectSummaryCard: React.FC = () => {
           </div>
         </div>
 
-        {/* الرسم البياني - النصف الثاني بنسبة 9:16 */}
-        <div className="flex-1 flex justify-center items-center">
+        {/* الرسم البياني - النصف الثاني بنسبة 16:9 */}
+        <div className="flex-1 flex justify-center items-center overflow-hidden">
           <div 
-            className="w-full max-w-[80px]"
-            style={{ aspectRatio: '9/16' }}
+            className="w-full max-w-[120px]"
+            style={{ aspectRatio: '16/9' }}
           >
             <ChartContainer
               config={{

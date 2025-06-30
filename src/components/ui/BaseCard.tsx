@@ -58,7 +58,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   return (
     <div 
       className={cn(
-        'rounded-3xl transition-all duration-300',
+        'rounded-3xl transition-all duration-300 overflow-hidden',
         variant !== 'operations' && sizeClasses[size],
         variantClasses[variant],
         color && colorClasses[color],
@@ -72,7 +72,9 @@ export const BaseCard: React.FC<BaseCardProps> = ({
           {header}
         </div>
       )}
-      {children}
+      <div className="h-full overflow-hidden">
+        {children}
+      </div>
     </div>
   );
 };

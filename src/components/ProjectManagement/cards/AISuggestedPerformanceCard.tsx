@@ -57,7 +57,7 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
     switch (chartType) {
       case 'line':
         return (
-          <ResponsiveContainer width="100%" height={60}>
+          <ResponsiveContainer width="100%" height="100%">
             <LineChart data={lineData}>
               <Line type="monotone" dataKey="value" stroke="#000000" strokeWidth={2} dot={false} />
             </LineChart>
@@ -65,7 +65,7 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
         );
       case 'bar':
         return (
-          <ResponsiveContainer width="100%" height={60}>
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart data={barData}>
               <Bar dataKey="value" fill="#aec2cf" radius={[2, 2, 0, 0]} />
             </BarChart>
@@ -74,14 +74,14 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
       case 'pie':
       case 'donut':
         return (
-          <ResponsiveContainer width="100%" height={80}>
+          <ResponsiveContainer width="100%" height="100%">
             <RechartsPieChart>
               <RechartsPieChart
                 data={pieData}
                 cx="50%"
                 cy="50%"
-                innerRadius={chartType === 'donut' ? 15 : 0}
-                outerRadius={30}
+                innerRadius={chartType === 'donut' ? 10 : 0}
+                outerRadius={20}
                 dataKey="value"
               >
                 {pieData.map((entry, index) => (
@@ -98,7 +98,7 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
 
   return (
     <div 
-      className="h-full p-4 rounded-3xl border border-white/20 flex flex-col"
+      className="h-full p-4 rounded-3xl border border-white/20 flex flex-col overflow-hidden"
       style={{
         background: '#f7ffff',
         fontFamily: 'IBM Plex Sans Arabic'
@@ -123,8 +123,13 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
       </div>
 
       {/* الرسم البياني */}
-      <div className="flex-1 mb-2">
-        {renderChart()}
+      <div className="flex-1 mb-2 overflow-hidden">
+        <div 
+          className="w-full h-full max-w-[120px] mx-auto"
+          style={{ aspectRatio: '16/9' }}
+        >
+          {renderChart()}
+        </div>
       </div>
 
       {/* المؤشر */}

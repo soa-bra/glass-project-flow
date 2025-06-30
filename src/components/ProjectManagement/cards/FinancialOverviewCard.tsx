@@ -19,7 +19,7 @@ const monthlyData = [
 export const FinancialOverviewCard: React.FC = () => {
   return (
     <div 
-      className="h-full p-6 rounded-3xl border border-white/20 flex flex-col"
+      className="h-full p-6 rounded-3xl border border-white/20 flex flex-col overflow-hidden"
       style={{ 
         background: '#f7ffff',
         fontFamily: 'IBM Plex Sans Arabic'
@@ -39,9 +39,9 @@ export const FinancialOverviewCard: React.FC = () => {
       </div>
 
       {/* المحتوى مقسم لنصفين */}
-      <div className="flex-1 flex gap-4">
+      <div className="flex-1 flex gap-4 overflow-hidden">
         {/* النصوص والأرقام - النصف الأول */}
-        <div className="flex-1 flex flex-col justify-center">
+        <div className="flex-1 flex flex-col justify-center overflow-hidden">
           <div className="text-center mb-4">
             <div className="text-xl font-bold text-black font-arabic">
               78M
@@ -68,11 +68,11 @@ export const FinancialOverviewCard: React.FC = () => {
           </div>
         </div>
 
-        {/* الرسم البياني - النصف الثاني بنسبة 9:16 */}
-        <div className="flex-1 flex justify-center items-center">
+        {/* الرسم البياني - النصف الثاني بنسبة 16:9 */}
+        <div className="flex-1 flex justify-center items-center overflow-hidden">
           <div 
-            className="w-full max-w-[90px]"
-            style={{ aspectRatio: '9/16' }}
+            className="w-full max-w-[120px]"
+            style={{ aspectRatio: '16/9' }}
           >
             <ChartContainer
               config={{
@@ -88,8 +88,8 @@ export const FinancialOverviewCard: React.FC = () => {
                     data={financialData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={25}
-                    outerRadius={40}
+                    innerRadius={15}
+                    outerRadius={30}
                     startAngle={90}
                     endAngle={450}
                     dataKey="value"
