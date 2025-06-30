@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { FileTemplate, Download, Plus, Star, Search, Filter } from 'lucide-react';
+import { FileText, Download, Plus, Star, Search, Filter } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,25 +14,25 @@ export const TemplatesTab: React.FC<TemplatesTabProps> = ({ departmentTitle }) =
     {
       name: 'النماذج الإدارية',
       count: 12,
-      icon: FileTemplate,
+      icon: FileText,
       color: 'text-blue-600'
     },
     {
       name: 'قوالب التقارير',
       count: 8,
-      icon: FileTemplate,
+      icon: FileText,
       color: 'text-green-600'
     },
     {
       name: 'النماذج المالية',
       count: 15,
-      icon: FileTemplate,
+      icon: FileText,
       color: 'text-purple-600'
     },
     {
       name: 'قوالب المراسلات',
       count: 6,
-      icon: FileTemplate,
+      icon: FileText,
       color: 'text-orange-600'
     }
   ];
