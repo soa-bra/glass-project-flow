@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye, Users, FileText, Clock, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Eye, Users, FileText, Clock, TrendingUp, AlertTriangle, Calendar, Award, Settings, BarChart } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -68,6 +68,36 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({
     task: 'مراجعة الخطة الاستراتيجية',
     dueDate: 'خلال أسبوع',
     progress: 75
+  }];
+  // الصف الرابع الجديد - بطاقات إضافية
+  const additionalStats = [{
+    title: 'الاجتماعات المجدولة',
+    value: '8',
+    change: 15.2,
+    trend: 'up' as const,
+    icon: Calendar,
+    color: 'text-indigo-600'
+  }, {
+    title: 'المشاريع المميزة',
+    value: '5',
+    change: 10.0,
+    trend: 'up' as const,
+    icon: Award,
+    color: 'text-yellow-600'
+  }, {
+    title: 'الإعدادات المحدثة',
+    value: '2',
+    change: -5.0,
+    trend: 'down' as const,
+    icon: Settings,
+    color: 'text-gray-600'
+  }, {
+    title: 'التقارير الشهرية',
+    value: '15',
+    change: 8.7,
+    trend: 'up' as const,
+    icon: BarChart,
+    color: 'text-teal-600'
   }];
   return <div className="space-y-6 p-6 bg-transparent">
       {/* إحصائيات الإدارة */}
@@ -146,5 +176,19 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({
           </div>
         </div>
       </BaseCard>
+
+      {/* الصف الرابع - إحصائيات إضافية */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {additionalStats.map((stat, index) => <BaseCard key={index} variant="operations" size="sm" className="text-center">
+            <div className="flex items-center justify-between mb-3">
+              <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              <Badge variant={stat.trend === 'up' ? 'default' : 'destructive'} className="text-xs">
+                {stat.change > 0 ? '+' : ''}{stat.change}%
+              </Badge>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{stat.value}</h3>
+            <p className="text-sm text-gray-600 font-arabic">{stat.title}</p>
+          </BaseCard>)}
+      </div>
     </div>;
 };
