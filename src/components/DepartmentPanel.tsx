@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab, FinancialDashboard } from './DepartmentTabs/Financial';
 import { GeneralOverviewTab } from './DepartmentTabs/GeneralOverviewTab';
@@ -18,6 +18,8 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   isMainSidebarCollapsed,
   isDepartmentsSidebarCollapsed
 }) => {
+  const [activeTab, setActiveTab] = useState('');
+
   if (!selectedDepartment) {
     return <div style={{
       background: 'var(--backgrounds-admin-ops-board-bg)'
@@ -97,6 +99,11 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   };
 
   const content = getDepartmentContent(selectedDepartment);
+  
+  // Initialize active tab if not set
+  if (!activeTab && content.tabs.length > 0) {
+    setActiveTab(content.tabs[0]);
+  }
 
   const renderTabContent = (tab: string, department: string) => {
     if (tab === 'النظرة العامة') {
@@ -118,35 +125,41 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   return <div style={{
     background: 'var(--backgrounds-admin-ops-board-bg)'
   }} className="h-full rounded-3xl overflow-hidden">
-      <div className="h-full flex flex-col">
-        {/* Header */}
+      <div className="h-full flex flex-col bg-transparent">
+        {/* Header with Title and Tabs - matching Legal and Financial dashboards */}
         <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
           <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
             {content.title}
           </h2>
           <div className="w-fit">
-            <Tabs defaultValue={content.tabs[0]} dir="rtl" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
               <TabsList className="grid w-full bg-transparent rounded-full p-1" style={{
-              gridTemplateColumns: `repeat(${content.tabs.length}, 1fr)`
-            }}>
-                {content.tabs.map(tab => <TabsTrigger key={tab} value={tab} className="text-sm font-arabic rounded-full py-2 px-6 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black">
+                gridTemplateColumns: `repeat(${content.tabs.length}, 1fr)`
+              }}>
+                {content.tabs.map(tab => (
+                  <TabsTrigger 
+                    key={tab} 
+                    value={tab} 
+                    className="text-sm font-arabic rounded-full py-2 px-6 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
+                  >
                     {tab}
-                  </TabsTrigger>)}
+                  </TabsTrigger>
+                ))}
               </TabsList>
             </Tabs>
           </div>
         </div>
 
-        {/* Content - بخلفية شفافة */}
-        <Tabs defaultValue={content.tabs[0]} className="flex-1 flex flex-col px-0 mx-0" dir="rtl">
-          <div className="px-0 my-0">
-            {content.tabs.map(tab => <TabsContent key={tab} value={tab} className="flex-1 mt-0 overflow-auto px-0 mx-0">
-                <div className="h-full mx-6 mb-6 rounded-2xl overflow-hidden bg-transparent">
-                  {renderTabContent(tab, selectedDepartment)}
-                </div>
-              </TabsContent>)}
-          </div>
-        </Tabs>
+        {/* Content */}
+        <div className="flex-1 overflow-auto px-6 pb-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
+            {content.tabs.map(tab => (
+              <TabsContent key={tab} value={tab} className="space-y-6">
+                {renderTabContent(tab, selectedDepartment)}
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
       </div>
     </div>;
 };
