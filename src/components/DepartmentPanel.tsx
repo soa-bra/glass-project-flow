@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab, FinancialDashboard } from './DepartmentTabs/Financial';
 import { GeneralOverviewTab } from './DepartmentTabs/GeneralOverviewTab';
 import { ReportsTab } from './DepartmentTabs/ReportsTab';
 import { TemplatesTab } from './DepartmentTabs/TemplatesTab';
+import { LegalDashboard } from './DepartmentTabs/Legal';
 
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
@@ -33,7 +35,6 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       background: 'var(--backgrounds-admin-ops-board-bg)'
     }} className="h-full rounded-3xl overflow-hidden">
         <div className="h-full flex flex-col">
-          {/* Content - Financial Dashboard */}
           <div className="flex-1 overflow-auto px-0 mx-0">
             <div className="h-full mx-6 my-6 rounded-2xl overflow-hidden bg-transparent">
               <FinancialDashboard />
@@ -43,19 +44,26 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       </div>;
   }
 
+  // Special handling for legal department
+  if (selectedDepartment === 'legal') {
+    return <div style={{
+      background: 'var(--backgrounds-admin-ops-board-bg)'
+    }} className="h-full rounded-3xl overflow-hidden">
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-auto px-0 mx-0">
+            <div className="h-full mx-6 my-6 rounded-2xl overflow-hidden bg-transparent">
+              <LegalDashboard />
+            </div>
+          </div>
+        </div>
+      </div>;
+  }
+
   const getDepartmentContent = (department: string) => {
     const departmentData = {
-      legal: {
-        title: 'إدارة الأحوال القانونية',
-        tabs: ['النظرة العامة', 'العقود', 'القضايا', 'الاستشارات', 'التراخيص', 'النماذج والقوالب', 'التقارير']
-      },
       marketing: {
         title: 'إدارة الأنشطة التسويقية',
         tabs: ['النظرة العامة', 'الحملات', 'التحليلات', 'المحتوى', 'العلاقات العامة', 'النماذج والقوالب', 'التقارير']
-      },
-      projects: {
-        title: 'إدارة المشاريع',
-        tabs: ['النظرة العامة', 'المشاريع النشطة', 'التخطيط', 'الموارد', 'النماذج والقوالب', 'التقارير']
       },
       hr: {
         title: 'إدارة الطاقات البشرية',

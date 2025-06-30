@@ -25,10 +25,6 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
     label: 'إدارة الأنشطة التسويقية',
     icon: TrendingUp
   }, {
-    key: 'projects',
-    label: 'إدارة المشاريع',
-    icon: Building2
-  }, {
     key: 'hr',
     label: 'إدارة الطاقات البشرية',
     icon: Users
