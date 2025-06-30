@@ -114,12 +114,12 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
           <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
             {content.title}
           </h2>
-          <div className="w-fit">
+          <div className="w-fit relative">
             <Tabs defaultValue={content.tabs[0]} dir="rtl" className="w-full">
-              <TabsList className="grid w-full bg-transparent rounded-full p-1" style={{
+              <TabsList className="grid w-full bg-black rounded-full p-1 relative z-10" style={{
               gridTemplateColumns: `repeat(${content.tabs.length}, 1fr)`
             }}>
-                {content.tabs.map(tab => <TabsTrigger key={tab} value={tab} className="text-sm font-arabic rounded-full py-2 px-6 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black">
+                {content.tabs.map(tab => <TabsTrigger key={tab} value={tab} className="relative text-sm font-arabic rounded-full py-2 px-6 transition-all duration-300 data-[state=active]:text-black data-[state=inactive]:bg-transparent data-[state=inactive]:text-white data-[state=inactive]:border-0 hover:bg-white/10 hover:text-white whitespace-nowrap data-[state=active]:bg-white data-[state=active]:shadow-[0_0_0_3px_#D1E1E9] data-[state=active]:z-20">
                     {tab}
                   </TabsTrigger>)}
               </TabsList>
