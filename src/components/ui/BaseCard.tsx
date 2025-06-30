@@ -37,7 +37,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   const variantClasses = {
     glass: 'bg-white/40 backdrop-blur-[20px] border border-white/20',
     flat: 'bg-opacity-100',
-    operations: 'operations-board-card'
+    operations: 'bg-[#ecf2f7] border border-gray-200/50'
   };
 
   const colorClasses = {
@@ -63,6 +63,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
         variantClasses[variant],
         color && colorClasses[color],
         neonRing && neonRingClasses[neonRing],
+        variant === 'operations' && sizeClasses[size],
         className
       )}
       style={style}
