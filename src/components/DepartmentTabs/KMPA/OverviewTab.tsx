@@ -36,6 +36,12 @@ export const OverviewTab: React.FC = () => {
       value: metrics.activeUsers,
       unit: 'مستخدم',
       description: 'النشاط الشهري للمستخدمين'
+    },
+    {
+      title: 'النمو الشهري',
+      value: `+${metrics.monthlyGrowth}`,
+      unit: '%',
+      description: 'معدل نمو استخدام المحتوى'
     }
   ];
 
@@ -46,38 +52,6 @@ export const OverviewTab: React.FC = () => {
     <div className="space-y-6">
       {/* مؤشرات الأداء الأساسية */}
       <KPIStatsSection stats={kpiStats} />
-
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{metrics.totalDocuments}</div>
-            <div className="text-sm text-gray-600">إجمالي الوثائق</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Eye className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{metrics.totalReads.toLocaleString()}</div>
-            <div className="text-sm text-gray-600">إجمالي القراءات</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Users className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{metrics.activeUsers}</div>
-            <div className="text-sm text-gray-600">المستخدمون النشطون</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <TrendingUp className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">+{metrics.monthlyGrowth}%</div>
-            <div className="text-sm text-gray-600">النمو الشهري</div>
-          </CardContent>
-        </Card>
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Categories */}

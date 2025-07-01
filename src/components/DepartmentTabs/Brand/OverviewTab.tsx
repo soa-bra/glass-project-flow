@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +14,7 @@ import {
   Award,
   Zap
 } from 'lucide-react';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 
 export const OverviewTab: React.FC = () => {
   const culturalHarmonyIndex = 87;
@@ -22,43 +22,37 @@ export const OverviewTab: React.FC = () => {
   const brandAwarenessScore = 78;
   const culturalImpactScore = 85;
 
+  const kpiStats = [
+    {
+      title: 'مؤشر الانسجام الثقافي',
+      value: culturalHarmonyIndex,
+      unit: '%',
+      description: 'مستوى التوافق مع القيم الجوهرية'
+    },
+    {
+      title: 'صحة الهوية',
+      value: identityHealthScore,
+      unit: '%',
+      description: 'تماسك الهوية البصرية والثقافية'
+    },
+    {
+      title: 'الوعي بالعلامة',
+      value: brandAwarenessScore,
+      unit: '%',
+      description: 'مستوى الإدراك والتميز'
+    },
+    {
+      title: 'الأثر الثقافي',
+      value: culturalImpactScore,
+      unit: '%',
+      description: 'قوة التأثير في المجتمع'
+    }
+  ];
+
   return (
     <div className="space-y-6">
-      {/* Key Metrics Dashboard */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Heart className="h-8 w-8 text-red-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{culturalHarmonyIndex}%</div>
-            <div className="text-sm text-gray-600">مؤشر الانسجام الثقافي</div>
-            <Progress value={culturalHarmonyIndex} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Target className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{identityHealthScore}%</div>
-            <div className="text-sm text-gray-600">صحة الهوية</div>
-            <Progress value={identityHealthScore} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Eye className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{brandAwarenessScore}%</div>
-            <div className="text-sm text-gray-600">الوعي بالعلامة</div>
-            <Progress value={brandAwarenessScore} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Award className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{culturalImpactScore}%</div>
-            <div className="text-sm text-gray-600">الأثر الثقافي</div>
-            <Progress value={culturalImpactScore} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
-      </div>
+      {/* مؤشرات الأداء الأساسية */}
+      <KPIStatsSection stats={kpiStats} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Cultural Identity Health */}

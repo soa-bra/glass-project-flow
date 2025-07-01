@@ -32,6 +32,12 @@ export const OverviewTab: React.FC = () => {
       value: `${metrics.completionRate}%`,
       unit: 'إنجاز',
       description: 'نسبة إكمال الدورات'
+    },
+    {
+      title: 'الشهادات الصادرة',
+      value: metrics.certificatesIssued,
+      unit: 'شهادة',
+      description: 'الشهادات المُصدرة هذا الشهر'
     }
   ];
 
@@ -62,38 +68,6 @@ export const OverviewTab: React.FC = () => {
     <div className="space-y-6">
       {/* مؤشرات الأداء الأساسية */}
       <KPIStatsSection stats={kpiStats} />
-
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="إجمالي الدورات"
-          value={metrics.totalCourses}
-          icon={BookOpen}
-          trend={12}
-          color="bg-blue-500"
-        />
-        <StatCard
-          title="المتدربون النشطون"
-          value={metrics.activeLearners}
-          icon={Users}
-          trend={8}
-          color="bg-green-500"
-        />
-        <StatCard
-          title="معدل الإنجاز"
-          value={`${metrics.completionRate}%`}
-          icon={Target}
-          trend={5}
-          color="bg-purple-500"
-        />
-        <StatCard
-          title="الشهادات الصادرة"
-          value={metrics.certificatesIssued}
-          icon={Award}
-          trend={15}
-          color="bg-orange-500"
-        />
-      </div>
 
       {/* Monthly Performance */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
