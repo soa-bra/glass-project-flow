@@ -42,17 +42,17 @@ export function AnimatedTabs({ tabs, activeTab, onTabChange, className = "" }: A
   }, [activeTab]);
 
   return (
-    <div className={`relative bg-secondary/50 border border-primary/10 mx-auto flex w-fit flex-col items-center rounded-full py-2 px-4 ${className}`}>
+    <div className={`relative bg-transparent border border-black mx-auto flex w-fit flex-col items-center rounded-full py-2 px-4 ${className}`}>
       <div
         ref={containerRef}
         className="absolute z-10 w-full overflow-hidden [clip-path:inset(0px_75%_0px_0%_round_17px)] [transition:clip-path_0.25s_ease]"
       >
-        <div className="relative flex w-full justify-center bg-primary">
+        <div className="relative flex w-full justify-center bg-black">
           {tabs.map((tab) => (
             <button
               key={tab.value}
               onClick={() => onTabChange(tab.value)}
-              className="flex h-8 items-center rounded-full px-3 py-2 text-sm font-medium text-primary-foreground whitespace-nowrap"
+              className="flex h-8 items-center rounded-full px-3 py-2 text-sm font-medium text-white whitespace-nowrap"
               tabIndex={-1}
             >
               {tab.label}
@@ -70,7 +70,7 @@ export function AnimatedTabs({ tabs, activeTab, onTabChange, className = "" }: A
               key={tab.value}
               ref={isActive ? activeTabRef : null}
               onClick={() => onTabChange(tab.value)}
-              className="flex h-8 items-center cursor-pointer rounded-full px-3 py-2 text-sm font-medium text-muted-foreground whitespace-nowrap"
+              className="flex h-8 items-center cursor-pointer rounded-full px-3 py-2 text-sm font-medium text-gray-700 whitespace-nowrap"
             >
               {tab.label}
             </button>
