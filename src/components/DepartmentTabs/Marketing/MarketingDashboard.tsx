@@ -4,11 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
 import { CampaignsChannelsTab } from './CampaignsChannelsTab';
 import { ContentAssetsTab } from './ContentAssetsTab';
-import { PerformanceAnalyticsTab } from './PerformanceAnalyticsTab';
-import { BudgetsTab } from './BudgetsTab';
-import { PublicRelationsTab } from './PublicRelationsTab';
-import { TemplatesTab } from './TemplatesTab';
-import { ReportsTab } from './ReportsTab';
+import { PerformanceAnalyticsTab, BudgetsTab, PublicRelationsTab, TemplatesTab, ReportsTab } from './index';
 
 export const MarketingDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
