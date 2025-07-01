@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { X, MoreHorizontal, Edit, Archive, Trash } from 'lucide-react';
 import { Project } from '@/types/project';
+import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,6 +35,11 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
   onTabChange,
   tabs
 }) => {
+  const animatedTabItems = tabs.map(tab => ({
+    value: tab.id,
+    label: tab.label
+  }));
+
   return (
     <div className="flex-shrink-0 mb-6">
       <div className="flex items-center justify-between">
@@ -42,22 +48,12 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
         </h1>
 
         <div className="flex-1 flex justify-center">
-          <div className="w-full overflow-x-auto no-scrollbar" dir="rtl">
-            <div className="gap-1 justify-center bg-transparent min-w-max flex-nowrap h-auto flex mx-auto">
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => onTabChange(tab.id)}
-                  className={`px-4 py-2 rounded-full font-arabic text-sm transition-all duration-200 border ${
-                    activeTab === tab.id
-                      ? 'bg-black text-white border-black shadow-sm'
-                      : 'bg-transparent text-gray-700 border-black hover:bg-white/50'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+          <div className="w-fit">
+            <AnimatedTabs 
+              tabs={animatedTabItems}
+              activeTab={activeTab}
+              onTabChange={onTabChange}
+            />
           </div>
         </div>
 
@@ -105,16 +101,6 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
           </button>
         </div>
       </div>
-
-      <style>{`
-        .no-scrollbar {
-          scrollbar-width: none !important;
-          -ms-overflow-style: none !important;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-          display: none !important;
-        }
-      `}</style>
     </div>
   );
 };
