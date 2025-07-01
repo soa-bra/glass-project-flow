@@ -33,10 +33,6 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
     label: 'إدارة علاقات العملاء',
     icon: UserCheck
   }, {
-    key: 'clients',
-    label: 'إدارة علاقات العملاء (القديم)',
-    icon: Heart
-  }, {
     key: 'social',
     label: 'إدارة المسؤولية الاجتماعية',
     icon: Heart
@@ -53,6 +49,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
     label: 'إدارة العلامة التجارية',
     icon: Award
   }];
+  
   const toggleSidebar = () => {
     onToggleCollapse(!isCollapsed);
   };

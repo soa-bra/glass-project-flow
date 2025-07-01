@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab, FinancialDashboard } from './DepartmentTabs/Financial';
@@ -9,6 +8,7 @@ import { LegalDashboard } from './DepartmentTabs/Legal';
 import { MarketingDashboard } from './DepartmentTabs/Marketing';
 import { HRDashboard } from './DepartmentTabs/HR';
 import { CRMDashboard } from './DepartmentTabs/CRM';
+import { CSRDashboard } from './DepartmentTabs/CSR';
 
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
@@ -109,6 +109,21 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       </div>;
   }
 
+  // Special handling for CSR department
+  if (selectedDepartment === 'social') {
+    return <div style={{
+      background: 'var(--backgrounds-admin-ops-board-bg)'
+    }} className="h-full rounded-3xl overflow-hidden">
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-auto px-0 mx-0">
+            <div className="h-full mx-6 my-6 rounded-2xl overflow-hidden bg-transparent">
+              <CSRDashboard />
+            </div>
+          </div>
+        </div>
+      </div>;
+  }
+
   const getDepartmentContent = (department: string) => {
     const departmentData = {
       clients: {
@@ -117,7 +132,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       },
       social: {
         title: 'إدارة المسؤولية الاجتماعية',
-        tabs: ['النظرة العامة', 'المبادرات', 'التطوع', 'المجتمع', 'النماذج والقوالب', 'التقارير']
+        tabs: ['النظرة العامة', 'المبادرات', 'الشراكات والموارد', 'المراقبة والتقييم', 'قصص الأثر', 'النماذج والقوالب', 'التقارير']
       },
       training: {
         title: 'إدارة التدريب',
