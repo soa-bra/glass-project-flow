@@ -6,6 +6,7 @@ import { ReportsTab } from '../DepartmentTabs/ReportsTab';
 import { TemplatesTab } from '../DepartmentTabs/TemplatesTab';
 import { TrainingDashboard } from '../DepartmentTabs/Training/TrainingDashboard';
 import { KMPADashboard } from '../DepartmentTabs/KMPA';
+import { BrandDashboard } from '../DepartmentTabs/Brand';
 
 interface GenericDepartmentPanelProps {
   selectedDepartment: string;
@@ -25,6 +26,10 @@ export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({
     return <KMPADashboard />;
   }
 
+  if (selectedDepartment === 'brand') {
+    return <BrandDashboard />;
+  }
+
   const getDepartmentContent = (department: string) => {
     const departmentData = {
       clients: {
@@ -34,10 +39,6 @@ export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({
       social: {
         title: 'إدارة المسؤولية الاجتماعية',
         tabs: ['النظرة العامة', 'المبادرات', 'الشراكات والموارد', 'المراقبة والتقييم', 'قصص الأثر', 'النماذج والقوالب', 'التقارير']
-      },
-      brand: {
-        title: 'إدارة العلامة التجارية',
-        tabs: ['النظرة العامة', 'الهوية', 'التسويق', 'المحتوى', 'الشراكات', 'النماذج والقوالب', 'التقارير']
       }
     };
     return departmentData[department as keyof typeof departmentData] || {
