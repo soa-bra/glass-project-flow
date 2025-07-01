@@ -60,7 +60,7 @@ export const CertificationsTab: React.FC = () => {
         <Card>
           <CardContent className="p-4 text-center">
             <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{certificates.filter(c => c.status === 'issued').length}</div>
+            <div className="text-2xl font-bold">{certificates.length}</div>
             <div className="text-sm text-gray-600">شهادات مفعلة</div>
           </CardContent>
         </Card>
@@ -130,11 +130,9 @@ export const CertificationsTab: React.FC = () => {
                     <h4 className="font-medium">موظف {cert.studentId}</h4>
                     <p className="text-sm text-gray-600">دورة {cert.courseId}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge variant={cert.status === 'issued' ? 'default' : 'secondary'}>
-                        {cert.status === 'issued' ? 'صادرة' : 'معلقة'}
-                      </Badge>
+                      <Badge variant="default">صادرة</Badge>
                       <span className="text-xs text-gray-500">
-                        {new Date(cert.issuedDate).toLocaleDateString('ar-SA')}
+                        {new Date(cert.issuedAt).toLocaleDateString('ar-SA')}
                       </span>
                     </div>
                   </div>
@@ -156,6 +154,26 @@ export const CertificationsTab: React.FC = () => {
       </Card>
     </div>
   );
+
+  const getSkillLevelValue = (level: 'beginner' | 'intermediate' | 'advanced' | 'expert'): number => {
+    switch (level) {
+      case 'beginner': return 25;
+      case 'intermediate': return 50;
+      case 'advanced': return 75;
+      case 'expert': return 100;
+      default: return 0;
+    }
+  };
+
+  const getSkillLevelLabel = (level: 'beginner' | 'intermediate' | 'advanced' | 'expert'): string => {
+    switch (level) {
+      case 'beginner': return 'مبتدئ';
+      case 'intermediate': return 'متوسط';
+      case 'advanced': return 'متقدم';
+      case 'expert': return 'خبير';
+      default: return '';
+    }
+  };
 
   const SkillsMatrix = () => (
     <div className="space-y-6">
@@ -181,7 +199,7 @@ export const CertificationsTab: React.FC = () => {
             <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">
               {Math.round(skillMatrix.reduce((acc, emp) => 
-                acc + emp.skills.reduce((skillAcc, skill) => skillAcc + skill.level, 0) / emp.skills.length, 0
+                acc + emp.skills.reduce((skillAcc, skill) => skillAcc + getSkillLevelValue(skill.currentLevel), 0) / emp.skills.length, 0
               ) / skillMatrix.length)}%
             </div>
             <div className="text-sm text-gray-600">متوسط المهارات</div>
@@ -192,7 +210,7 @@ export const CertificationsTab: React.FC = () => {
             <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">
               {skillMatrix.filter(emp => 
-                emp.skills.some(skill => skill.level >= 80)
+                emp.skills.some(skill => getSkillLevelValue(skill.currentLevel) >= 80)
               ).length}
             </div>
             <div className="text-sm text-gray-600">خبراء</div>
@@ -203,7 +221,7 @@ export const CertificationsTab: React.FC = () => {
             <Users className="h-8 w-8 text-purple-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">
               {skillMatrix.filter(emp => 
-                emp.skills.some(skill => skill.level < 50)
+                emp.skills.some(skill => getSkillLevelValue(skill.currentLevel) < 50)
               ).length}
             </div>
             <div className="text-sm text-gray-600">يحتاجون تطوير</div>
@@ -223,10 +241,10 @@ export const CertificationsTab: React.FC = () => {
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h4 className="font-medium">موظف {employee.employeeId}</h4>
-                    <p className="text-sm text-gray-600">{employee.department} - {employee.position}</p>
+                    <p className="text-sm text-gray-600">قسم عام - منصب عام</p>
                   </div>
                   <Badge variant="outline">
-                    متوسط المهارات: {Math.round(employee.skills.reduce((acc, skill) => acc + skill.level, 0) / employee.skills.length)}%
+                    متوسط المهارات: {Math.round(employee.skills.reduce((acc, skill) => acc + getSkillLevelValue(skill.currentLevel), 0) / employee.skills.length)}%
                   </Badge>
                 </div>
                 
@@ -234,10 +252,10 @@ export const CertificationsTab: React.FC = () => {
                   {employee.skills.map((skill, index) => (
                     <div key={index} className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="font-medium">{skill.name}</span>
-                        <span className="text-gray-600">{skill.level}%</span>
+                        <span className="font-medium">مهارة {skill.skillId}</span>
+                        <span className="text-gray-600">{getSkillLevelValue(skill.currentLevel)}%</span>
                       </div>
-                      <Progress value={skill.level} className="h-2" />
+                      <Progress value={getSkillLevelValue(skill.currentLevel)} className="h-2" />
                       <div className="text-xs text-gray-500">
                         آخر تحديث: {new Date(skill.lastUpdated).toLocaleDateString('ar-SA')}
                       </div>

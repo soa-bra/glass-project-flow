@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Play, FileText, CheckCircle, Clock, Users, Settings, Upload, Download } from 'lucide-react';
+import { BookOpen, Play, FileText, CheckCircle, Clock, Users, Settings } from 'lucide-react';
 
 export const LMSTab: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState('content');
@@ -57,7 +57,7 @@ export const LMSTab: React.FC = () => {
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">إدارة المحتوى التعليمي</h3>
         <Button className="flex items-center gap-2">
-          <Upload className="h-4 w-4" />
+          <FileText className="h-4 w-4" />
           رفع حزمة SCORM
         </Button>
       </div>
@@ -186,7 +186,7 @@ export const LMSTab: React.FC = () => {
     </div>
   );
 
-  const Settings = () => (
+  const SettingsPanel = () => (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">إعدادات نظام إدارة التعلم</h3>
       
@@ -261,7 +261,7 @@ export const LMSTab: React.FC = () => {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" className="flex items-center gap-2">
-            <Download className="h-4 w-4" />
+            <FileText className="h-4 w-4" />
             تصدير البيانات
           </Button>
           <Button className="flex items-center gap-2">
@@ -287,7 +287,7 @@ export const LMSTab: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">
-          <Settings />
+          <SettingsPanel />
         </TabsContent>
       </Tabs>
     </div>

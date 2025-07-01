@@ -47,64 +47,84 @@ export const mockLearningROI: LearningROI[] = [
 
 export const mockSkillGapAlerts: SkillGapAlert[] = [
   {
-    id: 'ALERT-001',
-    area: 'تحليل البيانات المتقدم',
+    id: '1',
+    area: 'التسويق الرقمي',
     severity: 'high',
-    affectedEmployees: ['EMP-015', 'EMP-023', 'EMP-031'],
-    recommendedCourses: ['COURSE-DATA-001', 'COURSE-DATA-002'],
-    businessImpact: 'تأثير على قدرة تحليل رؤى العملاء وتحسين استراتيجيات العلامة التجارية',
-    createdAt: '2024-06-28',
+    affectedEmployees: ['EMP-001', 'EMP-002', 'EMP-003'],
+    recommendedCourses: ['COURSE-001', 'COURSE-003'],
+    businessImpact: 'تأثير على استراتيجية التسويق الرقمي للشركة',
+    createdAt: '2024-06-15',
     status: 'open'
   },
   {
-    id: 'ALERT-002',
-    area: 'إدارة المشاريع الرقمية',
+    id: '2',
+    area: 'تحليل البيانات',
     severity: 'medium',
-    affectedEmployees: ['EMP-007', 'EMP-019'],
-    recommendedCourses: ['COURSE-003'],
-    businessImpact: 'قد يؤثر على فعالية تسليم المشاريع الرقمية',
-    createdAt: '2024-06-25',
+    affectedEmployees: ['EMP-004', 'EMP-005'],
+    recommendedCourses: ['COURSE-004'],
+    businessImpact: 'قدرة محدودة على تحليل بيانات العملاء',
+    createdAt: '2024-06-10',
     status: 'addressing'
   }
 ];
 
 export const mockCorporatePrograms: CorporateProgram[] = [
   {
-    id: 'CORP-001',
+    id: '1',
     clientId: 'CLIENT-001',
-    title: 'برنامج تطوير الهوية التجارية - بنك الأهلي',
-    description: 'برنامج شامل لتطوير قدرات فريق التسويق في بنك الأهلي على فهم وتطبيق علم اجتماع العلامة التجارية',
-    customCourses: ['COURSE-CORP-001', 'COURSE-CORP-002'],
+    title: 'برنامج تطوير القيادات التنفيذية',
+    description: 'برنامج شامل لتطوير مهارات القيادة والإدارة للمستويات التنفيذية',
+    customCourses: ['COURSE-001', 'COURSE-002'],
     contractValue: 450000,
-    startDate: '2024-05-01',
-    endDate: '2024-08-31',
+    startDate: '2024-01-15',
+    endDate: '2024-06-15',
     status: 'in_progress',
-    participantCount: 35,
+    participantCount: 25,
     needsAssessment: {
-      id: 'ASSESS-001',
+      id: 'NA-001',
       clientId: 'CLIENT-001',
-      conductedBy: 'د. سارة العلي',
-      completedAt: '2024-04-15',
+      conductedBy: 'د. أحمد المحمد',
+      completedAt: '2023-12-20',
       skillGaps: [
         {
-          area: 'تحليل السوق الثقافي',
-          currentLevel: 2,
-          targetLevel: 4,
-          priority: 'high'
-        },
-        {
-          area: 'استراتيجية العلامة التجارية',
-          currentLevel: 3,
-          targetLevel: 5,
+          area: 'القيادة الاستراتيجية',
+          currentLevel: 60,
+          targetLevel: 85,
           priority: 'high'
         }
       ],
-      recommendations: [
-        'تطوير برنامج مخصص في تحليل السوق الثقافي',
-        'ورش عمل تطبيقية على مشاريع حقيقية'
-      ],
+      recommendations: ['تدريب مكثف على القيادة', 'ورش عمل تطبيقية'],
       estimatedDuration: 120,
-      proposedSolutions: ['COURSE-CORP-001', 'COURSE-CORP-002']
+      proposedSolutions: ['برنامج القيادة التنفيذية']
+    }
+  },
+  {
+    id: '2',
+    clientId: 'CLIENT-002',
+    title: 'برنامج التسويق الرقمي المتقدم',
+    description: 'برنامج متخصص في استراتيجيات التسويق الرقمي الحديثة',
+    customCourses: ['COURSE-003'],
+    contractValue: 280000,
+    startDate: '2024-03-01',
+    endDate: '2024-05-30',
+    status: 'completed',
+    participantCount: 18,
+    needsAssessment: {
+      id: 'NA-002',
+      clientId: 'CLIENT-002',
+      conductedBy: 'أ. فاطمة العلي',
+      completedAt: '2024-02-10',
+      skillGaps: [
+        {
+          area: 'التسويق الرقمي',
+          currentLevel: 45,
+          targetLevel: 80,
+          priority: 'high'
+        }
+      ],
+      recommendations: ['دورات متخصصة في وسائل التواصل الاجتماعي'],
+      estimatedDuration: 80,
+      proposedSolutions: ['برنامج التسويق الرقمي']
     }
   }
 ];

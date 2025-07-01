@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -65,21 +64,21 @@ export const CorporateTab: React.FC = () => {
         <Card>
           <CardContent className="p-4 text-center">
             <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{corporatePrograms.reduce((acc, p) => acc + p.participantsCount, 0)}</div>
+            <div className="text-2xl font-bold">{corporatePrograms.reduce((acc, p) => acc + p.participantCount, 0)}</div>
             <div className="text-sm text-gray-600">إجمالي المشاركين</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <DollarSign className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{(corporatePrograms.reduce((acc, p) => acc + p.value, 0) / 1000).toFixed(0)}k</div>
+            <div className="text-2xl font-bold">{(corporatePrograms.reduce((acc, p) => acc + p.contractValue, 0) / 1000).toFixed(0)}k</div>
             <div className="text-sm text-gray-600">القيمة الإجمالية (ر.س)</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <Calendar className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{corporatePrograms.filter(p => p.status === 'active').length}</div>
+            <div className="text-2xl font-bold">{corporatePrograms.filter(p => p.status === 'in_progress').length}</div>
             <div className="text-sm text-gray-600">قيد التنفيذ</div>
           </CardContent>
         </Card>
@@ -94,15 +93,14 @@ export const CorporateTab: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h4 className="text-lg font-semibold">{program.title}</h4>
-                    <Badge variant={program.type === 'workshop' ? 'default' : 'secondary'}>
-                      {program.type === 'workshop' ? 'ورشة عمل' : 'برنامج تدريبي'}
-                    </Badge>
+                    <Badge variant="default">برنامج تدريبي</Badge>
                     <Badge variant={
-                      program.status === 'active' ? 'default' :
+                      program.status === 'in_progress' ? 'default' :
                       program.status === 'completed' ? 'secondary' : 'outline'
                     }>
-                      {program.status === 'active' ? 'نشط' :
-                       program.status === 'completed' ? 'مكتمل' : 'مجدول'}
+                      {program.status === 'in_progress' ? 'نشط' :
+                       program.status === 'completed' ? 'مكتمل' : 
+                       program.status === 'contracted' ? 'متعاقد' : 'مقترح'}
                     </Badge>
                   </div>
                   <p className="text-gray-600 mb-3">{program.description}</p>
@@ -110,19 +108,19 @@ export const CorporateTab: React.FC = () => {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
                       <span className="text-gray-500">العميل:</span>
-                      <div className="font-medium">{program.clientName}</div>
+                      <div className="font-medium">عميل {program.clientId}</div>
                     </div>
                     <div>
                       <span className="text-gray-500">المدة:</span>
-                      <div className="font-medium">{program.duration} يوم</div>
+                      <div className="font-medium">6 أشهر</div>
                     </div>
                     <div>
                       <span className="text-gray-500">المشاركون:</span>
-                      <div className="font-medium">{program.participantsCount} شخص</div>
+                      <div className="font-medium">{program.participantCount} شخص</div>
                     </div>
                     <div>
                       <span className="text-gray-500">القيمة:</span>
-                      <div className="font-medium">{program.value.toLocaleString()} ر.س</div>
+                      <div className="font-medium">{program.contractValue.toLocaleString()} ر.س</div>
                     </div>
                   </div>
                 </div>
@@ -138,15 +136,13 @@ export const CorporateTab: React.FC = () => {
                     <div className="text-sm text-gray-500">تاريخ الانتهاء</div>
                     <div className="font-medium">{new Date(program.endDate).toLocaleDateString('ar-SA')}</div>
                   </div>
-                  {program.progress !== undefined && (
-                    <div>
-                      <div className="text-sm text-gray-500">التقدم</div>
-                      <div className="flex items-center gap-2">
-                        <Progress value={program.progress} className="w-20 h-2" />
-                        <span className="text-sm font-medium">{program.progress}%</span>
-                      </div>
+                  <div>
+                    <div className="text-sm text-gray-500">التقدم</div>
+                    <div className="flex items-center gap-2">
+                      <Progress value={program.status === 'completed' ? 100 : program.status === 'in_progress' ? 65 : 0} className="w-20 h-2" />
+                      <span className="text-sm font-medium">{program.status === 'completed' ? 100 : program.status === 'in_progress' ? 65 : 0}%</span>
                     </div>
-                  )}
+                  </div>
                 </div>
                 
                 <div className="flex gap-2">
@@ -328,7 +324,7 @@ export const CorporateTab: React.FC = () => {
                 <div className="flex justify-between">
                   <span>المدة:</span>
                   <span>4 أيام</span>
-                </div>
+                </div>  
                 <div className="flex justify-between">
                   <span>السعة:</span>
                   <span>25 مشارك</span>
