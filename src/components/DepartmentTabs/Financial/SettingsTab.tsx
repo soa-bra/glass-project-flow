@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,11 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Database, Calculator } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
-
 export const SettingsTab: React.FC = () => {
-  return (
-    <div className="space-y-6">
-      <h3 className="text-2xl font-bold">إعدادات النظام المالي</h3>
+  return <div className="space-y-6">
+      <h3 className="font-medium text-lg mx-[26px]">إعدادات النظام المالي</h3>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <BaseCard variant="operations" className="p-6">
@@ -82,6 +79,5 @@ export const SettingsTab: React.FC = () => {
           </CardContent>
         </BaseCard>
       </div>
-    </div>
-  );
+    </div>;
 };
