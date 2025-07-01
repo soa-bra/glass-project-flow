@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Users, BookOpen, Award, TrendingUp, Clock, Target, AlertTriangle, DollarSign } from 'lucide-react';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { 
   mockTrainingMetrics, 
   mockSkillGapAlerts, 
@@ -13,6 +13,28 @@ import {
 
 export const OverviewTab: React.FC = () => {
   const metrics = mockTrainingMetrics;
+
+  const kpiStats = [
+    {
+      title: 'إجمالي الدورات',
+      value: metrics.totalCourses,
+      unit: 'دورة',
+      description: 'الدورات المتاحة حالياً'
+    },
+    {
+      title: 'المتدربون النشطون',
+      value: metrics.activeLearners,
+      unit: 'متدرب',
+      description: 'المتدربون المسجلون حالياً'
+    },
+    {
+      title: 'معدل الإنجاز',
+      value: `${metrics.completionRate}%`,
+      unit: 'إنجاز',
+      description: 'نسبة إكمال الدورات'
+    }
+  ];
+
   const alerts = mockSkillGapAlerts;
   const recentEnrollments = mockEnrollments.slice(0, 5);
   const upcomingSessions = mockTrainingSessions.filter(s => s.status === 'scheduled').slice(0, 3);
@@ -38,6 +60,9 @@ export const OverviewTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* مؤشرات الأداء الأساسية */}
+      <KPIStatsSection stats={kpiStats} />
+
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard

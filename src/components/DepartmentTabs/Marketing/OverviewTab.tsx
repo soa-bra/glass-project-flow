@@ -1,9 +1,30 @@
-
 import React from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { TrendingUp, DollarSign, Users, BarChart3, Target, Zap } from 'lucide-react';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 
 export const OverviewTab: React.FC = () => {
+  const kpiStats = [
+    {
+      title: 'العائد على الإنفاق',
+      value: '4.2x',
+      unit: 'ROAS',
+      description: 'عائد الاستثمار الإعلاني'
+    },
+    {
+      title: 'تكلفة اكتساب العميل',
+      value: '245',
+      unit: 'ريال',
+      description: 'متوسط تكلفة العميل الجديد'
+    },
+    {
+      title: 'معدل التحويل',
+      value: '2.8%',
+      unit: 'تحويل',
+      description: 'نسبة تحويل الزوار'
+    }
+  ];
+
   const kpis = [
     {
       title: 'العائد على الإنفاق الإعلاني',
@@ -94,6 +115,9 @@ export const OverviewTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* مؤشرات الأداء الأساسية */}
+      <KPIStatsSection stats={kpiStats} />
+
       {/* KPIs Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {kpis.map((kpi, index) => (

@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { AlertTriangle, FileText, Scale, Shield, Calendar, TrendingUp } from 'lucide-react';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { mockLegalMetrics, mockAlerts } from './data';
 import { getStatusColor, getStatusText, getPriorityColor } from './utils';
 
@@ -9,8 +9,33 @@ export const OverviewTab: React.FC = () => {
   const metrics = mockLegalMetrics;
   const alerts = mockAlerts.filter(alert => alert.status === 'pending').slice(0, 5);
 
+  const kpiStats = [
+    {
+      title: 'العقود الموقعة',
+      value: metrics.contractsCount.signed,
+      unit: 'عقد',
+      description: 'عقود نشطة ومعتمدة'
+    },
+    {
+      title: 'القضايا النشطة',
+      value: metrics.activeCases,
+      unit: 'قضية',
+      description: 'قضايا تحتاج متابعة'
+    },
+    {
+      title: 'درجة الامتثال',
+      value: `${metrics.complianceScore}%`,
+      unit: 'امتثال',
+      description: 'مستوى الامتثال القانوني'
+    }
+  ];
+
   return (
     <div className="h-full overflow-auto">
+      {/* مؤشرات الأداء الأساسية */}
+      <KPIStatsSection stats={kpiStats} />
+
+      {/* باقي المحتوى */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* عدادات العقود */}
         <BaseCard className="p-6">

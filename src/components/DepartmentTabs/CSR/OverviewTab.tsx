@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { 
@@ -12,9 +11,31 @@ import {
   Activity
 } from 'lucide-react';
 import { mockCSRDashboardData } from './data';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 
 export const OverviewTab: React.FC = () => {
   const { overview } = mockCSRDashboardData;
+
+  const kpiStats = [
+    {
+      title: 'إجمالي المبادرات',
+      value: overview.totalInitiatives,
+      unit: 'مبادرة',
+      description: `${overview.activeInitiatives} مبادرة نشطة`
+    },
+    {
+      title: 'إجمالي المستفيدين',
+      value: overview.totalBeneficiaries.toLocaleString('ar-SA'),
+      unit: 'مستفيد',
+      description: 'مستفيد مباشر وغير مباشر'
+    },
+    {
+      title: 'مؤشر الأثر الاجتماعي',
+      value: overview.socialImpactIndex.toFixed(1),
+      unit: 'نقطة',
+      description: 'من 10 نقاط'
+    }
+  ];
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ar-SA', {
@@ -71,6 +92,10 @@ export const OverviewTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* مؤشرات الأداء الأساسية */}
+      <KPIStatsSection stats={kpiStats} />
+
+      {/* باقي المحتوى */}
       {/* Welcome Section */}
       <GenericCard className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200">
         <div className="flex items-center gap-4">

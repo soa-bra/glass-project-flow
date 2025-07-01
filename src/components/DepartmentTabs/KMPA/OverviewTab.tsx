@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,15 +12,41 @@ import {
   Brain,
   Target
 } from 'lucide-react';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { mockKnowledgeMetrics, mockAIRecommendations, mockKnowledgeGaps } from './data/mockData';
 
 export const OverviewTab: React.FC = () => {
   const metrics = mockKnowledgeMetrics;
+
+  const kpiStats = [
+    {
+      title: 'إجمالي الوثائق',
+      value: metrics.totalDocuments,
+      unit: 'وثيقة',
+      description: 'المحتوى المعرفي المتاح'
+    },
+    {
+      title: 'إجمالي القراءات',
+      value: metrics.totalReads.toLocaleString(),
+      unit: 'قراءة',
+      description: 'مرات الوصول للمحتوى'
+    },
+    {
+      title: 'المستخدمون النشطون',
+      value: metrics.activeUsers,
+      unit: 'مستخدم',
+      description: 'النشاط الشهري للمستخدمين'
+    }
+  ];
+
   const recommendations = mockAIRecommendations.slice(0, 3);
   const gaps = mockKnowledgeGaps.slice(0, 2);
 
   return (
     <div className="space-y-6">
+      {/* مؤشرات الأداء الأساسية */}
+      <KPIStatsSection stats={kpiStats} />
+
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>

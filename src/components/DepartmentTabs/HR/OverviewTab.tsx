@@ -1,14 +1,35 @@
-
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Users, UserPlus, Calendar, TrendingUp, Award, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { mockHRStats, mockWorkforceAnalytics } from './data';
 
 export const OverviewTab: React.FC = () => {
   const stats = mockHRStats;
   const analytics = mockWorkforceAnalytics;
+
+  const kpiStats = [
+    {
+      title: 'إجمالي الموظفين',
+      value: stats.totalEmployees,
+      unit: 'موظف',
+      description: 'العدد الكلي للموظفين'
+    },
+    {
+      title: 'الموظفون النشطون',
+      value: stats.activeEmployees,
+      unit: 'نشط',
+      description: 'الموظفون الحاضرون اليوم'
+    },
+    {
+      title: 'معدل الحضور',
+      value: `${stats.attendanceRate}%`,
+      unit: 'حضور',
+      description: 'نسبة الحضور الشهرية'
+    }
+  ];
 
   const quickActions = [
     { icon: UserPlus, label: 'إضافة موظف جديد', color: 'text-blue-600' },
@@ -33,8 +54,13 @@ export const OverviewTab: React.FC = () => {
 
   return (
     <div className="space-y-6 p-6 bg-transparent">
+      {/* مؤشرات الأداء الأساسية */}
+      <KPIStatsSection stats={kpiStats} />
+
+      {/* باقي المحتوى */}
+      
       {/* إحصائيات سريعة */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -92,7 +118,7 @@ export const OverviewTab: React.FC = () => {
             </Badge>
           </div>
         </BaseCard>
-      </div>
+      </div> */}
 
       {/* الإجراءات السريعة */}
       <BaseCard variant="operations" className="p-6">

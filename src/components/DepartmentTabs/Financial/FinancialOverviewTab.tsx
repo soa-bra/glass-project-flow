@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { TrendingUp, DollarSign, CreditCard, Target, AlertTriangle, Calendar, Users, FileText, Award, PieChart, Banknote, Calculator, Briefcase } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 
 interface KPI {
   title: string;
@@ -21,6 +21,27 @@ interface BudgetAlert {
 }
 
 export const FinancialOverviewTab: React.FC = () => {
+  const kpiStats = [
+    {
+      title: 'إجمالي الإيرادات',
+      value: '2.4',
+      unit: 'مليون ريال',
+      description: 'الإيرادات المحققة هذا الربع'
+    },
+    {
+      title: 'صافي الربح',
+      value: '486',
+      unit: 'ألف ريال',
+      description: 'الربح الصافي بعد المصروفات'
+    },
+    {
+      title: 'التدفق النقدي',
+      value: '320',
+      unit: 'ألف ريال',
+      description: 'السيولة النقدية المتاحة'
+    }
+  ];
+
   const kpis: KPI[] = [{
     title: 'إجمالي الإيرادات',
     value: '2.4 مليون ريال',
@@ -146,6 +167,9 @@ export const FinancialOverviewTab: React.FC = () => {
 
   return (
     <div className="space-y-6 p-6 bg-transparent">
+      {/* مؤشرات الأداء الأساسية */}
+      <KPIStatsSection stats={kpiStats} />
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi, index) => (

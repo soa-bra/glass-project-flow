@@ -1,15 +1,37 @@
-
 import React from 'react';
 import { Eye, Users, FileText, Clock, TrendingUp, AlertTriangle, Calendar, Award, Settings, BarChart, Globe, Shield, Database, Zap } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
+
 interface DepartmentOverviewProps {
   departmentTitle: string;
 }
 export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({
   departmentTitle
 }) => {
+  const kpiStats = [
+    {
+      title: 'المهام النشطة',
+      value: 24,
+      unit: 'مهمة',
+      description: 'المهام الجارية حالياً'
+    },
+    {
+      title: 'أعضاء الفريق',
+      value: 12,
+      unit: 'عضو',
+      description: 'أعضاء الفريق النشطون'
+    },
+    {
+      title: 'معدل الإنجاز',
+      value: '87%',
+      unit: 'إنجاز',
+      description: 'نسبة إنجاز المهام'
+    }
+  ];
+
   // بيانات تجريبية عامة
   const departmentStats = [{
     title: 'المهام النشطة',
@@ -132,7 +154,11 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({
     color: 'text-orange-500'
   }];
 
-  return <div className="space-y-6 p-6 bg-transparent">
+  return (
+    <div className="space-y-6 p-6 bg-transparent">
+      {/* مؤشرات الأداء الأساسية */}
+      <KPIStatsSection stats={kpiStats} />
+
       {/* إحصائيات الإدارة */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {departmentStats.map((stat, index) => <BaseCard key={index} variant="operations" size="sm" className="text-center">
@@ -237,5 +263,6 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({
             <p className="text-sm text-gray-600 font-arabic">{stat.title}</p>
           </BaseCard>)}
       </div>
-    </div>;
+    </div>
+  );
 };
