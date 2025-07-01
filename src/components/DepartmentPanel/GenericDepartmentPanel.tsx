@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { GeneralOverviewTab } from '../DepartmentTabs/GeneralOverviewTab';
 import { ReportsTab } from '../DepartmentTabs/ReportsTab';
 import { TemplatesTab } from '../DepartmentTabs/TemplatesTab';
 import { TrainingDashboard } from '../DepartmentTabs/Training/TrainingDashboard';
+import { KMPADashboard } from '../DepartmentTabs/KMPA';
 
 interface GenericDepartmentPanelProps {
   selectedDepartment: string;
@@ -14,9 +16,13 @@ export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('');
 
-  // Check if this is the training department (specialized)
+  // Check if this is a specialized department
   if (selectedDepartment === 'training') {
     return <TrainingDashboard />;
+  }
+  
+  if (selectedDepartment === 'research') {
+    return <KMPADashboard />;
   }
 
   const getDepartmentContent = (department: string) => {
@@ -28,10 +34,6 @@ export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({
       social: {
         title: 'إدارة المسؤولية الاجتماعية',
         tabs: ['النظرة العامة', 'المبادرات', 'الشراكات والموارد', 'المراقبة والتقييم', 'قصص الأثر', 'النماذج والقوالب', 'التقارير']
-      },
-      research: {
-        title: 'إدارة المعرفة والنشر والبحث العلمي',
-        tabs: ['النظرة العامة', 'الأبحاث', 'المنشورات', 'المعرفة', 'المؤتمرات', 'النماذج والقوالب', 'التقارير']
       },
       brand: {
         title: 'إدارة العلامة التجارية',
