@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { FinancialOverviewTab, BudgetManagementTab, PaymentsInvoicesTab, FinancialAnalysisTab, FinancialDashboard } from './DepartmentTabs/Financial';
@@ -6,6 +7,7 @@ import { ReportsTab } from './DepartmentTabs/ReportsTab';
 import { TemplatesTab } from './DepartmentTabs/TemplatesTab';
 import { LegalDashboard } from './DepartmentTabs/Legal';
 import { MarketingDashboard } from './DepartmentTabs/Marketing';
+import { HRDashboard } from './DepartmentTabs/HR';
 
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
@@ -76,16 +78,23 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
       </div>;
   }
 
+  // Special handling for HR department
+  if (selectedDepartment === 'hr') {
+    return <div style={{
+      background: 'var(--backgrounds-admin-ops-board-bg)'
+    }} className="h-full rounded-3xl overflow-hidden">
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-auto px-0 mx-0">
+            <div className="h-full mx-6 my-6 rounded-2xl overflow-hidden bg-transparent">
+              <HRDashboard />
+            </div>
+          </div>
+        </div>
+      </div>;
+  }
+
   const getDepartmentContent = (department: string) => {
     const departmentData = {
-      marketing: {
-        title: 'إدارة الأنشطة التسويقية',
-        tabs: ['النظرة العامة', 'الحملات', 'التحليلات', 'المحتوى', 'العلاقات العامة', 'النماذج والقوالب', 'التقارير']
-      },
-      hr: {
-        title: 'إدارة الطاقات البشرية',
-        tabs: ['النظرة العامة', 'الموظفين', 'التوظيف', 'التدريب', 'الأداء', 'النماذج والقوالب', 'التقارير']
-      },
       clients: {
         title: 'إدارة علاقات العملاء',
         tabs: ['النظرة العامة', 'قاعدة العملاء', 'الخدمات', 'الشكاوى', 'الرضا', 'النماذج والقوالب', 'التقارير']
