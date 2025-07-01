@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight, UserCheck } from 'lucide-react';
 interface DepartmentsSidebarProps {
   selectedDepartment: string | null;
   onDepartmentSelect: (department: string) => void;
@@ -29,8 +29,12 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
     label: 'إدارة الطاقات البشرية',
     icon: Users
   }, {
-    key: 'clients',
+    key: 'crm',
     label: 'إدارة علاقات العملاء',
+    icon: UserCheck
+  }, {
+    key: 'clients',
+    label: 'إدارة علاقات العملاء (القديم)',
     icon: Heart
   }, {
     key: 'social',
