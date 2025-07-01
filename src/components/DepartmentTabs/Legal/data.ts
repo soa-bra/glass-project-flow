@@ -8,4 +8,4 @@ export {
   mockRiskAssessments,
   mockLicenses,
   mockAlerts
-} from './data';
+} from './data/index';
