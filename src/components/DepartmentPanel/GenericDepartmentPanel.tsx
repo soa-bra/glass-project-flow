@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { GeneralOverviewTab } from '../DepartmentTabs/GeneralOverviewTab';
 import { ReportsTab } from '../DepartmentTabs/ReportsTab';
 import { TemplatesTab } from '../DepartmentTabs/TemplatesTab';
+import { TrainingDashboard } from '../DepartmentTabs/Training/TrainingDashboard';
 
 interface GenericDepartmentPanelProps {
   selectedDepartment: string;
@@ -14,6 +14,11 @@ export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('');
 
+  // Check if this is the training department (specialized)
+  if (selectedDepartment === 'training') {
+    return <TrainingDashboard />;
+  }
+
   const getDepartmentContent = (department: string) => {
     const departmentData = {
       clients: {
@@ -23,10 +28,6 @@ export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({
       social: {
         title: 'إدارة المسؤولية الاجتماعية',
         tabs: ['النظرة العامة', 'المبادرات', 'الشراكات والموارد', 'المراقبة والتقييم', 'قصص الأثر', 'النماذج والقوالب', 'التقارير']
-      },
-      training: {
-        title: 'إدارة التدريب',
-        tabs: ['النظرة العامة', 'البرامج', 'المدربين', 'المتدربين', 'التقييم', 'النماذج والقوالب', 'التقارير']
       },
       research: {
         title: 'إدارة المعرفة والنشر والبحث العلمي',
