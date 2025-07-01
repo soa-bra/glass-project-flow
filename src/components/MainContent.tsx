@@ -3,10 +3,11 @@ import Sidebar from '@/components/Sidebar';
 import { useState } from 'react';
 import ProjectWorkspace from './ProjectWorkspace';
 import DepartmentsWorkspace from './DepartmentsWorkspace';
+import { CollaborativePlanningModule } from './CollaborativePlanning';
 
 const MainContent = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [activeSection, setActiveSection] = useState('home'); // 'home', 'departments', etc.
+  const [activeSection, setActiveSection] = useState('home'); // 'home', 'departments', 'planning', etc.
 
   return (
     <div className="flex h-screen pt-[var(--header-height)] overflow-hidden px-[22px]">
@@ -23,6 +24,12 @@ const MainContent = () => {
 
       {activeSection === 'departments' ? (
         <DepartmentsWorkspace isSidebarCollapsed={isSidebarCollapsed} />
+      ) : activeSection === 'planning' ? (
+        <div className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] overflow-y-auto ${
+          isSidebarCollapsed ? 'left-[var(--sidebar-collapsed-width)]' : 'left-[var(--sidebar-expanded-width)]'
+        } right-0 transition-all duration-300`}>
+          <CollaborativePlanningModule />
+        </div>
       ) : (
         <ProjectWorkspace isSidebarCollapsed={isSidebarCollapsed} />
       )}
