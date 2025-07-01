@@ -1,31 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Lightbulb, 
-  Users, 
-  Brain, 
-  Target, 
-  Zap, 
-  Share2,
-  Clock,
-  Palette,
-  Map,
-  FileText,
-  Settings,
-  Play,
-  Pause,
-  RotateCcw
-} from 'lucide-react';
+import { Lightbulb, Users, Brain, Target, Zap, Share2, Clock, Palette, Map, FileText, Settings, Play, Pause, RotateCcw } from 'lucide-react';
 import { InteractiveCanvas } from './InteractiveCanvas';
 import { CollaborationTools } from './CollaborationTools';
 import { SessionManager } from './SessionManager';
 import { AIAssistant } from './AIAssistant';
 import { ProjectConverter } from './ProjectConverter';
-
 export interface PlanningSession {
   id: string;
   title: string;
@@ -38,11 +21,13 @@ export interface PlanningSession {
   culturalScore: number;
   objectives: string[];
 }
-
 export interface CanvasElement {
   id: string;
   type: 'idea' | 'task' | 'milestone' | 'connection' | 'note';
-  position: { x: number; y: number };
+  position: {
+    x: number;
+    y: number;
+  };
   content: string;
   color: string;
   priority: 'low' | 'medium' | 'high' | 'critical';
@@ -51,7 +36,6 @@ export interface CanvasElement {
   tags: string[];
   culturalAlignment: number;
 }
-
 export const CollaborativePlanningModule: React.FC = () => {
   const [currentSession, setCurrentSession] = useState<PlanningSession | null>(null);
   const [isSessionActive, setIsSessionActive] = useState(false);
@@ -60,33 +44,29 @@ export const CollaborativePlanningModule: React.FC = () => {
   const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([]);
 
   // Mock data for demonstration
-  const mockSessions: PlanningSession[] = [
-    {
-      id: '1',
-      title: 'استراتيجية تطوير العلامة التجارية 2024',
-      description: 'جلسة تخطيط شاملة لتطوير هوية العلامة التجارية',
-      type: 'strategy',
-      status: 'active',
-      participants: ['أحمد المطيري', 'فاطمة الزهراني', 'محمد الشريف'],
-      duration: 90,
-      createdAt: '2024-01-15',
-      culturalScore: 92,
-      objectives: ['تحديد الهوية الثقافية', 'وضع خطة التسويق', 'تحليل المنافسين']
-    },
-    {
-      id: '2',
-      title: 'تطوير خدمات جديدة',
-      description: 'عصف ذهني لتطوير خدمات مبتكرة',
-      type: 'brainstorming',
-      status: 'completed',
-      participants: ['سارة أحمد', 'علي العتيبي'],
-      duration: 60,
-      createdAt: '2024-01-12',
-      culturalScore: 88,
-      objectives: ['توليد أفكار جديدة', 'تقييم الجدوى', 'وضع خطة التنفيذ']
-    }
-  ];
-
+  const mockSessions: PlanningSession[] = [{
+    id: '1',
+    title: 'استراتيجية تطوير العلامة التجارية 2024',
+    description: 'جلسة تخطيط شاملة لتطوير هوية العلامة التجارية',
+    type: 'strategy',
+    status: 'active',
+    participants: ['أحمد المطيري', 'فاطمة الزهراني', 'محمد الشريف'],
+    duration: 90,
+    createdAt: '2024-01-15',
+    culturalScore: 92,
+    objectives: ['تحديد الهوية الثقافية', 'وضع خطة التسويق', 'تحليل المنافسين']
+  }, {
+    id: '2',
+    title: 'تطوير خدمات جديدة',
+    description: 'عصف ذهني لتطوير خدمات مبتكرة',
+    type: 'brainstorming',
+    status: 'completed',
+    participants: ['سارة أحمد', 'علي العتيبي'],
+    duration: 60,
+    createdAt: '2024-01-12',
+    culturalScore: 88,
+    objectives: ['توليد أفكار جديدة', 'تقييم الجدوى', 'وضع خطة التنفيذ']
+  }];
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isSessionActive) {
@@ -96,13 +76,11 @@ export const CollaborativePlanningModule: React.FC = () => {
     }
     return () => clearInterval(interval);
   }, [isSessionActive]);
-
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
-
   const startNewSession = () => {
     const newSession: PlanningSession = {
       id: Date.now().toString(),
@@ -120,7 +98,6 @@ export const CollaborativePlanningModule: React.FC = () => {
     setIsSessionActive(true);
     setSessionTimer(0);
   };
-
   const toggleSession = () => {
     setIsSessionActive(!isSessionActive);
     if (currentSession) {
@@ -130,29 +107,35 @@ export const CollaborativePlanningModule: React.FC = () => {
       });
     }
   };
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'paused': return 'bg-yellow-100 text-yellow-800';
-      case 'completed': return 'bg-blue-100 text-blue-800';
-      case 'archived': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'active':
+        return 'bg-green-100 text-green-800';
+      case 'paused':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'completed':
+        return 'bg-blue-100 text-blue-800';
+      case 'archived':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
-
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'brainstorming': return <Lightbulb className="h-4 w-4" />;
-      case 'planning': return <Target className="h-4 w-4" />;
-      case 'review': return <FileText className="h-4 w-4" />;
-      case 'strategy': return <Brain className="h-4 w-4" />;
-      default: return <Lightbulb className="h-4 w-4" />;
+      case 'brainstorming':
+        return <Lightbulb className="h-4 w-4" />;
+      case 'planning':
+        return <Target className="h-4 w-4" />;
+      case 'review':
+        return <FileText className="h-4 w-4" />;
+      case 'strategy':
+        return <Brain className="h-4 w-4" />;
+      default:
+        return <Lightbulb className="h-4 w-4" />;
     }
   };
-
-  return (
-    <div className="space-y-6 p-6 bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+  return <div className="space-y-6 p-6 bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen px-[24px] mx-[600px]">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -166,19 +149,13 @@ export const CollaborativePlanningModule: React.FC = () => {
         </div>
         
         <div className="flex items-center gap-3">
-          {currentSession && (
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
+          {currentSession && <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
               <Clock className="h-4 w-4 text-blue-600" />
               <span className="font-mono text-lg">{formatTime(sessionTimer)}</span>
-              <Button
-                size="sm"
-                variant={isSessionActive ? "destructive" : "default"}
-                onClick={toggleSession}
-              >
+              <Button size="sm" variant={isSessionActive ? "destructive" : "default"} onClick={toggleSession}>
                 {isSessionActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </Button>
-            </div>
-          )}
+            </div>}
           
           <Button onClick={startNewSession} className="bg-gradient-to-r from-blue-600 to-purple-600">
             <Zap className="h-4 w-4 mr-2" />
@@ -188,8 +165,7 @@ export const CollaborativePlanningModule: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      {currentSession ? (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {currentSession ? <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mx-0">
           {/* Sidebar Tools */}
           <div className="lg:col-span-1 space-y-4">
             <Card className="bg-white/80 backdrop-blur-sm">
@@ -217,10 +193,7 @@ export const CollaborativePlanningModule: React.FC = () => {
               </CardContent>
             </Card>
 
-            <SessionManager 
-              session={currentSession}
-              onUpdateSession={setCurrentSession}
-            />
+            <SessionManager session={currentSession} onUpdateSession={setCurrentSession} />
           </div>
 
           {/* Main Canvas Area */}
@@ -232,9 +205,7 @@ export const CollaborativePlanningModule: React.FC = () => {
                     {getTypeIcon(currentSession.type)}
                     <CardTitle className="text-xl">{currentSession.title}</CardTitle>
                     <Badge className={getStatusColor(currentSession.status)}>
-                      {currentSession.status === 'active' ? 'نشط' : 
-                       currentSession.status === 'paused' ? 'متوقف' :
-                       currentSession.status === 'completed' ? 'مكتمل' : 'مؤرشف'}
+                      {currentSession.status === 'active' ? 'نشط' : currentSession.status === 'paused' ? 'متوقف' : currentSession.status === 'completed' ? 'مكتمل' : 'مؤرشف'}
                     </Badge>
                   </div>
                   
@@ -243,10 +214,7 @@ export const CollaborativePlanningModule: React.FC = () => {
                       <Users className="h-4 w-4" />
                       <span>{currentSession.participants.length}</span>
                     </div>
-                    <ProjectConverter 
-                      canvasElements={canvasElements}
-                      session={currentSession}
-                    />
+                    <ProjectConverter canvasElements={canvasElements} session={currentSession} />
                   </div>
                 </div>
               </CardHeader>
@@ -261,29 +229,18 @@ export const CollaborativePlanningModule: React.FC = () => {
                   </TabsList>
                   
                   <TabsContent value="canvas" className="mt-6">
-                    <InteractiveCanvas
-                      elements={canvasElements}
-                      onElementsChange={setCanvasElements}
-                      session={currentSession}
-                    />
+                    <InteractiveCanvas elements={canvasElements} onElementsChange={setCanvasElements} session={currentSession} />
                   </TabsContent>
                   
                   <TabsContent value="collaboration" className="mt-6">
-                    <CollaborationTools
-                      session={currentSession}
-                      participants={currentSession.participants}
-                    />
+                    <CollaborationTools session={currentSession} participants={currentSession.participants} />
                   </TabsContent>
                   
                   <TabsContent value="ai" className="mt-6">
-                    <AIAssistant
-                      session={currentSession}
-                      canvasElements={canvasElements}
-                      onSuggestion={(suggestions) => {
-                        // Handle AI suggestions
-                        console.log('AI Suggestions:', suggestions);
-                      }}
-                    />
+                    <AIAssistant session={currentSession} canvasElements={canvasElements} onSuggestion={suggestions => {
+                  // Handle AI suggestions
+                  console.log('AI Suggestions:', suggestions);
+                }} />
                   </TabsContent>
                   
                   <TabsContent value="reports" className="mt-6">
@@ -303,12 +260,10 @@ export const CollaborativePlanningModule: React.FC = () => {
               </CardContent>
             </Card>
           </div>
-        </div>
-      ) : (
-        // Sessions Overview
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {mockSessions.map((session) => (
-            <Card key={session.id} className="bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow cursor-pointer">
+        </div> :
+    // Sessions Overview
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {mockSessions.map(session => <Card key={session.id} className="bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -316,9 +271,7 @@ export const CollaborativePlanningModule: React.FC = () => {
                     <CardTitle className="text-lg">{session.title}</CardTitle>
                   </div>
                   <Badge className={getStatusColor(session.status)}>
-                    {session.status === 'active' ? 'نشط' : 
-                     session.status === 'paused' ? 'متوقف' :
-                     session.status === 'completed' ? 'مكتمل' : 'مؤرشف'}
+                    {session.status === 'active' ? 'نشط' : session.status === 'paused' ? 'متوقف' : session.status === 'completed' ? 'مكتمل' : 'مؤرشف'}
                   </Badge>
                 </div>
               </CardHeader>
@@ -342,11 +295,7 @@ export const CollaborativePlanningModule: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <Button 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => setCurrentSession(session)}
-                  >
+                  <Button size="sm" className="flex-1" onClick={() => setCurrentSession(session)}>
                     <Play className="h-4 w-4 mr-2" />
                     فتح الجلسة
                   </Button>
@@ -355,10 +304,7 @@ export const CollaborativePlanningModule: React.FC = () => {
                   </Button>
                 </div>
               </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+            </Card>)}
+        </div>}
+    </div>;
 };
