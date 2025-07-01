@@ -133,7 +133,7 @@ export const TemplatesTab: React.FC = () => {
             </div>
           </div>
           <Badge variant={template.status === 'active' ? 'default' : 'secondary'}>
-            {template status === 'active' ? 'نشط' : 'معطل'}
+            {template.status === 'active' ? 'نشط' : 'معطل'}
           </Badge>
         </div>
 
