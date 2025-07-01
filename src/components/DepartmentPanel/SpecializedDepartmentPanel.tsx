@@ -6,6 +6,7 @@ import { MarketingDashboard } from '../DepartmentTabs/Marketing';
 import { HRDashboard } from '../DepartmentTabs/HR';
 import { CRMDashboard } from '../DepartmentTabs/CRM';
 import { CSRDashboard } from '../DepartmentTabs/CSR';
+import { TrainingDashboard } from '../DepartmentTabs/Training';
 
 interface SpecializedDepartmentPanelProps {
   selectedDepartment: string;
@@ -28,6 +29,8 @@ export const SpecializedDepartmentPanel: React.FC<SpecializedDepartmentPanelProp
         return <CRMDashboard />;
       case 'social':
         return <CSRDashboard />;
+      case 'training':
+        return <TrainingDashboard />;
       default:
         return null;
     }

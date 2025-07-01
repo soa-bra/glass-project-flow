@@ -22,7 +22,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   }
 
   // Departments with specialized dashboards
-  const specializedDepartments = ['financial', 'legal', 'marketing', 'hr', 'crm', 'social'];
+  const specializedDepartments = ['financial', 'legal', 'marketing', 'hr', 'crm', 'social', 'training'];
   
   if (specializedDepartments.includes(selectedDepartment)) {
     return (
