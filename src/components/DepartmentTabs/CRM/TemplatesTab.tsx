@@ -267,15 +267,15 @@ export const TemplatesTab: React.FC = () => {
             <div className="space-y-1 text-sm font-arabic">
               <div className="flex justify-between">
                 <span className="text-gray-600">اسم العميل:</span>
-                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{{customer_name}}</code>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{customer_name}}"}</code>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">الشركة:</span>
-                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{{company_name}}</code>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{company_name}}"}</code>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">البريد الإلكتروني:</span>
-                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{{email}}</code>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{email}}"}</code>
               </div>
             </div>
           </div>
@@ -285,15 +285,15 @@ export const TemplatesTab: React.FC = () => {
             <div className="space-y-1 text-sm font-arabic">
               <div className="flex justify-between">
                 <span className="text-gray-600">اسم المشروع:</span>
-                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{{project_name}}</code>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{project_name}}"}</code>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">القيمة:</span>
-                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{{project_value}}</code>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{project_value}}"}</code>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">المدة:</span>
-                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{{duration}}</code>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{duration}}"}</code>
               </div>
             </div>
           </div>
@@ -303,15 +303,15 @@ export const TemplatesTab: React.FC = () => {
             <div className="space-y-1 text-sm font-arabic">
               <div className="flex justify-between">
                 <span className="text-gray-600">التاريخ:</span>
-                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{{current_date}}</code>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{current_date}}"}</code>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">اسم المسؤول:</span>
-                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{{manager_name}}</code>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{manager_name}}"}</code>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">اسم الشركة:</span>
-                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{{company_logo}}</code>
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{company_logo}}"}</code>
               </div>
             </div>
           </div>
