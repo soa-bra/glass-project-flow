@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { OverviewTab } from './OverviewTab';
 import { InitiativesTab } from './InitiativesTab';
 import { PartnershipsTab } from './PartnershipsTab';
@@ -12,14 +13,14 @@ import { ReportsTab } from './ReportsTab';
 export const CSRDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
-  const tabs = [
-    { id: 'overview', label: 'نظرة عامة' },
-    { id: 'initiatives', label: 'المبادرات' },
-    { id: 'partnerships', label: 'الشراكات والموارد' },
-    { id: 'monitoring', label: 'المراقبة والتقييم' },
-    { id: 'stories', label: 'قصص الأثر' },
-    { id: 'templates', label: 'النماذج والقوالب' },
-    { id: 'reports', label: 'التقارير' }
+  const tabItems = [
+    { value: 'overview', label: 'نظرة عامة' },
+    { value: 'initiatives', label: 'المبادرات' },
+    { value: 'partnerships', label: 'الشراكات والموارد' },
+    { value: 'monitoring', label: 'المراقبة والتقييم' },
+    { value: 'stories', label: 'قصص الأثر' },
+    { value: 'templates', label: 'النماذج والقوالب' },
+    { value: 'reports', label: 'التقارير' }
   ];
 
   return (
@@ -30,21 +31,11 @@ export const CSRDashboard: React.FC = () => {
           إدارة المسؤولية الاجتماعية
         </h2>
         <div className="w-fit">
-          <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
-            <TabsList className="grid w-full bg-transparent rounded-full p-1" style={{
-              gridTemplateColumns: `repeat(${tabs.length}, 1fr)`
-            }}>
-              {tabs.map(tab => (
-                <TabsTrigger 
-                  key={tab.id} 
-                  value={tab.id} 
-                  className="text-sm font-arabic rounded-full py-2 px-4 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
-                >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          <AnimatedTabs 
+            tabs={tabItems}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
         </div>
       </div>
 

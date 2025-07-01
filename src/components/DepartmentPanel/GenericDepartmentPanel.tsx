@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { GeneralOverviewTab } from '../DepartmentTabs/GeneralOverviewTab';
 import { ReportsTab } from '../DepartmentTabs/ReportsTab';
 import { TemplatesTab } from '../DepartmentTabs/TemplatesTab';
@@ -73,6 +74,8 @@ export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({
     setActiveTab(content.tabs[0]);
   }
 
+  const tabItems = content.tabs.map(tab => ({ value: tab, label: tab }));
+
   return (
     <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
@@ -81,21 +84,11 @@ export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({
           {content.title}
         </h2>
         <div className="w-fit">
-          <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
-            <TabsList className="grid w-full bg-transparent rounded-full p-1" style={{
-              gridTemplateColumns: `repeat(${content.tabs.length}, 1fr)`
-            }}>
-              {content.tabs.map(tab => (
-                <TabsTrigger 
-                  key={tab} 
-                  value={tab} 
-                  className="text-sm font-arabic rounded-full py-2 px-6 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
-                >
-                  {tab}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          <AnimatedTabs 
+            tabs={tabItems}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
         </div>
       </div>
 

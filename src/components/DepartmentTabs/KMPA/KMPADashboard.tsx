@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { OverviewTab } from './OverviewTab';
 import { KnowledgeRepositoryTab } from './KnowledgeRepositoryTab';
 import { AuthoringVersionsTab } from './AuthoringVersionsTab';
@@ -11,6 +12,15 @@ import { ReportsTab } from './ReportsTab';
 export const KMPADashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
+  const tabItems = [
+    { value: 'overview', label: 'نظرة عامة' },
+    { value: 'repository', label: 'مستودع المعرفة' },
+    { value: 'authoring', label: 'التأليف والإصدارات' },
+    { value: 'analytics', label: 'التحليلات والتأثير' },
+    { value: 'templates', label: 'النماذج والقوالب' },
+    { value: 'reports', label: 'التقارير' }
+  ];
+
   return (
     <div className="h-full flex flex-col bg-transparent">
       {/* Header */}
@@ -19,46 +29,11 @@ export const KMPADashboard: React.FC = () => {
           إدارة المعرفة والنشر والبحث العلمي
         </h2>
         <div className="w-fit">
-          <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
-            <TabsList className="grid w-full bg-transparent rounded-full p-1 grid-cols-6">
-              <TabsTrigger 
-                value="overview" 
-                className="text-sm font-arabic rounded-full py-2 px-4 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
-              >
-                نظرة عامة
-              </TabsTrigger>
-              <TabsTrigger 
-                value="repository" 
-                className="text-sm font-arabic rounded-full py-2 px-4 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
-              >
-                مستودع المعرفة
-              </TabsTrigger>
-              <TabsTrigger 
-                value="authoring" 
-                className="text-sm font-arabic rounded-full py-2 px-4 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
-              >
-                التأليف والإصدارات
-              </TabsTrigger>
-              <TabsTrigger 
-                value="analytics" 
-                className="text-sm font-arabic rounded-full py-2 px-4 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
-              >
-                التحليلات والتأثير
-              </TabsTrigger>
-              <TabsTrigger 
-                value="templates" 
-                className="text-sm font-arabic rounded-full py-2 px-4 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
-              >
-                النماذج والقوالب
-              </TabsTrigger>
-              <TabsTrigger 
-                value="reports" 
-                className="text-sm font-arabic rounded-full py-2 px-4 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
-              >
-                التقارير
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <AnimatedTabs 
+            tabs={tabItems}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { OverviewTab } from './OverviewTab';
 import { CustomersTab } from './CustomersTab';
 import { OpportunitiesTab } from './OpportunitiesTab';
@@ -30,21 +31,11 @@ export const CRMDashboard: React.FC = () => {
           إدارة علاقات العملاء
         </h2>
         <div className="w-fit">
-          <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
-            <TabsList className="grid w-full bg-transparent rounded-full p-1" style={{
-              gridTemplateColumns: `repeat(${tabItems.length}, 1fr)`
-            }}>
-              {tabItems.map(tab => (
-                <TabsTrigger 
-                  key={tab.value} 
-                  value={tab.value} 
-                  className="text-sm font-arabic rounded-full py-2 px-6 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
-                >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          <AnimatedTabs 
+            tabs={tabItems}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
         </div>
       </div>
 

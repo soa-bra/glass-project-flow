@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { OverviewTab } from './OverviewTab';
 import { BudgetsTab } from './BudgetsTab';
 import { TransactionsTab } from './TransactionsTab';
@@ -8,49 +10,34 @@ import { AnalysisTab } from './AnalysisTab';
 import { SettingsTab } from './SettingsTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
+
 export const FinancialDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const tabItems = [{
-    value: 'overview',
-    label: 'نظرة عامة'
-  }, {
-    value: 'budgets',
-    label: 'الميزانيات'
-  }, {
-    value: 'transactions',
-    label: 'النفقات والإيرادات'
-  }, {
-    value: 'invoices',
-    label: 'الفواتير والمدفوعات'
-  }, {
-    value: 'analysis',
-    label: 'التحليل والتقارير'
-  }, {
-    value: 'settings',
-    label: 'الضبط'
-  }, {
-    value: 'templates',
-    label: 'النماذج والقوالب'
-  }, {
-    value: 'reports',
-    label: 'التقارير'
-  }];
-  return <div className="h-full flex flex-col bg-transparent">
+  
+  const tabItems = [
+    { value: 'overview', label: 'نظرة عامة' },
+    { value: 'budgets', label: 'الميزانيات' },
+    { value: 'transactions', label: 'النفقات والإيرادات' },
+    { value: 'invoices', label: 'الفواتير والمدفوعات' },
+    { value: 'analysis', label: 'التحليل والتقارير' },
+    { value: 'settings', label: 'الضبط' },
+    { value: 'templates', label: 'النماذج والقوالب' },
+    { value: 'reports', label: 'التقارير' }
+  ];
+
+  return (
+    <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
       <div className="flex items-center justify-between px-0 py-[10px] my-[25px]">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
           إدارة الأوضاع المالية
         </h2>
         <div className="w-fit">
-          <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
-            <TabsList className="grid w-full bg-transparent rounded-full p-1" style={{
-            gridTemplateColumns: `repeat(${tabItems.length}, 1fr)`
-          }}>
-              {tabItems.map(tab => <TabsTrigger key={tab.value} value={tab.value} className="text-sm font-arabic rounded-full transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:text-gray-800 whitespace-nowrap px-[10px] py-[8px] ">
-                  {tab.label}
-                </TabsTrigger>)}
-            </TabsList>
-          </Tabs>
+          <AnimatedTabs 
+            tabs={tabItems}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
         </div>
       </div>
 
@@ -90,5 +77,6 @@ export const FinancialDashboard: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>;
+    </div>
+  );
 };
