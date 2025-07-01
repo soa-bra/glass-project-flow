@@ -3,6 +3,7 @@ import React from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Users, TrendingUp, Heart, MessageSquare, Target, DollarSign, Clock, Award } from 'lucide-react';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { mockCRMAnalytics, mockNPS } from './data';
 
 export const OverviewTab: React.FC = () => {
@@ -26,56 +27,37 @@ export const OverviewTab: React.FC = () => {
     { month: 'يونيو', customers: 158, revenue: 1300000 }
   ];
 
+  const kpiStats = [
+    {
+      title: 'إجمالي العملاء',
+      value: mockCRMAnalytics.totalCustomers,
+      unit: 'عميل',
+      description: 'العملاء المسجلون حالياً'
+    },
+    {
+      title: 'معدل التحويل',
+      value: `${mockCRMAnalytics.conversionRate}%`,
+      unit: 'تحويل',
+      description: 'نسبة تحويل الفرص'
+    },
+    {
+      title: 'درجة NPS',
+      value: npsData.score,
+      unit: 'نقطة',
+      description: 'مؤشر رضا العملاء'
+    },
+    {
+      title: 'الإيرادات الشهرية',
+      value: `${(mockCRMAnalytics.monthlyRevenue / 1000000).toFixed(1)}`,
+      unit: 'مليون ر.س',
+      description: 'إجمالي الإيرادات'
+    }
+  ];
+
   return (
     <div className="space-y-6">
-      {/* Key Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <Users className="h-8 w-8 text-blue-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">{mockCRMAnalytics.totalCustomers}</h3>
-          <p className="text-gray-600 font-arabic">إجمالي العملاء</p>
-          <div className="mt-2 text-sm text-green-600 font-arabic">
-            +{mockCRMAnalytics.newCustomersThisMonth} هذا الشهر
-          </div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <Target className="h-8 w-8 text-purple-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">{mockCRMAnalytics.conversionRate}%</h3>
-          <p className="text-gray-600 font-arabic">معدل التحويل</p>
-          <div className="mt-2 text-sm text-green-600 font-arabic">
-            {mockCRMAnalytics.wonOpportunities} من {mockCRMAnalytics.totalOpportunities} فرصة
-          </div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <Heart className="h-8 w-8 text-red-500" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">{npsData.score}</h3>
-          <p className="text-gray-600 font-arabic">درجة NPS</p>
-          <div className="mt-2 text-sm text-green-600 font-arabic">
-            {npsData.trend === 'up' ? '↗️ في تحسن' : npsData.trend === 'down' ? '↘️ في انخفاض' : '→ مستقر'}
-          </div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <DollarSign className="h-8 w-8 text-green-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">
-            {(mockCRMAnalytics.monthlyRevenue / 1000000).toFixed(1)}م
-          </h3>
-          <p className="text-gray-600 font-arabic">الإيرادات الشهرية</p>
-          <div className="mt-2 text-sm text-gray-500 font-arabic">
-            متوقع: {(mockCRMAnalytics.projectedRevenue / 1000000).toFixed(1)}م
-          </div>
-        </GenericCard>
-      </div>
+      {/* مؤشرات الأداء الأساسية */}
+      <KPIStatsSection stats={kpiStats} />
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

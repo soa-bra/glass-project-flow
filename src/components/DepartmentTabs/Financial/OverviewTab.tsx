@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, CheckCircle, Clock, Bell, BarChart, TrendingUp } from 'lucide-react';
 import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { KPICards } from './KPICards';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { mockBudgetData, mockCashFlowData } from './data';
 import { formatCurrency } from './utils';
 import { Alert } from './types';
@@ -32,9 +32,37 @@ export const OverviewTab: React.FC = () => {
     }
   ]);
 
+  const kpiStats = [
+    {
+      title: 'الإيرادات الشهرية',
+      value: '2.5',
+      unit: 'مليون ر.س',
+      description: 'إجمالي الإيرادات لهذا الشهر'
+    },
+    {
+      title: 'النفقات الشهرية',
+      value: '1.8',
+      unit: 'مليون ر.س',
+      description: 'إجمالي النفقات لهذا الشهر'
+    },
+    {
+      title: 'الربح الصافي',
+      value: '700',
+      unit: 'ألف ر.س',
+      description: 'الأرباح بعد خصم النفقات'
+    },
+    {
+      title: 'التدفق النقدي',
+      value: '+12%',
+      unit: 'نمو',
+      description: 'مقارنة بالشهر السابق'
+    }
+  ];
+
   return (
     <div className="space-y-6">
-      <KPICards />
+      {/* مؤشرات الأداء الأساسية */}
+      <KPIStatsSection stats={kpiStats} />
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Budget vs Actual Chart */}
