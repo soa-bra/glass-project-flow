@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import DepartmentsSidebar from './DepartmentsSidebar';
-import { DepartmentPanel } from './DepartmentPanel';
+import DepartmentPanel from './DepartmentPanel';
 
 interface DepartmentsWorkspaceProps {
   isSidebarCollapsed: boolean;
