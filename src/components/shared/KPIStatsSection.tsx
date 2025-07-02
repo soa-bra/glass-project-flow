@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ArrowUp } from 'lucide-react';
 
@@ -69,7 +68,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
             {stat.trend && (
               <div 
                 className="absolute left-0 top-1/2 transform -translate-y-1/2 w-[40px] h-[40px] rounded-full border-2 border-black bg-transparent flex items-center justify-center transition-all duration-300 group"
-                style={{ marginRight: '10px' }}
+                style={{ marginRight: '5px' }}
               >
                 <ArrowUp 
                   className={`w-5 h-5 text-black transition-transform duration-300 ${getTrendRotation(stat.trend)}`}
