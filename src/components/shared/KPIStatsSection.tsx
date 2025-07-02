@@ -25,7 +25,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
   if (!stats || stats.length === 0) {
     return (
       <div className={`grid grid-cols-4 gap-6 mb-6 my-0 px-[4px] mx-[10px] ${className}`}>
-        <div className="col-span-4 text-center py-8 text-gray-500 font-arabic">
+        <div className="col-span-4 text-center py-8 text-black font-arabic">
           جارٍ تحميل الإحصائيات...
         </div>
       </div>
@@ -40,7 +40,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
             <span className="text-sm text-black font-arabic font-medium">{stat.title}</span>
           </div>
           <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
-            <div className="text-5xl font-normal text-gray-900 font-arabic">
+            <div className="text-5xl font-normal text-black font-arabic">
               {typeof stat.value === 'number' ? 
                 String(stat.value).padStart(2, '0') : 
                 stat.value
