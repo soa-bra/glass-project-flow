@@ -22,7 +22,14 @@ export const TabContentWrapper = ({
       </TabsContent>
       
       <TabsContent value="finance" className="w-full h-full overflow-auto p-4 m-0">
-        <FinanceTab data={tabData.finance || { projects: [], overBudget: [] }} loading={loading} />
+        <FinanceTab data={tabData.finance || { 
+          monthlyBudget: [], 
+          cashFlow: [], 
+          kpis: [], 
+          totalBudget: 0, 
+          totalSpent: 0, 
+          forecastAccuracy: 0 
+        }} loading={loading} />
       </TabsContent>
 
       <TabsContent value="projects" className="w-full h-full overflow-auto p-4 m-0">
