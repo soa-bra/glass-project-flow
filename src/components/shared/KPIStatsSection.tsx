@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 
 interface KPIStat {
   title: string;
@@ -35,30 +35,21 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
     );
   }
 
-  const getTrendIcon = (trend?: 'up' | 'down' | 'neutral') => {
+  const getTrendRotation = (trend?: 'up' | 'down' | 'neutral') => {
     switch (trend) {
       case 'up':
-        return <TrendingUp className="w-5 h-5 text-green-600 rotate-45" />;
+        return 'rotate-[-45deg]'; // الساعة 2 (بين 12 و 3)
       case 'down':
-        return <TrendingDown className="w-5 h-5 text-red-600 -rotate-45" />;
+        return 'rotate-[135deg]'; // الساعة 8 (بين 6 و 9)
       case 'neutral':
-        return <Minus className="w-5 h-5 text-gray-600" />;
+        return 'rotate-[90deg]'; // الساعة 3 (مستقيم أفقي)
       default:
-        return null;
+        return 'rotate-0';
     }
   };
 
   const getTrendColor = (trend?: 'up' | 'down' | 'neutral') => {
-    switch (trend) {
-      case 'up':
-        return 'border-green-600/50 hover:bg-green-50';
-      case 'down':
-        return 'border-red-600/50 hover:bg-red-50';
-      case 'neutral':
-        return 'border-gray-600/50 hover:bg-gray-50';
-      default:
-        return 'border-[#3e494c]/50 hover:bg-white/20';
-    }
+    return 'border-black hover:bg-transparent';
   };
 
   return (
@@ -78,10 +69,15 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
             {stat.unit && (
               <div className="text-xs text-black font-arabic font-bold">{stat.unit}</div>
             )}
-            {/* مؤشر الاتجاه - محاذي للحد العلوي للوحدة وللنص السفلي */}
+            {/* مؤشر الاتجاه - سهم مستقيم يتحرك مع أو عكس عقارب الساعة */}
             {stat.trend && (
-              <div className={`absolute left-0 top-1/2 transform -translate-y-1/2 w-[50px] h-[50px] rounded-full border-2 ${getTrendColor(stat.trend)} bg-transparent flex items-center justify-center transition-all duration-300 group`}>
-                {getTrendIcon(stat.trend)}
+              <div 
+                className={`absolute left-0 top-1/2 transform -translate-y-1/2 w-[50px] h-[50px] rounded-full border-2 ${getTrendColor(stat.trend)} bg-white flex items-center justify-center transition-all duration-300 group`}
+                style={{ marginRight: '20px' }}
+              >
+                <ArrowUp 
+                  className={`w-6 h-6 text-black transition-transform duration-300 ${getTrendRotation(stat.trend)}`}
+                />
                 {stat.trendValue && (
                   <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-arabic text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
                     {stat.trendValue}
