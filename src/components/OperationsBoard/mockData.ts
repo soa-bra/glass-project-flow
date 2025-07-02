@@ -41,17 +41,47 @@ export const getMockData = () => ({
     aiAdvice: []
   },
   marketing: {
-    roasData: [],
-    campaigns: [],
-    attribution: [],
-    kpis: [],
+    roasData: [
+      { channel: 'وسائل التواصل الاجتماعي', investment: 45000, revenue: 180000, roas: 4.0, trend: 'up' },
+      { channel: 'إعلانات جوجل', investment: 60000, revenue: 200000, roas: 3.3, trend: 'up' },
+      { channel: 'إعلانات لينكد إن', investment: 25000, revenue: 75000, roas: 3.0, trend: 'stable' },
+      { channel: 'التسويق بالمحتوى', investment: 20000, revenue: 50000, roas: 2.5, trend: 'down' }
+    ],
+    campaigns: [
+      { id: '1', name: 'حملة الهوية الثقافية', channel: 'متعدد القنوات', budget: 80000, spent: 65000, impressions: 1200000, clicks: 24000, conversions: 480, status: 'active', startDate: '2024-01-15', endDate: '2024-03-15' },
+      { id: '2', name: 'استشارات العلامة التجارية', channel: 'لينكد إن', budget: 40000, spent: 38000, impressions: 500000, clicks: 15000, conversions: 300, status: 'active', startDate: '2024-02-01', endDate: '2024-04-01' },
+      { id: '3', name: 'خدمات البحث الثقافي', channel: 'جوجل', budget: 30000, spent: 30000, impressions: 800000, clicks: 20000, conversions: 200, status: 'completed', startDate: '2024-01-01', endDate: '2024-02-29' }
+    ],
+    attribution: [
+      { touchpoint: 'وسائل التواصل الاجتماعي', conversions: 320, revenue: 128000, percentage: 35 },
+      { touchpoint: 'البحث المباشر', conversions: 250, revenue: 100000, percentage: 27 },
+      { touchpoint: 'إعلانات لينكد إن', conversions: 180, revenue: 72000, percentage: 20 },
+      { touchpoint: 'الإحالات', conversions: 120, revenue: 48000, percentage: 13 },
+      { touchpoint: 'أخرى', conversions: 45, revenue: 18000, percentage: 5 }
+    ],
+    kpis: [
+      { id: 'cpa', title: 'تكلفة اكتساب العميل', value: 280, target: 300, format: 'currency', trend: 'down' },
+      { id: 'ltv', title: 'القيمة الدائمة للعميل', value: 2400, target: 2200, format: 'currency', trend: 'up' },
+      { id: 'conversion-rate', title: 'معدل التحويل', value: 3.2, target: 3.0, format: 'percentage', trend: 'up' },
+      { id: 'engagement', title: 'معدل التفاعل', value: 4.8, target: 4.5, format: 'percentage', trend: 'up' }
+    ],
     totalROAS: 3.2,
     totalSpent: 150000,
     totalRevenue: 480000
   },
   hr: {
-    resourceUtilization: [],
-    skillGaps: [],
+    resourceUtilization: [
+      { employeeId: 'EMP001', name: 'أحمد محمد', department: 'البحث الثقافي', utilization: 95, capacity: 100, projects: ['مشروع أ', 'مشروع ب'], skills: ['تحليل البيانات', 'البحث الثقافي'], performance: 4.8 },
+      { employeeId: 'EMP002', name: 'فاطمة علي', department: 'العلامة التجارية', utilization: 88, capacity: 100, projects: ['مشروع ج'], skills: ['التصميم', 'الهوية البصرية'], performance: 4.6 },
+      { employeeId: 'EMP003', name: 'محمد عبدالله', department: 'التسويق', utilization: 82, capacity: 100, projects: ['مشروع د', 'مشروع هـ'], skills: ['التسويق الرقمي', 'إدارة المحتوى'], performance: 4.4 },
+      { employeeId: 'EMP004', name: 'نور حسن', department: 'الاستشارات', utilization: 75, capacity: 100, projects: ['مشروع و'], skills: ['الاستشارات', 'التحليل الاستراتيجي'], performance: 4.7 }
+    ],
+    skillGaps: [
+      { skill: 'الذكاء الاصطناعي', current: 6, required: 10, gap: 4, priority: 'high' },
+      { skill: 'تحليل البيانات المتقدم', current: 8, required: 10, gap: 2, priority: 'medium' },
+      { skill: 'التسويق الرقمي', current: 7, required: 9, gap: 2, priority: 'medium' },
+      { skill: 'إدارة المشاريع', current: 9, required: 10, gap: 1, priority: 'low' }
+    ],
     stats: { 
       totalEmployees: 45, 
       activeProjects: 12, 
@@ -63,17 +93,64 @@ export const getMockData = () => ({
       onLeave: 3,
       vacancies: 5
     },
-    workloadBalance: []
+    workloadBalance: [
+      { department: 'البحث الثقافي', current: 95, capacity: 100, efficiency: 92 },
+      { department: 'العلامة التجارية', current: 88, capacity: 100, efficiency: 89 },
+      { department: 'التسويق', current: 82, capacity: 100, efficiency: 85 },
+      { department: 'الاستشارات', current: 75, capacity: 100, efficiency: 88 },
+      { department: 'التطوير', current: 90, capacity: 100, efficiency: 91 }
+    ]
   },
   clients: {
-    opportunityFunnel: [],
-    npsScores: [],
-    portfolioHealth: { totalClients: 0, activeContracts: 0, renewalRate: 0, churnRate: 0, avgContractValue: 0, clientSatisfaction: 0 },
-    sentimentData: []
+    opportunityFunnel: [
+      { stage: 'عملاء محتملون', count: 150, value: 3750000, conversionRate: 100 },
+      { stage: 'مهتمون', count: 85, value: 2125000, conversionRate: 57 },
+      { stage: 'عروض مقدمة', count: 45, value: 1350000, conversionRate: 53 },
+      { stage: 'تفاوض', count: 25, value: 750000, conversionRate: 56 },
+      { stage: 'إغلاق الصفقة', count: 15, value: 450000, conversionRate: 60 }
+    ],
+    npsScores: [
+      { id: 1, score: 85, client: 'شركة النخبة للاستشارات', category: 'promoter', feedback: 'خدمة ممتازة ونتائج متميزة', date: '2024-01-15' },
+      { id: 2, score: 92, client: 'مؤسسة التطوير الثقافي', category: 'promoter', feedback: 'فريق محترف وتسليم في الوقت المحدد', date: '2024-01-20' },
+      { id: 3, score: 78, client: 'مجموعة الإبداع', category: 'promoter', feedback: 'نتائج جيدة مع بعض التحسينات المطلوبة', date: '2024-01-25' },
+      { id: 4, score: 65, client: 'شركة الرؤية', category: 'passive', feedback: 'خدمة مقبولة', date: '2024-02-01' },
+      { id: 5, score: 95, client: 'مؤسسة الابتكار', category: 'promoter', feedback: 'تجربة استثنائية ونوعية عالية', date: '2024-02-05' }
+    ],
+    portfolioHealth: { 
+      totalClients: 28, 
+      activeContracts: 42, 
+      renewalRate: 85, 
+      churnRate: 8, 
+      avgContractValue: 125000, 
+      clientSatisfaction: 4.6 
+    },
+    sentimentData: [
+      { clientId: 'CLI001', clientName: 'شركة النخبة', sentiment: 'positive', score: 85, lastInteraction: '2024-01-15', riskLevel: 'low' },
+      { clientId: 'CLI002', clientName: 'مؤسسة التطوير', sentiment: 'positive', score: 92, lastInteraction: '2024-01-20', riskLevel: 'low' },
+      { clientId: 'CLI003', clientName: 'مجموعة الإبداع', sentiment: 'neutral', score: 65, lastInteraction: '2024-01-25', riskLevel: 'medium' },
+      { clientId: 'CLI004', clientName: 'شركة الرؤية', sentiment: 'negative', score: 45, lastInteraction: '2024-02-01', riskLevel: 'high' }
+    ]
   },
   reports: {
-    templates: [],
-    statistics: { totalReports: 0, monthlyDownloads: 0, customReports: 0, scheduledReports: 0, popularCategories: [] },
-    aiSuggestions: []
+    templates: [
+      { id: 'RPT001', name: 'تقرير الأداء الشهري', category: 'تقارير الأداء', description: 'تقرير شامل عن أداء المؤسسة الشهري', format: 'PDF', lastUpdated: '2024-01-30', downloadCount: 45, tags: ['شهري', 'أداء', 'شامل'] },
+      { id: 'RPT002', name: 'تحليل العلامة التجارية', category: 'تقارير العلامة التجارية', description: 'تحليل متعمق لوضع العلامة التجارية', format: 'PowerBI', lastUpdated: '2024-01-25', downloadCount: 28, tags: ['علامة تجارية', 'تحليل'] },
+      { id: 'RPT003', name: 'دراسة المنافسين', category: 'دراسات السوق', description: 'تحليل شامل للمنافسين في السوق', format: 'Excel', lastUpdated: '2024-01-20', downloadCount: 32, tags: ['منافسين', 'سوق'] }
+    ],
+    statistics: { 
+      totalReports: 156, 
+      monthlyDownloads: 1240, 
+      customReports: 23, 
+      scheduledReports: 12, 
+      popularCategories: [
+        { category: 'تقارير الأداء', count: 45 },
+        { category: 'تقارير العلامة التجارية', count: 38 },
+        { category: 'دراسات السوق', count: 32 }
+      ] 
+    },
+    aiSuggestions: [
+      { id: 'AI001', title: 'تقرير تحليل الاتجاهات الثقافية', description: 'تحليل ذكي للاتجاهات الثقافية الناشئة', confidence: 92, dataPoints: ['بيانات وسائل التواصل', 'استطلاعات الرأي', 'تحليل المحتوى'], estimatedTime: '4 ساعات' },
+      { id: 'AI002', title: 'تقرير أداء الحملات التسويقية', description: 'تقييم شامل لفعالية الحملات الحالية', confidence: 88, dataPoints: ['بيانات الحملات', 'معدلات التحويل', 'عائد الاستثمار'], estimatedTime: '2 ساعة' }
+    ]
   }
 });
