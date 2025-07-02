@@ -1,83 +1,115 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Database, Calculator } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { Database, Calculator, Download } from 'lucide-react';
+import { CircularIconButton } from '@/components/ui/CircularIconButton';
+
 export const SettingsTab: React.FC = () => {
-  return <div className="space-y-6">
-      <h3 className="font-medium text-lg mx-[26px]">إعدادات النظام المالي</h3>
+  return (
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold text-black font-arabic mx-[26px]">إعدادات النظام المالي</h3>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BaseCard variant="operations" className="p-6">
-          <CardHeader className="px-0 pt-0">
-            <CardTitle className="flex items-center gap-2">
-              <Database className="h-5 w-5" />
+        <div className="bg-[#f2ffff] rounded-3xl p-6 border border-transparent">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-black font-arabic">
               مخطط الحسابات
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-0 space-y-4">
+            </h3>
+            <CircularIconButton 
+              icon={Database}
+              size="sm"
+              className="w-8 h-8 bg-transparent border border-black/20 text-black"
+            />
+          </div>
+          <div className="space-y-4 bg-transparent">
             <div className="space-y-2">
-              <Label htmlFor="account-code">رمز الحساب</Label>
-              <Input id="account-code" placeholder="مثال: 1100" />
+              <Label htmlFor="account-code" className="text-sm font-bold text-black font-arabic">رمز الحساب</Label>
+              <Input 
+                id="account-code" 
+                placeholder="مثال: 1100" 
+                className="bg-transparent border border-black/20 rounded-2xl text-black placeholder:text-gray-400"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="account-name">اسم الحساب</Label>
-              <Input id="account-name" placeholder="مثال: النقدية بالصندوق" />
+              <Label htmlFor="account-name" className="text-sm font-bold text-black font-arabic">اسم الحساب</Label>
+              <Input 
+                id="account-name" 
+                placeholder="مثال: النقدية بالصندوق" 
+                className="bg-transparent border border-black/20 rounded-2xl text-black placeholder:text-gray-400"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="account-type">نوع الحساب</Label>
+              <Label htmlFor="account-type" className="text-sm font-bold text-black font-arabic">نوع الحساب</Label>
               <Select>
-                <SelectTrigger>
+                <SelectTrigger className="bg-transparent border border-black/20 rounded-2xl text-black">
                   <SelectValue placeholder="اختر نوع الحساب" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="asset">أصول</SelectItem>
-                  <SelectItem value="liability">خصوم</SelectItem>
-                  <SelectItem value="equity">حقوق الملكية</SelectItem>
-                  <SelectItem value="revenue">إيرادات</SelectItem>
-                  <SelectItem value="expense">مصروفات</SelectItem>
+                <SelectContent className="bg-[#f2ffff] border border-black/20 rounded-2xl">
+                  <SelectItem value="asset" className="text-black font-arabic">أصول</SelectItem>
+                  <SelectItem value="liability" className="text-black font-arabic">خصوم</SelectItem>
+                  <SelectItem value="equity" className="text-black font-arabic">حقوق الملكية</SelectItem>
+                  <SelectItem value="revenue" className="text-black font-arabic">إيرادات</SelectItem>
+                  <SelectItem value="expense" className="text-black font-arabic">مصروفات</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <Button className="w-full">إضافة حساب</Button>
-          </CardContent>
-        </BaseCard>
+            <Button className="w-full bg-transparent border border-black/20 text-black hover:bg-black/5 rounded-2xl font-arabic">
+              إضافة حساب
+            </Button>
+          </div>
+        </div>
 
-        <BaseCard variant="operations" className="p-6">
-          <CardHeader className="px-0 pt-0">
-            <CardTitle className="flex items-center gap-2">
-              <Calculator className="h-5 w-5" />
+        <div className="bg-[#f2ffff] rounded-3xl p-6 border border-transparent">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-black font-arabic">
               إعدادات الضرائب
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-0 space-y-4">
+            </h3>
+            <CircularIconButton 
+              icon={Calculator}
+              size="sm"
+              className="w-8 h-8 bg-transparent border border-black/20 text-black"
+            />
+          </div>
+          <div className="space-y-4 bg-transparent">
             <div className="space-y-2">
-              <Label htmlFor="vat-rate">معدل ضريبة القيمة المضافة (%)</Label>
-              <Input id="vat-rate" type="number" placeholder="15" className="text-white bg-black rounded-full" />
+              <Label htmlFor="vat-rate" className="text-sm font-bold text-black font-arabic">معدل ضريبة القيمة المضافة (%)</Label>
+              <Input 
+                id="vat-rate" 
+                type="number" 
+                placeholder="15" 
+                className="bg-transparent border border-black/20 rounded-2xl text-black placeholder:text-gray-400"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="tax-number">الرقم الضريبي</Label>
-              <Input id="tax-number" placeholder="300000000000003" />
+              <Label htmlFor="tax-number" className="text-sm font-bold text-black font-arabic">الرقم الضريبي</Label>
+              <Input 
+                id="tax-number" 
+                placeholder="300000000000003" 
+                className="bg-transparent border border-black/20 rounded-2xl text-black placeholder:text-gray-400"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="currency">العملة الأساسية</Label>
+              <Label htmlFor="currency" className="text-sm font-bold text-black font-arabic">العملة الأساسية</Label>
               <Select>
-                <SelectTrigger>
+                <SelectTrigger className="bg-transparent border border-black/20 rounded-2xl text-black">
                   <SelectValue placeholder="اختر العملة" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="SAR">ريال سعودي (SAR)</SelectItem>
-                  <SelectItem value="USD">دولار أمريكي (USD)</SelectItem>
-                  <SelectItem value="EUR">يورو (EUR)</SelectItem>
+                <SelectContent className="bg-[#f2ffff] border border-black/20 rounded-2xl">
+                  <SelectItem value="SAR" className="text-black font-arabic">ريال سعودي (SAR)</SelectItem>
+                  <SelectItem value="USD" className="text-black font-arabic">دولار أمريكي (USD)</SelectItem>
+                  <SelectItem value="EUR" className="text-black font-arabic">يورو (EUR)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <Button className="w-full">حفظ الإعدادات</Button>
-          </CardContent>
-        </BaseCard>
+            <Button className="w-full bg-transparent border border-black/20 text-black hover:bg-black/5 rounded-2xl font-arabic">
+              حفظ الإعدادات
+            </Button>
+          </div>
+        </div>
       </div>
-    </div>;
+    </div>
+  );
 };
