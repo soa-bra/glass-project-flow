@@ -8,3 +8,7 @@ export { ProjectsArchivePanel } from './ProjectsArchivePanel';
 export { HRArchivePanel } from './HRArchivePanel';
 export { FinancialArchivePanel } from './FinancialArchivePanel';
 export { LegalArchivePanel } from './LegalArchivePanel';
+export { OrganizationalArchivePanel } from './OrganizationalArchivePanel';
+export { KnowledgeArchivePanel } from './KnowledgeArchivePanel';
+export { TemplatesArchivePanel } from './TemplatesArchivePanel';
+export { PoliciesArchivePanel } from './PoliciesArchivePanel';

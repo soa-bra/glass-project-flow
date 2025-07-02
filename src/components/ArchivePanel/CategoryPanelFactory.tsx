@@ -5,7 +5,11 @@ import {
   ProjectsArchivePanel,
   HRArchivePanel,
   FinancialArchivePanel,
-  LegalArchivePanel
+  LegalArchivePanel,
+  OrganizationalArchivePanel,
+  KnowledgeArchivePanel,
+  TemplatesArchivePanel,
+  PoliciesArchivePanel
 } from './categories';
 import { GenericArchivePanel } from './GenericArchivePanel';
 import { ArchiveCategoryType } from './CategoryPanelTypes';
@@ -27,25 +31,25 @@ export const CategoryPanelFactory: React.FC<CategoryPanelFactoryProps> = ({ cate
         return <FinancialArchivePanel />;
       case 'legal':
         return <LegalArchivePanel />;
+      case 'organizational':
+        return <OrganizationalArchivePanel />;
+      case 'knowledge':
+        return <KnowledgeArchivePanel />;
+      case 'templates':
+        return <TemplatesArchivePanel />;
+      case 'policies':
+        return <PoliciesArchivePanel />;
       default:
         return null;
     }
   };
 
   const isSpecializedCategory = (cat: string): cat is ArchiveCategoryType => {
-    return ['documents', 'projects', 'hr', 'financial', 'legal'].includes(cat);
-  };
-
-  const isGenericCategory = (cat: string): cat is ArchiveCategoryType => {
-    return ['organizational', 'knowledge', 'templates', 'policies'].includes(cat);
+    return ['documents', 'projects', 'hr', 'financial', 'legal', 'organizational', 'knowledge', 'templates', 'policies'].includes(cat);
   };
 
   if (isSpecializedCategory(category)) {
     return renderSpecializedPanel(category);
-  }
-
-  if (isGenericCategory(category)) {
-    return <GenericArchivePanel category={category} />;
   }
 
   // Fallback for unknown categories
