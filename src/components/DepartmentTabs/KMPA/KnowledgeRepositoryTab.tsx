@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -62,16 +62,14 @@ export const KnowledgeRepositoryTab: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 bg-transparent">
       {/* Search and Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            البحث والتصفية
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <BaseCard variant="operations">
+        <div className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Search className="h-5 w-5 text-black" />
+            <h3 className="text-xl font-semibold text-black font-arabic">البحث والتصفية</h3>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <Input
@@ -120,33 +118,31 @@ export const KnowledgeRepositoryTab: React.FC = () => {
               </SelectContent>
             </Select>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseCard>
 
       {/* Upload Section */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium">إضافة وثيقة جديدة</h3>
-              <p className="text-sm text-gray-600">رفع وثائق جديدة إلى مستودع المعرفة</p>
-            </div>
-            <Button className="flex items-center gap-2">
-              <Upload className="h-4 w-4" />
-              رفع وثيقة
-            </Button>
+      <BaseCard variant="operations" className="p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-medium text-black font-arabic">إضافة وثيقة جديدة</h3>
+            <p className="text-sm text-black font-arabic">رفع وثائق جديدة إلى مستودع المعرفة</p>
           </div>
-        </CardContent>
-      </Card>
+          <Button className="flex items-center gap-2">
+            <Upload className="h-4 w-4" />
+            رفع وثيقة
+          </Button>
+        </div>
+      </BaseCard>
 
       {/* Documents Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredDocuments.map((doc) => (
-          <Card key={doc.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
+          <BaseCard key={doc.id} variant="operations" className="hover:shadow-lg transition-shadow">
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <h3 className="font-medium text-sm line-clamp-2 mb-2">{doc.title}</h3>
+                  <h3 className="font-medium text-sm line-clamp-2 mb-2 text-black font-arabic">{doc.title}</h3>
                   <div className="flex items-center gap-2 mb-2">
                     <Badge variant={getTypeBadgeVariant(doc.type)} className="text-xs">
                       {doc.type === 'research' ? 'بحث' :
@@ -166,21 +162,20 @@ export const KnowledgeRepositoryTab: React.FC = () => {
                   <Star className="h-4 w-4" />
                 </Button>
               </div>
-            </CardHeader>
-            <CardContent className="pt-0">
+              
               <div className="space-y-3">
-                <div className="flex items-center gap-2 text-xs text-gray-600">
+                <div className="flex items-center gap-2 text-xs text-black">
                   <User className="h-3 w-3" />
-                  <span>{doc.author}</span>
+                  <span className="font-arabic">{doc.author}</span>
                   <Calendar className="h-3 w-3 mr-1" />
-                  <span>{new Date(doc.createdAt).toLocaleDateString('ar-SA')}</span>
+                  <span className="font-arabic">{new Date(doc.createdAt).toLocaleDateString('ar-SA')}</span>
                 </div>
                 
-                <div className="flex items-center gap-2 text-xs text-gray-600">
+                <div className="flex items-center gap-2 text-xs text-black">
                   <Eye className="h-3 w-3" />
-                  <span>{doc.readCount}</span>
+                  <span className="font-arabic">{doc.readCount}</span>
                   <Download className="h-3 w-3 mr-1" />
-                  <span>{doc.downloads}</span>
+                  <span className="font-arabic">{doc.downloads}</span>
                 </div>
 
                 <div className="flex flex-wrap gap-1">
@@ -199,27 +194,27 @@ export const KnowledgeRepositoryTab: React.FC = () => {
                 <div className="flex gap-2 pt-2">
                   <Button size="sm" variant="outline" className="flex-1">
                     <Eye className="h-3 w-3 mr-1" />
-                    عرض
+                    <span className="font-arabic">عرض</span>
                   </Button>
                   <Button size="sm" variant="outline" className="flex-1">
                     <Download className="h-3 w-3 mr-1" />
-                    تحميل
+                    <span className="font-arabic">تحميل</span>
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseCard>
         ))}
       </div>
 
       {filteredDocuments.length === 0 && (
-        <Card>
-          <CardContent className="text-center py-8">
+        <BaseCard variant="operations">
+          <div className="text-center py-8">
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="font-medium text-gray-900 mb-2">لا توجد وثائق</h3>
-            <p className="text-gray-600">لم يتم العثور على وثائق تطابق معايير البحث المحددة</p>
-          </CardContent>
-        </Card>
+            <h3 className="font-medium text-black mb-2 font-arabic">لا توجد وثائق</h3>
+            <p className="text-black font-arabic">لم يتم العثور على وثائق تطابق معايير البحث المحددة</p>
+          </div>
+        </BaseCard>
       )}
     </div>
   );
