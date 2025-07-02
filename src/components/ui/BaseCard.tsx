@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 
@@ -16,7 +15,6 @@ interface BaseCardProps {
   neonRing?: NeonRing;
   header?: React.ReactNode;
   style?: React.CSSProperties;
-  actionButton?: React.ReactNode;
 }
 
 export const BaseCard: React.FC<BaseCardProps> = ({
@@ -27,8 +25,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   color,
   neonRing,
   header,
-  style,
-  actionButton
+  style
 }) => {
   const sizeClasses = {
     sm: 'p-4',
@@ -36,27 +33,43 @@ export const BaseCard: React.FC<BaseCardProps> = ({
     lg: 'p-8'
   };
 
+  const variantClasses = {
+    glass: 'bg-white/40 backdrop-blur-[20px] border border-white/20',
+    flat: 'bg-opacity-100',
+    operations: 'bg-[#f2ffff] border border-gray-200/50'
+  };
+
+  const colorClasses = {
+    info: 'bg-blue-500',
+    success: 'bg-green-500',
+    warning: 'bg-yellow-500',
+    error: 'bg-red-500',
+    crimson: 'bg-red-600'
+  };
+
+  const neonRingClasses = {
+    info: 'ring-2 ring-blue-400/30 ring-offset-2',
+    success: 'ring-2 ring-green-400/30 ring-offset-2',
+    warning: 'ring-2 ring-yellow-400/30 ring-offset-2',
+    error: 'ring-2 ring-red-400/30 ring-offset-2'
+  };
+
   return (
     <div 
       className={cn(
-        'bg-[#f2ffff] rounded-3xl transition-all duration-300 overflow-hidden relative',
-        sizeClasses[size],
+        'rounded-3xl transition-all duration-300 overflow-hidden',
+        variant !== 'operations' && sizeClasses[size],
+        variantClasses[variant],
+        color && colorClasses[color],
+        neonRing && neonRingClasses[neonRing],
+        variant === 'operations' && sizeClasses[size],
         className
       )}
       style={style}
     >
-      {(header || actionButton) && (
-        <div className="mb-6 flex items-center justify-between">
-          {header && (
-            <div className="text-lg font-semibold text-black font-arabic">
-              {header}
-            </div>
-          )}
-          {actionButton && (
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
-              {actionButton}
-            </div>
-          )}
+      {header && (
+        <div className="mb-6">
+          {header}
         </div>
       )}
       <div className="h-full overflow-hidden">

@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
@@ -23,15 +24,6 @@ export default {
 				'arabic': ['IBM Plex Sans Arabic', 'sans-serif'],
 			},
 			colors: {
-				// SoaBra Chart Palette
-				'soabra-chart': {
-					'green': '#bdeed3',
-					'blue': '#a4e2f6', 
-					'purple': '#d9d2fd',
-					'red': '#f1b5b9',
-					'yellow': '#fbe2aa',
-					'black': '#000000',
-				},
 				// Updated SoaBra Color Palette
 				'soabra-new': {
 					// Backgrounds
