@@ -1,19 +1,18 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, PieChart, Target } from 'lucide-react';
 import { ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Tooltip } from 'recharts';
-import { BaseCard } from '@/components/ui/BaseCard';
 import { mockExpenseCategories } from './data';
 import { formatCurrency } from './utils';
+import { CircularIconButton } from '@/components/ui/CircularIconButton';
 
 export const AnalysisTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-2xl font-bold">التحليل والتقارير</h3>
-        <Button>
+        <h3 className="text-lg font-semibold text-black font-arabic">التحليل والتقارير</h3>
+        <Button className="bg-transparent border border-black/20 text-black hover:bg-black/5 rounded-full">
           <Download className="w-4 h-4 mr-2" />
           تصدير التقرير
         </Button>
@@ -21,14 +20,18 @@ export const AnalysisTab: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expense Categories */}
-        <BaseCard variant="operations" className="p-6">
-          <CardHeader className="px-0 pt-0">
-            <CardTitle className="flex items-center gap-2">
-              <PieChart className="h-5 w-5" />
+        <div className="bg-[#f2ffff] rounded-3xl p-6 border border-transparent">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-black font-arabic">
               توزيع المصروفات
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-0">
+            </h3>
+            <CircularIconButton 
+              icon={PieChart}
+              size="sm"
+              className="w-8 h-8 bg-transparent border border-black/20 text-black"
+            />
+          </div>
+          <div className="bg-transparent">
             <ResponsiveContainer width="100%" height={300}>
               <RechartsPieChart>
                 <Pie 
@@ -45,38 +48,49 @@ export const AnalysisTab: React.FC = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: '#f2ffff',
+                    border: '1px solid rgba(0,0,0,0.1)',
+                    borderRadius: '12px',
+                    color: '#000000'
+                  }}
+                />
               </RechartsPieChart>
             </ResponsiveContainer>
-          </CardContent>
-        </BaseCard>
+          </div>
+        </div>
 
         {/* AI Predictions */}
-        <BaseCard variant="operations" className="p-6">
-          <CardHeader className="px-0 pt-0">
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
+        <div className="bg-[#f2ffff] rounded-3xl p-6 border border-transparent">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-black font-arabic">
               التنبؤات المالية
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-0 space-y-4">
-            <div className="p-4 bg-green-50 rounded-lg">
-              <h4 className="font-semibold text-green-800">السيناريو المتفائل</h4>
-              <p className="text-green-700">نمو متوقع: +25%</p>
-              <p className="text-green-600">الإيرادات المتوقعة: {formatCurrency(3062500)}</p>
+            </h3>
+            <CircularIconButton 
+              icon={Target}
+              size="sm"
+              className="w-8 h-8 bg-transparent border border-black/20 text-black"
+            />
+          </div>
+          <div className="space-y-4 bg-transparent">
+            <div className="p-4 bg-[#bdeed3] rounded-2xl border border-transparent">
+              <h4 className="text-sm font-bold text-black font-arabic">السيناريو المتفائل</h4>
+              <p className="text-sm font-medium text-black font-arabic">نمو متوقع: +25%</p>
+              <p className="text-sm font-normal text-black font-arabic">الإيرادات المتوقعة: {formatCurrency(3062500)}</p>
             </div>
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <h4 className="font-semibold text-blue-800">السيناريو الأساسي</h4>
-              <p className="text-blue-700">نمو متوقع: +12%</p>
-              <p className="text-blue-600">الإيرادات المتوقعة: {formatCurrency(2744000)}</p>
+            <div className="p-4 bg-[#a4e2f6] rounded-2xl border border-transparent">
+              <h4 className="text-sm font-bold text-black font-arabic">السيناريو الأساسي</h4>
+              <p className="text-sm font-medium text-black font-arabic">نمو متوقع: +12%</p>
+              <p className="text-sm font-normal text-black font-arabic">الإيرادات المتوقعة: {formatCurrency(2744000)}</p>
             </div>
-            <div className="p-4 bg-orange-50 rounded-lg">
-              <h4 className="font-semibold text-orange-800">السيناريو المتحفظ</h4>
-              <p className="text-orange-700">نمو متوقع: +5%</p>
-              <p className="text-orange-600">الإيرادات المتوقعة: {formatCurrency(2572500)}</p>
+            <div className="p-4 bg-[#fbe2aa] rounded-2xl border border-transparent">
+              <h4 className="text-sm font-bold text-black font-arabic">السيناريو المتحفظ</h4>
+              <p className="text-sm font-medium text-black font-arabic">نمو متوقع: +5%</p>
+              <p className="text-sm font-normal text-black font-arabic">الإيرادات المتوقعة: {formatCurrency(2572500)}</p>
             </div>
-          </CardContent>
-        </BaseCard>
+          </div>
+        </div>
       </div>
     </div>
   );

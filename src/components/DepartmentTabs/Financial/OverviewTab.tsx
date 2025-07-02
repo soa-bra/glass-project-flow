@@ -2,13 +2,14 @@
 import React, { useState } from 'react';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, CheckCircle, Clock, Bell, BarChart, TrendingUp } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Clock, Bell, BarChart, TrendingUp, Download } from 'lucide-react';
 import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { mockBudgetData, mockCashFlowData } from './data';
 import { formatCurrency } from './utils';
 import { Alert } from './types';
+import { CircularIconButton } from '@/components/ui/CircularIconButton';
 
 export const OverviewTab: React.FC = () => {
   const [alerts] = useState<Alert[]>([
@@ -66,85 +67,129 @@ export const OverviewTab: React.FC = () => {
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Budget vs Actual Chart */}
-        <BaseCard variant="operations" className="p-6">
-          <CardHeader className="px-0 pt-0">
-            <CardTitle className="flex items-center gap-2">
-              <BarChart className="h-5 w-5" />
+        <div className="bg-[#f2ffff] rounded-3xl p-6 border border-transparent">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-black font-arabic">
               الميزانية مقابل الفعلي (شهري)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-0">
+            </h3>
+            <CircularIconButton 
+              icon={Download}
+              size="sm"
+              className="w-8 h-8 bg-transparent border border-black/20 text-black"
+            />
+          </div>
+          <div className="bg-transparent">
             <ResponsiveContainer width="100%" height={300}>
               <RechartsBarChart data={mockBudgetData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={value => formatCurrency(Number(value))} />
-                <Legend />
-                <Bar dataKey="budget" fill="#8884d8" name="الميزانية" />
-                <Bar dataKey="actual" fill="#82ca9d" name="الفعلي" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.2} />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="#000000"
+                  className="text-sm font-medium font-arabic"
+                />
+                <YAxis 
+                  stroke="#000000"
+                  className="text-sm font-medium"
+                />
+                <Tooltip 
+                  formatter={value => formatCurrency(Number(value))}
+                  contentStyle={{
+                    backgroundColor: '#f2ffff',
+                    border: '1px solid rgba(0,0,0,0.1)',
+                    borderRadius: '12px',
+                    color: '#000000'
+                  }}
+                />
+                <Legend 
+                  wrapperStyle={{ color: '#000000' }}
+                />
+                <Bar dataKey="budget" fill="#bdeed3" name="الميزانية" />
+                <Bar dataKey="actual" fill="#a4e2f6" name="الفعلي" />
               </RechartsBarChart>
             </ResponsiveContainer>
-          </CardContent>
-        </BaseCard>
+          </div>
+        </div>
 
         {/* Cash Flow Forecast */}
-        <BaseCard variant="operations" className="p-6">
-          <CardHeader className="px-0 pt-0">
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
+        <div className="bg-[#f2ffff] rounded-3xl p-6 border border-transparent">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-black font-arabic">
               توقعات التدفق النقدي
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-0">
+            </h3>
+            <CircularIconButton 
+              icon={Download}
+              size="sm"
+              className="w-8 h-8 bg-transparent border border-black/20 text-black"
+            />
+          </div>
+          <div className="bg-transparent">
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={mockCashFlowData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={value => formatCurrency(Number(value))} />
-                <Legend />
-                <Line type="monotone" dataKey="inflow" stroke="#8884d8" name="التدفق الداخل" />
-                <Line type="monotone" dataKey="outflow" stroke="#82ca9d" name="التدفق الخارج" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.2} />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="#000000"
+                  className="text-sm font-medium font-arabic"
+                />
+                <YAxis 
+                  stroke="#000000"
+                  className="text-sm font-medium"
+                />
+                <Tooltip 
+                  formatter={value => formatCurrency(Number(value))}
+                  contentStyle={{
+                    backgroundColor: '#f2ffff',
+                    border: '1px solid rgba(0,0,0,0.1)',
+                    borderRadius: '12px',
+                    color: '#000000'
+                  }}
+                />
+                <Legend 
+                  wrapperStyle={{ color: '#000000' }}
+                />
+                <Line type="monotone" dataKey="inflow" stroke="#bdeed3" strokeWidth={3} name="التدفق الداخل" />
+                <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} name="التدفق الخارج" />
               </LineChart>
             </ResponsiveContainer>
-          </CardContent>
-        </BaseCard>
+          </div>
+        </div>
       </div>
 
       {/* AI Alerts */}
-      <BaseCard variant="operations" className="p-6">
-        <CardHeader className="px-0 pt-0">
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
+      <div className="bg-[#f2ffff] rounded-3xl p-6 border border-transparent">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-black font-arabic">
             تنبيهات الذكاء الاصطناعي
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-0">
-          <div className="space-y-3">
-            {alerts.map(alert => (
-              <div 
-                key={alert.id} 
-                className={`p-4 rounded-lg border ${
-                  alert.type === 'warning' ? 'bg-yellow-50 border-yellow-200' : 
-                  alert.type === 'info' ? 'bg-blue-50 border-blue-200' : 
-                  'bg-green-50 border-green-200'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  {alert.type === 'warning' && <AlertTriangle className="h-5 w-5 text-yellow-600" />}
-                  {alert.type === 'info' && <Clock className="h-5 w-5 text-blue-600" />}
-                  {alert.type === 'success' && <CheckCircle className="h-5 w-5 text-green-600" />}
-                  <span className="font-medium">{alert.message}</span>
-                  <Badge variant={alert.priority === 'high' ? 'destructive' : alert.priority === 'medium' ? 'secondary' : 'default'}>
-                    {alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض'}
-                  </Badge>
+          </h3>
+          <CircularIconButton 
+            icon={Bell}
+            size="sm"
+            className="w-8 h-8 bg-transparent border border-black/20 text-black"
+          />
+        </div>
+        <div className="space-y-3 bg-transparent">
+          {alerts.map(alert => (
+            <div 
+              key={alert.id} 
+              className="p-4 rounded-2xl border border-black/10 bg-transparent"
+            >
+              <div className="flex items-center gap-3">
+                {alert.type === 'warning' && <AlertTriangle className="h-5 w-5 text-black" />}
+                {alert.type === 'info' && <Clock className="h-5 w-5 text-black" />}
+                {alert.type === 'success' && <CheckCircle className="h-5 w-5 text-black" />}
+                <span className="text-sm font-medium text-black font-arabic">{alert.message}</span>
+                <div className={`px-3 py-1 rounded-full text-xs font-normal text-black ${
+                  alert.priority === 'high' ? 'bg-[#f1b5b9]' : 
+                  alert.priority === 'medium' ? 'bg-[#fbe2aa]' : 
+                  'bg-[#bdeed3]'
+                }`}>
+                  {alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض'}
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </BaseCard>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
