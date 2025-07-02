@@ -1,11 +1,14 @@
 
 import React from 'react';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface KPIStat {
   title: string;
   value: string | number;
   unit?: string;
   description?: string;
+  trend?: 'up' | 'down' | 'neutral'; // إضافة خاصية الاتجاه
+  trendValue?: string; // قيمة التغيير (مثل +12% أو -5%)
 }
 
 interface KPIStatsSectionProps {
@@ -32,6 +35,32 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
     );
   }
 
+  const getTrendIcon = (trend?: 'up' | 'down' | 'neutral') => {
+    switch (trend) {
+      case 'up':
+        return <TrendingUp className="w-5 h-5 text-green-600 rotate-45" />;
+      case 'down':
+        return <TrendingDown className="w-5 h-5 text-red-600 -rotate-45" />;
+      case 'neutral':
+        return <Minus className="w-5 h-5 text-gray-600" />;
+      default:
+        return null;
+    }
+  };
+
+  const getTrendColor = (trend?: 'up' | 'down' | 'neutral') => {
+    switch (trend) {
+      case 'up':
+        return 'border-green-600/50 hover:bg-green-50';
+      case 'down':
+        return 'border-red-600/50 hover:bg-red-50';
+      case 'neutral':
+        return 'border-gray-600/50 hover:bg-gray-50';
+      default:
+        return 'border-[#3e494c]/50 hover:bg-white/20';
+    }
+  };
+
   return (
     <div className={`grid grid-cols-4 gap-6 mb-6 my-0 px-0 mx-[5px] ${className}`}>
       {stats.map((stat, index) => (
@@ -39,7 +68,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
           <div className="mb-2">
             <span className="text-sm text-black font-arabic font-medium">{stat.title}</span>
           </div>
-          <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
+          <div className="flex items-baseline gap-2 mb-1 px-0 mx-0 relative">
             <div className="text-5xl font-normal text-gray-900 font-arabic">
               {typeof stat.value === 'number' ? 
                 String(stat.value).padStart(2, '0') : 
@@ -48,6 +77,17 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
             </div>
             {stat.unit && (
               <div className="text-xs text-black font-arabic font-bold">{stat.unit}</div>
+            )}
+            {/* مؤشر الاتجاه - محاذي للحد العلوي للوحدة وللنص السفلي */}
+            {stat.trend && (
+              <div className={`absolute left-0 top-1/2 transform -translate-y-1/2 w-[50px] h-[50px] rounded-full border-2 ${getTrendColor(stat.trend)} bg-transparent flex items-center justify-center transition-all duration-300 group`}>
+                {getTrendIcon(stat.trend)}
+                {stat.trendValue && (
+                  <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-arabic text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {stat.trendValue}
+                  </div>
+                )}
+              </div>
             )}
           </div>
           {stat.description && (
