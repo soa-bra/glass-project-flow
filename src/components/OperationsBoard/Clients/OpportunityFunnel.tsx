@@ -11,10 +11,10 @@ interface NPSScore {
 }
 
 interface NPSScoresProps {
-  npsData: NPSScore[];
+  nps: NPSScore[];
 }
 
-export const NPSScores: React.FC<NPSScoresProps> = ({ npsData }) => {
+export const NPSScores: React.FC<NPSScoresProps> = ({ nps }) => {
   return (
     <Card>
       <CardHeader>
@@ -27,6 +27,17 @@ export const NPSScores: React.FC<NPSScoresProps> = ({ npsData }) => {
   );
 };
 
-export const OpportunityFunnel = () => <div>قيد التطوير</div>;
-export const ClientPortfolioHealth = () => <div>قيد التطوير</div>;
-export const ClientSentiment = () => <div>قيد التطوير</div>;
+interface FunnelStage {
+  stage: string;
+  count: number;
+  value: number;
+  conversionRate?: number;
+}
+
+interface OpportunityFunnelProps {
+  funnelData: FunnelStage[];
+}
+
+export const OpportunityFunnel: React.FC<OpportunityFunnelProps> = ({ funnelData }) => {
+  return <div className="text-center text-gray-500 font-arabic">قيد التطوير</div>;
+};

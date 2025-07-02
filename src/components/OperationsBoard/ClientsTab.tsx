@@ -69,7 +69,7 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({ data, loading }) => {
       {/* الرسوم البيانية الأساسية */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <OpportunityFunnel funnelData={data.opportunityFunnel} />
-        <NPSScores npsData={data.npsScores} />
+        <NPSScores nps={data.npsScores} />
       </div>
       
       {/* تحليل المشاعر */}

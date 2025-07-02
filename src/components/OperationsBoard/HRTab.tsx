@@ -1,8 +1,6 @@
 import React from 'react';
-import { ResourceHeatMap } from './HR/ResourceHeatMap';
-import { SkillGapRadar } from './HR/SkillGapRadar';
+import { ResourceHeatMap, SkillGapRadar, WorkloadBalance } from './HR/ResourceHeatMap';
 import { HRStatsCards } from './HR/HRStatsCards';
-import { WorkloadBalance } from './HR/WorkloadBalance';
 
 interface ResourceUtilization {
   employeeId: string;

@@ -35,7 +35,12 @@ export const TabContentWrapper = ({
       </TabsContent>
 
       <TabsContent value="projects" className="w-full h-full overflow-auto p-4 m-0">
-        <ProjectsTab data={tabData.projects} loading={loading} />
+        <ProjectsTab data={tabData.projects || { 
+          criticalProjects: [], 
+          delayedMilestones: [], 
+          summary: { totalProjects: 0, onTrack: 0, atRisk: 0, delayed: 0, completionRate: 0 }, 
+          aiAdvice: [] 
+        }} loading={loading} />
       </TabsContent>
 
       <TabsContent value="marketing" className="w-full h-full overflow-auto p-4 m-0">
