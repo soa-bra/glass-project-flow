@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ArrowUp } from 'lucide-react';
 
@@ -37,11 +38,11 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
   const getTrendRotation = (trend?: 'up' | 'down' | 'neutral') => {
     switch (trend) {
       case 'up':
-        return 'rotate-[-45deg]'; // الساعة 2 (بين 12 و 3)
+        return 'rotate-0'; // الساعة 12 (لأعلى)
       case 'down':
-        return 'rotate-[135deg]'; // الساعة 8 (بين 6 و 9)
+        return 'rotate-180'; // الساعة 6 (لأسفل)
       case 'neutral':
-        return 'rotate-[90deg]'; // الساعة 3 (مستقيم أفقي)
+        return 'rotate-[270deg]'; // الساعة 9 (يسار)
       default:
         return 'rotate-0';
     }
@@ -64,11 +65,10 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
             {stat.unit && (
               <div className="text-xs text-black font-arabic font-bold">{stat.unit}</div>
             )}
-            {/* مؤشر الاتجاه - سهم مستقيم يتحرك مع أو عكس عقارب الساعة */}
+            {/* مؤشر الاتجاه - سهم مستقيم يتحرك كالبوصلة */}
             {stat.trend && (
               <div 
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 w-[40px] h-[40px] rounded-full border-2 border-black bg-transparent flex items-center justify-center transition-all duration-300 group"
-                style={{ marginRight: '5px' }}
+                className="absolute right-[-45px] top-1/2 transform -translate-y-1/2 w-[40px] h-[40px] rounded-full border border-black bg-transparent flex items-center justify-center transition-all duration-300 group"
               >
                 <ArrowUp 
                   className={`w-5 h-5 text-black transition-transform duration-300 ${getTrendRotation(stat.trend)}`}
