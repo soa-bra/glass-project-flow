@@ -1,6 +1,8 @@
 
 import type { OverviewData } from './Overview/OverviewData';
 import type { FinanceData } from './FinanceTab';
+import type { ProjectsData } from './ProjectsTab';
+import type { MarketingData } from './MarketingTab';
 import type { HRData } from './HRTab';
 import type { ClientsData } from './ClientsTab';
 import type { ReportsData } from './ReportsTab';
@@ -8,6 +10,8 @@ import type { ReportsData } from './ReportsTab';
 export interface TabData {
   overview?: OverviewData;
   finance?: FinanceData;
+  projects?: ProjectsData;
+  marketing?: MarketingData;
   hr?: HRData;
   clients?: ClientsData;
   reports?: ReportsData;

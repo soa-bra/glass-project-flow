@@ -28,6 +28,9 @@ interface HRStats {
   skillGaps: number;
   performanceScore: number;
   retentionRate: number;
+  active: number;
+  onLeave: number;
+  vacancies: number;
 }
 
 interface WorkloadData {

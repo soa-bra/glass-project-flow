@@ -59,7 +59,17 @@ export const TabContentWrapper = ({
         <HRTab data={tabData.hr || { 
           resourceUtilization: [], 
           skillGaps: [], 
-          stats: { totalEmployees: 0, activeProjects: 0, avgUtilization: 0, skillGaps: 0, performanceScore: 0, retentionRate: 0 }, 
+          stats: { 
+            totalEmployees: 0, 
+            activeProjects: 0, 
+            avgUtilization: 0, 
+            skillGaps: 0, 
+            performanceScore: 0, 
+            retentionRate: 0,
+            active: 0,
+            onLeave: 0,
+            vacancies: 0
+          }, 
           workloadBalance: [] 
         }} loading={loading} />
       </TabsContent>

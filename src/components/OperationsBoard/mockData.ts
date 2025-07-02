@@ -48,5 +48,32 @@ export const getMockData = () => ({
     totalROAS: 3.2,
     totalSpent: 150000,
     totalRevenue: 480000
+  },
+  hr: {
+    resourceUtilization: [],
+    skillGaps: [],
+    stats: { 
+      totalEmployees: 45, 
+      activeProjects: 12, 
+      avgUtilization: 85, 
+      skillGaps: 3, 
+      performanceScore: 4.2, 
+      retentionRate: 92,
+      active: 42,
+      onLeave: 3,
+      vacancies: 5
+    },
+    workloadBalance: []
+  },
+  clients: {
+    opportunityFunnel: [],
+    npsScores: [],
+    portfolioHealth: { totalClients: 0, activeContracts: 0, renewalRate: 0, churnRate: 0, avgContractValue: 0, clientSatisfaction: 0 },
+    sentimentData: []
+  },
+  reports: {
+    templates: [],
+    statistics: { totalReports: 0, monthlyDownloads: 0, customReports: 0, scheduledReports: 0, popularCategories: [] },
+    aiSuggestions: []
   }
 });
