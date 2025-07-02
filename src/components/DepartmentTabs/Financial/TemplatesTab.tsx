@@ -17,31 +17,31 @@ export const TemplatesTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-2xl font-bold">النماذج والقوالب المالية</h3>
-        <Button>
-          <Upload className="w-4 h-4 mr-2" />
+        <h3 className="text-large font-semibold text-black font-arabic">النماذج والقوالب المالية</h3>
+        <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+          <Upload className="w-4 h-4" />
           رفع قالب جديد
-        </Button>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((template, index) => (
-          <BaseCard key={index} variant="operations" className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
+          <div key={index} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 cursor-pointer hover:shadow-lg transition-shadow">
             <div className="flex items-center gap-3 mb-4">
-              <FileText className="h-8 w-8 text-blue-600" />
+              <FileText className="h-8 w-8 text-black" />
               <div>
-                <h4 className="font-semibold">{template.name}</h4>
-                <p className="text-sm text-gray-600">{template.type}</p>
+                <h4 className="text-sm font-bold text-black font-arabic">{template.name}</h4>
+                <p className="text-sm font-normal text-black">{template.type}</p>
               </div>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{template.downloads} تحميل</span>
-              <Button size="sm">
-                <Download className="w-4 h-4 mr-2" />
+              <span className="text-sm font-normal text-gray-400">{template.downloads} تحميل</span>
+              <button className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
+                <Download className="w-4 h-4" />
                 تحميل
-              </Button>
+              </button>
             </div>
-          </BaseCard>
+          </div>
         ))}
       </div>
     </div>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,78 +7,90 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Database, Calculator } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
+
 export const SettingsTab: React.FC = () => {
-  return <div className="space-y-6">
-      <h3 className="font-medium text-lg mx-[26px]">إعدادات النظام المالي</h3>
+  return (
+    <div className="space-y-6">
+      <h3 className="text-large font-semibold text-black font-arabic mx-[26px]">إعدادات النظام المالي</h3>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BaseCard variant="operations" className="p-6">
-          <CardHeader className="px-0 pt-0">
-            <CardTitle className="flex items-center gap-2">
-              <Database className="h-5 w-5" />
+        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+          <div className="px-0 pt-0 mb-6">
+            <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
+              <Database className="h-5 w-5 text-black" />
               مخطط الحسابات
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-0 space-y-4">
+            </h3>
+          </div>
+          <div className="px-0 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="account-code">رمز الحساب</Label>
-              <Input id="account-code" placeholder="مثال: 1100" />
+              <label htmlFor="account-code" className="text-sm font-bold text-black font-arabic">رمز الحساب</label>
+              <input 
+                id="account-code" 
+                placeholder="مثال: 1100" 
+                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="account-name">اسم الحساب</Label>
-              <Input id="account-name" placeholder="مثال: النقدية بالصندوق" />
+              <label htmlFor="account-name" className="text-sm font-bold text-black font-arabic">اسم الحساب</label>
+              <input 
+                id="account-name" 
+                placeholder="مثال: النقدية بالصندوق" 
+                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="account-type">نوع الحساب</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="اختر نوع الحساب" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="asset">أصول</SelectItem>
-                  <SelectItem value="liability">خصوم</SelectItem>
-                  <SelectItem value="equity">حقوق الملكية</SelectItem>
-                  <SelectItem value="revenue">إيرادات</SelectItem>
-                  <SelectItem value="expense">مصروفات</SelectItem>
-                </SelectContent>
-              </Select>
+              <label htmlFor="account-type" className="text-sm font-bold text-black font-arabic">نوع الحساب</label>
+              <select className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black focus:outline-none focus:border-black">
+                <option value="">اختر نوع الحساب</option>
+                <option value="asset">أصول</option>
+                <option value="liability">خصوم</option>
+                <option value="equity">حقوق الملكية</option>
+                <option value="revenue">إيرادات</option>
+                <option value="expense">مصروفات</option>
+              </select>
             </div>
-            <Button className="w-full">إضافة حساب</Button>
-          </CardContent>
-        </BaseCard>
+            <button className="w-full bg-black text-white px-4 py-2 rounded-full text-sm font-medium">إضافة حساب</button>
+          </div>
+        </div>
 
-        <BaseCard variant="operations" className="p-6">
-          <CardHeader className="px-0 pt-0">
-            <CardTitle className="flex items-center gap-2">
-              <Calculator className="h-5 w-5" />
+        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+          <div className="px-0 pt-0 mb-6">
+            <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
+              <Calculator className="h-5 w-5 text-black" />
               إعدادات الضرائب
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-0 space-y-4">
+            </h3>
+          </div>
+          <div className="px-0 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="vat-rate">معدل ضريبة القيمة المضافة (%)</Label>
-              <Input id="vat-rate" type="number" placeholder="15" />
+              <label htmlFor="vat-rate" className="text-sm font-bold text-black font-arabic">معدل ضريبة القيمة المضافة (%)</label>
+              <input 
+                id="vat-rate" 
+                type="number" 
+                placeholder="15" 
+                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="tax-number">الرقم الضريبي</Label>
-              <Input id="tax-number" placeholder="300000000000003" />
+              <label htmlFor="tax-number" className="text-sm font-bold text-black font-arabic">الرقم الضريبي</label>
+              <input 
+                id="tax-number" 
+                placeholder="300000000000003" 
+                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="currency">العملة الأساسية</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="اختر العملة" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="SAR">ريال سعودي (SAR)</SelectItem>
-                  <SelectItem value="USD">دولار أمريكي (USD)</SelectItem>
-                  <SelectItem value="EUR">يورو (EUR)</SelectItem>
-                </SelectContent>
-              </Select>
+              <label htmlFor="currency" className="text-sm font-bold text-black font-arabic">العملة الأساسية</label>
+              <select className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black focus:outline-none focus:border-black">
+                <option value="">اختر العملة</option>
+                <option value="SAR">ريال سعودي (SAR)</option>
+                <option value="USD">دولار أمريكي (USD)</option>
+                <option value="EUR">يورو (EUR)</option>
+              </select>
             </div>
-            <Button className="w-full">حفظ الإعدادات</Button>
-          </CardContent>
-        </BaseCard>
+            <button className="w-full bg-black text-white px-4 py-2 rounded-full text-sm font-medium">حفظ الإعدادات</button>
+          </div>
+        </div>
       </div>
-    </div>;
+    </div>
+  );
 };

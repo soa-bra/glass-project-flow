@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,51 +7,68 @@ import { FileText, BookOpen } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { mockBudgetTree } from './data';
 import { formatCurrency, getStatusColor, getStatusText } from './utils';
+
 export const BudgetsTab: React.FC = () => {
-  return <div className="space-y-6">
+  const getBudgetStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-[#bdeed3] text-black';
+      case 'completed': return 'bg-[#a4e2f6] text-black';
+      case 'overbudget': return 'bg-[#f1b5b9] text-black';
+      case 'pending': return 'bg-[#fbe2aa] text-black';
+      default: return 'bg-[#d9d2fd] text-black';
+    }
+  };
+
+  return (
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium mx-[30px]">إدارة الميزانيات</h3>
-        <Button className="rounded-full mx-[25px]">
-          <FileText className="w-4 h-4 mr-2" />
+        <h3 className="text-large font-semibold text-black font-arabic mx-[30px]">إدارة الميزانيات</h3>
+        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2">
+          <FileText className="w-4 h-4" />
           إنشاء ميزانية جديدة
-        </Button>
+        </button>
       </div>
 
-      <BaseCard variant="operations" className="p-6">
-        <CardHeader className="px-0 pt-0">
-          <CardTitle>شجرة الميزانيات</CardTitle>
-        </CardHeader>
-        <CardContent className="px-0">
-          {mockBudgetTree.map(budget => <div key={budget.id} className="space-y-4">
-              <div className="flex items-center justify-between p-4 rounded-lg bg-transparent">
+      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+        <div className="px-0 pt-0 mb-6">
+          <h3 className="text-large font-semibold text-black font-arabic">شجرة الميزانيات</h3>
+        </div>
+        <div className="px-0">
+          {mockBudgetTree.map(budget => (
+            <div key={budget.id} className="space-y-4">
+              <div className="flex items-center justify-between p-4 rounded-3xl bg-transparent border border-black/10">
                 <div className="flex items-center gap-3">
-                  <BookOpen className="h-5 w-5" />
+                  <BookOpen className="h-5 w-5 text-black" />
                   <div>
-                    <h4 className="font-semibold">{budget.name}</h4>
-                    <p className="text-sm text-gray-600">{formatCurrency(budget.amount)}</p>
+                    <h4 className="text-sm font-bold text-black font-arabic">{budget.name}</h4>
+                    <p className="text-sm font-normal text-black font-arabic">{formatCurrency(budget.amount)}</p>
                   </div>
                 </div>
-                <Badge className={getStatusColor(budget.status)}>
+                <div className={`px-3 py-1 rounded-full text-xs font-normal ${getBudgetStatusColor(budget.status)}`}>
                   {getStatusText(budget.status)}
-                </Badge>
+                </div>
               </div>
               
               <div className="ml-8 space-y-2">
-                {budget.children?.map(child => <div key={child.id} className="flex items-center justify-between p-3 border rounded-lg">
+                {budget.children?.map(child => (
+                  <div key={child.id} className="flex items-center justify-between p-3 bg-transparent border border-black/10 rounded-3xl">
                     <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                      <div className="w-3 h-3 bg-black rounded-full"></div>
                       <div>
-                        <h5 className="font-medium">{child.name}</h5>
-                        <p className="text-sm text-gray-600">{formatCurrency(child.amount)}</p>
+                        <h5 className="text-sm font-medium text-black font-arabic">{child.name}</h5>
+                        <p className="text-sm font-normal text-black font-arabic">{formatCurrency(child.amount)}</p>
                       </div>
                     </div>
-                    <Badge className={getStatusColor(child.status)}>
+                    <div className={`px-3 py-1 rounded-full text-xs font-normal ${getBudgetStatusColor(child.status)}`}>
                       {getStatusText(child.status)}
-                    </Badge>
-                  </div>)}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>)}
-        </CardContent>
-      </BaseCard>
-    </div>;
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
