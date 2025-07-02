@@ -98,17 +98,17 @@ export const BudgetManagementTab: React.FC = () => {
   ];
 
   const getBudgetStatusColor = (status: string, percentage: number) => {
-    if (status === 'overbudget' || percentage > 90) return 'bg-red-500';
-    if (percentage > 75) return 'bg-orange-500';
-    return 'bg-green-500';
+    if (status === 'overbudget' || percentage > 90) return 'bg-[#f1b5b9]';
+    if (percentage > 75) return 'bg-[#fbe2aa]';
+    return 'bg-[#bdeed3]';
   };
 
-  const getStatusBadgeVariant = (status: string) => {
+  const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case 'active': return 'default';
-      case 'completed': return 'secondary';
-      case 'overbudget': return 'destructive';
-      default: return 'secondary';
+      case 'active': return 'bg-[#bdeed3] text-black';
+      case 'completed': return 'bg-[#a4e2f6] text-black';
+      case 'overbudget': return 'bg-[#f1b5b9] text-black';
+      default: return 'bg-[#d9d2fd] text-black';
     }
   };
 
@@ -117,16 +117,14 @@ export const BudgetManagementTab: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* أدوات إدارة الميزانية */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800 font-arabic">إدارة الميزانيات</h2>
-        <div className="flex gap-3">
-          <Button className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            إنشاء ميزانية جديدة
-          </Button>
-        </div>
+        <h3 className="text-large font-semibold text-black font-arabic mx-[30px]">إدارة الميزانيات</h3>
+        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2">
+          <Plus className="w-4 h-4" />
+          إنشاء ميزانية جديدة
+        </button>
       </div>
 
       {/* قائمة الميزانيات */}
@@ -135,123 +133,129 @@ export const BudgetManagementTab: React.FC = () => {
           const percentage = (budget.spent / budget.totalBudget) * 100;
           
           return (
-            <BaseCard key={budget.id} className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
+            <div key={budget.id} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 cursor-pointer hover:shadow-lg transition-shadow">
               <div onClick={() => handleBudgetClick(budget.id)}>
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-800 font-arabic mb-2">{budget.name}</h3>
+                    <h3 className="text-sm font-bold text-black font-arabic mb-2">{budget.name}</h3>
                     <div className="flex items-center gap-2">
-                      <Badge variant={getStatusBadgeVariant(budget.status)}>
+                      <div className={`px-3 py-1 rounded-full text-xs font-normal ${getStatusBadgeColor(budget.status)}`}>
                         {budget.status === 'active' ? 'نشط' : budget.status === 'completed' ? 'مكتمل' : 'تجاوز الميزانية'}
-                      </Badge>
-                      <span className="text-sm text-gray-600">
+                      </div>
+                      <span className="text-sm text-gray-400">
                         {budget.type === 'project' ? 'مشروع' : budget.type === 'department' ? 'قسم' : 'عام'}
                       </span>
                     </div>
                   </div>
                   <div className="text-left">
-                    <div className="text-sm text-gray-600">المتبقي</div>
-                    <div className="font-bold text-lg">{budget.remaining.toLocaleString()} ريال</div>
+                    <div className="text-sm text-gray-400">المتبقي</div>
+                    <div className="font-bold text-lg text-black">{budget.remaining.toLocaleString()} ريال</div>
                   </div>
                 </div>
 
                 <div className="mb-4">
                   <div className="flex justify-between text-sm mb-2">
-                    <span>المنفق: {budget.spent.toLocaleString()} ريال</span>
-                    <span>الإجمالي: {budget.totalBudget.toLocaleString()} ريال</span>
+                    <span className="text-black">المنفق: {budget.spent.toLocaleString()} ريال</span>
+                    <span className="text-black">الإجمالي: {budget.totalBudget.toLocaleString()} ريال</span>
                   </div>
-                  <Progress 
-                    value={percentage} 
-                    className="h-3"
-                    indicatorClassName={getBudgetStatusColor(budget.status, percentage)}
-                  />
-                  <div className="text-right text-sm text-gray-600 mt-1">{percentage.toFixed(1)}%</div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div 
+                      className={`h-3 rounded-full ${getBudgetStatusColor(budget.status, percentage)}`}
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                  <div className="text-right text-sm text-gray-400 mt-1">{percentage.toFixed(1)}%</div>
                 </div>
               </div>
 
               {selectedBudget === budget.id && (
-                <div className="mt-4 pt-4 border-t">
-                  <h4 className="font-bold text-gray-800 mb-3 font-arabic">تفاصيل الفئات</h4>
+                <div className="mt-4 pt-4 border-t border-black/10">
+                  <h4 className="font-bold text-black mb-3 font-arabic">تفاصيل الفئات</h4>
                   <div className="space-y-3">
                     {budget.categories.map((category, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div key={index} className="flex items-center justify-between p-3 bg-transparent border border-black/10 rounded-3xl">
                         <div className="flex-1">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="font-medium font-arabic">{category.name}</span>
-                            <span className="text-sm text-gray-600">{category.percentage}%</span>
+                            <span className="font-medium font-arabic text-black">{category.name}</span>
+                            <span className="text-sm text-gray-400">{category.percentage}%</span>
                           </div>
-                          <Progress 
-                            value={category.percentage} 
-                            className="h-2"
-                            indicatorClassName={category.percentage > 90 ? 'bg-red-500' : 'bg-blue-500'}
-                          />
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                              className={`h-2 rounded-full ${category.percentage > 90 ? 'bg-[#f1b5b9]' : 'bg-[#a4e2f6]'}`}
+                              style={{ width: `${category.percentage}%` }}
+                            ></div>
+                          </div>
                         </div>
                         <div className="text-left ml-4">
-                          <div className="text-sm text-gray-600">المنفق</div>
-                          <div className="font-medium">{category.spent.toLocaleString()}</div>
+                          <div className="text-sm text-gray-400">المنفق</div>
+                          <div className="font-medium text-black">{category.spent.toLocaleString()}</div>
                         </div>
                       </div>
                     ))}
                   </div>
                   
                   <div className="flex gap-2 mt-4 justify-end">
-                    <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <button className="bg-transparent border border-black text-black px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
                       <Edit className="h-4 w-4" />
                       تعديل
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex items-center gap-2 text-red-600">
+                    </button>
+                    <button className="bg-transparent border border-black text-black px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
                       <Trash2 className="h-4 w-4" />
                       حذف
-                    </Button>
+                    </button>
                   </div>
                 </div>
               )}
-            </BaseCard>
+            </div>
           );
         })}
       </div>
 
       {/* السيناريوهات المالية */}
-      <BaseCard className="p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-4 font-arabic">سيناريوهات التخطيط المالي</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {scenarios.map((scenario, index) => (
-            <div
-              key={index}
-              className={`p-4 rounded-lg cursor-pointer transition-all ${
-                activeScenario === scenario.type 
-                  ? 'bg-blue-100 border-2 border-blue-500' 
-                  : 'bg-gray-50 hover:bg-gray-100'
-              }`}
-              onClick={() => setActiveScenario(scenario.type)}
-            >
-              <div className="flex items-center gap-2 mb-3">
-                {scenario.type === 'optimistic' && <TrendingUp className="h-5 w-5 text-green-500" />}
-                {scenario.type === 'realistic' && <CheckCircle className="h-5 w-5 text-blue-500" />}
-                {scenario.type === 'pessimistic' && <AlertCircle className="h-5 w-5 text-orange-500" />}
-                <h4 className="font-bold font-arabic">{scenario.name}</h4>
-              </div>
-              
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>الإيرادات المتوقعة:</span>
-                  <span className="font-medium">{(scenario.projectedRevenue / 1000000).toFixed(1)}م</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>المصروفات المتوقعة:</span>
-                  <span className="font-medium">{(scenario.projectedExpenses / 1000000).toFixed(1)}م</span>
-                </div>
-                <div className="flex justify-between font-bold">
-                  <span>هامش الربح:</span>
-                  <span className={`${scenario.profitMargin > 20 ? 'text-green-600' : scenario.profitMargin > 15 ? 'text-orange-600' : 'text-red-600'}`}>
-                    {scenario.profitMargin}%
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
+      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+        <div className="px-0 pt-0 mb-6">
+          <h3 className="text-large font-semibold text-black font-arabic">سيناريوهات التخطيط المالي</h3>
         </div>
-      </BaseCard>
+        <div className="px-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {scenarios.map((scenario, index) => (
+              <div
+                key={index}
+                className={`p-4 rounded-3xl cursor-pointer transition-all ${
+                  activeScenario === scenario.type 
+                    ? 'bg-[#a4e2f6] border-2 border-black' 
+                    : 'bg-transparent border border-black/10 hover:bg-gray-50'
+                }`}
+                onClick={() => setActiveScenario(scenario.type)}
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  {scenario.type === 'optimistic' && <TrendingUp className="h-5 w-5 text-black" />}
+                  {scenario.type === 'realistic' && <CheckCircle className="h-5 w-5 text-black" />}
+                  {scenario.type === 'pessimistic' && <AlertCircle className="h-5 w-5 text-black" />}
+                  <h4 className="font-bold font-arabic text-black">{scenario.name}</h4>
+                </div>
+                
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-black">الإيرادات المتوقعة:</span>
+                    <span className="font-medium text-black">{(scenario.projectedRevenue / 1000000).toFixed(1)}م</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-black">المصروفات المتوقعة:</span>
+                    <span className="font-medium text-black">{(scenario.projectedExpenses / 1000000).toFixed(1)}م</span>
+                  </div>
+                  <div className="flex justify-between font-bold">
+                    <span className="text-black">هامش الربح:</span>
+                    <span className="text-black">
+                      {scenario.profitMargin}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

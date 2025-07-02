@@ -29,7 +29,6 @@ interface Payment {
 
 export const PaymentsInvoicesTab: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'invoices' | 'payments'>('invoices');
-  const [selectedInvoice, setSelectedInvoice] = useState<string | null>(null);
 
   const invoices: Invoice[] = [
     {
@@ -89,14 +88,14 @@ export const PaymentsInvoicesTab: React.FC = () => {
     switch (status) {
       case 'paid':
       case 'completed':
-        return 'bg-green-500';
+        return 'bg-[#bdeed3] text-black';
       case 'pending':
-        return 'bg-yellow-500';
+        return 'bg-[#fbe2aa] text-black';
       case 'overdue':
       case 'failed':
-        return 'bg-red-500';
+        return 'bg-[#f1b5b9] text-black';
       default:
-        return 'bg-gray-500';
+        return 'bg-[#d9d2fd] text-black';
     }
   };
 
@@ -119,52 +118,52 @@ export const PaymentsInvoicesTab: React.FC = () => {
   const paidAmount = invoices.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <BaseCard variant="glass" size="sm" className="text-center">
+        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 text-center">
           <div className="flex items-center justify-center mb-2">
-            <FileText className="h-6 w-6 text-blue-600" />
+            <FileText className="h-6 w-6 text-black" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{totalInvoices}</h3>
-          <p className="text-sm text-gray-600 font-arabic">إجمالي الفواتير</p>
-        </BaseCard>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">{totalInvoices}</h3>
+          <p className="text-sm font-normal text-black font-arabic">إجمالي الفواتير</p>
+        </div>
 
-        <BaseCard variant="glass" size="sm" className="text-center">
+        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 text-center">
           <div className="flex items-center justify-center mb-2">
-            <CheckCircle className="h-6 w-6 text-green-600" />
+            <CheckCircle className="h-6 w-6 text-black" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{paidInvoices}</h3>
-          <p className="text-sm text-gray-600 font-arabic">فواتير مدفوعة</p>
-        </BaseCard>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">{paidInvoices}</h3>
+          <p className="text-sm font-normal text-black font-arabic">فواتير مدفوعة</p>
+        </div>
 
-        <BaseCard variant="glass" size="sm" className="text-center">
+        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 text-center">
           <div className="flex items-center justify-center mb-2">
-            <AlertCircle className="h-6 w-6 text-red-600" />
+            <AlertCircle className="h-6 w-6 text-black" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{overdueInvoices}</h3>
-          <p className="text-sm text-gray-600 font-arabic">فواتير متأخرة</p>
-        </BaseCard>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">{overdueInvoices}</h3>
+          <p className="text-sm font-normal text-black font-arabic">فواتير متأخرة</p>
+        </div>
 
-        <BaseCard variant="glass" size="sm" className="text-center">
+        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 text-center">
           <div className="flex items-center justify-center mb-2">
-            <DollarSign className="h-6 w-6 text-purple-600" />
+            <DollarSign className="h-6 w-6 text-black" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{((paidAmount / totalAmount) * 100).toFixed(0)}%</h3>
-          <p className="text-sm text-gray-600 font-arabic">نسبة التحصيل</p>
-        </BaseCard>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">{((paidAmount / totalAmount) * 100).toFixed(0)}%</h3>
+          <p className="text-sm font-normal text-black font-arabic">نسبة التحصيل</p>
+        </div>
       </div>
 
       {/* تبويبات فرعية */}
-      <div className="flex gap-4 border-b">
+      <div className="flex gap-4 border-b border-black/10">
         <button 
-          className={`pb-2 font-arabic ${activeTab === 'invoices' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'}`}
+          className={`pb-2 font-arabic ${activeTab === 'invoices' ? 'border-b-2 border-black text-black' : 'text-gray-400'}`}
           onClick={() => setActiveTab('invoices')}
         >
           الفواتير
         </button>
         <button 
-          className={`pb-2 font-arabic ${activeTab === 'payments' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'}`}
+          className={`pb-2 font-arabic ${activeTab === 'payments' ? 'border-b-2 border-black text-black' : 'text-gray-400'}`}
           onClick={() => setActiveTab('payments')}
         >
           المدفوعات
@@ -175,28 +174,28 @@ export const PaymentsInvoicesTab: React.FC = () => {
       {activeTab === 'invoices' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">قائمة الفواتير</h3>
-            <Button className="font-arabic">إنشاء فاتورة جديدة</Button>
+            <h3 className="text-large font-semibold text-black font-arabic">قائمة الفواتير</h3>
+            <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium font-arabic">إنشاء فاتورة جديدة</button>
           </div>
 
           {invoices.map((invoice) => (
-            <BaseCard key={invoice.id} className="p-6">
+            <div key={invoice.id} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h4 className="text-lg font-bold text-gray-800 font-arabic mb-1">{invoice.number}</h4>
-                  <p className="text-gray-600 font-arabic">{invoice.client}</p>
-                  <p className="text-sm text-gray-500 font-arabic">{invoice.description}</p>
+                  <h4 className="text-sm font-bold text-black font-arabic mb-1">{invoice.number}</h4>
+                  <p className="text-sm font-normal text-black font-arabic">{invoice.client}</p>
+                  <p className="text-sm font-normal text-gray-400 font-arabic">{invoice.description}</p>
                 </div>
                 <div className="text-left">
-                  <div className="text-2xl font-bold text-gray-800 mb-1">{invoice.amount.toLocaleString()} ريال</div>
-                  <Badge className={`${getStatusColor(invoice.status)} text-white`}>
+                  <div className="text-2xl font-bold text-black mb-1">{invoice.amount.toLocaleString()} ريال</div>
+                  <div className={`px-3 py-1 rounded-full text-xs font-normal ${getStatusColor(invoice.status)}`}>
                     {getStatusText(invoice.status)}
-                  </Badge>
+                  </div>
                 </div>
               </div>
 
               <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-400">
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4" />
                     <span>تاريخ الاستحقاق: {invoice.dueDate}</span>
@@ -208,21 +207,21 @@ export const PaymentsInvoicesTab: React.FC = () => {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <button className="bg-transparent border border-black text-black px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
                     <Eye className="h-4 w-4" />
                     عرض
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  </button>
+                  <button className="bg-transparent border border-black text-black px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
                     <Edit className="h-4 w-4" />
                     تحرير
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  </button>
+                  <button className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
                     <Download className="h-4 w-4" />
                     تحميل
-                  </Button>
+                  </button>
                 </div>
               </div>
-            </BaseCard>
+            </div>
           ))}
         </div>
       )}
@@ -230,71 +229,76 @@ export const PaymentsInvoicesTab: React.FC = () => {
       {activeTab === 'payments' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">سجل المدفوعات</h3>
-            <Button className="font-arabic">تسجيل دفعة جديدة</Button>
+            <h3 className="text-large font-semibold text-black font-arabic">سجل المدفوعات</h3>
+            <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium font-arabic">تسجيل دفعة جديدة</button>
           </div>
 
           {payments.map((payment) => {
             const relatedInvoice = invoices.find(inv => inv.id === payment.invoiceId);
             
             return (
-              <BaseCard key={payment.id} className="p-6">
+              <div key={payment.id} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="text-lg font-bold text-gray-800 font-arabic mb-1">
+                    <h4 className="text-sm font-bold text-black font-arabic mb-1">
                       {payment.amount.toLocaleString()} ريال
                     </h4>
-                    <p className="text-gray-600 font-arabic">
+                    <p className="text-sm font-normal text-black font-arabic">
                       فاتورة: {relatedInvoice?.number || 'غير محدد'}
                     </p>
-                    <p className="text-sm text-gray-500">العميل: {relatedInvoice?.client}</p>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                    <p className="text-sm font-normal text-gray-400">العميل: {relatedInvoice?.client}</p>
+                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
                       <span>طريقة الدفع: {payment.method}</span>
                       <span>المرجع: {payment.reference}</span>
                       <span>التاريخ: {payment.date}</span>
                     </div>
                   </div>
                   
-                  <Badge className={`${getStatusColor(payment.status)} text-white`}>
+                  <div className={`px-3 py-1 rounded-full text-xs font-normal ${getStatusColor(payment.status)}`}>
                     {getStatusText(payment.status)}
-                  </Badge>
+                  </div>
                 </div>
-              </BaseCard>
+              </div>
             );
           })}
         </div>
       )}
 
       {/* تقرير التحصيلات */}
-      <BaseCard className="p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-4 font-arabic">تقرير التحصيلات</h3>
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="font-arabic">إجمالي المبلغ المستحق</span>
-            <span className="font-bold text-lg">{totalAmount.toLocaleString()} ريال</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-arabic">المبلغ المحصل</span>
-            <span className="font-bold text-lg text-green-600">{paidAmount.toLocaleString()} ريال</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-arabic">المبلغ المتبقي</span>
-            <span className="font-bold text-lg text-red-600">{(totalAmount - paidAmount).toLocaleString()} ريال</span>
-          </div>
-          
-          <div className="mt-4">
-            <div className="flex justify-between text-sm mb-2">
-              <span>نسبة التحصيل</span>
-              <span>{((paidAmount / totalAmount) * 100).toFixed(1)}%</span>
+      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+        <div className="px-0 pt-0 mb-6">
+          <h3 className="text-large font-semibold text-black font-arabic">تقرير التحصيلات</h3>
+        </div>
+        <div className="px-0">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="font-arabic text-black">إجمالي المبلغ المستحق</span>
+              <span className="font-bold text-lg text-black">{totalAmount.toLocaleString()} ريال</span>
             </div>
-            <Progress 
-              value={(paidAmount / totalAmount) * 100} 
-              className="h-3"
-              indicatorClassName="bg-green-500"
-            />
+            <div className="flex justify-between items-center">
+              <span className="font-arabic text-black">المبلغ المحصل</span>
+              <span className="font-bold text-lg text-black">{paidAmount.toLocaleString()} ريال</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="font-arabic text-black">المبلغ المتبقي</span>
+              <span className="font-bold text-lg text-black">{(totalAmount - paidAmount).toLocaleString()} ريال</span>
+            </div>
+            
+            <div className="mt-4">
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-black">نسبة التحصيل</span>
+                <span className="text-black">{((paidAmount / totalAmount) * 100).toFixed(1)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-[#bdeed3] h-3 rounded-full"
+                  style={{ width: `${(paidAmount / totalAmount) * 100}%` }}
+                ></div>
+              </div>
+            </div>
           </div>
         </div>
-      </BaseCard>
+      </div>
     </div>
   );
 };
