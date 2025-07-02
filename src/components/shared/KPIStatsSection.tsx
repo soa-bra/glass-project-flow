@@ -48,10 +48,6 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
     }
   };
 
-  const getTrendColor = (trend?: 'up' | 'down' | 'neutral') => {
-    return 'border-black hover:bg-transparent';
-  };
-
   return (
     <div className={`grid grid-cols-4 gap-6 mb-6 my-0 px-0 mx-[5px] ${className}`}>
       {stats.map((stat, index) => (
@@ -72,11 +68,11 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
             {/* مؤشر الاتجاه - سهم مستقيم يتحرك مع أو عكس عقارب الساعة */}
             {stat.trend && (
               <div 
-                className={`absolute left-0 top-1/2 transform -translate-y-1/2 w-[50px] h-[50px] rounded-full border-2 ${getTrendColor(stat.trend)} bg-white flex items-center justify-center transition-all duration-300 group`}
-                style={{ marginRight: '20px' }}
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 w-[40px] h-[40px] rounded-full border-2 border-black bg-transparent flex items-center justify-center transition-all duration-300 group"
+                style={{ marginRight: '10px' }}
               >
                 <ArrowUp 
-                  className={`w-6 h-6 text-black transition-transform duration-300 ${getTrendRotation(stat.trend)}`}
+                  className={`w-5 h-5 text-black transition-transform duration-300 ${getTrendRotation(stat.trend)}`}
                 />
                 {stat.trendValue && (
                   <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-arabic text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
