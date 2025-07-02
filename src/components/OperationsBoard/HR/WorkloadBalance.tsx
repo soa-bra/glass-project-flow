@@ -1,0 +1,1 @@
+export const WorkloadBalance = () => <div>قيد التطوير</div>;

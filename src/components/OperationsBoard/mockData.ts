@@ -33,5 +33,20 @@ export const getMockData = () => ({
     totalBudget: 3090000,
     totalSpent: 3090000,
     forecastAccuracy: 92
+  },
+  projects: {
+    criticalProjects: [],
+    delayedMilestones: [],
+    summary: { totalProjects: 10, onTrack: 7, atRisk: 2, delayed: 1, completionRate: 75 },
+    aiAdvice: []
+  },
+  marketing: {
+    roasData: [],
+    campaigns: [],
+    attribution: [],
+    kpis: [],
+    totalROAS: 3.2,
+    totalSpent: 150000,
+    totalRevenue: 480000
   }
 });

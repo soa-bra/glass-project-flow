@@ -1,15 +1,42 @@
 
 import React from 'react';
-import { TemplatesList } from './Reports/TemplatesList';
-import { CustomReportForm } from './Reports/CustomReportForm';
+import { ReportLibrary } from './Reports/ReportLibrary';
+import { CustomReportWizard } from './Reports/CustomReportWizard';
+import { ReportStats } from './Reports/ReportStats';
+import { AIReportGenerator } from './Reports/AIReportGenerator';
 
 interface ReportTemplate {
-  id: number;
+  id: string;
   name: string;
+  category: string;
+  description: string;
+  format: 'PDF' | 'PowerBI' | 'Excel' | 'Dashboard';
+  lastUpdated: string;
+  downloadCount: number;
+  tags: string[];
+}
+
+interface ReportStatistics {
+  totalReports: number;
+  monthlyDownloads: number;
+  customReports: number;
+  scheduledReports: number;
+  popularCategories: { category: string; count: number }[];
+}
+
+interface AIReportSuggestion {
+  id: string;
+  title: string;
+  description: string;
+  confidence: number;
+  dataPoints: string[];
+  estimatedTime: string;
 }
 
 export interface ReportsData {
   templates: ReportTemplate[];
+  statistics: ReportStatistics;
+  aiSuggestions: AIReportSuggestion[];
 }
 
 interface ReportsTabProps {
@@ -23,14 +50,23 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ data, loading }) => {
   }
 
   return (
-    <div className="space-y-6 h-full">
+    <div className="space-y-6 h-full overflow-auto">
       <div className="text-right">
         <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">التقارير</h2>
-        <p className="text-gray-600 text-sm">تقارير مفصلة وإحصائيات</p>
+        <p className="text-gray-600 text-sm">إخراج تقارير تنفيذية أو تفصيلية عند الطلب</p>
       </div>
       
-      <TemplatesList templates={data.templates} />
-      <CustomReportForm />
+      {/* إحصائيات التقارير */}
+      <ReportStats statistics={data.statistics} />
+      
+      {/* الأدوات الأساسية */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <ReportLibrary templates={data.templates} />
+        <CustomReportWizard />
+      </div>
+      
+      {/* مولد التقارير الذكي */}
+      <AIReportGenerator suggestions={data.aiSuggestions} />
     </div>
   );
 };

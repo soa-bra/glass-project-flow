@@ -3,6 +3,8 @@ import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
 import { FinanceTab } from './FinanceTab';
+import { ProjectsTab } from './ProjectsTab';
+import { MarketingTab } from './MarketingTab';
 import LegalTab from './LegalTab';
 import HRTab from './HRTab';
 import { ClientsTab } from './ClientsTab';
@@ -33,27 +35,45 @@ export const TabContentWrapper = ({
       </TabsContent>
 
       <TabsContent value="projects" className="w-full h-full overflow-auto p-4 m-0">
-        <div className="text-center py-8 text-gray-500 font-arabic">
-          محتوى إدارة المشاريع قيد التطوير
-        </div>
+        <ProjectsTab data={tabData.projects} loading={loading} />
       </TabsContent>
 
       <TabsContent value="marketing" className="w-full h-full overflow-auto p-4 m-0">
-        <div className="text-center py-8 text-gray-500 font-arabic">
-          محتوى التسويق قيد التطوير
-        </div>
+        <MarketingTab data={tabData.marketing || { 
+          roasData: [], 
+          campaigns: [], 
+          attribution: [], 
+          kpis: [], 
+          totalROAS: 0, 
+          totalSpent: 0, 
+          totalRevenue: 0 
+        }} loading={loading} />
       </TabsContent>
       
       <TabsContent value="hr" className="w-full h-full overflow-auto p-4 m-0">
-        <HRTab data={tabData.hr || { stats: { active: 0, onLeave: 0, vacancies: 0 }, distribution: [] }} loading={loading} />
+        <HRTab data={tabData.hr || { 
+          resourceUtilization: [], 
+          skillGaps: [], 
+          stats: { totalEmployees: 0, activeProjects: 0, avgUtilization: 0, skillGaps: 0, performanceScore: 0, retentionRate: 0 }, 
+          workloadBalance: [] 
+        }} loading={loading} />
       </TabsContent>
       
       <TabsContent value="clients" className="w-full h-full overflow-auto p-4 m-0">
-        <ClientsTab data={tabData.clients || { active: [], nps: [] }} loading={loading} />
+        <ClientsTab data={tabData.clients || { 
+          opportunityFunnel: [], 
+          npsScores: [], 
+          portfolioHealth: { totalClients: 0, activeContracts: 0, renewalRate: 0, churnRate: 0, avgContractValue: 0, clientSatisfaction: 0 }, 
+          sentimentData: [] 
+        }} loading={loading} />
       </TabsContent>
       
       <TabsContent value="reports" className="w-full h-full overflow-auto p-4 m-0">
-        <ReportsTab data={tabData.reports || { templates: [] }} loading={loading} />
+        <ReportsTab data={tabData.reports || { 
+          templates: [], 
+          statistics: { totalReports: 0, monthlyDownloads: 0, customReports: 0, scheduledReports: 0, popularCategories: [] }, 
+          aiSuggestions: [] 
+        }} loading={loading} />
       </TabsContent>
     </>;
 };
