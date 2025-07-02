@@ -3,22 +3,10 @@ import Sidebar from '@/components/Sidebar';
 import { useState } from 'react';
 import ProjectWorkspace from './ProjectWorkspace';
 import DepartmentsWorkspace from './DepartmentsWorkspace';
-import ArchiveWorkspace from './ArchiveWorkspace';
 
 const MainContent = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [activeSection, setActiveSection] = useState('home'); // 'home', 'departments', 'archive', etc.
-
-  const renderWorkspace = () => {
-    switch (activeSection) {
-      case 'departments':
-        return <DepartmentsWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
-      case 'archive':
-        return <ArchiveWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
-      default:
-        return <ProjectWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
-    }
-  };
+  const [activeSection, setActiveSection] = useState('home'); // 'home', 'departments', etc.
 
   return (
     <div className="flex h-screen pt-[var(--header-height)] overflow-hidden px-[22px]">
@@ -33,7 +21,11 @@ const MainContent = () => {
         />
       </div>
 
-      {renderWorkspace()}
+      {activeSection === 'departments' ? (
+        <DepartmentsWorkspace isSidebarCollapsed={isSidebarCollapsed} />
+      ) : (
+        <ProjectWorkspace isSidebarCollapsed={isSidebarCollapsed} />
+      )}
     </div>
   );
 };
