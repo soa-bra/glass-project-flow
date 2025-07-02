@@ -65,13 +65,13 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
             {stat.unit && (
               <div className="text-xs text-black font-arabic font-bold">{stat.unit}</div>
             )}
-            {/* مؤشر الاتجاه - سهم مستقيم يتحرك كالبوصلة بجانب النص بهامش 10 بكسل */}
+            {/* مؤشر الاتجاه - سهم مستقيم يتحرك كالبوصلة بجانب النص بهامش 30 بكسل */}
             {stat.trend && (
               <div 
-                className="ml-2.5 w-[30px] h-[30px] rounded-full border border-black bg-transparent flex items-center justify-center transition-all duration-300 group"
+                className="ml-[30px] w-[40px] h-[40px] rounded-full border border-black bg-transparent flex items-center justify-center transition-all duration-300 group"
               >
                 <ArrowUp 
-                  className={`w-4 h-4 text-black transition-transform duration-300 ${getTrendRotation(stat.trend)}`}
+                  className={`w-5 h-5 text-black transition-transform duration-300 ${getTrendRotation(stat.trend)}`}
                 />
                 {stat.trendValue && (
                   <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-arabic text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
