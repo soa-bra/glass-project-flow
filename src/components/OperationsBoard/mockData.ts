@@ -35,10 +35,27 @@ export const getMockData = () => ({
     forecastAccuracy: 92
   },
   projects: {
-    criticalProjects: [],
-    delayedMilestones: [],
+    criticalProjects: [
+      { id: 'P001', name: 'تطوير الموقع الإلكتروني', startDate: '2024-01-15', endDate: '2024-05-25', progress: 65, status: 'on-track', priority: 'high' },
+      { id: 'P002', name: 'حملة التعريف', startDate: '2024-02-01', endDate: '2024-08-11', progress: 85, status: 'on-track', priority: 'high' },
+      { id: 'P003', name: 'صفحات التواصل', startDate: '2024-01-20', endDate: '2024-03-07', progress: 42, status: 'at-risk', priority: 'medium' },
+      { id: 'P004', name: 'المؤتمرات الثقافية', startDate: '2024-03-01', endDate: '2024-07-15', progress: 78, status: 'on-track', priority: 'high' },
+      { id: 'P005', name: 'العلامة الثقافية للعميل', startDate: '2024-02-15', endDate: '2024-06-27', progress: 30, status: 'delayed', priority: 'high' },
+      { id: 'P006', name: 'تطبيق الهاتف المحمول', startDate: '2024-04-01', endDate: '2024-12-10', progress: 15, status: 'on-track', priority: 'medium' },
+      { id: 'P007', name: 'نظام إدارة المحتوى', startDate: '2024-01-10', endDate: '2024-09-03', progress: 92, status: 'delayed', priority: 'high' },
+      { id: 'P008', name: 'استراتيجية التسويق الرقمي', startDate: '2024-03-15', endDate: '2024-11-18', progress: 56, status: 'on-track', priority: 'medium' }
+    ],
+    delayedMilestones: [
+      { id: 'M001', projectName: 'نظام إدارة المحتوى', milestone: 'تطوير واجهة المستخدم', originalDate: '2024-06-15', currentDate: '2024-07-02', delayDays: 17, impact: 'high' },
+      { id: 'M002', projectName: 'العلامة الثقافية للعميل', milestone: 'البحث الثقافي الأولي', originalDate: '2024-05-20', currentDate: '2024-06-10', delayDays: 21, impact: 'medium' },
+      { id: 'M003', projectName: 'صفحات التواصل', milestone: 'تصميم المحتوى', originalDate: '2024-06-01', currentDate: '2024-06-25', delayDays: 24, impact: 'low' }
+    ],
     summary: { totalProjects: 10, onTrack: 7, atRisk: 2, delayed: 1, completionRate: 75 },
-    aiAdvice: []
+    aiAdvice: [
+      { id: 'AI001', type: 'warning', title: 'تأخير محتمل في المشروع', description: 'مشروع نظام إدارة المحتوى يواجه تأخيرات في التطوير. يُنصح بإعادة توزيع الموارد.', confidence: 85, projectId: 'P007' },
+      { id: 'AI002', type: 'suggestion', title: 'تحسين التواصل', description: 'يمكن تحسين التواصل مع العميل في مشروع العلامة الثقافية لتسريع عملية الموافقة.', confidence: 72, projectId: 'P005' },
+      { id: 'AI003', type: 'optimization', title: 'توزيع أفضل للموارد', description: 'يمكن نقل مطور من مشروع التطبيق المحمول لمساعدة فريق الموقع الإلكتروني.', confidence: 68 }
+    ]
   },
   marketing: {
     roasData: [

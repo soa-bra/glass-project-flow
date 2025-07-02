@@ -23,71 +23,90 @@ export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({ 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {/* إجمالي المشاريع */}
-      <Card>
+      <Card className="glass-enhanced rounded-[40px]">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-600 font-arabic">إجمالي المشاريع</p>
-              <p className="text-2xl font-bold text-gray-900">{summary.totalProjects}</p>
+              <p className="text-sm text-gray-600">إجمالي المشاريع</p>
+              <p className="text-2xl font-bold">{summary.totalProjects}</p>
             </div>
-            <FolderOpen className="h-8 w-8 text-blue-600" />
+            <FolderOpen className="w-8 h-8 text-primary" />
           </div>
         </CardContent>
       </Card>
 
       {/* المشاريع في المسار */}
-      <Card>
+      <Card className="glass-enhanced rounded-[40px]">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-600 font-arabic">في المسار</p>
+              <p className="text-sm text-gray-600">في المسار</p>
               <p className="text-2xl font-bold text-green-600">{summary.onTrack}</p>
-              <p className="text-xs text-gray-500">{onTrackPercentage.toFixed(1)}%</p>
             </div>
-            <TrendingUp className="h-8 w-8 text-green-600" />
+            <TrendingUp className="w-8 h-8 text-green-500" />
+          </div>
+          <div className="mt-2">
+            <Progress value={onTrackPercentage} className="h-2" />
+            <p className="text-xs text-gray-500 mt-1">{onTrackPercentage.toFixed(0)}% من المشاريع</p>
           </div>
         </CardContent>
       </Card>
 
       {/* المشاريع في خطر */}
-      <Card>
+      <Card className="glass-enhanced rounded-[40px]">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-600 font-arabic">في خطر</p>
+              <p className="text-sm text-gray-600">في خطر</p>
               <p className="text-2xl font-bold text-yellow-600">{summary.atRisk}</p>
-              <p className="text-xs text-gray-500">{atRiskPercentage.toFixed(1)}%</p>
             </div>
-            <Users className="h-8 w-8 text-yellow-600" />
+            <Users className="w-8 h-8 text-yellow-500" />
+          </div>
+          <div className="mt-2">
+            <Progress value={atRiskPercentage} className="h-2" />
+            <p className="text-xs text-gray-500 mt-1">{atRiskPercentage.toFixed(0)}% من المشاريع</p>
           </div>
         </CardContent>
       </Card>
 
       {/* المشاريع المتأخرة */}
-      <Card>
+      <Card className="glass-enhanced rounded-[40px]">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-600 font-arabic">متأخرة</p>
+              <p className="text-sm text-gray-600">متأخرة</p>
               <p className="text-2xl font-bold text-red-600">{summary.delayed}</p>
-              <p className="text-xs text-gray-500">{delayedPercentage.toFixed(1)}%</p>
             </div>
-            <TrendingDown className="h-8 w-8 text-red-600" />
+            <TrendingDown className="w-8 h-8 text-red-500" />
+          </div>
+          <div className="mt-2">
+            <Progress value={delayedPercentage} className="h-2" />
+            <p className="text-xs text-gray-500 mt-1">{delayedPercentage.toFixed(0)}% من المشاريع</p>
           </div>
         </CardContent>
       </Card>
 
       {/* معدل الإنجاز الإجمالي */}
-      <Card className="col-span-full">
+      <Card className="glass-enhanced rounded-[40px] col-span-full">
         <CardContent className="p-4">
           <div className="text-right mb-4">
             <h3 className="text-lg font-semibold text-gray-800 font-arabic">معدل الإنجاز الإجمالي</h3>
-            <p className="text-3xl font-bold text-blue-600">{summary.completionRate}%</p>
+            <p className="text-3xl font-bold text-primary">{summary.completionRate}%</p>
           </div>
           <Progress value={summary.completionRate} className="h-3" />
-          <div className="flex justify-between text-sm text-gray-500 mt-2 font-arabic">
-            <span>مكتمل</span>
-            <span>قيد التطوير</span>
+          <div className="grid grid-cols-3 gap-4 text-center text-sm mt-4">
+            <div>
+              <p className="text-green-600 font-bold">{summary.onTrack}</p>
+              <p className="text-gray-600">في المسار</p>
+            </div>
+            <div>
+              <p className="text-yellow-600 font-bold">{summary.atRisk}</p>
+              <p className="text-gray-600">في خطر</p>
+            </div>
+            <div>
+              <p className="text-red-600 font-bold">{summary.delayed}</p>
+              <p className="text-gray-600">متأخر</p>
+            </div>
           </div>
         </CardContent>
       </Card>

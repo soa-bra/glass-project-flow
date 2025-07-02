@@ -41,7 +41,7 @@ export const MiniGanttChart: React.FC<MiniGanttChartProps> = ({ criticalProjects
   const formatProgress = (progress: number) => `${progress}%`;
 
   return (
-    <Card className="w-full">
+    <Card className="glass-enhanced rounded-[40px]">
       <CardHeader>
         <CardTitle className="text-right font-arabic text-lg">
           أعلى 10 مشاريع حرجة (Gantt مصغر)
@@ -80,7 +80,7 @@ export const MiniGanttChart: React.FC<MiniGanttChartProps> = ({ criticalProjects
               />
               <Bar 
                 dataKey="progress" 
-                fill="var(--color-progress)"
+                fill="hsl(var(--primary))"
                 radius={[0, 4, 4, 0]}
               />
             </BarChart>
