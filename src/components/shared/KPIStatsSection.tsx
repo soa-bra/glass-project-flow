@@ -1,14 +1,11 @@
 
 import React from 'react';
-import { ArrowUp } from 'lucide-react';
 
 interface KPIStat {
   title: string;
   value: string | number;
   unit?: string;
   description?: string;
-  trend?: 'up' | 'down' | 'neutral'; // إضافة خاصية الاتجاه
-  trendValue?: string; // قيمة التغيير (مثل +12% أو -5%)
 }
 
 interface KPIStatsSectionProps {
@@ -35,19 +32,6 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
     );
   }
 
-  const getTrendRotation = (trend?: 'up' | 'down' | 'neutral') => {
-    switch (trend) {
-      case 'up':
-        return 'rotate-0'; // الساعة 12 (لأعلى)
-      case 'down':
-        return 'rotate-180'; // الساعة 6 (لأسفل)
-      case 'neutral':
-        return 'rotate-[270deg]'; // الساعة 9 (يسار)
-      default:
-        return 'rotate-0';
-    }
-  };
-
   return (
     <div className={`grid grid-cols-4 gap-6 mb-6 my-0 px-0 mx-[5px] ${className}`}>
       {stats.map((stat, index) => (
@@ -55,7 +39,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
           <div className="mb-2">
             <span className="text-sm text-black font-arabic font-medium">{stat.title}</span>
           </div>
-          <div className="flex items-baseline gap-2 mb-1 px-0 mx-0 relative">
+          <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
             <div className="text-5xl font-normal text-gray-900 font-arabic">
               {typeof stat.value === 'number' ? 
                 String(stat.value).padStart(2, '0') : 
@@ -64,21 +48,6 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
             </div>
             {stat.unit && (
               <div className="text-xs text-black font-arabic font-bold">{stat.unit}</div>
-            )}
-            {/* مؤشر الاتجاه - سهم مستقيم يتحرك كالبوصلة بجانب النص بهامش 30 بكسل */}
-            {stat.trend && (
-              <div 
-                className="ml-[30px] w-[40px] h-[40px] rounded-full border border-black bg-transparent flex items-center justify-center transition-all duration-300 group"
-              >
-                <ArrowUp 
-                  className={`w-5 h-5 text-black transition-transform duration-300 ${getTrendRotation(stat.trend)}`}
-                />
-                {stat.trendValue && (
-                  <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-arabic text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {stat.trendValue}
-                  </div>
-                )}
-              </div>
             )}
           </div>
           {stat.description && (
