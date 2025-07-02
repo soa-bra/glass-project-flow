@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { ReportLibrary } from './Reports/ReportLibrary';
-import { CustomReportWizard, ReportStats } from './Reports/CustomReportWizard';
+import { ReportLibrary, ReportStats } from './Reports/ReportLibrary';
+import { CustomReportWizard } from './Reports/CustomReportWizard';
 import { AIReportGenerator } from './Reports/AIReportGenerator';
 
 interface ReportTemplate {
