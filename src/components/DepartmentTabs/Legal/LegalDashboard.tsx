@@ -27,7 +27,7 @@ export const LegalDashboard: React.FC = () => {
     <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
       <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
+        <h2 className="text-large font-semibold text-black font-arabic whitespace-nowrap px-[24px]">
           إدارة الأحوال القانونية
         </h2>
         <div className="w-fit">
