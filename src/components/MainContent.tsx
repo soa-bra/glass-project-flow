@@ -5,10 +5,11 @@ import ProjectWorkspace from './ProjectWorkspace';
 import DepartmentsWorkspace from './DepartmentsWorkspace';
 import ArchiveWorkspace from './ArchiveWorkspace';
 import SettingsWorkspace from './SettingsWorkspace';
+import { CollaborativePlanningWorkspace } from './CollaborativePlanning/CollaborativePlanningWorkspace';
 
 const MainContent = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [activeSection, setActiveSection] = useState('home'); // 'home', 'departments', 'archive', etc.
+  const [activeSection, setActiveSection] = useState('home'); // 'home', 'departments', 'archive', 'planning', etc.
 
   const renderWorkspace = () => {
     switch (activeSection) {
@@ -18,6 +19,8 @@ const MainContent = () => {
         return <ArchiveWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
       case 'settings':
         return <SettingsWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
+      case 'planning':
+        return <CollaborativePlanningWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
       default:
         return <ProjectWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
     }
