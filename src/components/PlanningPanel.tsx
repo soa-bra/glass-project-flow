@@ -1,19 +1,17 @@
 import React from 'react';
-
 interface PlanningPanelProps {
   selectedCategory: string | null;
   isMainSidebarCollapsed: boolean;
   isPlanningSidebarCollapsed: boolean;
 }
-
-const PlanningPanelLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return (
-    <div 
-      style={{
-        background: 'var(--backgrounds-admin-ops-board-bg)'
-      }} 
-      className="h-full rounded-3xl overflow-hidden"
-    >
+const PlanningPanelLayout: React.FC<{
+  children: React.ReactNode;
+}> = ({
+  children
+}) => {
+  return <div style={{
+    background: 'var(--backgrounds-admin-ops-board-bg)'
+  }} className="h-full rounded-3xl overflow-hidden">
       <div className="h-full flex flex-col">
         <div className="flex-1 overflow-auto px-0 mx-0 bg-[#d9e7ed]">
           <div className="h-full mx-6 my-6 rounded-2xl overflow-hidden bg-transparent">
@@ -21,10 +19,8 @@ const PlanningPanelLayout: React.FC<{ children: React.ReactNode }> = ({ children
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 const PlanningPanel: React.FC<PlanningPanelProps> = ({
   selectedCategory,
   isMainSidebarCollapsed,
@@ -32,35 +28,13 @@ const PlanningPanel: React.FC<PlanningPanelProps> = ({
 }) => {
   const renderContent = () => {
     if (!selectedCategory) {
-      return (
-        <div className="h-full flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-black mb-4">التخطيط التشاركي</h2>
-            <p className="text-lg text-gray-600 mb-8">اختر فئة من القائمة الجانبية لبدء التخطيط</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl">
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30">
-                <h3 className="text-lg font-semibold text-black mb-2">التخطيط الاستراتيجي</h3>
-                <p className="text-sm text-gray-700">وضع الخطط طويلة المدى وتحديد الأهداف الاستراتيجية</p>
-              </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30">
-                <h3 className="text-lg font-semibold text-black mb-2">تخطيط المشاريع</h3>
-                <p className="text-sm text-gray-700">إدارة وتخطيط المشاريع بشكل تشاركي</p>
-              </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30">
-                <h3 className="text-lg font-semibold text-black mb-2">تخطيط الفرق</h3>
-                <p className="text-sm text-gray-700">تنسيق العمل بين الفرق المختلفة</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
+      return;
     }
 
     // Render content based on selected category
     switch (selectedCategory) {
       case 'strategic':
-        return (
-          <div className="p-6">
+        return <div className="p-6">
             <h2 className="text-2xl font-bold text-black mb-6">التخطيط الاستراتيجي</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white/30 rounded-xl p-6">
@@ -90,11 +64,9 @@ const PlanningPanel: React.FC<PlanningPanelProps> = ({
                 </div>
               </div>
             </div>
-          </div>
-        );
+          </div>;
       case 'projects':
-        return (
-          <div className="p-6">
+        return <div className="p-6">
             <h2 className="text-2xl font-bold text-black mb-6">تخطيط المشاريع</h2>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="bg-white/30 rounded-xl p-6">
@@ -113,11 +85,9 @@ const PlanningPanel: React.FC<PlanningPanelProps> = ({
                 <p className="text-sm text-gray-600">مشروع مكتمل</p>
               </div>
             </div>
-          </div>
-        );
+          </div>;
       case 'teams':
-        return (
-          <div className="p-6">
+        return <div className="p-6">
             <h2 className="text-2xl font-bold text-black mb-6">تخطيط الفرق</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white/30 rounded-xl p-6">
@@ -147,11 +117,9 @@ const PlanningPanel: React.FC<PlanningPanelProps> = ({
                 </div>
               </div>
             </div>
-          </div>
-        );
+          </div>;
       default:
-        return (
-          <div className="p-6">
+        return <div className="p-6">
             <h2 className="text-2xl font-bold text-black mb-6">
               {selectedCategory === 'timeline' && 'الجداول الزمنية'}
               {selectedCategory === 'performance' && 'تخطيط الأداء'}
@@ -163,16 +131,11 @@ const PlanningPanel: React.FC<PlanningPanelProps> = ({
             <div className="bg-white/30 rounded-xl p-6">
               <p className="text-gray-600">محتوى هذا القسم قيد التطوير...</p>
             </div>
-          </div>
-        );
+          </div>;
     }
   };
-
-  return (
-    <PlanningPanelLayout>
+  return <PlanningPanelLayout>
       {renderContent()}
-    </PlanningPanelLayout>
-  );
+    </PlanningPanelLayout>;
 };
-
 export default PlanningPanel;
