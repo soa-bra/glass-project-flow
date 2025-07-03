@@ -1,18 +1,18 @@
 import React from 'react';
 import { GenericSettingsPanel } from './GenericSettingsPanel';
-
-// Import specialized panels here when created
-// import { ProfileSettingsPanel } from './categories/ProfileSettingsPanel';
-// import { SecuritySettingsPanel } from './categories/SecuritySettingsPanel';
+import { AccountSettingsPanel } from './categories/AccountSettingsPanel';
+import { SecuritySettingsPanel } from './categories/SecuritySettingsPanel';
+import { IntegrationsSettingsPanel } from './categories/IntegrationsSettingsPanel';
 
 export class CategoryPanelFactory {
   static getComponent(category: string): React.ComponentType<any> {
     switch (category) {
-      // Specialized panels can be added here
-      // case 'profile':
-      //   return ProfileSettingsPanel;
-      // case 'security':  
-      //   return SecuritySettingsPanel;
+      case 'account':
+        return AccountSettingsPanel;
+      case 'security':  
+        return SecuritySettingsPanel;
+      case 'integrations':
+        return IntegrationsSettingsPanel;
       
       default:
         return (props: any) => <GenericSettingsPanel category={category} {...props} />;
