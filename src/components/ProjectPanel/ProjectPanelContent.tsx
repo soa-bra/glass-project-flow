@@ -3,6 +3,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Project } from "@/types/project";
+import { FinancialTab, ClientTab, TeamTab, AttachmentsTab, TemplatesTab } from "./ProjectTabs";
 
 interface ProjectPanelContentProps {
   project: Project;
@@ -41,14 +42,15 @@ export default function ProjectPanelContent({ project }: ProjectPanelContentProp
         />
       </div>
 
-      <Tabs defaultValue="dashboard" dir="rtl" className="flex flex-col flex-1 min-h-0">
+      <Tabs defaultValue="financial" dir="rtl" className="flex flex-col flex-1 min-h-0">
         {/* شريط التبويبات والإجراءات */}
         <div className="flex justify-between items-center mt-2 flex-shrink-0">
           <TabsList className="bg-transparent p-0 h-auto gap-1">
-            <TabsTrigger value="dashboard" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">لوحة التحكم</TabsTrigger>
-            <TabsTrigger value="tasks" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">قائمة المهام</TabsTrigger>
-            <TabsTrigger value="budget" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">الميزانية</TabsTrigger>
-            <TabsTrigger value="legal" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">الشؤون القانونية</TabsTrigger>
+            <TabsTrigger value="financial" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">الوضع المالي</TabsTrigger>
+            <TabsTrigger value="client" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">العميل</TabsTrigger>
+            <TabsTrigger value="team" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">الفريق</TabsTrigger>
+            <TabsTrigger value="attachments" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">المرفقات</TabsTrigger>
+            <TabsTrigger value="templates" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">القوالب</TabsTrigger>
           </TabsList>
           <div className="flex gap-2">
             <QuickActionButton>➕ إضافة مهمة</QuickActionButton>
@@ -58,60 +60,24 @@ export default function ProjectPanelContent({ project }: ProjectPanelContentProp
         </div>
 
         {/* محتوى التبويبات */}
-        <TabsContent value="dashboard" className="flex-1 mt-4 min-h-0">
-          {/* شبكة البطاقات */}
-          <div className="grid grid-cols-3 grid-rows-2 gap-4 h-full">
-            <Card className="glass-enhanced">
-              <CardHeader><CardTitle>الميزانية</CardTitle></CardHeader>
-              <CardContent><p className="text-sm text-gray-700">متبقي 15,000 ر.س من الميزانية.</p></CardContent>
-            </Card>
-            <Card className="glass-enhanced">
-              <CardHeader><CardTitle>التنبيهات</CardTitle></CardHeader>
-              <CardContent><p className="text-sm text-gray-700">لا توجد تنبيهات جديدة.</p></CardContent>
-            </Card>
-            <Card className="glass-enhanced row-span-2">
-              <CardHeader><CardTitle>قائمة المهام</CardTitle></CardHeader>
-              <CardContent><p className="text-sm text-gray-700">عرض لآخر 5 مهام وأكثرها استعجالاً.</p></CardContent>
-            </Card>
-            <Card className="glass-enhanced">
-              <CardHeader><CardTitle>مرفقات المشروع</CardTitle></CardHeader>
-              <CardContent><p className="text-sm text-gray-700">3 ملفات مرفقة.</p></CardContent>
-            </Card>
-            <Card className="glass-enhanced">
-              <CardHeader><CardTitle>مقترح من الذكاء الاصطناعي</CardTitle></CardHeader>
-              <CardContent><p className="text-sm text-gray-700">هل تود إضافة فريق العمل؟</p></CardContent>
-            </Card>
-          </div>
+        <TabsContent value="financial" className="flex-1 mt-4 min-h-0 overflow-auto">
+          <FinancialTab data={project} />
         </TabsContent>
-        <TabsContent value="tasks" className="flex-1 mt-4 min-h-0">
-          <Card className="glass-enhanced h-full flex flex-col items-center justify-center text-center">
-            <CardHeader>
-              <CardTitle>قائمة المهام</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-base text-gray-700">هنا سيتم عرض جميع مهام المشروع.</p>
-            </CardContent>
-          </Card>
+        
+        <TabsContent value="client" className="flex-1 mt-4 min-h-0 overflow-auto">
+          <ClientTab clientData={null} />
         </TabsContent>
-        <TabsContent value="budget" className="flex-1 mt-4 min-h-0">
-          <Card className="glass-enhanced h-full flex flex-col items-center justify-center text-center">
-            <CardHeader>
-              <CardTitle>تفاصيل الميزانية</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-base text-gray-700">هنا سيتم عرض تفاصيل ميزانية المشروع.</p>
-            </CardContent>
-          </Card>
+        
+        <TabsContent value="team" className="flex-1 mt-4 min-h-0 overflow-auto">
+          <TeamTab teamData={null} />
         </TabsContent>
-        <TabsContent value="legal" className="flex-1 mt-4 min-h-0">
-          <Card className="glass-enhanced h-full flex flex-col items-center justify-center text-center">
-             <CardHeader>
-              <CardTitle>المستندات القانونية</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-base text-gray-700">هنا سيتم عرض المستندات والعقود القانونية للمشروع.</p>
-            </CardContent>
-          </Card>
+        
+        <TabsContent value="attachments" className="flex-1 mt-4 min-h-0 overflow-auto">
+          <AttachmentsTab documents={null} />
+        </TabsContent>
+        
+        <TabsContent value="templates" className="flex-1 mt-4 min-h-0 overflow-auto">
+          <TemplatesTab templates={null} />
         </TabsContent>
       </Tabs>
     </div>
