@@ -10,83 +10,124 @@ export const FinancialTab = ({ data }: any) => {
   return (
     <div className="space-y-6">
       {/* حالة الميزانية */}
-      <StatusBox title="الحالة المالية" status="success">
-        <p className="text-sm">المشروع ضمن الميزانية المحددة</p>
-      </StatusBox>
+      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-semibold text-black">الحالة المالية</h3>
+          <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
+            <span className="text-sm font-medium text-black">مستقرة</span>
+          </div>
+        </div>
+        <p className="text-sm font-medium text-black">المشروع ضمن الميزانية المحددة ويسير وفق الخطة المالية المعتمدة</p>
+      </div>
 
       {/* الإحصائيات المالية */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-green-600">المتبقي</h4>
-          <p className="text-2xl font-bold">15,000 ر.س</p>
-          <p className="text-sm text-gray-600">من إجمالي 50,000 ر.س</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">المتبقي من الميزانية</h4>
+          <p className="text-2xl font-bold text-black mb-1">15,000 ر.س</p>
+          <p className="text-sm font-normal text-black">من إجمالي 50,000 ر.س</p>
+          <div className="mt-3">
+            <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+              <span className="text-sm font-medium text-black">30% متبقية</span>
+            </div>
+          </div>
         </div>
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-blue-600">المصروف</h4>
-          <p className="text-2xl font-bold">35,000 ر.س</p>
-          <p className="text-sm text-gray-600">70% من الميزانية</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">إجمالي المصروفات</h4>
+          <p className="text-2xl font-bold text-black mb-1">35,000 ر.س</p>
+          <p className="text-sm font-normal text-black">70% من الميزانية المخططة</p>
+          <div className="mt-3">
+            <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+              <span className="text-sm font-medium text-black">ضمن الحدود</span>
+            </div>
+          </div>
         </div>
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-purple-600">الربح المتوقع</h4>
-          <p className="text-2xl font-bold">12,000 ر.س</p>
-          <p className="text-sm text-gray-600">24% هامش ربح</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">الربح المتوقع</h4>
+          <p className="text-2xl font-bold text-black mb-1">12,000 ر.س</p>
+          <p className="text-sm font-normal text-black">24% هامش ربح متوقع</p>
+          <div className="mt-3">
+            <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+              <span className="text-sm font-medium text-black">مربح</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* تفاصيل المصروفات */}
-      <div className="bg-white/20 rounded-2xl p-4">
-        <h3 className="font-bold mb-4">تفصيل المصروفات</h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span>رواتب الفريق</span>
-            <div className="text-right">
-              <span className="font-bold">20,000 ر.س</span>
-              <span className="text-sm text-gray-600 block">57%</span>
+      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+        <h3 className="text-lg font-semibold text-black mb-6">تفصيل المصروفات حسب الفئة</h3>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
+            <div className="flex items-center gap-3">
+              <div className="bg-[#fbe2aa] px-3 py-1 rounded-full">
+                <span className="text-sm font-medium text-black">57%</span>
+              </div>
+              <span className="text-sm font-bold text-black">20,000 ر.س</span>
             </div>
+            <span className="text-sm font-bold text-black">رواتب الفريق والمكافآت</span>
           </div>
-          <div className="flex justify-between items-center">
-            <span>أدوات وبرمجيات</span>
-            <div className="text-right">
-              <span className="font-bold">8,000 ر.س</span>
-              <span className="text-sm text-gray-600 block">23%</span>
+          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
+            <div className="flex items-center gap-3">
+              <div className="bg-[#a4e2f6] px-3 py-1 rounded-full">
+                <span className="text-sm font-medium text-black">23%</span>
+              </div>
+              <span className="text-sm font-bold text-black">8,000 ر.س</span>
             </div>
+            <span className="text-sm font-bold text-black">أدوات وبرمجيات متخصصة</span>
           </div>
-          <div className="flex justify-between items-center">
-            <span>استشارات خارجية</span>
-            <div className="text-right">
-              <span className="font-bold">5,000 ر.س</span>
-              <span className="text-sm text-gray-600 block">14%</span>
+          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
+            <div className="flex items-center gap-3">
+              <div className="bg-[#d9d2fd] px-3 py-1 rounded-full">
+                <span className="text-sm font-medium text-black">14%</span>
+              </div>
+              <span className="text-sm font-bold text-black">5,000 ر.س</span>
             </div>
+            <span className="text-sm font-bold text-black">استشارات خارجية وخدمات</span>
           </div>
-          <div className="flex justify-between items-center">
-            <span>مصاريف أخرى</span>
-            <div className="text-right">
-              <span className="font-bold">2,000 ر.س</span>
-              <span className="text-sm text-gray-600 block">6%</span>
+          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
+            <div className="flex items-center gap-3">
+              <div className="bg-[#f1b5b9] px-3 py-1 rounded-full">
+                <span className="text-sm font-medium text-black">6%</span>
+              </div>
+              <span className="text-sm font-bold text-black">2,000 ر.س</span>
             </div>
+            <span className="text-sm font-bold text-black">مصاريف إدارية وأخرى</span>
           </div>
         </div>
       </div>
 
       {/* التدفق النقدي المتوقع */}
-      <div className="bg-white/20 rounded-2xl p-4">
-        <h3 className="font-bold mb-4">التدفق النقدي المتوقع</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-center">
-          <div className="p-3 bg-white/10 rounded-xl">
-            <p className="text-sm text-gray-600">الشهر الحالي</p>
-            <p className="font-bold text-lg">8,000 ر.س</p>
+      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+        <h3 className="text-lg font-semibold text-black mb-6">التدفق النقدي المتوقع (الأشهر القادمة)</h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+          <div className="p-4 bg-transparent border border-black/10 rounded-3xl">
+            <h4 className="text-sm font-bold text-black mb-2">الشهر الحالي</h4>
+            <p className="text-2xl font-bold text-black mb-1">8,000 ر.س</p>
+            <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">مدفوعات جزئية</span>
+            </div>
           </div>
-          <div className="p-3 bg-white/10 rounded-xl">
-            <p className="text-sm text-gray-600">الشهر القادم</p>
-            <p className="font-bold text-lg">12,000 ر.س</p>
+          <div className="p-4 bg-transparent border border-black/10 rounded-3xl">
+            <h4 className="text-sm font-bold text-black mb-2">الشهر القادم</h4>
+            <p className="text-2xl font-bold text-black mb-1">12,000 ر.س</p>
+            <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">مرحلة متوسطة</span>
+            </div>
           </div>
-          <div className="p-3 bg-white/10 rounded-xl">
-            <p className="text-sm text-gray-600">بعد شهرين</p>
-            <p className="font-bold text-lg">15,000 ر.س</p>
+          <div className="p-4 bg-transparent border border-black/10 rounded-3xl">
+            <h4 className="text-sm font-bold text-black mb-2">بعد شهرين</h4>
+            <p className="text-2xl font-bold text-black mb-1">15,000 ر.س</p>
+            <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">مرحلة نهائية</span>
+            </div>
           </div>
-          <div className="p-3 bg-white/10 rounded-xl">
-            <p className="text-sm text-gray-600">المتبقي</p>
-            <p className="font-bold text-lg">15,000 ر.س</p>
+          <div className="p-4 bg-transparent border border-black/10 rounded-3xl">
+            <h4 className="text-sm font-bold text-black mb-2">المتبقي بعد التسليم</h4>
+            <p className="text-2xl font-bold text-black mb-1">15,000 ر.س</p>
+            <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">دفعة إغلاق</span>
+            </div>
           </div>
         </div>
       </div>
@@ -110,10 +151,43 @@ export const ClientTab = ({ clientData }: any) => {
   };
 
   return (
-    <div className="space-y-4">
-      <StatusBox title="رضا العميل" status="success">
-        <p className="text-sm">العميل راضٍ عن سير المشروع</p>
-      </StatusBox>
+    <div className="space-y-6">
+      {/* حالة رضا العميل */}
+      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-semibold text-black">رضا العميل</h3>
+          <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
+            <span className="text-sm font-medium text-black">ممتاز</span>
+          </div>
+        </div>
+        <p className="text-sm font-medium text-black">العميل راضٍ جداً عن سير المشروع والتسليم في المواعيد المحددة</p>
+      </div>
+      
+      {/* إحصائيات العميل */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">تقييم العميل</h4>
+          <p className="text-2xl font-bold text-black mb-1">4.8/5</p>
+          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">تقييم ممتاز</span>
+          </div>
+        </div>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">المشاريع السابقة</h4>
+          <p className="text-2xl font-bold text-black mb-1">5</p>
+          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">عميل دائم</span>
+          </div>
+        </div>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">معدل الاستجابة</h4>
+          <p className="text-2xl font-bold text-black mb-1">2.1 ساعة</p>
+          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">سريع الاستجابة</span>
+          </div>
+        </div>
+      </div>
+      
       <ClientProfile client={mockClient} />
     </div>
   );
@@ -178,74 +252,89 @@ export const TeamTab = ({ teamData }: any) => {
 
   return (
     <div className="space-y-6">
-      <StatusBox title="حالة الفريق" status="success">
-        <p className="text-sm">الفريق يعمل بكفاءة عالية - معدل الإنجاز 94%</p>
-      </StatusBox>
+      {/* حالة الفريق */}
+      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-semibold text-black">حالة الفريق</h3>
+          <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
+            <span className="text-sm font-medium text-black">ممتاز</span>
+          </div>
+        </div>
+        <p className="text-sm font-medium text-black">الفريق يعمل بكفاءة عالية ومعدل الإنجاز يتجاوز التوقعات بنسبة 94%</p>
+      </div>
 
       {/* إحصائيات الفريق */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-blue-600">إجمالي الأعضاء</h4>
-          <p className="text-2xl font-bold">4</p>
-          <p className="text-sm text-gray-600">أعضاء نشطين</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">إجمالي الأعضاء</h4>
+          <p className="text-2xl font-bold text-black mb-1">4</p>
+          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">أعضاء نشطين</span>
+          </div>
         </div>
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-green-600">معدل الأداء</h4>
-          <p className="text-2xl font-bold">91%</p>
-          <p className="text-sm text-gray-600">أداء ممتاز</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">معدل الأداء العام</h4>
+          <p className="text-2xl font-bold text-black mb-1">91%</p>
+          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">أداء ممتاز</span>
+          </div>
         </div>
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-orange-600">معدل الحمولة</h4>
-          <p className="text-2xl font-bold">83%</p>
-          <p className="text-sm text-gray-600">ضمن المعدل المثالي</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">معدل الحمولة</h4>
+          <p className="text-2xl font-bold text-black mb-1">83%</p>
+          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">مثالي</span>
+          </div>
         </div>
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-purple-600">المهام المكتملة</h4>
-          <p className="text-2xl font-bold">47</p>
-          <p className="text-sm text-gray-600">من أصل 50 مهمة</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">المهام المكتملة</h4>
+          <p className="text-2xl font-bold text-black mb-1">47/50</p>
+          <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">94% مكتمل</span>
+          </div>
         </div>
       </div>
 
       <TeamRoster data={mockTeamData} />
 
       {/* تحليل توزيع المهارات */}
-      <div className="bg-white/20 rounded-2xl p-4">
-        <h3 className="font-bold mb-4">توزيع المهارات في الفريق</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span>تطوير البرمجيات</span>
-              <span className="font-bold">85%</span>
+      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+        <h3 className="text-lg font-semibold text-black mb-6">توزيع المهارات والكفاءات في الفريق</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-bold text-black">تطوير البرمجيات المتقدمة</span>
+              <span className="text-sm font-bold text-black">85%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-blue-600 h-2 rounded-full" style={{ width: '85%' }}></div>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span>تصميم الواجهات</span>
-              <span className="font-bold">92%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-purple-600 h-2 rounded-full" style={{ width: '92%' }}></div>
+            <div className="w-full bg-transparent border border-black/10 rounded-full h-3">
+              <div className="bg-[#bdeed3] h-3 rounded-full" style={{ width: '85%' }}></div>
             </div>
           </div>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span>تحليل الأنظمة</span>
-              <span className="font-bold">78%</span>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-bold text-black">تصميم الواجهات التفاعلية</span>
+              <span className="text-sm font-bold text-black">92%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-green-600 h-2 rounded-full" style={{ width: '78%' }}></div>
+            <div className="w-full bg-transparent border border-black/10 rounded-full h-3">
+              <div className="bg-[#a4e2f6] h-3 rounded-full" style={{ width: '92%' }}></div>
             </div>
           </div>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span>اختبار الجودة</span>
-              <span className="font-bold">88%</span>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-bold text-black">تحليل الأنظمة المعقدة</span>
+              <span className="text-sm font-bold text-black">78%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-red-600 h-2 rounded-full" style={{ width: '88%' }}></div>
+            <div className="w-full bg-transparent border border-black/10 rounded-full h-3">
+              <div className="bg-[#d9d2fd] h-3 rounded-full" style={{ width: '78%' }}></div>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-bold text-black">اختبار الجودة والأمان</span>
+              <span className="text-sm font-bold text-black">88%</span>
+            </div>
+            <div className="w-full bg-transparent border border-black/10 rounded-full h-3">
+              <div className="bg-[#f1b5b9] h-3 rounded-full" style={{ width: '88%' }}></div>
             </div>
           </div>
         </div>
@@ -305,53 +394,80 @@ export const AttachmentsTab = ({ documents }: any) => {
 
   return (
     <div className="space-y-6">
-      <StatusBox title="المرفقات" status="success">
-        <p className="text-sm">جميع المستندات محدثة ومنظمة - آخر رفع منذ ساعتين</p>
-      </StatusBox>
+      {/* حالة المرفقات */}
+      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-semibold text-black">إدارة المرفقات</h3>
+          <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
+            <span className="text-sm font-medium text-black">محدثة</span>
+          </div>
+        </div>
+        <p className="text-sm font-medium text-black">جميع المستندات محدثة ومنظمة بشكل احترافي - آخر رفع منذ ساعتين</p>
+      </div>
 
       {/* إحصائيات المرفقات */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-blue-600">إجمالي الملفات</h4>
-          <p className="text-2xl font-bold">23</p>
-          <p className="text-sm text-gray-600">ملف مرفوع</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">إجمالي الملفات</h4>
+          <p className="text-2xl font-bold text-black mb-1">23</p>
+          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">ملف مرفوع</span>
+          </div>
         </div>
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-green-600">الحجم الإجمالي</h4>
-          <p className="text-2xl font-bold">156 MB</p>
-          <p className="text-sm text-gray-600">مساحة مستخدمة</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">الحجم الإجمالي</h4>
+          <p className="text-2xl font-bold text-black mb-1">156 MB</p>
+          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">مساحة مستخدمة</span>
+          </div>
         </div>
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-purple-600">المشاركة</h4>
-          <p className="text-2xl font-bold">8</p>
-          <p className="text-sm text-gray-600">ملفات مشتركة</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">الملفات المشتركة</h4>
+          <p className="text-2xl font-bold text-black mb-1">8</p>
+          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">ملفات مشتركة</span>
+          </div>
         </div>
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-orange-600">المعدلة حديثاً</h4>
-          <p className="text-2xl font-bold">5</p>
-          <p className="text-sm text-gray-600">خلال اليوم</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">المعدلة حديثاً</h4>
+          <p className="text-2xl font-bold text-black mb-1">5</p>
+          <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">خلال اليوم</span>
+          </div>
         </div>
       </div>
 
       {/* فئات الملفات */}
-      <div className="bg-white/20 rounded-2xl p-4">
-        <h3 className="font-bold mb-4">توزيع الملفات حسب النوع</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="text-center p-3 bg-white/10 rounded-xl">
-            <p className="text-lg font-bold text-red-600">7</p>
-            <p className="text-sm">PDF</p>
+      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+        <h3 className="text-lg font-semibold text-black mb-6">توزيع الملفات حسب النوع والتصنيف</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <p className="text-2xl font-bold text-black mb-1">7</p>
+            <h4 className="text-sm font-bold text-black mb-2">مستندات PDF</h4>
+            <div className="bg-[#f1b5b9] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">تقارير رسمية</span>
+            </div>
           </div>
-          <div className="text-center p-3 bg-white/10 rounded-xl">
-            <p className="text-lg font-bold text-blue-600">5</p>
-            <p className="text-sm">Word</p>
+          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <p className="text-2xl font-bold text-black mb-1">5</p>
+            <h4 className="text-sm font-bold text-black mb-2">مستندات Word</h4>
+            <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">وثائق تحريرية</span>
+            </div>
           </div>
-          <div className="text-center p-3 bg-white/10 rounded-xl">
-            <p className="text-lg font-bold text-green-600">4</p>
-            <p className="text-sm">Excel</p>
+          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <p className="text-2xl font-bold text-black mb-1">4</p>
+            <h4 className="text-sm font-bold text-black mb-2">جداول Excel</h4>
+            <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">بيانات تحليلية</span>
+            </div>
           </div>
-          <div className="text-center p-3 bg-white/10 rounded-xl">
-            <p className="text-lg font-bold text-purple-600">7</p>
-            <p className="text-sm">أخرى</p>
+          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <p className="text-2xl font-bold text-black mb-1">7</p>
+            <h4 className="text-sm font-bold text-black mb-2">ملفات أخرى</h4>
+            <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">صور وتصاميم</span>
+            </div>
           </div>
         </div>
       </div>
@@ -374,57 +490,87 @@ export const TemplatesTab = ({ templates }: any) => {
 
   return (
     <div className="space-y-6">
-      <StatusBox title="مكتبة القوالب" status="success">
-        <p className="text-sm">القوالب محدثة وجاهزة للاستخدام - 12 قالب متاح</p>
-      </StatusBox>
+      {/* حالة مكتبة القوالب */}
+      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-semibold text-black">مكتبة القوالب</h3>
+          <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
+            <span className="text-sm font-medium text-black">محدثة</span>
+          </div>
+        </div>
+        <p className="text-sm font-medium text-black">القوالب محدثة وجاهزة للاستخدام الفوري - 12 قالب احترافي متاح</p>
+      </div>
 
       {/* إحصائيات القوالب */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-blue-600">إجمالي القوالب</h4>
-          <p className="text-2xl font-bold">12</p>
-          <p className="text-sm text-gray-600">قالب متاح</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">إجمالي القوالب</h4>
+          <p className="text-2xl font-bold text-black mb-1">12</p>
+          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">قالب متاح</span>
+          </div>
         </div>
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-green-600">الأكثر استخداماً</h4>
-          <p className="text-2xl font-bold">6</p>
-          <p className="text-sm text-gray-600">قوالب شائعة</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">الأكثر استخداماً</h4>
+          <p className="text-2xl font-bold text-black mb-1">6</p>
+          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">قوالب شائعة</span>
+          </div>
         </div>
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-purple-600">تم التحديث</h4>
-          <p className="text-2xl font-bold">3</p>
-          <p className="text-sm text-gray-600">هذا الأسبوع</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">تم التحديث</h4>
+          <p className="text-2xl font-bold text-black mb-1">3</p>
+          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">هذا الأسبوع</span>
+          </div>
         </div>
-        <div className="bg-white/20 rounded-2xl p-4 text-center">
-          <h4 className="font-bold text-lg text-orange-600">إجمالي التحميلات</h4>
-          <p className="text-2xl font-bold">261</p>
-          <p className="text-sm text-gray-600">هذا الشهر</p>
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          <h4 className="text-lg font-semibold text-black mb-2">إجمالي التحميلات</h4>
+          <p className="text-2xl font-bold text-black mb-1">261</p>
+          <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">هذا الشهر</span>
+          </div>
         </div>
       </div>
 
       {/* فئات القوالب */}
-      <div className="bg-white/20 rounded-2xl p-4">
-        <h3 className="font-bold mb-4">القوالب حسب الفئة</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <div className="text-center p-3 bg-white/10 rounded-xl">
-            <p className="text-lg font-bold text-blue-600">4</p>
-            <p className="text-sm">تقارير</p>
+      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+        <h3 className="text-lg font-semibold text-black mb-6">توزيع القوالب حسب الفئة والاستخدام</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <p className="text-2xl font-bold text-black mb-1">4</p>
+            <h4 className="text-sm font-bold text-black mb-2">قوالب التقارير</h4>
+            <div className="bg-[#f1b5b9] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">تقارير دورية</span>
+            </div>
           </div>
-          <div className="text-center p-3 bg-white/10 rounded-xl">
-            <p className="text-lg font-bold text-green-600">3</p>
-            <p className="text-sm">إداري</p>
+          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <p className="text-2xl font-bold text-black mb-1">3</p>
+            <h4 className="text-sm font-bold text-black mb-2">نماذج إدارية</h4>
+            <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">إجراءات داخلية</span>
+            </div>
           </div>
-          <div className="text-center p-3 bg-white/10 rounded-xl">
-            <p className="text-lg font-bold text-purple-600">2</p>
-            <p className="text-sm">قانوني</p>
+          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <p className="text-2xl font-bold text-black mb-1">2</p>
+            <h4 className="text-sm font-bold text-black mb-2">وثائق قانونية</h4>
+            <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">عقود واتفاقيات</span>
+            </div>
           </div>
-          <div className="text-center p-3 bg-white/10 rounded-xl">
-            <p className="text-lg font-bold text-red-600">2</p>
-            <p className="text-sm">تخطيط</p>
+          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <p className="text-2xl font-bold text-black mb-1">2</p>
+            <h4 className="text-sm font-bold text-black mb-2">خطط التخطيط</h4>
+            <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">جدولة المشاريع</span>
+            </div>
           </div>
-          <div className="text-center p-3 bg-white/10 rounded-xl">
-            <p className="text-lg font-bold text-yellow-600">1</p>
-            <p className="text-sm">موارد بشرية</p>
+          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <p className="text-2xl font-bold text-black mb-1">1</p>
+            <h4 className="text-sm font-bold text-black mb-2">موارد بشرية</h4>
+            <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+              <span className="text-xs font-normal text-gray-400">تقييم الأداء</span>
+            </div>
           </div>
         </div>
       </div>
