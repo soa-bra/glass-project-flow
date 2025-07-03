@@ -8,40 +8,32 @@ interface PlanningWorkspaceProps {
 
 const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({ isSidebarCollapsed }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [isPlanningSidebarCollapsed, setIsPlanningSidebarCollapsed] = useState(false);
 
   return (
     <>
-      {/* Planning Categories Sidebar */}
-      <div
-        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${
-          isSidebarCollapsed ? 'departments-sidebar-collapsed' : 'departments-sidebar-expanded'
-        }`}
-        style={{
-          top: 'var(--sidebar-top-offset)',
-          zIndex: 110,
-        }}
-      >
+      {/* Planning Categories Sidebar - Hidden */}
+      <div className="hidden">
         <PlanningSidebar
           selectedCategory={selectedCategory}
           onCategorySelect={setSelectedCategory}
-          isCollapsed={isPlanningSidebarCollapsed}
-          onToggleCollapse={setIsPlanningSidebarCollapsed}
+          isCollapsed={true}
+          onToggleCollapse={() => {}}
         />
       </div>
 
-      {/* Planning Content Panel */}
+      {/* Planning Content Panel - Takes 96% width */}
       <div
-        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] ${
-          isSidebarCollapsed 
-            ? (isPlanningSidebarCollapsed ? 'departments-panel-both-collapsed' : 'departments-panel-main-collapsed') 
-            : (isPlanningSidebarCollapsed ? 'departments-panel-departments-collapsed' : 'departments-panel-both-expanded')
-        }`}
+        className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))]"
+        style={{
+          left: '4%', // Start after the 4% main sidebar
+          width: '96%', // Take remaining 96% width
+          zIndex: 100,
+        }}
       >
         <PlanningPanel 
           selectedCategory={selectedCategory}
-          isMainSidebarCollapsed={isSidebarCollapsed}
-          isPlanningSidebarCollapsed={isPlanningSidebarCollapsed}
+          isMainSidebarCollapsed={true}
+          isPlanningSidebarCollapsed={true}
         />
       </div>
     </>
