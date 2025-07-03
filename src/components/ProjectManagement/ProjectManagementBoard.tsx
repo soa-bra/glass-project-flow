@@ -4,6 +4,7 @@ import { ProjectManagementHeader } from './ProjectManagementHeader';
 import { ProjectProgressBar } from './ProjectProgressBar';
 import { ProjectCardGrid } from './ProjectCardGrid';
 import { AddProjectModal } from '@/components/ProjectsColumn/AddProjectModal';
+import { FinancialTab, ClientTab, TeamTab, AttachmentsTab, TemplatesTab } from '@/components/ProjectPanel/ProjectTabs';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 
@@ -206,32 +207,20 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             </div>
           </div>;
       case 'finance':
-        return <div className="flex-1 flex items-center justify-center">
-            <div className="text-center font-arabic">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">الوضع المالي</h3>
-              <p className="text-gray-600">محتوى الوضع المالي سيتم إضافته قريباً</p>
-            </div>
+        return <div className="flex-1 overflow-auto">
+            <FinancialTab data={project} />
           </div>;
       case 'team':
-        return <div className="flex-1 flex items-center justify-center">
-            <div className="text-center font-arabic">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">الفريق</h3>
-              <p className="text-gray-600">محتوى إدارة الفريق سيتم إضافته قريباً</p>
-            </div>
+        return <div className="flex-1 overflow-auto">
+            <TeamTab teamData={project.team} />
           </div>;
       case 'client':
-        return <div className="flex-1 flex items-center justify-center">
-            <div className="text-center font-arabic">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">العميل</h3>
-              <p className="text-gray-600">محتوى معلومات العميل سيتم إضافته قريباً</p>
-            </div>
+        return <div className="flex-1 overflow-auto">
+            <ClientTab clientData={null} />
           </div>;
       case 'files':
-        return <div className="flex-1 flex items-center justify-center">
-            <div className="text-center font-arabic">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">المرفقات</h3>
-              <p className="text-gray-600">محتوى إدارة المرفقات سيتم إضافته قريباً</p>
-            </div>
+        return <div className="flex-1 overflow-auto">
+            <AttachmentsTab documents={null} />
           </div>;
       case 'reports':
         return <div className="flex-1 flex items-center justify-center">
