@@ -32,25 +32,22 @@ const MainContent = () => {
   // Animation variants for smooth section transitions
   const sectionVariants = {
     initial: { 
-      opacity: 0, 
-      x: 60,
-      scale: 0.95
+      opacity: 0.8, 
+      y: 8
     },
     animate: { 
       opacity: 1, 
-      x: 0,
-      scale: 1
+      y: 0
     },
     exit: { 
-      opacity: 0, 
-      x: -40,
-      scale: 0.98
+      opacity: 0.8, 
+      y: -4
     }
   };
 
   const sectionTransition = {
-    duration: 0.4,
-    ease: [0.4, 0, 0.2, 1] as [number, number, number, number]
+    duration: 0.25,
+    ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number]
   };
 
   const renderWorkspace = () => {
