@@ -85,33 +85,36 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
   };
 
   return (
-    <div className="space-y-6">
+    <div className="h-full flex flex-col bg-transparent">
       {/* Header */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
-        <div className="flex items-center gap-4 mb-3">
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
-            <Bell className="w-6 h-6 text-black" />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-lg font-semibold text-black">الإشعارات والتنبيهات</h2>
-            <p className="text-sm font-normal text-black">إدارة الإشعارات والتنبيهات الذكية</p>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-orange-600">●</div>
-            <p className="text-xs font-normal text-gray-400">نشط</p>
-          </div>
+      <div className="flex items-center justify-between px-6 py-6">
+        <h2 className="font-medium text-black font-arabic text-3xl">
+          الإشعارات والتنبيهات
+        </h2>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSave}
+            style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
+            className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            حفظ التغييرات
+          </button>
         </div>
       </div>
 
-      {/* الإشعارات الذكية بالذكاء الاصطناعي */}
-      <div style={{ backgroundColor: '#fbe2aa' }} className="rounded-3xl p-6 border border-black/10">
+      {/* Content */}
+      <div className="flex-1 overflow-auto px-6 pb-6">
+        <div className="space-y-6">
+
+        {/* الإشعارات الذكية بالذكاء الاصطناعي */}
+        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           🤖 نظام الإشعارات الذكي
           <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">AI Smart Notify</span>
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-black/10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <h4 className="text-sm font-bold text-black mb-3">الملخص الذكي</h4>
             <label className="flex items-center gap-2">
               <input 
@@ -126,7 +129,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             </label>
           </div>
 
-          <div style={{ backgroundColor: '#96d8d0' }} className="rounded-2xl p-4 border border-black/10">
+            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <h4 className="text-sm font-bold text-black mb-3">فلترة الأولوية</h4>
             <label className="flex items-center gap-2">
               <input 
@@ -143,12 +146,12 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
         </div>
       </div>
 
-      {/* تفضيلات الإشعارات */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+        {/* تفضيلات الإشعارات */}
+        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
         <h3 className="text-md font-bold text-black mb-4">تفضيلات الإشعارات</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-black/10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <div className="flex items-center gap-3 mb-3">
               <Mail className="w-5 h-5 text-black" />
               <h4 className="text-sm font-bold text-black">البريد الإلكتروني</h4>
@@ -164,7 +167,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             </label>
           </div>
 
-          <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-2xl p-4 border border-black/10">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <div className="flex items-center gap-3 mb-3">
               <Smartphone className="w-5 h-5 text-black" />
               <h4 className="text-sm font-bold text-black">الدفع</h4>
@@ -180,7 +183,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             </label>
           </div>
 
-          <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-black/10">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <div className="flex items-center gap-3 mb-3">
               {formData.preferences.sound ? <Volume2 className="w-5 h-5 text-black" /> : <VolumeX className="w-5 h-5 text-black" />}
               <h4 className="text-sm font-bold text-black">الصوت</h4>
@@ -198,12 +201,12 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
         </div>
       </div>
 
-      {/* إعدادات التوقيت */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+        {/* إعدادات التوقيت */}
+        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
         <h3 className="text-md font-bold text-black mb-4">إعدادات التوقيت</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-black/10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
               <Clock className="w-4 h-4" />
               ساعات العمل
@@ -236,7 +239,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#96d8d0' }} className="rounded-2xl p-4 border border-black/10">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <h4 className="text-sm font-bold text-black mb-3">الساعات الهادئة</h4>
             <label className="flex items-center gap-2 mb-3">
               <input 
@@ -275,13 +278,13 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
         </div>
       </div>
 
-      {/* سجل الإشعارات */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+        {/* سجل الإشعارات */}
+        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
         <h3 className="text-md font-bold text-black mb-4">سجل الإشعارات الأخيرة</h3>
         
-        <div className="space-y-3">
-          {notificationHistory.map(notification => (
-            <div key={notification.id} style={{ backgroundColor: '#bdeed3' }} className="rounded-lg p-4 flex items-center justify-between">
+          <div className="space-y-3">
+            {notificationHistory.map(notification => (
+              <div key={notification.id} style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4 flex items-center justify-between border border-black/10">
               <div className="flex items-center gap-3">
                 <div className={`w-3 h-3 rounded-full ${notification.read ? 'bg-gray-400' : 'bg-blue-500'}`}></div>
                 <div>
@@ -295,55 +298,25 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
         </div>
       </div>
 
-      {/* إحصائيات الإشعارات */}
-      <div className="grid grid-cols-4 gap-4">
-        <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-black/10 text-center">
-          <div className="text-2xl font-bold text-black mb-1">47</div>
-          <p className="text-xs font-normal text-gray-400">هذا الأسبوع</p>
+        {/* إحصائيات الإشعارات */}
+        <div className="grid grid-cols-4 gap-4">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+            <div className="text-2xl font-bold text-black mb-1">47</div>
+            <p className="text-xs font-normal text-gray-400">هذا الأسبوع</p>
+          </div>
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+            <div className="text-2xl font-bold text-black mb-1">5</div>
+            <p className="text-xs font-normal text-gray-400">غير مقروءة</p>
+          </div>
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+            <div className="text-2xl font-bold text-black mb-1">92%</div>
+            <p className="text-xs font-normal text-gray-400">معدل القراءة</p>
+          </div>
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+            <div className="text-2xl font-bold text-black mb-1">3.2</div>
+            <p className="text-xs font-normal text-gray-400">متوسط يومي</p>
+          </div>
         </div>
-        <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-2xl p-4 border border-black/10 text-center">
-          <div className="text-2xl font-bold text-black mb-1">5</div>
-          <p className="text-xs font-normal text-gray-400">غير مقروءة</p>
-        </div>
-        <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-black/10 text-center">
-          <div className="text-2xl font-bold text-black mb-1">92%</div>
-          <p className="text-xs font-normal text-gray-400">معدل القراءة</p>
-        </div>
-        <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-black/10 text-center">
-          <div className="text-2xl font-bold text-black mb-1">3.2</div>
-          <p className="text-xs font-normal text-gray-400">متوسط يومي</p>
-        </div>
-      </div>
-
-      {/* أزرار العمل */}
-      <div className="flex justify-between items-center">
-        <div className="text-xs font-normal text-gray-400">
-          {lastAutosave ? `آخر حفظ تلقائي: ${lastAutosave}` : 'لم يتم الحفظ بعد'}
-        </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => {
-              setFormData({
-                preferences: { email: false, push: false, sms: false, inApp: false, sound: false },
-                channels: { projects: [], tasks: [], financial: [], legal: [], hr: [] },
-                schedule: { workHours: { start: '09:00', end: '17:00' }, timezone: 'Asia/Riyadh', quietHours: { enabled: false, start: '22:00', end: '07:00' } },
-                aiSettings: { smartDigest: false, priorityFiltering: false, predictiveAlerts: false, contextualGrouping: false },
-                lastModified: new Date().toISOString()
-              });
-              clearDraft();
-            }}
-            style={{ backgroundColor: '#F2FFFF', color: '#000000' }}
-            className="px-6 py-2 rounded-full text-sm font-medium border border-black/20 hover:bg-gray-50 transition-colors"
-          >
-            إعادة تعيين
-          </button>
-          <button
-            onClick={handleSave}
-            style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
-            className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            حفظ التغييرات
-          </button>
         </div>
       </div>
     </div>

@@ -7,13 +7,18 @@ interface SettingsPanelLayoutProps {
 export const SettingsPanelLayout: React.FC<SettingsPanelLayoutProps> = ({ children }) => {
   return (
     <div 
-      className="w-full h-full rounded-3xl overflow-hidden"
       style={{
-        background: 'var(--backgrounds-workspace-bg)',
-        transition: 'all var(--animation-duration-main) var(--animation-easing)'
-      }}
+        background: 'var(--backgrounds-admin-ops-board-bg)'
+      }} 
+      className="h-full rounded-3xl overflow-hidden"
     >
-      {children}
+      <div className="h-full flex flex-col">
+        <div className="flex-1 overflow-auto px-0 mx-0 bg-[#d9e7ed]">
+          <div className="h-full mx-6 my-6 rounded-2xl overflow-hidden bg-transparent">
+            {children}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

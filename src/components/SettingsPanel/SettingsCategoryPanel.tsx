@@ -15,7 +15,7 @@ export const SettingsCategoryPanel: React.FC<SettingsCategoryPanelProps> = ({
   const CategoryComponent = CategoryPanelFactory.getComponent(category);
   
   return (
-    <div className="w-full h-full p-6 overflow-auto">
+    <div className="h-full flex flex-col bg-transparent">
       <CategoryComponent 
         isMainSidebarCollapsed={isMainSidebarCollapsed}
         isSettingsSidebarCollapsed={isSettingsSidebarCollapsed}

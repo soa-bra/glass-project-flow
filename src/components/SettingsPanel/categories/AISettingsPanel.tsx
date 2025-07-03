@@ -93,34 +93,37 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="h-full flex flex-col bg-transparent">
       {/* Header */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
-        <div className="flex items-center gap-4 mb-3">
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
-            <BrainCircuit className="w-6 h-6 text-black" />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-lg font-semibold text-black">الذكاء الاصطناعي</h2>
-            <p className="text-sm font-normal text-black">إدارة نماذج الذكاء الاصطناعي والميزات الذكية</p>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600">●</div>
-            <p className="text-xs font-normal text-gray-400">متقدم</p>
-          </div>
+      <div className="flex items-center justify-between px-6 py-6">
+        <h2 className="font-medium text-black font-arabic text-3xl">
+          الذكاء الاصطناعي
+        </h2>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSave}
+            style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
+            className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            حفظ التغييرات
+          </button>
         </div>
       </div>
 
-      {/* تجارب الذكاء الاصطناعي الجارية */}
-      <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-3xl p-6 border border-black/10">
+      {/* Content */}
+      <div className="flex-1 overflow-auto px-6 pb-6">
+        <div className="space-y-6">
+
+        {/* تجارب الذكاء الاصطناعي الجارية */}
+        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           🧪 التجارب النشطة
           <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">AI Lab</span>
         </h3>
         
-        <div className="space-y-3">
-          {activeExperiments.map(experiment => (
-            <div key={experiment.id} style={{ backgroundColor: '#F2FFFF' }} className="rounded-lg p-4">
+          <div className="space-y-3">
+            {activeExperiments.map(experiment => (
+              <div key={experiment.id} style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4 border border-black/10">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="text-sm font-bold text-black">{experiment.name}</h4>
                 <span className={`text-xs px-2 py-1 rounded-full ${
@@ -143,12 +146,12 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
         </div>
       </div>
 
-      {/* نماذج الذكاء الاصطناعي */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+        {/* نماذج الذكاء الاصطناعي */}
+        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
         <h3 className="text-md font-bold text-black mb-4">نماذج الذكاء الاصطناعي</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div style={{ backgroundColor: '#96d8d0' }} className="rounded-2xl p-4 border border-black/10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
               <Cpu className="w-4 h-4" />
               النموذج الأساسي
@@ -164,7 +167,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
             </select>
           </div>
 
-          <div style={{ backgroundColor: '#fbe2aa' }} className="rounded-2xl p-4 border border-black/10">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <h4 className="text-sm font-bold text-black mb-3">النموذج الاحتياطي</h4>
             <select 
               value={formData.models.fallback}
@@ -176,7 +179,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
             </select>
           </div>
 
-          <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-2xl p-4 border border-black/10">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <h4 className="text-sm font-bold text-black mb-3">نموذج التفكير</h4>
             <select 
               value={formData.models.reasoning}
@@ -190,12 +193,12 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
         </div>
       </div>
 
-      {/* الميزات الذكية */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+        {/* الميزات الذكية */}
+        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
         <h3 className="text-md font-bold text-black mb-4">الميزات الذكية</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-black/10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <h4 className="text-sm font-bold text-black mb-3">التحليل والتنبؤ</h4>
             <div className="space-y-2">
               <label className="flex items-center gap-2">
@@ -228,7 +231,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-black/10">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <h4 className="text-sm font-bold text-black mb-3">الأتمتة الذكية</h4>
             <div className="space-y-2">
               <label className="flex items-center gap-2">
@@ -261,12 +264,12 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
         </div>
       </div>
 
-      {/* إعدادات الأداء */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+        {/* إعدادات الأداء */}
+        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
         <h3 className="text-md font-bold text-black mb-4">إعدادات الأداء</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-black/10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <h4 className="text-sm font-bold text-black mb-3">المعاملات</h4>
             <div className="space-y-3">
               <div>
@@ -302,7 +305,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#96d8d0' }} className="rounded-2xl p-4 border border-black/10">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
             <h4 className="text-sm font-bold text-black mb-3">التحسينات</h4>
             <div className="space-y-2">
               <label className="flex items-center gap-2">
@@ -333,55 +336,25 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
         </div>
       </div>
 
-      {/* إحصائيات الاستخدام */}
-      <div className="grid grid-cols-4 gap-4">
-        <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-black/10 text-center">
-          <div className="text-2xl font-bold text-black mb-1">{usage.thisMonth.requests.toLocaleString()}</div>
-          <p className="text-xs font-normal text-gray-400">طلبات هذا الشهر</p>
+        {/* إحصائيات الاستخدام */}
+        <div className="grid grid-cols-4 gap-4">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+            <div className="text-2xl font-bold text-black mb-1">{usage.thisMonth.requests.toLocaleString()}</div>
+            <p className="text-xs font-normal text-gray-400">طلبات هذا الشهر</p>
+          </div>
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+            <div className="text-2xl font-bold text-black mb-1">{(usage.thisMonth.tokens / 1000000).toFixed(1)}M</div>
+            <p className="text-xs font-normal text-gray-400">رموز معالجة</p>
+          </div>
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+            <div className="text-2xl font-bold text-black mb-1">{usage.average.efficiency}%</div>
+            <p className="text-xs font-normal text-gray-400">كفاءة النماذج</p>
+          </div>
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+            <div className="text-2xl font-bold text-black mb-1">${usage.thisMonth.cost.toFixed(0)}</div>
+            <p className="text-xs font-normal text-gray-400">تكلفة الشهر</p>
+          </div>
         </div>
-        <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-2xl p-4 border border-black/10 text-center">
-          <div className="text-2xl font-bold text-black mb-1">{(usage.thisMonth.tokens / 1000000).toFixed(1)}M</div>
-          <p className="text-xs font-normal text-gray-400">رموز معالجة</p>
-        </div>
-        <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-black/10 text-center">
-          <div className="text-2xl font-bold text-black mb-1">{usage.average.efficiency}%</div>
-          <p className="text-xs font-normal text-gray-400">كفاءة النماذج</p>
-        </div>
-        <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-black/10 text-center">
-          <div className="text-2xl font-bold text-black mb-1">${usage.thisMonth.cost.toFixed(0)}</div>
-          <p className="text-xs font-normal text-gray-400">تكلفة الشهر</p>
-        </div>
-      </div>
-
-      {/* أزرار العمل */}
-      <div className="flex justify-between items-center">
-        <div className="text-xs font-normal text-gray-400">
-          {lastAutosave ? `آخر حفظ تلقائي: ${lastAutosave}` : 'لم يتم الحفظ بعد'}
-        </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => {
-              setFormData({
-                models: { primary: 'gpt-4.1-2025-04-14', fallback: 'gpt-4.1-mini-2025-04-14', reasoning: 'o4-mini-2025-04-16' },
-                features: { smartSuggestions: false, autoCompletion: false, predictiveAnalytics: false, anomalyDetection: false, smartNotifications: false, contentGeneration: false, riskAssessment: false },
-                performance: { maxTokens: 4000, temperature: 0.7, responseTimeout: 30000, batchProcessing: false, caching: false },
-                privacy: { dataRetention: 30, anonymization: true, auditLogs: true, gdprCompliant: true },
-                lastModified: new Date().toISOString()
-              });
-              clearDraft();
-            }}
-            style={{ backgroundColor: '#F2FFFF', color: '#000000' }}
-            className="px-6 py-2 rounded-full text-sm font-medium border border-black/20 hover:bg-gray-50 transition-colors"
-          >
-            إعادة تعيين
-          </button>
-          <button
-            onClick={handleSave}
-            style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
-            className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            حفظ التغييرات
-          </button>
         </div>
       </div>
     </div>
