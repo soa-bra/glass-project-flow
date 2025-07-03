@@ -5,6 +5,7 @@ import { ProjectProgressBar } from './ProjectProgressBar';
 import { ProjectCardGrid } from './ProjectCardGrid';
 import { AddProjectModal } from '@/components/ProjectsColumn/AddProjectModal';
 import { FinancialTab, ClientTab, TeamTab, AttachmentsTab, TemplatesTab } from '@/components/ProjectPanel/ProjectTabs';
+import { TaskManagementTab } from './TaskManagementTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 
@@ -200,12 +201,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             </div>
           </>;
       case 'tasks':
-        return <div className="flex-1 flex items-center justify-center">
-            <div className="text-center font-arabic">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">إدارة المهام</h3>
-              <p className="text-gray-600">محتوى إدارة المهام سيتم إضافته قريباً</p>
-            </div>
-          </div>;
+        return <TaskManagementTab project={project} />;
       case 'finance':
         return <div className="flex-1 overflow-auto">
             <FinancialTab data={project} />
