@@ -4,6 +4,7 @@ import { useState } from 'react';
 import ProjectWorkspace from './ProjectWorkspace';
 import DepartmentsWorkspace from './DepartmentsWorkspace';
 import ArchiveWorkspace from './ArchiveWorkspace';
+import SettingsWorkspace from './SettingsWorkspace';
 
 const MainContent = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -15,6 +16,8 @@ const MainContent = () => {
         return <DepartmentsWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
       case 'archive':
         return <ArchiveWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
+      case 'settings':
+        return <SettingsWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
       default:
         return <ProjectWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
     }
