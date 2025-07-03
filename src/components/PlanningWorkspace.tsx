@@ -11,27 +11,11 @@ const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
   const [isPlanningSidebarCollapsed, setIsPlanningSidebarCollapsed] = useState(false);
   return (
     <>
-      {/* Planning Categories Sidebar */}
-      <div className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] z-10 ${
-        isSidebarCollapsed ? 'left-[4%]' : 'left-[20%]'
-      } ${isPlanningSidebarCollapsed ? 'w-[4%]' : 'w-[27%]'} transition-all duration-300`}>
-        <PlanningSidebar 
-          selectedCategory={selectedCategory}
-          onCategorySelect={setSelectedCategory}
-          isCollapsed={isPlanningSidebarCollapsed}
-          onToggleCollapse={setIsPlanningSidebarCollapsed}
-        />
-      </div>
-
-      {/* Planning Content Panel */}
+      {/* Planning Content Panel - 96% width from sidebar edge to right edge */}
       <div className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] ${
         isSidebarCollapsed 
-          ? isPlanningSidebarCollapsed 
-            ? 'left-[8%] w-[69%]' 
-            : 'left-[31%] w-[69%]'
-          : isPlanningSidebarCollapsed 
-            ? 'left-[24%] w-[69%]' 
-            : 'left-[47%] w-[69%]'
+          ? 'left-[4%] w-[96%]' 
+          : 'left-[20%] w-[80%]'
       } transition-all duration-300`}>
         <PlanningPanel selectedCategory={selectedCategory} isMainSidebarCollapsed={isSidebarCollapsed} isPlanningSidebarCollapsed={isPlanningSidebarCollapsed} />
       </div>
