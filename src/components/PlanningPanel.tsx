@@ -12,13 +12,7 @@ const PlanningPanelLayout: React.FC<{
   return <div style={{
     background: 'var(--backgrounds-admin-ops-board-bg)'
   }} className="h-full rounded-3xl overflow-hidden">
-      <div className="h-full flex flex-col">
-        <div className="flex-1 overflow-auto px-0 mx-0 bg-[#d9e7ed]">
-          <div className="h-full mx-6 my-6 rounded-2xl overflow-hidden bg-transparent">
-            {children}
-          </div>
-        </div>
-      </div>
+      
     </div>;
 };
 const PlanningPanel: React.FC<PlanningPanelProps> = ({
@@ -28,7 +22,26 @@ const PlanningPanel: React.FC<PlanningPanelProps> = ({
 }) => {
   const renderContent = () => {
     if (!selectedCategory) {
-      return;
+      return <div className="h-full flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-black mb-4">التخطيط التشاركي</h2>
+            <p className="text-lg text-gray-600 mb-8">اختر فئة من القائمة الجانبية لبدء التخطيط</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl">
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30">
+                <h3 className="text-lg font-semibold text-black mb-2">التخطيط الاستراتيجي</h3>
+                <p className="text-sm text-gray-700">وضع الخطط طويلة المدى وتحديد الأهداف الاستراتيجية</p>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30">
+                <h3 className="text-lg font-semibold text-black mb-2">تخطيط المشاريع</h3>
+                <p className="text-sm text-gray-700">إدارة وتخطيط المشاريع بشكل تشاركي</p>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30">
+                <h3 className="text-lg font-semibold text-black mb-2">تخطيط الفرق</h3>
+                <p className="text-sm text-gray-700">تنسيق العمل بين الفرق المختلفة</p>
+              </div>
+            </div>
+          </div>
+        </div>;
     }
 
     // Render content based on selected category
