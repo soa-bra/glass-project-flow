@@ -89,7 +89,25 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
   };
 
   return (
-    <div className="space-y-6">
+    <div className="h-full flex flex-col bg-transparent">
+      {/* Header */}
+      <div className="flex items-center justify-between px-0 py-[10px] my-[25px]">
+        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
+          إعدادات الأمان
+        </h2>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSave}
+            className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            حفظ التغييرات
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
+        <div className="space-y-6">
       {/* Header */}
       <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
         <div className="flex items-center gap-4 mb-3">
@@ -324,6 +342,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           >
             حفظ التغييرات
           </button>
+        </div>
         </div>
       </div>
     </div>
