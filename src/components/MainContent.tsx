@@ -5,6 +5,7 @@ import ProjectWorkspace from './ProjectWorkspace';
 import DepartmentsWorkspace from './DepartmentsWorkspace';
 import ArchiveWorkspace from './ArchiveWorkspace';
 import SettingsWorkspace from './SettingsWorkspace';
+import PlanningWorkspace from './PlanningWorkspace';
 
 const MainContent = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -14,6 +15,8 @@ const MainContent = () => {
     switch (activeSection) {
       case 'departments':
         return <DepartmentsWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
+      case 'planning':
+        return <PlanningWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
       case 'archive':
         return <ArchiveWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
       case 'settings':
