@@ -1,15 +1,10 @@
 import React from 'react';
 import { Settings } from 'lucide-react';
-
 export const EmptySettingsState: React.FC = () => {
-  return (
-    <div 
-      className="w-full h-full rounded-3xl flex items-center justify-center"
-      style={{
-        background: 'var(--backgrounds-workspace-bg)',
-        transition: 'all var(--animation-duration-main) var(--animation-easing)'
-      }}
-    >
+  return <div style={{
+    background: 'var(--backgrounds-workspace-bg)',
+    transition: 'all var(--animation-duration-main) var(--animation-easing)'
+  }} className="w-full h-full rounded-3xl flex items-center justify-center bg-[b7cccc]">
       <div className="text-center space-y-6 max-w-md mx-auto p-8">
         <div className="w-24 h-24 mx-auto bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20">
           <Settings className="w-12 h-12 text-soabra-text-secondary" />
@@ -30,6 +25,5 @@ export const EmptySettingsState: React.FC = () => {
           </p>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
