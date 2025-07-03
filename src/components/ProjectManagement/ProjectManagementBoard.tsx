@@ -6,6 +6,7 @@ import { ProjectCardGrid } from './ProjectCardGrid';
 import { AddProjectModal } from '@/components/ProjectsColumn/AddProjectModal';
 import { FinancialTab, ClientTab, TeamTab, AttachmentsTab, TemplatesTab } from '@/components/ProjectPanel/ProjectTabs';
 import { TaskManagementTab } from './TaskManagementTab';
+import { ReportsTab } from './ReportsTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 
@@ -84,6 +85,9 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     }, {
       id: 'files',
       label: 'المرفقات'
+    }, {
+      id: 'templates',
+      label: 'النماذج والقوالب'
     }, {
       id: 'reports',
       label: 'التقارير'
@@ -218,12 +222,13 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         return <div className="flex-1 overflow-auto">
             <AttachmentsTab documents={null} />
           </div>;
+      case 'templates':
+        return <div className="flex-1 overflow-auto">
+            <TemplatesTab templates={null} />
+          </div>;
       case 'reports':
-        return <div className="flex-1 flex items-center justify-center">
-            <div className="text-center font-arabic">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">التقارير</h3>
-              <p className="text-gray-600">محتوى التقارير سيتم إضافته قريباً</p>
-            </div>
+        return <div className="flex-1 overflow-auto">
+            <ReportsTab project={project} />
           </div>;
       default:
         return null;
