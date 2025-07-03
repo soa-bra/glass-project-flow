@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, User, Shield, Bell, Database, Globe, Palette, Key, Monitor, CreditCard, Users, Building } from 'lucide-react';
+import { User, ShieldCheck, Bell, Link2, BrainCircuit, Palette, Database, Users } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SettingsSidebarProps {
@@ -17,64 +17,61 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
 }) => {
   const categories = [
     {
-      key: 'profile',
-      label: 'الملف الشخصي',
-      icon: User
+      key: 'account',
+      label: 'الحساب الشخصي',
+      icon: User,
+      route: '/settings/account',
+      access: 'all'
     },
     {
       key: 'security',
-      label: 'الأمان والخصوصية',
-      icon: Shield
+      label: 'الخصوصية والأمان',
+      icon: ShieldCheck,
+      route: '/settings/security',
+      access: 'role in [admin, dept_manager]'
     },
     {
       key: 'notifications',
       label: 'الإشعارات',
-      icon: Bell
-    },
-    {
-      key: 'system',
-      label: 'إعدادات النظام',
-      icon: Settings
-    },
-    {
-      key: 'database',
-      label: 'قاعدة البيانات',
-      icon: Database
-    },
-    {
-      key: 'appearance',
-      label: 'المظهر والواجهة',
-      icon: Palette
+      icon: Bell,
+      route: '/settings/notifications',
+      access: 'all',
+      badge: true
     },
     {
       key: 'integrations',
-      label: 'التكاملات',
-      icon: Globe
+      label: 'التكاملات الخارجية',
+      icon: Link2,
+      route: '/settings/integrations',
+      access: 'permission: Integrations.Manage'
     },
     {
-      key: 'access',
-      label: 'الصلاحيات والوصول',
-      icon: Key
+      key: 'ai',
+      label: 'الذكاء الاصطناعي',
+      icon: BrainCircuit,
+      route: '/settings/ai',
+      access: 'role in [System Admin, AI Ops]'
     },
     {
-      key: 'display',
-      label: 'إعدادات العرض',
-      icon: Monitor
+      key: 'theme',
+      label: 'المظهر',
+      icon: Palette,
+      route: '/settings/theme',
+      access: 'all'
     },
     {
-      key: 'billing',
-      label: 'الفوترة والاشتراكات',
-      icon: CreditCard
+      key: 'data-governance',
+      label: 'إدارة البيانات',
+      icon: Database,
+      route: '/settings/data-governance',
+      access: 'role >= Data Officer'
     },
     {
-      key: 'team',
-      label: 'إدارة الفريق',
-      icon: Users
-    },
-    {
-      key: 'organization',
-      label: 'إعدادات المؤسسة',
-      icon: Building
+      key: 'users-roles',
+      label: 'المستخدمون والأدوار',
+      icon: Users,
+      route: '/settings/users-roles',
+      access: 'role == System Admin'
     }
   ];
   
@@ -164,7 +161,7 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
                     `} />
                 </div>
                 
-                <div 
+                 <div 
                   className="flex-1 flex items-center overflow-hidden"
                   style={{
                     opacity: isCollapsed ? 0 : 1,
@@ -174,9 +171,14 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
                     transitionDelay: isCollapsed ? '0ms' : `calc(var(--base-delay) + var(--stagger-delay) * ${index})`
                   }}
                 >
-                  <span className={`tracking-wide text-sm whitespace-nowrap sync-transition-fast ${isActive ? 'font-semibold' : 'group-hover:font-medium'}`}>
-                    {category.label}
-                  </span>
+                  <div className="flex items-center justify-between w-full">
+                    <span className={`tracking-wide text-sm whitespace-nowrap sync-transition-fast ${isActive ? 'font-semibold' : 'group-hover:font-medium'}`}>
+                      {category.label}
+                    </span>
+                    {category.badge && (
+                      <div className="w-2 h-2 bg-red-500 rounded-full ml-2 animate-pulse"></div>
+                    )}
+                  </div>
                 </div>
               </button>
             );
