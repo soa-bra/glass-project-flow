@@ -485,6 +485,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
           </button>
         </div>
         </div>
+        </div>
       </div>
     </div>
   );

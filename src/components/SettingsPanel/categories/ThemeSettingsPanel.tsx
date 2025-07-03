@@ -491,6 +491,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
           </button>
         </div>
         </div>
+        </div>
       </div>
     </div>
   );

@@ -445,6 +445,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
           </button>
         </div>
         </div>
+        </div>
       </div>
     </div>
   );

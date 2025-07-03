@@ -344,6 +344,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </button>
         </div>
         </div>
+        </div>
       </div>
     </div>
   );
