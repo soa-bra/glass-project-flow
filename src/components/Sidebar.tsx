@@ -70,7 +70,11 @@ const Sidebar = ({ onToggle, activeSection = 'home', onSectionChange, forceColla
             
             <button 
               onClick={toggleSidebar}
-              className={`group w-[60px] h-[60px] rounded-full flex items-center justify-center border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/20 hover:shadow-lg flex-shrink-0 sync-transition-fast ${forceCollapsed ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`group w-[60px] h-[60px] rounded-full flex items-center justify-center border-2 flex-shrink-0 sync-transition-fast ${
+                forceCollapsed 
+                  ? 'border-transparent bg-transparent hover:border-transparent hover:bg-transparent opacity-20 cursor-not-allowed' 
+                  : 'border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/20 hover:shadow-lg'
+              }`}
             >
               <div className="sync-transition-fast">
                 {(forceCollapsed || isCollapsed) ? (

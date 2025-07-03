@@ -11,13 +11,11 @@ const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
   const [isPlanningSidebarCollapsed, setIsPlanningSidebarCollapsed] = useState(false);
   return (
     <>
-      {/* Planning Content Panel - 96% width from sidebar edge to right edge */}
-      <div className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] ${
-        isSidebarCollapsed 
-          ? 'left-[4%] w-[96%]' 
-          : 'left-[20%] w-[80%]'
-      } transition-all duration-300`}>
-        <PlanningPanel selectedCategory={selectedCategory} isMainSidebarCollapsed={isSidebarCollapsed} isPlanningSidebarCollapsed={isPlanningSidebarCollapsed} />
+      {/* Planning Content Panel - Centered horizontally */}
+      <div className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] w-full flex justify-center px-8">
+        <div className="w-full max-w-[96%] transition-all duration-300">
+          <PlanningPanel selectedCategory={selectedCategory} isMainSidebarCollapsed={isSidebarCollapsed} isPlanningSidebarCollapsed={isPlanningSidebarCollapsed} />
+        </div>
       </div>
     </>
   );
