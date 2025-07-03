@@ -89,6 +89,11 @@
     --stagger-delay: 50ms;
     --base-delay: 100ms;
     
+    /* Smooth Page Transition Variables */
+    --page-transition-duration: 450ms;
+    --page-transition-easing: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --slide-distance: 20px;
+    
     /* Layout Constants for Consistent Spacing */
     --sidebar-margin: 15px;
     --content-margin: 20px;
@@ -221,6 +226,51 @@
     font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
     text-rendering: optimizeLegibility;
+  }
+}
+
+/* Page Transition Keyframes */
+@keyframes contentSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(20px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes contentSlideOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.98);
+  }
+}
+
+@keyframes softSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes softSlideOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-15px);
   }
 }
 
@@ -563,25 +613,94 @@
   transition: all var(--animation-duration-fast) var(--animation-easing);
 }
 
-/* Department panel smooth transitions */
-.department-panel-enter {
-  opacity: 0;
-  transform: translateX(40px);
-}
+  /* Page Transition Animation Classes */
+  .page-transition-enter {
+    opacity: 0;
+    transform: translateX(var(--slide-distance));
+  }
 
-.department-panel-enter-active {
-  opacity: 1;
-  transform: translateX(0);
-  transition: all var(--animation-duration-main) var(--animation-easing);
-}
+  .page-transition-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity var(--page-transition-duration) var(--page-transition-easing),
+                transform var(--page-transition-duration) var(--page-transition-easing);
+  }
 
-.department-panel-exit {
-  opacity: 1;
-  transform: translateX(0);
-}
+  .page-transition-exit {
+    opacity: 1;
+    transform: translateX(0);
+  }
 
-.department-panel-exit-active {
-  opacity: 0;
-  transform: translateX(-40px);
-  transition: all var(--animation-duration-main) var(--animation-easing);
-}
+  .page-transition-exit-active {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--slide-distance)));
+    transition: opacity var(--page-transition-duration) var(--page-transition-easing),
+                transform var(--page-transition-duration) var(--page-transition-easing);
+  }
+
+  /* Workspace Transition Classes */
+  .workspace-enter {
+    opacity: 0;
+    transform: translateX(15px) scale(0.98);
+  }
+
+  .workspace-enter-active {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    transition: all var(--page-transition-duration) var(--page-transition-easing);
+  }
+
+  .workspace-exit {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+
+  .workspace-exit-active {
+    opacity: 0;
+    transform: translateX(-15px) scale(0.98);
+    transition: all var(--page-transition-duration) var(--page-transition-easing);
+  }
+
+  /* Sidebar Transition Classes */
+  .sidebar-transition {
+    transition: all var(--page-transition-duration) var(--page-transition-easing);
+  }
+
+  /* Content Panel Slide Animations */
+  .content-slide-in {
+    animation: contentSlideIn var(--page-transition-duration) var(--page-transition-easing) forwards;
+  }
+
+  .content-slide-out {
+    animation: contentSlideOut var(--page-transition-duration) var(--page-transition-easing) forwards;
+  }
+
+  /* Projects Column Smooth Transition */
+  .projects-smooth-transition {
+    transition: right var(--page-transition-duration) var(--page-transition-easing),
+                transform var(--page-transition-duration) var(--page-transition-easing),
+                opacity var(--page-transition-duration) var(--page-transition-easing);
+  }
+
+  /* Department panel smooth transitions */
+  .department-panel-enter {
+    opacity: 0;
+    transform: translateX(25px) scale(0.98);
+  }
+
+  .department-panel-enter-active {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    transition: all var(--page-transition-duration) var(--page-transition-easing);
+  }
+
+  .department-panel-exit {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+
+  .department-panel-exit-active {
+    opacity: 0;
+    transform: translateX(-25px) scale(0.98);
+    transition: all var(--page-transition-duration) var(--page-transition-easing);
+  }

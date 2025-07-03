@@ -14,7 +14,7 @@ const SettingsWorkspace: React.FC<SettingsWorkspaceProps> = ({ isSidebarCollapse
     <>
       {/* Settings Categories Sidebar */}
       <div
-        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${
+        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] sidebar-transition ${
           isSidebarCollapsed ? 'departments-sidebar-collapsed' : 'departments-sidebar-expanded'
         }`}
         style={{
@@ -32,7 +32,7 @@ const SettingsWorkspace: React.FC<SettingsWorkspaceProps> = ({ isSidebarCollapse
 
       {/* Settings Content Panel */}
       <div
-        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] ${
+        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] content-slide-in ${
           isSidebarCollapsed 
             ? (isSettingsSidebarCollapsed ? 'departments-panel-both-collapsed' : 'departments-panel-main-collapsed') 
             : (isSettingsSidebarCollapsed ? 'departments-panel-departments-collapsed' : 'departments-panel-both-expanded')

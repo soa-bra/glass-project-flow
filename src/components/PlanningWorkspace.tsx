@@ -12,7 +12,7 @@ const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
   return (
     <>
       {/* Planning Content Panel - positioned after sidebar with 10px margin */}
-      <div className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-300 ${
+      <div className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] sidebar-transition content-slide-in ${
         isSidebarCollapsed 
           ? 'right-[calc(var(--sidebar-width-collapsed)+18px)] w-[calc(100vw-var(--sidebar-width-collapsed)-26px)]'
           : 'right-[calc(var(--sidebar-width-expanded)+18px)] w-[calc(100vw-var(--sidebar-width-expanded)-26px)]'

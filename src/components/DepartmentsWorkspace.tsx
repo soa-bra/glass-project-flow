@@ -14,7 +14,7 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
     <>
       {/* العمود الثاني: سايدبار الإدارات */}
       <div
-        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${
+        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] sidebar-transition ${
           isSidebarCollapsed ? 'departments-sidebar-collapsed' : 'departments-sidebar-expanded'
         }`}
         style={{
@@ -32,7 +32,7 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
 
       {/* العمود الثالث: لوحة الإدارة */}
       <div
-        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] ${
+        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] content-slide-in ${
           isSidebarCollapsed 
             ? (isDepartmentsSidebarCollapsed ? 'departments-panel-both-collapsed' : 'departments-panel-main-collapsed') 
             : (isDepartmentsSidebarCollapsed ? 'departments-panel-departments-collapsed' : 'departments-panel-both-expanded')

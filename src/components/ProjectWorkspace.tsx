@@ -84,12 +84,12 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     <ProjectTasksProvider>
       {/* Projects Column: shifts left when panel slides in */}
       <div
-        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`}
+        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass} projects-smooth-transition`}
         style={{
           top: 'var(--sidebar-top-offset)',
           right: projectsColumnRight,
           width: projectsColumnWidth,
-          transition: 'all var(--animation-duration-main) var(--animation-easing)',
+          transition: 'all var(--page-transition-duration) var(--page-transition-easing)',
           zIndex: 110,
         }}
       >
@@ -113,9 +113,9 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         style={{
           right: operationsBoardRight,
           width: operationsBoardWidth,
-          transition: 'all var(--animation-duration-main) var(--animation-easing)'
+          transition: 'all var(--page-transition-duration) var(--page-transition-easing)'
         }}
-        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0 ${operationsBoardClass}`}
+        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0 ${operationsBoardClass} content-slide-in`}
       >
         <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
       </div>
