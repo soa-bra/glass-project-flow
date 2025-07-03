@@ -1,6 +1,6 @@
 
 import Sidebar from '@/components/Sidebar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProjectWorkspace from './ProjectWorkspace';
 import DepartmentsWorkspace from './DepartmentsWorkspace';
 import ArchiveWorkspace from './ArchiveWorkspace';
@@ -10,6 +10,19 @@ import PlanningWorkspace from './PlanningWorkspace';
 const MainContent = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeSection, setActiveSection] = useState('home'); // 'home', 'departments', 'archive', etc.
+  const [previousSidebarState, setPreviousSidebarState] = useState(false);
+
+  // Auto-collapse sidebar when entering planning section
+  useEffect(() => {
+    if (activeSection === 'planning') {
+      // Save current sidebar state and collapse it
+      setPreviousSidebarState(isSidebarCollapsed);
+      setIsSidebarCollapsed(true);
+    } else {
+      // Restore previous sidebar state when leaving planning
+      setIsSidebarCollapsed(previousSidebarState);
+    }
+  }, [activeSection]);
 
   const renderWorkspace = () => {
     switch (activeSection) {
