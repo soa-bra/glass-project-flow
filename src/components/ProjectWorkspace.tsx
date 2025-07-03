@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import ProjectPanel from '@/components/ProjectPanel';
@@ -83,7 +84,11 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   return (
     <ProjectTasksProvider>
       {/* Projects Column: shifts left when panel slides in */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 20 }}
+        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
         className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`}
         style={{
           top: 'var(--sidebar-top-offset)',
@@ -106,10 +111,14 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
             onProjectAdded={handleProjectAdded}
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* Operations Board: slides out when panel slides in */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, x: 60 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 60 }}
+        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
         style={{
           right: operationsBoardRight,
           width: operationsBoardWidth,
@@ -118,7 +127,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0 ${operationsBoardClass}`}
       >
         <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
-      </div>
+      </motion.div>
 
       {/* Project Management Board: slides in/out and crossfades content */}
       {shownProject && (
