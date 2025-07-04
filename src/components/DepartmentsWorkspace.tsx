@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import DepartmentsSidebar from './DepartmentsSidebar';
 import DepartmentPanel from './DepartmentPanel';
 
@@ -11,34 +10,10 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [isDepartmentsSidebarCollapsed, setIsDepartmentsSidebarCollapsed] = useState(false);
 
-  // Animation variants for departments components
-  const sidebarVariants = {
-    initial: { opacity: 0, x: 20 },
-    animate: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: 20 }
-  };
-
-  const panelVariants = {
-    initial: { opacity: 0, x: 40 },
-    animate: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: 40 }
-  };
-
-  const transition = {
-    duration: 0.5,
-    ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
-    delay: 0.1
-  };
-
   return (
     <>
       {/* العمود الثاني: سايدبار الإدارات */}
-      <motion.div
-        variants={sidebarVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        transition={transition}
+      <div
         className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${
           isSidebarCollapsed ? 'departments-sidebar-collapsed' : 'departments-sidebar-expanded'
         }`}
@@ -53,15 +28,10 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
           isCollapsed={isDepartmentsSidebarCollapsed}
           onToggleCollapse={setIsDepartmentsSidebarCollapsed}
         />
-      </motion.div>
+      </div>
 
       {/* العمود الثالث: لوحة الإدارة */}
-      <motion.div
-        variants={panelVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        transition={{ ...transition, delay: 0.2 }}
+      <div
         className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] ${
           isSidebarCollapsed 
             ? (isDepartmentsSidebarCollapsed ? 'departments-panel-both-collapsed' : 'departments-panel-main-collapsed') 
@@ -73,7 +43,7 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
           isMainSidebarCollapsed={isSidebarCollapsed}
           isDepartmentsSidebarCollapsed={isDepartmentsSidebarCollapsed}
         />
-      </motion.div>
+      </div>
     </>
   );
 };
