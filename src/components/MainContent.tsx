@@ -1,6 +1,7 @@
 
 import Sidebar from '@/components/Sidebar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import ProjectWorkspace from './ProjectWorkspace';
 import DepartmentsWorkspace from './DepartmentsWorkspace';
 import ArchiveWorkspace from './ArchiveWorkspace';
@@ -28,19 +29,53 @@ const MainContent = () => {
   const forceCollapsed = activeSection === 'planning';
   const effectiveCollapsed = forceCollapsed || isSidebarCollapsed;
 
-  const renderWorkspace = () => {
-    switch (activeSection) {
-      case 'departments':
-        return <DepartmentsWorkspace isSidebarCollapsed={effectiveCollapsed} />;
-      case 'planning':
-        return <PlanningWorkspace isSidebarCollapsed={effectiveCollapsed} />;
-      case 'archive':
-        return <ArchiveWorkspace isSidebarCollapsed={effectiveCollapsed} />;
-      case 'settings':
-        return <SettingsWorkspace isSidebarCollapsed={effectiveCollapsed} />;
-      default:
-        return <ProjectWorkspace isSidebarCollapsed={effectiveCollapsed} />;
+  // Animation variants for smooth section transitions
+  const sectionVariants = {
+    initial: { 
+      opacity: 0.8, 
+      y: 8
+    },
+    animate: { 
+      opacity: 1, 
+      y: 0
+    },
+    exit: { 
+      opacity: 0.8, 
+      y: -4
     }
+  };
+
+  const sectionTransition = {
+    duration: 0.25,
+    ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number]
+  };
+
+  const renderWorkspace = () => {
+    const workspaceComponents = {
+      departments: <DepartmentsWorkspace isSidebarCollapsed={effectiveCollapsed} />,
+      planning: <PlanningWorkspace isSidebarCollapsed={effectiveCollapsed} />,
+      archive: <ArchiveWorkspace isSidebarCollapsed={effectiveCollapsed} />,
+      settings: <SettingsWorkspace isSidebarCollapsed={effectiveCollapsed} />,
+      home: <ProjectWorkspace isSidebarCollapsed={effectiveCollapsed} />
+    };
+
+    const currentComponent = workspaceComponents[activeSection] || workspaceComponents.home;
+
+    return (
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={activeSection}
+          variants={sectionVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={sectionTransition}
+          className="w-full h-full"
+        >
+          {currentComponent}
+        </motion.div>
+      </AnimatePresence>
+    );
   };
 
   return (
