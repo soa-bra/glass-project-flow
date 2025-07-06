@@ -84,6 +84,34 @@ export function useLayerInteraction({
     dragOffset.current = { x: deltaX, y: deltaY };
   }, [isDragging, dragStart, selectedElementId, setLayers, canvasRef]);
 
+  const handleNativeMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging || !dragStart || !selectedElementId) return;
+
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    const deltaX = mouseX - dragStart.x;
+    const deltaY = mouseY - dragStart.y;
+
+    // تحديث موقع العنصر
+    setLayers(prevLayers => 
+      prevLayers.map(layer => 
+        layer.id === selectedElementId 
+          ? { 
+              ...layer, 
+              x: layer.x + deltaX - dragOffset.current.x,
+              y: layer.y + deltaY - dragOffset.current.y
+            }
+          : layer
+      )
+    );
+
+    dragOffset.current = { x: deltaX, y: deltaY };
+  }, [isDragging, dragStart, selectedElementId, setLayers, canvasRef]);
+
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
     setDragStart(null);
@@ -91,32 +119,24 @@ export function useLayerInteraction({
   }, []);
 
   const registerCanvasMovement = useCallback((canvas: HTMLDivElement) => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleDocumentMouseMove = (e: MouseEvent) => {
       if (isDragging) {
-        const rect = canvas.getBoundingClientRect();
-        const mockEvent = {
-          clientX: e.clientX,
-          clientY: e.clientY,
-          stopPropagation: () => {},
-          preventDefault: () => {}
-        } as React.MouseEvent;
-        
-        handleMouseMove(mockEvent as React.MouseEvent);
+        handleNativeMouseMove(e);
       }
     };
 
-    const handleMouseUp = () => {
+    const handleDocumentMouseUp = () => {
       handleMouseUp();
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousemove', handleDocumentMouseMove);
+    document.addEventListener('mouseup', handleDocumentMouseUp);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleDocumentMouseMove);
+      document.removeEventListener('mouseup', handleDocumentMouseUp);
     };
-  }, [isDragging, handleMouseMove, handleMouseUp]);
+  }, [isDragging, handleNativeMouseMove, handleMouseUp]);
 
   // التحكم بلوحة المفاتيح
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
