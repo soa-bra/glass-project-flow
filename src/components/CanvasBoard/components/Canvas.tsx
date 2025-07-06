@@ -91,6 +91,8 @@ const Canvas: React.FC<CanvasProps> = ({
             onClick={(e) => {
               e.stopPropagation();
               onElementSelect(element.id);
+              // Debug log to see element type
+              console.log('Element clicked:', element.type, element);
             }}
           >
             {element.type === 'text' && (
@@ -134,6 +136,15 @@ const Canvas: React.FC<CanvasProps> = ({
                 <div className="text-center">
                   <span className="text-lg">🎨</span>
                   <p className="text-xs font-arabic mt-1">مودبورد</p>
+                </div>
+              </div>
+            )}
+            {/* Debug: Show element type if no case matches */}
+            {!['text', 'shape', 'sticky', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard'].includes(element.type) && (
+              <div className="w-full h-full bg-red-200 rounded border-2 border-red-400 flex items-center justify-center">
+                <div className="text-center">
+                  <span className="text-xs font-arabic">نوع غير معروف</span>
+                  <p className="text-xs text-red-600">{element.type}</p>
                 </div>
               </div>
             )}
