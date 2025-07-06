@@ -31,7 +31,7 @@ const CollabBar: React.FC = () => {
   };
   return (
     <div className="fixed top-4 left-4 z-40 w-80">
-      <Card className="bg-white/95 backdrop-blur-md shadow-lg rounded-[40px]">
+      <Card className="bg-white/95 backdrop-blur-md shadow-sm rounded-[40px]">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-arabic flex items-center gap-2">
             <Users className="w-5 h-5" />

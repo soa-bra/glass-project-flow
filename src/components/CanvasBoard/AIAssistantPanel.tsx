@@ -1,14 +1,31 @@
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Zap, MessageSquare } from 'lucide-react';
+import { Zap, MessageSquare, Bot } from 'lucide-react';
+import { toast } from 'sonner';
 
 const AIAssistantPanel: React.FC = () => {
+  const [message, setMessage] = useState('');
+
+  const handleSendMessage = () => {
+    if (!message.trim()) {
+      toast.error('يرجى كتابة رسالة');
+      return;
+    }
+    toast.success('تم إرسال الرسالة للمساعد الذكي');
+    setMessage('');
+  };
+
   return (
-    <Card className="bg-white/95 backdrop-blur-sm border-black/10">
-      <CardContent className="p-4">
-        <h3 className="text-lg font-semibold text-black mb-4">مساعد الذكاء الاصطناعي</h3>
+    <Card className="bg-white/95 backdrop-blur-md shadow-sm rounded-[40px] border-0">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg font-arabic flex items-center gap-2">
+          <Bot className="w-5 h-5" />
+          مساعد الذكاء الاصطناعي
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
         <div className="space-y-4">
           <div className="bg-blue-50 p-3 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
@@ -24,9 +41,11 @@ const AIAssistantPanel: React.FC = () => {
             placeholder="اسأل المساعد الذكي..."
             className="resize-none"
             rows={3}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
           />
           
-          <Button className="w-full">
+          <Button className="w-full" onClick={handleSendMessage}>
             <MessageSquare className="w-4 h-4 mr-2" />
             إرسال
           </Button>

@@ -11,7 +11,7 @@ interface MainToolbarProps {
 const MainToolbar: React.FC<MainToolbarProps> = ({ selectedTool, onToolSelect }) => {
   return (
     <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
-      <Card className="bg-white/95 backdrop-blur-md shadow-xl border-0 rounded-[40px]">
+      <Card className="bg-white/95 backdrop-blur-md shadow-sm border-0 rounded-[40px]">
         <CardContent className="flex items-center gap-2 p-3">
           {CANVAS_TOOLS.map((tool) => {
             const Icon = tool.icon;
