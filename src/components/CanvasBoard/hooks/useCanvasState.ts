@@ -18,6 +18,10 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
   const [drawStart, setDrawStart] = useState<{ x: number; y: number } | null>(null);
   const [drawEnd, setDrawEnd] = useState<{ x: number; y: number } | null>(null);
   const [selectedSmartElement, setSelectedSmartElement] = useState<string>('brainstorm');
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isResizing, setIsResizing] = useState<boolean>(false);
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [resizeHandle, setResizeHandle] = useState<string>('');
   
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -177,6 +181,123 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     }
   }, [selectedTool, addElement, zoom, canvasPosition]);
 
+  // وظائف السحب والإفلات
+  const handleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
+    if (selectedTool !== 'select') return;
+    
+    e.stopPropagation();
+    setSelectedElementId(elementId);
+    
+    const element = elements.find(el => el.id === elementId);
+    if (!element || element.locked) return;
+    
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    const mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    
+    setIsDragging(true);
+    setDragOffset({
+      x: mouseX - element.position.x,
+      y: mouseY - element.position.y
+    });
+  }, [selectedTool, elements, zoom, canvasPosition]);
+
+  const handleElementMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging || !selectedElementId || !canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    const mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    
+    updateElement(selectedElementId, {
+      position: {
+        x: mouseX - dragOffset.x,
+        y: mouseY - dragOffset.y
+      }
+    });
+  }, [isDragging, selectedElementId, dragOffset, zoom, canvasPosition, updateElement]);
+
+  const handleElementMouseUp = useCallback(() => {
+    if (isDragging) {
+      setIsDragging(false);
+      setDragOffset({ x: 0, y: 0 });
+    }
+    if (isResizing) {
+      setIsResizing(false);
+      setResizeHandle('');
+    }
+  }, [isDragging, isResizing]);
+
+  // وظائف تغيير الحجم
+  const handleResizeMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
+    if (selectedTool !== 'select') return;
+    
+    e.stopPropagation();
+    setIsResizing(true);
+    setResizeHandle(handle);
+  }, [selectedTool]);
+
+  const handleResizeMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isResizing || !selectedElementId || !canvasRef.current) return;
+    
+    const element = elements.find(el => el.id === selectedElementId);
+    if (!element) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    const mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    
+    let newPosition = { ...element.position };
+    let newSize = { ...element.size };
+    
+    switch (resizeHandle) {
+      case 'nw': // top-left
+        newSize.width = element.position.x + element.size.width - mouseX;
+        newSize.height = element.position.y + element.size.height - mouseY;
+        newPosition.x = mouseX;
+        newPosition.y = mouseY;
+        break;
+      case 'ne': // top-right
+        newSize.width = mouseX - element.position.x;
+        newSize.height = element.position.y + element.size.height - mouseY;
+        newPosition.y = mouseY;
+        break;
+      case 'sw': // bottom-left
+        newSize.width = element.position.x + element.size.width - mouseX;
+        newSize.height = mouseY - element.position.y;
+        newPosition.x = mouseX;
+        break;
+      case 'se': // bottom-right
+        newSize.width = mouseX - element.position.x;
+        newSize.height = mouseY - element.position.y;
+        break;
+      case 'n': // top
+        newSize.height = element.position.y + element.size.height - mouseY;
+        newPosition.y = mouseY;
+        break;
+      case 's': // bottom
+        newSize.height = mouseY - element.position.y;
+        break;
+      case 'w': // left
+        newSize.width = element.position.x + element.size.width - mouseX;
+        newPosition.x = mouseX;
+        break;
+      case 'e': // right
+        newSize.width = mouseX - element.position.x;
+        break;
+    }
+    
+    // التأكد من أن الحجم لا يصبح سالبًا
+    if (newSize.width > 20 && newSize.height > 20) {
+      updateElement(selectedElementId, {
+        position: newPosition,
+        size: newSize
+      });
+    }
+  }, [isResizing, selectedElementId, resizeHandle, elements, zoom, canvasPosition, updateElement]);
+
   return {
     // State
     selectedTool,
@@ -195,6 +316,8 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     drawStart,
     drawEnd,
     selectedSmartElement,
+    isDragging,
+    isResizing,
     
     // Setters
     setSelectedTool,
@@ -214,6 +337,11 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     handleCanvasMouseDown,
     handleCanvasMouseMove,
     handleCanvasMouseUp,
+    handleElementMouseDown,
+    handleElementMouseMove,
+    handleElementMouseUp,
+    handleResizeMouseDown,
+    handleResizeMouseMove,
     undo,
     redo,
     saveCanvas,

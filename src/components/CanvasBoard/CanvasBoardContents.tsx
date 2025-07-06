@@ -34,6 +34,8 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     drawStart,
     drawEnd,
     selectedSmartElement,
+    isDragging,
+    isResizing,
     setSelectedTool,
     setSelectedElementId,
     setShowGrid,
@@ -45,6 +47,11 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     handleCanvasMouseDown,
     handleCanvasMouseMove,
     handleCanvasMouseUp,
+    handleElementMouseDown,
+    handleElementMouseMove,
+    handleElementMouseUp,
+    handleResizeMouseDown,
+    handleResizeMouseMove,
     undo,
     redo,
     saveCanvas,
@@ -102,11 +109,18 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         isDrawing={isDrawing}
         drawStart={drawStart}
         drawEnd={drawEnd}
+        isDragging={isDragging}
+        isResizing={isResizing}
         onCanvasClick={handleCanvasClick}
         onCanvasMouseDown={handleCanvasMouseDown}
         onCanvasMouseMove={handleCanvasMouseMove}
         onCanvasMouseUp={handleCanvasMouseUp}
         onElementSelect={setSelectedElementId}
+        onElementMouseDown={handleElementMouseDown}
+        onElementMouseMove={handleElementMouseMove}
+        onElementMouseUp={handleElementMouseUp}
+        onResizeMouseDown={handleResizeMouseDown}
+        onResizeMouseMove={handleResizeMouseMove}
         onToggleGrid={() => setShowGrid(!showGrid)}
         onToggleSnap={() => setSnapEnabled(!snapEnabled)}
       />

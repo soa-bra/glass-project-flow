@@ -16,11 +16,18 @@ interface CanvasProps {
   isDrawing: boolean;
   drawStart: { x: number; y: number } | null;
   drawEnd: { x: number; y: number } | null;
+  isDragging: boolean;
+  isResizing: boolean;
   onCanvasClick: (e: React.MouseEvent) => void;
   onCanvasMouseDown: (e: React.MouseEvent) => void;
   onCanvasMouseMove: (e: React.MouseEvent) => void;
   onCanvasMouseUp: () => void;
   onElementSelect: (id: string) => void;
+  onElementMouseDown: (e: React.MouseEvent, elementId: string) => void;
+  onElementMouseMove: (e: React.MouseEvent) => void;
+  onElementMouseUp: () => void;
+  onResizeMouseDown: (e: React.MouseEvent, handle: string) => void;
+  onResizeMouseMove: (e: React.MouseEvent) => void;
   onToggleGrid: () => void;
   onToggleSnap: () => void;
 }
@@ -37,11 +44,18 @@ const Canvas: React.FC<CanvasProps> = ({
   isDrawing,
   drawStart,
   drawEnd,
+  isDragging,
+  isResizing,
   onCanvasClick,
   onCanvasMouseDown,
   onCanvasMouseMove,
   onCanvasMouseUp,
   onElementSelect,
+  onElementMouseDown,
+  onElementMouseMove,
+  onElementMouseUp,
+  onResizeMouseDown,
+  onResizeMouseMove,
   onToggleGrid,
   onToggleSnap
 }) => {
@@ -49,6 +63,7 @@ const Canvas: React.FC<CanvasProps> = ({
     if (selectedTool === 'smart-element') return 'crosshair';
     if (selectedTool === 'hand') return 'grab';
     if (selectedTool === 'zoom') return 'zoom-in';
+    if (selectedTool === 'select' && isDragging) return 'grabbing';
     return 'default';
   };
   return (
@@ -74,78 +89,160 @@ const Canvas: React.FC<CanvasProps> = ({
         }}
         onClick={onCanvasClick}
         onMouseDown={onCanvasMouseDown}
-        onMouseMove={onCanvasMouseMove}
-        onMouseUp={onCanvasMouseUp}
+        onMouseMove={(e) => {
+          onCanvasMouseMove(e);
+          if (isDragging || isResizing) {
+            if (isDragging) {
+              onElementMouseMove(e);
+            }
+            if (isResizing) {
+              onResizeMouseMove(e);
+            }
+          }
+        }}
+        onMouseUp={() => {
+          onCanvasMouseUp();
+          onElementMouseUp();
+        }}
       >
         {elements.map((element) => (
-          <div
-            key={element.id}
-            className={`absolute border-2 ${selectedElementId === element.id ? 'border-blue-500' : 'border-transparent'} 
-                      ${element.locked ? 'cursor-not-allowed' : 'cursor-move'} hover:border-blue-300 transition-colors`}
-            style={{
-              left: element.position.x,
-              top: element.position.y,
-              width: element.size.width,
-              height: element.size.height
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onElementSelect(element.id);
-              // Debug log to see element type
-              console.log('Element clicked:', element.type, element);
-            }}
-          >
-            {element.type === 'text' && (
-              <div className="w-full h-full flex items-center justify-center bg-yellow-200 rounded p-2">
-                <span className="text-sm font-arabic">{element.content || 'نص جديد'}</span>
-              </div>
-            )}
-            {element.type === 'shape' && (
-              <div className="w-full h-full bg-blue-200 rounded border-2 border-blue-400" />
-            )}
-            {element.type === 'sticky' && (
-              <div className="w-full h-full bg-yellow-300 rounded shadow-md p-2 border border-yellow-400">
-                <span className="text-xs font-arabic">{element.content || 'ملاحظة'}</span>
-              </div>
-            )}
-            {element.type === 'timeline' && (
-              <div className="w-full h-full bg-green-200 rounded border-2 border-green-400 flex items-center justify-center">
-                <Clock className="w-6 h-6 text-green-600" />
-              </div>
-            )}
-            {element.type === 'mindmap' && (
-              <div className="w-full h-full bg-purple-200 rounded border-2 border-purple-400 flex items-center justify-center">
-                <GitBranch className="w-6 h-6 text-purple-600" />
-              </div>
-            )}
-            {element.type === 'brainstorm' && (
-              <div className="w-full h-full bg-orange-200 rounded border-2 border-orange-400 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="text-lg">💡</span>
-                  <p className="text-xs font-arabic mt-1">عصف ذهني</p>
+          <div key={element.id}>
+            {/* العنصر الأساسي */}
+            <div
+              className={`absolute border-2 ${selectedElementId === element.id ? 'border-blue-500' : 'border-transparent'} 
+                        ${element.locked ? 'cursor-not-allowed' : (selectedTool === 'select' ? 'cursor-move' : 'cursor-pointer')} 
+                        hover:border-blue-300 transition-colors`}
+              style={{
+                left: element.position.x,
+                top: element.position.y,
+                width: element.size.width,
+                height: element.size.height
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onElementSelect(element.id);
+                console.log('Element clicked:', element.type, element);
+              }}
+              onMouseDown={(e) => {
+                if (selectedTool === 'select') {
+                  onElementMouseDown(e, element.id);
+                }
+              }}
+              onMouseMove={onElementMouseMove}
+              onMouseUp={onElementMouseUp}
+            >
+              {element.type === 'text' && (
+                <div className="w-full h-full flex items-center justify-center bg-yellow-200 rounded p-2">
+                  <span className="text-sm font-arabic">{element.content || 'نص جديد'}</span>
                 </div>
-              </div>
-            )}
-            {element.type === 'root' && (
-              <div className="w-full h-full bg-indigo-200 rounded border-2 border-indigo-400 flex items-center justify-center">
-                <GitBranch className="w-6 h-6 text-indigo-600" />
-              </div>
-            )}
-            {element.type === 'moodboard' && (
-              <div className="w-full h-full bg-pink-200 rounded border-2 border-pink-400 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="text-lg">🎨</span>
-                  <p className="text-xs font-arabic mt-1">مودبورد</p>
+              )}
+              {element.type === 'shape' && (
+                <div className="w-full h-full bg-blue-200 rounded border-2 border-blue-400" />
+              )}
+              {element.type === 'sticky' && (
+                <div className="w-full h-full bg-yellow-300 rounded shadow-md p-2 border border-yellow-400">
+                  <span className="text-xs font-arabic">{element.content || 'ملاحظة'}</span>
                 </div>
-              </div>
-            )}
-            {/* Debug: Show element type if no case matches */}
-            {!['text', 'shape', 'sticky', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard'].includes(element.type) && (
-              <div className="w-full h-full bg-red-200 rounded border-2 border-red-400 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="text-xs font-arabic">نوع غير معروف</span>
-                  <p className="text-xs text-red-600">{element.type}</p>
+              )}
+              {element.type === 'timeline' && (
+                <div className="w-full h-full bg-green-200 rounded border-2 border-green-400 flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-green-600" />
                 </div>
+              )}
+              {element.type === 'mindmap' && (
+                <div className="w-full h-full bg-purple-200 rounded border-2 border-purple-400 flex items-center justify-center">
+                  <GitBranch className="w-6 h-6 text-purple-600" />
+                </div>
+              )}
+              {element.type === 'brainstorm' && (
+                <div className="w-full h-full bg-orange-200 rounded border-2 border-orange-400 flex items-center justify-center">
+                  <div className="text-center">
+                    <span className="text-lg">💡</span>
+                    <p className="text-xs font-arabic mt-1">عصف ذهني</p>
+                  </div>
+                </div>
+              )}
+              {element.type === 'root' && (
+                <div className="w-full h-full bg-indigo-200 rounded border-2 border-indigo-400 flex items-center justify-center">
+                  <GitBranch className="w-6 h-6 text-indigo-600" />
+                </div>
+              )}
+              {element.type === 'moodboard' && (
+                <div className="w-full h-full bg-pink-200 rounded border-2 border-pink-400 flex items-center justify-center">
+                  <div className="text-center">
+                    <span className="text-lg">🎨</span>
+                    <p className="text-xs font-arabic mt-1">مودبورد</p>
+                  </div>
+                </div>
+              )}
+              {!['text', 'shape', 'sticky', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard'].includes(element.type) && (
+                <div className="w-full h-full bg-red-200 rounded border-2 border-red-400 flex items-center justify-center">
+                  <div className="text-center">
+                    <span className="text-xs font-arabic">نوع غير معروف</span>
+                    <p className="text-xs text-red-600">{element.type}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Bounding Box مع Resize Handles */}
+            {selectedElementId === element.id && selectedTool === 'select' && (
+              <div
+                className="absolute pointer-events-none"
+                style={{
+                  left: element.position.x - 4,
+                  top: element.position.y - 4,
+                  width: element.size.width + 8,
+                  height: element.size.height + 8
+                }}
+              >
+                {/* Bounding Box Border */}
+                <div className="absolute inset-0 border-2 border-blue-500 pointer-events-none" />
+                
+                {/* Resize Handles */}
+                {/* الزوايا */}
+                <div
+                  className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-nw-resize pointer-events-auto"
+                  style={{ left: -2, top: -2 }}
+                  onMouseDown={(e) => onResizeMouseDown(e, 'nw')}
+                />
+                <div
+                  className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-ne-resize pointer-events-auto"
+                  style={{ right: -2, top: -2 }}
+                  onMouseDown={(e) => onResizeMouseDown(e, 'ne')}
+                />
+                <div
+                  className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-sw-resize pointer-events-auto"
+                  style={{ left: -2, bottom: -2 }}
+                  onMouseDown={(e) => onResizeMouseDown(e, 'sw')}
+                />
+                <div
+                  className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-se-resize pointer-events-auto"
+                  style={{ right: -2, bottom: -2 }}
+                  onMouseDown={(e) => onResizeMouseDown(e, 'se')}
+                />
+                
+                {/* الجوانب */}
+                <div
+                  className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-n-resize pointer-events-auto"
+                  style={{ left: '50%', top: -2, transform: 'translateX(-50%)' }}
+                  onMouseDown={(e) => onResizeMouseDown(e, 'n')}
+                />
+                <div
+                  className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-s-resize pointer-events-auto"
+                  style={{ left: '50%', bottom: -2, transform: 'translateX(-50%)' }}
+                  onMouseDown={(e) => onResizeMouseDown(e, 's')}
+                />
+                <div
+                  className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-w-resize pointer-events-auto"
+                  style={{ left: -2, top: '50%', transform: 'translateY(-50%)' }}
+                  onMouseDown={(e) => onResizeMouseDown(e, 'w')}
+                />
+                <div
+                  className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-e-resize pointer-events-auto"
+                  style={{ right: -2, top: '50%', transform: 'translateY(-50%)' }}
+                  onMouseDown={(e) => onResizeMouseDown(e, 'e')}
+                />
               </div>
             )}
           </div>
