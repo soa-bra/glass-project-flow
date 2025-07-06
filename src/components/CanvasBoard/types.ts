@@ -1,3 +1,30 @@
+export interface CanvasElement {
+  id: string;
+  type: 'text' | 'shape' | 'sticky' | 'timeline' | 'mindmap' | 'smart';
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  content?: string;
+  style?: Record<string, any>;
+  locked?: boolean;
+}
+
+export interface CanvasBoardContentsProps {
+  projectId?: string;
+  userId?: string;
+}
+
+export interface CanvasState {
+  selectedTool: string;
+  selectedElementId: string | null;
+  showGrid: boolean;
+  snapEnabled: boolean;
+  elements: CanvasElement[];
+  showDefaultView: boolean;
+  searchQuery: string;
+  zoom: number;
+  canvasPosition: { x: number; y: number };
+}
+
 export interface CanvasItem {
   id: string;
   type: 'sticky-note' | 'task' | 'idea' | 'goal' | 'timeline' | 'team';
@@ -24,6 +51,7 @@ export interface Tool {
   id: string;
   label: string;
   icon: any;
+  category: 'basic' | 'smart' | 'file';
 }
 
 export interface PlanningMode {
