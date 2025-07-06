@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Plus, MessageSquare, Video, Mic, MicOff } from 'lucide-react';
+import { Users, Plus, MessageSquare, Phone, Mic, MicOff } from 'lucide-react';
 import { toast } from 'sonner';
 
 const CollabBar: React.FC = () => {
@@ -26,8 +26,8 @@ const CollabBar: React.FC = () => {
     toast.success(isMuted ? 'تم إلغاء الكتم' : 'تم كتم الصوت');
   };
 
-  const handleVideoCall = () => {
-    toast.info('سيتم بدء المكالمة المرئية قريباً');
+  const handleVoiceCall = () => {
+    toast.info('سيتم بدء المكالمة الصوتية قريباً');
   };
   return (
     <div className="fixed top-4 left-4 z-40 w-80">
@@ -38,9 +38,9 @@ const CollabBar: React.FC = () => {
               <Users className="w-5 h-5" />
               التعاون والتواصل
             </div>
-            <Button variant="outline" size="sm" onClick={handleInvite} className="rounded-full border-gray-300">
-              <Plus className="w-4 h-4 mr-1 text-black" />
-              <span className="text-black">دعوة</span>
+            <Button size="sm" onClick={handleInvite} className="rounded-full bg-black text-white hover:bg-black/80">
+              <Plus className="w-4 h-4 mr-1" />
+              <span>دعوة</span>
             </Button>
           </CardTitle>
         </CardHeader>
@@ -73,9 +73,9 @@ const CollabBar: React.FC = () => {
                 <MessageSquare className="w-4 h-4 mr-2" />
                 دردشة نصية
               </Button>
-              <Button variant="outline" size="sm" className="flex-1 rounded-full border-gray-300" onClick={handleVideoCall}>
-                <Video className="w-4 h-4 mr-2" />
-                مكالمة مرئية
+              <Button variant="outline" size="sm" className="flex-1 rounded-full border-gray-300" onClick={handleVoiceCall}>
+                <Phone className="w-4 h-4 mr-2" />
+                مكالمة صوتية
               </Button>
             </div>
             <Button 
