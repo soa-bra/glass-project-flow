@@ -1,13 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  SelectToolProps, 
-  ZoomToolProps, 
-  SmartElementToolProps, 
-  TextToolProps, 
-  ShapeToolProps 
-} from './ToolProps';
-
+import { SelectToolProps, ZoomToolProps, SmartElementToolProps, TextToolProps, ShapeToolProps } from './ToolProps';
 interface ToolPropsBarProps {
   selectedTool: string;
   selectedElementId: string | null;
@@ -20,9 +13,8 @@ interface ToolPropsBarProps {
   onPaste: () => void;
   onDelete: () => void;
 }
-
-const ToolPropsBar: React.FC<ToolPropsBarProps> = ({ 
-  selectedTool, 
+const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
+  selectedTool,
   selectedElementId,
   zoom,
   selectedSmartElement,
@@ -36,29 +28,11 @@ const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
   const renderToolProps = () => {
     switch (selectedTool) {
       case 'select':
-        return (
-          <SelectToolProps
-            selectedElementId={selectedElementId}
-            onCopy={onCopy}
-            onCut={onCut}
-            onPaste={onPaste}
-            onDelete={onDelete}
-          />
-        );
+        return <SelectToolProps selectedElementId={selectedElementId} onCopy={onCopy} onCut={onCut} onPaste={onPaste} onDelete={onDelete} />;
       case 'zoom':
-        return (
-          <ZoomToolProps
-            zoom={zoom}
-            onZoomChange={onZoomChange}
-          />
-        );
+        return <ZoomToolProps zoom={zoom} onZoomChange={onZoomChange} />;
       case 'smart-element':
-        return (
-          <SmartElementToolProps
-            selectedSmartElement={selectedSmartElement}
-            onSmartElementSelect={onSmartElementSelect}
-          />
-        );
+        return <SmartElementToolProps selectedSmartElement={selectedSmartElement} onSmartElementSelect={onSmartElementSelect} />;
       case 'text':
       case 'sticky':
         return <TextToolProps />;
@@ -68,19 +42,15 @@ const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
         return null;
     }
   };
-
-  return (
-    <div className="fixed bottom-24 left-4 z-40 w-80">
+  return <div className="fixed bottom-24 left-4 z-40 w-80">
       <Card className="bg-white/95 backdrop-blur-md shadow-sm rounded-[40px]">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-arabic">خصائص الأداة</CardTitle>
+          
         </CardHeader>
         <CardContent>
           {renderToolProps()}
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default ToolPropsBar;
