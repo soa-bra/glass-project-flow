@@ -1,5 +1,4 @@
 import React from 'react';
-import CanvasBoardContents from './CanvasBoard/CanvasBoardContents';
 interface PlanningPanelProps {
   selectedCategory: string | null;
   isMainSidebarCollapsed: boolean;
@@ -47,12 +46,6 @@ const PlanningPanel: React.FC<PlanningPanelProps> = ({
 
     // Render content based on selected category
     switch (selectedCategory) {
-      case 'canvas':
-        return <CanvasBoardContents 
-          projectId="PROJECT_001" 
-          userId="USER_001" 
-          userRole="manager" 
-        />;
       case 'strategic':
         return <div className="p-6">
             <h2 className="text-2xl font-bold text-black mb-6">التخطيط الاستراتيجي</h2>
