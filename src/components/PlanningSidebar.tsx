@@ -13,6 +13,10 @@ const PlanningSidebar: React.FC<PlanningSidebarProps> = ({
   onToggleCollapse
 }) => {
   const categories = [{
+    key: 'canvas',
+    label: 'لوحة التخطيط التفاعلية',
+    icon: BarChart3
+  }, {
     key: 'strategic',
     label: 'التخطيط الاستراتيجي',
     icon: Target
