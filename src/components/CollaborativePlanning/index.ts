@@ -1,4 +1,5 @@
 export { CollaborativePlanningCanvas } from './CollaborativePlanningCanvas';
+export { CanvasBoardContents } from './components/CanvasBoardContents';
 export { MainToolbar } from './components/MainToolbar';
 export { CanvasLayerSystem } from './components/CanvasLayerSystem';
 export { FloatingToolsPanel } from './components/FloatingToolsPanel';
@@ -6,3 +7,9 @@ export { Inspector } from './components/Inspector';
 export { AIPanel } from './components/AIPanel';
 export { CollaborationIndicators } from './components/CollaborationIndicators';
 export { ExportPanel } from './components/ExportPanel';
+export { CollabBar } from './components/CollabBar';
+export { ToolPropsBar } from './components/ToolPropsBar';
+export { CommandConsole } from './components/CommandConsole';
+export { MindMapPanel } from './components/MindMapPanel';
+export { TimelinePanel } from './components/TimelinePanel';
+export { BottomCenterToolbar } from './components/BottomCenterToolbar';

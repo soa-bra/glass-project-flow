@@ -2,7 +2,7 @@ import React from 'react';
 
 interface CanvasElement {
   id: string;
-  type: 'sticky-note' | 'shape' | 'text' | 'connection' | 'mindmap-node';
+  type: 'sticky-note' | 'shape' | 'text' | 'connection' | 'mindmap-node' | 'smart-element' | 'root-connector';
   position: { x: number; y: number };
   size: { width: number; height: number };
   content: string;
@@ -10,6 +10,8 @@ interface CanvasElement {
   locked?: boolean;
   userId?: string;
   layer: number;
+  rotation?: number;
+  groupId?: string;
 }
 
 interface Layer {
@@ -124,6 +126,46 @@ export const CanvasLayerSystem: React.FC<CanvasLayerSystemProps> = ({
             }}
           >
             <div className="p-2 h-full flex items-center justify-center text-sm font-medium text-purple-800">
+              {element.content}
+            </div>
+            {isSelected && (
+              <div className="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+            )}
+          </div>
+        );
+
+      case 'smart-element':
+        return (
+          <div
+            key={element.id}
+            className={`${baseClasses} rounded-lg border-2 border-yellow-400 bg-yellow-50`}
+            style={style}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isLocked) onElementSelect(element);
+            }}
+          >
+            <div className="p-2 h-full flex items-center justify-center text-sm font-medium text-yellow-800">
+              {element.content}
+            </div>
+            {isSelected && (
+              <div className="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+            )}
+          </div>
+        );
+
+      case 'root-connector':
+        return (
+          <div
+            key={element.id}
+            className={`${baseClasses} rounded-lg border-2 border-green-400 bg-green-50`}
+            style={style}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isLocked) onElementSelect(element);
+            }}
+          >
+            <div className="p-2 h-full flex items-center justify-center text-sm font-medium text-green-800">
               {element.content}
             </div>
             {isSelected && (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CollaborativePlanningCanvas } from './CollaborativePlanning';
+import { CanvasBoardContents } from './CollaborativePlanning';
 
 interface PlanningPanelProps {
   selectedCategory: string | null;
@@ -16,7 +16,7 @@ const PlanningPanel: React.FC<PlanningPanelProps> = ({
   if (selectedCategory === 'canvas' || selectedCategory === 'strategic' || selectedCategory === 'projects' || selectedCategory === 'teams') {
     return (
       <div style={{ background: 'var(--backgrounds-project-mgmt-board-bg)' }} className="h-full rounded-3xl overflow-hidden">
-        <CollaborativePlanningCanvas selectedCategory={selectedCategory} />
+        <CanvasBoardContents selectedCategory={selectedCategory} />
       </div>
     );
   }
