@@ -3,6 +3,7 @@ import { useCanvasHistory } from './useCanvasHistory';
 import { useCanvasElements } from './useCanvasElements';
 import { useCanvasActions } from './useCanvasActions';
 import { useCanvasInteraction } from './useCanvasInteraction';
+import { useKeyboardControls } from './useKeyboardControls';
 
 export const useCanvasState = (projectId = 'default', userId = 'user1') => {
   const [selectedTool, setSelectedTool] = useState<string>('select');
@@ -49,22 +50,22 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
   const wrappedConvertToProject = () => convertToProject(elements);
 
   const wrappedHandleCanvasMouseDown = (e: React.MouseEvent) => 
-    handleCanvasMouseDown(e, selectedTool, zoom, canvasPosition);
+    handleCanvasMouseDown(e, selectedTool, zoom, canvasPosition, snapEnabled);
   
   const wrappedHandleCanvasMouseMove = (e: React.MouseEvent) => 
-    handleCanvasMouseMove(e, zoom, canvasPosition);
+    handleCanvasMouseMove(e, zoom, canvasPosition, snapEnabled);
   
   const wrappedHandleCanvasMouseUp = () => 
     handleCanvasMouseUp(wrappedAddElement);
   
   const wrappedHandleCanvasClick = (e: React.MouseEvent) => 
-    handleCanvasClick(e, selectedTool, zoom, canvasPosition, wrappedAddElement);
+    handleCanvasClick(e, selectedTool, zoom, canvasPosition, wrappedAddElement, snapEnabled);
   
   const wrappedHandleElementMouseDown = (e: React.MouseEvent, elementId: string) => 
     handleElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId);
   
   const wrappedHandleElementMouseMove = (e: React.MouseEvent) => 
-    handleElementMouseMove(e, selectedElementId, zoom, canvasPosition, updateElement);
+    handleElementMouseMove(e, selectedElementId, zoom, canvasPosition, updateElement, snapEnabled);
   
   const wrappedHandleResizeMouseDown = (e: React.MouseEvent, handle: string) => 
     handleResizeMouseDown(e, handle, selectedTool);
@@ -76,6 +77,15 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     deleteElement(elementId);
     setSelectedElementId(null);
   };
+
+  // تفعيل التحكم بلوحة المفاتيح
+  useKeyboardControls({
+    selectedElementId,
+    elements,
+    updateElement,
+    deleteElement: wrappedDeleteElement,
+    setSelectedElementId
+  });
 
   return {
     // State

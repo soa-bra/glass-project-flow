@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback } from 'react';
 import { CanvasElement } from '../types';
 
+const GRID_SIZE = 24; // حجم الشبكة للسنابينج
+
 export const useCanvasInteraction = () => {
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [drawStart, setDrawStart] = useState<{ x: number; y: number } | null>(null);
@@ -12,18 +14,27 @@ export const useCanvasInteraction = () => {
   
   const canvasRef = useRef<HTMLDivElement>(null);
 
+  const snapToGrid = (value: number, snapEnabled: boolean) => {
+    return snapEnabled ? Math.round(value / GRID_SIZE) * GRID_SIZE : value;
+  };
+
   const handleCanvasMouseDown = useCallback((
     e: React.MouseEvent,
     selectedTool: string,
     zoom: number,
-    canvasPosition: { x: number; y: number }
+    canvasPosition: { x: number; y: number },
+    snapEnabled: boolean = false
   ) => {
     if (!canvasRef.current) return;
     if (selectedTool === 'select' || selectedTool === 'hand' || selectedTool === 'zoom') return;
     
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-    const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    let y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    
+    // تطبيق السنابينج
+    x = snapToGrid(x, snapEnabled);
+    y = snapToGrid(y, snapEnabled);
     
     setIsDrawing(true);
     setDrawStart({ x, y });
@@ -33,13 +44,18 @@ export const useCanvasInteraction = () => {
   const handleCanvasMouseMove = useCallback((
     e: React.MouseEvent,
     zoom: number,
-    canvasPosition: { x: number; y: number }
+    canvasPosition: { x: number; y: number },
+    snapEnabled: boolean = false
   ) => {
     if (!isDrawing || !drawStart || !canvasRef.current) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-    const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    let y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    
+    // تطبيق السنابينج
+    x = snapToGrid(x, snapEnabled);
+    y = snapToGrid(y, snapEnabled);
     
     setDrawEnd({ x, y });
   }, [isDrawing, drawStart]);
@@ -69,7 +85,8 @@ export const useCanvasInteraction = () => {
     selectedTool: string,
     zoom: number,
     canvasPosition: { x: number; y: number },
-    addElement: (x: number, y: number) => void
+    addElement: (x: number, y: number) => void,
+    snapEnabled: boolean = false
   ) => {
     if (selectedTool === 'select' || selectedTool === 'hand' || selectedTool === 'zoom') return;
     // للأدوات التي تحتاج نقرة واحدة فقط
@@ -77,8 +94,12 @@ export const useCanvasInteraction = () => {
       if (!canvasRef.current) return;
       
       const rect = canvasRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-      const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+      let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+      let y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+      
+      // تطبيق السنابينج
+      x = snapToGrid(x, snapEnabled);
+      y = snapToGrid(y, snapEnabled);
       
       addElement(x, y);
     }
@@ -119,18 +140,26 @@ export const useCanvasInteraction = () => {
     selectedElementId: string | null,
     zoom: number,
     canvasPosition: { x: number; y: number },
-    updateElement: (elementId: string, updates: Partial<CanvasElement>) => void
+    updateElement: (elementId: string, updates: Partial<CanvasElement>) => void,
+    snapEnabled: boolean = false
   ) => {
     if (!isDragging || !selectedElementId || !canvasRef.current) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
-    const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-    const mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    let mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    let mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    
+    let newX = mouseX - dragOffset.x;
+    let newY = mouseY - dragOffset.y;
+    
+    // تطبيق السنابينج
+    newX = snapToGrid(newX, snapEnabled);
+    newY = snapToGrid(newY, snapEnabled);
     
     updateElement(selectedElementId, {
       position: {
-        x: mouseX - dragOffset.x,
-        y: mouseY - dragOffset.y
+        x: newX,
+        y: newY
       }
     });
   }, [isDragging, dragOffset]);

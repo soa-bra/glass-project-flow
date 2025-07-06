@@ -27,17 +27,19 @@ const ZoomToolProps: React.FC<ZoomToolPropsProps> = ({ zoom, onZoomChange }) => 
           value={zoom} 
           onChange={(e) => onZoomChange(Number(e.target.value))}
           placeholder="نسبة الزوم"
+          className="rounded-full border-gray-300"
         />
         <Button 
           variant="outline" 
           size="sm"
           onClick={() => onZoomChange(100)}
+          className="rounded-full border-gray-300 hover:bg-soabra-new-secondary-4"
         >
           إعادة تعيين
         </Button>
       </div>
       <select 
-        className="w-full p-2 border rounded"
+        className="w-full p-2 border border-gray-300 rounded-full font-arabic"
         onChange={(e) => handleZoomSelect(e.target.value)}
         value={zoom.toString()}
       >
@@ -52,6 +54,7 @@ const ZoomToolProps: React.FC<ZoomToolPropsProps> = ({ zoom, onZoomChange }) => 
           variant="outline" 
           size="sm"
           onClick={() => onZoomChange(Math.min(zoom + 25, 200))}
+          className="rounded-full border-gray-300 hover:bg-soabra-new-secondary-1"
         >
           تكبير +
         </Button>
@@ -59,6 +62,7 @@ const ZoomToolProps: React.FC<ZoomToolPropsProps> = ({ zoom, onZoomChange }) => 
           variant="outline" 
           size="sm"
           onClick={() => onZoomChange(Math.max(zoom - 25, 25))}
+          className="rounded-full border-gray-300 hover:bg-soabra-new-secondary-2"
         >
           تصغير -
         </Button>

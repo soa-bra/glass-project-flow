@@ -51,15 +51,20 @@ const Inspector: React.FC<InspectorProps> = ({
     }
   };
   return <div className="fixed top-4 right-4 z-40 w-80">
-      <Card className="bg-white/95 backdrop-blur-md shadow-sm rounded-[40px]">
+      <Card className="bg-white/95 backdrop-blur-md shadow-lg border border-gray-300 rounded-[40px]">
         <CardHeader className="pb-3">
-          
+          <CardTitle className="text-lg font-arabic">خصائص العنصر</CardTitle>
         </CardHeader>
         <CardContent>
           {selectedElementId && selectedElement ? <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium font-arabic">النص</label>
-                <Input placeholder="أدخل النص..." value={text} onChange={e => handleTextChange(e.target.value)} />
+                <Input 
+                  placeholder="أدخل النص..." 
+                  value={text} 
+                  onChange={e => handleTextChange(e.target.value)}
+                  className="rounded-full border-gray-300 mt-1"
+                />
               </div>
               <div>
                 <label className="text-sm font-medium font-arabic">اللون</label>
@@ -73,22 +78,34 @@ const Inspector: React.FC<InspectorProps> = ({
               </div>
               <div>
                 <label className="text-sm font-medium font-arabic">الموقع</label>
-                <div className="flex gap-2">
-                  <Input type="number" placeholder="X" value={Math.round(selectedElement.position.x)} onChange={e => onUpdateElement(selectedElementId, {
-                position: {
-                  ...selectedElement.position,
-                  x: parseInt(e.target.value) || 0
-                }
-              })} />
-                  <Input type="number" placeholder="Y" value={Math.round(selectedElement.position.y)} onChange={e => onUpdateElement(selectedElementId, {
-                position: {
-                  ...selectedElement.position,
-                  y: parseInt(e.target.value) || 0
-                }
-              })} />
+                <div className="flex gap-2 mt-1">
+                  <Input 
+                    type="number" 
+                    placeholder="X" 
+                    value={Math.round(selectedElement.position.x)} 
+                    onChange={e => onUpdateElement(selectedElementId, {
+                      position: {
+                        ...selectedElement.position,
+                        x: parseInt(e.target.value) || 0
+                      }
+                    })}
+                    className="rounded-full border-gray-300"
+                  />
+                  <Input 
+                    type="number" 
+                    placeholder="Y" 
+                    value={Math.round(selectedElement.position.y)} 
+                    onChange={e => onUpdateElement(selectedElementId, {
+                      position: {
+                        ...selectedElement.position,
+                        y: parseInt(e.target.value) || 0
+                      }
+                    })}
+                    className="rounded-full border-gray-300"
+                  />
                 </div>
               </div>
-              <Button variant="destructive" size="sm" onClick={handleDelete} className="w-full">
+              <Button variant="destructive" size="sm" onClick={handleDelete} className="w-full rounded-full">
                 <Trash2 className="w-4 h-4 mr-2" />
                 حذف العنصر
               </Button>

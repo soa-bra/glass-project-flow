@@ -31,7 +31,7 @@ const CollabBar: React.FC = () => {
   };
   return (
     <div className="fixed top-4 left-4 z-40 w-80">
-      <Card className="bg-white/95 backdrop-blur-md shadow-sm rounded-[40px]">
+      <Card className="bg-white/95 backdrop-blur-md shadow-lg border border-gray-300 rounded-[40px]">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-arabic flex items-center gap-2">
             <Users className="w-5 h-5" />
@@ -59,7 +59,7 @@ const CollabBar: React.FC = () => {
                 </div>
               )}
             </div>
-            <Button variant="outline" size="sm" onClick={handleInvite}>
+            <Button variant="outline" size="sm" onClick={handleInvite} className="rounded-full border-gray-300">
               <Plus className="w-4 h-4 mr-1" />
               دعوة
             </Button>
@@ -67,11 +67,11 @@ const CollabBar: React.FC = () => {
           
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="flex-1" onClick={handleTextChat}>
+              <Button variant="outline" size="sm" className="flex-1 rounded-full border-gray-300" onClick={handleTextChat}>
                 <MessageSquare className="w-4 h-4 mr-2" />
                 دردشة نصية
               </Button>
-              <Button variant="outline" size="sm" className="flex-1" onClick={handleVideoCall}>
+              <Button variant="outline" size="sm" className="flex-1 rounded-full border-gray-300" onClick={handleVideoCall}>
                 <Video className="w-4 h-4 mr-2" />
                 مكالمة مرئية
               </Button>
@@ -79,7 +79,7 @@ const CollabBar: React.FC = () => {
             <Button 
               variant={isMuted ? "destructive" : "outline"} 
               size="sm" 
-              className="w-full"
+              className={`w-full rounded-full ${!isMuted ? 'border-gray-300' : ''}`}
               onClick={handleVoiceChat}
             >
               {isMuted ? <MicOff className="w-4 h-4 mr-2" /> : <Mic className="w-4 h-4 mr-2" />}

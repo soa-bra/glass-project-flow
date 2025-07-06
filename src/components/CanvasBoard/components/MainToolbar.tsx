@@ -20,7 +20,7 @@ const MainToolbar: React.FC<MainToolbarProps> = ({ selectedTool, onToolSelect })
                 key={tool.id}
                 variant={selectedTool === tool.id ? "default" : "ghost"}
                 size="sm"
-                className={`h-10 px-3 ${selectedTool === tool.id ? 'bg-blue-600 text-white' : 'text-gray-600'}`}
+                className={`h-10 px-3 rounded-full ${selectedTool === tool.id ? 'bg-black text-white' : 'text-gray-600 hover:bg-soabra-new-secondary-4'}`}
                 onClick={() => onToolSelect(tool.id)}
                 title={tool.label}
               >

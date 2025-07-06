@@ -25,7 +25,11 @@ const SmartElementToolProps: React.FC<SmartElementToolPropsProps> = ({
               key={element.id}
               variant={isSelected ? "default" : "outline"}
               size="sm"
-              className={`justify-start ${isSelected ? 'bg-blue-600 text-white' : 'hover:bg-blue-50'}`}
+              className={`justify-start rounded-full ${
+                isSelected 
+                  ? 'bg-black text-white border-black' 
+                  : 'border-gray-300 hover:bg-soabra-new-secondary-3'
+              }`}
               onClick={() => {
                 onSmartElementSelect(element.id);
                 toast.success(`تم اختيار ${element.label} - انقر واسحب على الكانفس`);

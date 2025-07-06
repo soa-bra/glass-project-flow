@@ -68,13 +68,14 @@ const Canvas: React.FC<CanvasProps> = ({
   };
   return (
     <div className="relative w-full h-full bg-white overflow-hidden">
-      {/* الشبكة */}
+      {/* الشبكة النقطية الشفافة */}
       {showGrid && (
         <div 
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-15 pointer-events-none"
           style={{
-            backgroundImage: 'radial-gradient(circle, #ccc 1px, transparent 1px)',
-            backgroundSize: '20px 20px'
+            backgroundImage: 'radial-gradient(circle, rgba(0, 0, 0, 0.3) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+            backgroundPosition: '12px 12px'
           }}
         />
       )}
@@ -263,9 +264,9 @@ const Canvas: React.FC<CanvasProps> = ({
       </div>
 
       {/* شريط الطبقات السفلي */}
-      <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t p-2">
+      <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-300 p-2 rounded-t-2xl shadow-lg">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 text-sm text-gray-600">
+          <div className="flex items-center gap-4 text-sm text-gray-600 font-arabic">
             <span>العناصر: {elements.length}</span>
             <span>المحددة: {selectedElementId ? 1 : 0}</span>
             <span>الزوم: {zoom}%</span>
@@ -274,22 +275,22 @@ const Canvas: React.FC<CanvasProps> = ({
           
           <div className="flex items-center gap-2">
             <Button 
-              variant="ghost" 
+              variant="outline" 
               size="sm"
               onClick={onToggleGrid}
-              className={showGrid ? 'bg-blue-100' : ''}
+              className={`rounded-full border-gray-300 ${showGrid ? 'bg-soabra-new-secondary-4 text-black border-soabra-new-secondary-4' : 'text-gray-600 hover:bg-gray-100'}`}
             >
               <Grid className="w-4 h-4" />
             </Button>
             <Button 
-              variant="ghost" 
+              variant="outline" 
               size="sm"
               onClick={onToggleSnap}
-              className={snapEnabled ? 'bg-blue-100' : ''}
+              className={`rounded-full border-gray-300 ${snapEnabled ? 'bg-soabra-new-secondary-1 text-black border-soabra-new-secondary-1' : 'text-gray-600 hover:bg-gray-100'}`}
             >
               <Move className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button variant="outline" size="sm" className="rounded-full border-gray-300 text-gray-600 hover:bg-gray-100">
               <Settings className="w-4 h-4" />
             </Button>
           </div>

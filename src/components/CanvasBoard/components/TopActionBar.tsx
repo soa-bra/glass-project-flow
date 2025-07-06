@@ -26,12 +26,12 @@ const TopActionBar: React.FC<TopActionBarProps> = ({
 }) => {
   return (
     <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
-      <Card className="bg-white/95 backdrop-blur-md shadow-sm border-0 rounded-[40px]">
+      <Card className="bg-white/95 backdrop-blur-md shadow-lg border border-gray-300 rounded-[40px]">
         <CardContent className="flex items-center gap-2 p-3">
           <Button
             variant="ghost"
             size="sm"
-            className={`h-10 px-3 ${canUndo ? 'text-gray-600 hover:bg-gray-100' : 'text-gray-400 cursor-not-allowed'}`}
+            className={`h-10 px-3 rounded-full ${canUndo ? 'text-gray-600 hover:bg-soabra-new-secondary-4' : 'text-gray-400 cursor-not-allowed'}`}
             title="تراجع"
             onClick={onUndo}
             disabled={!canUndo}
@@ -42,7 +42,7 @@ const TopActionBar: React.FC<TopActionBarProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            className={`h-10 px-3 ${canRedo ? 'text-gray-600 hover:bg-gray-100' : 'text-gray-400 cursor-not-allowed'}`}
+            className={`h-10 px-3 rounded-full ${canRedo ? 'text-gray-600 hover:bg-soabra-new-secondary-4' : 'text-gray-400 cursor-not-allowed'}`}
             title="إعادة"
             onClick={onRedo}
             disabled={!canRedo}
@@ -55,7 +55,7 @@ const TopActionBar: React.FC<TopActionBarProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            className="h-10 px-3 text-gray-600 hover:bg-gray-100"
+            className="h-10 px-3 rounded-full text-gray-600 hover:bg-soabra-new-secondary-1"
             title="حفظ"
             onClick={onSave}
           >
@@ -65,7 +65,7 @@ const TopActionBar: React.FC<TopActionBarProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            className="h-10 px-3 text-gray-600 hover:bg-gray-100"
+            className="h-10 px-3 rounded-full text-gray-600 hover:bg-soabra-new-secondary-2"
             title="تصدير"
             onClick={onExport}
           >
@@ -75,7 +75,7 @@ const TopActionBar: React.FC<TopActionBarProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            className="h-10 px-3 text-gray-600 hover:bg-gray-100"
+            className="h-10 px-3 rounded-full text-gray-600 hover:bg-soabra-new-secondary-3"
             title="التحويل الذكي إلى مشروع"
             onClick={onConvert}
           >
@@ -87,7 +87,7 @@ const TopActionBar: React.FC<TopActionBarProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            className="h-10 px-3 text-gray-600 hover:bg-gray-100"
+            className="h-10 px-3 rounded-full text-gray-600 hover:bg-soabra-new-secondary-5"
             title="إعدادات"
             onClick={onSettings}
           >
