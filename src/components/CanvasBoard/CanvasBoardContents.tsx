@@ -187,7 +187,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   // شريط الأدوات الرئيسي
   const MainToolbar = () => (
     <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
-      <Card className="bg-white/95 backdrop-blur-md shadow-xl border-0">
+      <Card className="bg-white/95 backdrop-blur-md shadow-xl border-0 rounded-[40px]">
         <CardContent className="flex items-center gap-2 p-3">
           {tools.map((tool) => {
             const Icon = tool.icon;
@@ -212,7 +212,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   // شريط التواصل والمستخدمين (CollabBar)
   const CollabBar = () => (
     <div className="fixed top-4 left-4 z-40 w-80">
-      <Card className="bg-white/95 backdrop-blur-md shadow-lg">
+      <Card className="bg-white/95 backdrop-blur-md shadow-lg rounded-[40px]">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-arabic flex items-center gap-2">
             <Users className="w-5 h-5" />
@@ -254,7 +254,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   // شريط خصائص الأدوات (ToolPropsBar)
   const ToolPropsBar = () => (
     <div className="fixed bottom-24 left-4 z-40 w-80">
-      <Card className="bg-white/95 backdrop-blur-md shadow-lg">
+      <Card className="bg-white/95 backdrop-blur-md shadow-lg rounded-[40px]">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-arabic">خصائص الأداة</CardTitle>
         </CardHeader>
@@ -325,7 +325,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   // المفتش (Inspector)
   const Inspector = () => (
     <div className="fixed top-4 right-4 z-40 w-80">
-      <Card className="bg-white/95 backdrop-blur-md shadow-lg">
+      <Card className="bg-white/95 backdrop-blur-md shadow-lg rounded-[40px]">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-arabic">المفتش</CardTitle>
         </CardHeader>
@@ -360,7 +360,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   // حوار الذكاء الاصطناعي (AI Panel)
   const AIPanel = () => (
     <div className="fixed bottom-4 right-4 z-40 w-80">
-      <Card className="bg-white/95 backdrop-blur-md shadow-lg">
+      <Card className="bg-white/95 backdrop-blur-md shadow-lg rounded-[40px]">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-arabic flex items-center gap-2">
             <Lightbulb className="w-5 h-5" />
