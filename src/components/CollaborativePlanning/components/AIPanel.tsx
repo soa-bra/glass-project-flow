@@ -17,7 +17,7 @@ import {
 
 interface CanvasElement {
   id: string;
-  type: 'sticky-note' | 'shape' | 'text' | 'connection' | 'mindmap-node';
+  type: 'sticky-note' | 'shape' | 'text' | 'connection' | 'mindmap-node' | 'smart-element' | 'root-connector';
   position: { x: number; y: number };
   size: { width: number; height: number };
   content: string;
@@ -25,6 +25,8 @@ interface CanvasElement {
   locked?: boolean;
   userId?: string;
   layer: number;
+  rotation?: number;
+  groupId?: string;
 }
 
 interface AIPanelProps {

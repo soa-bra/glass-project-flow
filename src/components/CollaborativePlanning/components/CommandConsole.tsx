@@ -3,11 +3,14 @@ import { Terminal, Send, X, Sparkles, Clock } from 'lucide-react';
 
 interface CanvasElement {
   id: string;
-  type: string;
+  type: 'sticky-note' | 'shape' | 'text' | 'connection' | 'mindmap-node' | 'smart-element' | 'root-connector';
   position: { x: number; y: number };
   size: { width: number; height: number };
   content: string;
   color: string;
+  layer: number;
+  rotation?: number;
+  groupId?: string;
 }
 
 interface CommandConsoleProps {
@@ -72,7 +75,8 @@ export const CommandConsole: React.FC<CommandConsoleProps> = ({
         position: { x: 400, y: 300 },
         size: { width: 120, height: 80 },
         content: 'ملاحظة من الأوامر',
-        color: '#FEF3C7'
+        color: '#FEF3C7',
+        layer: 1
       };
       onElementsUpdate([...canvasElements, newElement]);
     } else if (command.includes('احذف الكل') || command.includes('clear all')) {

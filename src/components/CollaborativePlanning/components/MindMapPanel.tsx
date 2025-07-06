@@ -3,11 +3,14 @@ import { Brain, Plus, Minus, X, GitBranch, Target } from 'lucide-react';
 
 interface CanvasElement {
   id: string;
-  type: string;
+  type: 'sticky-note' | 'shape' | 'text' | 'connection' | 'mindmap-node' | 'smart-element' | 'root-connector';
   position: { x: number; y: number };
   size: { width: number; height: number };
   content: string;
   color: string;
+  layer: number;
+  rotation?: number;
+  groupId?: string;
 }
 
 interface MindMapPanelProps {
@@ -58,7 +61,8 @@ export const MindMapPanel: React.FC<MindMapPanelProps> = ({
         position: { x: baseX, y: baseY },
         size: { width: 150, height: 60 },
         content: node.text,
-        color: node.level === 0 ? '#E0E7FF' : node.level === 1 ? '#F3E8FF' : '#FEF3C7'
+        color: node.level === 0 ? '#E0E7FF' : node.level === 1 ? '#F3E8FF' : '#FEF3C7',
+        layer: node.level + 1
       };
       newElements.push(element);
     });

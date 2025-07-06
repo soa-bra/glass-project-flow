@@ -3,11 +3,14 @@ import { Calendar, Clock, X, Plus, ArrowRight } from 'lucide-react';
 
 interface CanvasElement {
   id: string;
-  type: string;
+  type: 'sticky-note' | 'shape' | 'text' | 'connection' | 'mindmap-node' | 'smart-element' | 'root-connector';
   position: { x: number; y: number };
   size: { width: number; height: number };
   content: string;
   color: string;
+  layer: number;
+  rotation?: number;
+  groupId?: string;
 }
 
 interface TimelinePanelProps {
@@ -139,7 +142,8 @@ export const TimelinePanel: React.FC<TimelinePanelProps> = ({
         size: { width: 180, height: 100 },
         content: `${event.title}\n${event.startDate}\n${event.status}`,
         color: event.status === 'completed' ? '#DCFCE7' : 
-               event.status === 'in-progress' ? '#DBEAFE' : '#FEF3C7'
+               event.status === 'in-progress' ? '#DBEAFE' : '#FEF3C7',
+        layer: 1
       };
       timelineElements.push(element);
 
@@ -154,7 +158,8 @@ export const TimelinePanel: React.FC<TimelinePanelProps> = ({
               position: { x: 100 + (depIndex * 200) + 180, y: 250 },
               size: { width: 20, height: 2 },
               content: '',
-              color: '#9CA3AF'
+              color: '#9CA3AF',
+              layer: 0
             };
             timelineElements.push(connection);
           }
