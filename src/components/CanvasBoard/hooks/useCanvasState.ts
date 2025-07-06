@@ -1,302 +1,81 @@
-import { useState, useRef, useCallback } from 'react';
-import { CanvasElement, CanvasState } from '../types';
-import { toast } from 'sonner';
+import { useState } from 'react';
+import { useCanvasHistory } from './useCanvasHistory';
+import { useCanvasElements } from './useCanvasElements';
+import { useCanvasActions } from './useCanvasActions';
+import { useCanvasInteraction } from './useCanvasInteraction';
 
 export const useCanvasState = (projectId = 'default', userId = 'user1') => {
   const [selectedTool, setSelectedTool] = useState<string>('select');
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [showGrid, setShowGrid] = useState<boolean>(true);
   const [snapEnabled, setSnapEnabled] = useState<boolean>(true);
-  const [elements, setElements] = useState<CanvasElement[]>([]);
   const [showDefaultView, setShowDefaultView] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [zoom, setZoom] = useState<number>(100);
   const [canvasPosition, setCanvasPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [history, setHistory] = useState<CanvasElement[][]>([[]]);
-  const [historyIndex, setHistoryIndex] = useState<number>(0);
-  const [isDrawing, setIsDrawing] = useState<boolean>(false);
-  const [drawStart, setDrawStart] = useState<{ x: number; y: number } | null>(null);
-  const [drawEnd, setDrawEnd] = useState<{ x: number; y: number } | null>(null);
   const [selectedSmartElement, setSelectedSmartElement] = useState<string>('brainstorm');
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [isResizing, setIsResizing] = useState<boolean>(false);
-  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [resizeHandle, setResizeHandle] = useState<string>('');
+
+  // Use specialized hooks
+  const { history, historyIndex, saveToHistory, undo, redo } = useCanvasHistory();
+  const { elements, setElements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
+  const { saveCanvas, exportCanvas, convertToProject } = useCanvasActions(projectId, userId);
+  const {
+    canvasRef,
+    isDrawing,
+    drawStart,
+    drawEnd,
+    isDragging,
+    isResizing,
+    handleCanvasMouseDown,
+    handleCanvasMouseMove,
+    handleCanvasMouseUp,
+    handleCanvasClick,
+    handleElementMouseDown,
+    handleElementMouseMove,
+    handleElementMouseUp,
+    handleResizeMouseDown,
+    handleResizeMouseMove
+  } = useCanvasInteraction();
+
+  // Wrapper functions for hooks that need current state
+  const wrappedAddElement = (x: number, y: number, width?: number, height?: number) => {
+    addElement(x, y, selectedTool, selectedSmartElement, width, height);
+  };
+
+  const wrappedUndo = () => undo(elements, setElements);
+  const wrappedRedo = () => redo(elements, setElements);
+  const wrappedSaveCanvas = () => saveCanvas(elements);
+  const wrappedExportCanvas = () => exportCanvas(elements);
+  const wrappedConvertToProject = () => convertToProject(elements);
+
+  const wrappedHandleCanvasMouseDown = (e: React.MouseEvent) => 
+    handleCanvasMouseDown(e, selectedTool, zoom, canvasPosition);
   
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const wrappedHandleCanvasMouseMove = (e: React.MouseEvent) => 
+    handleCanvasMouseMove(e, zoom, canvasPosition);
+  
+  const wrappedHandleCanvasMouseUp = () => 
+    handleCanvasMouseUp(wrappedAddElement);
+  
+  const wrappedHandleCanvasClick = (e: React.MouseEvent) => 
+    handleCanvasClick(e, selectedTool, zoom, canvasPosition, wrappedAddElement);
+  
+  const wrappedHandleElementMouseDown = (e: React.MouseEvent, elementId: string) => 
+    handleElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId);
+  
+  const wrappedHandleElementMouseMove = (e: React.MouseEvent) => 
+    handleElementMouseMove(e, selectedElementId, zoom, canvasPosition, updateElement);
+  
+  const wrappedHandleResizeMouseDown = (e: React.MouseEvent, handle: string) => 
+    handleResizeMouseDown(e, handle, selectedTool);
+  
+  const wrappedHandleResizeMouseMove = (e: React.MouseEvent) => 
+    handleResizeMouseMove(e, selectedElementId, elements, zoom, canvasPosition, updateElement);
 
-  const saveToHistory = useCallback((newElements: CanvasElement[]) => {
-    const newHistory = history.slice(0, historyIndex + 1);
-    newHistory.push([...newElements]);
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-  }, [history, historyIndex]);
-
-  const addElement = useCallback((x: number, y: number, width?: number, height?: number) => {
-    if (selectedTool === 'select' || selectedTool === 'hand' || selectedTool === 'zoom') return;
-
-    const elementType = selectedTool === 'smart-element' ? selectedSmartElement : selectedTool;
-    const newElement: CanvasElement = {
-      id: `element-${Date.now()}`,
-      type: elementType as any,
-      position: { x, y },
-      size: { width: width || 120, height: height || 80 },
-      content: selectedTool === 'text' ? 'نص جديد' : selectedTool === 'sticky' ? 'ملاحظة' : undefined
-    };
-
-    setElements(prev => {
-      const newElements = [...prev, newElement];
-      saveToHistory(newElements);
-      return newElements;
-    });
-  }, [selectedTool, selectedSmartElement, saveToHistory]);
-
-  const undo = useCallback(() => {
-    if (historyIndex > 0) {
-      setHistoryIndex(historyIndex - 1);
-      setElements(history[historyIndex - 1]);
-      toast.success('تم التراجع');
-    }
-  }, [historyIndex, history]);
-
-  const redo = useCallback(() => {
-    if (historyIndex < history.length - 1) {
-      setHistoryIndex(historyIndex + 1);
-      setElements(history[historyIndex + 1]);
-      toast.success('تم الإعادة');
-    }
-  }, [historyIndex, history]);
-
-  const saveCanvas = useCallback(() => {
-    const canvasData = {
-      projectId,
-      userId,
-      elements,
-      timestamp: new Date().toISOString()
-    };
-    localStorage.setItem(`canvas_${projectId}`, JSON.stringify(canvasData));
-    toast.success('تم حفظ اللوحة');
-  }, [projectId, userId, elements]);
-
-  const exportCanvas = useCallback(() => {
-    const dataStr = JSON.stringify(elements, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const exportFileDefaultName = `canvas_${projectId}_${new Date().toISOString().split('T')[0]}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-    toast.success('تم تصدير اللوحة');
-  }, [elements, projectId]);
-
-  const convertToProject = useCallback(() => {
-    if (elements.length === 0) {
-      toast.error('لا توجد عناصر للتحويل');
-      return;
-    }
-    
-    const projectData = {
-      name: `مشروع من اللوحة ${new Date().toLocaleDateString('ar')}`,
-      elements: elements.filter(el => el.type !== 'shape'),
-      createdAt: new Date().toISOString()
-    };
-    
-    console.log('تحويل العناصر إلى مشروع:', projectData);
-    toast.success('تم تحويل العناصر إلى مشروع');
-  }, [elements]);
-
-  const updateElement = useCallback((elementId: string, updates: Partial<CanvasElement>) => {
-    setElements(prev => {
-      const newElements = prev.map(el => 
-        el.id === elementId ? { ...el, ...updates } : el
-      );
-      saveToHistory(newElements);
-      return newElements;
-    });
-  }, [saveToHistory]);
-
-  const deleteElement = useCallback((elementId: string) => {
-    setElements(prev => {
-      const newElements = prev.filter(el => el.id !== elementId);
-      saveToHistory(newElements);
-      return newElements;
-    });
+  const wrappedDeleteElement = (elementId: string) => {
+    deleteElement(elementId);
     setSelectedElementId(null);
-    toast.success('تم حذف العنصر');
-  }, [saveToHistory]);
-
-  const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
-    if (!canvasRef.current) return;
-    if (selectedTool === 'select' || selectedTool === 'hand' || selectedTool === 'zoom') return;
-    
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-    const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
-    
-    setIsDrawing(true);
-    setDrawStart({ x, y });
-    setDrawEnd({ x, y });
-  }, [selectedTool, zoom, canvasPosition]);
-
-  const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDrawing || !drawStart || !canvasRef.current) return;
-    
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-    const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
-    
-    setDrawEnd({ x, y });
-  }, [isDrawing, drawStart, zoom, canvasPosition]);
-
-  const handleCanvasMouseUp = useCallback(() => {
-    if (!isDrawing || !drawStart || !drawEnd) return;
-    
-    const width = Math.abs(drawEnd.x - drawStart.x);
-    const height = Math.abs(drawEnd.y - drawStart.y);
-    const x = Math.min(drawStart.x, drawEnd.x);
-    const y = Math.min(drawStart.y, drawEnd.y);
-    
-    // فقط إنشاء عنصر إذا كان الحجم كافي
-    if (width > 20 && height > 20) {
-      addElement(x, y, width, height);
-    }
-    
-    setIsDrawing(false);
-    setDrawStart(null);
-    setDrawEnd(null);
-  }, [isDrawing, drawStart, drawEnd, addElement]);
-
-  const handleCanvasClick = useCallback((e: React.MouseEvent) => {
-    if (selectedTool === 'select' || selectedTool === 'hand' || selectedTool === 'zoom') return;
-    // للأدوات التي تحتاج نقرة واحدة فقط
-    if (selectedTool !== 'smart-element') {
-      if (!canvasRef.current) return;
-      
-      const rect = canvasRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-      const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
-      
-      addElement(x, y);
-    }
-  }, [selectedTool, addElement, zoom, canvasPosition]);
-
-  // وظائف السحب والإفلات
-  const handleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
-    if (selectedTool !== 'select') return;
-    
-    e.stopPropagation();
-    setSelectedElementId(elementId);
-    
-    const element = elements.find(el => el.id === elementId);
-    if (!element || element.locked) return;
-    
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    
-    const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-    const mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
-    
-    setIsDragging(true);
-    setDragOffset({
-      x: mouseX - element.position.x,
-      y: mouseY - element.position.y
-    });
-  }, [selectedTool, elements, zoom, canvasPosition]);
-
-  const handleElementMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging || !selectedElementId || !canvasRef.current) return;
-    
-    const rect = canvasRef.current.getBoundingClientRect();
-    const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-    const mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
-    
-    updateElement(selectedElementId, {
-      position: {
-        x: mouseX - dragOffset.x,
-        y: mouseY - dragOffset.y
-      }
-    });
-  }, [isDragging, selectedElementId, dragOffset, zoom, canvasPosition, updateElement]);
-
-  const handleElementMouseUp = useCallback(() => {
-    if (isDragging) {
-      setIsDragging(false);
-      setDragOffset({ x: 0, y: 0 });
-    }
-    if (isResizing) {
-      setIsResizing(false);
-      setResizeHandle('');
-    }
-  }, [isDragging, isResizing]);
-
-  // وظائف تغيير الحجم
-  const handleResizeMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
-    if (selectedTool !== 'select') return;
-    
-    e.stopPropagation();
-    setIsResizing(true);
-    setResizeHandle(handle);
-  }, [selectedTool]);
-
-  const handleResizeMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isResizing || !selectedElementId || !canvasRef.current) return;
-    
-    const element = elements.find(el => el.id === selectedElementId);
-    if (!element) return;
-    
-    const rect = canvasRef.current.getBoundingClientRect();
-    const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-    const mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
-    
-    let newPosition = { ...element.position };
-    let newSize = { ...element.size };
-    
-    switch (resizeHandle) {
-      case 'nw': // top-left
-        newSize.width = element.position.x + element.size.width - mouseX;
-        newSize.height = element.position.y + element.size.height - mouseY;
-        newPosition.x = mouseX;
-        newPosition.y = mouseY;
-        break;
-      case 'ne': // top-right
-        newSize.width = mouseX - element.position.x;
-        newSize.height = element.position.y + element.size.height - mouseY;
-        newPosition.y = mouseY;
-        break;
-      case 'sw': // bottom-left
-        newSize.width = element.position.x + element.size.width - mouseX;
-        newSize.height = mouseY - element.position.y;
-        newPosition.x = mouseX;
-        break;
-      case 'se': // bottom-right
-        newSize.width = mouseX - element.position.x;
-        newSize.height = mouseY - element.position.y;
-        break;
-      case 'n': // top
-        newSize.height = element.position.y + element.size.height - mouseY;
-        newPosition.y = mouseY;
-        break;
-      case 's': // bottom
-        newSize.height = mouseY - element.position.y;
-        break;
-      case 'w': // left
-        newSize.width = element.position.x + element.size.width - mouseX;
-        newPosition.x = mouseX;
-        break;
-      case 'e': // right
-        newSize.width = mouseX - element.position.x;
-        break;
-    }
-    
-    // التأكد من أن الحجم لا يصبح سالبًا
-    if (newSize.width > 20 && newSize.height > 20) {
-      updateElement(selectedElementId, {
-        position: newPosition,
-        size: newSize
-      });
-    }
-  }, [isResizing, selectedElementId, resizeHandle, elements, zoom, canvasPosition, updateElement]);
+  };
 
   return {
     // State
@@ -332,22 +111,22 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     setSelectedSmartElement,
     
     // Actions
-    addElement,
-    handleCanvasClick,
-    handleCanvasMouseDown,
-    handleCanvasMouseMove,
-    handleCanvasMouseUp,
-    handleElementMouseDown,
-    handleElementMouseMove,
+    addElement: wrappedAddElement,
+    handleCanvasClick: wrappedHandleCanvasClick,
+    handleCanvasMouseDown: wrappedHandleCanvasMouseDown,
+    handleCanvasMouseMove: wrappedHandleCanvasMouseMove,
+    handleCanvasMouseUp: wrappedHandleCanvasMouseUp,
+    handleElementMouseDown: wrappedHandleElementMouseDown,
+    handleElementMouseMove: wrappedHandleElementMouseMove,
     handleElementMouseUp,
-    handleResizeMouseDown,
-    handleResizeMouseMove,
-    undo,
-    redo,
-    saveCanvas,
-    exportCanvas,
-    convertToProject,
+    handleResizeMouseDown: wrappedHandleResizeMouseDown,
+    handleResizeMouseMove: wrappedHandleResizeMouseMove,
+    undo: wrappedUndo,
+    redo: wrappedRedo,
+    saveCanvas: wrappedSaveCanvas,
+    exportCanvas: wrappedExportCanvas,
+    convertToProject: wrappedConvertToProject,
     updateElement,
-    deleteElement
+    deleteElement: wrappedDeleteElement
   };
 };
