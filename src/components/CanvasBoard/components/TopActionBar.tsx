@@ -26,7 +26,7 @@ const TopActionBar: React.FC<TopActionBarProps> = ({
 }) => {
   return (
     <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
-      <Card className="bg-white/95 backdrop-blur-md shadow-lg border border-gray-300 rounded-[40px]">
+      <Card className="bg-white/95 backdrop-blur-md shadow-sm border border-gray-300 rounded-[40px]">
         <CardContent className="flex items-center gap-2 p-3">
           <Button
             variant="ghost"

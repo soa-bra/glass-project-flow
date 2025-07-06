@@ -31,11 +31,17 @@ const CollabBar: React.FC = () => {
   };
   return (
     <div className="fixed top-4 left-4 z-40 w-80">
-      <Card className="bg-white/95 backdrop-blur-md shadow-lg border border-gray-300 rounded-[40px]">
+      <Card className="bg-white/95 backdrop-blur-md shadow-sm border border-gray-300 rounded-[40px]">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-arabic flex items-center gap-2">
-            <Users className="w-5 h-5" />
-            التعاون والتواصل
+          <CardTitle className="text-lg font-arabic flex items-center gap-2 justify-between">
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              التعاون والتواصل
+            </div>
+            <Button variant="outline" size="sm" onClick={handleInvite} className="rounded-full border-gray-300">
+              <Plus className="w-4 h-4 mr-1 text-black" />
+              <span className="text-black">دعوة</span>
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -59,10 +65,6 @@ const CollabBar: React.FC = () => {
                 </div>
               )}
             </div>
-            <Button variant="outline" size="sm" onClick={handleInvite} className="rounded-full border-gray-300">
-              <Plus className="w-4 h-4 mr-1" />
-              دعوة
-            </Button>
           </div>
           
           <div className="space-y-2">

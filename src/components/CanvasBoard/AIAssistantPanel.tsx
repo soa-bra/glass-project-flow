@@ -18,7 +18,7 @@ const AIAssistantPanel: React.FC = () => {
   };
 
   return (
-    <Card className="bg-white/95 backdrop-blur-md shadow-lg border border-gray-300 rounded-[40px]">
+    <Card className="bg-white/95 backdrop-blur-md shadow-sm border border-gray-300 rounded-[40px]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2">
           <Bot className="w-5 h-5" />
@@ -45,7 +45,7 @@ const AIAssistantPanel: React.FC = () => {
             onChange={(e) => setMessage(e.target.value)}
           />
           
-          <Button className="w-full" onClick={handleSendMessage}>
+          <Button className="w-full rounded-full" onClick={handleSendMessage}>
             <MessageSquare className="w-4 h-4 mr-2" />
             إرسال
           </Button>
@@ -53,10 +53,10 @@ const AIAssistantPanel: React.FC = () => {
           <div className="space-y-2">
             <h4 className="text-sm font-medium text-black">اختصارات سريعة</h4>
             <div className="grid grid-cols-2 gap-2">
-              <Button variant="outline" size="sm" className="text-xs">
+              <Button variant="outline" size="sm" className="text-xs rounded-full border-gray-300">
                 تحليل المشروع
               </Button>
-              <Button variant="outline" size="sm" className="text-xs">
+              <Button variant="outline" size="sm" className="text-xs rounded-full border-gray-300">
                 تقسيم المهام
               </Button>
             </div>
