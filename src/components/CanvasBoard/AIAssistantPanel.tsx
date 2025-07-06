@@ -18,7 +18,7 @@ const AIAssistantPanel: React.FC = () => {
   };
 
   return (
-    <Card className="bg-white/95 backdrop-blur-md shadow-sm rounded-[40px] border-0">
+    <Card className="bg-white/95 backdrop-blur-md shadow-lg border border-gray-300 rounded-[40px]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2">
           <Bot className="w-5 h-5" />

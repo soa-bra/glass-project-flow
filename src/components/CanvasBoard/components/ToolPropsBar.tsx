@@ -43,7 +43,7 @@ const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
     }
   };
   return <div className="fixed bottom-24 left-4 z-40 w-80">
-      <Card className="bg-white/95 backdrop-blur-md shadow-sm rounded-[40px]">
+      <Card className="bg-white/95 backdrop-blur-md shadow-sm border border-gray-300 rounded-[40px]">
         <CardHeader className="pb-3">
           
         </CardHeader>

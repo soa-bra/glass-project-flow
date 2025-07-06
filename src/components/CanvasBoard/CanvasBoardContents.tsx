@@ -153,7 +153,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         onUpdateElement={updateElement}
         onDeleteElement={deleteElement}
       />
-      <div className="fixed bottom-4 right-4 z-40 w-80">
+      <div className="fixed bottom-24 right-4 z-40 w-80">
         <AIAssistantPanel />
       </div>
       <MainToolbar
