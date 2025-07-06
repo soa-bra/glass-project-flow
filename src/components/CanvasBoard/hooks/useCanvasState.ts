@@ -14,6 +14,10 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
   const [canvasPosition, setCanvasPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [history, setHistory] = useState<CanvasElement[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);
+  const [drawStart, setDrawStart] = useState<{ x: number; y: number } | null>(null);
+  const [drawEnd, setDrawEnd] = useState<{ x: number; y: number } | null>(null);
+  const [selectedSmartElement, setSelectedSmartElement] = useState<string>('brainstorm');
   
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -24,14 +28,15 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     setHistoryIndex(newHistory.length - 1);
   }, [history, historyIndex]);
 
-  const addElement = useCallback((x: number, y: number) => {
+  const addElement = useCallback((x: number, y: number, width?: number, height?: number) => {
     if (selectedTool === 'select' || selectedTool === 'hand' || selectedTool === 'zoom') return;
 
+    const elementType = selectedTool === 'smart-element' ? selectedSmartElement : selectedTool;
     const newElement: CanvasElement = {
       id: `element-${Date.now()}`,
-      type: selectedTool as any,
+      type: elementType as any,
       position: { x, y },
-      size: { width: 120, height: 80 },
+      size: { width: width || 120, height: height || 80 },
       content: selectedTool === 'text' ? 'نص جديد' : selectedTool === 'sticky' ? 'ملاحظة' : undefined
     };
 
@@ -40,7 +45,7 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
       saveToHistory(newElements);
       return newElements;
     });
-  }, [selectedTool, saveToHistory]);
+  }, [selectedTool, selectedSmartElement, saveToHistory]);
 
   const undo = useCallback(() => {
     if (historyIndex > 0) {
@@ -117,15 +122,60 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     toast.success('تم حذف العنصر');
   }, [saveToHistory]);
 
-  const handleCanvasClick = useCallback((e: React.MouseEvent) => {
+  const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
     if (!canvasRef.current) return;
+    if (selectedTool === 'select' || selectedTool === 'hand' || selectedTool === 'zoom') return;
     
     const rect = canvasRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
     const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
     
-    addElement(x, y);
-  }, [addElement, zoom, canvasPosition]);
+    setIsDrawing(true);
+    setDrawStart({ x, y });
+    setDrawEnd({ x, y });
+  }, [selectedTool, zoom, canvasPosition]);
+
+  const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDrawing || !drawStart || !canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    
+    setDrawEnd({ x, y });
+  }, [isDrawing, drawStart, zoom, canvasPosition]);
+
+  const handleCanvasMouseUp = useCallback(() => {
+    if (!isDrawing || !drawStart || !drawEnd) return;
+    
+    const width = Math.abs(drawEnd.x - drawStart.x);
+    const height = Math.abs(drawEnd.y - drawStart.y);
+    const x = Math.min(drawStart.x, drawEnd.x);
+    const y = Math.min(drawStart.y, drawEnd.y);
+    
+    // فقط إنشاء عنصر إذا كان الحجم كافي
+    if (width > 20 && height > 20) {
+      addElement(x, y, width, height);
+    }
+    
+    setIsDrawing(false);
+    setDrawStart(null);
+    setDrawEnd(null);
+  }, [isDrawing, drawStart, drawEnd, addElement]);
+
+  const handleCanvasClick = useCallback((e: React.MouseEvent) => {
+    if (selectedTool === 'select' || selectedTool === 'hand' || selectedTool === 'zoom') return;
+    // للأدوات التي تحتاج نقرة واحدة فقط
+    if (selectedTool !== 'smart-element') {
+      if (!canvasRef.current) return;
+      
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+      const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+      
+      addElement(x, y);
+    }
+  }, [selectedTool, addElement, zoom, canvasPosition]);
 
   return {
     // State
@@ -141,6 +191,10 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     canvasRef,
     history,
     historyIndex,
+    isDrawing,
+    drawStart,
+    drawEnd,
+    selectedSmartElement,
     
     // Setters
     setSelectedTool,
@@ -152,10 +206,14 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     setSearchQuery,
     setZoom,
     setCanvasPosition,
+    setSelectedSmartElement,
     
     // Actions
     addElement,
     handleCanvasClick,
+    handleCanvasMouseDown,
+    handleCanvasMouseMove,
+    handleCanvasMouseUp,
     undo,
     redo,
     saveCanvas,

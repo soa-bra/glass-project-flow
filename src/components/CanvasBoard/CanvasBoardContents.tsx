@@ -18,7 +18,6 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   userId = 'user1' 
 }) => {
   const [showSmartModal, setShowSmartModal] = useState(false);
-  const [selectedSmartElement, setSelectedSmartElement] = useState('');
   const {
     selectedTool,
     selectedElementId,
@@ -31,13 +30,21 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     canvasRef,
     history,
     historyIndex,
+    isDrawing,
+    drawStart,
+    drawEnd,
+    selectedSmartElement,
     setSelectedTool,
     setSelectedElementId,
     setShowGrid,
     setSnapEnabled,
     setShowDefaultView,
     setZoom,
+    setSelectedSmartElement,
     handleCanvasClick,
+    handleCanvasMouseDown,
+    handleCanvasMouseMove,
+    handleCanvasMouseUp,
     undo,
     redo,
     saveCanvas,
@@ -49,12 +56,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
 
   const handleSmartElementSelect = (elementId: string) => {
     setSelectedSmartElement(elementId);
-    setShowSmartModal(true);
-  };
-
-  const handleCreateSmartElement = (elementData: any) => {
-    console.log('إنشاء عنصر ذكي:', elementData);
-    // هنا يمكن إضافة منطق إنشاء العنصر الذكي
+    // لا نحتاج modal بعد الآن، سيتم الرسم مباشرة على الكانفس
   };
 
   const handleCopy = () => {
@@ -97,7 +99,13 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         selectedElementId={selectedElementId}
         selectedTool={selectedTool}
         canvasRef={canvasRef}
+        isDrawing={isDrawing}
+        drawStart={drawStart}
+        drawEnd={drawEnd}
         onCanvasClick={handleCanvasClick}
+        onCanvasMouseDown={handleCanvasMouseDown}
+        onCanvasMouseMove={handleCanvasMouseMove}
+        onCanvasMouseUp={handleCanvasMouseUp}
         onElementSelect={setSelectedElementId}
         onToggleGrid={() => setShowGrid(!showGrid)}
         onToggleSnap={() => setSnapEnabled(!snapEnabled)}
@@ -117,6 +125,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         selectedTool={selectedTool}
         selectedElementId={selectedElementId}
         zoom={zoom}
+        selectedSmartElement={selectedSmartElement}
         onZoomChange={setZoom}
         onSmartElementSelect={handleSmartElementSelect}
         onCopy={handleCopy}
@@ -136,13 +145,6 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
       <MainToolbar
         selectedTool={selectedTool}
         onToolSelect={setSelectedTool}
-      />
-      
-      <SmartElementsModal
-        isOpen={showSmartModal}
-        onClose={() => setShowSmartModal(false)}
-        selectedElement={selectedSmartElement}
-        onCreateElement={handleCreateSmartElement}
       />
     </div>
   );

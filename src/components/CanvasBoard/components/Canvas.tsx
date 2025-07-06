@@ -13,7 +13,13 @@ interface CanvasProps {
   selectedElementId: string | null;
   selectedTool: string;
   canvasRef: React.RefObject<HTMLDivElement>;
+  isDrawing: boolean;
+  drawStart: { x: number; y: number } | null;
+  drawEnd: { x: number; y: number } | null;
   onCanvasClick: (e: React.MouseEvent) => void;
+  onCanvasMouseDown: (e: React.MouseEvent) => void;
+  onCanvasMouseMove: (e: React.MouseEvent) => void;
+  onCanvasMouseUp: () => void;
   onElementSelect: (id: string) => void;
   onToggleGrid: () => void;
   onToggleSnap: () => void;
@@ -28,11 +34,23 @@ const Canvas: React.FC<CanvasProps> = ({
   selectedElementId,
   selectedTool,
   canvasRef,
+  isDrawing,
+  drawStart,
+  drawEnd,
   onCanvasClick,
+  onCanvasMouseDown,
+  onCanvasMouseMove,
+  onCanvasMouseUp,
   onElementSelect,
   onToggleGrid,
   onToggleSnap
 }) => {
+  const getCursorStyle = () => {
+    if (selectedTool === 'smart-element') return 'crosshair';
+    if (selectedTool === 'hand') return 'grab';
+    if (selectedTool === 'zoom') return 'zoom-in';
+    return 'default';
+  };
   return (
     <div className="relative w-full h-full bg-white overflow-hidden">
       {/* الشبكة */}
@@ -49,11 +67,15 @@ const Canvas: React.FC<CanvasProps> = ({
       {/* منطقة الرسم */}
       <div
         ref={canvasRef}
-        className="absolute inset-0 cursor-crosshair"
+        className="absolute inset-0"
         style={{
-          transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`
+          transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,
+          cursor: getCursorStyle()
         }}
         onClick={onCanvasClick}
+        onMouseDown={onCanvasMouseDown}
+        onMouseMove={onCanvasMouseMove}
+        onMouseUp={onCanvasMouseUp}
       >
         {elements.map((element) => (
           <div
@@ -94,8 +116,42 @@ const Canvas: React.FC<CanvasProps> = ({
                 <GitBranch className="w-6 h-6 text-purple-600" />
               </div>
             )}
+            {element.type === 'brainstorm' && (
+              <div className="w-full h-full bg-orange-200 rounded border-2 border-orange-400 flex items-center justify-center">
+                <div className="text-center">
+                  <span className="text-lg">💡</span>
+                  <p className="text-xs font-arabic mt-1">عصف ذهني</p>
+                </div>
+              </div>
+            )}
+            {element.type === 'root' && (
+              <div className="w-full h-full bg-indigo-200 rounded border-2 border-indigo-400 flex items-center justify-center">
+                <GitBranch className="w-6 h-6 text-indigo-600" />
+              </div>
+            )}
+            {element.type === 'moodboard' && (
+              <div className="w-full h-full bg-pink-200 rounded border-2 border-pink-400 flex items-center justify-center">
+                <div className="text-center">
+                  <span className="text-lg">🎨</span>
+                  <p className="text-xs font-arabic mt-1">مودبورد</p>
+                </div>
+              </div>
+            )}
           </div>
         ))}
+
+        {/* مؤشر الرسم للعناصر الذكية */}
+        {isDrawing && drawStart && drawEnd && selectedTool === 'smart-element' && (
+          <div
+            className="absolute border-2 border-dashed border-blue-500 bg-blue-50 opacity-50 pointer-events-none"
+            style={{
+              left: Math.min(drawStart.x, drawEnd.x),
+              top: Math.min(drawStart.y, drawEnd.y),
+              width: Math.abs(drawEnd.x - drawStart.x),
+              height: Math.abs(drawEnd.y - drawStart.y)
+            }}
+          />
+        )}
       </div>
 
       {/* شريط الطبقات السفلي */}

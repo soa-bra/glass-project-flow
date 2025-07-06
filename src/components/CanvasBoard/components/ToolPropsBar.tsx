@@ -12,6 +12,7 @@ interface ToolPropsBarProps {
   selectedTool: string;
   selectedElementId: string | null;
   zoom: number;
+  selectedSmartElement: string;
   onZoomChange: (zoom: number) => void;
   onSmartElementSelect: (elementId: string) => void;
   onCopy: () => void;
@@ -23,7 +24,8 @@ interface ToolPropsBarProps {
 const ToolPropsBar: React.FC<ToolPropsBarProps> = ({ 
   selectedTool, 
   selectedElementId,
-  zoom, 
+  zoom,
+  selectedSmartElement,
   onZoomChange,
   onSmartElementSelect,
   onCopy,
@@ -53,6 +55,7 @@ const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
       case 'smart-element':
         return (
           <SmartElementToolProps
+            selectedSmartElement={selectedSmartElement}
             onSmartElementSelect={onSmartElementSelect}
           />
         );
