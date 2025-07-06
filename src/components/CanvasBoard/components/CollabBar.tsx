@@ -1,9 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Plus, MessageSquare } from 'lucide-react';
+import { Users, Plus, MessageSquare, Video, Mic, MicOff } from 'lucide-react';
+import { toast } from 'sonner';
 
 const CollabBar: React.FC = () => {
+  const [isMuted, setIsMuted] = useState(false);
+  const [collaborators] = useState([
+    { id: 1, name: 'أحمد محمد', avatar: 'أ', online: true },
+    { id: 2, name: 'فاطمة علي', avatar: 'ف', online: true },
+    { id: 3, name: 'محمد أحمد', avatar: 'م', online: false }
+  ]);
+
+  const handleInvite = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success('تم نسخ رابط الدعوة');
+  };
+
+  const handleTextChat = () => {
+    toast.info('سيتم فتح نافذة الدردشة النصية قريباً');
+  };
+
+  const handleVoiceChat = () => {
+    setIsMuted(!isMuted);
+    toast.success(isMuted ? 'تم إلغاء الكتم' : 'تم كتم الصوت');
+  };
+
+  const handleVideoCall = () => {
+    toast.info('سيتم بدء المكالمة المرئية قريباً');
+  };
   return (
     <div className="fixed top-4 left-4 z-40 w-80">
       <Card className="bg-white/95 backdrop-blur-md shadow-lg rounded-[40px]">
@@ -16,13 +41,25 @@ const CollabBar: React.FC = () => {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-2">
             <div className="flex -space-x-2">
-              {['المستخدم 1', 'المستخدم 2'].map((user, i) => (
-                <div key={i} className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs border-2 border-white">
-                  {user[0]}
+              {collaborators.slice(0, 3).map((user) => (
+                <div 
+                  key={user.id} 
+                  className={`w-8 h-8 ${user.online ? 'bg-green-500' : 'bg-gray-400'} rounded-full flex items-center justify-center text-white text-xs border-2 border-white relative`}
+                  title={user.name}
+                >
+                  {user.avatar}
+                  {user.online && (
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border border-white"></div>
+                  )}
                 </div>
               ))}
+              {collaborators.length > 3 && (
+                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-xs border-2 border-white">
+                  +{collaborators.length - 3}
+                </div>
+              )}
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleInvite}>
               <Plus className="w-4 h-4 mr-1" />
               دعوة
             </Button>
@@ -30,15 +67,24 @@ const CollabBar: React.FC = () => {
           
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="flex-1">
+              <Button variant="outline" size="sm" className="flex-1" onClick={handleTextChat}>
                 <MessageSquare className="w-4 h-4 mr-2" />
                 دردشة نصية
               </Button>
-              <Button variant="outline" size="sm" className="flex-1">
-                <MessageSquare className="w-4 h-4 mr-2" />
-                دردشة صوتية
+              <Button variant="outline" size="sm" className="flex-1" onClick={handleVideoCall}>
+                <Video className="w-4 h-4 mr-2" />
+                مكالمة مرئية
               </Button>
             </div>
+            <Button 
+              variant={isMuted ? "destructive" : "outline"} 
+              size="sm" 
+              className="w-full"
+              onClick={handleVoiceChat}
+            >
+              {isMuted ? <MicOff className="w-4 h-4 mr-2" /> : <Mic className="w-4 h-4 mr-2" />}
+              {isMuted ? 'إلغاء الكتم' : 'كتم الصوت'}
+            </Button>
           </div>
         </CardContent>
       </Card>
