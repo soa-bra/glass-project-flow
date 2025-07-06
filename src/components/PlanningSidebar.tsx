@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Target, Calendar, TrendingUp, FileText, Settings, ChevronLeft, ChevronRight, Lightbulb, Building, BarChart3 } from 'lucide-react';
+import { Users, Target, Calendar, TrendingUp, FileText, Settings, ChevronLeft, ChevronRight, Lightbulb, Building, BarChart3, Layers } from 'lucide-react';
 interface PlanningSidebarProps {
   selectedCategory: string | null;
   onCategorySelect: (category: string) => void;
@@ -13,6 +13,10 @@ const PlanningSidebar: React.FC<PlanningSidebarProps> = ({
   onToggleCollapse
 }) => {
   const categories = [{
+    key: 'canvas',
+    label: 'لوحة الكانفاس',
+    icon: Layers
+  }, {
     key: 'strategic',
     label: 'التخطيط الاستراتيجي',
     icon: Target

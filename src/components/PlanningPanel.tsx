@@ -1,4 +1,5 @@
 import React from 'react';
+import CanvasBoardContents from './CanvasBoard/CanvasBoardContents';
 interface PlanningPanelProps {
   selectedCategory: string | null;
   isMainSidebarCollapsed: boolean;
