@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCanvasState } from './hooks/useCanvasState';
 import { CanvasBoardContentsProps } from './types';
 import {
@@ -11,11 +11,14 @@ import {
   Canvas
 } from './components';
 import AIAssistantPanel from './AIAssistantPanel';
+import SmartElementsModal from './components/SmartElementsModal';
 
 const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
   projectId = 'default', 
   userId = 'user1' 
 }) => {
+  const [showSmartModal, setShowSmartModal] = useState(false);
+  const [selectedSmartElement, setSelectedSmartElement] = useState('');
   const {
     selectedTool,
     selectedElementId,
@@ -43,6 +46,32 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     updateElement,
     deleteElement
   } = useCanvasState(projectId, userId);
+
+  const handleSmartElementSelect = (elementId: string) => {
+    setSelectedSmartElement(elementId);
+    setShowSmartModal(true);
+  };
+
+  const handleCreateSmartElement = (elementData: any) => {
+    console.log('إنشاء عنصر ذكي:', elementData);
+    // هنا يمكن إضافة منطق إنشاء العنصر الذكي
+  };
+
+  const handleCopy = () => {
+    if (selectedElementId) {
+      console.log('نسخ العنصر:', selectedElementId);
+    }
+  };
+
+  const handleCut = () => {
+    if (selectedElementId) {
+      console.log('قص العنصر:', selectedElementId);
+    }
+  };
+
+  const handlePaste = () => {
+    console.log('لصق العنصر');
+  };
 
   const handleStartCanvas = () => {
     setShowDefaultView(false);
@@ -86,8 +115,14 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
       <CollabBar />
       <ToolPropsBar
         selectedTool={selectedTool}
+        selectedElementId={selectedElementId}
         zoom={zoom}
         onZoomChange={setZoom}
+        onSmartElementSelect={handleSmartElementSelect}
+        onCopy={handleCopy}
+        onCut={handleCut}
+        onPaste={handlePaste}
+        onDelete={() => selectedElementId && deleteElement(selectedElementId)}
       />
       <Inspector 
         selectedElementId={selectedElementId}
@@ -101,6 +136,13 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
       <MainToolbar
         selectedTool={selectedTool}
         onToolSelect={setSelectedTool}
+      />
+      
+      <SmartElementsModal
+        isOpen={showSmartModal}
+        onClose={() => setShowSmartModal(false)}
+        selectedElement={selectedSmartElement}
+        onCreateElement={handleCreateSmartElement}
       />
     </div>
   );
