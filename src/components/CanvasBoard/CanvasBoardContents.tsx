@@ -25,7 +25,9 @@ import {
   Eye,
   Settings,
   Layout,
-  Layers
+  Layers,
+  Building,
+  TrendingUp
 } from 'lucide-react';
 
 interface CanvasItem {
@@ -70,6 +72,7 @@ const CanvasBoardContents: React.FC = () => {
   ]);
   
   const [selectedTool, setSelectedTool] = useState<string>('select');
+  const [selectedPlanningMode, setSelectedPlanningMode] = useState<string>('collaborative');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -81,6 +84,13 @@ const CanvasBoardContents: React.FC = () => {
     { id: 'idea', label: 'فكرة', icon: Lightbulb },
     { id: 'timeline', label: 'جدول زمني', icon: Calendar },
     { id: 'team', label: 'فريق', icon: Users }
+  ];
+
+  const planningModes = [
+    { id: 'collaborative', label: 'التخطيط التشاركي', icon: Users },
+    { id: 'strategic', label: 'التخطيط الاستراتيجي', icon: Target },
+    { id: 'projects', label: 'تخطيط المشاريع', icon: Building },
+    { id: 'performance', label: 'تخطيط الأداء', icon: TrendingUp }
   ];
 
   const colors = [
@@ -130,35 +140,68 @@ const CanvasBoardContents: React.FC = () => {
   const ToolsPanel = () => (
     <Card className="bg-white/95 backdrop-blur-sm border-black/10">
       <CardContent className="p-4">
-        <h3 className="text-lg font-semibold text-black mb-4">أدوات التخطيط</h3>
-        <div className="space-y-2">
-          {tools.map(tool => {
-            const Icon = tool.icon;
-            return (
-              <Button
-                key={tool.id}
-                variant={selectedTool === tool.id ? "default" : "outline"}
-                className={`w-full justify-start gap-2 ${
-                  selectedTool === tool.id 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-transparent border-black/20 text-black hover:bg-black/5'
-                }`}
-                onClick={() => setSelectedTool(tool.id)}
-              >
-                <Icon className="w-4 h-4" />
-                {tool.label}
-              </Button>
-            );
-          })}
+        <h3 className="text-lg font-semibold text-black mb-4">لوحة التخطيط التفاعلية</h3>
+        
+        {/* Planning Modes */}
+        <div className="mb-6">
+          <h4 className="text-sm font-medium text-black mb-2">أنماط التخطيط</h4>
+          <div className="space-y-1">
+            {planningModes.map(mode => {
+              const Icon = mode.icon;
+              return (
+                <Button
+                  key={mode.id}
+                  variant={selectedPlanningMode === mode.id ? "default" : "ghost"}
+                  size="sm"
+                  className={`w-full justify-start gap-2 text-xs ${
+                    selectedPlanningMode === mode.id 
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-transparent text-black hover:bg-black/5'
+                  }`}
+                  onClick={() => setSelectedPlanningMode(mode.id)}
+                >
+                  <Icon className="w-3 h-3" />
+                  {mode.label}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Drawing Tools */}
+        <div className="mb-6">
+          <h4 className="text-sm font-medium text-black mb-2">أدوات الرسم</h4>
+          <div className="space-y-1">
+            {tools.map(tool => {
+              const Icon = tool.icon;
+              return (
+                <Button
+                  key={tool.id}
+                  variant={selectedTool === tool.id ? "default" : "outline"}
+                  size="sm"
+                  className={`w-full justify-start gap-2 text-xs ${
+                    selectedTool === tool.id 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-transparent border-black/20 text-black hover:bg-black/5'
+                  }`}
+                  onClick={() => setSelectedTool(tool.id)}
+                >
+                  <Icon className="w-3 h-3" />
+                  {tool.label}
+                </Button>
+              );
+            })}
+          </div>
         </div>
         
-        <div className="mt-6">
+        {/* Colors */}
+        <div className="mt-4">
           <h4 className="text-sm font-medium text-black mb-2">الألوان</h4>
           <div className="grid grid-cols-3 gap-2">
             {colors.map((color, index) => (
               <div
                 key={index}
-                className={`w-8 h-8 rounded-lg cursor-pointer border-2 border-black/10 ${color}`}
+                className={`w-6 h-6 rounded-lg cursor-pointer border-2 border-black/10 ${color}`}
               />
             ))}
           </div>
@@ -359,6 +402,7 @@ const CanvasBoardContents: React.FC = () => {
           <div className="flex items-center gap-4">
             <span>العناصر: {canvasItems.length}</span>
             <span>المحددة: {selectedItems.length}</span>
+            <span>النمط: {planningModes.find(m => m.id === selectedPlanningMode)?.label}</span>
             <span>الأداة: {tools.find(t => t.id === selectedTool)?.label}</span>
           </div>
           <div className="flex items-center gap-2">
