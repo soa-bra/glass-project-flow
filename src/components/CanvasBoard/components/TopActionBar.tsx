@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight, Save, Download, Target, Settings } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, Download, Rocket, Settings } from 'lucide-react';
 
 interface TopActionBarProps {
   canUndo: boolean;
@@ -10,7 +10,6 @@ interface TopActionBarProps {
   onRedo: () => void;
   onSave: () => void;
   onExport: () => void;
-  onConvert: () => void;
   onSettings: () => void;
 }
 
@@ -21,7 +20,6 @@ const TopActionBar: React.FC<TopActionBarProps> = ({
   onRedo,
   onSave,
   onExport,
-  onConvert,
   onSettings
 }) => {
   return (
@@ -72,16 +70,6 @@ const TopActionBar: React.FC<TopActionBarProps> = ({
             <Download className="w-4 h-4" />
           </Button>
           
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-10 px-3 rounded-full text-gray-600 hover:bg-soabra-new-secondary-3"
-            title="التحويل الذكي إلى مشروع"
-            onClick={onConvert}
-          >
-            <Target className="w-4 h-4" />
-          </Button>
-          
           <div className="w-px h-6 bg-gray-300 mx-1" />
           
           <Button
@@ -91,7 +79,7 @@ const TopActionBar: React.FC<TopActionBarProps> = ({
             title="إعدادات"
             onClick={onSettings}
           >
-            <Settings className="w-4 h-4" />
+            <Rocket className="w-4 h-4" />
           </Button>
         </CardContent>
       </Card>

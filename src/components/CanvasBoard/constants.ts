@@ -10,7 +10,6 @@ export const CANVAS_TOOLS: Tool[] = [
   { id: 'zoom', label: 'زوم', icon: ZoomIn, category: 'basic' },
   { id: 'hand', label: 'كف', icon: Hand, category: 'basic' },
   { id: 'file', label: 'ملف', icon: File, category: 'file' },
-  { id: 'project-convert', label: 'تحويل لمشروع', icon: Target, category: 'smart' },
   { id: 'upload', label: 'رفع ملف', icon: Upload, category: 'file' },
   { id: 'comment', label: 'تعليق', icon: MessageSquare, category: 'basic' },
   { id: 'text', label: 'نص', icon: Type, category: 'basic' },

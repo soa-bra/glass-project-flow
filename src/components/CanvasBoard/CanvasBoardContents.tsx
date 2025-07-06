@@ -131,7 +131,6 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         onRedo={redo}
         onSave={saveCanvas}
         onExport={exportCanvas}
-        onConvert={convertToProject}
         onSettings={handleSettings}
       />
       <CollabBar />
