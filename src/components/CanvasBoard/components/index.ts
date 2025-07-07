@@ -5,3 +5,6 @@ export { default as CollabBar } from './CollabBar';
 export { default as ToolPropsBar } from './ToolPropsBar';
 export { default as Inspector } from './Inspector';
 export { default as Canvas } from './Canvas';
+export { CanvasWrapper } from './CanvasWrapper';
+export { CanvasPanelLayout } from './CanvasPanelLayout';
+export { useCanvasEventHandlers } from './CanvasEventHandlers';
