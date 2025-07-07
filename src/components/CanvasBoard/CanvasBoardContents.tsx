@@ -29,12 +29,13 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     canvasState.handleElementMouseMove(e, canvasState.selectedElementId, canvasState.zoom, canvasState.canvasPosition, canvasState.updateElement, canvasState.snapEnabled);
   };
 
-  const wrappedHandleResizeMouseDown = (e: React.MouseEvent, handle: string) => {
-    canvasState.handleResizeMouseDown(e, handle, canvasState.selectedTool);
+  // Placeholder resize handlers
+  const handleResizeMouseDown = (e: React.MouseEvent, handle: string) => {
+    console.log('Resize mouse down:', handle);
   };
 
-  const wrappedHandleResizeMouseMove = (e: React.MouseEvent) => {
-    canvasState.handleResizeMouseMove(e, canvasState.selectedElementId, canvasState.elements, canvasState.zoom, canvasState.canvasPosition, canvasState.updateElement);
+  const handleResizeMouseMove = (e: React.MouseEvent) => {
+    console.log('Resize mouse move');
   };
 
   if (canvasState.showDefaultView) {
@@ -67,8 +68,8 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         handleElementMouseDown={wrappedHandleElementMouseDown}
         handleElementMouseMove={wrappedHandleElementMouseMove}
         handleElementMouseUp={canvasState.handleElementMouseUp}
-        handleResizeMouseDown={wrappedHandleResizeMouseDown}
-        handleResizeMouseMove={wrappedHandleResizeMouseMove}
+        handleResizeMouseDown={handleResizeMouseDown}
+        handleResizeMouseMove={handleResizeMouseMove}
       />
       
       <CleanCanvasPanelLayout

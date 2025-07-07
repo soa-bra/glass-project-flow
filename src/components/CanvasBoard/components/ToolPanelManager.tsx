@@ -14,6 +14,10 @@ import {
   EnhancedZoomPanel,
   EnhancedCommentPanel
 } from '../panels/enhanced';
+import { EnhancedSelectionTool } from '../tools/EnhancedSelectionTool';
+import { EnhancedSmartPenTool } from '../tools/EnhancedSmartPenTool';
+import { EnhancedTextTool } from '../tools/EnhancedTextTool';
+import { EnhancedShapeTool } from '../tools/EnhancedShapeTool';
 import { CanvasElement } from '../types';
 
 interface Layer {
@@ -107,9 +111,9 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
     switch (selectedTool) {
       case 'select':
         return (
-          <EnhancedSelectionPanel
+          <EnhancedSelectionTool
+            selectedTool={selectedTool}
             selectedElements={selectedElements}
-            onUpdateElement={onUpdateElement}
             onCopy={onCopy}
             onCut={onCut}
             onPaste={onPaste}
@@ -124,8 +128,6 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
             onRotate={(angle) => console.log('دوران:', angle)}
             onAlign={(type) => console.log('محاذاة:', type)}
             onDistribute={(type) => console.log('توزيع:', type)}
-            layers={layers}
-            onLayerReorder={onLayerReorder}
           />
         );
 
@@ -147,15 +149,17 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
 
       case 'text':
         return (
-          <TextPanel
-            onAddText={(type, config) => console.log('نص:', type, config)}
+          <EnhancedTextTool
+            selectedTool={selectedTool}
+            onAddText={(config) => console.log('نص:', config)}
           />
         );
 
       case 'shape':
         return (
-          <ShapePanel
-            onAddShape={(type, data) => console.log('شكل:', type, data)}
+          <EnhancedShapeTool
+            selectedTool={selectedTool}
+            onAddShape={(config) => console.log('شكل:', config)}
           />
         );
 
@@ -171,7 +175,8 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
 
       case 'smart-pen':
         return (
-          <EnhancedSmartPenPanel
+          <EnhancedSmartPenTool
+            selectedTool={selectedTool}
             selectedPenMode={selectedPenMode}
             lineWidth={lineWidth}
             lineStyle={lineStyle}
