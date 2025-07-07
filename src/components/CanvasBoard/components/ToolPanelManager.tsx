@@ -8,9 +8,19 @@ import {
   SmartPenPanel,
   ZoomPanel,
   HandPanel,
-  UploadPanel
+  UploadPanel,
+  GridPanel,
+  LayersPanel
 } from '../panels';
 import { CanvasElement } from '../types';
+
+interface Layer {
+  id: string;
+  name: string;
+  visible: boolean;
+  locked: boolean;
+  elements: string[];
+}
 
 interface ToolPanelManagerProps {
   selectedTool: string;
@@ -21,6 +31,12 @@ interface ToolPanelManagerProps {
   lineWidth: number;
   lineStyle: string;
   selectedPenMode: string;
+  showGrid: boolean;
+  snapEnabled: boolean;
+  gridSize: number;
+  gridShape: string;
+  layers: Layer[];
+  selectedLayerId: string | null;
   
   // Handlers
   onUpdateElement: (elementId: string, updates: any) => void;
@@ -38,8 +54,13 @@ interface ToolPanelManagerProps {
   onLineStyleChange: (style: string) => void;
   onPenModeSelect: (mode: string) => void;
   onFileUpload: (files: File[]) => void;
-  layers: any[];
-  onLayerReorder: (layers: any[]) => void;
+  onLayerReorder: (layers: Layer[]) => void;
+  onLayerSelect: (layerId: string) => void;
+  onGridToggle: () => void;
+  onSnapToggle: () => void;
+  onGridSizeChange: (size: number) => void;
+  onGridShapeChange: (shape: string) => void;
+  onAlignToGrid: () => void;
 }
 
 const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
@@ -51,6 +72,12 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
   lineWidth,
   lineStyle,
   selectedPenMode,
+  showGrid,
+  snapEnabled,
+  gridSize,
+  gridShape,
+  layers,
+  selectedLayerId,
   onUpdateElement,
   onCopy,
   onCut,
@@ -66,8 +93,13 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
   onLineStyleChange,
   onPenModeSelect,
   onFileUpload,
-  layers,
-  onLayerReorder
+  onLayerReorder,
+  onLayerSelect,
+  onGridToggle,
+  onSnapToggle,
+  onGridSizeChange,
+  onGridShapeChange,
+  onAlignToGrid
 }) => {
   const renderToolPanel = () => {
     switch (selectedTool) {
@@ -150,6 +182,31 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
             onPanSpeedChange={onPanSpeedChange}
             onPositionChange={onPositionChange}
             onResetView={onResetView}
+          />
+        );
+
+      case 'grid':
+        return (
+          <GridPanel
+            showGrid={showGrid}
+            snapEnabled={snapEnabled}
+            gridSize={gridSize}
+            gridShape={gridShape}
+            onGridToggle={onGridToggle}
+            onSnapToggle={onSnapToggle}
+            onGridSizeChange={onGridSizeChange}
+            onGridShapeChange={onGridShapeChange}
+            onAlignToGrid={onAlignToGrid}
+          />
+        );
+
+      case 'layers':
+        return (
+          <LayersPanel
+            layers={layers}
+            selectedLayerId={selectedLayerId}
+            onLayerUpdate={onLayerReorder}
+            onLayerSelect={onLayerSelect}
           />
         );
 

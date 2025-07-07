@@ -1,5 +1,5 @@
 import React from 'react';
-import { CollabBar, ToolPropsBar, Inspector, MainToolbar } from './';
+import { CollabBar, Inspector, MainToolbar } from './';
 import ToolPanelManager from './ToolPanelManager';
 import NewTopToolbar from './NewTopToolbar';
 import AIAssistantPanel from '../AIAssistantPanel';
@@ -162,34 +162,6 @@ export const CleanCanvasPanelLayout: React.FC<CleanCanvasPanelLayoutProps> = ({
       
       <CollabBar />
       
-      <ToolPropsBar
-        selectedTool={selectedTool}
-        selectedElementId={selectedElementId}
-        selectedElements={selectedElements}
-        zoom={zoom}
-        selectedSmartElement={selectedSmartElement}
-        showGrid={showGrid}
-        snapEnabled={snapEnabled}
-        gridSize={gridSize}
-        layers={layers}
-        selectedLayerId={selectedLayerId}
-        onZoomChange={setZoom}
-        onSmartElementSelect={handleSmartElementSelect}
-        onGridToggle={() => setShowGrid(!showGrid)}
-        onSnapToggle={() => setSnapEnabled(!snapEnabled)}
-        onGridSizeChange={handleGridSizeChange}
-        onAlignToGrid={handleAlignToGrid}
-        onLayerUpdate={handleLayerUpdate}
-        onLayerSelect={handleLayerSelect}
-        onCopy={handleCopy}
-        onCut={handleCut}
-        onPaste={handlePaste}
-        onDelete={handleDeleteSelected}
-        onGroup={handleGroup}
-        onUngroup={handleUngroup}
-        onLock={handleLock}
-        onUnlock={handleUnlock}
-      />
       
       <Inspector 
         selectedElementId={selectedElementId}
@@ -214,6 +186,12 @@ export const CleanCanvasPanelLayout: React.FC<CleanCanvasPanelLayoutProps> = ({
           lineWidth={lineWidth}
           lineStyle={lineStyle}
           selectedPenMode={selectedPenMode}
+          showGrid={showGrid}
+          snapEnabled={snapEnabled}
+          gridSize={gridSize}
+          gridShape={gridShape}
+          layers={layers}
+          selectedLayerId={selectedLayerId}
           onUpdateElement={updateElement}
           onCopy={handleCopy}
           onCut={handleCut}
@@ -229,8 +207,13 @@ export const CleanCanvasPanelLayout: React.FC<CleanCanvasPanelLayoutProps> = ({
           onLineStyleChange={onLineStyleChange}
           onPenModeSelect={onPenModeSelect}
           onFileUpload={onFileUpload}
-          layers={layers}
           onLayerReorder={handleLayerUpdate}
+          onLayerSelect={handleLayerSelect}
+          onGridToggle={() => setShowGrid(!showGrid)}
+          onSnapToggle={() => setSnapEnabled(!snapEnabled)}
+          onGridSizeChange={handleGridSizeChange}
+          onGridShapeChange={handleGridShapeChange}
+          onAlignToGrid={handleAlignToGrid}
         />
       </div>
       

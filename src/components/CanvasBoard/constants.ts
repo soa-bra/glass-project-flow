@@ -6,12 +6,14 @@ import {
 } from 'lucide-react';
 import { Tool } from './types';
 
-// أدوات شريط الأدوات الرئيسي (أسفل) - بالترتيب المطلوب
+// أدوات شريت الأدوات الرئيسي (أسفل) - بالترتيب المطلوب
 export const MAIN_TOOLBAR_TOOLS: Tool[] = [
   { id: 'select', label: 'تحديد', icon: MousePointer, category: 'basic' },
   { id: 'smart-pen', label: 'القلم الذكي', icon: Pen, category: 'basic' },
   { id: 'zoom', label: 'زوم', icon: ZoomIn, category: 'basic' },
   { id: 'hand', label: 'كف', icon: Hand, category: 'navigation' },
+  { id: 'grid', label: 'شبكة', icon: Grid3X3, category: 'navigation' },
+  { id: 'layers', label: 'طبقات', icon: Layers, category: 'navigation' },
   { id: 'upload', label: 'رفع مرفق', icon: Upload, category: 'file' },
   { id: 'comment', label: 'تعليق', icon: MessageSquare, category: 'collaboration' },
   { id: 'text', label: 'نص', icon: Type, category: 'content' },

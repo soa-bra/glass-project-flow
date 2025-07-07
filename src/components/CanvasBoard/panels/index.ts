@@ -7,3 +7,5 @@ export { default as SmartPenPanel } from './SmartPenPanel';
 export { default as ZoomPanel } from './ZoomPanel';
 export { default as HandPanel } from './HandPanel';
 export { default as UploadPanel } from './UploadPanel';
+export { default as GridPanel } from './GridPanel';
+export { default as LayersPanel } from './LayersPanel';
