@@ -1,9 +1,9 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { SelectToolProps, ZoomToolProps, SmartElementToolProps, TextToolProps, ShapeToolProps } from './ToolProps';
+import { ZoomToolProps, SmartElementToolProps, TextToolProps, ShapeToolProps } from './ToolProps';
+import SelectToolProps from './ToolProps/SelectToolProps';
 import { GridTool } from '../tools/GridTool';
 import { LayerTool } from '../tools/LayerTool';
-import { SelectionTool } from '../tools/SelectionTool';
 
 interface Layer {
   id: string;
@@ -86,17 +86,12 @@ const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
     switch (selectedTool) {
       case 'select':
         return (
-          <SelectionTool
-            selectedTool={selectedTool}
-            selectedElements={selectedElements}
+          <SelectToolProps
+            selectedElementId={selectedElementId}
             onCopy={onCopy}
             onCut={onCut}
             onPaste={onPaste}
             onDelete={onDelete}
-            onGroup={onGroup}
-            onUngroup={onUngroup}
-            onLock={onLock}
-            onUnlock={onUnlock}
           />
         );
       case 'zoom':
