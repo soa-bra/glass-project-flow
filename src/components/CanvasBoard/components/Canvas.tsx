@@ -18,6 +18,8 @@ interface CanvasProps {
   drawEnd: { x: number; y: number } | null;
   isDragging: boolean;
   isResizing: boolean;
+  isSelecting?: boolean;
+  selectionBox?: { start: { x: number; y: number }; end: { x: number; y: number } } | null;
   onCanvasClick: (e: React.MouseEvent) => void;
   onCanvasMouseDown: (e: React.MouseEvent) => void;
   onCanvasMouseMove: (e: React.MouseEvent) => void;
@@ -46,6 +48,8 @@ const Canvas: React.FC<CanvasProps> = ({
   drawEnd,
   isDragging,
   isResizing,
+  isSelecting = false,
+  selectionBox = null,
   onCanvasClick,
   onCanvasMouseDown,
   onCanvasMouseMove,
@@ -258,6 +262,19 @@ const Canvas: React.FC<CanvasProps> = ({
               top: Math.min(drawStart.y, drawEnd.y),
               width: Math.abs(drawEnd.x - drawStart.x),
               height: Math.abs(drawEnd.y - drawStart.y)
+            }}
+          />
+        )}
+
+        {/* صندوق التحديد المتعدد */}
+        {isSelecting && selectionBox && (
+          <div
+            className="absolute border-2 border-dashed border-green-500 bg-green-50 opacity-30 pointer-events-none"
+            style={{
+              left: Math.min(selectionBox.start.x, selectionBox.end.x),
+              top: Math.min(selectionBox.start.y, selectionBox.end.y),
+              width: Math.abs(selectionBox.end.x - selectionBox.start.x),
+              height: Math.abs(selectionBox.end.y - selectionBox.start.y)
             }}
           />
         )}

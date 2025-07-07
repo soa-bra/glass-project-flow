@@ -22,19 +22,19 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
 
   // Create wrapper functions to match CanvasWrapper interface
   const wrappedHandleElementMouseDown = (e: React.MouseEvent, elementId: string) => {
-    canvasState.handleElementMouseDown(e, elementId, canvasState.selectedTool, canvasState.elements, canvasState.zoom, canvasState.canvasPosition, canvasState.setSelectedElementId);
+    canvasState.handleElementMouseDown(e, elementId);
   };
 
   const wrappedHandleElementMouseMove = (e: React.MouseEvent) => {
-    canvasState.handleElementMouseMove(e, canvasState.selectedElementId, canvasState.zoom, canvasState.canvasPosition, canvasState.updateElement, canvasState.snapEnabled);
+    canvasState.handleElementMouseMove(e);
   };
 
   const wrappedHandleResizeMouseDown = (e: React.MouseEvent, handle: string) => {
-    canvasState.handleResizeMouseDown(e, handle, canvasState.selectedTool);
+    canvasState.handleResizeMouseDown(e, handle);
   };
 
   const wrappedHandleResizeMouseMove = (e: React.MouseEvent) => {
-    canvasState.handleResizeMouseMove(e, canvasState.selectedElementId, canvasState.elements, canvasState.zoom, canvasState.canvasPosition, canvasState.updateElement);
+    canvasState.handleResizeMouseMove(e);
   };
 
   if (canvasState.showDefaultView) {
@@ -57,6 +57,8 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         drawEnd={canvasState.drawEnd}
         isDragging={canvasState.isDragging}
         isResizing={canvasState.isResizing}
+        isSelecting={canvasState.isSelecting}
+        selectionBox={canvasState.selectionBox}
         setSelectedElementId={canvasState.setSelectedElementId}
         setShowGrid={canvasState.setShowGrid}
         setSnapEnabled={canvasState.setSnapEnabled}

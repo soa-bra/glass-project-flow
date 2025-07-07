@@ -16,6 +16,8 @@ interface CanvasWrapperProps {
   drawEnd: { x: number; y: number } | null;
   isDragging: boolean;
   isResizing: boolean;
+  isSelecting?: boolean;
+  selectionBox?: { start: { x: number; y: number }; end: { x: number; y: number } } | null;
   setSelectedElementId: (id: string | null) => void;
   setShowGrid: (show: boolean) => void;
   setSnapEnabled: (enabled: boolean) => void;
@@ -44,6 +46,8 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
   drawEnd,
   isDragging,
   isResizing,
+  isSelecting = false,
+  selectionBox = null,
   setSelectedElementId,
   setShowGrid,
   setSnapEnabled,
@@ -72,6 +76,8 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
       drawEnd={drawEnd}
       isDragging={isDragging}
       isResizing={isResizing}
+      isSelecting={isSelecting}
+      selectionBox={selectionBox}
       onCanvasClick={handleCanvasClick}
       onCanvasMouseDown={handleCanvasMouseDown}
       onCanvasMouseMove={handleCanvasMouseMove}
