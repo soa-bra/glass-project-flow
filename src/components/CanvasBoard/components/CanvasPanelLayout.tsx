@@ -1,5 +1,7 @@
 import React from 'react';
 import { TopActionBar, CollabBar, ToolPropsBar, Inspector, MainToolbar } from './';
+import ToolPanelManager from './ToolPanelManager';
+import NewTopToolbar from './NewTopToolbar';
 import AIAssistantPanel from '../AIAssistantPanel';
 import { HistoryPanel } from '../sidepanels/HistoryPanel';
 import { PropertiesPanel } from '../sidepanels/PropertiesPanel';
@@ -33,9 +35,15 @@ interface CanvasPanelLayoutProps {
   showGrid: boolean;
   snapEnabled: boolean;
   gridSize: number;
+  gridShape: string;
   layers: Layer[];
   selectedLayerId: string | null;
   elements: CanvasElement[];
+  canvasPosition: { x: number; y: number };
+  panSpeed: number;
+  lineWidth: number;
+  lineStyle: string;
+  selectedPenMode: string;
   
   // Handlers
   setSelectedTool: (tool: string) => void;
@@ -44,6 +52,7 @@ interface CanvasPanelLayoutProps {
   setSnapEnabled: (enabled: boolean) => void;
   handleSmartElementSelect: (elementId: string) => void;
   handleGridSizeChange: (size: number) => void;
+  handleGridShapeChange: (shape: string) => void;
   handleAlignToGrid: () => void;
   handleLayerUpdate: (layers: Layer[]) => void;
   handleLayerSelect: (layerId: string) => void;
@@ -57,6 +66,17 @@ interface CanvasPanelLayoutProps {
   handleUnlock: () => void;
   updateElement: (elementId: string, updates: any) => void;
   deleteElement: (elementId: string) => void;
+  onPositionChange: (position: { x: number; y: number }) => void;
+  onFitToScreen: () => void;
+  onResetView: () => void;
+  onPanSpeedChange: (speed: number) => void;
+  onLineWidthChange: (width: number) => void;
+  onLineStyleChange: (style: string) => void;
+  onPenModeSelect: (mode: string) => void;
+  onFileUpload: (files: File[]) => void;
+  onNew: () => void;
+  onOpen: () => void;
+  onSmartProjectGenerate: () => void;
 }
 
 export const CanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
@@ -75,15 +95,22 @@ export const CanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
   showGrid,
   snapEnabled,
   gridSize,
+  gridShape,
   layers,
   selectedLayerId,
   elements,
+  canvasPosition,
+  panSpeed,
+  lineWidth,
+  lineStyle,
+  selectedPenMode,
   setSelectedTool,
   setZoom,
   setShowGrid,
   setSnapEnabled,
   handleSmartElementSelect,
   handleGridSizeChange,
+  handleGridShapeChange,
   handleAlignToGrid,
   handleLayerUpdate,
   handleLayerSelect,
@@ -96,18 +123,44 @@ export const CanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
   handleLock,
   handleUnlock,
   updateElement,
-  deleteElement
+  deleteElement,
+  onPositionChange,
+  onFitToScreen,
+  onResetView,
+  onPanSpeedChange,
+  onLineWidthChange,
+  onLineStyleChange,
+  onPenModeSelect,
+  onFileUpload,
+  onNew,
+  onOpen,
+  onSmartProjectGenerate
 }) => {
+  const selectedElementsAsElements = selectedElements
+    .map(id => elements.find(el => el.id === id))
+    .filter(Boolean) as CanvasElement[];
+
   return (
     <>
-      <TopActionBar 
+      {/* البار العلوي الجديد */}
+      <NewTopToolbar
         canUndo={historyIndex > 0}
         canRedo={historyIndex < history.length - 1}
         onUndo={onUndo}
         onRedo={onRedo}
         onSave={onSave}
-        onExport={onExport}
-        onSettings={onSettings}
+        onNew={onNew}
+        onOpen={onOpen}
+        onCopy={handleCopy}
+        showGrid={showGrid}
+        onGridToggle={() => setShowGrid(!showGrid)}
+        snapEnabled={snapEnabled}
+        onSnapToggle={() => setSnapEnabled(!snapEnabled)}
+        gridSize={gridSize}
+        onGridSizeChange={handleGridSizeChange}
+        gridShape={gridShape}
+        onGridShapeChange={handleGridShapeChange}
+        onSmartProjectGenerate={onSmartProjectGenerate}
       />
       
       <CollabBar />
@@ -175,27 +228,40 @@ export const CanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
         <AIAssistantPanel />
       </div>
       
-      {/* استبدال بشريط الأدوات الجديد */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="bg-white/95 backdrop-blur-lg shadow-xl border border-gray-200/50 rounded-[24px] px-6 py-3">
-          <div className="flex items-center gap-4">
-            {['select', 'smart-pen', 'zoom', 'hand', 'upload', 'comment', 'text', 'shape', 'smart-element'].map((toolId) => (
-              <button
-                key={toolId}
-                onClick={() => setSelectedTool(toolId)}
-                className={`p-3 rounded-xl transition-all ${
-                  selectedTool === toolId 
-                    ? 'bg-black text-white' 
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-                title={toolId}
-              >
-                ⚡
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* مدير اللوحات حسب الأداة المحددة */}
+      <ToolPanelManager
+        selectedTool={selectedTool}
+        selectedElements={selectedElementsAsElements}
+        zoom={zoom}
+        canvasPosition={canvasPosition}
+        panSpeed={panSpeed}
+        lineWidth={lineWidth}
+        lineStyle={lineStyle}
+        selectedPenMode={selectedPenMode}
+        onUpdateElement={updateElement}
+        onCopy={handleCopy}
+        onCut={handleCut}
+        onPaste={handlePaste}
+        onDelete={handleDeleteSelected}
+        onGroup={handleGroup}
+        onZoomChange={setZoom}
+        onPositionChange={onPositionChange}
+        onFitToScreen={onFitToScreen}
+        onResetView={onResetView}
+        onPanSpeedChange={onPanSpeedChange}
+        onLineWidthChange={onLineWidthChange}
+        onLineStyleChange={onLineStyleChange}
+        onPenModeSelect={onPenModeSelect}
+        onFileUpload={onFileUpload}
+        layers={layers}
+        onLayerReorder={handleLayerUpdate}
+      />
+      
+      {/* البار السفلي الجديد */}
+      <MainToolbar
+        selectedTool={selectedTool}
+        onToolSelect={setSelectedTool}
+      />
     </>
   );
 };
