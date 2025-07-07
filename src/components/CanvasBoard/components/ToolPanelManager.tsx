@@ -154,20 +154,34 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
 
       case 'smart-element':
         return (
-          <SmartElementPanel
+          <EnhancedSmartElementPanel
             onAddSmartElement={(type, config) => console.log('عنصر ذكي:', type, config)}
+            onPreviewElement={(type, config) => console.log('معاينة:', type, config)}
+            isAIEnabled={true}
+            onToggleAI={(enabled) => console.log('تبديل الذكاء الاصطناعي:', enabled)}
           />
         );
 
       case 'smart-pen':
         return (
-          <SmartPenPanel
+          <EnhancedSmartPenPanel
             selectedPenMode={selectedPenMode}
             lineWidth={lineWidth}
             lineStyle={lineStyle}
+            penColor="#000000"
+            smoothing={50}
+            snapSensitivity={20}
+            autoGroup={true}
+            smartRecognition={true}
             onPenModeSelect={onPenModeSelect}
             onLineWidthChange={onLineWidthChange}
             onLineStyleChange={onLineStyleChange}
+            onColorChange={(color) => console.log('لون:', color)}
+            onSmoothingChange={(smoothing) => console.log('تنعيم:', smoothing)}
+            onSnapSensitivityChange={(sensitivity) => console.log('حساسية:', sensitivity)}
+            onAutoGroupToggle={(enabled) => console.log('تجميع تلقائي:', enabled)}
+            onSmartRecognitionToggle={(enabled) => console.log('تعرف ذكي:', enabled)}
+            onCalibratePen={() => console.log('معايرة القلم')}
           />
         );
 
