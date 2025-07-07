@@ -1,17 +1,19 @@
 import React from 'react';
 import { 
-  SelectionPanel, 
   CommentPanel, 
   TextPanel, 
   ShapePanel, 
-  SmartElementPanel,
-  SmartPenPanel,
   ZoomPanel,
   HandPanel,
   UploadPanel,
   GridPanel,
   LayersPanel
 } from '../panels';
+import { 
+  EnhancedSelectionPanel,
+  EnhancedSmartPenPanel,
+  EnhancedSmartElementPanel
+} from '../panels/enhanced';
 import { CanvasElement } from '../types';
 
 interface Layer {
@@ -105,7 +107,7 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
     switch (selectedTool) {
       case 'select':
         return (
-          <SelectionPanel
+          <EnhancedSelectionPanel
             selectedElements={selectedElements}
             onUpdateElement={onUpdateElement}
             onCopy={onCopy}
@@ -113,6 +115,15 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
             onPaste={onPaste}
             onDelete={onDelete}
             onGroup={onGroup}
+            onUngroup={() => console.log('إلغاء التجميع')}
+            onLock={() => console.log('قفل')}
+            onUnlock={() => console.log('إلغاء القفل')}
+            onDuplicate={() => console.log('تكرار')}
+            onFlipHorizontal={() => console.log('قلب أفقي')}
+            onFlipVertical={() => console.log('قلب عمودي')}
+            onRotate={(angle) => console.log('دوران:', angle)}
+            onAlign={(type) => console.log('محاذاة:', type)}
+            onDistribute={(type) => console.log('توزيع:', type)}
             layers={layers}
             onLayerReorder={onLayerReorder}
           />
