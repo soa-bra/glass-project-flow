@@ -51,7 +51,7 @@ export interface Tool {
   id: string;
   label: string;
   icon: any;
-  category: 'basic' | 'smart' | 'file';
+  category: 'basic' | 'smart' | 'file' | 'project';
 }
 
 export interface PlanningMode {

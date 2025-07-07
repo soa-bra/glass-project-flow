@@ -207,7 +207,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         />
       </div>
       
-      <div className="fixed bottom-24 right-4 z-40 w-80">
+      <div className="fixed top-4 right-4 z-40 w-80">
         <AIAssistantPanel />
       </div>
       <MainToolbar

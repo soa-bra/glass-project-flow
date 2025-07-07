@@ -5,3 +5,8 @@ export { FlowchartTool } from './FlowchartTool';
 export { AnnotationTool } from './AnnotationTool';
 export { ShapeTool } from './ShapeTool';
 export { SmartElementLinker } from './SmartElementLinker';
+export { HandTool } from './HandTool';
+export { FileTool } from './FileTool';
+export { UploadTool } from './UploadTool';
+export { CommentTool } from './CommentTool';
+export { ConvertToProjectTool } from './ConvertToProjectTool';

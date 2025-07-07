@@ -17,7 +17,8 @@ export const CANVAS_TOOLS: Tool[] = [
   { id: 'comment', label: 'تعليق', icon: MessageSquare, category: 'basic' },
   { id: 'text', label: 'نص', icon: Type, category: 'basic' },
   { id: 'shape', label: 'شكل', icon: Shapes, category: 'basic' },
-  { id: 'smart-element', label: 'عنصر ذكي', icon: Lightbulb, category: 'smart' }
+  { id: 'smart-element', label: 'عنصر ذكي', icon: Lightbulb, category: 'smart' },
+  { id: 'convert-project', label: 'تحويل لمشروع', icon: GitBranch, category: 'project' }
 ];
 
 export const SMART_ELEMENTS = [

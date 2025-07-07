@@ -4,6 +4,7 @@ import { ZoomToolProps, SmartElementToolProps, TextToolProps, ShapeToolProps } f
 import { GridTool } from '../tools/GridTool';
 import { LayerTool } from '../tools/LayerTool';
 import { SelectionTool } from '../tools/SelectionTool';
+import { HandTool, FileTool, UploadTool, CommentTool, ConvertToProjectTool, RepeatTool } from '../tools';
 
 interface Layer {
   id: string;
@@ -40,6 +41,18 @@ interface ToolPropsBarProps {
   onUngroup: () => void;
   onLock: () => void;
   onUnlock: () => void;
+  // New handlers for additional tools
+  onPan?: () => void;
+  onResetView?: () => void;
+  onSave?: () => void;
+  onExport?: () => void;
+  onImport?: () => void;
+  onFileUpload?: (file: File) => void;
+  onAddComment?: (text: string, position: { x: number; y: number }) => void;
+  onDeleteComment?: (commentId: string) => void;
+  onConvertToProject?: (projectData: any) => void;
+  onRepeat?: (elementId: string) => void;
+  comments?: any[];
 }
 const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
   selectedTool,
@@ -67,7 +80,19 @@ const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
   onGroup,
   onUngroup,
   onLock,
-  onUnlock
+  onUnlock,
+  // New handlers
+  onPan = () => console.log('Pan activated'),
+  onResetView = () => console.log('Reset view'),
+  onSave = () => console.log('Save'),
+  onExport = () => console.log('Export'),
+  onImport = () => console.log('Import'),
+  onFileUpload = () => console.log('File uploaded'),
+  onAddComment = () => console.log('Comment added'),
+  onDeleteComment = () => console.log('Comment deleted'),
+  onConvertToProject = () => console.log('Convert to project'),
+  onRepeat = () => console.log('Repeat element'),
+  comments = []
 }) => {
   const getToolTitle = () => {
     switch (selectedTool) {
@@ -79,6 +104,12 @@ const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
       case 'shape': return 'أدوات الأشكال';
       case 'grid': return 'إعدادات الشبكة والمحاذاة';
       case 'layers': return 'إدارة الطبقات';
+      case 'hand': return 'أداة اليد';
+      case 'file': return 'إدارة الملفات';
+      case 'upload': return 'رفع الملفات';
+      case 'comment': return 'التعليقات';
+      case 'repeat': return 'أداة التكرار';
+      case 'convert-project': return 'تحويل لمشروع';
       default: return 'أدوات الكانفس';
     }
   };
@@ -131,11 +162,59 @@ const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
             selectedLayerId={selectedLayerId}
           />
         );
+      case 'hand':
+        return (
+          <HandTool
+            selectedTool={selectedTool}
+            onPan={onPan}
+            onResetView={onResetView}
+          />
+        );
+      case 'file':
+        return (
+          <FileTool
+            selectedTool={selectedTool}
+            onSave={onSave}
+            onExport={onExport}
+            onImport={onImport}
+          />
+        );
+      case 'upload':
+        return (
+          <UploadTool
+            selectedTool={selectedTool}
+            onFileUpload={onFileUpload}
+          />
+        );
+      case 'comment':
+        return (
+          <CommentTool
+            selectedTool={selectedTool}
+            comments={comments}
+            onAddComment={onAddComment}
+            onDeleteComment={onDeleteComment}
+          />
+        );
+      case 'repeat':
+        return (
+          <RepeatTool
+            selectedTool={selectedTool}
+            elementId={selectedElementId}
+            onRepeat={(options) => onRepeat && onRepeat(options.elementId)}
+          />
+        );
+      case 'convert-project':
+        return (
+          <ConvertToProjectTool
+            selectedTool={selectedTool}
+            onConvert={onConvertToProject}
+          />
+        );
       default:
         return null;
     }
   };
-  return <div className="fixed bottom-24 left-4 z-40 w-80">
+  return <div className="fixed bottom-4 left-4 z-40 w-80">
       <Card className="bg-white/95 backdrop-blur-md shadow-sm border border-gray-300 rounded-[40px]">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-arabic font-medium">{getToolTitle()}</CardTitle>
