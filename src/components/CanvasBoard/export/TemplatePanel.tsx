@@ -177,5 +177,35 @@ export const TemplatePanel: React.FC<TemplatePanelProps> = ({
         💡 سيتم حفظ جميع العناصر الموجودة حالياً على اللوحة
       </div>
     </div>;
-  return;
+  return (
+    <Card className="w-80 bg-white/95 backdrop-blur-sm border-black/10">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold font-arabic">مكتبة القوالب</h3>
+          <div className="flex gap-1">
+            <Button
+              variant={activeTab === 'browse' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setActiveTab('browse')}
+              className="text-xs"
+            >
+              <FileText className="w-3 h-3 mr-1" />
+              تصفح
+            </Button>
+            <Button
+              variant={activeTab === 'save' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setActiveTab('save')}
+              className="text-xs"
+            >
+              <Save className="w-3 h-3 mr-1" />
+              حفظ
+            </Button>
+          </div>
+        </div>
+        
+        {activeTab === 'browse' ? renderBrowseTab() : renderSaveTab()}
+      </CardContent>
+    </Card>
+  );
 };

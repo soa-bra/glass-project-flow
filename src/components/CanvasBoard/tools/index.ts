@@ -10,3 +10,6 @@ export { FileTool } from './FileTool';
 export { UploadTool } from './UploadTool';
 export { CommentTool } from './CommentTool';
 export { ConvertToProjectTool } from './ConvertToProjectTool';
+export { default as RootConnectorTool } from './RootConnectorTool';
+export { default as TimelineTool } from './TimelineTool';
+export { default as SmartMoodboardTool } from './SmartMoodboardTool';
