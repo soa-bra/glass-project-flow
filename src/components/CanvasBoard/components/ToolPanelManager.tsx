@@ -1,9 +1,7 @@
 import React from 'react';
 import { 
-  CommentPanel, 
   TextPanel, 
   ShapePanel, 
-  ZoomPanel,
   HandPanel,
   UploadPanel,
   GridPanel,
@@ -12,7 +10,9 @@ import {
 import { 
   EnhancedSelectionPanel,
   EnhancedSmartPenPanel,
-  EnhancedSmartElementPanel
+  EnhancedSmartElementPanel,
+  EnhancedZoomPanel,
+  EnhancedCommentPanel
 } from '../panels/enhanced';
 import { CanvasElement } from '../types';
 
@@ -131,10 +131,17 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
 
       case 'comment':
         return (
-          <CommentPanel
-            onAddComment={(text, useAI) => console.log('تعليق:', text, useAI)}
+          <EnhancedCommentPanel
+            onAddComment={(text, type, tags) => console.log('تعليق:', text, type, tags)}
             onToggleCommentPen={() => console.log('تبديل قلم التعليق')}
+            onResolveComment={(id) => console.log('حل تعليق:', id)}
+            onReplyToComment={(id, reply) => console.log('رد:', id, reply)}
             isCommentPenActive={false}
+            isVoiceEnabled={true}
+            comments={[]}
+            collaborators={['محمد', 'فاطمة', 'أحمد']}
+            onToggleVoice={(enabled) => console.log('تبديل الصوت:', enabled)}
+            onMentionUser={(username) => console.log('ذكر:', username)}
           />
         );
 
@@ -187,15 +194,23 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
 
       case 'zoom':
         return (
-          <ZoomPanel
+          <EnhancedZoomPanel
             zoom={zoom}
             canvasPosition={canvasPosition}
             panSpeed={panSpeed}
+            smoothZoom={true}
+            zoomToMouse={true}
+            fitPadding={20}
             onZoomChange={onZoomChange}
             onPositionChange={onPositionChange}
             onFitToScreen={onFitToScreen}
+            onFitToSelection={() => console.log('ملاءمة التحديد')}
             onResetView={onResetView}
             onPanSpeedChange={onPanSpeedChange}
+            onSmoothZoomToggle={(enabled) => console.log('زوم سلس:', enabled)}
+            onZoomToMouseToggle={(enabled) => console.log('زوم للماوس:', enabled)}
+            onFitPaddingChange={(padding) => console.log('هامش:', padding)}
+            onCenterOnElement={(id) => console.log('توسيط العنصر:', id)}
           />
         );
 

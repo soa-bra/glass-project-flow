@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
-import { useCanvasState } from './hooks/useCanvasState';
+import React from 'react';
+import { useEnhancedCanvasState } from './hooks/useEnhancedCanvasState';
 import { CanvasBoardContentsProps } from './types';
 import { DefaultView } from './components';
 import { useCanvasEventHandlers } from './components/CanvasEventHandlers';
-import { CanvasPanelLayout } from './components/CanvasPanelLayout';
+import { CleanCanvasPanelLayout } from './components/CleanCanvasPanelLayout';
 import { CanvasWrapper } from './components/CanvasWrapper';
 
 const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
   projectId = 'default', 
   userId = 'user1' 
 }) => {
-  const [showSmartModal, setShowSmartModal] = useState(false);
-  const canvasState = useCanvasState(projectId, userId);
+  const canvasState = useEnhancedCanvasState(projectId, userId);
   
   const eventHandlers = useCanvasEventHandlers({
     selectedElementId: canvasState.selectedElementId,
@@ -20,6 +19,23 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     setSelectedTool: canvasState.setSelectedTool,
     deleteElement: canvasState.deleteElement
   });
+
+  // Create wrapper functions to match CanvasWrapper interface
+  const wrappedHandleElementMouseDown = (e: React.MouseEvent, elementId: string) => {
+    canvasState.handleElementMouseDown(e, elementId, canvasState.selectedTool, canvasState.elements, canvasState.zoom, canvasState.canvasPosition, canvasState.setSelectedElementId);
+  };
+
+  const wrappedHandleElementMouseMove = (e: React.MouseEvent) => {
+    canvasState.handleElementMouseMove(e, canvasState.selectedElementId, canvasState.zoom, canvasState.canvasPosition, canvasState.updateElement, canvasState.snapEnabled);
+  };
+
+  const wrappedHandleResizeMouseDown = (e: React.MouseEvent, handle: string) => {
+    canvasState.handleResizeMouseDown(e, handle, canvasState.selectedTool);
+  };
+
+  const wrappedHandleResizeMouseMove = (e: React.MouseEvent) => {
+    canvasState.handleResizeMouseMove(e, canvasState.selectedElementId, canvasState.elements, canvasState.zoom, canvasState.canvasPosition, canvasState.updateElement);
+  };
 
   if (canvasState.showDefaultView) {
     return <DefaultView onStartCanvas={eventHandlers.handleStartCanvas} />;
@@ -48,14 +64,14 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         handleCanvasMouseDown={canvasState.handleCanvasMouseDown}
         handleCanvasMouseMove={canvasState.handleCanvasMouseMove}
         handleCanvasMouseUp={canvasState.handleCanvasMouseUp}
-        handleElementMouseDown={canvasState.handleElementMouseDown}
-        handleElementMouseMove={canvasState.handleElementMouseMove}
+        handleElementMouseDown={wrappedHandleElementMouseDown}
+        handleElementMouseMove={wrappedHandleElementMouseMove}
         handleElementMouseUp={canvasState.handleElementMouseUp}
-        handleResizeMouseDown={canvasState.handleResizeMouseDown}
-        handleResizeMouseMove={canvasState.handleResizeMouseMove}
+        handleResizeMouseDown={wrappedHandleResizeMouseDown}
+        handleResizeMouseMove={wrappedHandleResizeMouseMove}
       />
       
-      <CanvasPanelLayout
+      <CleanCanvasPanelLayout
         historyIndex={canvasState.historyIndex}
         history={canvasState.history}
         onUndo={canvasState.undo}
@@ -76,10 +92,10 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         selectedLayerId={canvasState.selectedLayerId}
         elements={canvasState.elements}
         canvasPosition={canvasState.canvasPosition || { x: 0, y: 0 }}
-        panSpeed={100}
-        lineWidth={2}
-        lineStyle="solid"
-        selectedPenMode="smart-draw"
+        panSpeed={canvasState.panSpeed}
+        lineWidth={canvasState.lineWidth}
+        lineStyle={canvasState.lineStyle}
+        selectedPenMode={canvasState.selectedPenMode}
         setSelectedTool={canvasState.setSelectedTool}
         setZoom={canvasState.setZoom}
         setShowGrid={canvasState.setShowGrid}
@@ -90,9 +106,9 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         handleAlignToGrid={canvasState.handleAlignToGrid}
         handleLayerUpdate={canvasState.handleLayerUpdate}
         handleLayerSelect={canvasState.handleLayerSelect}
-        handleCopy={eventHandlers.handleCopy}
-        handleCut={eventHandlers.handleCut}
-        handlePaste={eventHandlers.handlePaste}
+        handleCopy={canvasState.handleCopy}
+        handleCut={canvasState.handleCut}
+        handlePaste={canvasState.handlePaste}
         handleDeleteSelected={eventHandlers.handleDeleteSelected}
         handleGroup={canvasState.handleGroup}
         handleUngroup={canvasState.handleUngroup}
@@ -100,13 +116,13 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         handleUnlock={canvasState.handleUnlock}
         updateElement={canvasState.updateElement}
         deleteElement={canvasState.deleteElement}
-        onPositionChange={(pos) => console.log('Position change:', pos)}
+        onPositionChange={canvasState.setCanvasPosition}
         onFitToScreen={() => console.log('Fit to screen')}
         onResetView={() => console.log('Reset view')}
-        onPanSpeedChange={(speed) => console.log('Pan speed:', speed)}
-        onLineWidthChange={(width) => console.log('Line width:', width)}
-        onLineStyleChange={(style) => console.log('Line style:', style)}
-        onPenModeSelect={(mode) => console.log('Pen mode:', mode)}
+        onPanSpeedChange={canvasState.setPanSpeed}
+        onLineWidthChange={canvasState.setLineWidth}
+        onLineStyleChange={canvasState.setLineStyle}
+        onPenModeSelect={canvasState.setSelectedPenMode}
         onFileUpload={(files) => console.log('Files uploaded:', files)}
         onNew={() => console.log('New canvas')}
         onOpen={() => console.log('Open canvas')}
