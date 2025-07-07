@@ -5,6 +5,7 @@ import { CanvasElement } from '../types';
 interface CanvasWrapperProps {
   showGrid: boolean;
   snapEnabled: boolean;
+  gridSize: number;
   zoom: number;
   canvasPosition: { x: number; y: number };
   elements: CanvasElement[];
@@ -33,6 +34,7 @@ interface CanvasWrapperProps {
 export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
   showGrid,
   snapEnabled,
+  gridSize,
   zoom,
   canvasPosition,
   elements,
@@ -84,6 +86,7 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
       onResizeMouseMove={handleResizeMouseMove}
       onToggleGrid={() => setShowGrid(!showGrid)}
       onToggleSnap={() => setSnapEnabled(!snapEnabled)}
+      gridSize={gridSize}
     />
   );
 };

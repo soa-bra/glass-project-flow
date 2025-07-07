@@ -7,6 +7,7 @@ import { CANVAS_TOOLS } from '../constants';
 interface CanvasProps {
   showGrid: boolean;
   snapEnabled: boolean;
+  gridSize: number;
   zoom: number;
   canvasPosition: { x: number; y: number };
   elements: CanvasElement[];
@@ -35,6 +36,7 @@ interface CanvasProps {
 const Canvas: React.FC<CanvasProps> = ({
   showGrid,
   snapEnabled,
+  gridSize,
   zoom,
   canvasPosition,
   elements,
@@ -74,8 +76,8 @@ const Canvas: React.FC<CanvasProps> = ({
           className="absolute inset-0 opacity-15 pointer-events-none"
           style={{
             backgroundImage: 'radial-gradient(circle, rgba(0, 0, 0, 0.3) 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
-            backgroundPosition: '12px 12px'
+            backgroundSize: `${gridSize}px ${gridSize}px`,
+            backgroundPosition: `${gridSize / 2}px ${gridSize / 2}px`
           }}
         />
       )}

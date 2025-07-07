@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useCanvasHistory } from './useCanvasHistory';
 import { useCanvasElements } from './useCanvasElements';
 import { useCanvasActions } from './useCanvasActions';
-import { useCanvasInteraction } from './useCanvasInteraction';
+import { useEnhancedCanvasInteraction } from './useEnhancedCanvasInteraction';
 import { useKeyboardControls } from './useKeyboardControls';
 import { CanvasElement } from '../types';
 
@@ -72,16 +72,27 @@ export const useEnhancedCanvasState = (projectId = 'default', userId = 'user1') 
     drawEnd,
     isDragging,
     isResizing,
-    handleCanvasMouseDown,
-    handleCanvasMouseMove,
-    handleCanvasMouseUp,
-    handleCanvasClick,
+    isSelecting,
+    selectionBox,
+    isPanning,
+    handleSelectionStart,
+    handleSelectionMove,
+    handleSelectionEnd,
+    handleSmartPenStart,
+    handleSmartPenMove,
+    handleSmartPenEnd,
+    handleDragCreate,
+    handleDragCreateMove,
+    handleDragCreateEnd,
+    handleTextClick,
+    handlePanStart,
+    handlePanMove,
+    handlePanEnd,
+    handleZoomClick,
     handleElementMouseDown,
     handleElementMouseMove,
     handleElementMouseUp,
-    handleResizeMouseDown,
-    handleResizeMouseMove
-  } = useCanvasInteraction();
+  } = useEnhancedCanvasInteraction(gridSize);
 
   // Enhanced selection handlers
   const handleCopy = useCallback(() => {
@@ -313,24 +324,67 @@ export const useEnhancedCanvasState = (projectId = 'default', userId = 'user1') 
   }, [deleteElement]);
 
   // Wrapper functions for interaction handlers
-  const wrappedHandleCanvasMouseDown = useCallback((e: React.MouseEvent) => 
-    handleCanvasMouseDown(e, selectedTool, zoom, canvasPosition, snapEnabled), 
-    [handleCanvasMouseDown, selectedTool, zoom, canvasPosition, snapEnabled]
+  const wrappedHandleCanvasMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (selectedTool === 'select') {
+        handleSelectionStart(e, zoom, canvasPosition, snapEnabled);
+      } else if (selectedTool === 'smart-pen') {
+        handleSmartPenStart(e, zoom, canvasPosition, snapEnabled);
+      } else if (selectedTool === 'shape' || selectedTool === 'smart-element') {
+        handleDragCreate(e, selectedTool, zoom, canvasPosition, snapEnabled);
+      } else if (selectedTool === 'hand') {
+        handlePanStart(e);
+      } else {
+        handleCanvasMouseDown(e, selectedTool, zoom, canvasPosition, snapEnabled);
+      }
+    },
+    [selectedTool, zoom, canvasPosition, snapEnabled, handleSelectionStart, handleSmartPenStart, handleDragCreate, handlePanStart, handleCanvasMouseDown]
   );
   
-  const wrappedHandleCanvasMouseMove = useCallback((e: React.MouseEvent) => 
-    handleCanvasMouseMove(e, zoom, canvasPosition, snapEnabled), 
-    [handleCanvasMouseMove, zoom, canvasPosition, snapEnabled]
+  const wrappedHandleCanvasMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (selectedTool === 'select' && isSelecting) {
+        handleSelectionMove(e, zoom, canvasPosition, snapEnabled);
+      } else if (selectedTool === 'smart-pen' && isDrawing) {
+        handleSmartPenMove(e, zoom, canvasPosition, snapEnabled);
+      } else if ((selectedTool === 'shape' || selectedTool === 'smart-element') && isDrawing) {
+        handleDragCreateMove(e, zoom, canvasPosition, snapEnabled);
+      } else if (selectedTool === 'hand' && isPanning) {
+        handlePanMove(e, canvasPosition, setCanvasPosition);
+      } else {
+        handleCanvasMouseMove(e, zoom, canvasPosition, snapEnabled);
+      }
+    },
+    [selectedTool, isSelecting, isDrawing, isPanning, zoom, canvasPosition, snapEnabled, handleSelectionMove, handleSmartPenMove, handleDragCreateMove, handlePanMove, handleCanvasMouseMove, setCanvasPosition]
   );
   
-  const wrappedHandleCanvasMouseUp = useCallback(() => 
-    handleCanvasMouseUp(wrappedAddElement), 
-    [handleCanvasMouseUp, wrappedAddElement]
-  );
+  const wrappedHandleCanvasMouseUp = useCallback(() => {
+    if (selectedTool === 'select' && isSelecting) {
+      handleSelectionEnd(elements, setSelectedElements);
+    } else if (selectedTool === 'smart-pen' && isDrawing) {
+      handleSmartPenEnd((type, sx, sy, ex, ey) => {
+        wrappedAddElement(sx, sy, ex - sx, ey - sy);
+      });
+    } else if ((selectedTool === 'shape' || selectedTool === 'smart-element') && isDrawing) {
+      handleDragCreateEnd(selectedTool, wrappedAddElement);
+    } else if (selectedTool === 'hand' && isPanning) {
+      handlePanEnd();
+    } else {
+      handleCanvasMouseUp(wrappedAddElement);
+    }
+  }, [selectedTool, isSelecting, isDrawing, isPanning, elements, wrappedAddElement, handleSelectionEnd, handleSmartPenEnd, handleDragCreateEnd, handlePanEnd, handleCanvasMouseUp, setSelectedElements]);
   
-  const wrappedHandleCanvasClick = useCallback((e: React.MouseEvent) => 
-    handleCanvasClick(e, selectedTool, zoom, canvasPosition, wrappedAddElement, snapEnabled), 
-    [handleCanvasClick, selectedTool, zoom, canvasPosition, wrappedAddElement, snapEnabled]
+  const wrappedHandleCanvasClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (selectedTool === 'zoom') {
+        handleZoomClick(e, zoom, setZoom);
+      } else if (selectedTool === 'text') {
+        handleTextClick(e, zoom, canvasPosition, wrappedAddElement, snapEnabled);
+      } else {
+        handleCanvasClick(e, selectedTool, zoom, canvasPosition, wrappedAddElement, snapEnabled);
+      }
+    },
+    [handleCanvasClick, selectedTool, zoom, canvasPosition, wrappedAddElement, snapEnabled, handleZoomClick, handleTextClick]
   );
 
   // Keyboard controls
@@ -370,6 +424,9 @@ export const useEnhancedCanvasState = (projectId = 'default', userId = 'user1') 
     selectedSmartElement,
     isDragging,
     isResizing,
+    isSelecting,
+    selectionBox,
+    isPanning,
     layers,
     selectedLayerId,
     
