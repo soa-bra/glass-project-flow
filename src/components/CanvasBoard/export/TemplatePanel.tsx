@@ -263,7 +263,7 @@ export const TemplatePanel: React.FC<TemplatePanelProps> = ({
     <Card className="w-80">
       <CardHeader>
         <CardTitle className="text-lg font-arabic flex items-center gap-2">
-          <Template className="w-5 h-5" />
+          <FileText className="w-5 h-5" />
           قوالب اللوحة
         </CardTitle>
         
