@@ -1,9 +1,9 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { CanvasElement } from '../types';
 
 const GRID_SIZE = 24;
 
-export const useEnhancedCanvasInteraction = () => {
+export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivElement>) => {
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [drawStart, setDrawStart] = useState<{ x: number; y: number } | null>(null);
   const [drawEnd, setDrawEnd] = useState<{ x: number; y: number } | null>(null);
@@ -13,8 +13,6 @@ export const useEnhancedCanvasInteraction = () => {
   const [selectionBox, setSelectionBox] = useState<{ start: { x: number; y: number }; end: { x: number; y: number } } | null>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [resizeHandle, setResizeHandle] = useState<string>('');
-  
-  const canvasRef = useRef<HTMLDivElement>(null);
 
   const snapToGrid = (value: number, snapEnabled: boolean) => {
     return snapEnabled ? Math.round(value / GRID_SIZE) * GRID_SIZE : value;
@@ -24,7 +22,8 @@ export const useEnhancedCanvasInteraction = () => {
     isDrawing,
     isDragging,
     isSelecting,
-    canvasRefExists: !!canvasRef.current
+    isResizing,
+    canvasRefExists: !!canvasRef?.current
   });
 
   // Selection box handling
@@ -159,8 +158,15 @@ export const useEnhancedCanvasInteraction = () => {
     canvasPosition: { x: number; y: number },
     snapEnabled: boolean = false
   ) => {
-    if (!canvasRef.current) return;
-    if (!['shape', 'smart-element', 'text-box'].includes(selectedTool)) return;
+    console.log('🎯 handleDragCreate called:', { selectedTool, canvasRefExists: !!canvasRef?.current });
+    if (!canvasRef?.current) {
+      console.warn('❌ canvasRef not available in handleDragCreate');
+      return;
+    }
+    if (!['shape', 'smart-element', 'text-box'].includes(selectedTool)) {
+      console.warn('❌ Invalid tool for drag create:', selectedTool);
+      return;
+    }
     
     const rect = canvasRef.current.getBoundingClientRect();
     let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
@@ -169,6 +175,7 @@ export const useEnhancedCanvasInteraction = () => {
     x = snapToGrid(x, snapEnabled);
     y = snapToGrid(y, snapEnabled);
     
+    console.log('✅ Setting isDrawing = true, start position:', { x, y });
     setIsDrawing(true);
     setDrawStart({ x, y });
     setDrawEnd({ x, y });
@@ -180,7 +187,12 @@ export const useEnhancedCanvasInteraction = () => {
     canvasPosition: { x: number; y: number },
     snapEnabled: boolean = false
   ) => {
-    if (!isDrawing || !drawStart || !canvasRef.current) return;
+    if (!isDrawing || !drawStart || !canvasRef?.current) {
+      if (!isDrawing) console.log('❌ handleDragCreateMove: not drawing');
+      if (!drawStart) console.log('❌ handleDragCreateMove: no drawStart');
+      if (!canvasRef?.current) console.log('❌ handleDragCreateMove: no canvasRef');
+      return;
+    }
     
     const rect = canvasRef.current.getBoundingClientRect();
     let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
@@ -189,6 +201,7 @@ export const useEnhancedCanvasInteraction = () => {
     x = snapToGrid(x, snapEnabled);
     y = snapToGrid(y, snapEnabled);
     
+    console.log('🎯 Drag create move:', { x, y, drawStart });
     setDrawEnd({ x, y });
   }, [isDrawing, drawStart]);
 
@@ -196,15 +209,24 @@ export const useEnhancedCanvasInteraction = () => {
     selectedTool: string,
     addElement: (type: string, x: number, y: number, width: number, height: number) => void
   ) => {
-    if (!isDrawing || !drawStart || !drawEnd) return;
+    console.log('🎯 handleDragCreateEnd called:', { isDrawing, drawStart, drawEnd });
+    if (!isDrawing || !drawStart || !drawEnd) {
+      console.warn('❌ handleDragCreateEnd: missing requirements');
+      return;
+    }
     
     const width = Math.abs(drawEnd.x - drawStart.x);
     const height = Math.abs(drawEnd.y - drawStart.y);
     const x = Math.min(drawStart.x, drawEnd.x);
     const y = Math.min(drawStart.y, drawEnd.y);
     
+    console.log('📏 Calculated dimensions:', { x, y, width, height, minSize: width > 20 && height > 20 });
+    
     if (width > 20 && height > 20) {
+      console.log('✅ Creating element:', selectedTool, { x, y, width, height });
       addElement(selectedTool, x, y, width, height);
+    } else {
+      console.log('❌ Element too small, not creating');
     }
     
     setIsDrawing(false);
@@ -220,7 +242,10 @@ export const useEnhancedCanvasInteraction = () => {
     addElement: (type: string, x: number, y: number) => void,
     snapEnabled: boolean = false
   ) => {
-    if (!canvasRef.current) return;
+    if (!canvasRef?.current) {
+      console.warn('❌ canvasRef not available in handleTextClick');
+      return;
+    }
     
     const rect = canvasRef.current.getBoundingClientRect();
     let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
@@ -229,6 +254,7 @@ export const useEnhancedCanvasInteraction = () => {
     x = snapToGrid(x, snapEnabled);
     y = snapToGrid(y, snapEnabled);
     
+    console.log('✅ Adding text element at:', { x, y });
     addElement('text', x, y);
   }, []);
 
@@ -263,7 +289,7 @@ export const useEnhancedCanvasInteraction = () => {
     const element = elements.find(el => el.id === elementId);
     if (!element || element.locked) return;
     
-    const rect = canvasRef.current?.getBoundingClientRect();
+    const rect = canvasRef?.current?.getBoundingClientRect();
     if (!rect) return;
     
     const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
@@ -284,7 +310,7 @@ export const useEnhancedCanvasInteraction = () => {
     updateElement: (elementId: string, updates: Partial<CanvasElement>) => void,
     snapEnabled: boolean = false
   ) => {
-    if (!isDragging || selectedElementIds.length === 0 || !canvasRef.current) return;
+    if (!isDragging || selectedElementIds.length === 0 || !canvasRef?.current) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
     let mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
@@ -312,7 +338,6 @@ export const useEnhancedCanvasInteraction = () => {
   }, []);
 
   return {
-    canvasRef,
     isDrawing,
     drawStart,
     drawEnd,

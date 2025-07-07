@@ -22,9 +22,8 @@ export const useEnhancedCanvasState = (projectId = 'default', userId = 'user1') 
   const { elements, setElements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
   const { saveCanvas, exportCanvas, convertToProject } = useCanvasActions(projectId, userId);
   
-  // Use enhanced interaction hook
+  // Use enhanced interaction hook with canvasRef from basicState
   const {
-    canvasRef,
     isDrawing,
     drawStart,
     drawEnd,
@@ -32,7 +31,7 @@ export const useEnhancedCanvasState = (projectId = 'default', userId = 'user1') 
     isResizing,
     isSelecting,
     selectionBox,
-  } = useEnhancedCanvasInteraction();
+  } = useEnhancedCanvasInteraction(basicState.canvasRef);
 
   // Use manipulation hooks
   const manipulationActions = useCanvasManipulation(
@@ -75,7 +74,7 @@ export const useEnhancedCanvasState = (projectId = 'default', userId = 'user1') 
     basicState.selectedElements,
     updateElement,
     basicState.setSelectedElementId,
-    canvasRef
+    basicState.canvasRef
   );
 
   // Legacy wrapper functions
@@ -106,7 +105,6 @@ export const useEnhancedCanvasState = (projectId = 'default', userId = 'user1') 
     // Canvas functionality
     elements,
     setElements,
-    canvasRef,
     history,
     historyIndex,
     isDrawing,

@@ -1,6 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 export const useCanvasBasicState = () => {
+  // Canvas ref - centralized here to avoid conflicts
+  const canvasRef = useRef<HTMLDivElement>(null);
+  
   const [selectedTool, setSelectedTool] = useState<string>('select');
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
@@ -30,6 +33,9 @@ export const useCanvasBasicState = () => {
   }, []);
 
   return {
+    // Canvas ref
+    canvasRef,
+    
     // State
     selectedTool,
     selectedElementId,

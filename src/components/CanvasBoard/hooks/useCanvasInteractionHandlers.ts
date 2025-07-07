@@ -31,7 +31,7 @@ export const useCanvasInteractionHandlers = (
     handleElementMouseDown: enhancedElementMouseDown,
     handleElementMouseMove: enhancedElementMouseMove,
     handleElementMouseUp
-  } = useEnhancedCanvasInteraction();
+  } = useEnhancedCanvasInteraction(canvasRef);
 
   // Canvas interaction handlers - تحسين معالجات التفاعل
   const wrappedHandleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
