@@ -69,6 +69,19 @@ const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
   onLock,
   onUnlock
 }) => {
+  const getToolTitle = () => {
+    switch (selectedTool) {
+      case 'select': return 'أداة التحديد';
+      case 'zoom': return 'أداة التكبير والتصغير';
+      case 'smart-element': return 'العناصر الذكية';
+      case 'text':
+      case 'sticky': return 'أدوات النص';
+      case 'shape': return 'أدوات الأشكال';
+      case 'grid': return 'إعدادات الشبكة والمحاذاة';
+      case 'layers': return 'إدارة الطبقات';
+      default: return 'أدوات الكانفس';
+    }
+  };
   const renderToolProps = () => {
     switch (selectedTool) {
       case 'select':
@@ -125,7 +138,7 @@ const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
   return <div className="fixed bottom-24 left-4 z-40 w-80">
       <Card className="bg-white/95 backdrop-blur-md shadow-sm border border-gray-300 rounded-[40px]">
         <CardHeader className="pb-3">
-          
+          <CardTitle className="text-sm font-arabic font-medium">{getToolTitle()}</CardTitle>
         </CardHeader>
         <CardContent>
           {renderToolProps()}
