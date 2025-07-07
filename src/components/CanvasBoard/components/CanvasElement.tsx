@@ -39,12 +39,16 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
         }}
         onClick={(e) => {
           e.stopPropagation();
-          onElementSelect(element.id);
-          console.log('Element clicked:', element.type, element);
+          if (selectedTool === 'select') {
+            onElementSelect(element.id);
+            console.log('Element selected:', element.type, element.id);
+          }
         }}
         onMouseDown={(e) => {
-          if (selectedTool === 'select') {
+          if (selectedTool === 'select' && !element.locked) {
+            e.stopPropagation();
             onElementMouseDown(e, element.id);
+            console.log('Element mouse down:', element.id);
           }
         }}
         onMouseMove={onElementMouseMove}

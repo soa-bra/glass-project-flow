@@ -233,7 +233,7 @@ export const useEnhancedCanvasInteraction = () => {
     elements: CanvasElement[],
     zoom: number,
     canvasPosition: { x: number; y: number },
-    setSelectedElementId: (id: string) => void,
+    setSelectedElementId: (id: string | null) => void,
     selectedElementIds: string[],
     setSelectedElementIds: (ids: string[]) => void
   ) => {

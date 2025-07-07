@@ -168,7 +168,10 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
       case 'smart-element':
         return (
           <EnhancedSmartElementPanel
-            onAddSmartElement={(type, config) => console.log('عنصر ذكي:', type, config)}
+            onAddSmartElement={(type, config) => {
+              console.log('عنصر ذكي:', type, config);
+              // This will be handled by canvas click when smart-element tool is selected
+            }}
             onPreviewElement={(type, config) => console.log('معاينة:', type, config)}
             isAIEnabled={true}
             onToggleAI={(enabled) => console.log('تبديل الذكاء الاصطناعي:', enabled)}

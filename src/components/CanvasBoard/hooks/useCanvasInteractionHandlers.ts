@@ -33,7 +33,7 @@ export const useCanvasInteractionHandlers = (
     handleElementMouseUp
   } = useEnhancedCanvasInteraction();
 
-  // Enhanced canvas interaction wrappers
+  // Canvas interaction handlers
   const wrappedHandleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     console.log('Canvas mouse down - tool:', selectedTool);
@@ -105,8 +105,20 @@ export const useCanvasInteractionHandlers = (
         addElement(x, y, selectedTool, selectedSmartElement);
       }
     }
+    // Handle smart element tool
+    else if (selectedTool === 'smart-element' && selectedSmartElement) {
+      console.log('Adding smart element:', selectedSmartElement);
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+        const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+        console.log('Smart element position:', { x, y });
+        addElement(x, y, 'smart-element', selectedSmartElement);
+      }
+    }
   }, [selectedTool, zoom, canvasPosition, snapEnabled, selectedSmartElement, addElement, handleTextClick, canvasRef, setSelectedElements, setSelectedElementId]);
 
+  // Element interaction handlers
   const wrappedHandleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
     enhancedElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId, selectedElements, setSelectedElements);
   }, [enhancedElementMouseDown, selectedTool, elements, zoom, canvasPosition, selectedElements, setSelectedElementId, setSelectedElements]);
@@ -115,16 +127,14 @@ export const useCanvasInteractionHandlers = (
     enhancedElementMouseMove(e, selectedElements, zoom, canvasPosition, updateElement, snapEnabled);
   }, [enhancedElementMouseMove, selectedElements, zoom, canvasPosition, updateElement, snapEnabled]);
 
-  // Simple resize handlers (using basic functionality for now)
+  // Resize handlers (placeholder for now)
   const handleResizeMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
     if (selectedTool !== 'select') return;
     e.stopPropagation();
-    // TODO: Implement resize functionality
     console.log('Resize started:', handle);
   }, [selectedTool]);
 
   const handleResizeMouseMove = useCallback((e: React.MouseEvent) => {
-    // TODO: Implement resize functionality
     console.log('Resize move');
   }, []);
 

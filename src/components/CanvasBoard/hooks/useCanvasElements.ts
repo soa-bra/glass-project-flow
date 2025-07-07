@@ -8,21 +8,33 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
   const addElement = useCallback((x: number, y: number, elementType: string, selectedSmartElement: string, width?: number, height?: number) => {
     console.log('Adding element:', { elementType, x, y, width, height });
     
-    if (elementType === 'select' || elementType === 'hand' || elementType === 'zoom' || elementType === 'grid' || elementType === 'layers') return;
+    // Skip non-creatable tools
+    if (['select', 'hand', 'zoom', 'grid', 'layers'].includes(elementType)) return;
 
-    const type = elementType === 'smart-element' ? selectedSmartElement : elementType;
+    // Determine the actual element type
+    let actualType = elementType;
+    if (elementType === 'smart-element' && selectedSmartElement) {
+      actualType = selectedSmartElement;
+    }
+    
+    // Validate that we have a valid type
+    const validTypes = ['text', 'shape', 'sticky', 'comment', 'upload', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard', 'line'];
+    if (!validTypes.includes(actualType)) {
+      console.warn('Invalid element type:', actualType);
+      return;
+    }
     
     // Create element with appropriate defaults
     const newElement: CanvasElement = {
-      id: `element-${Date.now()}`,
-      type: type as any,
-      position: { x, y },
+      id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: actualType as any,
+      position: { x: Math.round(x), y: Math.round(y) },
       size: { 
-        width: width || (elementType === 'text' ? 200 : elementType === 'sticky' ? 160 : 120), 
-        height: height || (elementType === 'text' ? 50 : elementType === 'sticky' ? 120 : 80) 
+        width: width || getDefaultWidth(actualType), 
+        height: height || getDefaultHeight(actualType)
       },
-      content: getDefaultContent(elementType),
-      style: getDefaultStyle(elementType)
+      content: getDefaultContent(actualType),
+      style: getDefaultStyle(actualType)
     };
 
     console.log('Created element:', newElement);
@@ -34,7 +46,7 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
     });
 
     // Provide user feedback
-    const elementName = getElementDisplayName(elementType);
+    const elementName = getElementDisplayName(actualType);
     toast.success(`تم إضافة ${elementName}`);
   }, [saveToHistory]);
 
@@ -67,6 +79,40 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
 };
 
 // Helper functions
+const getDefaultWidth = (elementType: string): number => {
+  switch (elementType) {
+    case 'text': return 200;
+    case 'sticky': return 160;
+    case 'comment': return 140;
+    case 'upload': return 120;
+    case 'shape': return 120;
+    case 'timeline': return 300;
+    case 'mindmap': return 200;
+    case 'brainstorm': return 180;
+    case 'root': return 150;
+    case 'moodboard': return 250;
+    case 'line': return 100;
+    default: return 120;
+  }
+};
+
+const getDefaultHeight = (elementType: string): number => {
+  switch (elementType) {
+    case 'text': return 50;
+    case 'sticky': return 120;
+    case 'comment': return 80;
+    case 'upload': return 80;
+    case 'shape': return 80;
+    case 'timeline': return 60;
+    case 'mindmap': return 150;
+    case 'brainstorm': return 120;
+    case 'root': return 100;
+    case 'moodboard': return 180;
+    case 'line': return 2;
+    default: return 80;
+  }
+};
+
 const getDefaultContent = (elementType: string): string => {
   switch (elementType) {
     case 'text': return 'نص جديد';

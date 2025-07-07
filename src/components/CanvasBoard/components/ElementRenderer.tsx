@@ -13,7 +13,7 @@ export const ElementRenderer: React.FC<ElementRendererProps> = ({ element }) => 
     case 'text':
       return (
         <div 
-          className="w-full h-full flex items-center justify-center bg-white/80 rounded p-2 border border-gray-200"
+          className="w-full h-full flex items-center justify-center bg-white/90 rounded p-2 border border-gray-300 shadow-sm"
           style={{
             fontSize: baseStyle.fontSize || '16px',
             fontFamily: baseStyle.fontFamily || 'IBM Plex Sans Arabic',
@@ -22,7 +22,7 @@ export const ElementRenderer: React.FC<ElementRendererProps> = ({ element }) => 
             fontWeight: baseStyle.fontWeight || 'normal'
           }}
         >
-          <span className="font-arabic">{element.content || 'نص جديد'}</span>
+          <span className="font-arabic select-none">{element.content || 'نص جديد'}</span>
         </div>
       );
 
