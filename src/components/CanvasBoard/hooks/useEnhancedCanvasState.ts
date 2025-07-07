@@ -344,9 +344,13 @@ export const useEnhancedCanvasState = (projectId = 'default', userId = 'user1') 
     if (selectedTool === 'select' && isSelecting) {
       handleSelectionEnd(elements, (elementIds) => setSelectedElements(elementIds));
     } else if (selectedTool === 'smart-pen' && isDrawing) {
-      handleSmartPenEnd((type, startX, startY, endX, endY) => 
-        addElement(startX, startY, type, selectedSmartElement, Math.abs(endX - startX), Math.abs(endY - startY))
-      );
+      handleSmartPenEnd((type, startX, startY, endX, endY) => {
+        const width = Math.abs(endX - startX);
+        const height = Math.abs(endY - startY);
+        const x = Math.min(startX, endX);
+        const y = Math.min(startY, endY);
+        addElement(x, y, type, selectedSmartElement, Math.max(width, 20), Math.max(height, 20));
+      });
     } else if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && isDrawing) {
       handleDragCreateEnd(selectedTool, (type, x, y, width, height) => 
         addElement(x, y, type, selectedSmartElement, width, height)

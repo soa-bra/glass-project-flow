@@ -65,9 +65,12 @@ const Canvas: React.FC<CanvasProps> = ({
 }) => {
   const getCursorStyle = () => {
     if (selectedTool === 'smart-element') return 'crosshair';
+    if (selectedTool === 'smart-pen') return 'crosshair';
     if (selectedTool === 'hand') return 'grab';
     if (selectedTool === 'zoom') return 'zoom-in';
     if (selectedTool === 'select' && isDragging) return 'grabbing';
+    if (selectedTool === 'select') return 'default';
+    if (['shape', 'text', 'sticky'].includes(selectedTool)) return 'crosshair';
     return 'default';
   };
   return (
@@ -180,7 +183,22 @@ const Canvas: React.FC<CanvasProps> = ({
                   </div>
                 </div>
               )}
-              {!['text', 'shape', 'sticky', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard'].includes(element.type) && (
+              {element.type === 'line' && (
+                <div className="w-full h-full relative pointer-events-none">
+                  <svg className="absolute inset-0 w-full h-full">
+                    <line
+                      x1="0"
+                      y1="0"
+                      x2={element.size.width}
+                      y2={element.size.height}
+                      stroke="#2563eb"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </div>
+              )}
+              {!['text', 'shape', 'sticky', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard', 'line'].includes(element.type) && (
                 <div className="w-full h-full bg-red-200 rounded border-2 border-red-400 flex items-center justify-center">
                   <div className="text-center">
                     <span className="text-xs font-arabic">نوع غير معروف</span>
@@ -264,6 +282,33 @@ const Canvas: React.FC<CanvasProps> = ({
               height: Math.abs(drawEnd.y - drawStart.y)
             }}
           />
+        )}
+
+        {/* مؤشر الرسم للقلم الذكي */}
+        {isDrawing && drawStart && drawEnd && selectedTool === 'smart-pen' && (
+          <div className="absolute pointer-events-none">
+            <svg 
+              className="absolute pointer-events-none"
+              style={{
+                left: Math.min(drawStart.x, drawEnd.x),
+                top: Math.min(drawStart.y, drawEnd.y),
+                width: Math.abs(drawEnd.x - drawStart.x) + 4,
+                height: Math.abs(drawEnd.y - drawStart.y) + 4
+              }}
+            >
+              <line
+                x1={drawStart.x < drawEnd.x ? 2 : Math.abs(drawEnd.x - drawStart.x) + 2}
+                y1={drawStart.y < drawEnd.y ? 2 : Math.abs(drawEnd.y - drawStart.y) + 2}
+                x2={drawEnd.x < drawStart.x ? 2 : Math.abs(drawEnd.x - drawStart.x) + 2}
+                y2={drawEnd.y < drawStart.y ? 2 : Math.abs(drawEnd.y - drawStart.y) + 2}
+                stroke="#2563eb"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeDasharray="4,4"
+                opacity="0.7"
+              />
+            </svg>
+          </div>
         )}
 
         {/* صندوق التحديد المتعدد */}
