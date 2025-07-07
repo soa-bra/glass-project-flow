@@ -7,4 +7,5 @@ export { default as Inspector } from './Inspector';
 export { default as Canvas } from './Canvas';
 export { CanvasWrapper } from './CanvasWrapper';
 export { CanvasPanelLayout } from './CanvasPanelLayout';
+export { CleanCanvasPanelLayout } from './CleanCanvasPanelLayout';
 export { useCanvasEventHandlers } from './CanvasEventHandlers';

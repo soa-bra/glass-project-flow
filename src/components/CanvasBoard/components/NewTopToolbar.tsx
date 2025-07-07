@@ -63,27 +63,27 @@ const NewTopToolbar: React.FC<NewTopToolbarProps> = ({
         <CardContent className="flex items-center justify-center gap-4 px-4 py-2">
           {/* أدوات سجل العمليات */}
           <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onRedo}
-                disabled={!canRedo}
-                className="h-10 w-10 rounded-xl"
-                title="إعادة"
-              >
-                <TOP_TOOLBAR_TOOLS.history.redo.icon className="w-4 h-4" />
-              </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onUndo}
+              disabled={!canUndo}
+              className="h-10 w-10 rounded-xl"
+              title="تراجع"
+            >
+              <TOP_TOOLBAR_TOOLS.history.undo.icon className="w-4 h-4" />
+            </Button>
               
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onUndo}
-                disabled={!canUndo}
-                className="h-10 w-10 rounded-xl"
-                title="تراجع"
-              >
-                <TOP_TOOLBAR_TOOLS.history.undo.icon className="w-4 h-4" />
-              </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onRedo}
+              disabled={!canRedo}
+              className="h-10 w-10 rounded-xl"
+              title="إعادة"
+            >
+              <TOP_TOOLBAR_TOOLS.history.redo.icon className="w-4 h-4" />
+            </Button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -104,17 +104,6 @@ const NewTopToolbar: React.FC<NewTopToolbarProps> = ({
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onRedo}
-              disabled={!canRedo}
-              className="h-10 w-10 rounded-xl"
-              title="إعادة"
-            >
-              <TOP_TOOLBAR_TOOLS.history.redo.icon className="w-4 h-4" />
-            </Button>
           </div>
 
           <Separator orientation="vertical" className="h-6 bg-gray-300" />

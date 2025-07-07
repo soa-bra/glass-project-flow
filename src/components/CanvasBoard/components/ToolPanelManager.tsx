@@ -1,5 +1,15 @@
 import React from 'react';
-import { SelectionPanel, CommentPanel, TextPanel, ShapePanel, SmartElementPanel } from '../panels';
+import { 
+  SelectionPanel, 
+  CommentPanel, 
+  TextPanel, 
+  ShapePanel, 
+  SmartElementPanel,
+  SmartPenPanel,
+  ZoomPanel,
+  HandPanel,
+  UploadPanel
+} from '../panels';
 import { CanvasElement } from '../types';
 
 interface ToolPanelManagerProps {
@@ -103,6 +113,50 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
         return (
           <SmartElementPanel
             onAddSmartElement={(type, config) => console.log('عنصر ذكي:', type, config)}
+          />
+        );
+
+      case 'smart-pen':
+        return (
+          <SmartPenPanel
+            selectedPenMode={selectedPenMode}
+            lineWidth={lineWidth}
+            lineStyle={lineStyle}
+            onPenModeSelect={onPenModeSelect}
+            onLineWidthChange={onLineWidthChange}
+            onLineStyleChange={onLineStyleChange}
+          />
+        );
+
+      case 'zoom':
+        return (
+          <ZoomPanel
+            zoom={zoom}
+            canvasPosition={canvasPosition}
+            panSpeed={panSpeed}
+            onZoomChange={onZoomChange}
+            onPositionChange={onPositionChange}
+            onFitToScreen={onFitToScreen}
+            onResetView={onResetView}
+            onPanSpeedChange={onPanSpeedChange}
+          />
+        );
+
+      case 'hand':
+        return (
+          <HandPanel
+            panSpeed={panSpeed}
+            canvasPosition={canvasPosition}
+            onPanSpeedChange={onPanSpeedChange}
+            onPositionChange={onPositionChange}
+            onResetView={onResetView}
+          />
+        );
+
+      case 'upload':
+        return (
+          <UploadPanel
+            onFileUpload={onFileUpload}
           />
         );
 
