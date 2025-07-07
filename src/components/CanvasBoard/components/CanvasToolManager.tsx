@@ -39,7 +39,8 @@ export const CanvasToolManager: React.FC<CanvasToolManagerProps> = ({
       
       <TextTool 
         selectedTool={selectedTool}
-        onAddText={(data) => onToolAction('add-text', data)}
+        elementId={selectedElementId}
+        onTextUpdate={(elementId, text, style) => onToolAction('text-updated', { elementId, text, style })}
       />
       
       <FlowchartTool 
@@ -62,13 +63,14 @@ export const CanvasToolManager: React.FC<CanvasToolManagerProps> = ({
       {/* أدوات الذكاء الاصطناعي */}
       <BrainstormEnginePanel 
         selectedTool={selectedTool}
-        projectId={projectId}
-        onGenerated={(data) => onToolAction('brainstorm-generated', data)}
+        onResult={(ideas) => onToolAction('brainstorm-result', { ideas })}
       />
       
       <SmartProjectGenerator 
-        selectedTool={selectedTool}
-        onProjectGenerated={(data) => onToolAction('project-generated', data)}
+        projectId={projectId}
+        layers={elements}
+        visible={selectedTool === 'smart-project'}
+        onGenerated={(preview) => onToolAction('project-generated', { preview })}
       />
       
       <AICommandConsole 
