@@ -16,3 +16,14 @@ export { ElementResizeHandles } from './ElementResizeHandles';
 export { CanvasDrawingPreview } from './CanvasDrawingPreview';
 export { CanvasElement } from './CanvasElement';
 export { CanvasStatusBar } from './CanvasStatusBar';
+
+// Refactored Panel Layout components
+export { CanvasTopSection } from './CanvasTopSection';
+export { CanvasCollaborationSection } from './CanvasCollaborationSection';
+export { CanvasInspectorSection } from './CanvasInspectorSection';
+export { CanvasAISection } from './CanvasAISection';
+export { CanvasToolsSection } from './CanvasToolsSection';
+export { CanvasBottomSection } from './CanvasBottomSection';
+
+// Types
+export type { CanvasPanelLayoutProps, Layer } from './CanvasPanelTypes';
