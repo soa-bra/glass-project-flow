@@ -16,8 +16,9 @@ export const useCanvasEventHandlers = ({
   deleteElement
 }: CanvasEventHandlersProps) => {
   const handleSmartElementSelect = (elementId: string) => {
+    console.log('🎯 Smart element selected:', elementId);
     setSelectedSmartElement(elementId);
-    // لا نحتاج modal بعد الآن، سيتم الرسم مباشرة على الكانفس
+    // العنصر الذكي محدد، سيتم استخدامه عند النقر على الكانفاس
   };
 
   const handleCopy = () => {

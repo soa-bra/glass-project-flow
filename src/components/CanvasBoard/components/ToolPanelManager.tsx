@@ -103,6 +103,11 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
   onGridShapeChange,
   onAlignToGrid
 }) => {
+  console.log('🔧 ToolPanelManager render:', {
+    selectedTool,
+    selectedElementsCount: selectedElements.length,
+    zoom
+  });
   const renderToolPanel = () => {
     switch (selectedTool) {
       case 'select':

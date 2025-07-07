@@ -20,6 +20,13 @@ export const useEnhancedCanvasInteraction = () => {
     return snapEnabled ? Math.round(value / GRID_SIZE) * GRID_SIZE : value;
   };
 
+  console.log('🎨 Enhanced Canvas Interaction:', {
+    isDrawing,
+    isDragging,
+    isSelecting,
+    canvasRefExists: !!canvasRef.current
+  });
+
   // Selection box handling
   const handleSelectionStart = useCallback((
     e: React.MouseEvent,

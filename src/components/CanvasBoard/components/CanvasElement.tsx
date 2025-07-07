@@ -24,6 +24,15 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   onElementMouseUp,
   onResizeMouseDown
 }) => {
+  console.log('🎨 CanvasElement render:', {
+    id: element.id,
+    type: element.type,
+    selected: selectedElementId === element.id,
+    tool: selectedTool,
+    position: element.position,
+    size: element.size
+  });
+
   return (
     <div key={element.id}>
       {/* العنصر الأساسي */}

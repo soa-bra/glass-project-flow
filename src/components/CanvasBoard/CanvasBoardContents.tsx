@@ -10,6 +10,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   projectId = 'default', 
   userId = 'user1' 
 }) => {
+  // Initialize enhanced canvas state - تحسين حالة الكانفاس
   const canvasState = useEnhancedCanvasState(projectId, userId);
   
   const eventHandlers = useCanvasEventHandlers({
@@ -18,6 +19,13 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     setShowDefaultView: canvasState.setShowDefaultView,
     setSelectedTool: canvasState.setSelectedTool,
     deleteElement: canvasState.deleteElement
+  });
+
+  console.log('🎨 CanvasBoardContents state:', {
+    selectedTool: canvasState.selectedTool,
+    selectedSmartElement: canvasState.selectedSmartElement,
+    elementsCount: canvasState.elements.length,
+    showDefaultView: canvasState.showDefaultView
   });
 
   // Create wrapper functions to match CanvasWrapper interface

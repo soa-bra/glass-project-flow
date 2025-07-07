@@ -14,20 +14,31 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
       return;
     }
 
-    // Determine the actual element type
+    // Determine the actual element type - تحسين منطق تحديد النوع
     let actualType = elementType;
-    if (elementType === 'smart-element' && selectedSmartElement) {
-      actualType = selectedSmartElement;
-      console.log('✅ Smart element type:', actualType);
-    } else if (elementType === 'smart-element') {
-      actualType = 'timeline'; // Default smart element
-      console.log('✅ Default smart element:', actualType);
+    
+    // Handle smart element logic
+    if (elementType === 'smart-element') {
+      if (selectedSmartElement && selectedSmartElement !== 'smart-element') {
+        actualType = selectedSmartElement;
+        console.log('✅ Smart element type:', actualType);
+      } else {
+        actualType = 'timeline'; // Default smart element
+        console.log('✅ Default smart element (timeline)');
+      }
+    }
+    
+    // Handle text-box -> text conversion
+    if (elementType === 'text-box') {
+      actualType = 'text';
+      console.log('✅ Converting text-box to text');
     }
     
     // Validate that we have a valid type
     const validTypes = ['text', 'shape', 'sticky', 'comment', 'upload', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard', 'line'];
     if (!validTypes.includes(actualType)) {
-      console.warn('❌ Invalid element type:', actualType);
+      console.warn('❌ Invalid element type:', actualType, 'from elementType:', elementType);
+      toast.error(`نوع عنصر غير صحيح: ${actualType}`);
       return;
     }
     
