@@ -1,42 +1,96 @@
 import { 
-  MousePointer, Copy, ZoomIn, Hand, File, Target, Upload, 
-  MessageSquare, Type, Shapes, Lightbulb, Clock, GitBranch, Layout,
-  Grid3X3, Layers, Settings
+  MousePointer, Pen, ZoomIn, Hand, File, Upload, 
+  MessageSquare, Type, Shapes, Plus, Clock, GitBranch, Layout,
+  Grid3X3, Undo, Redo, Save, FolderOpen, Copy, Layers,
+  Lightbulb, Target, Settings
 } from 'lucide-react';
 import { Tool } from './types';
 
-export const CANVAS_TOOLS: Tool[] = [
+// أدوات شريط الأدوات الرئيسي (أسفل)
+export const MAIN_TOOLBAR_TOOLS: Tool[] = [
   { id: 'select', label: 'تحديد', icon: MousePointer, category: 'basic' },
-  { id: 'repeat', label: 'تكرار', icon: Copy, category: 'basic' },
+  { id: 'smart-pen', label: 'القلم الذكي', icon: Pen, category: 'basic' },
   { id: 'zoom', label: 'زوم', icon: ZoomIn, category: 'basic' },
-  { id: 'hand', label: 'كف', icon: Hand, category: 'basic' },
-  { id: 'grid', label: 'شبكة', icon: Grid3X3, category: 'basic' },
-  { id: 'layers', label: 'طبقات', icon: Layers, category: 'basic' },
-  { id: 'file', label: 'ملف', icon: File, category: 'file' },
-  { id: 'upload', label: 'رفع ملف', icon: Upload, category: 'file' },
-  { id: 'comment', label: 'تعليق', icon: MessageSquare, category: 'basic' },
-  { id: 'text', label: 'نص', icon: Type, category: 'basic' },
-  { id: 'shape', label: 'شكل', icon: Shapes, category: 'basic' },
-  { id: 'smart-element', label: 'عنصر ذكي', icon: Lightbulb, category: 'smart' },
-  { id: 'convert-project', label: 'تحويل لمشروع', icon: GitBranch, category: 'project' }
+  { id: 'hand', label: 'كف', icon: Hand, category: 'navigation' },
+  { id: 'upload', label: 'رفع مرفق', icon: Upload, category: 'file' },
+  { id: 'comment', label: 'تعليق', icon: MessageSquare, category: 'collaboration' },
+  { id: 'text', label: 'نص', icon: Type, category: 'content' },
+  { id: 'shape', label: 'شكل', icon: Shapes, category: 'content' },
+  { id: 'smart-element', label: 'عنصر ذكي', icon: Plus, category: 'smart' }
 ];
 
+// أدوات شريط الأدوات العلوي
+export const TOP_TOOLBAR_TOOLS = {
+  history: {
+    undo: { id: 'undo', label: 'تراجع', icon: Undo },
+    redo: { id: 'redo', label: 'إعادة', icon: Redo },
+    history: { id: 'history', label: 'سجل العمليات', icon: Copy }
+  },
+  file: {
+    new: { id: 'new', label: 'جديد', icon: File },
+    save: { id: 'save', label: 'حفظ/تصدير', icon: Save },
+    copy: { id: 'copy', label: 'إنشاء نسخة', icon: Copy },
+    open: { id: 'open', label: 'فتح', icon: FolderOpen }
+  },
+  grid: {
+    toggle: { id: 'grid-toggle', label: 'إظهار/إخفاء الشبكة', icon: Grid3X3 },
+    snap: { id: 'grid-snap', label: 'المحاذاة التلقائية', icon: Target },
+    size: { id: 'grid-size', label: 'حجم الشبكة', icon: Grid3X3 },
+    shape: { id: 'grid-shape', label: 'شكل الشبكة', icon: Shapes }
+  },
+  smartProject: {
+    generate: { id: 'smart-project-gen', label: 'توليد المشاريع الذكية', icon: GitBranch }
+  }
+};
+
+// العناصر الذكية
 export const SMART_ELEMENTS = [
-  { id: 'brainstorm', label: 'محرك العصف الذهني', icon: Lightbulb },
-  { id: 'root', label: 'الجذر', icon: GitBranch },
-  { id: 'timeline', label: 'الخط الزمني', icon: Clock },
-  { id: 'mindmap', label: 'الخرائط الذهنية', icon: Target },
-  { id: 'moodboard', label: 'مودبورد ذكية', icon: Layout }
+  { id: 'root', label: 'الجذر', icon: GitBranch, description: 'أداة للربط بين العناصر' },
+  { id: 'brainstorm', label: 'محرك العصف الذهني', icon: Lightbulb, description: 'عمود دردشة مخصص للعصف الذهني' },
+  { id: 'timeline', label: 'الخط الزمني', icon: Clock, description: 'إضافة خط زمني أو مخططات جانت' },
+  { id: 'mindmap', label: 'الخرائط الذهنية', icon: Target, description: 'رسم الخرائط الذهنية يدوياً أو بالذكاء الاصطناعي' },
+  { id: 'moodboard', label: 'مودبورد ذكية', icon: Layout, description: 'جمع عناصر وتوليد الروابط بينها' }
 ];
 
+// خيارات القلم الذكي
+export const SMART_PEN_MODES = [
+  { id: 'smart-draw', label: 'الرسم الذكي', description: 'تحويل الأشكال إلى أشكال هندسية' },
+  { id: 'root-connector', label: 'الجذر', description: 'ربط العناصر ببعضها' },
+  { id: 'auto-group', label: 'التجميع التلقائي', description: 'تجميع العناصر المحاطة' },
+  { id: 'eraser', label: 'المسح', description: 'حذف العناصر بالرسم فوقها' }
+];
+
+// خيارات الزوم
 export const ZOOM_OPTIONS = [
   { value: '50', label: '50%' },
-  { value: '75', label: '75%' },
+  { value: '70', label: '70%' },
+  { value: '90', label: '90%' },
   { value: '100', label: '100%' },
-  { value: '125', label: '125%' },
+  { value: '120', label: '120%' },
+  { value: '140', label: '140%' },
   { value: '150', label: '150%' },
   { value: 'fit', label: 'ملاءمة' }
 ];
+
+// أشكال الشبكة
+export const GRID_SHAPES = [
+  { id: 'dots', label: 'نقط' },
+  { id: 'squares', label: 'مربعات' },
+  { id: 'diamonds', label: 'معينات' },
+  { id: 'hexagon', label: 'خلية نحل' }
+];
+
+// أحجام الشبكة
+export const GRID_SIZES = [
+  { value: 10, label: '10px' },
+  { value: 20, label: '20px' },
+  { value: 30, label: '30px' },
+  { value: 40, label: '40px' },
+  { value: 50, label: '50px' }
+];
+
+// للتوافق مع الملفات الموجودة
+export const CANVAS_TOOLS = MAIN_TOOLBAR_TOOLS;
 
 export const ELEMENT_COLORS = [
   'bg-red-200', 'bg-blue-200', 'bg-green-200', 'bg-yellow-200',

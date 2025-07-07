@@ -175,10 +175,27 @@ export const CanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
         <AIAssistantPanel />
       </div>
       
-      <MainToolbar
-        selectedTool={selectedTool}
-        onToolSelect={setSelectedTool}
-      />
+      {/* استبدال بشريط الأدوات الجديد */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-white/95 backdrop-blur-lg shadow-xl border border-gray-200/50 rounded-[24px] px-6 py-3">
+          <div className="flex items-center gap-4">
+            {['select', 'smart-pen', 'zoom', 'hand', 'upload', 'comment', 'text', 'shape', 'smart-element'].map((toolId) => (
+              <button
+                key={toolId}
+                onClick={() => setSelectedTool(toolId)}
+                className={`p-3 rounded-xl transition-all ${
+                  selectedTool === toolId 
+                    ? 'bg-black text-white' 
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+                title={toolId}
+              >
+                ⚡
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </>
   );
 };
