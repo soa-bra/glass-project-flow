@@ -1,7 +1,9 @@
 import { useState, useRef, useCallback } from 'react';
 import { CanvasElement } from '../types';
 
-export const useEnhancedCanvasInteraction = (gridSize = 24) => {
+const GRID_SIZE = 24;
+
+export const useEnhancedCanvasInteraction = () => {
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [drawStart, setDrawStart] = useState<{ x: number; y: number } | null>(null);
   const [drawEnd, setDrawEnd] = useState<{ x: number; y: number } | null>(null);
@@ -11,13 +13,11 @@ export const useEnhancedCanvasInteraction = (gridSize = 24) => {
   const [selectionBox, setSelectionBox] = useState<{ start: { x: number; y: number }; end: { x: number; y: number } } | null>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [resizeHandle, setResizeHandle] = useState<string>('');
-  const [isPanning, setIsPanning] = useState<boolean>(false);
-  const panStartRef = useRef<{ x: number; y: number } | null>(null);
   
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const snapToGrid = (value: number, snapEnabled: boolean) => {
-    return snapEnabled ? Math.round(value / gridSize) * gridSize : value;
+    return snapEnabled ? Math.round(value / GRID_SIZE) * GRID_SIZE : value;
   };
 
   // Selection box handling
@@ -215,119 +215,8 @@ export const useEnhancedCanvasInteraction = (gridSize = 24) => {
     x = snapToGrid(x, snapEnabled);
     y = snapToGrid(y, snapEnabled);
     
-  addElement('text', x, y);
+    addElement('text', x, y);
   }, []);
-
-  // Panning handlers for hand tool
-  const handlePanStart = useCallback((e: React.MouseEvent) => {
-    setIsPanning(true);
-    panStartRef.current = { x: e.clientX, y: e.clientY };
-  }, []);
-
-  const handlePanMove = useCallback(
-    (
-      e: React.MouseEvent,
-      canvasPosition: { x: number; y: number },
-      setCanvasPosition: (pos: { x: number; y: number }) => void
-    ) => {
-      if (!isPanning || !panStartRef.current) return;
-      const dx = e.clientX - panStartRef.current.x;
-      const dy = e.clientY - panStartRef.current.y;
-      panStartRef.current = { x: e.clientX, y: e.clientY };
-      setCanvasPosition({ x: canvasPosition.x + dx, y: canvasPosition.y + dy });
-    },
-    [isPanning]
-  );
-
-  const handlePanEnd = useCallback(() => {
-    setIsPanning(false);
-    panStartRef.current = null;
-  }, []);
-
-  const handleZoomClick = useCallback(
-    (
-      e: React.MouseEvent,
-      currentZoom: number,
-      setZoom: (zoom: number) => void
-    ) => {
-      const delta = e.shiftKey ? -25 : 25;
-      setZoom(Math.min(300, Math.max(25, currentZoom + delta)));
-    },
-    []
-  );
-
-  const handleResizeMouseDown = useCallback(
-    (e: React.MouseEvent, handle: string, selectedTool: string) => {
-      if (selectedTool !== 'select') return;
-      e.stopPropagation();
-      setIsResizing(true);
-      setResizeHandle(handle);
-    },
-    []
-  );
-
-  const handleResizeMouseMove = useCallback(
-    (
-      e: React.MouseEvent,
-      selectedElementId: string | null,
-      elements: CanvasElement[],
-      zoom: number,
-      canvasPosition: { x: number; y: number },
-      updateElement: (id: string, updates: Partial<CanvasElement>) => void
-    ) => {
-      if (!isResizing || !selectedElementId || !canvasRef.current) return;
-      const element = elements.find(el => el.id === selectedElementId);
-      if (!element) return;
-      const rect = canvasRef.current.getBoundingClientRect();
-      const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-      const mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
-
-      let newPosition = { ...element.position };
-      let newSize = { ...element.size };
-
-      switch (resizeHandle) {
-        case 'nw':
-          newSize.width = element.position.x + element.size.width - mouseX;
-          newSize.height = element.position.y + element.size.height - mouseY;
-          newPosition.x = mouseX;
-          newPosition.y = mouseY;
-          break;
-        case 'ne':
-          newSize.width = mouseX - element.position.x;
-          newSize.height = element.position.y + element.size.height - mouseY;
-          newPosition.y = mouseY;
-          break;
-        case 'sw':
-          newSize.width = element.position.x + element.size.width - mouseX;
-          newSize.height = mouseY - element.position.y;
-          newPosition.x = mouseX;
-          break;
-        case 'se':
-          newSize.width = mouseX - element.position.x;
-          newSize.height = mouseY - element.position.y;
-          break;
-        case 'n':
-          newSize.height = element.position.y + element.size.height - mouseY;
-          newPosition.y = mouseY;
-          break;
-        case 's':
-          newSize.height = mouseY - element.position.y;
-          break;
-        case 'w':
-          newSize.width = element.position.x + element.size.width - mouseX;
-          newPosition.x = mouseX;
-          break;
-        case 'e':
-          newSize.width = mouseX - element.position.x;
-          break;
-      }
-
-      if (newSize.width > 20 && newSize.height > 20) {
-        updateElement(selectedElementId, { position: newPosition, size: newSize });
-      }
-    },
-    [isResizing, resizeHandle]
-  );
 
   // Element manipulation (existing functionality)
   const handleElementMouseDown = useCallback((
@@ -415,7 +304,6 @@ export const useEnhancedCanvasInteraction = (gridSize = 24) => {
     drawEnd,
     isDragging,
     isResizing,
-    isPanning,
     isSelecting,
     selectionBox,
     
@@ -436,15 +324,7 @@ export const useEnhancedCanvasInteraction = (gridSize = 24) => {
     
     // Text click method
     handleTextClick,
-
-    // Pan and zoom methods
-    handlePanStart,
-    handlePanMove,
-    handlePanEnd,
-    handleZoomClick,
-    handleResizeMouseDown,
-    handleResizeMouseMove,
-
+    
     // Element manipulation methods
     handleElementMouseDown,
     handleElementMouseMove,

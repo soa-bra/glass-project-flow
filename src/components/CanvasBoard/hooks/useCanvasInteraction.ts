@@ -1,7 +1,9 @@
 import { useState, useRef, useCallback } from 'react';
 import { CanvasElement } from '../types';
 
-export const useCanvasInteraction = (gridSize = 24) => {
+const GRID_SIZE = 24; // حجم الشبكة للسنابينج
+
+export const useCanvasInteraction = () => {
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [drawStart, setDrawStart] = useState<{ x: number; y: number } | null>(null);
   const [drawEnd, setDrawEnd] = useState<{ x: number; y: number } | null>(null);
@@ -13,7 +15,7 @@ export const useCanvasInteraction = (gridSize = 24) => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const snapToGrid = (value: number, snapEnabled: boolean) => {
-    return snapEnabled ? Math.round(value / gridSize) * gridSize : value;
+    return snapEnabled ? Math.round(value / GRID_SIZE) * GRID_SIZE : value;
   };
 
   const handleCanvasMouseDown = useCallback((
