@@ -71,15 +71,22 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         showGrid={canvasState.showGrid}
         snapEnabled={canvasState.snapEnabled}
         gridSize={canvasState.gridSize}
+        gridShape="dots"
         layers={canvasState.layers}
         selectedLayerId={canvasState.selectedLayerId}
         elements={canvasState.elements}
+        canvasPosition={canvasState.canvasPosition || { x: 0, y: 0 }}
+        panSpeed={100}
+        lineWidth={2}
+        lineStyle="solid"
+        selectedPenMode="smart-draw"
         setSelectedTool={canvasState.setSelectedTool}
         setZoom={canvasState.setZoom}
         setShowGrid={canvasState.setShowGrid}
         setSnapEnabled={canvasState.setSnapEnabled}
         handleSmartElementSelect={eventHandlers.handleSmartElementSelect}
         handleGridSizeChange={canvasState.handleGridSizeChange}
+        handleGridShapeChange={(shape) => console.log('Grid shape:', shape)}
         handleAlignToGrid={canvasState.handleAlignToGrid}
         handleLayerUpdate={canvasState.handleLayerUpdate}
         handleLayerSelect={canvasState.handleLayerSelect}
@@ -93,6 +100,17 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         handleUnlock={canvasState.handleUnlock}
         updateElement={canvasState.updateElement}
         deleteElement={canvasState.deleteElement}
+        onPositionChange={(pos) => console.log('Position change:', pos)}
+        onFitToScreen={() => console.log('Fit to screen')}
+        onResetView={() => console.log('Reset view')}
+        onPanSpeedChange={(speed) => console.log('Pan speed:', speed)}
+        onLineWidthChange={(width) => console.log('Line width:', width)}
+        onLineStyleChange={(style) => console.log('Line style:', style)}
+        onPenModeSelect={(mode) => console.log('Pen mode:', mode)}
+        onFileUpload={(files) => console.log('Files uploaded:', files)}
+        onNew={() => console.log('New canvas')}
+        onOpen={() => console.log('Open canvas')}
+        onSmartProjectGenerate={() => console.log('Smart project generate')}
       />
     </div>
   );
