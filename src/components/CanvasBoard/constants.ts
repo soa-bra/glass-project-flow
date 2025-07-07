@@ -1,6 +1,7 @@
 import { 
   MousePointer, Copy, ZoomIn, Hand, File, Target, Upload, 
-  MessageSquare, Type, Shapes, Lightbulb, Clock, GitBranch, Layout
+  MessageSquare, Type, Shapes, Lightbulb, Clock, GitBranch, Layout,
+  Grid3X3, Layers, Settings
 } from 'lucide-react';
 import { Tool } from './types';
 
@@ -9,6 +10,8 @@ export const CANVAS_TOOLS: Tool[] = [
   { id: 'repeat', label: 'تكرار', icon: Copy, category: 'basic' },
   { id: 'zoom', label: 'زوم', icon: ZoomIn, category: 'basic' },
   { id: 'hand', label: 'كف', icon: Hand, category: 'basic' },
+  { id: 'grid', label: 'شبكة', icon: Grid3X3, category: 'basic' },
+  { id: 'layers', label: 'طبقات', icon: Layers, category: 'basic' },
   { id: 'file', label: 'ملف', icon: File, category: 'file' },
   { id: 'upload', label: 'رفع ملف', icon: Upload, category: 'file' },
   { id: 'comment', label: 'تعليق', icon: MessageSquare, category: 'basic' },

@@ -11,6 +11,9 @@ import {
   Canvas
 } from './components';
 import AIAssistantPanel from './AIAssistantPanel';
+import { HistoryPanel } from './sidepanels/HistoryPanel';
+import { PropertiesPanel } from './sidepanels/PropertiesPanel';
+import { TemplatePanel } from './export/TemplatePanel';
 import SmartElementsModal from './components/SmartElementsModal';
 
 const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
@@ -21,8 +24,10 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   const {
     selectedTool,
     selectedElementId,
+    selectedElements,
     showGrid,
     snapEnabled,
+    gridSize,
     elements,
     showDefaultView,
     zoom,
@@ -36,6 +41,8 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     selectedSmartElement,
     isDragging,
     isResizing,
+    layers,
+    selectedLayerId,
     setSelectedTool,
     setSelectedElementId,
     setShowGrid,
@@ -58,7 +65,15 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     exportCanvas,
     convertToProject,
     updateElement,
-    deleteElement
+    deleteElement,
+    handleGridSizeChange,
+    handleAlignToGrid,
+    handleLayerUpdate,
+    handleLayerSelect,
+    handleGroup,
+    handleUngroup,
+    handleLock,
+    handleUnlock
   } = useCanvasState(projectId, userId);
 
   const handleSmartElementSelect = (elementId: string) => {
@@ -137,14 +152,30 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
       <ToolPropsBar
         selectedTool={selectedTool}
         selectedElementId={selectedElementId}
+        selectedElements={selectedElements}
         zoom={zoom}
         selectedSmartElement={selectedSmartElement}
+        showGrid={showGrid}
+        snapEnabled={snapEnabled}
+        gridSize={gridSize}
+        layers={layers}
+        selectedLayerId={selectedLayerId}
         onZoomChange={setZoom}
         onSmartElementSelect={handleSmartElementSelect}
+        onGridToggle={() => setShowGrid(!showGrid)}
+        onSnapToggle={() => setSnapEnabled(!snapEnabled)}
+        onGridSizeChange={handleGridSizeChange}
+        onAlignToGrid={handleAlignToGrid}
+        onLayerUpdate={handleLayerUpdate}
+        onLayerSelect={handleLayerSelect}
         onCopy={handleCopy}
         onCut={handleCut}
         onPaste={handlePaste}
         onDelete={() => selectedElementId && deleteElement(selectedElementId)}
+        onGroup={handleGroup}
+        onUngroup={handleUngroup}
+        onLock={handleLock}
+        onUnlock={handleUnlock}
       />
       <Inspector 
         selectedElementId={selectedElementId}
@@ -152,6 +183,30 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         onUpdateElement={updateElement}
         onDeleteElement={deleteElement}
       />
+      
+      {/* Side Panels */}
+      <div className="fixed top-24 right-4 z-40 space-y-4">
+        <HistoryPanel
+          history={[]}
+          currentIndex={historyIndex}
+          onUndo={undo}
+          onRedo={redo}
+          onRevertTo={(index) => console.log('الرجوع للفهرس:', index)}
+          canUndo={historyIndex > 0}
+          canRedo={historyIndex < history.length - 1}
+        />
+        <PropertiesPanel
+          selectedElementId={selectedElementId}
+          element={selectedElementId ? elements.find(el => el.id === selectedElementId) : null}
+          onUpdate={updateElement}
+        />
+        <TemplatePanel
+          currentElements={elements}
+          onLoadTemplate={(template) => console.log('تحميل القالب:', template)}
+          onSaveAsTemplate={(name, description) => console.log('حفظ كقالب:', name, description)}
+        />
+      </div>
+      
       <div className="fixed bottom-24 right-4 z-40 w-80">
         <AIAssistantPanel />
       </div>

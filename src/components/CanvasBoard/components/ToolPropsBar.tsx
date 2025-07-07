@@ -1,34 +1,91 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SelectToolProps, ZoomToolProps, SmartElementToolProps, TextToolProps, ShapeToolProps } from './ToolProps';
+import { GridTool } from '../tools/GridTool';
+import { LayerTool } from '../tools/LayerTool';
+import { SelectionTool } from '../tools/SelectionTool';
+
+interface Layer {
+  id: string;
+  name: string;
+  visible: boolean;
+  locked: boolean;
+  elements: string[];
+}
+
 interface ToolPropsBarProps {
   selectedTool: string;
   selectedElementId: string | null;
+  selectedElements: string[];
   zoom: number;
   selectedSmartElement: string;
+  showGrid: boolean;
+  snapEnabled: boolean;
+  gridSize: number;
+  layers: Layer[];
+  selectedLayerId: string | null;
   onZoomChange: (zoom: number) => void;
   onSmartElementSelect: (elementId: string) => void;
+  onGridToggle: () => void;
+  onSnapToggle: () => void;
+  onGridSizeChange: (size: number) => void;
+  onAlignToGrid: () => void;
+  onLayerUpdate: (layers: Layer[]) => void;
+  onLayerSelect: (layerId: string) => void;
   onCopy: () => void;
   onCut: () => void;
   onPaste: () => void;
   onDelete: () => void;
+  onGroup: () => void;
+  onUngroup: () => void;
+  onLock: () => void;
+  onUnlock: () => void;
 }
 const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
   selectedTool,
   selectedElementId,
+  selectedElements,
   zoom,
   selectedSmartElement,
+  showGrid,
+  snapEnabled,
+  gridSize,
+  layers,
+  selectedLayerId,
   onZoomChange,
   onSmartElementSelect,
+  onGridToggle,
+  onSnapToggle,
+  onGridSizeChange,
+  onAlignToGrid,
+  onLayerUpdate,
+  onLayerSelect,
   onCopy,
   onCut,
   onPaste,
-  onDelete
+  onDelete,
+  onGroup,
+  onUngroup,
+  onLock,
+  onUnlock
 }) => {
   const renderToolProps = () => {
     switch (selectedTool) {
       case 'select':
-        return <SelectToolProps selectedElementId={selectedElementId} onCopy={onCopy} onCut={onCut} onPaste={onPaste} onDelete={onDelete} />;
+        return (
+          <SelectionTool
+            selectedTool={selectedTool}
+            selectedElements={selectedElements}
+            onCopy={onCopy}
+            onCut={onCut}
+            onPaste={onPaste}
+            onDelete={onDelete}
+            onGroup={onGroup}
+            onUngroup={onUngroup}
+            onLock={onLock}
+            onUnlock={onUnlock}
+          />
+        );
       case 'zoom':
         return <ZoomToolProps zoom={zoom} onZoomChange={onZoomChange} />;
       case 'smart-element':
@@ -38,6 +95,29 @@ const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
         return <TextToolProps />;
       case 'shape':
         return <ShapeToolProps />;
+      case 'grid':
+        return (
+          <GridTool
+            selectedTool={selectedTool}
+            showGrid={showGrid}
+            snapEnabled={snapEnabled}
+            gridSize={gridSize}
+            onGridToggle={onGridToggle}
+            onSnapToggle={onSnapToggle}
+            onGridSizeChange={onGridSizeChange}
+            onAlignToGrid={onAlignToGrid}
+          />
+        );
+      case 'layers':
+        return (
+          <LayerTool
+            selectedTool={selectedTool}
+            layers={layers}
+            onLayerUpdate={onLayerUpdate}
+            onLayerSelect={onLayerSelect}
+            selectedLayerId={selectedLayerId}
+          />
+        );
       default:
         return null;
     }

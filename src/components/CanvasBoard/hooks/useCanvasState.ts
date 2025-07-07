@@ -8,13 +8,19 @@ import { useKeyboardControls } from './useKeyboardControls';
 export const useCanvasState = (projectId = 'default', userId = 'user1') => {
   const [selectedTool, setSelectedTool] = useState<string>('select');
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
+  const [selectedElements, setSelectedElements] = useState<string[]>([]);
   const [showGrid, setShowGrid] = useState<boolean>(true);
   const [snapEnabled, setSnapEnabled] = useState<boolean>(true);
+  const [gridSize, setGridSize] = useState<number>(20);
   const [showDefaultView, setShowDefaultView] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [zoom, setZoom] = useState<number>(100);
   const [canvasPosition, setCanvasPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [selectedSmartElement, setSelectedSmartElement] = useState<string>('brainstorm');
+  const [layers, setLayers] = useState([
+    { id: 'layer-1', name: 'الطبقة الأساسية', visible: true, locked: false, elements: [] }
+  ]);
+  const [selectedLayerId, setSelectedLayerId] = useState<string>('layer-1');
 
   // Use specialized hooks
   const { history, historyIndex, saveToHistory, undo, redo } = useCanvasHistory();
@@ -76,6 +82,17 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
   const wrappedDeleteElement = (elementId: string) => {
     deleteElement(elementId);
     setSelectedElementId(null);
+    setSelectedElements([]);
+  };
+
+  // Update selectedElements when selectedElementId changes
+  const updateSelectedElements = (elementId: string | null) => {
+    if (elementId) {
+      setSelectedElements([elementId]);
+    } else {
+      setSelectedElements([]);
+    }
+    setSelectedElementId(elementId);
   };
 
   // تفعيل التحكم بلوحة المفاتيح
@@ -87,12 +104,47 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     setSelectedElementId
   });
 
+  // Helper functions for new tools
+  const handleGridSizeChange = (size: number) => {
+    setGridSize(size);
+  };
+
+  const handleAlignToGrid = () => {
+    console.log('محاذاة العناصر للشبكة');
+  };
+
+  const handleLayerUpdate = (newLayers: any[]) => {
+    setLayers(newLayers);
+  };
+
+  const handleLayerSelect = (layerId: string) => {
+    setSelectedLayerId(layerId);
+  };
+
+  const handleGroup = () => {
+    console.log('تجميع العناصر');
+  };
+
+  const handleUngroup = () => {
+    console.log('إلغاء تجميع العناصر');
+  };
+
+  const handleLock = () => {
+    console.log('قفل العناصر');
+  };
+
+  const handleUnlock = () => {
+    console.log('إلغاء قفل العناصر');
+  };
+
   return {
     // State
     selectedTool,
     selectedElementId,
+    selectedElements,
     showGrid,
     snapEnabled,
+    gridSize,
     elements,
     showDefaultView,
     searchQuery,
@@ -107,18 +159,24 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     selectedSmartElement,
     isDragging,
     isResizing,
+    layers,
+    selectedLayerId,
     
     // Setters
     setSelectedTool,
-    setSelectedElementId,
+    setSelectedElementId: updateSelectedElements,
+    setSelectedElements,
     setShowGrid,
     setSnapEnabled,
+    setGridSize,
     setElements,
     setShowDefaultView,
     setSearchQuery,
     setZoom,
     setCanvasPosition,
     setSelectedSmartElement,
+    setLayers,
+    setSelectedLayerId,
     
     // Actions
     addElement: wrappedAddElement,
@@ -137,6 +195,16 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     exportCanvas: wrappedExportCanvas,
     convertToProject: wrappedConvertToProject,
     updateElement,
-    deleteElement: wrappedDeleteElement
+    deleteElement: wrappedDeleteElement,
+    
+    // New tool handlers
+    handleGridSizeChange,
+    handleAlignToGrid,
+    handleLayerUpdate,
+    handleLayerSelect,
+    handleGroup,
+    handleUngroup,
+    handleLock,
+    handleUnlock
   };
 };
