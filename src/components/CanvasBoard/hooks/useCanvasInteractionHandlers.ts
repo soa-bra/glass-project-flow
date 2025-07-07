@@ -36,6 +36,7 @@ export const useCanvasInteractionHandlers = (
   // Canvas interaction handlers - optimized for performance
   const wrappedHandleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
+    console.log('🎯 Canvas mouse down:', selectedTool);
     
     // Route to appropriate handler based on tool
     switch (selectedTool) {
@@ -87,6 +88,7 @@ export const useCanvasInteractionHandlers = (
   
   const wrappedHandleCanvasClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
+    console.log('🎯 Canvas click:', selectedTool);
     
     // Handle different tool behaviors
     if (selectedTool === 'select') {
@@ -98,29 +100,38 @@ export const useCanvasInteractionHandlers = (
     
     // Calculate position for single click tools
     const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    if (!rect) {
+      console.log('❌ Canvas ref not available');
+      return;
+    }
 
     const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
     const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
     
+    console.log('📍 Click position:', { x, y, tool: selectedTool });
+    
     // Route to appropriate creation method
     switch (selectedTool) {
       case 'text':
+        console.log('✏️ Creating text element');
         handleTextClick(e, zoom, canvasPosition, (type, textX, textY) => {
+          console.log('📝 Text element created at:', { textX, textY });
           addElement(textX, textY, type, selectedSmartElement);
         }, snapEnabled);
         break;
       case 'sticky':
       case 'comment':
       case 'upload':
+        console.log('📌 Creating single-click element:', selectedTool);
         addElement(x, y, selectedTool, selectedSmartElement);
         break;
       case 'smart-element':
         const elementType = selectedSmartElement || 'timeline';
+        console.log('🧠 Creating smart element:', elementType);
         addElement(x, y, 'smart-element', elementType);
         break;
       default:
-        // No action for tools that don't support single-click creation
+        console.log('🚫 No click action for tool:', selectedTool);
         break;
     }
   }, [selectedTool, zoom, canvasPosition, snapEnabled, selectedSmartElement, addElement, handleTextClick, canvasRef, setSelectedElements, setSelectedElementId]);

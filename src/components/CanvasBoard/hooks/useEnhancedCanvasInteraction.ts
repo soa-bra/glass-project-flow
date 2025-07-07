@@ -160,11 +160,11 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     snapEnabled: boolean = false
   ) => {
     if (!canvasRef?.current) {
-      logInteraction('❌ canvasRef not available in handleDragCreate');
+      console.log('❌ canvasRef not available in handleDragCreate');
       return;
     }
     if (!['shape', 'smart-element', 'text-box'].includes(selectedTool)) {
-      logInteraction('❌ Invalid tool for drag create', selectedTool);
+      console.log('❌ Invalid tool for drag create:', selectedTool);
       return;
     }
     
@@ -175,7 +175,7 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     x = snapToGrid(x, snapEnabled);
     y = snapToGrid(y, snapEnabled);
     
-    logInteraction('✅ Starting drag create', { tool: selectedTool, x, y });
+    console.log('✅ Starting drag create:', { tool: selectedTool, x, y });
     setIsDrawing(true);
     setDrawStart({ x, y });
     setDrawEnd({ x, y });
@@ -216,8 +216,10 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     
     // Create element if dragged area is significant
     if (width > 10 && height > 10) {
-      logInteraction('✅ Creating dragged element', { tool: selectedTool, x, y, width, height });
+      console.log('✅ Creating dragged element:', { tool: selectedTool, x, y, width, height });
       addElement(selectedTool, x, y, Math.max(width, 30), Math.max(height, 30));
+    } else {
+      console.log('❌ Drag area too small:', { width, height });
     }
     
     // Always reset drawing state
