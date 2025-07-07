@@ -46,7 +46,6 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
       <CanvasWrapper
         showGrid={canvasState.showGrid}
         snapEnabled={canvasState.snapEnabled}
-        gridSize={canvasState.gridSize}
         zoom={canvasState.zoom}
         canvasPosition={canvasState.canvasPosition}
         elements={canvasState.elements}
