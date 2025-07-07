@@ -106,14 +106,16 @@ export const useCanvasInteractionHandlers = (
       }
     }
     // Handle smart element tool
-    else if (selectedTool === 'smart-element' && selectedSmartElement) {
-      console.log('Adding smart element:', selectedSmartElement);
+    else if (selectedTool === 'smart-element') {
+      console.log('Adding smart element:', selectedSmartElement || 'timeline');
       const rect = canvasRef.current?.getBoundingClientRect();
       if (rect) {
         const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
         const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
         console.log('Smart element position:', { x, y });
-        addElement(x, y, 'smart-element', selectedSmartElement);
+        // Use default smart element if none selected
+        const elementType = selectedSmartElement || 'timeline';
+        addElement(x, y, 'smart-element', elementType);
       }
     }
   }, [selectedTool, zoom, canvasPosition, snapEnabled, selectedSmartElement, addElement, handleTextClick, canvasRef, setSelectedElements, setSelectedElementId]);
