@@ -249,8 +249,8 @@ const Canvas: React.FC<CanvasProps> = ({
           </div>
         ))}
 
-        {/* مؤشر الرسم للعناصر الذكية */}
-        {isDrawing && drawStart && drawEnd && selectedTool === 'smart-element' && (
+        {/* مؤشر الرسم للعناصر التي تحتاج سحب */}
+        {isDrawing && drawStart && drawEnd && ['smart-element', 'shape', 'text-box'].includes(selectedTool) && (
           <div
             className="absolute border-2 border-dashed border-blue-500 bg-blue-50 opacity-50 pointer-events-none"
             style={{

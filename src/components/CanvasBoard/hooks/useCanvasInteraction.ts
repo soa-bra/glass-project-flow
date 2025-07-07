@@ -90,7 +90,7 @@ export const useCanvasInteraction = () => {
   ) => {
     if (selectedTool === 'select' || selectedTool === 'hand' || selectedTool === 'zoom') return;
     // للأدوات التي تحتاج نقرة واحدة فقط
-    if (selectedTool !== 'smart-element') {
+    if (!['shape', 'smart-element', 'text-box'].includes(selectedTool)) {
       if (!canvasRef.current) return;
       
       const rect = canvasRef.current.getBoundingClientRect();
