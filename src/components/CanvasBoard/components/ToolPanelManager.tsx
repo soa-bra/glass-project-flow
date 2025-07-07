@@ -1,5 +1,5 @@
 import React from 'react';
-import { SelectionPanel, SmartPenPanel, ZoomPanel, HandPanel, UploadPanel } from '../panels';
+import { SelectionPanel, CommentPanel, TextPanel, ShapePanel, SmartElementPanel } from '../panels';
 import { CanvasElement } from '../types';
 
 interface ToolPanelManagerProps {
@@ -76,48 +76,33 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
           />
         );
 
-      case 'smart-pen':
+      case 'comment':
         return (
-          <SmartPenPanel
-            selectedMode={selectedPenMode}
-            onModeSelect={onPenModeSelect}
-            lineWidth={lineWidth}
-            onLineWidthChange={onLineWidthChange}
-            lineStyle={lineStyle}
-            onLineStyleChange={onLineStyleChange}
+          <CommentPanel
+            onAddComment={(text, useAI) => console.log('تعليق:', text, useAI)}
+            onToggleCommentPen={() => console.log('تبديل قلم التعليق')}
+            isCommentPenActive={false}
           />
         );
 
-      case 'zoom':
+      case 'text':
         return (
-          <ZoomPanel
-            zoom={zoom}
-            onZoomChange={onZoomChange}
-            canvasPosition={canvasPosition}
-            onPositionChange={onPositionChange}
-            onFitToScreen={onFitToScreen}
-            onResetView={onResetView}
+          <TextPanel
+            onAddText={(type, config) => console.log('نص:', type, config)}
           />
         );
 
-      case 'hand':
+      case 'shape':
         return (
-          <HandPanel
-            panSpeed={panSpeed}
-            onPanSpeedChange={onPanSpeedChange}
-            canvasPosition={canvasPosition}
-            onPositionChange={onPositionChange}
-            onResetPosition={onResetView}
-            onFitToScreen={onFitToScreen}
+          <ShapePanel
+            onAddShape={(type, data) => console.log('شكل:', type, data)}
           />
         );
 
-      case 'upload':
+      case 'smart-element':
         return (
-          <UploadPanel
-            onFileUpload={onFileUpload}
-            maxFileSize={10}
-            allowedTypes={['image/*', 'video/*', 'application/pdf', '.txt', '.doc', '.docx']}
+          <SmartElementPanel
+            onAddSmartElement={(type, config) => console.log('عنصر ذكي:', type, config)}
           />
         );
 

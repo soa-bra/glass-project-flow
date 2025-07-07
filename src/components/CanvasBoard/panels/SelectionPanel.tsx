@@ -34,7 +34,7 @@ const SelectionPanel: React.FC<SelectionPanelProps> = ({
   const multipleSelected = selectedElements.length > 1;
 
   return (
-    <Card className="w-80 bg-white/95 backdrop-blur-sm border-black/10">
+    <Card className="w-80 bg-white/95 backdrop-blur-xl shadow-lg border border-white/20 rounded-[24px]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2">
           <MousePointer className="w-5 h-5 text-blue-500" />
@@ -42,6 +42,29 @@ const SelectionPanel: React.FC<SelectionPanelProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* العناصر المحددة */}
+        {selectedElements.length > 0 ? (
+          <>
+            <div>
+              <h4 className="text-sm font-medium font-arabic mb-2">العناصر المحددة</h4>
+              <div className="text-xs text-gray-600 font-arabic">
+                محدد {selectedElements.length} عنصر
+              </div>
+            </div>
+            <Separator />
+          </>
+        ) : (
+          <>
+            <div>
+              <h4 className="text-sm font-medium font-arabic mb-2">العناصر المحددة</h4>
+              <div className="text-xs text-gray-500 font-arabic">
+                لا توجد عناصر محددة
+              </div>
+            </div>
+            <Separator />
+          </>
+        )}
+
         {selectedElement && !multipleSelected && (
           <>
             {/* موقع ومقاس العنصر */}
@@ -56,7 +79,7 @@ const SelectionPanel: React.FC<SelectionPanelProps> = ({
                     onChange={(e) => onUpdateElement(selectedElement.id, {
                       position: { ...selectedElement.position, x: parseInt(e.target.value) || 0 }
                     })}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs rounded-xl border-gray-200"
                   />
                 </div>
                 <div>
@@ -67,7 +90,7 @@ const SelectionPanel: React.FC<SelectionPanelProps> = ({
                     onChange={(e) => onUpdateElement(selectedElement.id, {
                       position: { ...selectedElement.position, y: parseInt(e.target.value) || 0 }
                     })}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs rounded-xl border-gray-200"
                   />
                 </div>
                 <div>
@@ -78,7 +101,7 @@ const SelectionPanel: React.FC<SelectionPanelProps> = ({
                     onChange={(e) => onUpdateElement(selectedElement.id, {
                       size: { ...selectedElement.size, width: parseInt(e.target.value) || 0 }
                     })}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs rounded-xl border-gray-200"
                   />
                 </div>
                 <div>
@@ -89,7 +112,7 @@ const SelectionPanel: React.FC<SelectionPanelProps> = ({
                     onChange={(e) => onUpdateElement(selectedElement.id, {
                       size: { ...selectedElement.size, height: parseInt(e.target.value) || 0 }
                     })}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs rounded-xl border-gray-200"
                   />
                 </div>
               </div>
@@ -103,21 +126,33 @@ const SelectionPanel: React.FC<SelectionPanelProps> = ({
         <div>
           <h4 className="text-sm font-medium font-arabic mb-2">أدوات التحرير</h4>
           <div className="grid grid-cols-2 gap-2">
-            <Button onClick={onCut} size="sm" variant="outline" className="text-xs font-arabic">
+            <Button onClick={onCut} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
               <Scissors className="w-3 h-3 mr-1" />
               قص
             </Button>
-            <Button onClick={onCopy} size="sm" variant="outline" className="text-xs font-arabic">
+            <Button onClick={onCopy} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
               <Copy className="w-3 h-3 mr-1" />
               نسخ
             </Button>
-            <Button onClick={onPaste} size="sm" variant="outline" className="text-xs font-arabic">
+            <Button onClick={onPaste} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
               <Clipboard className="w-3 h-3 mr-1" />
               لصق
             </Button>
-            <Button onClick={onDelete} size="sm" variant="destructive" className="text-xs font-arabic">
+            <Button onClick={onDelete} size="sm" variant="destructive" className="text-xs font-arabic rounded-xl">
               <Trash2 className="w-3 h-3 mr-1" />
               حذف
+            </Button>
+            <Button onClick={onGroup} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
+              <Group className="w-3 h-3 mr-1" />
+              تجميع
+            </Button>
+            <Button onClick={() => {}} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
+              <Group className="w-3 h-3 mr-1" />
+              قفل
+            </Button>
+            <Button onClick={() => {}} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
+              <Group className="w-3 h-3 mr-1" />
+              إلغاء القفل
             </Button>
           </div>
         </div>
@@ -128,7 +163,7 @@ const SelectionPanel: React.FC<SelectionPanelProps> = ({
             {/* تجميع العناصر */}
             <div>
               <h4 className="text-sm font-medium font-arabic mb-2">تجميع العناصر</h4>
-              <Button onClick={onGroup} className="w-full text-xs font-arabic">
+              <Button onClick={onGroup} className="w-full text-xs font-arabic rounded-xl">
                 <Group className="w-3 h-3 mr-1" />
                 تجميع ({selectedElements.length} عناصر)
               </Button>
@@ -145,7 +180,7 @@ const SelectionPanel: React.FC<SelectionPanelProps> = ({
             {layers.map((layer, index) => (
               <div
                 key={layer.id}
-                className="flex items-center justify-between p-2 bg-gray-50 rounded text-xs cursor-move"
+                className="flex items-center justify-between p-2 bg-gray-50 rounded-xl text-xs cursor-move border border-gray-200"
                 draggable
               >
                 <span className="font-arabic">{layer.name || `طبقة ${index + 1}`}</span>
@@ -157,14 +192,15 @@ const SelectionPanel: React.FC<SelectionPanelProps> = ({
           </div>
         </div>
 
-        {/* معلومات إضافية */}
-        <div className="bg-blue-50 p-3 rounded-lg">
-          <h4 className="text-sm font-medium font-arabic mb-1">التحديد:</h4>
-          <ul className="text-xs text-blue-800 font-arabic space-y-1">
-            <li>• انقر لتحديد عنصر واحد</li>
-            <li>• اسحب لتحديد عدة عناصر</li>
-            <li>• سحب الطبقات لإعادة الترتيب</li>
-          </ul>
+        <Separator />
+
+        {/* نصائح الاستخدام */}
+        <div className="bg-blue-50 p-3 rounded-xl border border-blue-200">
+          <div className="text-xs text-blue-800 font-arabic space-y-1">
+            <div>💡 استخدم Ctrl + النقر للتحديد المتعدد</div>
+            <div>📦 لتحديد العناصر انقر على طبقة العنصر من صندوق الطبقات</div>
+            <div>🔒 العناصر المقفلة لا يمكن تحديدها</div>
+          </div>
         </div>
       </CardContent>
     </Card>

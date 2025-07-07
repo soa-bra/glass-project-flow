@@ -1,8 +1,8 @@
 import { 
   MousePointer, Pen, ZoomIn, Hand, File, Upload, 
-  MessageSquare, Type, Shapes, Plus, Clock, GitBranch, Layout,
-  Grid3X3, Undo, Redo, Save, FolderOpen, Copy, Layers,
-  Lightbulb, Target, Settings
+  MessageSquare, Type, Shapes, Sparkles, Clock, GitBranch, Layout,
+  Grid3X3, RotateCcw, RotateCw, Save, FolderOpen, Copy, Layers,
+  Lightbulb, Target, Rocket
 } from 'lucide-react';
 import { Tool } from './types';
 
@@ -16,14 +16,14 @@ export const MAIN_TOOLBAR_TOOLS: Tool[] = [
   { id: 'comment', label: 'تعليق', icon: MessageSquare, category: 'collaboration' },
   { id: 'text', label: 'نص', icon: Type, category: 'content' },
   { id: 'shape', label: 'شكل', icon: Shapes, category: 'content' },
-  { id: 'smart-element', label: 'عنصر ذكي', icon: Plus, category: 'smart' }
+  { id: 'smart-element', label: 'عنصر ذكي', icon: Sparkles, category: 'smart' }
 ];
 
 // أدوات شريط الأدوات العلوي
 export const TOP_TOOLBAR_TOOLS = {
   history: {
-    undo: { id: 'undo', label: 'تراجع', icon: Undo },
-    redo: { id: 'redo', label: 'إعادة', icon: Redo },
+    undo: { id: 'undo', label: 'تراجع', icon: RotateCcw },
+    redo: { id: 'redo', label: 'إعادة', icon: RotateCw },
     history: { id: 'history', label: 'سجل العمليات', icon: Copy }
   },
   file: {
@@ -39,7 +39,7 @@ export const TOP_TOOLBAR_TOOLS = {
     shape: { id: 'grid-shape', label: 'شكل الشبكة', icon: Shapes }
   },
   smartProject: {
-    generate: { id: 'smart-project-gen', label: 'توليد المشاريع الذكية', icon: GitBranch }
+    generate: { id: 'smart-project-gen', label: 'توليد المشاريع الذكية', icon: Rocket }
   }
 };
 
