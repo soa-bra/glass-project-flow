@@ -130,11 +130,7 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
   
   if (!panel) return null;
 
-  return (
-    <div className="fixed bottom-24 right-6 z-40">
-      {panel}
-    </div>
-  );
+  return panel;
 };
 
 export default ToolPanelManager;

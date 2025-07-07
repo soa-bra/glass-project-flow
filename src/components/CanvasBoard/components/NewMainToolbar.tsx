@@ -13,16 +13,24 @@ const NewMainToolbar: React.FC<NewMainToolbarProps> = ({
   selectedTool, 
   onToolSelect 
 }) => {
-  const basicTools = MAIN_TOOLBAR_TOOLS.filter(tool => 
-    ['select', 'smart-pen', 'zoom', 'hand'].includes(tool.id)
+  // المجموعة الأولى: التحديد والقلم الذكي
+  const group1Tools = MAIN_TOOLBAR_TOOLS.filter(tool => 
+    ['select', 'smart-pen'].includes(tool.id)
   );
   
-  const fileTools = MAIN_TOOLBAR_TOOLS.filter(tool => 
-    ['upload'].includes(tool.id)
+  // المجموعة الثانية: الزوم والكف
+  const group2Tools = MAIN_TOOLBAR_TOOLS.filter(tool => 
+    ['zoom', 'hand'].includes(tool.id)
   );
   
-  const contentTools = MAIN_TOOLBAR_TOOLS.filter(tool => 
-    ['comment', 'text', 'shape', 'smart-element'].includes(tool.id)
+  // المجموعة الثالثة: الرفع والتعليق
+  const group3Tools = MAIN_TOOLBAR_TOOLS.filter(tool => 
+    ['upload', 'comment'].includes(tool.id)
+  );
+  
+  // المجموعة الرابعة: النص والشكل والعنصر الذكي
+  const group4Tools = MAIN_TOOLBAR_TOOLS.filter(tool => 
+    ['text', 'shape', 'smart-element'].includes(tool.id)
   );
 
   const renderToolGroup = (tools: typeof MAIN_TOOLBAR_TOOLS, groupName: string) => (
@@ -51,21 +59,26 @@ const NewMainToolbar: React.FC<NewMainToolbarProps> = ({
   );
 
   return (
-    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50" style={{ width: '70%' }}>
-      <Card className="bg-white/95 backdrop-blur-lg shadow-xl border border-gray-200/50 rounded-[24px]">
-        <CardContent className="flex items-center justify-center gap-6 p-4">
-          {/* الأدوات الأساسية */}
-          {renderToolGroup(basicTools, 'basic')}
+    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+      <Card className="bg-white/95 backdrop-blur-lg shadow-sm border border-gray-200/50 rounded-[24px]">
+        <CardContent className="flex items-center justify-center gap-4 px-6 py-3">
+          {/* المجموعة الأولى: التحديد والقلم الذكي */}
+          {renderToolGroup(group1Tools, 'group1')}
           
           <Separator orientation="vertical" className="h-8 bg-gray-300" />
           
-          {/* أدوات الملفات */}
-          {renderToolGroup(fileTools, 'file')}
+          {/* المجموعة الثانية: الزوم والكف */}
+          {renderToolGroup(group2Tools, 'group2')}
           
           <Separator orientation="vertical" className="h-8 bg-gray-300" />
           
-          {/* أدوات المحتوى */}
-          {renderToolGroup(contentTools, 'content')}
+          {/* المجموعة الثالثة: الرفع والتعليق */}
+          {renderToolGroup(group3Tools, 'group3')}
+          
+          <Separator orientation="vertical" className="h-8 bg-gray-300" />
+          
+          {/* المجموعة الرابعة: النص والشكل والعنصر الذكي */}
+          {renderToolGroup(group4Tools, 'group4')}
         </CardContent>
       </Card>
       

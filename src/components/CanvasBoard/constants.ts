@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { Tool } from './types';
 
-// أدوات شريط الأدوات الرئيسي (أسفل)
+// أدوات شريط الأدوات الرئيسي (أسفل) - بالترتيب المطلوب
 export const MAIN_TOOLBAR_TOOLS: Tool[] = [
   { id: 'select', label: 'تحديد', icon: MousePointer, category: 'basic' },
   { id: 'smart-pen', label: 'القلم الذكي', icon: Pen, category: 'basic' },

@@ -5,7 +5,7 @@ import NewTopToolbar from './NewTopToolbar';
 import AIAssistantPanel from '../AIAssistantPanel';
 import { HistoryPanel } from '../sidepanels/HistoryPanel';
 import { PropertiesPanel } from '../sidepanels/PropertiesPanel';
-import { TemplatePanel } from '../export/TemplatePanel';
+
 import { CanvasElement } from '../types';
 
 interface Layer {
@@ -217,45 +217,42 @@ export const CanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
           element={selectedElementId ? elements.find(el => el.id === selectedElementId) : null}
           onUpdate={updateElement}
         />
-        <TemplatePanel
-          currentElements={elements}
-          onLoadTemplate={(template) => console.log('تحميل القالب:', template)}
-          onSaveAsTemplate={(name, description) => console.log('حفظ كقالب:', name, description)}
-        />
       </div>
       
       <div className="fixed top-4 right-4 z-40 w-80">
         <AIAssistantPanel />
       </div>
       
-      {/* مدير اللوحات حسب الأداة المحددة */}
-      <ToolPanelManager
-        selectedTool={selectedTool}
-        selectedElements={selectedElementsAsElements}
-        zoom={zoom}
-        canvasPosition={canvasPosition}
-        panSpeed={panSpeed}
-        lineWidth={lineWidth}
-        lineStyle={lineStyle}
-        selectedPenMode={selectedPenMode}
-        onUpdateElement={updateElement}
-        onCopy={handleCopy}
-        onCut={handleCut}
-        onPaste={handlePaste}
-        onDelete={handleDeleteSelected}
-        onGroup={handleGroup}
-        onZoomChange={setZoom}
-        onPositionChange={onPositionChange}
-        onFitToScreen={onFitToScreen}
-        onResetView={onResetView}
-        onPanSpeedChange={onPanSpeedChange}
-        onLineWidthChange={onLineWidthChange}
-        onLineStyleChange={onLineStyleChange}
-        onPenModeSelect={onPenModeSelect}
-        onFileUpload={onFileUpload}
-        layers={layers}
-        onLayerReorder={handleLayerUpdate}
-      />
+      {/* مدير اللوحات حسب الأداة المحددة - في المكان القديم للوحات */}
+      <div className="fixed bottom-24 left-6 z-40">
+        <ToolPanelManager
+          selectedTool={selectedTool}
+          selectedElements={selectedElementsAsElements}
+          zoom={zoom}
+          canvasPosition={canvasPosition}
+          panSpeed={panSpeed}
+          lineWidth={lineWidth}
+          lineStyle={lineStyle}
+          selectedPenMode={selectedPenMode}
+          onUpdateElement={updateElement}
+          onCopy={handleCopy}
+          onCut={handleCut}
+          onPaste={handlePaste}
+          onDelete={handleDeleteSelected}
+          onGroup={handleGroup}
+          onZoomChange={setZoom}
+          onPositionChange={onPositionChange}
+          onFitToScreen={onFitToScreen}
+          onResetView={onResetView}
+          onPanSpeedChange={onPanSpeedChange}
+          onLineWidthChange={onLineWidthChange}
+          onLineStyleChange={onLineStyleChange}
+          onPenModeSelect={onPenModeSelect}
+          onFileUpload={onFileUpload}
+          layers={layers}
+          onLayerReorder={handleLayerUpdate}
+        />
+      </div>
       
       {/* البار السفلي الجديد */}
       <MainToolbar
