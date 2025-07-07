@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useEnhancedCanvasState } from '../hooks/useEnhancedCanvasState';
-import { MiroStyleTopBar } from './MiroStyleTopBar';
-import { MiroStyleToolbar } from './MiroStyleToolbar';
 import { MiroStyleCanvas } from './MiroStyleCanvas';
-import { MiroStyleBottomBar } from './MiroStyleBottomBar';
+import { MiroStyleMainToolbar } from './MiroStyleMainToolbar';
+import { MiroStyleEnhancedTopBar } from './MiroStyleEnhancedTopBar';
+import { ToolPropsBar } from './ToolPropsBar';
+import { AIPanel } from './AIPanel';
+import { EnhancedInspector } from './EnhancedInspector';
+import { CollabBar } from '../collaboration/CollabBar';
 
 interface MiroStyleBoardProps {
   projectId?: string;
@@ -15,6 +18,11 @@ export const MiroStyleBoard: React.FC<MiroStyleBoardProps> = ({
   userId = 'user1'
 }) => {
   const canvasState = useEnhancedCanvasState(projectId, userId);
+  
+  // Panel states
+  const [isCollabBarOpen, setIsCollabBarOpen] = useState(true);
+  const [isAIPanelExpanded, setIsAIPanelExpanded] = useState(false);
+  const [isInspectorExpanded, setIsInspectorExpanded] = useState(true);
 
   // Map old tool names to new ones
   const handleToolSelect = (tool: string) => {
@@ -92,57 +100,120 @@ export const MiroStyleBoard: React.FC<MiroStyleBoardProps> = ({
     });
   };
 
+  const handleFileAction = (action: string) => {
+    console.log('File action:', action);
+    switch (action) {
+      case 'new':
+        // Clear canvas
+        canvasState.setElements([]);
+        break;
+      case 'save':
+        canvasState.saveCanvas();
+        break;
+      case 'copy':
+        // Create copy logic
+        break;
+      case 'open':
+        // Open file logic
+        break;
+    }
+  };
+
+  const handleSmartProjectGenerator = () => {
+    console.log('Smart Project Generator clicked');
+    // Implement smart project generation logic
+  };
+
+  const handleGridToggle = () => {
+    canvasState.setShowGrid(!canvasState.showGrid);
+  };
+
+  const handleSnapToggle = () => {
+    canvasState.setSnapEnabled(!canvasState.snapEnabled);
+  };
+
+  const selectedElement = canvasState.elements.find(el => el.id === canvasState.selectedElementId);
+
   return (
     <div className="relative w-full h-screen bg-gray-50 overflow-hidden">
-      {/* Top Bar */}
-      <MiroStyleTopBar
-        projectName="لوحة التخطيط التشاركي"
+      {/* Enhanced Top Bar - 40% width, centered */}
+      <MiroStyleEnhancedTopBar
         canUndo={canvasState.historyIndex > 0}
         canRedo={canvasState.historyIndex < canvasState.history.length - 1}
-        zoom={canvasState.zoom}
         onUndo={canvasState.undo}
         onRedo={canvasState.redo}
         onSave={canvasState.saveCanvas}
-        onShare={() => console.log('مشاركة')}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-        onResetZoom={handleResetZoom}
-      />
-
-      {/* Left Toolbar */}
-      <MiroStyleToolbar
-        selectedTool={canvasState.selectedTool}
-        onToolSelect={handleToolSelect}
+        onFileAction={handleFileAction}
+        onGridToggle={handleGridToggle}
+        onSmartProjectGenerator={handleSmartProjectGenerator}
+        showGrid={canvasState.showGrid}
+        snapEnabled={canvasState.snapEnabled}
+        onSnapToggle={handleSnapToggle}
       />
 
       {/* Main Canvas */}
-      <div className="pt-16 h-full">
-        <MiroStyleCanvas
-          elements={canvasState.elements}
-          selectedElementId={canvasState.selectedElementId}
-          selectedTool={canvasState.selectedTool}
-          zoom={canvasState.zoom}
-          canvasPosition={canvasState.canvasPosition}
-          showGrid={canvasState.showGrid}
-          canvasRef={canvasState.canvasRef}
-          onElementSelect={canvasState.setSelectedElementId}
-          onElementMouseDown={canvasState.handleElementMouseDown}
-          onCanvasClick={canvasState.handleCanvasClick}
-          onCanvasMouseDown={canvasState.handleCanvasMouseDown}
-          onCanvasMouseMove={canvasState.handleCanvasMouseMove}
-          onCanvasMouseUp={canvasState.handleCanvasMouseUp}
-        />
-      </div>
-
-      {/* Bottom Bar */}
-      <MiroStyleBottomBar
+      <MiroStyleCanvas
+        elements={canvasState.elements}
+        selectedElementId={canvasState.selectedElementId}
+        selectedTool={canvasState.selectedTool}
         zoom={canvasState.zoom}
-        elementsCount={canvasState.elements.length}
-        selectedElementsCount={canvasState.selectedElements.length}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-        onFitToScreen={handleFitToScreen}
-        onResetZoom={handleResetZoom}
+        canvasPosition={canvasState.canvasPosition}
+        showGrid={canvasState.showGrid}
+        canvasRef={canvasState.canvasRef}
+        onElementSelect={canvasState.setSelectedElementId}
+        onElementMouseDown={canvasState.handleElementMouseDown}
+        onCanvasClick={canvasState.handleCanvasClick}
+        onCanvasMouseDown={canvasState.handleCanvasMouseDown}
+        onCanvasMouseMove={canvasState.handleCanvasMouseMove}
+        onCanvasMouseUp={canvasState.handleCanvasMouseUp}
+      />
+
+      {/* Floating Panels */}
+      
+      {/* Left Top (0-25%) - CollabBar */}
+      <CollabBar 
+        projectId={projectId} 
+        currentUserId={userId}
+      />
+
+      {/* Left Bottom (25-100%) - ToolPropsBar */}
+      <ToolPropsBar
+        selectedTool={canvasState.selectedTool}
+        isCollabBarOpen={isCollabBarOpen}
+        selectedElement={selectedElement}
+        onElementUpdate={(updates) => {
+          if (selectedElement) {
+            canvasState.updateElement(selectedElement.id, updates);
+          }
+        }}
+        onAction={(action) => {
+          console.log('Tool action:', action);
+          // Handle tool actions like cut, copy, paste, delete, etc.
+        }}
+      />
+
+      {/* Right Top (0-75%) - Inspector */}
+      <EnhancedInspector
+        selectedElement={selectedElement}
+        onElementUpdate={(updates) => {
+          if (selectedElement) {
+            canvasState.updateElement(selectedElement.id, updates);
+          }
+        }}
+        isExpanded={isInspectorExpanded}
+        onToggle={() => setIsInspectorExpanded(!isInspectorExpanded)}
+      />
+
+      {/* Right Bottom (75-100%) - AI Panel */}
+      <AIPanel
+        isExpanded={isAIPanelExpanded}
+        onToggle={() => setIsAIPanelExpanded(!isAIPanelExpanded)}
+      />
+
+      {/* Bottom Center (70% width) - Main Toolbar */}
+      <MiroStyleMainToolbar
+        selectedTool={canvasState.selectedTool}
+        onToolSelect={handleToolSelect}
       />
     </div>
   );
