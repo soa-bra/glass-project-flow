@@ -6,43 +6,34 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
   const [elements, setElements] = useState<CanvasElement[]>([]);
 
   const addElement = useCallback((x: number, y: number, elementType: string, selectedSmartElement: string, width?: number, height?: number) => {
-    console.log('🎯 MAIN addElement called with:', { elementType, selectedSmartElement, x, y, width, height, timestamp: Date.now() });
-    
     // Skip non-creatable tools
     if (['select', 'hand', 'zoom', 'grid', 'layers'].includes(elementType)) {
-      console.log('❌ Skipping non-creatable tool:', elementType);
       return;
     }
 
-    // Determine the actual element type - تحسين منطق تحديد النوع
+    // Determine the actual element type
     let actualType = elementType;
     
     // Handle smart element logic
     if (elementType === 'smart-element') {
-      if (selectedSmartElement && selectedSmartElement !== 'smart-element') {
-        actualType = selectedSmartElement;
-        console.log('✅ Smart element type:', actualType);
-      } else {
-        actualType = 'timeline'; // Default smart element
-        console.log('✅ Default smart element (timeline)');
-      }
+      actualType = (selectedSmartElement && selectedSmartElement !== 'smart-element') 
+        ? selectedSmartElement 
+        : 'timeline';
     }
     
     // Handle text-box -> text conversion
     if (elementType === 'text-box') {
       actualType = 'text';
-      console.log('✅ Converting text-box to text');
     }
     
-    // Validate that we have a valid type
+    // Validate element type
     const validTypes = ['text', 'shape', 'sticky', 'comment', 'upload', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard', 'line'];
     if (!validTypes.includes(actualType)) {
-      console.warn('❌ Invalid element type:', actualType, 'from elementType:', elementType);
       toast.error(`نوع عنصر غير صحيح: ${actualType}`);
       return;
     }
     
-    // Create element with appropriate defaults
+    // Create element with optimized defaults
     const newElement: CanvasElement = {
       id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type: actualType as any,
@@ -55,12 +46,8 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
       style: getDefaultStyle(actualType)
     };
 
-    console.log('✅ ELEMENT CREATED:', newElement);
-
     setElements(prev => {
       const newElements = [...prev, newElement];
-      console.log('📊 ELEMENTS ARRAY UPDATE - Total elements now:', newElements.length);
-      console.log('📊 ELEMENTS ARRAY:', newElements.map(el => ({ id: el.id, type: el.type, position: el.position })));
       saveToHistory(newElements);
       return newElements;
     });
@@ -68,7 +55,6 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
     // Provide user feedback
     const elementName = getElementDisplayName(actualType);
     toast.success(`تم إضافة ${elementName}`);
-    console.log('🎉 ELEMENT ADDITION COMPLETE!');
   }, [saveToHistory]);
 
   const updateElement = useCallback((elementId: string, updates: Partial<CanvasElement>) => {

@@ -18,13 +18,14 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     return snapEnabled ? Math.round(value / GRID_SIZE) * GRID_SIZE : value;
   };
 
-  console.log('🎨 Enhanced Canvas Interaction:', {
-    isDrawing,
-    isDragging,
-    isSelecting,
-    isResizing,
-    canvasRefExists: !!canvasRef?.current
-  });
+  // Remove excessive logging - only log critical interactions
+  const logInteraction = (action: string, data?: any) => {
+    if (data) {
+      console.log(`🎨 ${action}:`, data);
+    } else {
+      console.log(`🎨 ${action}`);
+    }
+  };
 
   // Selection box handling
   const handleSelectionStart = useCallback((
@@ -158,13 +159,12 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     canvasPosition: { x: number; y: number },
     snapEnabled: boolean = false
   ) => {
-    console.log('🎯 handleDragCreate called:', { selectedTool, canvasRefExists: !!canvasRef?.current });
     if (!canvasRef?.current) {
-      console.warn('❌ canvasRef not available in handleDragCreate');
+      logInteraction('❌ canvasRef not available in handleDragCreate');
       return;
     }
     if (!['shape', 'smart-element', 'text-box'].includes(selectedTool)) {
-      console.warn('❌ Invalid tool for drag create:', selectedTool);
+      logInteraction('❌ Invalid tool for drag create', selectedTool);
       return;
     }
     
@@ -175,7 +175,7 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     x = snapToGrid(x, snapEnabled);
     y = snapToGrid(y, snapEnabled);
     
-    console.log('✅ Setting isDrawing = true, start position:', { x, y });
+    logInteraction('✅ Starting drag create', { tool: selectedTool, x, y });
     setIsDrawing(true);
     setDrawStart({ x, y });
     setDrawEnd({ x, y });
@@ -188,10 +188,7 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     snapEnabled: boolean = false
   ) => {
     if (!isDrawing || !drawStart || !canvasRef?.current) {
-      if (!isDrawing) console.log('❌ handleDragCreateMove: not drawing');
-      if (!drawStart) console.log('❌ handleDragCreateMove: no drawStart');
-      if (!canvasRef?.current) console.log('❌ handleDragCreateMove: no canvasRef');
-      return;
+      return; // Silent fail for performance
     }
     
     const rect = canvasRef.current.getBoundingClientRect();
@@ -201,7 +198,6 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     x = snapToGrid(x, snapEnabled);
     y = snapToGrid(y, snapEnabled);
     
-    console.log('🎯 Drag create move:', { x, y, drawStart });
     setDrawEnd({ x, y });
   }, [isDrawing, drawStart]);
 
@@ -209,9 +205,7 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     selectedTool: string,
     addElement: (type: string, x: number, y: number, width: number, height: number) => void
   ) => {
-    console.log('🎯 handleDragCreateEnd called:', { isDrawing, drawStart, drawEnd });
     if (!isDrawing || !drawStart || !drawEnd) {
-      console.warn('❌ handleDragCreateEnd: missing requirements');
       return;
     }
     
@@ -220,15 +214,13 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     const x = Math.min(drawStart.x, drawEnd.x);
     const y = Math.min(drawStart.y, drawEnd.y);
     
-    console.log('📏 Calculated dimensions:', { x, y, width, height, minSize: width > 20 && height > 20 });
-    
-    if (width > 20 && height > 20) {
-      console.log('✅ Creating element:', selectedTool, { x, y, width, height });
-      addElement(selectedTool, x, y, width, height);
-    } else {
-      console.log('❌ Element too small, not creating');
+    // Create element if dragged area is significant
+    if (width > 10 && height > 10) {
+      logInteraction('✅ Creating dragged element', { tool: selectedTool, x, y, width, height });
+      addElement(selectedTool, x, y, Math.max(width, 30), Math.max(height, 30));
     }
     
+    // Always reset drawing state
     setIsDrawing(false);
     setDrawStart(null);
     setDrawEnd(null);

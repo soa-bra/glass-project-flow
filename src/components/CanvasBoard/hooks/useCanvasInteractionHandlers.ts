@@ -33,25 +33,26 @@ export const useCanvasInteractionHandlers = (
     handleElementMouseUp
   } = useEnhancedCanvasInteraction(canvasRef);
 
-  // Canvas interaction handlers - تحسين معالجات التفاعل
+  // Canvas interaction handlers - optimized for performance
   const wrappedHandleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    console.log('🎯 Canvas mouse down - tool:', selectedTool, 'position:', { 
-      x: e.clientX, 
-      y: e.clientY, 
-      canvasPos: canvasPosition,
-      zoom 
-    });
     
-    if (selectedTool === 'select') {
-      console.log('✅ Starting selection');
-      handleSelectionStart(e, zoom, canvasPosition, snapEnabled);
-    } else if (selectedTool === 'smart-pen') {
-      console.log('✅ Starting smart pen draw');
-      handleSmartPenStart(e, zoom, canvasPosition, snapEnabled);
-    } else if (['shape', 'smart-element', 'text-box'].includes(selectedTool)) {
-      console.log('✅ Starting drag create for tool:', selectedTool);
-      handleDragCreate(e, selectedTool, zoom, canvasPosition, snapEnabled);
+    // Route to appropriate handler based on tool
+    switch (selectedTool) {
+      case 'select':
+        handleSelectionStart(e, zoom, canvasPosition, snapEnabled);
+        break;
+      case 'smart-pen':
+        handleSmartPenStart(e, zoom, canvasPosition, snapEnabled);
+        break;
+      case 'shape':
+      case 'smart-element':
+      case 'text-box':
+        handleDragCreate(e, selectedTool, zoom, canvasPosition, snapEnabled);
+        break;
+      default:
+        // Do nothing for other tools like hand, zoom, etc.
+        break;
     }
   }, [selectedTool, zoom, canvasPosition, snapEnabled, handleSelectionStart, handleSmartPenStart, handleDragCreate]);
   
@@ -66,37 +67,30 @@ export const useCanvasInteractionHandlers = (
   }, [selectedTool, zoom, canvasPosition, snapEnabled, isSelecting, isDrawing, handleSelectionMove, handleSmartPenMove, handleDragCreateMove]);
   
   const wrappedHandleCanvasMouseUp = useCallback(() => {
-    console.log('🎯 Canvas mouse up - tool:', selectedTool, 'isSelecting:', isSelecting, 'isDrawing:', isDrawing);
-    
+    // Handle completion based on current tool and state
     if (selectedTool === 'select' && isSelecting) {
-      console.log('✅ Ending selection');
       handleSelectionEnd(elements, (elementIds) => setSelectedElements(elementIds));
     } else if (selectedTool === 'smart-pen' && isDrawing) {
-      console.log('✅ Ending smart pen draw');
       handleSmartPenEnd((type, startX, startY, endX, endY) => {
         const width = Math.abs(endX - startX);
         const height = Math.abs(endY - startY);
         const x = Math.min(startX, endX);
         const y = Math.min(startY, endY);
-        console.log('🎨 Creating smart pen element:', { type, x, y, width, height });
         addElement(x, y, type, selectedSmartElement, Math.max(width, 20), Math.max(height, 20));
       });
     } else if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && isDrawing) {
-      console.log('✅ Ending drag create');
       handleDragCreateEnd(selectedTool, (type, x, y, width, height) => {
-        console.log('🎨 Creating dragged element:', { type, x, y, width, height });
-        addElement(x, y, type, selectedSmartElement, Math.max(width, 50), Math.max(height, 50));
+        addElement(x, y, type, selectedSmartElement, Math.max(width, 30), Math.max(height, 30));
       });
     }
   }, [selectedTool, isSelecting, isDrawing, elements, selectedSmartElement, addElement, handleSelectionEnd, handleSmartPenEnd, handleDragCreateEnd, setSelectedElements]);
   
   const wrappedHandleCanvasClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    console.log('🎯 Canvas click - tool:', selectedTool, 'target:', e.target);
     
-    // Clear selection if clicking with select tool on empty canvas
+    // Handle different tool behaviors
     if (selectedTool === 'select') {
-      console.log('✅ Clearing selection');
+      // Clear selection on empty canvas click
       setSelectedElements([]);
       setSelectedElementId(null);
       return;
@@ -104,33 +98,30 @@ export const useCanvasInteractionHandlers = (
     
     // Calculate position for single click tools
     const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) {
-      console.warn('❌ Canvas ref not available');
-      return;
-    }
+    if (!rect) return;
 
     const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
     const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
-    console.log('📍 Calculated position:', { x, y, clientX: e.clientX, clientY: e.clientY });
     
-    // Handle text tool - single click
-    if (selectedTool === 'text') {
-      console.log('✅ Adding text element at:', { x, y });
-      handleTextClick(e, zoom, canvasPosition, (type, textX, textY) => {
-        console.log('🎨 Creating text element:', { type, x: textX, y: textY });
-        addElement(textX, textY, type, selectedSmartElement);
-      }, snapEnabled);
-    } 
-    // Handle simple click tools
-    else if (['sticky', 'comment', 'upload'].includes(selectedTool)) {
-      console.log('✅ Adding simple element:', selectedTool, 'at:', { x, y });
-      addElement(x, y, selectedTool, selectedSmartElement);
-    }
-    // Handle smart element tool - single click
-    else if (selectedTool === 'smart-element') {
-      const elementType = selectedSmartElement || 'timeline';
-      console.log('✅ Adding smart element:', elementType, 'at:', { x, y });
-      addElement(x, y, 'smart-element', elementType);
+    // Route to appropriate creation method
+    switch (selectedTool) {
+      case 'text':
+        handleTextClick(e, zoom, canvasPosition, (type, textX, textY) => {
+          addElement(textX, textY, type, selectedSmartElement);
+        }, snapEnabled);
+        break;
+      case 'sticky':
+      case 'comment':
+      case 'upload':
+        addElement(x, y, selectedTool, selectedSmartElement);
+        break;
+      case 'smart-element':
+        const elementType = selectedSmartElement || 'timeline';
+        addElement(x, y, 'smart-element', elementType);
+        break;
+      default:
+        // No action for tools that don't support single-click creation
+        break;
     }
   }, [selectedTool, zoom, canvasPosition, snapEnabled, selectedSmartElement, addElement, handleTextClick, canvasRef, setSelectedElements, setSelectedElementId]);
 
