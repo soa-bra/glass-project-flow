@@ -3,3 +3,5 @@ export { StickyNoteTool } from './StickyNoteTool';
 export { RepeatTool } from './RepeatTool';
 export { FlowchartTool } from './FlowchartTool';
 export { AnnotationTool } from './AnnotationTool';
+export { ShapeTool } from './ShapeTool';
+export { SmartElementLinker } from './SmartElementLinker';
