@@ -130,7 +130,14 @@ export const useEnhancedCanvasInteraction = () => {
   ) => {
     if (!isDrawing || !drawStart || !drawEnd) return;
     
-    addElement('line', drawStart.x, drawStart.y, drawEnd.x, drawEnd.y);
+    // Calculate the line dimensions
+    const width = Math.abs(drawEnd.x - drawStart.x);
+    const height = Math.abs(drawEnd.y - drawStart.y);
+    
+    // Only create if there's enough movement
+    if (width > 10 || height > 10) {
+      addElement('line', drawStart.x, drawStart.y, drawEnd.x, drawEnd.y);
+    }
     
     setIsDrawing(false);
     setDrawStart(null);

@@ -35,11 +35,16 @@ export const useCanvasInteractionHandlers = (
 
   // Enhanced canvas interaction wrappers
   const wrappedHandleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log('Canvas mouse down - tool:', selectedTool);
+    
     if (selectedTool === 'select') {
       handleSelectionStart(e, zoom, canvasPosition, snapEnabled);
     } else if (selectedTool === 'smart-pen') {
+      console.log('Starting smart pen draw');
       handleSmartPenStart(e, zoom, canvasPosition, snapEnabled);
     } else if (['shape', 'smart-element', 'text-box'].includes(selectedTool)) {
+      console.log('Starting drag create for tool:', selectedTool);
       handleDragCreate(e, selectedTool, zoom, canvasPosition, snapEnabled);
     }
   }, [selectedTool, zoom, canvasPosition, snapEnabled, handleSelectionStart, handleSmartPenStart, handleDragCreate]);
@@ -67,24 +72,40 @@ export const useCanvasInteractionHandlers = (
       });
     } else if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && isDrawing) {
       handleDragCreateEnd(selectedTool, (type, x, y, width, height) => 
-        addElement(x, y, type, selectedSmartElement, width, height)
+        addElement(x, y, type, selectedSmartElement, Math.max(width, 50), Math.max(height, 50))
       );
     }
   }, [selectedTool, isSelecting, isDrawing, elements, selectedSmartElement, addElement, handleSelectionEnd, handleSmartPenEnd, handleDragCreateEnd, setSelectedElements]);
   
   const wrappedHandleCanvasClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log('Canvas click - tool:', selectedTool);
+    
+    // Clear selection if clicking with select tool
+    if (selectedTool === 'select') {
+      setSelectedElements([]);
+      setSelectedElementId(null);
+      return;
+    }
+    
+    // Handle text tool
     if (selectedTool === 'text') {
+      console.log('Adding text element');
       handleTextClick(e, zoom, canvasPosition, (type, x, y) => 
         addElement(x, y, type, selectedSmartElement), snapEnabled);
-    } else if (['sticky', 'comment', 'upload'].includes(selectedTool)) {
+    } 
+    // Handle simple click tools
+    else if (['sticky', 'comment', 'upload'].includes(selectedTool)) {
+      console.log('Adding simple element:', selectedTool);
       const rect = canvasRef.current?.getBoundingClientRect();
       if (rect) {
         const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
         const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+        console.log('Element position:', { x, y });
         addElement(x, y, selectedTool, selectedSmartElement);
       }
     }
-  }, [selectedTool, zoom, canvasPosition, snapEnabled, selectedSmartElement, addElement, handleTextClick, canvasRef]);
+  }, [selectedTool, zoom, canvasPosition, snapEnabled, selectedSmartElement, addElement, handleTextClick, canvasRef, setSelectedElements, setSelectedElementId]);
 
   const wrappedHandleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
     enhancedElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId, selectedElements, setSelectedElements);

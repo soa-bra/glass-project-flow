@@ -148,14 +148,20 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
       case 'text':
         return (
           <TextPanel
-            onAddText={(type, config) => console.log('نص:', type, config)}
+            onAddText={(type, config) => {
+              console.log('نص:', type, config);
+              // This will be handled by the canvas click event when text tool is selected
+            }}
           />
         );
 
       case 'shape':
         return (
           <ShapePanel
-            onAddShape={(type, data) => console.log('شكل:', type, data)}
+            onAddShape={(type, data) => {
+              console.log('شكل:', type, data);
+              // This will be handled by the canvas click/drag event when shape tool is selected
+            }}
           />
         );
 

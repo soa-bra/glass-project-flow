@@ -7,21 +7,69 @@ interface ElementRendererProps {
 }
 
 export const ElementRenderer: React.FC<ElementRendererProps> = ({ element }) => {
+  const baseStyle = element.style || {};
+  
   switch (element.type) {
     case 'text':
       return (
-        <div className="w-full h-full flex items-center justify-center bg-yellow-200 rounded p-2">
-          <span className="text-sm font-arabic">{element.content || 'نص جديد'}</span>
+        <div 
+          className="w-full h-full flex items-center justify-center bg-white/80 rounded p-2 border border-gray-200"
+          style={{
+            fontSize: baseStyle.fontSize || '16px',
+            fontFamily: baseStyle.fontFamily || 'IBM Plex Sans Arabic',
+            color: baseStyle.color || '#000000',
+            textAlign: baseStyle.textAlign || 'right',
+            fontWeight: baseStyle.fontWeight || 'normal'
+          }}
+        >
+          <span className="font-arabic">{element.content || 'نص جديد'}</span>
         </div>
       );
 
     case 'shape':
-      return <div className="w-full h-full bg-blue-200 rounded border-2 border-blue-400" />;
+      return (
+        <div 
+          className="w-full h-full rounded border-2" 
+          style={{
+            backgroundColor: baseStyle.fill || '#3B82F6',
+            borderColor: baseStyle.stroke || '#1D4ED8',
+            borderWidth: baseStyle.strokeWidth || 2
+          }}
+        />
+      );
 
     case 'sticky':
       return (
-        <div className="w-full h-full bg-yellow-300 rounded shadow-md p-2 border border-yellow-400">
-          <span className="text-xs font-arabic">{element.content || 'ملاحظة'}</span>
+        <div 
+          className="w-full h-full rounded shadow-md p-2 border"
+          style={{
+            backgroundColor: baseStyle.backgroundColor || '#FEF3C7',
+            borderColor: '#F59E0B',
+            borderRadius: baseStyle.borderRadius || '8px',
+            padding: baseStyle.padding || '12px'
+          }}
+        >
+          <span className="text-xs font-arabic text-gray-800">{element.content || 'ملاحظة'}</span>
+        </div>
+      );
+
+    case 'comment':
+      return (
+        <div className="w-full h-full bg-blue-50 rounded shadow-md p-2 border border-blue-200">
+          <div className="flex items-start gap-1">
+            <div className="w-2 h-2 bg-blue-500 rounded-full mt-1"></div>
+            <span className="text-xs font-arabic text-blue-800">{element.content || 'تعليق'}</span>
+          </div>
+        </div>
+      );
+
+    case 'upload':
+      return (
+        <div className="w-full h-full bg-gray-50 rounded shadow-md p-2 border border-gray-200 flex items-center justify-center">
+          <div className="text-center">
+            <span className="text-lg">📁</span>
+            <p className="text-xs font-arabic mt-1">ملف</p>
+          </div>
         </div>
       );
 
