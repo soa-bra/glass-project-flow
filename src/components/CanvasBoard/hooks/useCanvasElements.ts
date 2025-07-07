@@ -6,21 +6,28 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
   const [elements, setElements] = useState<CanvasElement[]>([]);
 
   const addElement = useCallback((x: number, y: number, elementType: string, selectedSmartElement: string, width?: number, height?: number) => {
-    console.log('Adding element:', { elementType, x, y, width, height });
+    console.log('🎯 Adding element called with:', { elementType, selectedSmartElement, x, y, width, height });
     
     // Skip non-creatable tools
-    if (['select', 'hand', 'zoom', 'grid', 'layers'].includes(elementType)) return;
+    if (['select', 'hand', 'zoom', 'grid', 'layers'].includes(elementType)) {
+      console.log('❌ Skipping non-creatable tool:', elementType);
+      return;
+    }
 
     // Determine the actual element type
     let actualType = elementType;
     if (elementType === 'smart-element' && selectedSmartElement) {
       actualType = selectedSmartElement;
+      console.log('✅ Smart element type:', actualType);
+    } else if (elementType === 'smart-element') {
+      actualType = 'timeline'; // Default smart element
+      console.log('✅ Default smart element:', actualType);
     }
     
     // Validate that we have a valid type
     const validTypes = ['text', 'shape', 'sticky', 'comment', 'upload', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard', 'line'];
     if (!validTypes.includes(actualType)) {
-      console.warn('Invalid element type:', actualType);
+      console.warn('❌ Invalid element type:', actualType);
       return;
     }
     
@@ -37,10 +44,11 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
       style: getDefaultStyle(actualType)
     };
 
-    console.log('Created element:', newElement);
+    console.log('✅ Created element:', newElement);
 
     setElements(prev => {
       const newElements = [...prev, newElement];
+      console.log('📊 Total elements now:', newElements.length);
       saveToHistory(newElements);
       return newElements;
     });
@@ -48,6 +56,7 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
     // Provide user feedback
     const elementName = getElementDisplayName(actualType);
     toast.success(`تم إضافة ${elementName}`);
+    console.log('🎉 Element added successfully!');
   }, [saveToHistory]);
 
   const updateElement = useCallback((elementId: string, updates: Partial<CanvasElement>) => {
