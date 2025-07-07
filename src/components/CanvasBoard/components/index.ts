@@ -25,5 +25,13 @@ export { CanvasAISection } from './CanvasAISection';
 export { CanvasToolsSection } from './CanvasToolsSection';
 export { CanvasBottomSection } from './CanvasBottomSection';
 
+// Miro-style components
+export { MiroStyleBoard } from './MiroStyleBoard';
+export { MiroStyleTopBar } from './MiroStyleTopBar';
+export { MiroStyleToolbar } from './MiroStyleToolbar';
+export { MiroStyleCanvas } from './MiroStyleCanvas';
+export { MiroStyleElement } from './MiroStyleElement';
+export { MiroStyleBottomBar } from './MiroStyleBottomBar';
+
 // Types
 export type { CanvasPanelLayoutProps, Layer } from './CanvasPanelTypes';
