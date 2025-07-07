@@ -141,7 +141,6 @@ const SmartPenPanel: React.FC<SmartPenPanelProps> = ({
             <div 
               className="h-1 w-20 rounded"
               style={{
-                backgroundColor: penColor,
                 height: `${lineWidth}px`,
                 backgroundColor: lineStyle === 'solid' ? penColor : 'transparent',
                 borderTop: lineStyle !== 'solid' ? `${lineWidth}px ${lineStyle} ${penColor}` : 'none'
