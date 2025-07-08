@@ -21,8 +21,7 @@ import {
   Type,
   Upload,
   MessageSquare,
-  Plus,
-  Pen
+  Plus
 } from 'lucide-react';
 
 interface ToolPropsBarProps {
@@ -31,22 +30,6 @@ interface ToolPropsBarProps {
   selectedElement?: any;
   onElementUpdate?: (updates: any) => void;
   onAction?: (action: string) => void;
-  // Tool-specific props
-  zoom?: number;
-  canvasPosition?: { x: number; y: number };
-  onZoomChange?: (zoom: number) => void;
-  onPositionChange?: (position: { x: number; y: number }) => void;
-  onFitToScreen?: () => void;
-  onResetView?: () => void;
-  selectedPenMode?: string;
-  lineWidth?: number;
-  lineStyle?: string;
-  onPenModeSelect?: (mode: string) => void;
-  onLineWidthChange?: (width: number) => void;
-  onLineStyleChange?: (style: string) => void;
-  onFileUpload?: (files: File[]) => void;
-  selectedSmartElement?: string;
-  onSmartElementSelect?: (element: string) => void;
 }
 
 export const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
@@ -54,23 +37,7 @@ export const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
   isCollabBarOpen,
   selectedElement,
   onElementUpdate,
-  onAction,
-  // Tool-specific props
-  zoom = 100,
-  canvasPosition = { x: 0, y: 0 },
-  onZoomChange,
-  onPositionChange,
-  onFitToScreen,
-  onResetView,
-  selectedPenMode = 'smart-draw',
-  lineWidth = 2,
-  lineStyle = 'solid',
-  onPenModeSelect,
-  onLineWidthChange,
-  onLineStyleChange,
-  onFileUpload,
-  selectedSmartElement,
-  onSmartElementSelect
+  onAction
 }) => {
   const isCompact = isCollabBarOpen;
 
@@ -169,20 +136,12 @@ export const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
       {/* Line Style */}
       <div>
         <Label className="text-xs">عرض الخط</Label>
-        <Slider 
-          value={[lineWidth]} 
-          onValueChange={(value) => onLineWidthChange?.(value[0])}
-          max={10} 
-          min={1} 
-          step={1} 
-          className="mt-2" 
-        />
-        <div className="text-xs text-gray-500 text-center mt-1">{lineWidth}px</div>
+        <Slider defaultValue={[2]} max={10} min={1} step={1} className="mt-2" />
       </div>
       
       <div>
         <Label className="text-xs">نوع الخط</Label>
-        <Select value={lineStyle} onValueChange={onLineStyleChange}>
+        <Select defaultValue="solid">
           <SelectTrigger className="h-8 text-xs">
             <SelectValue />
           </SelectTrigger>
@@ -198,39 +157,19 @@ export const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
       <Separator />
       <div className="text-xs font-medium">الوظائف الذكية</div>
       <div className="grid gap-2">
-        <Button 
-          size="sm" 
-          variant={selectedPenMode === 'smart-draw' ? 'default' : 'outline'} 
-          className="justify-start text-xs"
-          onClick={() => onPenModeSelect?.('smart-draw')}
-        >
+        <Button size="sm" variant="outline" className="justify-start text-xs">
           <RotateCw className="w-3 h-3 ml-2" />
           الرسم الذكي
         </Button>
-        <Button 
-          size="sm" 
-          variant={selectedPenMode === 'root-connector' ? 'default' : 'outline'} 
-          className="justify-start text-xs"
-          onClick={() => onPenModeSelect?.('root-connector')}
-        >
+        <Button size="sm" variant="outline" className="justify-start text-xs">
           <Move className="w-3 h-3 ml-2" />
           الجذر
         </Button>
-        <Button 
-          size="sm" 
-          variant={selectedPenMode === 'auto-group' ? 'default' : 'outline'} 
-          className="justify-start text-xs"
-          onClick={() => onPenModeSelect?.('auto-group')}
-        >
+        <Button size="sm" variant="outline" className="justify-start text-xs">
           <Group className="w-3 h-3 ml-2" />
           التجميع التلقائي
         </Button>
-        <Button 
-          size="sm" 
-          variant={selectedPenMode === 'eraser' ? 'default' : 'outline'} 
-          className="justify-start text-xs"
-          onClick={() => onPenModeSelect?.('eraser')}
-        >
+        <Button size="sm" variant="outline" className="justify-start text-xs">
           <Trash2 className="w-3 h-3 ml-2" />
           أداة المسح
         </Button>
@@ -245,48 +184,21 @@ export const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
       <div className="grid grid-cols-3 gap-2">
         <div>
           <Label className="text-xs">درجة القرب</Label>
-          <Input 
-            type="number" 
-            value={zoom} 
-            onChange={(e) => onZoomChange?.(parseInt(e.target.value) || 100)}
-            className="h-8 text-xs" 
-          />
+          <Input type="number" defaultValue={100} className="h-8 text-xs" />
         </div>
         <div>
           <Label className="text-xs">الأفقي</Label>
-          <Input 
-            type="number" 
-            value={canvasPosition.x} 
-            onChange={(e) => onPositionChange?.({ 
-              ...canvasPosition, 
-              x: parseInt(e.target.value) || 0 
-            })}
-            className="h-8 text-xs" 
-          />
+          <Input type="number" defaultValue={0} className="h-8 text-xs" />
         </div>
         <div>
           <Label className="text-xs">العمودي</Label>
-          <Input 
-            type="number" 
-            value={canvasPosition.y} 
-            onChange={(e) => onPositionChange?.({ 
-              ...canvasPosition, 
-              y: parseInt(e.target.value) || 0 
-            })}
-            className="h-8 text-xs" 
-          />
+          <Input type="number" defaultValue={0} className="h-8 text-xs" />
         </div>
       </div>
 
       <div>
         <Label className="text-xs">نسبة التكبير</Label>
-        <Select value={zoom.toString()} onValueChange={(value) => {
-          if (value === 'fit') {
-            onFitToScreen?.();
-          } else {
-            onZoomChange?.(parseInt(value));
-          }
-        }}>
+        <Select defaultValue="100">
           <SelectTrigger className="h-8 text-xs">
             <SelectValue />
           </SelectTrigger>
@@ -300,59 +212,29 @@ export const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
           </SelectContent>
         </Select>
       </div>
-
-      <div className="flex gap-2">
-        <Button size="sm" onClick={onFitToScreen} className="flex-1 text-xs">
-          <Maximize className="w-3 h-3 ml-1" />
-          ملاءمة الشاشة
-        </Button>
-        <Button size="sm" variant="outline" onClick={onResetView} className="flex-1 text-xs">
-          إعادة تعيين
-        </Button>
-      </div>
     </div>
   );
 
-  const renderFileTools = () => {
-    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const files = event.target.files;
-      if (files && files.length > 0) {
-        onFileUpload?.(Array.from(files));
-      }
-    };
+  const renderFileTools = () => (
+    <div className="space-y-4">
+      <div className="text-sm font-medium text-gray-700">رفع المرفقات</div>
+      
+      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+        <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+        <div className="text-xs text-gray-500">اسحب الملفات هنا أو انقر للاستعراض</div>
+      </div>
 
-    return (
-      <div className="space-y-4">
-        <div className="text-sm font-medium text-gray-700">رفع المرفقات</div>
-        
-        <div 
-          className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-400 transition-colors"
-          onClick={() => document.getElementById('file-upload')?.click()}
-        >
-          <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-          <div className="text-xs text-gray-500">اسحب الملفات هنا أو انقر للاستعراض</div>
-          <input 
-            id="file-upload"
-            type="file" 
-            multiple 
-            className="hidden" 
-            onChange={handleFileUpload}
-            accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-          />
-        </div>
-
-        <div className="max-h-32 overflow-y-auto">
-          <div className="text-xs font-medium mb-2">الملفات المرفوعة</div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 p-2 border rounded text-xs">
-              <div className="w-2 h-2 bg-blue-500 rounded"></div>
-              <span>تقرير_المشروع.pdf</span>
-            </div>
+      <div className="max-h-32 overflow-y-auto">
+        <div className="text-xs font-medium mb-2">الملفات المرفوعة</div>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 p-2 border rounded text-xs">
+            <div className="w-2 h-2 bg-blue-500 rounded"></div>
+            <span>تقرير_المشروع.pdf</span>
           </div>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
 
   const renderTextTools = () => (
     <div className="space-y-4">
@@ -397,126 +279,36 @@ export const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
     </div>
   );
 
-  const renderShapeTools = () => {
-    const shapes = [
-      { id: 'rectangle', label: 'مستطيل', icon: <div className="w-4 h-4 border-2 border-gray-600"></div> },
-      { id: 'circle', label: 'دائرة', icon: <div className="w-4 h-4 rounded-full border-2 border-gray-600"></div> },
-      { id: 'triangle', label: 'مثلث', icon: <div className="w-0 h-0 border-l-2 border-r-2 border-b-4 border-transparent border-b-gray-600"></div> },
-      { id: 'sticky', label: 'ملاحظة لاصقة', icon: <MessageSquare className="w-4 h-4" /> }
-    ];
-
-    return (
-      <div className="space-y-4">
-        <div className="text-sm font-medium text-gray-700">أداة الأشكال</div>
-        
-        <div className="grid grid-cols-4 gap-2">
-          {shapes.map(shape => (
-            <Button 
-              key={shape.id}
-              size="sm" 
-              variant={selectedSmartElement === shape.id ? "default" : "outline"} 
-              className="aspect-square p-1"
-              onClick={() => onSmartElementSelect?.(shape.id)}
-              title={shape.label}
-            >
-              {shape.icon}
-            </Button>
-          ))}
-        </div>
-
-        <div>
-          <Label className="text-xs">اللون</Label>
-          <div className="flex gap-2 mt-1">
-            {['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'].map(color => (
-              <div 
-                key={color}
-                className="w-6 h-6 rounded border-2 border-gray-300 cursor-pointer hover:scale-110 transition-transform"
-                style={{ backgroundColor: color }}
-                onClick={() => {
-                  console.log('Color selected:', color);
-                  // Handle color selection
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <Label className="text-xs">الشكل المحدد</Label>
-          <div className="text-xs text-gray-500 p-2 bg-gray-50 rounded">
-            {shapes.find(s => s.id === selectedSmartElement)?.label || 'لم يتم تحديد شكل'}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderCommentTools = () => (
+  const renderShapeTools = () => (
     <div className="space-y-4">
-      <div className="text-sm font-medium text-gray-700">أداة التعليق</div>
+      <div className="text-sm font-medium text-gray-700">أداة الأشكال</div>
       
-      <div className="flex gap-2">
-        <Button size="sm" variant="outline" className="text-xs flex-1">
-          <MessageSquare className="w-3 h-3 ml-1" />
-          تعليق نصي
+      <div className="grid grid-cols-4 gap-2">
+        <Button size="sm" variant="outline" className="aspect-square p-1">
+          <div className="w-4 h-4 border-2 border-gray-600"></div>
         </Button>
-        <Button size="sm" variant="outline" className="text-xs flex-1">
-          🎤
-          تعليق صوتي
+        <Button size="sm" variant="outline" className="aspect-square p-1">
+          <div className="w-4 h-4 rounded-full border-2 border-gray-600"></div>
+        </Button>
+        <Button size="sm" variant="outline" className="aspect-square p-1">
+          <div className="w-0 h-0 border-l-2 border-r-2 border-b-4 border-transparent border-b-gray-600"></div>
+        </Button>
+        <Button size="sm" variant="outline" className="aspect-square p-1">
+          <MessageSquare className="w-4 h-4" />
         </Button>
       </div>
 
       <div>
-        <Label className="text-xs">قلم التعليق</Label>
+        <Label className="text-xs">اللون</Label>
         <div className="flex gap-2 mt-1">
-          <Button size="sm" variant="outline" className="text-xs flex-1">
-            <Pen className="w-3 h-3 ml-1" />
-            تفعيل
-          </Button>
-          <div className="w-6 h-6 rounded-full bg-blue-500 border cursor-pointer" title="لون القلم"></div>
+          {['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'].map(color => (
+            <div 
+              key={color}
+              className="w-6 h-6 rounded border-2 border-gray-300 cursor-pointer"
+              style={{ backgroundColor: color }}
+            />
+          ))}
         </div>
-      </div>
-
-      <div className="bg-blue-50 p-3 rounded-lg text-xs text-blue-800">
-        <div>💬 انقر لإضافة تعليق</div>
-        <div>🎨 استخدم قلم التعليق للرسم التوضيحي</div>
-        <div>💾 اضغط تطبيق لحفظ التعليق</div>
-      </div>
-    </div>
-  );
-
-  const renderSmartElementTools = () => (
-    <div className="space-y-4">
-      <div className="text-sm font-medium text-gray-700">العناصر الذكية</div>
-      
-      <div className="grid gap-2">
-        <Button size="sm" variant="outline" className="justify-start text-xs">
-          <Move className="w-3 h-3 ml-2" />
-          الجذر
-        </Button>
-        <Button size="sm" variant="outline" className="justify-start text-xs">
-          🧠
-          محرك العصف الذهني
-        </Button>
-        <Button size="sm" variant="outline" className="justify-start text-xs">
-          📅
-          الخط الزمني
-        </Button>
-        <Button size="sm" variant="outline" className="justify-start text-xs">
-          🗺️
-          الخرائط الذهنية
-        </Button>
-        <Button size="sm" variant="outline" className="justify-start text-xs">
-          🎯
-          أداة ثنك بورد الذكية
-        </Button>
-      </div>
-
-      <div className="bg-purple-50 p-3 rounded-lg text-xs text-purple-800">
-        <div>🔗 الجذر: ربط العناصر ببعضها</div>
-        <div>🧠 العصف الذهني: أدوات إبداعية</div>
-        <div>📅 الخط الزمني: جدولة المشاريع</div>
-        <div>🗺️ الخرائط: تنظيم الأفكار</div>
       </div>
     </div>
   );
@@ -532,14 +324,10 @@ export const ToolPropsBar: React.FC<ToolPropsBarProps> = ({
         return renderZoomTools();
       case 'upload':
         return renderFileTools();
-      case 'comment':
-        return renderCommentTools();
       case 'text':
         return renderTextTools();
       case 'shape':
         return renderShapeTools();
-      case 'smart-element':
-        return renderSmartElementTools();
       default:
         return (
           <div className="text-center text-gray-500 py-8 text-sm">

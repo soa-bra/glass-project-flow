@@ -47,9 +47,6 @@ export const useCanvasInteractionHandlers = (
         handleSmartPenStart(e, zoom, canvasPosition, snapEnabled);
         break;
       case 'shape':
-        const shapeType = selectedSmartElement || 'rectangle';
-        handleDragCreate(e, shapeType, zoom, canvasPosition, snapEnabled);
-        break;
       case 'smart-element':
       case 'text-box':
         handleDragCreate(e, selectedTool, zoom, canvasPosition, snapEnabled);
@@ -82,12 +79,7 @@ export const useCanvasInteractionHandlers = (
         const y = Math.min(startY, endY);
         addElement(x, y, type, selectedSmartElement, Math.max(width, 20), Math.max(height, 20));
       });
-    } else if (selectedTool === 'shape' && isDrawing) {
-      const shapeType = selectedSmartElement || 'rectangle';
-      handleDragCreateEnd(shapeType, (type, x, y, width, height) => {
-        addElement(x, y, shapeType, selectedSmartElement, Math.max(width, 30), Math.max(height, 30));
-      });
-    } else if (['smart-element', 'text-box'].includes(selectedTool) && isDrawing) {
+    } else if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && isDrawing) {
       handleDragCreateEnd(selectedTool, (type, x, y, width, height) => {
         addElement(x, y, type, selectedSmartElement, Math.max(width, 30), Math.max(height, 30));
       });

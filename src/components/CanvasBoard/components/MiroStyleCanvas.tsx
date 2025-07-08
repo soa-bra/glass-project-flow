@@ -40,44 +40,16 @@ export const MiroStyleCanvas: React.FC<MiroStyleCanvasProps> = ({
         return 'grab';
       case 'zoom':
         return 'zoom-in';
-      case 'smart-pen':
+      case 'pen':
         return 'crosshair';
       case 'text':
       case 'sticky':
-      case 'comment':
-      case 'shape':
-      case 'smart-element':
+      case 'rectangle':
+      case 'circle':
         return 'crosshair';
-      case 'upload':
-        return 'copy';
       case 'select':
       default:
         return 'default';
-    }
-  };
-
-  const getToolHint = () => {
-    switch (selectedTool) {
-      case 'select':
-        return 'انقر لتحديد عنصر أو اسحب لتحديد متعدد';
-      case 'smart-pen':
-        return 'اسحب للرسم الذكي أو ربط العناصر';
-      case 'text':
-        return 'انقر لإضافة نص';
-      case 'shape':
-        return 'اسحب لإنشاء شكل';
-      case 'comment':
-        return 'انقر لإضافة تعليق';
-      case 'upload':
-        return 'انقر لرفع ملف';
-      case 'smart-element':
-        return 'انقر لإضافة عنصر ذكي';
-      case 'hand':
-        return 'اسحب للتنقل';
-      case 'zoom':
-        return 'انقر للتكبير';
-      default:
-        return '';
     }
   };
 
@@ -122,25 +94,13 @@ export const MiroStyleCanvas: React.FC<MiroStyleCanvasProps> = ({
           />
         ))}
         
-        {/* Tool Hint */}
-        {getToolHint() && (
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-30">
-            <div className="bg-black/70 text-white px-4 py-2 rounded-lg text-sm font-arabic">
-              {getToolHint()}
-            </div>
+        {/* Selection Preview for drawing tools */}
+        {(selectedTool === 'rectangle' || selectedTool === 'circle' || selectedTool === 'sticky') && (
+          <div className="absolute pointer-events-none">
+            {/* This will be handled by drawing preview component */}
           </div>
         )}
       </div>
-
-      {/* Status indicators */}
-      {selectedTool !== 'select' && (
-        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 text-sm border border-gray-200">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <span>الأداة النشطة: {selectedTool}</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
