@@ -36,7 +36,6 @@ export const useCanvasInteractionHandlers = (
   // Canvas interaction handlers - optimized for performance
   const wrappedHandleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    console.log('🎯 Canvas mouse down:', selectedTool);
     
     // Route to appropriate handler based on tool
     switch (selectedTool) {
@@ -88,7 +87,6 @@ export const useCanvasInteractionHandlers = (
   
   const wrappedHandleCanvasClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    console.log('🎯 Canvas click:', selectedTool);
     
     // Handle different tool behaviors
     if (selectedTool === 'select') {
@@ -101,44 +99,35 @@ export const useCanvasInteractionHandlers = (
     // Calculate position for single click tools
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) {
-      console.log('❌ Canvas ref not available');
       return;
     }
 
     const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
     const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
     
-    console.log('📍 Click position:', { x, y, tool: selectedTool });
-    
     // Route to appropriate creation method
     switch (selectedTool) {
       case 'text':
-        console.log('✏️ Creating text element');
         handleTextClick(e, zoom, canvasPosition, (type, textX, textY) => {
-          console.log('📝 Text element created at:', { textX, textY });
           addElement(textX, textY, type, selectedSmartElement);
         }, snapEnabled);
         break;
       case 'sticky':
       case 'comment':
       case 'upload':
-        console.log('📌 Creating single-click element:', selectedTool);
         addElement(x, y, selectedTool, selectedSmartElement);
         break;
       case 'smart-element':
         const elementType = selectedSmartElement || 'timeline';
-        console.log('🧠 Creating smart element:', elementType);
         addElement(x, y, 'smart-element', elementType);
         break;
       default:
-        console.log('🚫 No click action for tool:', selectedTool);
         break;
     }
   }, [selectedTool, zoom, canvasPosition, snapEnabled, selectedSmartElement, addElement, handleTextClick, canvasRef, setSelectedElements, setSelectedElementId]);
 
   // Element interaction handlers - تحسين معالجات العناصر
   const wrappedHandleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
-    console.log('🎯 Element mouse down:', elementId, 'tool:', selectedTool);
     enhancedElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId, selectedElements, setSelectedElements);
   }, [enhancedElementMouseDown, selectedTool, elements, zoom, canvasPosition, selectedElements, setSelectedElementId, setSelectedElements]);
 
@@ -150,11 +139,9 @@ export const useCanvasInteractionHandlers = (
   const handleResizeMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
     if (selectedTool !== 'select') return;
     e.stopPropagation();
-    console.log('🎯 Resize started:', handle);
   }, [selectedTool]);
 
   const handleResizeMouseMove = useCallback((e: React.MouseEvent) => {
-    console.log('🎯 Resize move');
   }, []);
 
   return {

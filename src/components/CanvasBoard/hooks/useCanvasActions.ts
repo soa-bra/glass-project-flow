@@ -38,7 +38,7 @@ export const useCanvasActions = (projectId: string, userId: string) => {
       createdAt: new Date().toISOString()
     };
     
-    console.log('تحويل العناصر إلى مشروع:', projectData);
+    // تحويل العناصر إلى مشروع
     toast.success('تم تحويل العناصر إلى مشروع');
   }, []);
 

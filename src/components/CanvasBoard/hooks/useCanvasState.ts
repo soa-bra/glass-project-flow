@@ -110,7 +110,7 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
   };
 
   const handleAlignToGrid = () => {
-    console.log('محاذاة العناصر للشبكة');
+    // محاذاة العناصر للشبكة
   };
 
   const handleLayerUpdate = (newLayers: any[]) => {
@@ -122,19 +122,19 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
   };
 
   const handleGroup = () => {
-    console.log('تجميع العناصر');
+    // تجميع العناصر
   };
 
   const handleUngroup = () => {
-    console.log('إلغاء تجميع العناصر');
+    // إلغاء تجميع العناصر
   };
 
   const handleLock = () => {
-    console.log('قفل العناصر');
+    // قفل العناصر
   };
 
   const handleUnlock = () => {
-    console.log('إلغاء قفل العناصر');
+    // إلغاء قفل العناصر
   };
 
   return {

@@ -21,12 +21,6 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     deleteElement: canvasState.deleteElement
   });
 
-  console.log('🎨 CanvasBoardContents state:', {
-    selectedTool: canvasState.selectedTool,
-    selectedSmartElement: canvasState.selectedSmartElement,
-    elementsCount: canvasState.elements.length,
-    showDefaultView: canvasState.showDefaultView
-  });
 
   // Create wrapper functions to match CanvasWrapper interface
   const wrappedHandleElementMouseDown = (e: React.MouseEvent, elementId: string) => {
@@ -112,7 +106,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         setSnapEnabled={canvasState.setSnapEnabled}
         handleSmartElementSelect={eventHandlers.handleSmartElementSelect}
         handleGridSizeChange={canvasState.handleGridSizeChange}
-        handleGridShapeChange={(shape) => console.log('Grid shape:', shape)}
+        handleGridShapeChange={(shape) => {}}
         handleAlignToGrid={canvasState.handleAlignToGrid}
         handleLayerUpdate={canvasState.handleLayerUpdate}
         handleLayerSelect={canvasState.handleLayerSelect}
@@ -127,16 +121,16 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         updateElement={canvasState.updateElement}
         deleteElement={canvasState.deleteElement}
         onPositionChange={canvasState.setCanvasPosition}
-        onFitToScreen={() => console.log('Fit to screen')}
-        onResetView={() => console.log('Reset view')}
+        onFitToScreen={() => {}}
+        onResetView={() => {}}
         onPanSpeedChange={canvasState.setPanSpeed}
         onLineWidthChange={canvasState.setLineWidth}
         onLineStyleChange={canvasState.setLineStyle}
         onPenModeSelect={canvasState.setSelectedPenMode}
-        onFileUpload={(files) => console.log('Files uploaded:', files)}
-        onNew={() => console.log('New canvas')}
-        onOpen={() => console.log('Open canvas')}
-        onSmartProjectGenerate={() => console.log('Smart project generate')}
+        onFileUpload={(files) => {}}
+        onNew={() => {}}
+        onOpen={() => {}}
+        onSmartProjectGenerate={() => {}}
       />
     </div>
   );

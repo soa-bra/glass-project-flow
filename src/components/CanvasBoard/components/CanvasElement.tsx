@@ -24,14 +24,6 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   onElementMouseUp,
   onResizeMouseDown
 }) => {
-  console.log('🎨 CanvasElement render:', {
-    id: element.id,
-    type: element.type,
-    selected: selectedElementId === element.id,
-    tool: selectedTool,
-    position: element.position,
-    size: element.size
-  });
 
   return (
     <div key={element.id}>
@@ -50,14 +42,14 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
           e.stopPropagation();
           if (selectedTool === 'select') {
             onElementSelect(element.id);
-            console.log('Element selected:', element.type, element.id);
+            
           }
         }}
         onMouseDown={(e) => {
           if (selectedTool === 'select' && !element.locked) {
             e.stopPropagation();
             onElementMouseDown(e, element.id);
-            console.log('Element mouse down:', element.id);
+            
           }
         }}
         onMouseMove={onElementMouseMove}
