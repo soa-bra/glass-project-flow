@@ -15,7 +15,7 @@ export const useCanvasLayerState = () => {
   ]);
   const [selectedLayerId, setSelectedLayerId] = useState<string>('layer-1');
 
-  const handleLayerUpdate = (newLayers: any[]) => {
+  const handleLayerUpdate = (newLayers: Layer[]) => {
     setLayers(newLayers);
   };
 

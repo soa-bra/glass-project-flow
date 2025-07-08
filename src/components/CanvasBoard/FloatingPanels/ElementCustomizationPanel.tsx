@@ -44,7 +44,7 @@ const ElementCustomizationPanel: React.FC<ElementCustomizationPanelProps> = ({
   if (!visible || !selectedElement) return null;
 
   return (
-    <div className="fixed top-4 left-4 z-40" style={{ width: '6%' }}>
+    <div className="fixed top-4 left-4 z-40 w-80">
       <Card className="bg-soabra-new-canvas-floating-panels rounded-[32px] shadow-sm border-0">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-semibold text-soabra-new-canvas-text font-arabic">

@@ -38,7 +38,7 @@ const SmartAssistantPanel: React.FC<SmartAssistantPanelProps> = ({ visible = tru
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 z-50" style={{ width: '6%' }}>
+    <div className="fixed bottom-4 left-4 z-50 w-80">
       <Card className="bg-soabra-new-canvas-floating-panels rounded-[32px] shadow-sm border-0">
         <CardContent className="p-6 space-y-4">
           {/* أزرار الأوامر الذكية */}

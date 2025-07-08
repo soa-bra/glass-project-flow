@@ -168,7 +168,7 @@ const LayersPanel: React.FC<LayersPanelProps> = ({
   if (!visible) return null;
 
   return (
-    <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40" style={{ width: '6%' }}>
+    <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 w-80">
       <Card className="bg-soabra-new-canvas-floating-panels rounded-[32px] shadow-sm border-0">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-semibold text-soabra-new-canvas-text font-arabic">

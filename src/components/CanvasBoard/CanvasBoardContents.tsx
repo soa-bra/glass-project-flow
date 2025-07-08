@@ -86,7 +86,10 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
       <SmartAssistantPanel visible={true} />
       <LayersPanel 
         visible={true}
-        layers={canvasState.layers}
+        layers={canvasState.layers.map(layer => ({
+          ...layer,
+          type: 'element' as const
+        }))}
         selectedLayerId={canvasState.selectedLayerId}
         onLayerUpdate={canvasState.handleLayerUpdate}
         onLayerSelect={canvasState.handleLayerSelect}
