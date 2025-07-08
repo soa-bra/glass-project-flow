@@ -24,6 +24,11 @@ export const MiroStyleBoard: React.FC<MiroStyleBoardProps> = ({
   const [isAIPanelExpanded, setIsAIPanelExpanded] = useState(false);
   const [isInspectorExpanded, setIsInspectorExpanded] = useState(true);
 
+  // Tool-specific states
+  const [selectedPenMode, setSelectedPenMode] = useState('smart-draw');
+  const [lineWidth, setLineWidth] = useState(2);
+  const [lineStyle, setLineStyle] = useState('solid');
+
   // Map old tool names to new ones
   const handleToolSelect = (tool: string) => {
     let mappedTool = tool;
@@ -190,6 +195,25 @@ export const MiroStyleBoard: React.FC<MiroStyleBoardProps> = ({
           console.log('Tool action:', action);
           // Handle tool actions like cut, copy, paste, delete, etc.
         }}
+        // Tool-specific props
+        zoom={canvasState.zoom}
+        canvasPosition={canvasState.canvasPosition}
+        onZoomChange={canvasState.setZoom}
+        onPositionChange={canvasState.setCanvasPosition}
+        onFitToScreen={handleFitToScreen}
+        onResetView={handleResetZoom}
+        selectedPenMode={selectedPenMode}
+        lineWidth={lineWidth}
+        lineStyle={lineStyle}
+        onPenModeSelect={setSelectedPenMode}
+        onLineWidthChange={setLineWidth}
+        onLineStyleChange={setLineStyle}
+        onFileUpload={(files) => {
+          console.log('Files uploaded:', files);
+          // Handle file upload logic
+        }}
+        selectedSmartElement={canvasState.selectedSmartElement}
+        onSmartElementSelect={canvasState.setSelectedSmartElement}
       />
 
       {/* Right Top (0-75%) - Inspector */}
