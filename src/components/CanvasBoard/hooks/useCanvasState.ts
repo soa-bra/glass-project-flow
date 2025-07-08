@@ -1,28 +1,23 @@
-import { useState } from 'react';
 import { useCanvasHistory } from './useCanvasHistory';
 import { useCanvasElements } from './useCanvasElements';
 import { useCanvasActions } from './useCanvasActions';
 import { useCanvasInteraction } from './useCanvasInteraction';
 import { useKeyboardControls } from './useKeyboardControls';
+import { useCanvasToolState } from './useCanvasToolState';
+import { useCanvasViewState } from './useCanvasViewState';
+import { useCanvasSelectionState } from './useCanvasSelectionState';
+import { useCanvasLayerState } from './useCanvasLayerState';
+import { useCanvasToolActions } from './useCanvasToolActions';
+import { useCanvasInteractionWrappers } from './useCanvasInteractionWrappers';
 
 export const useCanvasState = (projectId = 'default', userId = 'user1') => {
-  const [selectedTool, setSelectedTool] = useState<string>('select');
-  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
-  const [selectedElements, setSelectedElements] = useState<string[]>([]);
-  const [showGrid, setShowGrid] = useState<boolean>(true);
-  const [snapEnabled, setSnapEnabled] = useState<boolean>(true);
-  const [gridSize, setGridSize] = useState<number>(20);
-  const [showDefaultView, setShowDefaultView] = useState<boolean>(true);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [zoom, setZoom] = useState<number>(100);
-  const [canvasPosition, setCanvasPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [selectedSmartElement, setSelectedSmartElement] = useState<string>('brainstorm');
-  const [layers, setLayers] = useState([
-    { id: 'layer-1', name: 'الطبقة الأساسية', visible: true, locked: false, elements: [] }
-  ]);
-  const [selectedLayerId, setSelectedLayerId] = useState<string>('layer-1');
+  // Use specialized state hooks
+  const toolState = useCanvasToolState();
+  const viewState = useCanvasViewState();
+  const selectionState = useCanvasSelectionState();
+  const layerState = useCanvasLayerState();
 
-  // Use specialized hooks
+  // Use specialized functionality hooks
   const { history, historyIndex, saveToHistory, undo, redo } = useCanvasHistory();
   const { elements, setElements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
   const { saveCanvas, exportCanvas, convertToProject } = useCanvasActions(projectId, userId);
@@ -44,9 +39,36 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     handleResizeMouseMove
   } = useCanvasInteraction();
 
-  // Wrapper functions for hooks that need current state
-  const wrappedAddElement = (x: number, y: number, width?: number, height?: number) => {
-    addElement(x, y, selectedTool, selectedSmartElement, width, height);
+  // Tool actions
+  const toolActions = useCanvasToolActions(viewState.gridSize, viewState.setGridSize);
+
+  // Interaction wrappers
+  const interactionWrappers = useCanvasInteractionWrappers(
+    toolState.selectedTool,
+    toolState.selectedSmartElement,
+    selectionState.selectedElementId,
+    elements,
+    viewState.zoom,
+    viewState.canvasPosition,
+    viewState.snapEnabled,
+    addElement,
+    updateElement,
+    selectionState.setSelectedElementId,
+    handleCanvasMouseDown,
+    handleCanvasMouseMove,
+    handleCanvasMouseUp,
+    handleCanvasClick,
+    handleElementMouseDown,
+    handleElementMouseMove,
+    handleResizeMouseDown,
+    handleResizeMouseMove
+  );
+
+  // Wrapper functions for actions
+  const wrappedDeleteElement = (elementId: string) => {
+    deleteElement(elementId);
+    selectionState.setSelectedElementId(null);
+    selectionState.setSelectedElements([]);
   };
 
   const wrappedUndo = () => undo(elements, setElements);
@@ -55,127 +77,45 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
   const wrappedExportCanvas = () => exportCanvas(elements);
   const wrappedConvertToProject = () => convertToProject(elements);
 
-  const wrappedHandleCanvasMouseDown = (e: React.MouseEvent) => 
-    handleCanvasMouseDown(e, selectedTool, zoom, canvasPosition, snapEnabled);
-  
-  const wrappedHandleCanvasMouseMove = (e: React.MouseEvent) => 
-    handleCanvasMouseMove(e, zoom, canvasPosition, snapEnabled);
-  
-  const wrappedHandleCanvasMouseUp = () => 
-    handleCanvasMouseUp(wrappedAddElement);
-  
-  const wrappedHandleCanvasClick = (e: React.MouseEvent) => 
-    handleCanvasClick(e, selectedTool, zoom, canvasPosition, wrappedAddElement, snapEnabled);
-  
-  const wrappedHandleElementMouseDown = (e: React.MouseEvent, elementId: string) => 
-    handleElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId);
-  
-  const wrappedHandleElementMouseMove = (e: React.MouseEvent) => 
-    handleElementMouseMove(e, selectedElementId, zoom, canvasPosition, updateElement, snapEnabled);
-  
-  const wrappedHandleResizeMouseDown = (e: React.MouseEvent, handle: string) => 
-    handleResizeMouseDown(e, handle, selectedTool);
-  
-  const wrappedHandleResizeMouseMove = (e: React.MouseEvent) => 
-    handleResizeMouseMove(e, selectedElementId, elements, zoom, canvasPosition, updateElement);
-
-  const wrappedDeleteElement = (elementId: string) => {
-    deleteElement(elementId);
-    setSelectedElementId(null);
-    setSelectedElements([]);
-  };
-
-  // Update selectedElements when selectedElementId changes
-  const updateSelectedElements = (elementId: string | null) => {
-    if (elementId) {
-      setSelectedElements([elementId]);
-    } else {
-      setSelectedElements([]);
-    }
-    setSelectedElementId(elementId);
-  };
-
-  
+  // Keyboard controls
   useKeyboardControls({
-    selectedElementId,
+    selectedElementId: selectionState.selectedElementId,
     elements,
     updateElement,
     deleteElement: wrappedDeleteElement,
-    setSelectedElementId
+    setSelectedElementId: selectionState.setSelectedElementId
   });
 
-  
-  const handleGridSizeChange = (size: number) => {
-    setGridSize(size);
-  };
-
-  const handleAlignToGrid = () => {};
-
-  const handleLayerUpdate = (newLayers: any[]) => {
-    setLayers(newLayers);
-  };
-
-  const handleLayerSelect = (layerId: string) => {
-    setSelectedLayerId(layerId);
-  };
-
-  const handleGroup = () => {};
-  const handleUngroup = () => {};
-  const handleLock = () => {};
-  const handleUnlock = () => {};
-
   return {
-    // State
-    selectedTool,
-    selectedElementId,
-    selectedElements,
-    showGrid,
-    snapEnabled,
-    gridSize,
+    // Tool state
+    ...toolState,
+    
+    // View state
+    ...viewState,
+    
+    // Selection state
+    ...selectionState,
+    
+    // Layer state
+    ...layerState,
+    
+    // Canvas functionality
     elements,
-    showDefaultView,
-    searchQuery,
-    zoom,
-    canvasPosition,
+    setElements,
     canvasRef,
     history,
     historyIndex,
     isDrawing,
     drawStart,
     drawEnd,
-    selectedSmartElement,
     isDragging,
     isResizing,
-    layers,
-    selectedLayerId,
     
-    // Setters
-    setSelectedTool,
-    setSelectedElementId: updateSelectedElements,
-    setSelectedElements,
-    setShowGrid,
-    setSnapEnabled,
-    setGridSize,
-    setElements,
-    setShowDefaultView,
-    setSearchQuery,
-    setZoom,
-    setCanvasPosition,
-    setSelectedSmartElement,
-    setLayers,
-    setSelectedLayerId,
+    // Interaction handlers
+    ...interactionWrappers,
+    handleElementMouseUp,
     
     // Actions
-    addElement: wrappedAddElement,
-    handleCanvasClick: wrappedHandleCanvasClick,
-    handleCanvasMouseDown: wrappedHandleCanvasMouseDown,
-    handleCanvasMouseMove: wrappedHandleCanvasMouseMove,
-    handleCanvasMouseUp: wrappedHandleCanvasMouseUp,
-    handleElementMouseDown: wrappedHandleElementMouseDown,
-    handleElementMouseMove: wrappedHandleElementMouseMove,
-    handleElementMouseUp,
-    handleResizeMouseDown: wrappedHandleResizeMouseDown,
-    handleResizeMouseMove: wrappedHandleResizeMouseMove,
     undo: wrappedUndo,
     redo: wrappedRedo,
     saveCanvas: wrappedSaveCanvas,
@@ -184,14 +124,7 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     updateElement,
     deleteElement: wrappedDeleteElement,
     
-    // New tool handlers
-    handleGridSizeChange,
-    handleAlignToGrid,
-    handleLayerUpdate,
-    handleLayerSelect,
-    handleGroup,
-    handleUngroup,
-    handleLock,
-    handleUnlock
+    // Tool actions
+    ...toolActions,
   };
 };
