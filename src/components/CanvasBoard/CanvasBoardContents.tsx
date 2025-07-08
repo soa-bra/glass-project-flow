@@ -3,7 +3,6 @@ import { useEnhancedCanvasState } from './hooks/useEnhancedCanvasState';
 import { CanvasBoardContentsProps } from './types';
 import { DefaultView } from './components';
 import { useCanvasEventHandlers } from './components/CanvasEventHandlers';
-import { CleanCanvasPanelLayout } from './components/CleanCanvasPanelLayout';
 import { CanvasWrapper } from './components/CanvasWrapper';
 import { 
   SmartAssistantPanel,
@@ -106,63 +105,6 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         onToolAction={(action, data) => console.log(action, data)}
       />
       
-      <CleanCanvasPanelLayout
-        historyIndex={canvasState.historyIndex}
-        history={canvasState.history}
-        onUndo={canvasState.undo}
-        onRedo={canvasState.redo}
-        onSave={canvasState.saveCanvas}
-        onExport={canvasState.exportCanvas}
-        onSettings={eventHandlers.handleSettings}
-        selectedTool={canvasState.selectedTool}
-        selectedElementId={canvasState.selectedElementId}
-        selectedElements={canvasState.selectedElements}
-        zoom={canvasState.zoom}
-        selectedSmartElement={canvasState.selectedSmartElement}
-        showGrid={canvasState.showGrid}
-        snapEnabled={canvasState.snapEnabled}
-        gridSize={canvasState.gridSize}
-        gridShape="dots"
-        layers={canvasState.layers}
-        selectedLayerId={canvasState.selectedLayerId}
-        elements={canvasState.elements}
-        canvasPosition={canvasState.canvasPosition || { x: 0, y: 0 }}
-        panSpeed={canvasState.panSpeed}
-        lineWidth={canvasState.lineWidth}
-        lineStyle={canvasState.lineStyle}
-        selectedPenMode={canvasState.selectedPenMode}
-        setSelectedTool={canvasState.setSelectedTool}
-        setZoom={canvasState.setZoom}
-        setShowGrid={canvasState.setShowGrid}
-        setSnapEnabled={canvasState.setSnapEnabled}
-        handleSmartElementSelect={eventHandlers.handleSmartElementSelect}
-        handleGridSizeChange={canvasState.handleGridSizeChange}
-        handleGridShapeChange={(shape) => {}}
-        handleAlignToGrid={canvasState.handleAlignToGrid}
-        handleLayerUpdate={canvasState.handleLayerUpdate}
-        handleLayerSelect={canvasState.handleLayerSelect}
-        handleCopy={canvasState.handleCopy}
-        handleCut={canvasState.handleCut}
-        handlePaste={canvasState.handlePaste}
-        handleDeleteSelected={eventHandlers.handleDeleteSelected}
-        handleGroup={canvasState.handleGroup}
-        handleUngroup={canvasState.handleUngroup}
-        handleLock={canvasState.handleLock}
-        handleUnlock={canvasState.handleUnlock}
-        updateElement={canvasState.updateElement}
-        deleteElement={canvasState.deleteElement}
-        onPositionChange={canvasState.setCanvasPosition}
-        onFitToScreen={() => {}}
-        onResetView={() => {}}
-        onPanSpeedChange={canvasState.setPanSpeed}
-        onLineWidthChange={canvasState.setLineWidth}
-        onLineStyleChange={canvasState.setLineStyle}
-        onPenModeSelect={canvasState.setSelectedPenMode}
-        onFileUpload={(files) => {}}
-        onNew={() => {}}
-        onOpen={() => {}}
-        onSmartProjectGenerate={() => {}}
-      />
     </div>
   );
 };
