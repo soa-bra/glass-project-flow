@@ -3,9 +3,12 @@ import { CanvasElement } from '../types';
 export interface Layer {
   id: string;
   name: string;
+  type: 'layer' | 'folder';
   visible: boolean;
   locked: boolean;
-  elements: string[];
+  elements?: string[];
+  children?: Layer[];
+  expanded?: boolean;
 }
 
 export interface CanvasPanelLayoutProps {

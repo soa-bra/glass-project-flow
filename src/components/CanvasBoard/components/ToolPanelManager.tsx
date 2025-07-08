@@ -16,13 +16,7 @@ import {
 } from '../panels/enhanced';
 import { CanvasElement } from '../types';
 
-interface Layer {
-  id: string;
-  name: string;
-  visible: boolean;
-  locked: boolean;
-  elements: string[];
-}
+import { Layer } from './CanvasPanelTypes';
 
 interface ToolPanelManagerProps {
   selectedTool: string;

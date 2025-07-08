@@ -2,13 +2,7 @@ import React from 'react';
 import { CleanCanvasPanelLayout } from './CleanCanvasPanelLayout';
 import { CanvasElement } from '../types';
 
-interface Layer {
-  id: string;
-  name: string;
-  visible: boolean;
-  locked: boolean;
-  elements: string[];
-}
+import { Layer } from './CanvasPanelTypes';
 
 interface CanvasPanelLayoutProps {
   // History props

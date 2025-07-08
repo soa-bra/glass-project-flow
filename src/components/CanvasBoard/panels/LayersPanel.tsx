@@ -6,13 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Layers, Eye, EyeOff, Lock, Unlock, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
 
-interface Layer {
-  id: string;
-  name: string;
-  visible: boolean;
-  locked: boolean;
-  elements: string[];
-}
+import { Layer } from '../components/CanvasPanelTypes';
 
 interface LayersPanelProps {
   layers: Layer[];
@@ -34,6 +28,7 @@ const LayersPanel: React.FC<LayersPanelProps> = ({
     const newLayer: Layer = {
       id: `layer-${Date.now()}`,
       name,
+      type: 'layer',
       visible: true,
       locked: false,
       elements: []

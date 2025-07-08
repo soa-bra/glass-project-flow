@@ -1,16 +1,7 @@
 
 import { useState, useCallback } from 'react';
 
-interface Layer {
-  id: string;
-  name: string;
-  type: 'layer' | 'folder';
-  visible: boolean;
-  locked: boolean;
-  elements?: string[];
-  children?: Layer[];
-  expanded?: boolean;
-}
+import { Layer } from '../components/CanvasPanelTypes';
 
 export const useCanvasLayerState = () => {
   const [layers, setLayers] = useState<Layer[]>([
