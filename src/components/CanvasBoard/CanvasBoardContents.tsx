@@ -4,6 +4,9 @@ import { CanvasBoardContentsProps } from './types';
 import { DefaultView } from './components';
 import { useCanvasEventHandlers } from './components/CanvasEventHandlers';
 import { CanvasWrapper } from './components/CanvasWrapper';
+import { CanvasStatusBar } from './components/CanvasStatusBar';
+import NewTopToolbar from './components/NewTopToolbar';
+import NewMainToolbar from './components/NewMainToolbar';
 import { 
   SmartAssistantPanel,
   LayersPanel, 
@@ -51,6 +54,27 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
 
   return (
     <div className="relative w-full h-full">
+      {/* شريط الأدوات العلوي */}
+      <NewTopToolbar 
+        canUndo={canvasState.history.length > 0}
+        canRedo={false}
+        onUndo={canvasState.undo}
+        onRedo={canvasState.redo}
+        onSave={() => console.log('Save')}
+        onNew={() => console.log('New')}
+        onOpen={() => console.log('Open')}
+        onCopy={() => console.log('Copy')}
+        showGrid={canvasState.showGrid}
+        onGridToggle={() => canvasState.setShowGrid(!canvasState.showGrid)}
+        snapEnabled={canvasState.snapEnabled}
+        onSnapToggle={() => canvasState.setSnapEnabled(!canvasState.snapEnabled)}
+        gridSize={20}
+        onGridSizeChange={(size) => console.log('Grid size:', size)}
+        gridShape="dots"
+        onGridShapeChange={(shape) => console.log('Grid shape:', shape)}
+        onSmartProjectGenerate={() => console.log('Smart project')}
+      />
+
       <CanvasWrapper
         showGrid={canvasState.showGrid}
         snapEnabled={canvasState.snapEnabled}
@@ -79,6 +103,24 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         handleElementMouseUp={canvasState.handleElementMouseUp}
         handleResizeMouseDown={wrappedHandleResizeMouseDown}
         handleResizeMouseMove={wrappedHandleResizeMouseMove}
+      />
+
+      {/* شريط الأدوات الرئيسي السفلي */}
+      <NewMainToolbar 
+        selectedTool={canvasState.selectedTool}
+        onToolSelect={canvasState.setSelectedTool}
+      />
+
+      {/* شريط الحالة السفلي */}
+      <CanvasStatusBar 
+        elements={canvasState.elements}
+        selectedElementId={canvasState.selectedElementId}
+        zoom={canvasState.zoom}
+        selectedTool={canvasState.selectedTool}
+        showGrid={canvasState.showGrid}
+        snapEnabled={canvasState.snapEnabled}
+        onToggleGrid={() => canvasState.setShowGrid(!canvasState.showGrid)}
+        onToggleSnap={() => canvasState.setSnapEnabled(!canvasState.snapEnabled)}
       />
       
       {/* اللوحات العائمة الجديدة */}
