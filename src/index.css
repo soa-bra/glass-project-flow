@@ -17,6 +17,20 @@
     --backgrounds-admin-ops-board-bg: #d0e0e2;
     --backgrounds-active-tab-admin-ops: #000000;
     --backgrounds-inactive-tab-admin-ops: transparent;
+    
+    /* Canvas Board Floating Panels Colors */
+    --canvas-floating-panels-bg: #f2f9fb;
+    --canvas-palette-color-1: #96d8d0;
+    --canvas-palette-color-2: #f1b5b9;
+    --canvas-palette-color-3: #a4e2f6;
+    --canvas-palette-color-4: #d1e1ea;
+    --canvas-palette-color-5: #e9eff4;
+    --canvas-palette-color-6: #bdeed3;
+    --canvas-palette-color-7: #d9d2fd;
+    --canvas-palette-color-8: #fbe2aa;
+    --canvas-text-color: #000000;
+    --canvas-active-tab: #000000;
+    --canvas-inactive-tab: transparent;
     --backgrounds-timeline-bg: #f2ffff;
     --backgrounds-cards-admin-ops: #f2ffff;
     --backgrounds-financial-card-profit: #96d8d0;

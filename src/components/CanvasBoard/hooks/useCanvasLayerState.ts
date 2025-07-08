@@ -1,8 +1,17 @@
 import { useState } from 'react';
 
+interface Layer {
+  id: string;
+  name: string;
+  type: 'element' | 'group';
+  visible: boolean;
+  locked: boolean;
+  children?: Layer[];
+}
+
 export const useCanvasLayerState = () => {
-  const [layers, setLayers] = useState([
-    { id: 'layer-1', name: 'الطبقة الأساسية', visible: true, locked: false, elements: [] }
+  const [layers, setLayers] = useState<Layer[]>([
+    { id: 'layer-1', name: 'الطبقة الأساسية', type: 'element', visible: true, locked: false }
   ]);
   const [selectedLayerId, setSelectedLayerId] = useState<string>('layer-1');
 

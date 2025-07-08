@@ -40,6 +40,20 @@ export default {
 					'project-mgmt-board': '#f9fbfc',
 					'project-mgmt-cards': '#ecf2f7',
 					
+					// Canvas Board Floating Panels Colors
+					'canvas-floating-panels': '#f2f9fb',
+					'canvas-palette-1': '#96d8d0',
+					'canvas-palette-2': '#f1b5b9',
+					'canvas-palette-3': '#a4e2f6',
+					'canvas-palette-4': '#d1e1ea',
+					'canvas-palette-5': '#e9eff4',
+					'canvas-palette-6': '#bdeed3',
+					'canvas-palette-7': '#d9d2fd',
+					'canvas-palette-8': '#fbe2aa',
+					'canvas-text': '#000000',
+					'canvas-active-tab': '#000000',
+					'canvas-inactive-tab': 'transparent',
+					
 					// Visual Data Colors
 					'primary': '#000000',
 					'secondary-1': '#bdeed3',

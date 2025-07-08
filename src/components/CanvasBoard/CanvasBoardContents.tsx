@@ -5,6 +5,13 @@ import { DefaultView } from './components';
 import { useCanvasEventHandlers } from './components/CanvasEventHandlers';
 import { CleanCanvasPanelLayout } from './components/CleanCanvasPanelLayout';
 import { CanvasWrapper } from './components/CanvasWrapper';
+import { 
+  SmartAssistantPanel,
+  LayersPanel, 
+  ElementCustomizationPanel,
+  CollaborationPanel,
+  ToolCustomizationPanel 
+} from './FloatingPanels';
 
 const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
   projectId = 'default', 
@@ -73,6 +80,27 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         handleElementMouseUp={canvasState.handleElementMouseUp}
         handleResizeMouseDown={wrappedHandleResizeMouseDown}
         handleResizeMouseMove={wrappedHandleResizeMouseMove}
+      />
+      
+      {/* اللوحات العائمة الجديدة */}
+      <SmartAssistantPanel visible={true} />
+      <LayersPanel 
+        visible={true}
+        layers={canvasState.layers}
+        selectedLayerId={canvasState.selectedLayerId}
+        onLayerUpdate={canvasState.handleLayerUpdate}
+        onLayerSelect={canvasState.handleLayerSelect}
+      />
+      <ElementCustomizationPanel 
+        visible={!!canvasState.selectedElementId}
+        selectedElement={canvasState.elements.find(el => el.id === canvasState.selectedElementId)}
+        onElementUpdate={canvasState.updateElement}
+      />
+      <CollaborationPanel visible={true} />
+      <ToolCustomizationPanel 
+        visible={true}
+        selectedTool={canvasState.selectedTool}
+        onToolAction={(action, data) => console.log(action, data)}
       />
       
       <CleanCanvasPanelLayout
