@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
+import { ScrollableAnimatedTabs } from '@/components/ui/ScrollableAnimatedTabs';
 import { OverviewTab } from './OverviewTab';
 import { InitiativesTab } from './InitiativesTab';
 import { PartnershipsTab } from './PartnershipsTab';
@@ -30,8 +30,8 @@ export const CSRDashboard: React.FC = () => {
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           إدارة المسؤولية الاجتماعية
         </h2>
-        <div className="w-fit">
-          <AnimatedTabs 
+        <div className="flex-1 max-w-full">
+          <ScrollableAnimatedTabs 
             tabs={tabItems}
             activeTab={activeTab}
             onTabChange={setActiveTab}

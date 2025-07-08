@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { X, MoreHorizontal, Edit, Archive, Trash } from 'lucide-react';
 import { Project } from '@/types/project';
-import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
+import { ScrollableAnimatedTabs } from '@/components/ui/ScrollableAnimatedTabs';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,14 +47,12 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
           إدارة المشروع
         </h1>
 
-        <div className="flex-1 flex justify-center">
-          <div className="w-fit">
-            <AnimatedTabs 
-              tabs={animatedTabItems}
-              activeTab={activeTab}
-              onTabChange={onTabChange}
-            />
-          </div>
+        <div className="flex-1 max-w-full px-4">
+          <ScrollableAnimatedTabs 
+            tabs={animatedTabItems}
+            activeTab={activeTab}
+            onTabChange={onTabChange}
+          />
         </div>
 
         <div className="flex items-center gap-3">
