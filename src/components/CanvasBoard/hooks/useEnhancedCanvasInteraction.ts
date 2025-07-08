@@ -18,14 +18,6 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     return snapEnabled ? Math.round(value / GRID_SIZE) * GRID_SIZE : value;
   };
 
-  // Remove excessive logging - only log critical interactions
-  const logInteraction = (action: string, data?: any) => {
-    if (data) {
-      console.log(`🎨 ${action}:`, data);
-    } else {
-      console.log(`🎨 ${action}`);
-    }
-  };
 
   // Selection box handling
   const handleSelectionStart = useCallback((
@@ -159,12 +151,7 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     canvasPosition: { x: number; y: number },
     snapEnabled: boolean = false
   ) => {
-    if (!canvasRef?.current) {
-      console.log('❌ canvasRef not available in handleDragCreate');
-      return;
-    }
-    if (!['shape', 'smart-element', 'text-box'].includes(selectedTool)) {
-      console.log('❌ Invalid tool for drag create:', selectedTool);
+    if (!canvasRef?.current || !['shape', 'smart-element', 'text-box'].includes(selectedTool)) {
       return;
     }
     
@@ -175,7 +162,6 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     x = snapToGrid(x, snapEnabled);
     y = snapToGrid(y, snapEnabled);
     
-    console.log('✅ Starting drag create:', { tool: selectedTool, x, y });
     setIsDrawing(true);
     setDrawStart({ x, y });
     setDrawEnd({ x, y });
@@ -214,21 +200,16 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     const x = Math.min(drawStart.x, drawEnd.x);
     const y = Math.min(drawStart.y, drawEnd.y);
     
-    // Create element if dragged area is significant
     if (width > 10 && height > 10) {
-      console.log('✅ Creating dragged element:', { tool: selectedTool, x, y, width, height });
       addElement(selectedTool, x, y, Math.max(width, 30), Math.max(height, 30));
-    } else {
-      console.log('❌ Drag area too small:', { width, height });
     }
     
-    // Always reset drawing state
     setIsDrawing(false);
     setDrawStart(null);
     setDrawEnd(null);
   }, [isDrawing, drawStart, drawEnd]);
 
-  // Single click for text
+  
   const handleTextClick = useCallback((
     e: React.MouseEvent,
     zoom: number,
@@ -236,10 +217,7 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     addElement: (type: string, x: number, y: number) => void,
     snapEnabled: boolean = false
   ) => {
-    if (!canvasRef?.current) {
-      console.warn('❌ canvasRef not available in handleTextClick');
-      return;
-    }
+    if (!canvasRef?.current) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
     let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
@@ -248,11 +226,10 @@ export const useEnhancedCanvasInteraction = (canvasRef: React.RefObject<HTMLDivE
     x = snapToGrid(x, snapEnabled);
     y = snapToGrid(y, snapEnabled);
     
-    console.log('✅ Adding text element at:', { x, y });
     addElement('text', x, y);
   }, []);
 
-  // Element manipulation (existing functionality)
+  
   const handleElementMouseDown = useCallback((
     e: React.MouseEvent,
     elementId: string,

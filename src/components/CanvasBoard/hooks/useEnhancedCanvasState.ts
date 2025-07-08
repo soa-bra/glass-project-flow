@@ -135,10 +135,10 @@ export const useEnhancedCanvasState = (projectId = 'default', userId = 'user1') 
     deleteElement: wrappedDeleteElement,
     
     // Helper functions
-    handleAlignToGrid: () => console.log('محاذاة للشبكة'),
-    handleGroup: () => console.log('تجميع العناصر'),
-    handleUngroup: () => console.log('إلغاء تجميع العناصر'),
-    handleLock: () => console.log('قفل العناصر'),
-    handleUnlock: () => console.log('إلغاء قفل العناصر')
+    handleAlignToGrid: () => {},
+    handleGroup: () => {},
+    handleUngroup: () => {},
+    handleLock: () => {},
+    handleUnlock: () => {}
   };
 };

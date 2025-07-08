@@ -16,25 +16,23 @@ export const useCanvasEventHandlers = ({
   deleteElement
 }: CanvasEventHandlersProps) => {
   const handleSmartElementSelect = (elementId: string) => {
-    console.log('🎯 Smart element selected:', elementId);
     setSelectedSmartElement(elementId);
-    // العنصر الذكي محدد، سيتم استخدامه عند النقر على الكانفاس
   };
 
   const handleCopy = () => {
     if (selectedElementId) {
-      console.log('نسخ العنصر:', selectedElementId);
+      // Copy functionality
     }
   };
 
   const handleCut = () => {
     if (selectedElementId) {
-      console.log('قص العنصر:', selectedElementId);
+      // Cut functionality
     }
   };
 
   const handlePaste = () => {
-    console.log('لصق العنصر');
+    // Paste functionality
   };
 
   const handleStartCanvas = () => {
@@ -43,7 +41,7 @@ export const useCanvasEventHandlers = ({
   };
 
   const handleSettings = () => {
-    console.log('فتح الإعدادات');
+    // Open settings
   };
 
   const handleDeleteSelected = () => {

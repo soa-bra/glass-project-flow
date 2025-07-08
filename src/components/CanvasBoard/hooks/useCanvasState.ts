@@ -95,7 +95,7 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     setSelectedElementId(elementId);
   };
 
-  // تفعيل التحكم بلوحة المفاتيح
+  
   useKeyboardControls({
     selectedElementId,
     elements,
@@ -104,14 +104,12 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     setSelectedElementId
   });
 
-  // Helper functions for new tools
+  
   const handleGridSizeChange = (size: number) => {
     setGridSize(size);
   };
 
-  const handleAlignToGrid = () => {
-    // محاذاة العناصر للشبكة
-  };
+  const handleAlignToGrid = () => {};
 
   const handleLayerUpdate = (newLayers: any[]) => {
     setLayers(newLayers);
@@ -121,21 +119,10 @@ export const useCanvasState = (projectId = 'default', userId = 'user1') => {
     setSelectedLayerId(layerId);
   };
 
-  const handleGroup = () => {
-    // تجميع العناصر
-  };
-
-  const handleUngroup = () => {
-    // إلغاء تجميع العناصر
-  };
-
-  const handleLock = () => {
-    // قفل العناصر
-  };
-
-  const handleUnlock = () => {
-    // إلغاء قفل العناصر
-  };
+  const handleGroup = () => {};
+  const handleUngroup = () => {};
+  const handleLock = () => {};
+  const handleUnlock = () => {};
 
   return {
     // State
