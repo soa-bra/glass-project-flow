@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useEnhancedCanvasState } from './hooks/useEnhancedCanvasState';
 import { CanvasBoardContentsProps } from './types';
@@ -10,7 +11,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   projectId = 'default', 
   userId = 'user1' 
 }) => {
-  // Initialize enhanced canvas state - تحسين حالة الكانفاس
+  // Initialize enhanced canvas state
   const canvasState = useEnhancedCanvasState(projectId, userId);
   
   const eventHandlers = useCanvasEventHandlers({
@@ -20,24 +21,6 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     setSelectedTool: canvasState.setSelectedTool,
     deleteElement: canvasState.deleteElement
   });
-
-
-  // Create wrapper functions to match CanvasWrapper interface
-  const wrappedHandleElementMouseDown = (e: React.MouseEvent, elementId: string) => {
-    canvasState.handleElementMouseDown(e, elementId);
-  };
-
-  const wrappedHandleElementMouseMove = (e: React.MouseEvent) => {
-    canvasState.handleElementMouseMove(e);
-  };
-
-  const wrappedHandleResizeMouseDown = (e: React.MouseEvent, handle: string) => {
-    canvasState.handleResizeMouseDown(e, handle);
-  };
-
-  const wrappedHandleResizeMouseMove = (e: React.MouseEvent) => {
-    canvasState.handleResizeMouseMove(e);
-  };
 
   if (canvasState.showDefaultView) {
     return <DefaultView onStartCanvas={eventHandlers.handleStartCanvas} />;
@@ -68,11 +51,11 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         handleCanvasMouseDown={canvasState.handleCanvasMouseDown}
         handleCanvasMouseMove={canvasState.handleCanvasMouseMove}
         handleCanvasMouseUp={canvasState.handleCanvasMouseUp}
-        handleElementMouseDown={wrappedHandleElementMouseDown}
-        handleElementMouseMove={wrappedHandleElementMouseMove}
+        handleElementMouseDown={canvasState.handleElementMouseDown}
+        handleElementMouseMove={canvasState.handleElementMouseMove}
         handleElementMouseUp={canvasState.handleElementMouseUp}
-        handleResizeMouseDown={wrappedHandleResizeMouseDown}
-        handleResizeMouseMove={wrappedHandleResizeMouseMove}
+        handleResizeMouseDown={canvasState.handleResizeMouseDown}
+        handleResizeMouseMove={canvasState.handleResizeMouseMove}
       />
       
       <CleanCanvasPanelLayout
@@ -85,7 +68,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         onSettings={eventHandlers.handleSettings}
         selectedTool={canvasState.selectedTool}
         selectedElementId={canvasState.selectedElementId}
-        selectedElements={canvasState.selectedElements}
+        selectedElements={canvasState.selectedElementIds}
         zoom={canvasState.zoom}
         selectedSmartElement={canvasState.selectedSmartElement}
         showGrid={canvasState.showGrid}

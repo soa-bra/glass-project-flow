@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { CanvasElement } from '../types';
@@ -7,7 +8,7 @@ import { useRefactoredCanvasInteraction } from './useRefactoredCanvasInteraction
 
 const defaultElement = {
   id: uuidv4(),
-  type: 'rectangle',
+  type: 'shape' as const,
   position: { x: 50, y: 50 },
   size: { width: 100, height: 100 },
   fill: 'red',
@@ -38,7 +39,7 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
   const [lineStyle, setLineStyle] = useState<string>('solid');
   const [selectedPenMode, setSelectedPenMode] = useState<string>('smart-draw');
 
-  const { history, historyIndex, saveStep, undo, redo } = useCanvasHistory(elements, setElements);
+  const { history, historyIndex, saveToHistory, undo, redo } = useCanvasHistory();
   const { layers, setLayers, selectedLayerId, setSelectedLayerId, handleLayerUpdate, handleLayerSelect } = useCanvasLayerState();
 
   // Use the refactored interaction hook
@@ -48,35 +49,35 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     const newElement: CanvasElement = {
       ...defaultElement,
       id: uuidv4(),
-      type,
+      type: type as any,
       position: { x: x || 50, y: y || 50 },
       size: { width: width || 100, height: height || 100 },
       properties: { text: text || 'نص تجريبي' }
     };
     setElements(prevElements => {
       const newElements = [...prevElements, newElement];
-      saveStep(newElements);
+      saveToHistory(newElements);
       return newElements;
     });
-  }, [setElements, saveStep]);
+  }, [saveToHistory]);
 
   const updateElement = useCallback((elementId: string, updates: Partial<CanvasElement>) => {
     setElements(prevElements => {
       const newElements = prevElements.map(element =>
         element.id === elementId ? { ...element, ...updates } : element
       );
-      saveStep(newElements);
+      saveToHistory(newElements);
       return newElements;
     });
-  }, [setElements, saveStep]);
+  }, [saveToHistory]);
 
   const deleteElement = useCallback((elementId: string) => {
     setElements(prevElements => {
       const newElements = prevElements.filter(element => element.id !== elementId);
-      saveStep(newElements);
+      saveToHistory(newElements);
       return newElements;
     });
-  }, [setElements, saveStep]);
+  }, [saveToHistory]);
 
   const handleCopy = useCallback(() => {
     if (selectedElementId) {
@@ -132,12 +133,43 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
 
   const handleGridSizeChange = useCallback((size: number) => {
     setGridSize(size);
-  }, [setGridSize]);
+  }, []);
+
+  // Canvas action methods
+  const saveCanvas = useCallback(() => {
+    const canvasData = {
+      projectId,
+      userId,
+      elements,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem(`canvas_${projectId}`, JSON.stringify(canvasData));
+  }, [projectId, userId, elements]);
+
+  const exportCanvas = useCallback(() => {
+    const dataStr = JSON.stringify(elements, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = `canvas_${projectId}_${new Date().toISOString().split('T')[0]}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  }, [projectId, elements]);
+
+  // Wrapper functions for undo/redo with correct signatures
+  const wrappedUndo = useCallback(() => {
+    undo(elements, setElements);
+  }, [undo, elements]);
+
+  const wrappedRedo = useCallback(() => {
+    redo(elements, setElements);
+  }, [redo, elements]);
 
   const handleCanvasClick = useCallback((e: React.MouseEvent) => {
     setSelectedElementId(null);
     setSelectedElementIds([]);
-  }, [setSelectedElementId, setSelectedElementIds]);
+  }, []);
 
   const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
     if (selectedTool === 'select') return;
@@ -173,10 +205,6 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
       interaction.handleSelectionMove(e, zoom, canvasPosition, snapEnabled);
       return;
     }
-
-    if (selectedTool === 'hand') {
-      // Handle pan
-    }
   }, [selectedTool, zoom, canvasPosition, snapEnabled, interaction]);
 
   const handleCanvasMouseUp = useCallback(() => {
@@ -198,7 +226,7 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
 
   const handleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
     interaction.handleElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId, selectedElementIds, setSelectedElementIds);
-  }, [selectedTool, elements, zoom, canvasPosition, setSelectedElementId, selectedElementIds, setSelectedElementIds, interaction]);
+  }, [selectedTool, elements, zoom, canvasPosition, selectedElementIds, interaction]);
 
   const handleElementMouseMove = useCallback((e: React.MouseEvent) => {
     interaction.handleElementMouseMove(e, selectedElementIds, zoom, canvasPosition, updateElement, snapEnabled);
@@ -250,9 +278,9 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     setSelectedPenMode,
     history,
     historyIndex,
-    saveStep,
-    undo,
-    redo,
+    saveToHistory, // Use saveToHistory instead of saveStep
+    undo: wrappedUndo,
+    redo: wrappedRedo,
     layers,
     setLayers,
     selectedLayerId,
@@ -271,6 +299,8 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     handleUnlock,
     handleAlignToGrid,
     handleGridSizeChange,
+    saveCanvas,
+    exportCanvas,
 
     // Interaction properties from the refactored hook
     isDrawing: interaction.isDrawing,
@@ -281,19 +311,15 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     isSelecting: interaction.isSelecting,
     selectionBox: interaction.selectionBox,
     
-    // Interaction methods from the refactored hook
-    handleSelectionStart: interaction.handleSelectionStart,
-    handleSelectionMove: interaction.handleSelectionMove,
-    handleSelectionEnd: interaction.handleSelectionEnd,
-    handleSmartPenStart: interaction.handleSmartPenStart,
-    handleSmartPenMove: interaction.handleSmartPenMove,
-    handleSmartPenEnd: interaction.handleSmartPenEnd,
-    handleDragCreate: interaction.handleDragCreate,
-    handleDragCreateMove: interaction.handleDragCreateMove,
-    handleDragCreateEnd: interaction.handleDragCreateEnd,
-    handleTextClick: interaction.handleTextClick,
-    handleElementMouseDown: interaction.handleElementMouseDown,
-    handleElementMouseMove: interaction.handleElementMouseMove,
-    handleElementMouseUp: interaction.handleElementMouseUp,
+    // Canvas event handlers
+    handleCanvasClick,
+    handleCanvasMouseDown,
+    handleCanvasMouseMove,
+    handleCanvasMouseUp,
+    handleElementMouseDown,
+    handleElementMouseMove,
+    handleElementMouseUp,
+    handleResizeMouseDown,
+    handleResizeMouseMove,
   };
 };
