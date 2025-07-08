@@ -30,7 +30,7 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
 
   // Specialized hooks
   const { history, historyIndex, saveToHistory, undo, redo } = useCanvasHistory();
-  const { layers, setLayers, selectedLayerId, setSelectedLayerId, handleLayerUpdate, handleLayerSelect } = useCanvasLayerState();
+  const { layers, setLayers, selectedLayerId, setSelectedLayerId, handleLayerUpdate, handleLayerSelect, updateSingleLayer } = useCanvasLayerState();
   const interaction = useRefactoredCanvasInteraction(canvasRef);
   const { elements, setElements, addElement, updateElement, deleteElement } = useCanvasElementManagement(saveToHistory);
   const clipboardActions = useCanvasClipboardActions(selectedElementId, elements, addElement, deleteElement);
@@ -112,6 +112,7 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     setSelectedLayerId,
     handleLayerUpdate,
     handleLayerSelect,
+    updateSingleLayer,
     
     // Element management
     addElement,

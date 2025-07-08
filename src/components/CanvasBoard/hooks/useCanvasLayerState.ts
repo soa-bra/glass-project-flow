@@ -6,8 +6,7 @@ interface Layer {
   name: string;
   visible: boolean;
   locked: boolean;
-  opacity: number;
-  zIndex: number;
+  elements: string[];
 }
 
 export const useCanvasLayerState = () => {
@@ -17,23 +16,27 @@ export const useCanvasLayerState = () => {
       name: 'Layer 1',
       visible: true,
       locked: false,
-      opacity: 1,
-      zIndex: 1
+      elements: []
     }
   ]);
   
   const [selectedLayerId, setSelectedLayerId] = useState<string>('layer-1');
 
-  const handleLayerUpdate = useCallback((layerId: string, updates: Partial<Layer>) => {
+  const handleLayerUpdate = useCallback((updatedLayers: Layer[]) => {
+    setLayers(updatedLayers);
+  }, []);
+
+  const handleLayerSelect = useCallback((layerId: string) => {
+    setSelectedLayerId(layerId);
+  }, []);
+
+  // Helper function to update a single layer
+  const updateSingleLayer = useCallback((layerId: string, updates: Partial<Layer>) => {
     setLayers(prevLayers => 
       prevLayers.map(layer => 
         layer.id === layerId ? { ...layer, ...updates } : layer
       )
     );
-  }, []);
-
-  const handleLayerSelect = useCallback((layerId: string) => {
-    setSelectedLayerId(layerId);
   }, []);
 
   return {
@@ -42,6 +45,7 @@ export const useCanvasLayerState = () => {
     selectedLayerId,
     setSelectedLayerId,
     handleLayerUpdate,
-    handleLayerSelect
+    handleLayerSelect,
+    updateSingleLayer
   };
 };
