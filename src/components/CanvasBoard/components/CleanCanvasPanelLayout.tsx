@@ -1,11 +1,9 @@
+
 import React from 'react';
 import { CanvasPanelLayoutProps } from './CanvasPanelTypes';
 import { CanvasTopSection } from './CanvasTopSection';
-import { CanvasCollaborationSection } from './CanvasCollaborationSection';
-import { CanvasInspectorSection } from './CanvasInspectorSection';
-import { CanvasAISection } from './CanvasAISection';
-import { CanvasToolsSection } from './CanvasToolsSection';
 import { CanvasBottomSection } from './CanvasBottomSection';
+import CanvasFloatingPanelsManager from './CanvasFloatingPanelsManager';
 
 export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
   historyIndex,
@@ -64,13 +62,9 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
   onOpen,
   onSmartProjectGenerate
 }) => {
-  const selectedElementsAsElements = selectedElements
-    .map(id => elements.find(el => el.id === id))
-    .filter(Boolean);
-
   return (
     <>
-      {/* Top Section */}
+      {/* Top Toolbar Section */}
       <CanvasTopSection
         historyIndex={historyIndex}
         history={history}
@@ -91,58 +85,16 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
         onSmartProjectGenerate={onSmartProjectGenerate}
       />
       
-      {/* Collaboration Section */}
-      <CanvasCollaborationSection />
-      
-      {/* Inspector Section */}
-      <CanvasInspectorSection 
+      {/* Floating Panels Manager */}
+      <CanvasFloatingPanelsManager
+        selectedTool={selectedTool}
         selectedElementId={selectedElementId}
         elements={elements}
-        onUpdateElement={updateElement}
-        onDeleteElement={deleteElement}
-      />
-      
-      {/* AI Assistant Section */}
-      <CanvasAISection />
-      
-      {/* Tools Section */}
-      <CanvasToolsSection
-        selectedTool={selectedTool}
-        selectedElements={selectedElementsAsElements}
-        zoom={zoom}
-        canvasPosition={canvasPosition}
-        panSpeed={panSpeed}
-        lineWidth={lineWidth}
-        lineStyle={lineStyle}
-        selectedPenMode={selectedPenMode}
-        showGrid={showGrid}
-        snapEnabled={snapEnabled}
-        gridSize={gridSize}
-        gridShape={gridShape}
         layers={layers}
         selectedLayerId={selectedLayerId}
-        onUpdateElement={updateElement}
-        onCopy={handleCopy}
-        onCut={handleCut}
-        onPaste={handlePaste}
-        onDelete={handleDeleteSelected}
-        onGroup={handleGroup}
-        onZoomChange={setZoom}
-        onPositionChange={onPositionChange}
-        onFitToScreen={onFitToScreen}
-        onResetView={onResetView}
-        onPanSpeedChange={onPanSpeedChange}
-        onLineWidthChange={onLineWidthChange}
-        onLineStyleChange={onLineStyleChange}
-        onPenModeSelect={onPenModeSelect}
-        onFileUpload={onFileUpload}
-        onLayerReorder={handleLayerUpdate}
+        onLayerUpdate={handleLayerUpdate}
         onLayerSelect={handleLayerSelect}
-        onGridToggle={() => setShowGrid(!showGrid)}
-        onSnapToggle={() => setSnapEnabled(!snapEnabled)}
-        onGridSizeChange={handleGridSizeChange}
-        onGridShapeChange={handleGridShapeChange}
-        onAlignToGrid={handleAlignToGrid}
+        onUpdateElement={updateElement}
       />
       
       {/* Bottom Toolbar Section */}

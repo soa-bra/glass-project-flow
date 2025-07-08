@@ -4,16 +4,20 @@ import { useState, useCallback } from 'react';
 interface Layer {
   id: string;
   name: string;
+  type: 'layer' | 'folder';
   visible: boolean;
   locked: boolean;
-  elements: string[];
+  elements?: string[];
+  children?: Layer[];
+  expanded?: boolean;
 }
 
 export const useCanvasLayerState = () => {
   const [layers, setLayers] = useState<Layer[]>([
     {
       id: 'layer-1',
-      name: 'Layer 1',
+      name: 'الطبقة الرئيسية',
+      type: 'layer',
       visible: true,
       locked: false,
       elements: []
@@ -32,11 +36,40 @@ export const useCanvasLayerState = () => {
 
   // Helper function to update a single layer
   const updateSingleLayer = useCallback((layerId: string, updates: Partial<Layer>) => {
-    setLayers(prevLayers => 
-      prevLayers.map(layer => 
-        layer.id === layerId ? { ...layer, ...updates } : layer
-      )
-    );
+    const updateLayerRecursive = (items: Layer[]): Layer[] => {
+      return items.map(layer => {
+        if (layer.id === layerId) {
+          return { ...layer, ...updates };
+        }
+        if (layer.children) {
+          return { ...layer, children: updateLayerRecursive(layer.children) };
+        }
+        return layer;
+      });
+    };
+    
+    setLayers(prev => updateLayerRecursive(prev));
+  }, []);
+
+  // Add element to layer automatically
+  const addElementToLayer = useCallback((elementId: string, layerId?: string) => {
+    const targetLayerId = layerId || selectedLayerId;
+    updateSingleLayer(targetLayerId, {
+      elements: [...(layers.find(l => l.id === targetLayerId)?.elements || []), elementId]
+    });
+  }, [selectedLayerId, layers, updateSingleLayer]);
+
+  // Remove element from layer
+  const removeElementFromLayer = useCallback((elementId: string) => {
+    const updateElements = (items: Layer[]): Layer[] => {
+      return items.map(layer => ({
+        ...layer,
+        elements: layer.elements?.filter(id => id !== elementId) || [],
+        children: layer.children ? updateElements(layer.children) : undefined
+      }));
+    };
+    
+    setLayers(prev => updateElements(prev));
   }, []);
 
   return {
@@ -46,6 +79,8 @@ export const useCanvasLayerState = () => {
     setSelectedLayerId,
     handleLayerUpdate,
     handleLayerSelect,
-    updateSingleLayer
+    updateSingleLayer,
+    addElementToLayer,
+    removeElementFromLayer
   };
 };
