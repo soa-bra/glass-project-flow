@@ -1,6 +1,6 @@
 export interface CanvasElement {
   id: string;
-  type: 'text' | 'shape' | 'sticky' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'smart' | 'brainstorm' | 'root' | 'moodboard' | 'line' | 'rectangle' | 'circle' | 'triangle' | 'diamond' | 'arrow' | 'pen';
+  type: 'text' | 'shape' | 'sticky' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'smart' | 'brainstorm' | 'root' | 'moodboard' | 'line';
   position: { x: number; y: number };
   size: { width: number; height: number };
   content?: string;

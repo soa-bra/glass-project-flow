@@ -25,20 +25,5 @@ export { CanvasAISection } from './CanvasAISection';
 export { CanvasToolsSection } from './CanvasToolsSection';
 export { CanvasBottomSection } from './CanvasBottomSection';
 
-// Miro-style components
-export { MiroStyleBoard } from './MiroStyleBoard';
-export { MiroStyleTopBar } from './MiroStyleTopBar';
-export { MiroStyleToolbar } from './MiroStyleToolbar';
-export { MiroStyleCanvas } from './MiroStyleCanvas';
-export { MiroStyleElement } from './MiroStyleElement';
-export { MiroStyleBottomBar } from './MiroStyleBottomBar';
-export { MiroStyleMainToolbar } from './MiroStyleMainToolbar';
-export { MiroStyleEnhancedTopBar } from './MiroStyleEnhancedTopBar';
-
-// Enhanced Panels
-export { ToolPropsBar } from './ToolPropsBar';
-export { AIPanel } from './AIPanel';
-export { EnhancedInspector } from './EnhancedInspector';
-
 // Types
 export type { CanvasPanelLayoutProps, Layer } from './CanvasPanelTypes';

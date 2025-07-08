@@ -32,7 +32,7 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
     }
     
     // Validate element type
-    const validTypes = ['text', 'shape', 'sticky', 'comment', 'upload', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard', 'line', 'rectangle', 'circle', 'triangle', 'diamond', 'arrow', 'pen'];
+    const validTypes = ['text', 'shape', 'sticky', 'comment', 'upload', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard', 'line'];
     if (!validTypes.includes(actualType)) {
       console.log('❌ Invalid element type:', actualType);
       toast.error(`نوع عنصر غير صحيح: ${actualType}`);
@@ -103,18 +103,12 @@ const getDefaultWidth = (elementType: string): number => {
     case 'comment': return 140;
     case 'upload': return 120;
     case 'shape': return 120;
-    case 'rectangle': return 120;
-    case 'circle': return 100;
-    case 'triangle': return 100;
-    case 'diamond': return 100;
-    case 'arrow': return 120;
     case 'timeline': return 300;
     case 'mindmap': return 200;
     case 'brainstorm': return 180;
     case 'root': return 150;
     case 'moodboard': return 250;
     case 'line': return 100;
-    case 'pen': return 2;
     default: return 120;
   }
 };
@@ -126,18 +120,12 @@ const getDefaultHeight = (elementType: string): number => {
     case 'comment': return 80;
     case 'upload': return 80;
     case 'shape': return 80;
-    case 'rectangle': return 80;
-    case 'circle': return 100;
-    case 'triangle': return 100;
-    case 'diamond': return 100;
-    case 'arrow': return 40;
     case 'timeline': return 60;
     case 'mindmap': return 150;
     case 'brainstorm': return 120;
     case 'root': return 100;
     case 'moodboard': return 180;
     case 'line': return 2;
-    case 'pen': return 2;
     default: return 80;
   }
 };
@@ -147,11 +135,6 @@ const getDefaultContent = (elementType: string): string => {
     case 'text': return 'نص جديد';
     case 'sticky': return 'ملاحظة جديدة';
     case 'comment': return 'تعليق';
-    case 'rectangle': return 'مستطيل';
-    case 'circle': return 'دائرة';
-    case 'triangle': return 'مثلث';
-    case 'diamond': return 'معين';
-    case 'arrow': return '';
     case 'shape': return '';
     case 'smart-element': return '';
     default: return '';
@@ -189,13 +172,6 @@ const getElementDisplayName = (elementType: string): string => {
     case 'text': return 'النص';
     case 'sticky': return 'الملاحظة اللاصقة';
     case 'comment': return 'التعليق';
-    case 'rectangle': return 'المستطيل';
-    case 'circle': return 'الدائرة';
-    case 'triangle': return 'المثلث';
-    case 'diamond': return 'المعين';
-    case 'arrow': return 'السهم';
-    case 'line': return 'الخط';
-    case 'pen': return 'القلم';
     case 'shape': return 'الشكل';
     case 'smart-element': return 'العنصر الذكي';
     case 'upload': return 'الملف';
