@@ -1,29 +1,18 @@
 
 import { useState, useCallback, useRef } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { CanvasElement } from '../types';
 import { useCanvasHistory } from './useCanvasHistory';
 import { useCanvasLayerState } from './useCanvasLayerState';
 import { useRefactoredCanvasInteraction } from './useRefactoredCanvasInteraction';
-
-const defaultElement = {
-  id: uuidv4(),
-  type: 'shape' as const,
-  position: { x: 50, y: 50 },
-  size: { width: 100, height: 100 },
-  fill: 'red',
-  stroke: 'black',
-  strokeWidth: 2,
-  rotation: 0,
-  opacity: 1,
-  zIndex: 1,
-  locked: false,
-  properties: {}
-};
+import { useCanvasElementManagement } from './useCanvasElementManagement';
+import { useCanvasClipboardActions } from './useCanvasClipboardActions';
+import { useCanvasElementActions } from './useCanvasElementActions';
+import { useCanvasFileActions } from './useCanvasFileActions';
+import { useCanvasEventHandlers } from './useCanvasEventHandlers';
 
 export const useEnhancedCanvasState = (projectId: string, userId: string) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [elements, setElements] = useState<CanvasElement[]>([]);
+  
+  // Basic state
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [selectedElementIds, setSelectedElementIds] = useState<string[]>([]);
   const [selectedSmartElement, setSelectedSmartElement] = useState<string | null>(null);
@@ -39,123 +28,32 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
   const [lineStyle, setLineStyle] = useState<string>('solid');
   const [selectedPenMode, setSelectedPenMode] = useState<string>('smart-draw');
 
+  // Specialized hooks
   const { history, historyIndex, saveToHistory, undo, redo } = useCanvasHistory();
   const { layers, setLayers, selectedLayerId, setSelectedLayerId, handleLayerUpdate, handleLayerSelect } = useCanvasLayerState();
-
-  // Use the refactored interaction hook
   const interaction = useRefactoredCanvasInteraction(canvasRef);
+  const { elements, setElements, addElement, updateElement, deleteElement } = useCanvasElementManagement(saveToHistory);
+  const clipboardActions = useCanvasClipboardActions(selectedElementId, elements, addElement, deleteElement);
+  const elementActions = useCanvasElementActions(selectedElementId, updateElement);
+  const fileActions = useCanvasFileActions(projectId, userId, elements);
+  const eventHandlers = useCanvasEventHandlers(
+    selectedTool,
+    zoom,
+    canvasPosition,
+    snapEnabled,
+    interaction,
+    addElement,
+    elements,
+    selectedElementIds,
+    setSelectedElementId,
+    setSelectedElementIds,
+    updateElement
+  );
 
-  const addElement = useCallback((type: string, x: number, y: number, width?: number, height?: number, text?: string) => {
-    const newElement: CanvasElement = {
-      ...defaultElement,
-      id: uuidv4(),
-      type: type as any,
-      position: { x: x || 50, y: y || 50 },
-      size: { width: width || 100, height: height || 100 },
-      properties: { text: text || 'نص تجريبي' }
-    };
-    setElements(prevElements => {
-      const newElements = [...prevElements, newElement];
-      saveToHistory(newElements);
-      return newElements;
-    });
-  }, [saveToHistory]);
-
-  const updateElement = useCallback((elementId: string, updates: Partial<CanvasElement>) => {
-    setElements(prevElements => {
-      const newElements = prevElements.map(element =>
-        element.id === elementId ? { ...element, ...updates } : element
-      );
-      saveToHistory(newElements);
-      return newElements;
-    });
-  }, [saveToHistory]);
-
-  const deleteElement = useCallback((elementId: string) => {
-    setElements(prevElements => {
-      const newElements = prevElements.filter(element => element.id !== elementId);
-      saveToHistory(newElements);
-      return newElements;
-    });
-  }, [saveToHistory]);
-
-  const handleCopy = useCallback(() => {
-    if (selectedElementId) {
-      const element = elements.find(el => el.id === selectedElementId);
-      if (element) {
-        navigator.clipboard.writeText(JSON.stringify(element));
-      }
-    }
-  }, [selectedElementId, elements]);
-
-  const handlePaste = useCallback(async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      const element = JSON.parse(text);
-      if (element && element.type) {
-        addElement(element.type, element.position.x + 10, element.position.y + 10, element.size.width, element.size.height);
-      }
-    } catch (error) {
-      console.error('Could not paste element', error);
-    }
-  }, [addElement]);
-
-  const handleCut = useCallback(() => {
-    handleCopy();
-    if (selectedElementId) {
-      deleteElement(selectedElementId);
-    }
-  }, [handleCopy, deleteElement, selectedElementId]);
-
-  const handleGroup = useCallback(() => {
-    // Logic to group selected elements
-  }, []);
-
-  const handleUngroup = useCallback(() => {
-    // Logic to ungroup selected elements
-  }, []);
-
-  const handleLock = useCallback(() => {
-    if (selectedElementId) {
-      updateElement(selectedElementId, { locked: true });
-    }
-  }, [selectedElementId, updateElement]);
-
-  const handleUnlock = useCallback(() => {
-    if (selectedElementId) {
-      updateElement(selectedElementId, { locked: false });
-    }
-  }, [selectedElementId, updateElement]);
-
-  const handleAlignToGrid = useCallback(() => {
-    // Logic to align selected elements to the grid
-  }, []);
-
+  // Grid helper function
   const handleGridSizeChange = useCallback((size: number) => {
     setGridSize(size);
   }, []);
-
-  // Canvas action methods
-  const saveCanvas = useCallback(() => {
-    const canvasData = {
-      projectId,
-      userId,
-      elements,
-      timestamp: new Date().toISOString()
-    };
-    localStorage.setItem(`canvas_${projectId}`, JSON.stringify(canvasData));
-  }, [projectId, userId, elements]);
-
-  const exportCanvas = useCallback(() => {
-    const dataStr = JSON.stringify(elements, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const exportFileDefaultName = `canvas_${projectId}_${new Date().toISOString().split('T')[0]}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-  }, [projectId, elements]);
 
   // Wrapper functions for undo/redo with correct signatures
   const wrappedUndo = useCallback(() => {
@@ -166,85 +64,8 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     redo(elements, setElements);
   }, [redo, elements]);
 
-  const handleCanvasClick = useCallback((e: React.MouseEvent) => {
-    setSelectedElementId(null);
-    setSelectedElementIds([]);
-  }, []);
-
-  const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
-    if (selectedTool === 'select') return;
-
-    if (selectedTool === 'text') {
-      interaction.handleTextClick(e, zoom, canvasPosition, addElement, snapEnabled);
-      return;
-    }
-
-    if (['shape', 'smart-element', 'text-box'].includes(selectedTool)) {
-      interaction.handleDragCreate(e, selectedTool, zoom, canvasPosition, snapEnabled);
-      return;
-    }
-
-    if (selectedTool === 'smart-pen') {
-      interaction.handleSmartPenStart(e, zoom, canvasPosition, snapEnabled);
-      return;
-    }
-  }, [selectedTool, zoom, canvasPosition, addElement, snapEnabled, interaction]);
-
-  const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
-    if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && interaction.isDrawing) {
-      interaction.handleDragCreateMove(e, zoom, canvasPosition, snapEnabled);
-      return;
-    }
-
-    if (selectedTool === 'smart-pen' && interaction.isDrawing) {
-      interaction.handleSmartPenMove(e, zoom, canvasPosition, snapEnabled);
-      return;
-    }
-
-    if (selectedTool === 'select' && interaction.isSelecting) {
-      interaction.handleSelectionMove(e, zoom, canvasPosition, snapEnabled);
-      return;
-    }
-  }, [selectedTool, zoom, canvasPosition, snapEnabled, interaction]);
-
-  const handleCanvasMouseUp = useCallback(() => {
-    if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && interaction.isDrawing) {
-      interaction.handleDragCreateEnd(selectedTool, addElement);
-      return;
-    }
-
-    if (selectedTool === 'smart-pen' && interaction.isDrawing) {
-      interaction.handleSmartPenEnd(addElement);
-      return;
-    }
-
-    if (selectedTool === 'select' && interaction.isSelecting) {
-      interaction.handleSelectionEnd(elements, setSelectedElementIds);
-      return;
-    }
-  }, [selectedTool, elements, addElement, setSelectedElementIds, interaction]);
-
-  const handleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
-    interaction.handleElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId, selectedElementIds, setSelectedElementIds);
-  }, [selectedTool, elements, zoom, canvasPosition, selectedElementIds, interaction]);
-
-  const handleElementMouseMove = useCallback((e: React.MouseEvent) => {
-    interaction.handleElementMouseMove(e, selectedElementIds, zoom, canvasPosition, updateElement, snapEnabled);
-  }, [selectedElementIds, zoom, canvasPosition, updateElement, snapEnabled, interaction]);
-
-  const handleElementMouseUp = useCallback(() => {
-    interaction.handleElementMouseUp();
-  }, [interaction]);
-
-  const handleResizeMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
-    // Logic for resize start
-  }, []);
-
-  const handleResizeMouseMove = useCallback((e: React.MouseEvent) => {
-    // Logic for resize move
-  }, []);
-
   return {
+    // Canvas ref and basic state
     canvasRef,
     elements,
     setElements,
@@ -276,31 +97,36 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     setLineStyle,
     selectedPenMode,
     setSelectedPenMode,
+    
+    // History
     history,
     historyIndex,
-    saveToHistory, // Use saveToHistory instead of saveStep
+    saveToHistory,
     undo: wrappedUndo,
     redo: wrappedRedo,
+    
+    // Layers
     layers,
     setLayers,
     selectedLayerId,
     setSelectedLayerId,
     handleLayerUpdate,
     handleLayerSelect,
+    
+    // Element management
     addElement,
     updateElement,
     deleteElement,
-    handleCopy,
-    handlePaste,
-    handleCut,
-    handleGroup,
-    handleUngroup,
-    handleLock,
-    handleUnlock,
-    handleAlignToGrid,
+    
+    // Clipboard actions
+    ...clipboardActions,
+    
+    // Element actions
+    ...elementActions,
     handleGridSizeChange,
-    saveCanvas,
-    exportCanvas,
+    
+    // File actions
+    ...fileActions,
 
     // Interaction properties from the refactored hook
     isDrawing: interaction.isDrawing,
@@ -311,15 +137,7 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     isSelecting: interaction.isSelecting,
     selectionBox: interaction.selectionBox,
     
-    // Canvas event handlers
-    handleCanvasClick,
-    handleCanvasMouseDown,
-    handleCanvasMouseMove,
-    handleCanvasMouseUp,
-    handleElementMouseDown,
-    handleElementMouseMove,
-    handleElementMouseUp,
-    handleResizeMouseDown,
-    handleResizeMouseMove,
+    // Event handlers
+    ...eventHandlers
   };
 };
