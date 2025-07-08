@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ScrollableAnimatedTabs } from '@/components/ui/ScrollableAnimatedTabs';
+import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { TabItem } from './types';
 
 interface TabNavigationProps {
@@ -20,13 +20,23 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   }));
 
   return (
-    <div className="w-full" dir="rtl">
-      <ScrollableAnimatedTabs 
+    <div className="w-full overflow-x-auto overflow-y-hidden no-scrollbar px-0" dir="rtl">
+      <AnimatedTabs 
         tabs={animatedTabItems}
         activeTab={activeTab}
         onTabChange={onTabChange}
         className="mx-auto"
       />
+      
+      <style>{`
+        .no-scrollbar {
+          scrollbar-width: none !important;
+          -ms-overflow-style: none !important;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+          display: none !important;
+        }
+      `}</style>
     </div>
   );
 };

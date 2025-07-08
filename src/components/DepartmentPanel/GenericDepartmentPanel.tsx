@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { ScrollableAnimatedTabs } from '@/components/ui/ScrollableAnimatedTabs';
+import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { GeneralOverviewTab } from '../DepartmentTabs/GeneralOverviewTab';
 import { ReportsTab } from '../DepartmentTabs/ReportsTab';
 import { TemplatesTab } from '../DepartmentTabs/TemplatesTab';
@@ -83,8 +83,8 @@ export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           {content.title}
         </h2>
-        <div className="flex-1 max-w-full">
-          <ScrollableAnimatedTabs 
+        <div className="w-fit">
+          <AnimatedTabs 
             tabs={tabItems}
             activeTab={activeTab}
             onTabChange={setActiveTab}
