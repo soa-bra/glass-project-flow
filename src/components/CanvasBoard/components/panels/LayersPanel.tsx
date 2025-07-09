@@ -6,7 +6,6 @@ import { Separator } from '@/components/ui/separator';
 import { Layers, Eye, EyeOff, Lock, Unlock, Plus, Trash2, Folder, FolderOpen, ChevronDown, ChevronRight } from 'lucide-react';
 import { Layer } from '../CanvasPanelTypes';
 import { CanvasElement } from '../../types';
-
 interface LayersPanelProps {
   layers: Layer[];
   selectedLayerId: string | null;
@@ -14,7 +13,6 @@ interface LayersPanelProps {
   onLayerSelect: (layerId: string) => void;
   elements: CanvasElement[];
 }
-
 interface LayerFolder {
   id: string;
   name: string;
@@ -22,7 +20,6 @@ interface LayerFolder {
   layers: string[];
   subFolders: LayerFolder[];
 }
-
 export const LayersPanel: React.FC<LayersPanelProps> = ({
   layers,
   selectedLayerId,
@@ -36,10 +33,7 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
   // Auto-generate layers for elements that don't have them
   React.useEffect(() => {
     const existingLayerElements = layers.flatMap(layer => layer.elements);
-    const elementsWithoutLayers = elements.filter(element => 
-      !existingLayerElements.includes(element.id)
-    );
-
+    const elementsWithoutLayers = elements.filter(element => !existingLayerElements.includes(element.id));
     if (elementsWithoutLayers.length > 0) {
       const newLayers = elementsWithoutLayers.map(element => ({
         id: `layer-${element.id}`,
@@ -48,11 +42,9 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
         locked: false,
         elements: [element.id]
       }));
-      
       onLayerUpdate([...layers, ...newLayers]);
     }
   }, [elements, layers, onLayerUpdate]);
-
   const addNewLayer = () => {
     const name = newLayerName.trim() || `طبقة ${layers.length + 1}`;
     const newLayer: Layer = {
@@ -65,7 +57,6 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
     onLayerUpdate([...layers, newLayer]);
     setNewLayerName('');
   };
-
   const deleteLayer = (layerId: string) => {
     if (layers.length > 1) {
       const updatedLayers = layers.filter(layer => layer.id !== layerId);
@@ -75,28 +66,27 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
       }
     }
   };
-
   const toggleLayerVisibility = (layerId: string) => {
-    const updatedLayers = layers.map(layer =>
-      layer.id === layerId ? { ...layer, visible: !layer.visible } : layer
-    );
+    const updatedLayers = layers.map(layer => layer.id === layerId ? {
+      ...layer,
+      visible: !layer.visible
+    } : layer);
     onLayerUpdate(updatedLayers);
   };
-
   const toggleLayerLock = (layerId: string) => {
-    const updatedLayers = layers.map(layer =>
-      layer.id === layerId ? { ...layer, locked: !layer.locked } : layer
-    );
+    const updatedLayers = layers.map(layer => layer.id === layerId ? {
+      ...layer,
+      locked: !layer.locked
+    } : layer);
     onLayerUpdate(updatedLayers);
   };
-
   const updateLayerName = (layerId: string, newName: string) => {
-    const updatedLayers = layers.map(layer =>
-      layer.id === layerId ? { ...layer, name: newName } : layer
-    );
+    const updatedLayers = layers.map(layer => layer.id === layerId ? {
+      ...layer,
+      name: newName
+    } : layer);
     onLayerUpdate(updatedLayers);
   };
-
   const createFolder = () => {
     const newFolder: LayerFolder = {
       id: `folder-${Date.now()}`,
@@ -107,66 +97,36 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
     };
     setFolders([...folders, newFolder]);
   };
-
   const toggleFolder = (folderId: string) => {
-    const updateFolders = (folders: LayerFolder[]): LayerFolder[] =>
-      folders.map(folder =>
-        folder.id === folderId
-          ? { ...folder, isOpen: !folder.isOpen }
-          : { ...folder, subFolders: updateFolders(folder.subFolders) }
-      );
+    const updateFolders = (folders: LayerFolder[]): LayerFolder[] => folders.map(folder => folder.id === folderId ? {
+      ...folder,
+      isOpen: !folder.isOpen
+    } : {
+      ...folder,
+      subFolders: updateFolders(folder.subFolders)
+    });
     setFolders(updateFolders(folders));
   };
-
-  const renderLayer = (layer: Layer) => (
-    <div
-      key={layer.id}
-      className={`p-3 rounded-[16px] border transition-colors cursor-pointer ${
-        selectedLayerId === layer.id
-          ? 'border-[#96d8d0] bg-[#96d8d0]/10'
-          : 'border-[#d1e1ea] bg-white hover:bg-[#e9eff4]/50'
-      }`}
-      onClick={() => onLayerSelect(layer.id)}
-    >
+  const renderLayer = (layer: Layer) => <div key={layer.id} className={`p-3 rounded-[16px] border transition-colors cursor-pointer ${selectedLayerId === layer.id ? 'border-[#96d8d0] bg-[#96d8d0]/10' : 'border-[#d1e1ea] bg-white hover:bg-[#e9eff4]/50'}`} onClick={() => onLayerSelect(layer.id)}>
       <div className="flex items-center justify-between mb-2">
-        <Input
-          value={layer.name}
-          onChange={(e) => updateLayerName(layer.id, e.target.value)}
-          className="text-sm font-arabic border-none p-0 h-auto bg-transparent text-black"
-          onClick={(e) => e.stopPropagation()}
-        />
+        <Input value={layer.name} onChange={e => updateLayerName(layer.id, e.target.value)} className="text-sm font-arabic border-none p-0 h-auto bg-transparent text-black" onClick={e => e.stopPropagation()} />
         <div className="flex items-center gap-1">
-          <Button
-            onClick={(e) => { e.stopPropagation(); toggleLayerVisibility(layer.id); }}
-            size="sm"
-            variant="ghost"
-            className="w-6 h-6 p-0 rounded-[8px]"
-          >
-            {layer.visible ? (
-              <Eye className="w-3 h-3 text-[#96d8d0]" />
-            ) : (
-              <EyeOff className="w-3 h-3 text-black/40" />
-            )}
+          <Button onClick={e => {
+          e.stopPropagation();
+          toggleLayerVisibility(layer.id);
+        }} size="sm" variant="ghost" className="w-6 h-6 p-0 rounded-[8px]">
+            {layer.visible ? <Eye className="w-3 h-3 text-[#96d8d0]" /> : <EyeOff className="w-3 h-3 text-black/40" />}
           </Button>
-          <Button
-            onClick={(e) => { e.stopPropagation(); toggleLayerLock(layer.id); }}
-            size="sm"
-            variant="ghost"
-            className="w-6 h-6 p-0 rounded-[8px]"
-          >
-            {layer.locked ? (
-              <Lock className="w-3 h-3 text-[#f1b5b9]" />
-            ) : (
-              <Unlock className="w-3 h-3 text-black" />
-            )}
+          <Button onClick={e => {
+          e.stopPropagation();
+          toggleLayerLock(layer.id);
+        }} size="sm" variant="ghost" className="w-6 h-6 p-0 rounded-[8px]">
+            {layer.locked ? <Lock className="w-3 h-3 text-[#f1b5b9]" /> : <Unlock className="w-3 h-3 text-black" />}
           </Button>
-          <Button
-            onClick={(e) => { e.stopPropagation(); deleteLayer(layer.id); }}
-            size="sm"
-            variant="ghost"
-            className="w-6 h-6 p-0 text-[#f1b5b9] hover:text-[#f1b5b9]/70 rounded-[8px]"
-            disabled={layers.length <= 1}
-          >
+          <Button onClick={e => {
+          e.stopPropagation();
+          deleteLayer(layer.id);
+        }} size="sm" variant="ghost" className="w-6 h-6 p-0 text-[#f1b5b9] hover:text-[#f1b5b9]/70 rounded-[8px]" disabled={layers.length <= 1}>
             <Trash2 className="w-3 h-3" />
           </Button>
         </div>
@@ -175,48 +135,29 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
       <div className="text-xs text-black/70 font-arabic">
         {layer.elements.length} عنصر
       </div>
-    </div>
-  );
-
-  const renderFolder = (folder: LayerFolder, depth = 0) => (
-    <div key={folder.id} style={{ marginLeft: `${depth * 16}px` }}>
+    </div>;
+  const renderFolder = (folder: LayerFolder, depth = 0) => <div key={folder.id} style={{
+    marginLeft: `${depth * 16}px`
+  }}>
       <div className="p-2 rounded-[12px] border border-[#d1e1ea] bg-[#e9eff4]/30 mb-2">
         <div className="flex items-center gap-2">
-          <Button
-            onClick={() => toggleFolder(folder.id)}
-            size="sm"
-            variant="ghost"
-            className="w-4 h-4 p-0"
-          >
-            {folder.isOpen ? (
-              <ChevronDown className="w-3 h-3" />
-            ) : (
-              <ChevronRight className="w-3 h-3" />
-            )}
+          <Button onClick={() => toggleFolder(folder.id)} size="sm" variant="ghost" className="w-4 h-4 p-0">
+            {folder.isOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
           </Button>
-          {folder.isOpen ? (
-            <FolderOpen className="w-4 h-4 text-[#fbe2aa]" />
-          ) : (
-            <Folder className="w-4 h-4 text-[#fbe2aa]" />
-          )}
+          {folder.isOpen ? <FolderOpen className="w-4 h-4 text-[#fbe2aa]" /> : <Folder className="w-4 h-4 text-[#fbe2aa]" />}
           <span className="text-sm font-arabic text-black">{folder.name}</span>
         </div>
         
-        {folder.isOpen && (
-          <div className="mt-2 space-y-1">
+        {folder.isOpen && <div className="mt-2 space-y-1">
             {folder.layers.map(layerId => {
-              const layer = layers.find(l => l.id === layerId);
-              return layer ? renderLayer(layer) : null;
-            })}
+          const layer = layers.find(l => l.id === layerId);
+          return layer ? renderLayer(layer) : null;
+        })}
             {folder.subFolders.map(subFolder => renderFolder(subFolder, depth + 1))}
-          </div>
-        )}
+          </div>}
       </div>
-    </div>
-  );
-
-  return (
-    <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
+    </div>;
+  return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2 text-black">
           <Layers className="w-5 h-5 text-[#96d8d0]" />
@@ -228,26 +169,12 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
         {/* Add New Layer/Folder */}
         <div className="space-y-2">
           <div className="flex gap-2">
-            <Input
-              value={newLayerName}
-              onChange={(e) => setNewLayerName(e.target.value)}
-              placeholder="اسم الطبقة الجديدة"
-              className="flex-1 font-arabic text-sm rounded-[16px] border-[#d1e1ea] text-black placeholder:text-black/50"
-              onKeyPress={(e) => e.key === 'Enter' && addNewLayer()}
-            />
-            <Button
-              onClick={addNewLayer}
-              size="sm"
-              className="rounded-[16px] bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none"
-            >
+            <Input value={newLayerName} onChange={e => setNewLayerName(e.target.value)} placeholder="اسم الطبقة الجديدة" className="flex-1 font-arabic text-sm rounded-[16px] border-[#d1e1ea] text-black placeholder:text-black/50" onKeyPress={e => e.key === 'Enter' && addNewLayer()} />
+            <Button onClick={addNewLayer} size="sm" className="rounded-[16px] bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none">
               <Plus className="w-4 h-4" />
             </Button>
           </div>
-          <Button
-            onClick={createFolder}
-            size="sm"
-            className="w-full rounded-[16px] bg-[#fbe2aa] hover:bg-[#fbe2aa]/80 text-black border-none"
-          >
+          <Button onClick={createFolder} size="sm" className="w-full rounded-[16px] bg-[#fbe2aa] hover:bg-[#fbe2aa]/80 text-black border-none">
             <Folder className="w-4 h-4 mr-2" />
             إنشاء ملف جديد
           </Button>
@@ -265,22 +192,11 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
           {folders.map(folder => renderFolder(folder))}
           
           {/* Ungrouped Layers */}
-          {layers
-            .filter(layer => !folders.some(folder => folder.layers.includes(layer.id)))
-            .map(layer => renderLayer(layer))
-          }
+          {layers.filter(layer => !folders.some(folder => folder.layers.includes(layer.id))).map(layer => renderLayer(layer))}
         </div>
 
         {/* Tips */}
-        <div className="bg-[#bdeed3]/30 p-3 rounded-[16px] border border-[#bdeed3]/50">
-          <div className="text-xs text-black font-arabic space-y-1">
-            <div>📚 سحب وإفلات الطبقات لإعادة الترتيب</div>
-            <div>👁️ إخفاء/إظهار الطبقات</div>
-            <div>🔒 قفل الطبقات للحماية</div>
-            <div>📁 تجميع الطبقات في ملفات</div>
-          </div>
-        </div>
+        
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
