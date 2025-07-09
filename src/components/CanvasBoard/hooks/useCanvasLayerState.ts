@@ -1,7 +1,7 @@
 
 import { useState, useCallback } from 'react';
 
-interface Layer {
+export interface Layer {
   id: string;
   name: string;
   visible: boolean;

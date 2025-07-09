@@ -1,6 +1,9 @@
 import React from 'react';
-import { CollabBar } from './';
 
 export const CanvasCollaborationSection: React.FC = () => {
-  return <CollabBar />;
+  return (
+    <div className="fixed top-24 right-6 z-40">
+      {/* سيتم إضافة لوحة التعاون هنا لاحقاً */}
+    </div>
+  );
 };

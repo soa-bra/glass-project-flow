@@ -15,14 +15,7 @@ import {
   EnhancedCommentPanel
 } from '../panels/enhanced';
 import { CanvasElement } from '../types';
-
-interface Layer {
-  id: string;
-  name: string;
-  visible: boolean;
-  locked: boolean;
-  elements: string[];
-}
+import { Layer } from '../hooks/useCanvasLayerState';
 
 interface ToolPanelManagerProps {
   selectedTool: string;

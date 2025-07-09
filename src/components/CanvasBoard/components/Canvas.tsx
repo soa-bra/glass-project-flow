@@ -2,8 +2,6 @@ import React from 'react';
 import { CanvasElement } from '../types';
 import { CanvasGrid } from './CanvasGrid';
 import { CanvasElement as CanvasElementComponent } from './CanvasElement';
-import { CanvasDrawingPreview } from './CanvasDrawingPreview';
-import { CanvasStatusBar } from './CanvasStatusBar';
 
 interface CanvasProps {
   showGrid: boolean;
@@ -121,28 +119,37 @@ const Canvas: React.FC<CanvasProps> = ({
           />
         ))}
 
-        {/* معاينات الرسم */}
-        <CanvasDrawingPreview
-          isDrawing={isDrawing}
-          drawStart={drawStart}
-          drawEnd={drawEnd}
-          selectedTool={selectedTool}
-          isSelecting={isSelecting}
-          selectionBox={selectionBox}
-        />
+        {/* معاينة الرسم البسيطة */}
+        {isDrawing && drawStart && drawEnd && (
+          <div
+            className="absolute border-2 border-blue-500 pointer-events-none"
+            style={{
+              left: Math.min(drawStart.x, drawEnd.x),
+              top: Math.min(drawStart.y, drawEnd.y),
+              width: Math.abs(drawEnd.x - drawStart.x),
+              height: Math.abs(drawEnd.y - drawStart.y),
+            }}
+          />
+        )}
+        
+        {/* معاينة التحديد */}
+        {isSelecting && selectionBox && (
+          <div
+            className="absolute border border-blue-400 bg-blue-100/20 pointer-events-none"
+            style={{
+              left: Math.min(selectionBox.start.x, selectionBox.end.x),
+              top: Math.min(selectionBox.start.y, selectionBox.end.y),
+              width: Math.abs(selectionBox.end.x - selectionBox.start.x),
+              height: Math.abs(selectionBox.end.y - selectionBox.start.y),
+            }}
+          />
+        )}
       </div>
 
-      {/* شريط الحالة السفلي */}
-      <CanvasStatusBar
-        elements={elements}
-        selectedElementId={selectedElementId}
-        zoom={zoom}
-        selectedTool={selectedTool}
-        showGrid={showGrid}
-        snapEnabled={snapEnabled}
-        onToggleGrid={onToggleGrid}
-        onToggleSnap={onToggleSnap}
-      />
+      {/* شريط المعلومات البسيط */}
+      <div className="absolute bottom-2 left-2 bg-black/80 text-white px-3 py-1 rounded-lg text-xs font-arabic">
+        العناصر: {elements.length} | التكبير: {zoom}% | الأداة: {selectedTool}
+      </div>
     </div>
   );
 };

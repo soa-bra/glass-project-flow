@@ -1,5 +1,4 @@
 import React from 'react';
-import { Inspector } from './';
 import { CanvasElement } from '../types';
 
 interface CanvasInspectorSectionProps {
@@ -16,11 +15,8 @@ export const CanvasInspectorSection: React.FC<CanvasInspectorSectionProps> = ({
   onDeleteElement
 }) => {
   return (
-    <Inspector 
-      selectedElementId={selectedElementId}
-      elements={elements}
-      onUpdateElement={onUpdateElement}
-      onDeleteElement={onDeleteElement}
-    />
+    <div className="fixed top-24 left-6 z-40">
+      {/* سيتم إضافة لوحة الخصائص هنا لاحقاً */}
+    </div>
   );
 };
