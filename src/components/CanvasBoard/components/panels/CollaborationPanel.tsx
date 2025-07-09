@@ -129,7 +129,7 @@ export const CollaborationPanel: React.FC = () => {
                 </Button>
               </div>
               
-              <div className="space-y-2 max-h-[calc(100%-3rem)] overflow-y-auto">
+              <div className="space-y-2 max-h-[calc(100%-3rem)] overflow-y-auto py-0 my-[14px]">
                 {participants.map(participant => <div key={participant.id} className="flex items-center gap-3 p-2 rounded-[12px] bg-white border border-[#d1e1ea]">
                     <div className="relative">
                       <Avatar className="w-8 h-8">
