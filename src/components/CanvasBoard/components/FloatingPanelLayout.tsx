@@ -93,12 +93,18 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
   return (
     <>
       {/* AI Assistant Panel - Bottom Right (25% height) */}
-      <div className="fixed bottom-6 right-6 w-80 h-[25vh] z-40">
+      <div 
+        className="fixed bottom-6 right-6 w-80 h-[25vh] z-40 pointer-events-auto"
+        style={{ backdropFilter: 'blur(8px)' }}
+      >
         <AIAssistantPanel />
       </div>
 
       {/* Layers Panel - Above AI Assistant (50% height) */}
-      <div className="fixed bottom-[27vh] right-6 w-80 h-[50vh] z-40">
+      <div 
+        className="fixed bottom-[27vh] right-6 w-80 h-[50vh] z-40 pointer-events-auto"
+        style={{ backdropFilter: 'blur(8px)' }}
+      >
         <LayersPanel
           layers={layers}
           selectedLayerId={selectedLayerId}
@@ -109,7 +115,10 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
       </div>
 
       {/* Element Style Panel - Top Left (25% height) */}
-      <div className="fixed top-6 left-6 w-80 h-[25vh] z-40">
+      <div 
+        className="fixed top-6 left-6 w-80 h-[25vh] z-40 pointer-events-auto"
+        style={{ backdropFilter: 'blur(8px)' }}
+      >
         <ElementStylePanel
           selectedElement={selectedElementId ? elements.find(el => el.id === selectedElementId) : null}
           onUpdateElement={onUpdateElement}
@@ -117,12 +126,18 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
       </div>
 
       {/* Collaboration Panel - Top Right (25% height) */}
-      <div className="fixed top-6 right-6 w-80 h-[25vh] z-40">
+      <div 
+        className="fixed top-6 right-6 w-80 h-[25vh] z-40 pointer-events-auto"
+        style={{ backdropFilter: 'blur(8px)' }}
+      >
         <CollaborationPanel />
       </div>
 
       {/* Tool Customization Panel - Left Side (75% height) */}
-      <div className="fixed top-[27vh] left-6 w-80 h-[75vh] z-40">
+      <div 
+        className="fixed top-[27vh] left-6 w-80 h-[75vh] z-40 pointer-events-auto"
+        style={{ backdropFilter: 'blur(8px)' }}
+      >
         <ToolCustomizationPanel
           selectedTool={selectedTool}
           selectedElements={selectedElements}

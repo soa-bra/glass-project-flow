@@ -38,7 +38,12 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
   const handleColorChange = (color: string) => {
     setSelectedColor(color);
     if (selectedElement) {
-      onUpdateElement(selectedElement.id, { fill: color });
+      onUpdateElement(selectedElement.id, { 
+        style: { 
+          ...selectedElement.style, 
+          fill: color 
+        } 
+      });
     }
   };
 
@@ -46,21 +51,36 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
     const width = value[0];
     setBorderWidth(width);
     if (selectedElement) {
-      onUpdateElement(selectedElement.id, { strokeWidth: width });
+      onUpdateElement(selectedElement.id, { 
+        style: { 
+          ...selectedElement.style, 
+          strokeWidth: width 
+        } 
+      });
     }
   };
 
   const handleBorderColorChange = (color: string) => {
     setBorderColor(color);
     if (selectedElement) {
-      onUpdateElement(selectedElement.id, { stroke: color });
+      onUpdateElement(selectedElement.id, { 
+        style: { 
+          ...selectedElement.style, 
+          stroke: color 
+        } 
+      });
     }
   };
 
   const handleBorderStyleChange = (style: string) => {
     setBorderStyle(style);
     if (selectedElement) {
-      onUpdateElement(selectedElement.id, { strokeDashArray: style === 'dashed' ? [5, 5] : style === 'dotted' ? [2, 2] : [] });
+      onUpdateElement(selectedElement.id, { 
+        style: { 
+          ...selectedElement.style, 
+          strokeDashArray: style === 'dashed' ? [5, 5] : style === 'dotted' ? [2, 2] : [] 
+        } 
+      });
     }
   };
 
