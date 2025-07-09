@@ -1,5 +1,6 @@
 import React from 'react';
-import { Canvas } from './';
+import Canvas from './Canvas';
+import CollaborativeCanvas from '../collaboration/CollaborativeCanvas';
 import { CanvasElement } from '../types';
 
 interface CanvasWrapperProps {
@@ -18,6 +19,9 @@ interface CanvasWrapperProps {
   isResizing: boolean;
   isSelecting?: boolean;
   selectionBox?: { start: { x: number; y: number }; end: { x: number; y: number } } | null;
+  projectId?: string;
+  currentUserId?: string;
+  enableCollaboration?: boolean;
   setSelectedElementId: (id: string | null) => void;
   setShowGrid: (show: boolean) => void;
   setSnapEnabled: (enabled: boolean) => void;
@@ -48,6 +52,9 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
   isResizing,
   isSelecting = false,
   selectionBox = null,
+  projectId = 'default',
+  currentUserId = 'user1',
+  enableCollaboration = true,
   setSelectedElementId,
   setShowGrid,
   setSnapEnabled,
@@ -61,6 +68,42 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
   handleResizeMouseDown,
   handleResizeMouseMove
 }) => {
+  if (enableCollaboration) {
+    return (
+      <CollaborativeCanvas
+        showGrid={showGrid}
+        snapEnabled={snapEnabled}
+        zoom={zoom}
+        canvasPosition={canvasPosition}
+        elements={elements}
+        selectedElementId={selectedElementId}
+        selectedTool={selectedTool}
+        canvasRef={canvasRef}
+        isDrawing={isDrawing}
+        drawStart={drawStart}
+        drawEnd={drawEnd}
+        isDragging={isDragging}
+        isResizing={isResizing}
+        isSelecting={isSelecting}
+        selectionBox={selectionBox}
+        projectId={projectId}
+        currentUserId={currentUserId}
+        onCanvasClick={handleCanvasClick}
+        onCanvasMouseDown={handleCanvasMouseDown}
+        onCanvasMouseMove={handleCanvasMouseMove}
+        onCanvasMouseUp={handleCanvasMouseUp}
+        onElementSelect={setSelectedElementId}
+        onElementMouseDown={handleElementMouseDown}
+        onElementMouseMove={handleElementMouseMove}
+        onElementMouseUp={handleElementMouseUp}
+        onResizeMouseDown={handleResizeMouseDown}
+        onResizeMouseMove={handleResizeMouseMove}
+        onToggleGrid={() => setShowGrid(!showGrid)}
+        onToggleSnap={() => setSnapEnabled(!snapEnabled)}
+      />
+    );
+  }
+
   return (
     <Canvas
       showGrid={showGrid}
