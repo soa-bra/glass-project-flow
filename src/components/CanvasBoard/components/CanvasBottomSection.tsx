@@ -1,5 +1,5 @@
 import React from 'react';
-import NewMainToolbar from './NewMainToolbar';
+import { MainToolbar } from './';
 
 interface CanvasBottomSectionProps {
   selectedTool: string;
@@ -11,7 +11,7 @@ export const CanvasBottomSection: React.FC<CanvasBottomSectionProps> = ({
   onToolSelect
 }) => {
   return (
-    <NewMainToolbar
+    <MainToolbar
       selectedTool={selectedTool}
       onToolSelect={onToolSelect}
     />

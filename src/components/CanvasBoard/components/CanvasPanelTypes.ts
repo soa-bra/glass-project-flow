@@ -1,8 +1,12 @@
 import { CanvasElement } from '../types';
-import { Layer } from '../hooks/useCanvasLayerState';
 
-// Re-export Layer type
-export type { Layer };
+export interface Layer {
+  id: string;
+  name: string;
+  visible: boolean;
+  locked: boolean;
+  elements: string[];
+}
 
 export interface CanvasPanelLayoutProps {
   // History props

@@ -1,7 +1,7 @@
 import React from 'react';
 import ToolPanelManager from './ToolPanelManager';
 import { CanvasElement } from '../types';
-import { Layer } from '../hooks/useCanvasLayerState';
+import { Layer } from './CanvasPanelTypes';
 
 interface CanvasToolsSectionProps {
   selectedTool: string;

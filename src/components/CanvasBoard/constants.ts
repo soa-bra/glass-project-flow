@@ -86,12 +86,15 @@ export const GRID_SHAPES = [
 export const GRID_SIZES = [
   { value: 10, label: '10px' },
   { value: 20, label: '20px' },
-  { value: 24, label: '24px' },
   { value: 30, label: '30px' },
-  { value: 40, label: '40px' }
+  { value: 40, label: '40px' },
+  { value: 50, label: '50px' }
 ];
 
+// للتوافق مع الملفات الموجودة
+export const CANVAS_TOOLS = MAIN_TOOLBAR_TOOLS;
+
 export const ELEMENT_COLORS = [
-  '#EF4444', '#3B82F6', '#10B981', '#F59E0B',
-  '#8B5CF6', '#EC4899', '#6366F1', '#F97316'
+  'bg-red-200', 'bg-blue-200', 'bg-green-200', 'bg-yellow-200',
+  'bg-purple-200', 'bg-pink-200', 'bg-indigo-200', 'bg-orange-200'
 ];
