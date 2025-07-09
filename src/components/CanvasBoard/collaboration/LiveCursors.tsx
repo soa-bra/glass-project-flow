@@ -32,14 +32,23 @@ export const LiveCursors: React.FC<LiveCursorsProps> = ({
     broadcastCursor(x, y);
   };
 
+  React.useEffect(() => {
+    const handleDocumentMouseMove = (e: MouseEvent) => {
+      if (!canvasRef.current) return;
+      
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+      const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+      
+      broadcastCursor(x, y);
+    };
+
+    document.addEventListener('mousemove', handleDocumentMouseMove);
+    return () => document.removeEventListener('mousemove', handleDocumentMouseMove);
+  }, [broadcastCursor, zoom, canvasPosition, canvasRef]);
+
   return (
     <>
-      {/* Mouse tracker for broadcasting cursor position */}
-      <div
-        className="absolute inset-0 z-10 pointer-events-none"
-        onMouseMove={handleMouseMove}
-      />
-      
       {/* Other users' cursors */}
       {collaborators
         .filter(collab => collab.isOnline && collab.cursor)
