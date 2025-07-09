@@ -133,9 +133,9 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
         <CollaborationPanel />
       </div>
 
-      {/* Tool Customization Panel - Left Side (75% height) */}
+      {/* Tool Customization Panel - Left Side (70% height) */}
       <div 
-        className="fixed top-[27vh] left-6 w-80 h-[73vh] z-40 pointer-events-auto"
+        className="fixed top-[27vh] left-6 w-80 h-[70vh] z-40 pointer-events-auto"
         style={{ backdropFilter: 'blur(8px)' }}
       >
         <ToolCustomizationPanel
