@@ -2,259 +2,220 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Users, MessageSquare, Mic, MicOff, UserPlus, Send, Volume2, VolumeX } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { useCanvasCollaboration } from '@/hooks/useCanvasCollaboration';
+import { 
+  Users, 
+  MessageSquare, 
+  Send, 
+  UserCheck, 
+  Clock, 
+  Wifi,
+  WifiOff,
+  Share2,
+  Settings
+} from 'lucide-react';
+import { toast } from 'sonner';
 
-interface Participant {
-  id: string;
-  name: string;
-  role: 'host' | 'user' | 'guest';
-  avatar?: string;
-  isOnline: boolean;
-  isSpeaking?: boolean;
+interface CollaborationPanelProps {
+  projectId?: string;
+  currentUserId?: string;
 }
 
-interface ChatMessage {
-  id: string;
-  userId: string;
-  userName: string;
-  message: string;
-  timestamp: Date;
-}
+export const CollaborationPanel: React.FC<CollaborationPanelProps> = ({
+  projectId = 'default',
+  currentUserId = 'user1'
+}) => {
+  const [message, setMessage] = useState('');
+  const [chatMessages, setChatMessages] = useState<Array<{
+    id: string;
+    userId: string;
+    message: string;
+    timestamp: Date;
+    userName: string;
+  }>>([]);
 
-export const CollaborationPanel: React.FC = () => {
-  const [participants] = useState<Participant[]>([
-    { id: '1', name: 'أحمد محمد', role: 'host', isOnline: true },
-    { id: '2', name: 'فاطمة علي', role: 'user', isOnline: true, isSpeaking: true },
-    { id: '3', name: 'محمد خالد', role: 'user', isOnline: true },
-    { id: '4', name: 'سارة أحمد', role: 'guest', isOnline: false }
-  ]);
-
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: '1', userId: '2', userName: 'فاطمة علي', message: 'مرحباً بالجميع، كيف يمكننا تطوير هذا المشروع؟', timestamp: new Date() },
-    { id: '2', userId: '1', userName: 'أحمد محمد', message: 'أعتقد أننا بحاجة لإضافة المزيد من التفاصيل', timestamp: new Date() }
-  ]);
-
-  const [newMessage, setNewMessage] = useState('');
-  const [isMuted, setIsMuted] = useState(false);
-  const [isDeafened, setIsDeafened] = useState(false);
+  const { 
+    collaborators, 
+    isConnected, 
+    sendMessage,
+    lockedElements 
+  } = useCanvasCollaboration({
+    projectId,
+    userId: currentUserId,
+    enable: true
+  });
 
   const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
-    
-    const message: ChatMessage = {
-      id: Date.now().toString(),
-      userId: '1',
-      userName: 'أحمد محمد',
-      message: newMessage,
-      timestamp: new Date()
-    };
-    
-    setMessages([...messages, message]);
-    setNewMessage('');
-  };
+    if (!message.trim()) {
+      toast.error('يرجى كتابة رسالة');
+      return;
+    }
 
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case 'host': return 'bg-[#96d8d0]';
-      case 'user': return 'bg-[#a4e2f6]';
-      case 'guest': return 'bg-[#fbe2aa]';
-      default: return 'bg-[#d1e1ea]';
+    const newMessage = sendMessage(message);
+    if (newMessage) {
+      setChatMessages(prev => [...prev, {
+        ...newMessage,
+        userName: 'أنت'
+      }]);
+      setMessage('');
+      toast.success('تم إرسال الرسالة');
     }
   };
 
-  const getRoleLabel = (role: string) => {
-    switch (role) {
-      case 'host': return 'مضيف';
-      case 'user': return 'مستخدم';
-      case 'guest': return 'ضيف';
-      default: return 'غير محدد';
-    }
+  const handleShareProject = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success('تم نسخ رابط المشروع');
   };
+
+  const onlineCount = collaborators.filter(c => c.isOnline).length;
+  const totalCount = collaborators.length + 1; // +1 for current user
 
   return (
     <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2 text-black">
           <Users className="w-5 h-5 text-[#96d8d0]" />
-          التعاون والمشاركة
+          التعاون المباشر
+          {isConnected ? (
+            <Wifi className="w-4 h-4 text-green-500" />
+          ) : (
+            <WifiOff className="w-4 h-4 text-red-500" />
+          )}
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="h-[calc(100%-4rem)] p-0">
-        <Tabs defaultValue="participants" className="h-full flex flex-col">
-          <TabsList className="grid w-full grid-cols-3 bg-transparent p-1 mx-4">
-            <TabsTrigger 
-              value="participants" 
-              className="rounded-[12px] text-xs font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:text-black"
-            >
-              المشاركين
-            </TabsTrigger>
-            <TabsTrigger 
-              value="chat" 
-              className="rounded-[12px] text-xs font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:text-black"
-            >
-              المحادثة
-            </TabsTrigger>
-            <TabsTrigger 
-              value="voice" 
-              className="rounded-[12px] text-xs font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:text-black"
-            >
-              الصوت
-            </TabsTrigger>
-          </TabsList>
-
-          <div className="flex-1 px-4 pb-4">
-            <TabsContent value="participants" className="h-full space-y-3 mt-0">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-arabic text-black">المشاركين ({participants.length})</span>
-                <Button size="sm" className="rounded-[12px] bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none">
-                  <UserPlus className="w-4 h-4 mr-1" />
-                  دعوة
-                </Button>
-              </div>
-              
-              <div className="space-y-2 max-h-[calc(100%-3rem)] overflow-y-auto">
-                {participants.map((participant) => (
-                  <div
-                    key={participant.id}
-                    className="flex items-center gap-3 p-2 rounded-[12px] bg-white border border-[#d1e1ea]"
-                  >
-                    <div className="relative">
-                      <Avatar className="w-8 h-8">
-                        <AvatarImage src={participant.avatar} />
-                        <AvatarFallback className="text-xs text-black">
-                          {participant.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
-                        participant.isOnline ? 'bg-green-500' : 'bg-gray-400'
-                      }`} />
-                    </div>
-                    
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-arabic text-black">{participant.name}</span>
-                        {participant.isSpeaking && (
-                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                        )}
-                      </div>
-                      <Badge className={`text-xs font-arabic ${getRoleColor(participant.role)} text-black border-none`}>
-                        {getRoleLabel(participant.role)}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="chat" className="h-full flex flex-col mt-0 space-y-3">
-              <div className="flex-1 bg-white rounded-[16px] border border-[#d1e1ea] p-3 overflow-y-auto space-y-2">
-                {messages.map((message) => (
-                  <div key={message.id} className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-arabic font-medium text-black">{message.userName}</span>
-                      <span className="text-xs text-black/50">
-                        {message.timestamp.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                    <p className="text-sm font-arabic text-black bg-[#e9eff4] p-2 rounded-[8px]">
-                      {message.message}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="flex gap-2">
-                <Input
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="اكتب رسالتك..."
-                  className="flex-1 font-arabic text-sm rounded-[12px] border-[#d1e1ea] text-black placeholder:text-black/50"
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  size="sm"
-                  className="rounded-[12px] bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="voice" className="h-full space-y-4 mt-0">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-[#96d8d0] rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Mic className="w-8 h-8 text-black" />
-                </div>
-                <p className="text-sm font-arabic text-black">المحادثة الصوتية نشطة</p>
-                <p className="text-xs text-black/70">3 أشخاص متصلين</p>
-              </div>
-              
-              <Separator className="bg-[#d1e1ea]" />
-              
-              <div className="space-y-3">
-                <h4 className="text-sm font-arabic font-medium text-black">أدوات التحكم الصوتي</h4>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    onClick={() => setIsMuted(!isMuted)}
-                    variant={isMuted ? "destructive" : "outline"}
-                    size="sm"
-                    className={`rounded-[12px] font-arabic ${
-                      isMuted 
-                        ? 'bg-[#f1b5b9] hover:bg-[#f1b5b9]/80 text-black border-none' 
-                        : 'border-[#d1e1ea] text-black hover:bg-[#e9eff4]/50'
-                    }`}
-                  >
-                    {isMuted ? <MicOff className="w-4 h-4 mr-1" /> : <Mic className="w-4 h-4 mr-1" />}
-                    {isMuted ? 'كتم' : 'تشغيل'}
-                  </Button>
-                  
-                  <Button
-                    onClick={() => setIsDeafened(!isDeafened)}
-                    variant={isDeafened ? "destructive" : "outline"}
-                    size="sm"
-                    className={`rounded-[12px] font-arabic ${
-                      isDeafened 
-                        ? 'bg-[#f1b5b9] hover:bg-[#f1b5b9]/80 text-black border-none' 
-                        : 'border-[#d1e1ea] text-black hover:bg-[#e9eff4]/50'
-                    }`}
-                  >
-                    {isDeafened ? <VolumeX className="w-4 h-4 mr-1" /> : <Volume2 className="w-4 h-4 mr-1" />}
-                    {isDeafened ? 'صامت' : 'سماع'}
-                  </Button>
-                </div>
-                
-                <Button
-                  size="sm"
-                  className="w-full rounded-[12px] bg-[#f1b5b9] hover:bg-[#f1b5b9]/80 text-black border-none font-arabic"
-                >
-                  إنهاء المكالمة
-                </Button>
-              </div>
-              
-              <Separator className="bg-[#d1e1ea]" />
-              
-              <div className="space-y-2">
-                <h5 className="text-xs font-arabic font-medium text-black">المتحدثين الآن</h5>
-                {participants
-                  .filter(p => p.isSpeaking)
-                  .map(participant => (
-                    <div key={participant.id} className="flex items-center gap-2 text-xs">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                      <span className="font-arabic text-black">{participant.name}</span>
-                    </div>
-                  ))
-                }
-              </div>
-            </TabsContent>
+      <CardContent className="space-y-4 h-[calc(100%-4rem)] flex flex-col">
+        {/* Connection Status */}
+        <div className="flex items-center justify-between p-3 bg-[#e9eff4] rounded-[16px]">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
+            <span className="text-sm text-black font-medium">
+              {isConnected ? 'متصل' : 'غير متصل'}
+            </span>
           </div>
-        </Tabs>
+          <Badge variant="outline" className="text-xs bg-white/50">
+            {onlineCount}/{totalCount} متصل
+          </Badge>
+        </div>
+
+        {/* Active Collaborators */}
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium text-black flex items-center gap-2">
+            <UserCheck className="w-4 h-4" />
+            المتعاونين النشطين
+          </h4>
+          
+          <div className="space-y-2 max-h-20 overflow-y-auto">
+            {/* Current user */}
+            <div className="flex items-center gap-2 p-2 bg-[#96d8d0]/20 rounded-[12px]">
+              <Avatar className="w-6 h-6">
+                <AvatarFallback className="text-xs bg-[#96d8d0] text-black">أ</AvatarFallback>
+              </Avatar>
+              <span className="text-xs text-black font-medium">أنت (المضيف)</span>
+              <div className="w-2 h-2 bg-green-400 rounded-full ml-auto"></div>
+            </div>
+
+            {collaborators.map((collab) => (
+              <div key={collab.id} className="flex items-center gap-2 p-2 bg-white/30 rounded-[12px]">
+                <Avatar className="w-6 h-6" style={{ borderColor: collab.color }}>
+                  <AvatarFallback 
+                    className="text-xs text-white"
+                    style={{ backgroundColor: collab.color }}
+                  >
+                    {collab.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-xs text-black">{collab.name}</span>
+                <div className={`w-2 h-2 rounded-full ml-auto ${collab.isOnline ? 'bg-green-400' : 'bg-gray-400'}`}></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Separator className="bg-[#d1e1ea]" />
+
+        {/* Quick Actions */}
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium text-black">إجراءات سريعة</h4>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              onClick={handleShareProject}
+              size="sm"
+              className="rounded-[16px] bg-[#a4e2f6] hover:bg-[#a4e2f6]/80 text-black border-none"
+            >
+              <Share2 className="w-4 h-4 mr-1" />
+              مشاركة
+            </Button>
+            <Button
+              size="sm"
+              className="rounded-[16px] bg-[#bdeed3] hover:bg-[#bdeed3]/80 text-black border-none"
+            >
+              <Settings className="w-4 h-4 mr-1" />
+              إعدادات
+            </Button>
+          </div>
+        </div>
+
+        <Separator className="bg-[#d1e1ea]" />
+
+        {/* Mini Chat */}
+        <div className="flex-1 flex flex-col space-y-2">
+          <h4 className="text-sm font-medium text-black flex items-center gap-2">
+            <MessageSquare className="w-4 h-4" />
+            محادثة سريعة
+          </h4>
+          
+          {/* Chat Messages */}
+          <div className="flex-1 bg-[#e9eff4] p-2 rounded-[16px] min-h-16 max-h-24 overflow-y-auto">
+            {chatMessages.length === 0 ? (
+              <div className="text-xs text-black/60 text-center">
+                لا توجد رسائل بعد
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {chatMessages.map((msg) => (
+                  <div key={msg.id} className="text-xs">
+                    <span className="font-medium text-black">{msg.userName}:</span>
+                    <span className="text-black/80 ml-1">{msg.message}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Message Input */}
+          <div className="flex gap-2">
+            <Input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="اكتب رسالة..."
+              className="flex-1 font-arabic text-xs rounded-[16px] border-[#d1e1ea] text-black placeholder:text-black/50"
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            />
+            <Button
+              onClick={handleSendMessage}
+              size="sm"
+              className="rounded-[16px] bg-[#fbe2aa] hover:bg-[#fbe2aa]/80 text-black border-none px-3"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Status Info */}
+        {lockedElements.length > 0 && (
+          <div className="p-2 bg-[#fbe2aa]/20 rounded-[12px]">
+            <div className="flex items-center gap-2">
+              <Clock className="w-3 h-3 text-orange-600" />
+              <span className="text-xs text-black">
+                {lockedElements.length} عنصر قيد التحرير
+              </span>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
