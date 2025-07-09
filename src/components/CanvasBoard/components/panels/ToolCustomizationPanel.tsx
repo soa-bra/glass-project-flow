@@ -147,7 +147,7 @@ export const ToolCustomizationPanel: React.FC<ToolCustomizationPanelProps> = ({
         return <SmartElementsToolPanel />;
       default:
         return <div className="flex items-center justify-center h-full">
-            <div className="text-center my-0 px-0 mx-[35px] py-0">
+            <div className="text-center my-0 px-0 py-[240px] mx-[44px]">
               <Settings className="w-12 h-12 text-[#96d8d0] mx-auto mb-3" />
               <p className="text-sm font-arabic text-black/70">
                 اختر أداة لتخصيص إعداداتها
@@ -157,7 +157,7 @@ export const ToolCustomizationPanel: React.FC<ToolCustomizationPanelProps> = ({
     }
   };
   const ToolIcon = getToolIcon(selectedTool);
-  return <Card className="w-full h-20 bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
+  return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2 text-black">
           
