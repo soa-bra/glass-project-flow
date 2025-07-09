@@ -147,7 +147,7 @@ export const ToolCustomizationPanel: React.FC<ToolCustomizationPanelProps> = ({
         return <SmartElementsToolPanel />;
       default:
         return <div className="flex items-center justify-center h-full">
-            <div className="text-center px-0 mx-[13px] my-[240px] py-0">
+            <div className="text-center px-0 py-0 my-0 mx-[14px]">
               <Settings className="w-12 h-12 text-[#96d8d0] mx-auto mb-3" />
               <p className="text-sm font-arabic text-black/70">
                 اختر أداة لتخصيص إعداداتها
