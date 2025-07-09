@@ -5,10 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Bot, Play, Search, Trash2, Send } from 'lucide-react';
 import { toast } from 'sonner';
-
 export const AIAssistantPanel: React.FC = () => {
   const [message, setMessage] = useState('');
-
   const handleSendMessage = () => {
     if (!message.trim()) {
       toast.error('يرجى كتابة رسالة');
@@ -17,24 +15,19 @@ export const AIAssistantPanel: React.FC = () => {
     toast.success('تم إرسال الرسالة للمساعد الذكي');
     setMessage('');
   };
-
   const handleFinishWorkIntelligently = () => {
     toast.info('تم تشغيل أداة إنهاء العمل بذكاء');
   };
-
   const handleSmartReview = () => {
     toast.info('تم تشغيل أداة المراجعة الذكية');
   };
-
   const handleSmartCleanup = () => {
     toast.info('تم تشغيل أداة التنظيف الذكية');
   };
-
-  return (
-    <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
+  return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2 text-black">
-          <Bot className="w-5 h-5 text-[#96d8d0]" />
+          
           المساعد الذكي
         </CardTitle>
       </CardHeader>
@@ -42,28 +35,13 @@ export const AIAssistantPanel: React.FC = () => {
       <CardContent className="space-y-4 h-[calc(100%-4rem)] flex flex-col">
         {/* Smart Commands Row */}
         <div className="flex gap-2 justify-between">
-          <Button
-            onClick={handleFinishWorkIntelligently}
-            size="sm"
-            className="flex-1 rounded-[16px] bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none"
-            title="إنهاء العمل بذكاء"
-          >
+          <Button onClick={handleFinishWorkIntelligently} size="sm" className="flex-1 rounded-[16px] bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none" title="إنهاء العمل بذكاء">
             <Play className="w-4 h-4" />
           </Button>
-          <Button
-            onClick={handleSmartReview}
-            size="sm"
-            className="flex-1 rounded-[16px] bg-[#a4e2f6] hover:bg-[#a4e2f6]/80 text-black border-none"
-            title="المراجعة الذكية"
-          >
+          <Button onClick={handleSmartReview} size="sm" className="flex-1 rounded-[16px] bg-[#a4e2f6] hover:bg-[#a4e2f6]/80 text-black border-none" title="المراجعة الذكية">
             <Search className="w-4 h-4" />
           </Button>
-          <Button
-            onClick={handleSmartCleanup}
-            size="sm"
-            className="flex-1 rounded-[16px] bg-[#bdeed3] hover:bg-[#bdeed3]/80 text-black border-none"
-            title="التنظيف الذكية"
-          >
+          <Button onClick={handleSmartCleanup} size="sm" className="flex-1 rounded-[16px] bg-[#bdeed3] hover:bg-[#bdeed3]/80 text-black border-none" title="التنظيف الذكية">
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
@@ -82,23 +60,12 @@ export const AIAssistantPanel: React.FC = () => {
           </div>
           
           <div className="flex gap-2">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="اكتب رسالتك هنا..."
-              className="flex-1 font-arabic text-sm rounded-[16px] border-[#d1e1ea] text-black placeholder:text-black/50"
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            />
-            <Button
-              onClick={handleSendMessage}
-              size="sm"
-              className="rounded-[16px] bg-[#fbe2aa] hover:bg-[#fbe2aa]/80 text-black border-none px-3"
-            >
+            <Input value={message} onChange={e => setMessage(e.target.value)} placeholder="اكتب رسالتك هنا..." className="flex-1 font-arabic text-sm rounded-[16px] border-[#d1e1ea] text-black placeholder:text-black/50" onKeyPress={e => e.key === 'Enter' && handleSendMessage()} />
+            <Button onClick={handleSendMessage} size="sm" className="rounded-[16px] bg-[#fbe2aa] hover:bg-[#fbe2aa]/80 text-black border-none px-3">
               <Send className="w-4 h-4" />
             </Button>
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };

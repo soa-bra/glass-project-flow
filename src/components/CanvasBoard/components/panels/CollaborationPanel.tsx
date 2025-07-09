@@ -100,7 +100,7 @@ export const CollaborationPanel: React.FC = () => {
   return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2 text-black">
-          <Users className="w-5 h-5 text-[#96d8d0]" />
+          
           التعاون والمشاركة
         </CardTitle>
       </CardHeader>

@@ -127,7 +127,7 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
           e.stopPropagation();
           deleteLayer(layer.id);
         }} size="sm" variant="ghost" className="w-6 h-6 p-0 text-[#f1b5b9] hover:text-[#f1b5b9]/70 rounded-[8px]" disabled={layers.length <= 1}>
-            <Trash2 className="w-3 h-3" />
+            <Trash2 className="w-3 h-2" />
           </Button>
         </div>
       </div>
@@ -157,15 +157,15 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
           </div>}
       </div>
     </div>;
-  return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
+  return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden my-[140px] py-0">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2 text-black">
-          <Layers className="w-5 h-5 text-[#96d8d0]" />
+          
           إدارة الطبقات
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="space-y-4 h-[calc(100%-4rem)] flex flex-col">
+      <CardContent className="space-y-4 h-[calc(100%-4rem)] flex flex-col my-0">
         {/* Add New Layer/Folder */}
         <div className="space-y-2">
           <div className="flex gap-2">
@@ -183,7 +183,7 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
         <Separator className="bg-[#d1e1ea]" />
 
         {/* Layers and Folders List */}
-        <div className="flex-1 overflow-y-auto space-y-2">
+        <div className="flex-1 overflow-y-auto space-y-2 py-0">
           <h4 className="text-sm font-medium font-arabic mb-2 text-black">
             الطبقات والملفات ({layers.length + folders.length})
           </h4>
