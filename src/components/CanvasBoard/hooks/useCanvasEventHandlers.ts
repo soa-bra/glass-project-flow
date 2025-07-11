@@ -15,15 +15,22 @@ export const useCanvasEventHandlers = (
   updateElement: (elementId: string, updates: any) => void
 ) => {
   const handleCanvasClick = useCallback((e: React.MouseEvent) => {
-    setSelectedElementId(null);
-    setSelectedElementIds([]);
-  }, [setSelectedElementId, setSelectedElementIds]);
+    if (selectedTool === 'select') {
+      setSelectedElementId(null);
+      setSelectedElementIds([]);
+    }
+  }, [selectedTool, setSelectedElementId, setSelectedElementIds]);
 
   const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
-    if (selectedTool === 'select') return;
+    if (selectedTool === 'select') {
+      interaction.handleSelectionStart(e, zoom, canvasPosition, snapEnabled);
+      return;
+    }
 
     if (selectedTool === 'text') {
-      interaction.handleTextClick(e, zoom, canvasPosition, addElement, snapEnabled);
+      interaction.handleTextClick(e, zoom, canvasPosition, (type: string, x: number, y: number) => {
+        addElement(type, x, y);
+      }, snapEnabled);
       return;
     }
 
@@ -39,6 +46,11 @@ export const useCanvasEventHandlers = (
   }, [selectedTool, zoom, canvasPosition, addElement, snapEnabled, interaction]);
 
   const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
+    if (selectedTool === 'select' && interaction.isSelecting) {
+      interaction.handleSelectionMove(e, zoom, canvasPosition, snapEnabled);
+      return;
+    }
+
     if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && interaction.isDrawing) {
       interaction.handleDragCreateMove(e, zoom, canvasPosition, snapEnabled);
       return;
@@ -48,26 +60,29 @@ export const useCanvasEventHandlers = (
       interaction.handleSmartPenMove(e, zoom, canvasPosition, snapEnabled);
       return;
     }
-
-    if (selectedTool === 'select' && interaction.isSelecting) {
-      interaction.handleSelectionMove(e, zoom, canvasPosition, snapEnabled);
-      return;
-    }
   }, [selectedTool, zoom, canvasPosition, snapEnabled, interaction]);
 
   const handleCanvasMouseUp = useCallback(() => {
+    if (selectedTool === 'select' && interaction.isSelecting) {
+      interaction.handleSelectionEnd(elements, setSelectedElementIds);
+      return;
+    }
+
     if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && interaction.isDrawing) {
-      interaction.handleDragCreateEnd(selectedTool, addElement);
+      interaction.handleDragCreateEnd(selectedTool, (type: string, x: number, y: number, width: number, height: number) => {
+        addElement(type, x, y, width, height);
+      });
       return;
     }
 
     if (selectedTool === 'smart-pen' && interaction.isDrawing) {
-      interaction.handleSmartPenEnd(addElement);
-      return;
-    }
-
-    if (selectedTool === 'select' && interaction.isSelecting) {
-      interaction.handleSelectionEnd(elements, setSelectedElementIds);
+      interaction.handleSmartPenEnd((type: string, startX: number, startY: number, endX: number, endY: number) => {
+        const width = Math.abs(endX - startX);
+        const height = Math.abs(endY - startY);
+        const x = Math.min(startX, endX);
+        const y = Math.min(startY, endY);
+        addElement(type, x, y, Math.max(width, 20), Math.max(height, 20));
+      });
       return;
     }
   }, [selectedTool, elements, addElement, setSelectedElementIds, interaction]);
@@ -85,11 +100,12 @@ export const useCanvasEventHandlers = (
   }, [interaction]);
 
   const handleResizeMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
-    // Logic for resize start
+    e.stopPropagation();
+    // Resize logic will be implemented later
   }, []);
 
   const handleResizeMouseMove = useCallback((e: React.MouseEvent) => {
-    // Logic for resize move
+    // Resize logic will be implemented later
   }, []);
 
   return {
