@@ -55,14 +55,6 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     setGridSize(size);
   }, []);
 
-  const handleAlignToGrid = useCallback(() => {
-    elements.forEach(element => {
-      const alignedX = Math.round(element.x / gridSize) * gridSize;
-      const alignedY = Math.round(element.y / gridSize) * gridSize;
-      updateElement(element.id, { x: alignedX, y: alignedY });
-    });
-  }, [elements, gridSize, updateElement]);
-
   // Wrapper functions for undo/redo with correct signatures
   const wrappedUndo = useCallback(() => {
     undo(elements, setElements);
@@ -133,7 +125,6 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     // Element actions
     ...elementActions,
     handleGridSizeChange,
-    handleAlignToGrid,
     
     // File actions
     ...fileActions,
