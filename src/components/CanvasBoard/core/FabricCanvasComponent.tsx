@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Canvas as FabricCanvas, Circle, Rect, Textbox, Line, Path, FabricObject, Point } from 'fabric';
 import { toast } from 'sonner';
@@ -45,9 +46,19 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
       selection: true,
     });
 
-    // Initialize the freeDrawingBrush right after canvas creation (v6 requirement)
-    canvas.freeDrawingBrush.color = activeColor;
-    canvas.freeDrawingBrush.width = brushWidth;
+    // Ensure freeDrawingBrush is available before setting properties
+    if (canvas.freeDrawingBrush) {
+      canvas.freeDrawingBrush.color = activeColor;
+      canvas.freeDrawingBrush.width = brushWidth;
+    } else {
+      // Initialize drawing mode first to create the brush
+      canvas.isDrawingMode = true;
+      if (canvas.freeDrawingBrush) {
+        canvas.freeDrawingBrush.color = activeColor;
+        canvas.freeDrawingBrush.width = brushWidth;
+      }
+      canvas.isDrawingMode = false;
+    }
 
     // Add grid if enabled
     if (showGrid) {
@@ -104,6 +115,7 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
       case 'pen':
       case 'draw':
         fabricCanvas.isDrawingMode = true;
+        // Ensure freeDrawingBrush exists before setting properties
         if (fabricCanvas.freeDrawingBrush) {
           fabricCanvas.freeDrawingBrush.color = activeColor;
           fabricCanvas.freeDrawingBrush.width = brushWidth;
