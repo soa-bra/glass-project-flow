@@ -1,22 +1,21 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { MainToolbar } from './';
 
 interface CanvasBottomSectionProps {
   selectedTool: string;
   onToolSelect: (tool: string) => void;
-  toolPanels?: any;
 }
 
-export const CanvasBottomSection: React.FC<CanvasBottomSectionProps> = ({
+export const CanvasBottomSection: React.FC<CanvasBottomSectionProps> = memo(({
   selectedTool,
-  onToolSelect,
-  toolPanels
+  onToolSelect
 }) => {
   return (
-    <MainToolbar
-      selectedTool={selectedTool}
-      onToolSelect={onToolSelect}
-      toolPanels={toolPanels}
-    />
+    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in">
+      <MainToolbar
+        selectedTool={selectedTool}
+        onToolSelect={onToolSelect}
+      />
+    </div>
   );
-};
+});

@@ -1,5 +1,4 @@
 import { CanvasElement } from '../types';
-import { useToolPanels } from '../hooks/useToolPanels';
 
 export interface Layer {
   id: string;
@@ -70,7 +69,4 @@ export interface CanvasPanelLayoutProps {
   onNew: () => void;
   onOpen: () => void;
   onSmartProjectGenerate: () => void;
-  
-  // Tool panels
-  toolPanels?: ReturnType<typeof useToolPanels>;
 }

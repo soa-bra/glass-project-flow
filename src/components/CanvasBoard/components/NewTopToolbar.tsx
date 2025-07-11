@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { TOP_TOOLBAR_TOOLS, GRID_SHAPES, GRID_SIZES } from '../constants';
+import { TOP_TOOLBAR_TOOLS, GRID_SHAPES, GRID_SIZES } from '../constants/toolbarConstants';
 import { ChevronDown } from 'lucide-react';
 
 interface NewTopToolbarProps {
@@ -59,7 +59,7 @@ const NewTopToolbar: React.FC<NewTopToolbarProps> = ({
 
   return (
     <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
-      <Card className="bg-white/95 backdrop-blur-lg shadow-sm border border-gray-200/50 rounded-[20px]">
+      <Card className="bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 rounded-[20px] animate-fade-in">
         <CardContent className="flex items-center justify-center gap-4 px-4 py-2">
           {/* أدوات سجل العمليات */}
           <div className="flex items-center gap-1">
@@ -68,7 +68,7 @@ const NewTopToolbar: React.FC<NewTopToolbarProps> = ({
               size="sm"
               onClick={onUndo}
               disabled={!canUndo}
-              className="h-10 w-10 rounded-xl"
+              className="h-10 w-10 rounded-xl transition-all duration-200 hover:scale-105 disabled:opacity-50"
               title="تراجع"
             >
               <TOP_TOOLBAR_TOOLS.history.undo.icon className="w-4 h-4" />
@@ -79,7 +79,7 @@ const NewTopToolbar: React.FC<NewTopToolbarProps> = ({
               size="sm"
               onClick={onRedo}
               disabled={!canRedo}
-              className="h-10 w-10 rounded-xl"
+              className="h-10 w-10 rounded-xl transition-all duration-200 hover:scale-105 disabled:opacity-50"
               title="إعادة"
             >
               <TOP_TOOLBAR_TOOLS.history.redo.icon className="w-4 h-4" />
@@ -90,7 +90,7 @@ const NewTopToolbar: React.FC<NewTopToolbarProps> = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-10 w-10 rounded-xl"
+                  className="h-10 w-10 rounded-xl transition-all duration-200 hover:scale-105"
                   title="سجل العمليات"
                 >
                   <TOP_TOOLBAR_TOOLS.history.history.icon className="w-4 h-4" />

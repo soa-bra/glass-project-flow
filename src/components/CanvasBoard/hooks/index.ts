@@ -21,3 +21,4 @@ export { useCanvasElementActions } from './useCanvasElementActions';
 export { useCanvasFileActions } from './useCanvasFileActions';
 export { useCanvasEventHandlers } from './useCanvasEventHandlers';
 export { useCanvasLayerState } from './useCanvasLayerState';
+export { usePerformanceMonitor } from './usePerformanceMonitor';
