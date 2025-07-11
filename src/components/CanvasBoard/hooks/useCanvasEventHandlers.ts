@@ -7,13 +7,13 @@ export const useCanvasEventHandlers = (
   canvasPosition: { x: number; y: number },
   snapEnabled: boolean,
   interaction: any,
-  addElement: (type: string, x: number, y: number, width?: number, height?: number) => void,
-  addDrawingElement: (type: string, path: { x: number; y: number }[], lineWidth: number, color: string) => void,
+  addElement: (x: number, y: number, type: string, smartElement?: string, width?: number, height?: number) => void,
   elements: any[],
   selectedElementIds: string[],
   setSelectedElementId: (id: string | null) => void,
   setSelectedElementIds: (ids: string[]) => void,
   updateElement: (elementId: string, updates: any) => void,
+  addDrawingElement: (type: string, path: { x: number; y: number }[], lineWidth: number, color: string) => void,
   lineWidth: number = 2,
   lineColor: string = '#000000'
 ) => {
@@ -26,7 +26,9 @@ export const useCanvasEventHandlers = (
     if (selectedTool === 'select') return;
 
     if (selectedTool === 'text') {
-      interaction.handleTextClick(e, zoom, canvasPosition, addElement, snapEnabled);
+      interaction.handleTextClick(e, zoom, canvasPosition, (type: string, x: number, y: number) => {
+        addElement(x, y, type);
+      }, snapEnabled);
       return;
     }
 
@@ -60,7 +62,9 @@ export const useCanvasEventHandlers = (
 
   const handleCanvasMouseUp = useCallback(() => {
     if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && interaction.isDrawing) {
-      interaction.handleDragCreateEnd(selectedTool, addElement);
+      interaction.handleDragCreateEnd(selectedTool, (type: string, x: number, y: number, width: number, height: number) => {
+        addElement(x, y, type, undefined, width, height);
+      });
       return;
     }
 

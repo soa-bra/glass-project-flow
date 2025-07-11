@@ -11,6 +11,7 @@ export const useCanvasInteractionHandlers = (
   isSelecting: boolean,
   isDrawing: boolean,
   addElement: (x: number, y: number, type: string, smartElement: string, width?: number, height?: number) => void,
+  addDrawingElement: (type: string, path: { x: number; y: number }[], lineWidth: number, color: string) => void,
   setSelectedElements: (elements: string[]) => void,
   elements: any[],
   selectedElements: string[],
@@ -58,19 +59,13 @@ export const useCanvasInteractionHandlers = (
     if (selectedTool === 'select' && interaction.isSelecting) {
       interaction.handleSelectionEnd(elements, (elementIds) => setSelectedElements(elementIds));
     } else if (selectedTool === 'smart-pen' && interaction.isDrawing) {
-      interaction.handleSmartPenEnd((type, startX, startY, endX, endY) => {
-        const width = Math.abs(endX - startX);
-        const height = Math.abs(endY - startY);
-        const x = Math.min(startX, endX);
-        const y = Math.min(startY, endY);
-        addElement(x, y, type, selectedSmartElement, Math.max(width, 20), Math.max(height, 20));
-      });
+      interaction.handleSmartPenEnd(addDrawingElement, 2, '#000000');
     } else if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && interaction.isDrawing) {
       interaction.handleDragCreateEnd(selectedTool, (type, x, y, width, height) => {
         addElement(x, y, type, selectedSmartElement, Math.max(width, 30), Math.max(height, 30));
       });
     }
-  }, [selectedTool, elements, selectedSmartElement, addElement, interaction, setSelectedElements]);
+  }, [selectedTool, elements, selectedSmartElement, addElement, addDrawingElement, interaction, setSelectedElements]);
   
   const wrappedHandleCanvasClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();

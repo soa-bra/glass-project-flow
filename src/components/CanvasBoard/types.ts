@@ -1,6 +1,7 @@
+
 export interface CanvasElement {
   id: string;
-  type: 'text' | 'shape' | 'smart-element' | 'drawing' | 'sticky' | 'image' | 'line';
+  type: 'text' | 'shape' | 'smart-element' | 'drawing' | 'sticky' | 'image' | 'line' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'brainstorm' | 'root' | 'moodboard';
   position: {
     x: number;
     y: number;
@@ -14,11 +15,20 @@ export interface CanvasElement {
     backgroundColor?: string;
     borderColor?: string;
     textColor?: string;
+    color?: string;
     fontSize?: number;
     fontFamily?: string;
+    fontWeight?: string;
+    textAlign?: string;
     borderWidth?: number;
     borderRadius?: number;
     opacity?: number;
+    fill?: string;
+    stroke?: string;
+    strokeWidth?: number;
+    padding?: string;
+    rotation?: string;
+    transform?: string;
   };
   // Drawing-specific properties
   path?: { x: number; y: number }[];

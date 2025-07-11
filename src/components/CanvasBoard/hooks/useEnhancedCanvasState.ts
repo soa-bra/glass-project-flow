@@ -32,7 +32,7 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
   const { history, historyIndex, saveToHistory, undo, redo } = useCanvasHistory();
   const { layers, setLayers, selectedLayerId, setSelectedLayerId, handleLayerUpdate, handleLayerSelect, updateSingleLayer } = useCanvasLayerState();
   const interaction = useRefactoredCanvasInteraction(canvasRef);
-  const { elements, setElements, addElement, updateElement, deleteElement } = useCanvasElementManagement(saveToHistory);
+  const { elements, setElements, addElement, updateElement, deleteElement, addDrawingElement } = useCanvasElementManagement(saveToHistory);
   const clipboardActions = useCanvasClipboardActions(selectedElementId, elements, addElement, deleteElement);
   const elementActions = useCanvasElementActions(selectedElementId, updateElement);
   const fileActions = useCanvasFileActions(projectId, userId, elements);
@@ -47,7 +47,10 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     selectedElementIds,
     setSelectedElementId,
     setSelectedElementIds,
-    updateElement
+    updateElement,
+    addDrawingElement,
+    lineWidth,
+    '#000000'
   );
 
   // Grid helper function
@@ -118,6 +121,7 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     addElement,
     updateElement,
     deleteElement,
+    addDrawingElement,
     
     // Clipboard actions
     ...clipboardActions,
