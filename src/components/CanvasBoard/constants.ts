@@ -6,14 +6,12 @@ import {
 } from 'lucide-react';
 import { Tool } from './types';
 
-// أدوات شريت الأدوات الرئيسي (أسفل) - بالترتيب المطلوب
+// أدوات شريط الأدوات الرئيسي (أسفل) - 9 أدوات بالضبط
 export const MAIN_TOOLBAR_TOOLS: Tool[] = [
   { id: 'select', label: 'تحديد', icon: MousePointer, category: 'basic' },
   { id: 'smart-pen', label: 'القلم الذكي', icon: Pen, category: 'basic' },
-  { id: 'zoom', label: 'زوم', icon: ZoomIn, category: 'basic' },
+  { id: 'zoom', label: 'زوم', icon: ZoomIn, category: 'navigation' },
   { id: 'hand', label: 'كف', icon: Hand, category: 'navigation' },
-  { id: 'grid', label: 'شبكة', icon: Grid3X3, category: 'navigation' },
-  { id: 'layers', label: 'طبقات', icon: Layers, category: 'navigation' },
   { id: 'upload', label: 'رفع مرفق', icon: Upload, category: 'file' },
   { id: 'comment', label: 'تعليق', icon: MessageSquare, category: 'collaboration' },
   { id: 'text', label: 'نص', icon: Type, category: 'content' },
@@ -91,8 +89,21 @@ export const GRID_SIZES = [
   { value: 50, label: '50px' }
 ];
 
-// للتوافق مع الملفات الموجودة
+// للتوافق مع الملفات الموجودة - مهم: لا تحذف هذا
 export const CANVAS_TOOLS = MAIN_TOOLBAR_TOOLS;
+
+// اختصارات لوحة المفاتيح للأدوات
+export const TOOL_KEYBOARD_SHORTCUTS = {
+  'select': 'V',
+  'smart-pen': 'P', 
+  'zoom': 'Z',
+  'hand': 'H',
+  'upload': 'U',
+  'comment': 'C',
+  'text': 'T',
+  'shape': 'R',
+  'smart-element': 'S'
+};
 
 export const ELEMENT_COLORS = [
   'bg-red-200', 'bg-blue-200', 'bg-green-200', 'bg-yellow-200',

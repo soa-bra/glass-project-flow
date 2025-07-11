@@ -1,5 +1,5 @@
 export { default as DefaultView } from './DefaultView';
-export { default as MainToolbar } from './NewMainToolbar';
+export { default as MainToolbar } from './MainToolbar';
 export { default as CollabBar } from './CollabBar';
 
 export { default as Inspector } from './Inspector';

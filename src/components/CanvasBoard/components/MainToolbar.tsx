@@ -1,35 +1,85 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CANVAS_TOOLS } from '../constants';
+import { Separator } from '@/components/ui/separator';
+import { MAIN_TOOLBAR_TOOLS } from '../constants';
 
 interface MainToolbarProps {
   selectedTool: string;
   onToolSelect: (toolId: string) => void;
 }
 
-const MainToolbar: React.FC<MainToolbarProps> = ({ selectedTool, onToolSelect }) => {
+const MainToolbar: React.FC<MainToolbarProps> = ({
+  selectedTool, 
+  onToolSelect 
+}) => {
+  // المجموعة الأولى: الأدوات الأساسية
+  const basicTools = MAIN_TOOLBAR_TOOLS.filter(tool => 
+    ['select', 'smart-pen'].includes(tool.id)
+  );
+  
+  // المجموعة الثانية: أدوات التنقل
+  const navigationTools = MAIN_TOOLBAR_TOOLS.filter(tool => 
+    ['zoom', 'hand'].includes(tool.id)
+  );
+  
+  // المجموعة الثالثة: أدوات التعاون والملفات
+  const collaborationTools = MAIN_TOOLBAR_TOOLS.filter(tool => 
+    ['upload', 'comment'].includes(tool.id)
+  );
+  
+  // المجموعة الرابعة: أدوات المحتوى الذكي
+  const contentTools = MAIN_TOOLBAR_TOOLS.filter(tool => 
+    ['text', 'shape', 'smart-element'].includes(tool.id)
+  );
+
+  const renderToolGroup = (tools: typeof MAIN_TOOLBAR_TOOLS, groupName: string) => (
+    <div className="flex items-center gap-1">
+      {tools.map((tool) => {
+        const Icon = tool.icon;
+        const isSelected = selectedTool === tool.id;
+        return (
+          <Button
+            key={tool.id}
+            variant={isSelected ? "default" : "ghost"}
+            size="sm"
+            className={`h-12 w-12 rounded-xl transition-all duration-200 ${
+              isSelected 
+                ? 'bg-black text-white shadow-lg' 
+                : 'text-gray-600 hover:bg-gray-100 hover:text-black'
+            }`}
+            onClick={() => onToolSelect(tool.id)}
+            title={tool.label}
+          >
+            <Icon className="w-5 h-5" />
+          </Button>
+        );
+      })}
+    </div>
+  );
+
   return (
-    <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50">
-      <Card className="bg-white/95 backdrop-blur-md shadow-sm border border-gray-300 rounded-[40px]">
-        <CardContent className="flex items-center gap-2 p-3">
-          {CANVAS_TOOLS.map((tool) => {
-            const Icon = tool.icon;
-            return (
-              <Button
-                key={tool.id}
-                variant={selectedTool === tool.id ? "default" : "ghost"}
-                size="sm"
-                className={`h-10 px-3 rounded-full ${selectedTool === tool.id ? 'bg-black text-white' : 'text-gray-600 hover:bg-soabra-new-secondary-4'}`}
-                onClick={() => onToolSelect(tool.id)}
-                title={tool.label}
-              >
-                <Icon className="w-4 h-4" />
-              </Button>
-            );
-          })}
+    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+      <Card className="bg-white/95 backdrop-blur-lg shadow-sm border border-gray-200/50 rounded-[24px]">
+        <CardContent className="flex items-center gap-3 p-4">
+          {renderToolGroup(basicTools, 'أساسي')}
+          {basicTools.length > 0 && navigationTools.length > 0 && <Separator orientation="vertical" className="h-6" />}
+          {renderToolGroup(navigationTools, 'تنقل')}
+          {navigationTools.length > 0 && collaborationTools.length > 0 && <Separator orientation="vertical" className="h-6" />}
+          {renderToolGroup(collaborationTools, 'تعاون')}
+          {collaborationTools.length > 0 && contentTools.length > 0 && <Separator orientation="vertical" className="h-6" />}
+          {renderToolGroup(contentTools, 'محتوى')}
         </CardContent>
       </Card>
+      
+      {/* عرض اسم الأداة المحددة */}
+      {selectedTool && (
+        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
+          <div className="bg-black text-white px-4 py-2 rounded-lg text-sm font-arabic whitespace-nowrap">
+            {MAIN_TOOLBAR_TOOLS.find(t => t.id === selectedTool)?.label}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

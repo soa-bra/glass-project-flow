@@ -2,11 +2,14 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, MousePointer, PenTool, MessageSquare, Type, Square, Lightbulb } from 'lucide-react';
+import { Settings, MousePointer, PenTool, MessageSquare, Type, Square, Lightbulb, ZoomIn, Hand, Upload } from 'lucide-react';
 import { CanvasElement } from '../../types';
 import { Layer } from '../CanvasPanelTypes';
 import { SelectionToolPanel } from './tools/SelectionToolPanel';
 import { SmartPenToolPanel } from './tools/SmartPenToolPanel';
+import { ZoomToolPanel } from './tools/ZoomToolPanel';
+import { HandToolPanel } from './tools/HandToolPanel';
+import { UploadToolPanel } from './tools/UploadToolPanel';
 import { InteractiveCommentsToolPanel } from './tools/InteractiveCommentsToolPanel';
 import { TextToolPanel } from './tools/TextToolPanel';
 import { ShapesToolPanel } from './tools/ShapesToolPanel';
@@ -101,6 +104,12 @@ export const ToolCustomizationPanel: React.FC<ToolCustomizationPanelProps> = ({
         return MousePointer;
       case 'smart-pen':
         return PenTool;
+      case 'zoom':
+        return ZoomIn;
+      case 'hand':
+        return Hand;
+      case 'upload':
+        return Upload;
       case 'comment':
         return MessageSquare;
       case 'text':
@@ -119,6 +128,12 @@ export const ToolCustomizationPanel: React.FC<ToolCustomizationPanelProps> = ({
         return 'أداة التحديد';
       case 'smart-pen':
         return 'القلم الذكي';
+      case 'zoom':
+        return 'أداة الزوم';
+      case 'hand':
+        return 'أداة الكف';
+      case 'upload':
+        return 'رفع المرفقات';
       case 'comment':
         return 'التعليقات التفاعلية';
       case 'text':
@@ -137,6 +152,12 @@ export const ToolCustomizationPanel: React.FC<ToolCustomizationPanelProps> = ({
         return <SelectionToolPanel selectedElements={selectedElements} onCopy={onCopy} onCut={onCut} onPaste={onPaste} onDelete={onDelete} onGroup={onGroup} onUpdateElement={onUpdateElement} />;
       case 'smart-pen':
         return <SmartPenToolPanel lineWidth={lineWidth} lineStyle={lineStyle} selectedPenMode={selectedPenMode} onLineWidthChange={onLineWidthChange} onLineStyleChange={onLineStyleChange} onPenModeSelect={onPenModeSelect} />;
+      case 'zoom':
+        return <ZoomToolPanel zoom={zoom} canvasPosition={canvasPosition} onZoomChange={onZoomChange} onPositionChange={onPositionChange} onFitToScreen={onFitToScreen} onResetView={onResetView} />;
+      case 'hand':
+        return <HandToolPanel panSpeed={panSpeed} canvasPosition={canvasPosition} onPanSpeedChange={onPanSpeedChange} onPositionChange={onPositionChange} onResetView={onResetView} />;
+      case 'upload':
+        return <UploadToolPanel onFileUpload={onFileUpload} />;
       case 'comment':
         return <InteractiveCommentsToolPanel />;
       case 'text':
