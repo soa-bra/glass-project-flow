@@ -8,11 +8,14 @@ export const useCanvasEventHandlers = (
   snapEnabled: boolean,
   interaction: any,
   addElement: (type: string, x: number, y: number, width?: number, height?: number) => void,
+  addDrawingElement: (type: string, path: { x: number; y: number }[], lineWidth: number, color: string) => void,
   elements: any[],
   selectedElementIds: string[],
   setSelectedElementId: (id: string | null) => void,
   setSelectedElementIds: (ids: string[]) => void,
-  updateElement: (elementId: string, updates: any) => void
+  updateElement: (elementId: string, updates: any) => void,
+  lineWidth: number = 2,
+  lineColor: string = '#000000'
 ) => {
   const handleCanvasClick = useCallback((e: React.MouseEvent) => {
     setSelectedElementId(null);
@@ -62,7 +65,7 @@ export const useCanvasEventHandlers = (
     }
 
     if (selectedTool === 'smart-pen' && interaction.isDrawing) {
-      interaction.handleSmartPenEnd(addElement);
+      interaction.handleSmartPenEnd(addDrawingElement, lineWidth, lineColor);
       return;
     }
 
@@ -70,7 +73,7 @@ export const useCanvasEventHandlers = (
       interaction.handleSelectionEnd(elements, setSelectedElementIds);
       return;
     }
-  }, [selectedTool, elements, addElement, setSelectedElementIds, interaction]);
+  }, [selectedTool, elements, addElement, addDrawingElement, setSelectedElementIds, interaction, lineWidth, lineColor]);
 
   const handleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
     interaction.handleElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId, selectedElementIds, setSelectedElementIds);

@@ -7,12 +7,13 @@ export const useCanvasDrawingInteraction = (canvasRef: React.RefObject<HTMLDivEl
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [drawStart, setDrawStart] = useState<{ x: number; y: number } | null>(null);
   const [drawEnd, setDrawEnd] = useState<{ x: number; y: number } | null>(null);
+  const [currentPath, setCurrentPath] = useState<{ x: number; y: number }[]>([]);
 
   const snapToGrid = (value: number, snapEnabled: boolean) => {
     return snapEnabled ? Math.round(value / GRID_SIZE) * GRID_SIZE : value;
   };
 
-  // Enhanced drawing for smart pen
+  // Enhanced drawing for smart pen with path tracking
   const handleSmartPenStart = useCallback((
     e: React.MouseEvent,
     zoom: number,
@@ -31,6 +32,7 @@ export const useCanvasDrawingInteraction = (canvasRef: React.RefObject<HTMLDivEl
     setIsDrawing(true);
     setDrawStart({ x, y });
     setDrawEnd({ x, y });
+    setCurrentPath([{ x, y }]);
   }, []);
 
   const handleSmartPenMove = useCallback((
@@ -49,26 +51,30 @@ export const useCanvasDrawingInteraction = (canvasRef: React.RefObject<HTMLDivEl
     y = snapToGrid(y, snapEnabled);
     
     setDrawEnd({ x, y });
+    setCurrentPath(prev => [...prev, { x, y }]);
   }, [isDrawing, drawStart]);
 
   const handleSmartPenEnd = useCallback((
-    addElement: (type: string, startX: number, startY: number, endX: number, endY: number) => void
+    addElement: (type: string, path: { x: number; y: number }[], lineWidth: number, color: string) => void,
+    lineWidth: number = 2,
+    color: string = '#000000'
   ) => {
-    if (!isDrawing || !drawStart || !drawEnd) return;
-    
-    // Calculate the line dimensions
-    const width = Math.abs(drawEnd.x - drawStart.x);
-    const height = Math.abs(drawEnd.y - drawStart.y);
-    
-    // Only create if there's enough movement
-    if (width > 10 || height > 10) {
-      addElement('line', drawStart.x, drawStart.y, drawEnd.x, drawEnd.y);
+    if (!isDrawing || !drawStart || currentPath.length < 2) {
+      setIsDrawing(false);
+      setDrawStart(null);
+      setDrawEnd(null);
+      setCurrentPath([]);
+      return;
     }
+    
+    // Create a drawing element with the complete path
+    addElement('drawing', currentPath, lineWidth, color);
     
     setIsDrawing(false);
     setDrawStart(null);
     setDrawEnd(null);
-  }, [isDrawing, drawStart, drawEnd]);
+    setCurrentPath([]);
+  }, [isDrawing, drawStart, currentPath]);
 
   // Shape and smart element drag creation
   const handleDragCreate = useCallback((
@@ -101,7 +107,7 @@ export const useCanvasDrawingInteraction = (canvasRef: React.RefObject<HTMLDivEl
     snapEnabled: boolean = false
   ) => {
     if (!isDrawing || !drawStart || !canvasRef?.current) {
-      return; // Silent fail for performance
+      return;
     }
     
     const rect = canvasRef.current.getBoundingClientRect();
@@ -134,6 +140,7 @@ export const useCanvasDrawingInteraction = (canvasRef: React.RefObject<HTMLDivEl
     setIsDrawing(false);
     setDrawStart(null);
     setDrawEnd(null);
+    setCurrentPath([]);
   }, [isDrawing, drawStart, drawEnd]);
 
   const handleTextClick = useCallback((
@@ -159,6 +166,7 @@ export const useCanvasDrawingInteraction = (canvasRef: React.RefObject<HTMLDivEl
     isDrawing,
     drawStart,
     drawEnd,
+    currentPath,
     handleSmartPenStart,
     handleSmartPenMove,
     handleSmartPenEnd,

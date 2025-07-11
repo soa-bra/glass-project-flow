@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CanvasElement } from '../types';
 import { CanvasGrid } from './CanvasGrid';
@@ -17,10 +18,13 @@ interface CanvasProps {
   isDrawing: boolean;
   drawStart: { x: number; y: number } | null;
   drawEnd: { x: number; y: number } | null;
+  currentPath?: { x: number; y: number }[];
   isDragging: boolean;
   isResizing: boolean;
   isSelecting?: boolean;
   selectionBox?: { start: { x: number; y: number }; end: { x: number; y: number } } | null;
+  lineWidth?: number;
+  lineColor?: string;
   onCanvasClick: (e: React.MouseEvent) => void;
   onCanvasMouseDown: (e: React.MouseEvent) => void;
   onCanvasMouseMove: (e: React.MouseEvent) => void;
@@ -47,10 +51,13 @@ const Canvas: React.FC<CanvasProps> = ({
   isDrawing,
   drawStart,
   drawEnd,
+  currentPath = [],
   isDragging,
   isResizing,
   isSelecting = false,
   selectionBox = null,
+  lineWidth = 2,
+  lineColor = '#000000',
   onCanvasClick,
   onCanvasMouseDown,
   onCanvasMouseMove,
@@ -65,8 +72,8 @@ const Canvas: React.FC<CanvasProps> = ({
   onToggleSnap
 }) => {
   const getCursorStyle = () => {
-    if (selectedTool === 'smart-element') return 'crosshair';
     if (selectedTool === 'smart-pen') return 'crosshair';
+    if (selectedTool === 'smart-element') return 'crosshair';
     if (selectedTool === 'hand') return 'grab';
     if (selectedTool === 'zoom') return 'zoom-in';
     if (selectedTool === 'select' && isDragging) return 'grabbing';
@@ -126,7 +133,10 @@ const Canvas: React.FC<CanvasProps> = ({
           isDrawing={isDrawing}
           drawStart={drawStart}
           drawEnd={drawEnd}
+          currentPath={currentPath}
           selectedTool={selectedTool}
+          lineWidth={lineWidth}
+          lineColor={lineColor}
           isSelecting={isSelecting}
           selectionBox={selectionBox}
         />
