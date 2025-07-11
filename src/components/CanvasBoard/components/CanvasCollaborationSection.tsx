@@ -1,7 +1,6 @@
-
 import React from 'react';
-import { CollabBar } from '../collaboration/CollabBar';
+import { CollabBar } from './';
 
 export const CanvasCollaborationSection: React.FC = () => {
-  return <CollabBar projectId="default" />;
+  return <CollabBar />;
 };

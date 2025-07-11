@@ -1,6 +1,5 @@
-
 import React from 'react';
-import Canvas from './Canvas';
+import { Canvas } from './';
 import { CanvasElement } from '../types';
 
 interface CanvasWrapperProps {

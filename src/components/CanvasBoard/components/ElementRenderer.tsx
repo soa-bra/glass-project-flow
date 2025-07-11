@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Clock, GitBranch } from 'lucide-react';
 import { CanvasElement } from '../types';
@@ -27,7 +26,7 @@ export const ElementRenderer: React.FC<ElementRendererProps> = ({ element }) => 
             fontSize: baseStyle.fontSize || '16px',
             fontFamily: baseStyle.fontFamily || 'IBM Plex Sans Arabic',
             color: baseStyle.color || '#000000',
-            textAlign: (baseStyle.textAlign as 'left' | 'center' | 'right' | 'justify') || 'right',
+            textAlign: baseStyle.textAlign || 'right',
             fontWeight: baseStyle.fontWeight || 'normal'
           }}
         >

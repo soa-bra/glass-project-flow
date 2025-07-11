@@ -1,66 +1,65 @@
 
 import { useState, useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { CanvasElement } from '../types';
+
+const defaultElement = {
+  id: uuidv4(),
+  type: 'shape' as const,
+  position: { x: 50, y: 50 },
+  size: { width: 100, height: 100 },
+  fill: 'red',
+  stroke: 'black',
+  strokeWidth: 2,
+  rotation: 0,
+  opacity: 1,
+  zIndex: 1,
+  locked: false,
+  content: '',
+  style: {}
+};
 
 export const useCanvasElementManagement = (saveToHistory: (elements: CanvasElement[]) => void) => {
   const [elements, setElements] = useState<CanvasElement[]>([]);
 
-  const addElement = useCallback((type: string, x: number, y: number, width?: number, height?: number) => {
+  const addElement = useCallback((type: string, x: number, y: number, width?: number, height?: number, text?: string) => {
     const newElement: CanvasElement = {
-      id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      type: type as CanvasElement['type'],
-      position: { x, y },
-      size: {
-        width: width || 120,
-        height: height || 60
-      },
-      content: type === 'text' ? 'نص جديد' : (type === 'sticky' ? 'ملاحظة' : undefined),
-      zIndex: 1
+      ...defaultElement,
+      id: uuidv4(),
+      type: type as any,
+      position: { x: x || 50, y: y || 50 },
+      size: { width: width || 100, height: height || 100 },
+      content: text || 'نص تجريبي'
     };
-
-    const newElements = [...elements, newElement];
-    setElements(newElements);
-    saveToHistory(newElements);
-  }, [elements, saveToHistory]);
-
-  const addDrawingElement = useCallback((type: string, path: { x: number; y: number }[], lineWidth: number, color: string) => {
-    const newElement: CanvasElement = {
-      id: `drawing-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      type: 'drawing',
-      position: { x: 0, y: 0 }, // Will be calculated from path bounds
-      size: { width: 0, height: 0 }, // Will be calculated from path bounds
-      path,
-      lineWidth,
-      color,
-      zIndex: 1
-    };
-
-    const newElements = [...elements, newElement];
-    setElements(newElements);
-    saveToHistory(newElements);
-  }, [elements, saveToHistory]);
+    setElements(prevElements => {
+      const newElements = [...prevElements, newElement];
+      saveToHistory(newElements);
+      return newElements;
+    });
+  }, [saveToHistory]);
 
   const updateElement = useCallback((elementId: string, updates: Partial<CanvasElement>) => {
-    const newElements = elements.map(element => 
-      element.id === elementId 
-        ? { ...element, ...updates }
-        : element
-    );
-    setElements(newElements);
-    saveToHistory(newElements);
-  }, [elements, saveToHistory]);
+    setElements(prevElements => {
+      const newElements = prevElements.map(element =>
+        element.id === elementId ? { ...element, ...updates } : element
+      );
+      saveToHistory(newElements);
+      return newElements;
+    });
+  }, [saveToHistory]);
 
   const deleteElement = useCallback((elementId: string) => {
-    const newElements = elements.filter(element => element.id !== elementId);
-    setElements(newElements);
-    saveToHistory(newElements);
-  }, [elements, saveToHistory]);
+    setElements(prevElements => {
+      const newElements = prevElements.filter(element => element.id !== elementId);
+      saveToHistory(newElements);
+      return newElements;
+    });
+  }, [saveToHistory]);
 
   return {
     elements,
     setElements,
     addElement,
-    addDrawingElement,
     updateElement,
     deleteElement
   };

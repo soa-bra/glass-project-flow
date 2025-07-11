@@ -6,7 +6,6 @@ import { DefaultView } from './components';
 import { useCanvasEventHandlers } from './components/CanvasEventHandlers';
 import { CleanCanvasPanelLayout } from './components/CleanCanvasPanelLayout';
 import { CanvasWrapper } from './components/CanvasWrapper';
-import { useCanvasCollaboration } from '@/hooks/useCanvasCollaboration';
 
 const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
   projectId = 'default', 
@@ -14,13 +13,6 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
 }) => {
   // Initialize enhanced canvas state
   const canvasState = useEnhancedCanvasState(projectId, userId);
-  
-  // Initialize collaboration features
-  const collaboration = useCanvasCollaboration({
-    projectId,
-    userId,
-    enable: true
-  });
   
   const eventHandlers = useCanvasEventHandlers({
     selectedElementId: canvasState.selectedElementId,
@@ -35,38 +27,36 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   }
 
   return (
-    <div className="relative w-full h-full pointer-events-none">
-      <div className="pointer-events-auto">
-        <CanvasWrapper
-          showGrid={canvasState.showGrid}
-          snapEnabled={canvasState.snapEnabled}
-          zoom={canvasState.zoom}
-          canvasPosition={canvasState.canvasPosition}
-          elements={canvasState.elements}
-          selectedElementId={canvasState.selectedElementId}
-          selectedTool={canvasState.selectedTool}
-          canvasRef={canvasState.canvasRef}
-          isDrawing={canvasState.isDrawing}
-          drawStart={canvasState.drawStart}
-          drawEnd={canvasState.drawEnd}
-          isDragging={canvasState.isDragging}
-          isResizing={canvasState.isResizing}
-          isSelecting={canvasState.isSelecting}
-          selectionBox={canvasState.selectionBox}
-          setSelectedElementId={canvasState.setSelectedElementId}
-          setShowGrid={canvasState.setShowGrid}
-          setSnapEnabled={canvasState.setSnapEnabled}
-          handleCanvasClick={canvasState.handleCanvasClick}
-          handleCanvasMouseDown={canvasState.handleCanvasMouseDown}
-          handleCanvasMouseMove={canvasState.handleCanvasMouseMove}
-          handleCanvasMouseUp={canvasState.handleCanvasMouseUp}
-          handleElementMouseDown={canvasState.handleElementMouseDown}
-          handleElementMouseMove={canvasState.handleElementMouseMove}
-          handleElementMouseUp={canvasState.handleElementMouseUp}
-          handleResizeMouseDown={canvasState.handleResizeMouseDown}
-          handleResizeMouseMove={canvasState.handleResizeMouseMove}
-        />
-      </div>
+    <div className="relative w-full h-full">
+      <CanvasWrapper
+        showGrid={canvasState.showGrid}
+        snapEnabled={canvasState.snapEnabled}
+        zoom={canvasState.zoom}
+        canvasPosition={canvasState.canvasPosition}
+        elements={canvasState.elements}
+        selectedElementId={canvasState.selectedElementId}
+        selectedTool={canvasState.selectedTool}
+        canvasRef={canvasState.canvasRef}
+        isDrawing={canvasState.isDrawing}
+        drawStart={canvasState.drawStart}
+        drawEnd={canvasState.drawEnd}
+        isDragging={canvasState.isDragging}
+        isResizing={canvasState.isResizing}
+        isSelecting={canvasState.isSelecting}
+        selectionBox={canvasState.selectionBox}
+        setSelectedElementId={canvasState.setSelectedElementId}
+        setShowGrid={canvasState.setShowGrid}
+        setSnapEnabled={canvasState.setSnapEnabled}
+        handleCanvasClick={canvasState.handleCanvasClick}
+        handleCanvasMouseDown={canvasState.handleCanvasMouseDown}
+        handleCanvasMouseMove={canvasState.handleCanvasMouseMove}
+        handleCanvasMouseUp={canvasState.handleCanvasMouseUp}
+        handleElementMouseDown={canvasState.handleElementMouseDown}
+        handleElementMouseMove={canvasState.handleElementMouseMove}
+        handleElementMouseUp={canvasState.handleElementMouseUp}
+        handleResizeMouseDown={canvasState.handleResizeMouseDown}
+        handleResizeMouseMove={canvasState.handleResizeMouseMove}
+      />
       
       <CleanCanvasPanelLayout
         historyIndex={canvasState.historyIndex}

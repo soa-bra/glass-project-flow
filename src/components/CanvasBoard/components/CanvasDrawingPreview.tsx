@@ -1,14 +1,10 @@
-
 import React from 'react';
 
 interface CanvasDrawingPreviewProps {
   isDrawing: boolean;
   drawStart: { x: number; y: number } | null;
   drawEnd: { x: number; y: number } | null;
-  currentPath?: { x: number; y: number }[];
   selectedTool: string;
-  lineWidth?: number;
-  lineColor?: string;
   isSelecting?: boolean;
   selectionBox?: { start: { x: number; y: number }; end: { x: number; y: number } } | null;
 }
@@ -17,81 +13,64 @@ export const CanvasDrawingPreview: React.FC<CanvasDrawingPreviewProps> = ({
   isDrawing,
   drawStart,
   drawEnd,
-  currentPath = [],
   selectedTool,
-  lineWidth = 2,
-  lineColor = '#000000',
   isSelecting = false,
   selectionBox = null
 }) => {
-  if (!isDrawing) return null;
-
-  // Selection box preview
-  if (isSelecting && selectionBox) {
-    const { start, end } = selectionBox;
-    const width = Math.abs(end.x - start.x);
-    const height = Math.abs(end.y - start.y);
-    const x = Math.min(start.x, end.x);
-    const y = Math.min(start.y, end.y);
-
-    return (
-      <div
-        className="absolute border-2 border-dashed border-blue-500 bg-blue-100/20 pointer-events-none"
-        style={{
-          left: x,
-          top: y,
-          width,
-          height,
-          zIndex: 1000
-        }}
-      />
-    );
-  }
-
-  // Smart pen drawing preview
-  if (selectedTool === 'smart-pen' && currentPath.length > 1) {
-    const pathString = currentPath
-      .map((point, index) => (index === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`))
-      .join(' ');
-
-    return (
-      <svg
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 999 }}
-      >
-        <path
-          d={pathString}
-          fill="none"
-          stroke={lineColor}
-          strokeWidth={lineWidth}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          opacity={0.8}
+  return (
+    <>
+      {/* مؤشر الرسم للعناصر التي تحتاج سحب */}
+      {isDrawing && drawStart && drawEnd && ['smart-element', 'shape', 'text-box'].includes(selectedTool) && (
+        <div
+          className="absolute border-2 border-dashed border-blue-500 bg-blue-50 opacity-50 pointer-events-none"
+          style={{
+            left: Math.min(drawStart.x, drawEnd.x),
+            top: Math.min(drawStart.y, drawEnd.y),
+            width: Math.abs(drawEnd.x - drawStart.x),
+            height: Math.abs(drawEnd.y - drawStart.y)
+          }}
         />
-      </svg>
-    );
-  }
+      )}
 
-  // Shape preview for drag creation
-  if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && drawStart && drawEnd) {
-    const width = Math.abs(drawEnd.x - drawStart.x);
-    const height = Math.abs(drawEnd.y - drawStart.y);
-    const x = Math.min(drawStart.x, drawEnd.x);
-    const y = Math.min(drawStart.y, drawEnd.y);
+      {/* مؤشر الرسم للقلم الذكي */}
+      {isDrawing && drawStart && drawEnd && selectedTool === 'smart-pen' && (
+        <div className="absolute pointer-events-none">
+          <svg 
+            className="absolute pointer-events-none"
+            style={{
+              left: Math.min(drawStart.x, drawEnd.x),
+              top: Math.min(drawStart.y, drawEnd.y),
+              width: Math.abs(drawEnd.x - drawStart.x) + 4,
+              height: Math.abs(drawEnd.y - drawStart.y) + 4
+            }}
+          >
+            <line
+              x1={drawStart.x < drawEnd.x ? 2 : Math.abs(drawEnd.x - drawStart.x) + 2}
+              y1={drawStart.y < drawEnd.y ? 2 : Math.abs(drawEnd.y - drawStart.y) + 2}
+              x2={drawEnd.x < drawStart.x ? 2 : Math.abs(drawEnd.x - drawStart.x) + 2}
+              y2={drawEnd.y < drawStart.y ? 2 : Math.abs(drawEnd.y - drawStart.y) + 2}
+              stroke="#2563eb"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeDasharray="4,4"
+              opacity="0.7"
+            />
+          </svg>
+        </div>
+      )}
 
-    return (
-      <div
-        className="absolute border-2 border-dashed border-gray-400 bg-gray-100/20 pointer-events-none"
-        style={{
-          left: x,
-          top: y,
-          width,
-          height,
-          zIndex: 998
-        }}
-      />
-    );
-  }
-
-  return null;
+      {/* صندوق التحديد المتعدد */}
+      {isSelecting && selectionBox && (
+        <div
+          className="absolute border-2 border-dashed border-green-500 bg-green-50 opacity-30 pointer-events-none"
+          style={{
+            left: Math.min(selectionBox.start.x, selectionBox.end.x),
+            top: Math.min(selectionBox.start.y, selectionBox.end.y),
+            width: Math.abs(selectionBox.end.x - selectionBox.start.x),
+            height: Math.abs(selectionBox.end.y - selectionBox.start.y)
+          }}
+        />
+      )}
+    </>
+  );
 };

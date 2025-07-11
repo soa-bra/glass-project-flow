@@ -12,10 +12,7 @@ export const useCanvasEventHandlers = (
   selectedElementIds: string[],
   setSelectedElementId: (id: string | null) => void,
   setSelectedElementIds: (ids: string[]) => void,
-  updateElement: (elementId: string, updates: any) => void,
-  addDrawingElement: (type: string, path: { x: number; y: number }[], lineWidth: number, color: string) => void,
-  lineWidth: number = 2,
-  lineColor: string = '#000000'
+  updateElement: (elementId: string, updates: any) => void
 ) => {
   const handleCanvasClick = useCallback((e: React.MouseEvent) => {
     setSelectedElementId(null);
@@ -26,9 +23,7 @@ export const useCanvasEventHandlers = (
     if (selectedTool === 'select') return;
 
     if (selectedTool === 'text') {
-      interaction.handleTextClick(e, zoom, canvasPosition, (type: string, x: number, y: number) => {
-        addElement(type, x, y);
-      }, snapEnabled);
+      interaction.handleTextClick(e, zoom, canvasPosition, addElement, snapEnabled);
       return;
     }
 
@@ -62,14 +57,12 @@ export const useCanvasEventHandlers = (
 
   const handleCanvasMouseUp = useCallback(() => {
     if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && interaction.isDrawing) {
-      interaction.handleDragCreateEnd(selectedTool, (type: string, x: number, y: number, width: number, height: number) => {
-        addElement(type, x, y, width, height);
-      });
+      interaction.handleDragCreateEnd(selectedTool, addElement);
       return;
     }
 
     if (selectedTool === 'smart-pen' && interaction.isDrawing) {
-      interaction.handleSmartPenEnd(addDrawingElement, lineWidth, lineColor);
+      interaction.handleSmartPenEnd(addElement);
       return;
     }
 
@@ -77,7 +70,7 @@ export const useCanvasEventHandlers = (
       interaction.handleSelectionEnd(elements, setSelectedElementIds);
       return;
     }
-  }, [selectedTool, elements, addElement, addDrawingElement, setSelectedElementIds, interaction, lineWidth, lineColor]);
+  }, [selectedTool, elements, addElement, setSelectedElementIds, interaction]);
 
   const handleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
     interaction.handleElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId, selectedElementIds, setSelectedElementIds);
