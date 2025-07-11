@@ -2,288 +2,202 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Slider } from '@/components/ui/slider';
-import { 
-  Layers, 
-  Eye, 
-  EyeOff, 
-  Lock, 
-  Unlock, 
-  Plus, 
-  Trash2, 
-  Edit2, 
-  ChevronUp, 
-  ChevronDown,
-  Copy,
-  X
-} from 'lucide-react';
-import { CanvasLayer } from '../types/index';
+import { Layers, Eye, EyeOff, Lock, Unlock, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
+
+interface Layer {
+  id: string;
+  name: string;
+  visible: boolean;
+  locked: boolean;
+  elements: string[];
+}
 
 interface LayersPanelProps {
-  isVisible: boolean;
-  onToggle: () => void;
-  layers: CanvasLayer[];
-  activeLayerId: string;
+  layers: Layer[];
+  selectedLayerId: string | null;
+  onLayerUpdate: (layers: Layer[]) => void;
   onLayerSelect: (layerId: string) => void;
-  onLayerCreate: (name: string) => void;
-  onLayerDelete: (layerId: string) => void;
-  onLayerRename: (layerId: string, name: string) => void;
-  onLayerToggleVisibility: (layerId: string) => void;
-  onLayerToggleLock: (layerId: string) => void;
-  onLayerReorder: (layerId: string, direction: 'up' | 'down') => void;
-  onLayerDuplicate: (layerId: string) => void;
-  onLayerOpacityChange: (layerId: string, opacity: number) => void;
 }
 
 const LayersPanel: React.FC<LayersPanelProps> = ({
-  isVisible,
-  onToggle,
   layers,
-  activeLayerId,
-  onLayerSelect,
-  onLayerCreate,
-  onLayerDelete,
-  onLayerRename,
-  onLayerToggleVisibility,
-  onLayerToggleLock,
-  onLayerReorder,
-  onLayerDuplicate,
-  onLayerOpacityChange
+  selectedLayerId,
+  onLayerUpdate,
+  onLayerSelect
 }) => {
   const [newLayerName, setNewLayerName] = useState('');
-  const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
-  const [editingName, setEditingName] = useState('');
 
-  const handleCreateLayer = () => {
-    if (newLayerName.trim()) {
-      onLayerCreate(newLayerName);
-      setNewLayerName('');
+  const addNewLayer = () => {
+    const name = newLayerName.trim() || `طبقة ${layers.length + 1}`;
+    const newLayer: Layer = {
+      id: `layer-${Date.now()}`,
+      name,
+      visible: true,
+      locked: false,
+      elements: []
+    };
+    onLayerUpdate([...layers, newLayer]);
+    setNewLayerName('');
+  };
+
+  const deleteLayer = (layerId: string) => {
+    if (layers.length > 1) {
+      const updatedLayers = layers.filter(layer => layer.id !== layerId);
+      onLayerUpdate(updatedLayers);
+      if (selectedLayerId === layerId) {
+        onLayerSelect(updatedLayers[0]?.id || '');
+      }
     }
   };
 
-  const handleStartRename = (layer: CanvasLayer) => {
-    setEditingLayerId(layer.id);
-    setEditingName(layer.name);
+  const toggleLayerVisibility = (layerId: string) => {
+    const updatedLayers = layers.map(layer =>
+      layer.id === layerId ? { ...layer, visible: !layer.visible } : layer
+    );
+    onLayerUpdate(updatedLayers);
   };
 
-  const handleSaveRename = () => {
-    if (editingLayerId && editingName.trim()) {
-      onLayerRename(editingLayerId, editingName);
+  const toggleLayerLock = (layerId: string) => {
+    const updatedLayers = layers.map(layer =>
+      layer.id === layerId ? { ...layer, locked: !layer.locked } : layer
+    );
+    onLayerUpdate(updatedLayers);
+  };
+
+  const moveLayerUp = (index: number) => {
+    if (index > 0) {
+      const newLayers = [...layers];
+      [newLayers[index], newLayers[index - 1]] = [newLayers[index - 1], newLayers[index]];
+      onLayerUpdate(newLayers);
     }
-    setEditingLayerId(null);
-    setEditingName('');
   };
 
-  const handleCancelRename = () => {
-    setEditingLayerId(null);
-    setEditingName('');
+  const moveLayerDown = (index: number) => {
+    if (index < layers.length - 1) {
+      const newLayers = [...layers];
+      [newLayers[index], newLayers[index + 1]] = [newLayers[index + 1], newLayers[index]];
+      onLayerUpdate(newLayers);
+    }
   };
 
-  const sortedLayers = [...layers].sort((a, b) => b.order - a.order);
-
-  if (!isVisible) return null;
+  const updateLayerName = (layerId: string, newName: string) => {
+    const updatedLayers = layers.map(layer =>
+      layer.id === layerId ? { ...layer, name: newName } : layer
+    );
+    onLayerUpdate(updatedLayers);
+  };
 
   return (
-    <Card className="w-72 h-[600px] flex flex-col bg-background/95 backdrop-blur-sm border shadow-lg">
+    <Card className="w-80 bg-white/95 backdrop-blur-xl shadow-lg border border-white/20 rounded-[24px]">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <Layers className="w-4 h-4 text-primary" />
-          الطبقات
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggle}
-            className="ml-auto p-1 h-6 w-6"
-          >
-            <X className="w-3 h-3" />
-          </Button>
+        <CardTitle className="text-lg font-arabic flex items-center gap-2">
+          <Layers className="w-5 h-5 text-blue-500" />
+          إدارة الطبقات
         </CardTitle>
       </CardHeader>
-
-      <CardContent className="flex-1 flex flex-col gap-3 p-4 pt-0">
-        {/* Add Layer */}
-        <div className="flex gap-2">
-          <Input
-            placeholder="اسم الطبقة الجديدة"
-            value={newLayerName}
-            onChange={(e) => setNewLayerName(e.target.value)}
-            className="text-sm"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleCreateLayer();
-              }
-            }}
-          />
-          <Button
-            size="sm"
-            onClick={handleCreateLayer}
-            disabled={!newLayerName.trim()}
-          >
-            <Plus className="w-3 h-3" />
-          </Button>
+      <CardContent className="space-y-4">
+        {/* إضافة طبقة جديدة */}
+        <div>
+          <h4 className="text-sm font-medium font-arabic mb-2">إضافة طبقة جديدة</h4>
+          <div className="flex gap-2">
+            <Input
+              value={newLayerName}
+              onChange={(e) => setNewLayerName(e.target.value)}
+              placeholder="اسم الطبقة"
+              className="flex-1 font-arabic text-sm rounded-xl"
+              onKeyPress={(e) => e.key === 'Enter' && addNewLayer()}
+            />
+            <Button
+              onClick={addNewLayer}
+              size="sm"
+              className="rounded-xl bg-blue-500 hover:bg-blue-600"
+            >
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         <Separator />
 
-        {/* Layers List */}
-        <ScrollArea className="flex-1">
-          <div className="space-y-1">
-            {sortedLayers.map((layer) => (
+        {/* قائمة الطبقات */}
+        <div>
+          <h4 className="text-sm font-medium font-arabic mb-2">الطبقات ({layers.length})</h4>
+          <div className="space-y-2 max-h-60 overflow-y-auto">
+            {layers.map((layer, index) => (
               <div
                 key={layer.id}
-                className={`p-2 rounded border transition-all ${
-                  layer.id === activeLayerId 
-                    ? 'bg-primary/10 border-primary' 
-                    : 'bg-background hover:bg-muted border-border'
+                className={`p-3 rounded-xl border transition-colors ${
+                  selectedLayerId === layer.id
+                    ? 'border-blue-300 bg-blue-50'
+                    : 'border-gray-200 bg-white hover:bg-gray-50'
                 }`}
                 onClick={() => onLayerSelect(layer.id)}
               >
-                {/* Layer Header */}
-                <div className="flex items-center gap-2 mb-2">
-                  {editingLayerId === layer.id ? (
-                    <div className="flex items-center gap-1 flex-1">
-                      <Input
-                        value={editingName}
-                        onChange={(e) => setEditingName(e.target.value)}
-                        className="text-xs h-6"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleSaveRename();
-                          if (e.key === 'Escape') handleCancelRename();
-                        }}
-                        onBlur={handleSaveRename}
-                        autoFocus
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <span className="flex-1 text-sm font-medium truncate">
-                        {layer.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {layer.elements.length}
-                      </span>
-                    </>
-                  )}
-
-                  {/* Layer Controls */}
+                <div className="flex items-center justify-between mb-2">
+                  <Input
+                    value={layer.name}
+                    onChange={(e) => updateLayerName(layer.id, e.target.value)}
+                    className="text-sm font-arabic border-none p-0 h-auto bg-transparent"
+                    onClick={(e) => e.stopPropagation()}
+                  />
                   <div className="flex items-center gap-1">
                     <Button
-                      variant="ghost"
+                      onClick={(e) => { e.stopPropagation(); toggleLayerVisibility(layer.id); }}
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onLayerToggleVisibility(layer.id);
-                      }}
-                      className="p-1 h-6 w-6"
+                      variant="ghost"
+                      className="w-6 h-6 p-0"
                     >
                       {layer.visible ? (
                         <Eye className="w-3 h-3" />
                       ) : (
-                        <EyeOff className="w-3 h-3 text-muted-foreground" />
+                        <EyeOff className="w-3 h-3 text-gray-400" />
                       )}
                     </Button>
-
                     <Button
-                      variant="ghost"
+                      onClick={(e) => { e.stopPropagation(); toggleLayerLock(layer.id); }}
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onLayerToggleLock(layer.id);
-                      }}
-                      className="p-1 h-6 w-6"
+                      variant="ghost"
+                      className="w-6 h-6 p-0"
                     >
                       {layer.locked ? (
-                        <Lock className="w-3 h-3 text-muted-foreground" />
+                        <Lock className="w-3 h-3 text-red-500" />
                       ) : (
                         <Unlock className="w-3 h-3" />
                       )}
                     </Button>
                   </div>
                 </div>
-
-                {/* Layer Opacity */}
-                <div className="mb-2">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                    <span>الشفافية</span>
-                    <span>{Math.round(layer.opacity * 100)}%</span>
+                
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-gray-500 font-arabic">
+                    {layer.elements.length} عنصر
                   </div>
-                  <Slider
-                    value={[layer.opacity * 100]}
-                    onValueChange={([value]) => 
-                      onLayerOpacityChange(layer.id, value / 100)
-                    }
-                    max={100}
-                    min={0}
-                    step={1}
-                    className="h-2"
-                  />
-                </div>
-
-                {/* Layer Actions */}
-                <div className="flex items-center gap-1 justify-between">
                   <div className="flex items-center gap-1">
                     <Button
-                      variant="ghost"
+                      onClick={(e) => { e.stopPropagation(); moveLayerUp(index); }}
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onLayerReorder(layer.id, 'up');
-                      }}
-                      className="p-1 h-6 w-6"
-                      disabled={layer.order === Math.max(...layers.map(l => l.order))}
+                      variant="ghost"
+                      className="w-6 h-6 p-0"
+                      disabled={index === 0}
                     >
-                      <ChevronUp className="w-3 h-3" />
+                      <ArrowUp className="w-3 h-3" />
                     </Button>
-
                     <Button
-                      variant="ghost"
+                      onClick={(e) => { e.stopPropagation(); moveLayerDown(index); }}
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onLayerReorder(layer.id, 'down');
-                      }}
-                      className="p-1 h-6 w-6"
-                      disabled={layer.order === Math.min(...layers.map(l => l.order))}
+                      variant="ghost"
+                      className="w-6 h-6 p-0"
+                      disabled={index === layers.length - 1}
                     >
-                      <ChevronDown className="w-3 h-3" />
+                      <ArrowDown className="w-3 h-3" />
                     </Button>
-                  </div>
-
-                  <div className="flex items-center gap-1">
                     <Button
-                      variant="ghost"
+                      onClick={(e) => { e.stopPropagation(); deleteLayer(layer.id); }}
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleStartRename(layer);
-                      }}
-                      className="p-1 h-6 w-6"
-                    >
-                      <Edit2 className="w-3 h-3" />
-                    </Button>
-
-                    <Button
                       variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onLayerDuplicate(layer.id);
-                      }}
-                      className="p-1 h-6 w-6"
-                    >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onLayerDelete(layer.id);
-                      }}
-                      className="p-1 h-6 w-6 text-destructive hover:text-destructive"
+                      className="w-6 h-6 p-0 text-red-500 hover:text-red-700"
                       disabled={layers.length <= 1}
                     >
                       <Trash2 className="w-3 h-3" />
@@ -293,12 +207,16 @@ const LayersPanel: React.FC<LayersPanelProps> = ({
               </div>
             ))}
           </div>
-        </ScrollArea>
+        </div>
 
-        {/* Layer Stats */}
-        <Separator />
-        <div className="text-xs text-muted-foreground">
-          المجموع: {layers.length} طبقة، {layers.reduce((acc, layer) => acc + layer.elements.length, 0)} عنصر
+        {/* نصائح الاستخدام */}
+        <div className="bg-blue-50 p-3 rounded-xl border border-blue-200">
+          <div className="text-xs text-blue-800 font-arabic space-y-1">
+            <div>📚 استخدم الطبقات لتنظيم عملك</div>
+            <div>👁️ أخفِ الطبقات غير المرغوبة</div>
+            <div>🔒 اقفل الطبقات لحمايتها</div>
+            <div>↕️ رتب الطبقات حسب الأولوية</div>
+          </div>
         </div>
       </CardContent>
     </Card>

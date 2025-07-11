@@ -1,6 +1,14 @@
 import React from 'react';
 import { CleanCanvasPanelLayout } from './CleanCanvasPanelLayout';
-import { CanvasElement, CanvasLayer } from '../types';
+import { CanvasElement } from '../types';
+
+interface Layer {
+  id: string;
+  name: string;
+  visible: boolean;
+  locked: boolean;
+  elements: string[];
+}
 
 interface CanvasPanelLayoutProps {
   // History props
@@ -22,7 +30,7 @@ interface CanvasPanelLayoutProps {
   snapEnabled: boolean;
   gridSize: number;
   gridShape: string;
-  layers: CanvasLayer[];
+  layers: Layer[];
   selectedLayerId: string | null;
   elements: CanvasElement[];
   canvasPosition: { x: number; y: number };
@@ -40,7 +48,7 @@ interface CanvasPanelLayoutProps {
   handleGridSizeChange: (size: number) => void;
   handleGridShapeChange: (shape: string) => void;
   handleAlignToGrid: () => void;
-  handleLayerUpdate: (layerId: string, updates: Partial<CanvasLayer>) => void;
+  handleLayerUpdate: (layers: Layer[]) => void;
   handleLayerSelect: (layerId: string) => void;
   handleCopy: () => void;
   handleCut: () => void;
@@ -59,7 +67,7 @@ interface CanvasPanelLayoutProps {
   onLineWidthChange: (width: number) => void;
   onLineStyleChange: (style: string) => void;
   onPenModeSelect: (mode: string) => void;
-  onFileUpload: (files: FileList) => void;
+  onFileUpload: (files: File[]) => void;
   onNew: () => void;
   onOpen: () => void;
   onSmartProjectGenerate: () => void;

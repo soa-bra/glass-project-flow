@@ -497,286 +497,91 @@
   transition: all 0.16s cubic-bezier(0.4,0,0.2,1);
   z-index:1003;
 }
-/* Canvas Board Enhanced Design System */
-@layer components {
-  
-  /* Canvas Panel Styles */
-  .canvas-panel {
-    @apply bg-background/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-lg;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05);
-    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .canvas-panel:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  }
-  
-  /* Smart Elements */
-  .smart-element {
-    @apply relative overflow-hidden rounded-lg border border-primary/20;
-    background: linear-gradient(135deg, hsl(var(--primary)/5) 0%, hsl(var(--primary)/2) 100%);
-    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .smart-element::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, hsl(var(--primary)) 0%, transparent 100%);
-    opacity: 0;
-    transition: opacity 200ms ease-out;
-  }
-  
-  .smart-element:hover::before {
-    opacity: 1;
-  }
-  
-  .smart-element:hover {
-    transform: translateY(-1px);
-    border-color: hsl(var(--primary)/40);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Canvas Tools */
-  .canvas-tool {
-    @apply relative p-3 rounded-lg border transition-all duration-200;
-    background: hsl(var(--background));
-    border-color: hsl(var(--border));
-  }
-  
-  .canvas-tool:hover {
-    background: hsl(var(--accent));
-    border-color: hsl(var(--primary)/30);
-    transform: translateY(-1px);
-  }
-  
-  .canvas-tool.active {
-    background: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
-    border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 2px hsl(var(--primary)/20);
-  }
-  
-  /* Floating Panels */
-  .floating-panel {
-    @apply fixed bg-background/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl;
-    z-index: 1000;
-    animation: fadeInScale 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .floating-panel-compact {
-    @apply w-80 max-h-[600px];
-  }
-  
-  .floating-panel-wide {
-    @apply w-96 max-h-[700px];
-  }
-  
-  /* Collaboration Indicators */
-  .collab-cursor {
-    @apply absolute pointer-events-none z-50;
-    transition: all 100ms linear;
-  }
-  
-  .collab-cursor::after {
-    content: '';
-    @apply absolute w-4 h-4 bg-primary rounded-full;
-    box-shadow: 0 0 0 2px white, 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-  
-  .collab-selection {
-    @apply absolute border-2 border-primary/60 rounded;
-    background: hsl(var(--primary)/10);
-    animation: pulse 2s infinite;
-  }
-  
-  /* Progress Indicators */
-  .ai-thinking {
-    @apply inline-flex items-center gap-2 text-primary;
-  }
-  
-  .ai-thinking::after {
-    content: '';
-    @apply w-1 h-1 bg-current rounded-full;
-    animation: aiDots 1.4s infinite ease-in-out both;
-  }
-  
-  .ai-thinking::before {
-    content: '';
-    @apply w-1 h-1 bg-current rounded-full mr-1;
-    animation: aiDots 1.4s -0.32s infinite ease-in-out both;
-  }
-  
-  /* Canvas Grid */
-  .canvas-grid {
-    background-image: 
-      radial-gradient(circle, hsl(var(--muted-foreground)/20) 1px, transparent 1px);
-    background-size: 20px 20px;
-    opacity: 0.6;
-    transition: opacity 200ms ease-out;
-  }
-  
-  .canvas-grid.hidden {
-    opacity: 0;
-  }
-  
-  /* Enhanced Tooltips */
-  .canvas-tooltip {
-    @apply px-3 py-2 bg-foreground text-background text-xs rounded-lg shadow-lg;
-    backdrop-filter: blur(8px);
-    z-index: 10000;
-    animation: fadeInScale 150ms ease-out;
-  }
-  
-  /* Smart Suggestions */
-  .suggestion-card {
-    @apply p-4 rounded-lg border border-border/50 hover:border-primary/30 transition-all duration-200;
-    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)/30) 100%);
-  }
-  
-  .suggestion-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  }
-  
-  .suggestion-confidence {
-    @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
-  }
-  
-  .confidence-high {
-    @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
-  }
-  
-  .confidence-medium {
-    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400;
-  }
-  
-  .confidence-low {
-    @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400;
-  }
+
+.project-panel-frame6 {
+  width: var(--operations-width-expanded);
+  height: calc(100vh - var(--sidebar-top-offset));
+  border-radius: 32px;
+  right: var(--operations-right-expanded);
+  top: var(--sidebar-top-offset);
+  background: var(--backgrounds-project-mgmt-board-bg);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
+  opacity:1;
+  pointer-events: auto;
+  transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+  z-index:1004;
 }
 
-/* Canvas Specific Animations */
-@layer utilities {
-  @keyframes fadeInScale {
-    0% {
-      opacity: 0;
-      transform: scale(0.95) translateY(10px);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-  }
-  
-  @keyframes aiDots {
-    0%, 80%, 100% {
-      transform: scale(0);
-    }
-    40% {
-      transform: scale(1);
-    }
-  }
-  
-  @keyframes pulse {
-    0%, 100% {
-      opacity: 0.6;
-    }
-    50% {
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideInFromRight {
-    0% {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    100% {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideOutToRight {
-    0% {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    100% {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-  }
-  
-  @keyframes bounceIn {
-    0% {
-      transform: scale(0.3);
-      opacity: 0;
-    }
-    50% {
-      transform: scale(1.05);
-    }
-    70% {
-      transform: scale(0.9);
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-  
-  .animate-fadeInScale {
-    animation: fadeInScale 300ms ease-out;
-  }
-  
-  .animate-slideInRight {
-    animation: slideInFromRight 300ms ease-out;
-  }
-  
-  .animate-slideOutRight {
-    animation: slideOutToRight 300ms ease-out;
-  }
-  
-  .animate-bounceIn {
-    animation: bounceIn 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  }
-  
-  /* Canvas Interaction States */
-  .canvas-dragging {
-    cursor: grabbing !important;
-  }
-  
-  .canvas-selecting {
-    cursor: crosshair !important;
-  }
-  
-  .canvas-drawing {
-    cursor: none !important;
-  }
-  
-  /* Enhanced Focus States */
-  .focus-visible:focus-visible {
-    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
-  }
-  
-  /* Responsive Canvas */
-  .canvas-responsive {
-    @apply w-full h-full;
-    min-height: 400px;
-  }
-  
-  @media (max-width: 768px) {
-    .canvas-responsive {
-      min-height: 300px;
-    }
-    
-    .floating-panel {
-      @apply w-full max-w-sm mx-4;
-    }
-  }
+.rtl-fix-panel {
+  direction: rtl;
+}
+
+.operations-board-slid {
+  right: calc(var(--operations-right-expanded) - 60vw);
+  width: 0px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+
+.projects-column-slid {
+  right: calc(var(--projects-right-expanded) + 30vw);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+
+.project-panel-slid-in {
+  opacity: 1;
+  right: var(--operations-right-expanded);
+  pointer-events: auto;
+  z-index: 1200;
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+
+.project-panel-slid-out {
+  opacity: 0;
+  right: calc(100vw + 80px);
+  pointer-events: none;
+  z-index: 1199;
+  transition: all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1);
+}
+
+.project-panel-hidden {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  right: var(--operations-right-expanded);
+}
+
+/* Departments specific animations and transitions */
+.sync-transition {
+  transition: all var(--animation-duration-main) var(--animation-easing);
+}
+
+.sync-transition-fast {
+  transition: all var(--animation-duration-fast) var(--animation-easing);
+}
+
+/* Department panel smooth transitions */
+.department-panel-enter {
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+.department-panel-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all var(--animation-duration-main) var(--animation-easing);
+}
+
+.department-panel-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.department-panel-exit-active {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: all var(--animation-duration-main) var(--animation-easing);
 }

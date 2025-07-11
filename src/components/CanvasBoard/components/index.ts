@@ -1,28 +1,30 @@
-// Core Components
-export { default as PerformanceOptimizedCanvas } from './PerformanceOptimizedCanvas';
-export { EnhancedCanvasBoard } from './EnhancedCanvasBoard';
+export { default as DefaultView } from './DefaultView';
+export { default as MainToolbar } from './NewMainToolbar';
+export { default as CollabBar } from './CollabBar';
 
-// Enhanced Components
-export { EnhancedKeyboardShortcuts } from './EnhancedKeyboardShortcuts';
-export { SmartStatusIndicator } from './SmartStatusIndicator';
-export { FloatingPanelControls } from './FloatingPanelControls';
-export { FloatingPanels } from './FloatingPanels';
+export { default as Inspector } from './Inspector';
+export { default as Canvas } from './Canvas';
+export { CanvasWrapper } from './CanvasWrapper';
+export { CanvasPanelLayout } from './CanvasPanelLayout';
+export { CleanCanvasPanelLayout } from './CleanCanvasPanelLayout';
+export { useCanvasEventHandlers } from './CanvasEventHandlers';
 
-// Toolbar Components
-export { AnimatedToolbar } from './AnimatedToolbar';
-export { MainToolbar } from './MainToolbar';
-export { default as NewTopToolbar } from './NewTopToolbar';
+// Refactored Canvas components
+export { CanvasGrid } from './CanvasGrid';
+export { ElementRenderer } from './ElementRenderer';
+export { ElementResizeHandles } from './ElementResizeHandles';
+export { CanvasDrawingPreview } from './CanvasDrawingPreview';
+export { CanvasElement } from './CanvasElement';
+export { CanvasStatusBar } from './CanvasStatusBar';
 
-// Section Components
+// Refactored Panel Layout components
 export { CanvasTopSection } from './CanvasTopSection';
+export { CanvasCollaborationSection } from './CanvasCollaborationSection';
+export { CanvasInspectorSection } from './CanvasInspectorSection';
+export { CanvasAISection } from './CanvasAISection';
+export { CanvasToolsSection } from './CanvasToolsSection';
 export { CanvasBottomSection } from './CanvasBottomSection';
+export { FloatingPanelLayout } from './FloatingPanelLayout';
 
-// Panel Components
-export { SmartAssistantPanel } from './panels/SmartAssistantPanel';
-export { LayersPanel } from './panels/LayersPanel';
-export { AppearancePanel } from './panels/AppearancePanel';
-export { CollaborationPanel } from './panels/CollaborationPanel';
-export { ToolsPanel } from './panels/ToolsPanel';
-
-// Default View Component
-export { DefaultView } from './DefaultView';
+// Types
+export type { CanvasPanelLayoutProps, Layer } from './CanvasPanelTypes';

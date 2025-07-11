@@ -5,6 +5,7 @@ import {
   HandPanel,
   UploadPanel,
   GridPanel,
+  LayersPanel
 } from '../panels';
 import { 
   EnhancedSelectionPanel,
@@ -13,7 +14,15 @@ import {
   EnhancedZoomPanel,
   EnhancedCommentPanel
 } from '../panels/enhanced';
-import { CanvasElement, CanvasLayer } from '../types';
+import { CanvasElement } from '../types';
+
+interface Layer {
+  id: string;
+  name: string;
+  visible: boolean;
+  locked: boolean;
+  elements: string[];
+}
 
 interface ToolPanelManagerProps {
   selectedTool: string;
@@ -28,7 +37,7 @@ interface ToolPanelManagerProps {
   snapEnabled: boolean;
   gridSize: number;
   gridShape: string;
-  layers: CanvasLayer[];
+  layers: Layer[];
   selectedLayerId: string | null;
   
   // Handlers
@@ -47,7 +56,7 @@ interface ToolPanelManagerProps {
   onLineStyleChange: (style: string) => void;
   onPenModeSelect: (mode: string) => void;
   onFileUpload: (files: File[]) => void;
-  onLayerReorder: (layers: CanvasLayer[]) => void;
+  onLayerReorder: (layers: Layer[]) => void;
   onLayerSelect: (layerId: string) => void;
   onGridToggle: () => void;
   onSnapToggle: () => void;
@@ -246,8 +255,14 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
         );
 
       case 'layers':
-        // Using the new enhanced LayersPanel - handled directly in EnhancedCanvasBoard
-        return null;
+        return (
+          <LayersPanel
+            layers={layers}
+            selectedLayerId={selectedLayerId}
+            onLayerUpdate={onLayerReorder}
+            onLayerSelect={onLayerSelect}
+          />
+        );
 
       case 'upload':
         return (
