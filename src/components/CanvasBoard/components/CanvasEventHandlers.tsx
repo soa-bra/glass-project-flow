@@ -1,4 +1,5 @@
-import React from 'react';
+
+import { useCallback } from 'react';
 
 interface CanvasEventHandlersProps {
   selectedElementId: string | null;
@@ -15,46 +16,27 @@ export const useCanvasEventHandlers = ({
   setSelectedTool,
   deleteElement
 }: CanvasEventHandlersProps) => {
-  const handleSmartElementSelect = (elementId: string) => {
+  const handleSmartElementSelect = useCallback((elementId: string) => {
     setSelectedSmartElement(elementId);
-  };
+  }, [setSelectedSmartElement]);
 
-  const handleCopy = () => {
-    if (selectedElementId) {
-      // Copy functionality
-    }
-  };
-
-  const handleCut = () => {
-    if (selectedElementId) {
-      // Cut functionality
-    }
-  };
-
-  const handlePaste = () => {
-    // Paste functionality
-  };
-
-  const handleStartCanvas = () => {
+  const handleStartCanvas = useCallback(() => {
     setShowDefaultView(false);
     setSelectedTool('select');
-  };
+  }, [setShowDefaultView, setSelectedTool]);
 
-  const handleSettings = () => {
-    // Open settings
-  };
+  const handleSettings = useCallback(() => {
+    // Settings functionality can be added here
+  }, []);
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = useCallback(() => {
     if (selectedElementId) {
       deleteElement(selectedElementId);
     }
-  };
+  }, [selectedElementId, deleteElement]);
 
   return {
     handleSmartElementSelect,
-    handleCopy,
-    handleCut,
-    handlePaste,
     handleStartCanvas,
     handleSettings,
     handleDeleteSelected
