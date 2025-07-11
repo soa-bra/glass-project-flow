@@ -3,6 +3,7 @@ import { CanvasPanelLayoutProps } from './CanvasPanelTypes';
 import { CanvasTopSection } from './CanvasTopSection';
 import { CanvasBottomSection } from './CanvasBottomSection';
 import { FloatingPanelLayout } from './FloatingPanelLayout';
+import { ToolPanels } from './ToolPanels';
 
 export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
   historyIndex,
@@ -59,7 +60,8 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
   onFileUpload,
   onNew,
   onOpen,
-  onSmartProjectGenerate
+  onSmartProjectGenerate,
+  toolPanels
 }) => {
   const selectedElementsAsElements = selectedElements
     .map(id => elements.find(el => el.id === id))
@@ -134,7 +136,17 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
       <CanvasBottomSection
         selectedTool={selectedTool}
         onToolSelect={setSelectedTool}
+        toolPanels={toolPanels}
       />
+      
+      {/* Tool Panels */}
+      {toolPanels && (
+        <ToolPanels
+          toolPanels={toolPanels}
+          selectedTool={selectedTool}
+          setSelectedTool={setSelectedTool}
+        />
+      )}
     </>
   );
 };

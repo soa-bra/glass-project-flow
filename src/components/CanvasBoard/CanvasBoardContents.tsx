@@ -7,6 +7,8 @@ import { useCanvasEventHandlers } from './components/CanvasEventHandlers';
 import { CleanCanvasPanelLayout } from './components/CleanCanvasPanelLayout';
 import { CanvasWrapper } from './components/CanvasWrapper';
 import { useCanvasCollaboration } from '@/hooks/useCanvasCollaboration';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useToolPanels } from './hooks/useToolPanels';
 
 const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
   projectId = 'default', 
@@ -30,12 +32,31 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     deleteElement: canvasState.deleteElement
   });
 
+  // Initialize tool panels
+  const toolPanels = useToolPanels();
+
+  // Initialize keyboard shortcuts
+  useKeyboardShortcuts({
+    selectedTool: canvasState.selectedTool,
+    onToolSelect: canvasState.setSelectedTool,
+    onUndo: canvasState.undo,
+    onRedo: canvasState.redo,
+    onSave: canvasState.saveCanvas,
+    onNew: () => {},
+    onOpen: () => {},
+    onCopy: canvasState.handleCopy,
+    onGridToggle: () => canvasState.setShowGrid(!canvasState.showGrid),
+    onSnapToggle: () => canvasState.setSnapEnabled(!canvasState.snapEnabled),
+    onSmartProjectGenerate: () => {},
+    canvasRef: canvasState.canvasRef
+  });
+
   if (canvasState.showDefaultView) {
     return <DefaultView onStartCanvas={eventHandlers.handleStartCanvas} />;
   }
 
   return (
-    <div className="relative w-full h-full pointer-events-none">
+    <div className="relative w-full h-full">
       <div className="pointer-events-auto">
         <CanvasWrapper
           showGrid={canvasState.showGrid}
@@ -124,6 +145,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         onNew={() => {}}
         onOpen={() => {}}
         onSmartProjectGenerate={() => {}}
+        toolPanels={toolPanels}
       />
     </div>
   );

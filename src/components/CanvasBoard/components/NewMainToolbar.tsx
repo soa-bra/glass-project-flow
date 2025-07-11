@@ -7,12 +7,36 @@ import { MAIN_TOOLBAR_TOOLS } from '../constants';
 interface NewMainToolbarProps {
   selectedTool: string;
   onToolSelect: (toolId: string) => void;
+  toolPanels?: {
+    panels: any;
+    openPanel: (tool: string, position?: { x: number; y: number }) => void;
+    closePanel: (tool: string) => void;
+    togglePanel: (tool: string, position?: { x: number; y: number }) => void;
+    closeAllPanels: () => void;
+    getPanelConfig: (tool: string) => any;
+  };
 }
 
 const NewMainToolbar: React.FC<NewMainToolbarProps> = ({ 
   selectedTool, 
-  onToolSelect 
+  onToolSelect,
+  toolPanels
 }) => {
+  
+  // Tools that have panels
+  const toolsWithPanels = ['smart-pen', 'zoom', 'grid', 'layers', 'text', 'shape', 'smart-element'];
+  
+  const handleToolClick = (toolId: string, event: React.MouseEvent) => {
+    if (toolsWithPanels.includes(toolId) && toolPanels) {
+      const rect = (event.target as HTMLElement).getBoundingClientRect();
+      const position = {
+        x: rect.left + rect.width / 2,
+        y: rect.top - 10
+      };
+      toolPanels.togglePanel(toolId, position);
+    }
+    onToolSelect(toolId);
+  };
   // المجموعة الأولى: التحديد والقلم الذكي
   const group1Tools = MAIN_TOOLBAR_TOOLS.filter(tool => 
     ['select', 'smart-pen'].includes(tool.id)
@@ -48,7 +72,7 @@ const NewMainToolbar: React.FC<NewMainToolbarProps> = ({
                 ? 'bg-black text-white shadow-lg' 
                 : 'text-gray-600 hover:bg-gray-100 hover:text-black'
             }`}
-            onClick={() => onToolSelect(tool.id)}
+            onClick={(e) => handleToolClick(tool.id, e)}
             title={tool.label}
           >
             <Icon className="w-5 h-5" />
