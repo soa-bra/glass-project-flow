@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CanvasElement } from '../types';
 import { CanvasGrid } from './CanvasGrid';
@@ -77,9 +76,9 @@ const Canvas: React.FC<CanvasProps> = ({
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden" style={{ backgroundColor: '#f7f8f9' }}>
-      {/* الشبكة النقطية */}
-      <CanvasGrid showGrid={showGrid} gridColor="#e9eff4" />
+    <div className="relative w-full h-full bg-white overflow-hidden">
+      {/* الشبكة النقطية الشفافة */}
+      <CanvasGrid showGrid={showGrid} />
 
       {/* منطقة الرسم */}
       <div
