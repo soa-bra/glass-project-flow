@@ -7,7 +7,7 @@ export const useCanvasEventHandlers = (
   canvasPosition: { x: number; y: number },
   snapEnabled: boolean,
   interaction: any,
-  addElement: (x: number, y: number, type: string, smartElement?: string, width?: number, height?: number) => void,
+  addElement: (type: string, x: number, y: number, width?: number, height?: number) => void,
   elements: any[],
   selectedElementIds: string[],
   setSelectedElementId: (id: string | null) => void,
@@ -27,7 +27,7 @@ export const useCanvasEventHandlers = (
 
     if (selectedTool === 'text') {
       interaction.handleTextClick(e, zoom, canvasPosition, (type: string, x: number, y: number) => {
-        addElement(x, y, type);
+        addElement(type, x, y);
       }, snapEnabled);
       return;
     }
@@ -63,7 +63,7 @@ export const useCanvasEventHandlers = (
   const handleCanvasMouseUp = useCallback(() => {
     if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && interaction.isDrawing) {
       interaction.handleDragCreateEnd(selectedTool, (type: string, x: number, y: number, width: number, height: number) => {
-        addElement(x, y, type, undefined, width, height);
+        addElement(type, x, y, width, height);
       });
       return;
     }

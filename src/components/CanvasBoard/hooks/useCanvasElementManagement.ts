@@ -5,7 +5,7 @@ import { CanvasElement } from '../types';
 export const useCanvasElementManagement = (saveToHistory: () => void) => {
   const [elements, setElements] = useState<CanvasElement[]>([]);
 
-  const addElement = useCallback((x: number, y: number, type: string, smartElement?: string, width?: number, height?: number) => {
+  const addElement = useCallback((type: string, x: number, y: number, width?: number, height?: number) => {
     const newElement: CanvasElement = {
       id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type: type as CanvasElement['type'],
