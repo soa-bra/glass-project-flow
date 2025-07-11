@@ -126,7 +126,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
       {/* Tool Customization Panel - Left Side (75% height) */}
       <div style={{
       backdropFilter: 'blur(8px)'
-    }} className="fixed top-[27vh] left-6 w-80 h-[75vh] z-40 pointer-events-auto mx-0 px-0 my-[84px] py-0">
+    }} className="fixed top-[27vh] left-6 w-80 h-[75vh] z-40 pointer-events-auto px-[20px] mx-[3px]">
         <ToolCustomizationPanel selectedTool={selectedTool} selectedElements={selectedElements} zoom={zoom} canvasPosition={canvasPosition} panSpeed={panSpeed} lineWidth={lineWidth} lineStyle={lineStyle} selectedPenMode={selectedPenMode} showGrid={showGrid} snapEnabled={snapEnabled} gridSize={gridSize} gridShape={gridShape} layers={layers} selectedLayerId={selectedLayerId} onUpdateElement={onUpdateElement} onCopy={onCopy} onCut={onCut} onPaste={onPaste} onDelete={onDelete} onGroup={onGroup} onZoomChange={onZoomChange} onPositionChange={onPositionChange} onFitToScreen={onFitToScreen} onResetView={onResetView} onPanSpeedChange={onPanSpeedChange} onLineWidthChange={onLineWidthChange} onLineStyleChange={onLineStyleChange} onPenModeSelect={onPenModeSelect} onFileUpload={onFileUpload} onLayerReorder={onLayerReorder} onLayerSelect={onLayerSelect} onGridToggle={onGridToggle} onSnapToggle={onSnapToggle} onGridSizeChange={onGridSizeChange} onGridShapeChange={onGridShapeChange} onAlignToGrid={onAlignToGrid} />
       </div>
     </>;
