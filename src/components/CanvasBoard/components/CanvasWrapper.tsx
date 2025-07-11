@@ -52,7 +52,7 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = (props) => {
   };
   
   return (
-    <div className="w-full h-full">
+    <div className="absolute inset-0 w-full h-full">
       <FabricCanvasComponent
         selectedTool={selectedTool}
         selectedElementIds={props.selectedElementId ? [props.selectedElementId] : []}

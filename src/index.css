@@ -496,6 +496,7 @@
   pointer-events:auto;
   transition: all 0.16s cubic-bezier(0.4,0,0.2,1);
   z-index:1003;
+}
 /* Canvas Board Enhanced Design System */
 @layer components {
   

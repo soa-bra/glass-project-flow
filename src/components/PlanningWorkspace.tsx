@@ -14,7 +14,7 @@ const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
         ? 'right-[calc(var(--sidebar-width-collapsed)+8px)] w-[calc(100vw-var(--sidebar-width-collapsed)-16px)]'
         : 'right-[calc(var(--sidebar-width-expanded)+8px)] w-[calc(100vw-var(--sidebar-width-expanded)-16px)]'
     }`}>
-      <div className="h-full bg-white/10 backdrop-blur-sm rounded-3xl overflow-hidden">
+      <div className="h-full bg-white/10 backdrop-blur-sm rounded-3xl overflow-hidden relative">
         <CanvasBoardContents />
       </div>
     </div>

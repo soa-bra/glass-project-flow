@@ -1,11 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useEnhancedCanvasState } from './hooks/useEnhancedCanvasState';
 import { CanvasBoardContentsProps } from './types';
 import { DefaultView } from './components';
 import { useCanvasEventHandlers } from './components';
-import { CleanCanvasPanelLayout } from './components/CleanCanvasPanelLayout';
 import { CanvasWrapper } from './components/CanvasWrapper';
+import { CanvasTopSection } from './components/CanvasTopSection';
+import { CanvasBottomSection } from './components/CanvasBottomSection';
+import { FloatingPanels } from './components/FloatingPanels';
+import { FloatingPanelControls } from './components/FloatingPanelControls';
 
 const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
   projectId = 'default', 
@@ -13,6 +16,13 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
 }) => {
   // Initialize enhanced canvas state
   const canvasState = useEnhancedCanvasState(projectId, userId);
+  
+  // Floating panels state
+  const [showSmartAssistant, setShowSmartAssistant] = useState(false);
+  const [showLayers, setShowLayers] = useState(false);
+  const [showAppearance, setShowAppearance] = useState(false);
+  const [showCollaboration, setShowCollaboration] = useState(false);
+  const [showTools, setShowTools] = useState(false);
   
   const eventHandlers = useCanvasEventHandlers({
     selectedElementId: canvasState.selectedElementId,
@@ -22,12 +32,35 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     deleteElement: canvasState.deleteElement
   });
 
+  const handleTogglePanel = (panel: string) => {
+    switch (panel) {
+      case 'smartAssistant':
+        setShowSmartAssistant(!showSmartAssistant);
+        break;
+      case 'layers':
+        setShowLayers(!showLayers);
+        break;
+      case 'appearance':
+        setShowAppearance(!showAppearance);
+        break;
+      case 'collaboration':
+        setShowCollaboration(!showCollaboration);
+        break;
+      case 'tools':
+        setShowTools(!showTools);
+        break;
+      default:
+        break;
+    }
+  };
+
   if (canvasState.showDefaultView) {
     return <DefaultView onStartCanvas={eventHandlers.handleStartCanvas} />;
   }
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full bg-white">
+      {/* Main Canvas Area */}
       <CanvasWrapper
         showGrid={canvasState.showGrid}
         snapEnabled={canvasState.snapEnabled}
@@ -58,62 +91,56 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         handleResizeMouseMove={canvasState.handleResizeMouseMove}
       />
       
-      <CleanCanvasPanelLayout
+      {/* Top Toolbar */}
+      <CanvasTopSection
         historyIndex={canvasState.historyIndex}
         history={canvasState.history}
         onUndo={canvasState.undo}
         onRedo={canvasState.redo}
         onSave={canvasState.saveCanvas}
-        onExport={canvasState.exportCanvas}
-        onSettings={eventHandlers.handleSettings}
-        selectedTool={canvasState.selectedTool}
-        selectedElementId={canvasState.selectedElementId}
-        selectedElements={canvasState.selectedElementIds}
-        zoom={canvasState.zoom}
-        selectedSmartElement={canvasState.selectedSmartElement}
-        showGrid={canvasState.showGrid}
-        snapEnabled={canvasState.snapEnabled}
-        gridSize={canvasState.gridSize}
-        gridShape="dots"
-        layers={canvasState.layers}
-        selectedLayerId={canvasState.selectedLayerId}
-        elements={canvasState.elements}
-        canvasPosition={canvasState.canvasPosition || { x: 0, y: 0 }}
-        panSpeed={canvasState.panSpeed}
-        lineWidth={canvasState.lineWidth}
-        lineStyle={canvasState.lineStyle}
-        selectedPenMode={canvasState.selectedPenMode}
-        setSelectedTool={canvasState.setSelectedTool}
-        setZoom={canvasState.setZoom}
-        setShowGrid={canvasState.setShowGrid}
-        setSnapEnabled={canvasState.setSnapEnabled}
-        handleSmartElementSelect={eventHandlers.handleSmartElementSelect}
-        handleGridSizeChange={canvasState.handleGridSizeChange}
-        handleGridShapeChange={(shape) => {}}
-        handleAlignToGrid={canvasState.handleAlignToGrid}
-        handleLayerUpdate={canvasState.handleLayerUpdate}
-        handleLayerSelect={canvasState.handleLayerSelect}
-        handleCopy={canvasState.handleCopy}
-        handleCut={canvasState.handleCut}
-        handlePaste={canvasState.handlePaste}
-        handleDeleteSelected={eventHandlers.handleDeleteSelected}
-        handleGroup={canvasState.handleGroup}
-        handleUngroup={canvasState.handleUngroup}
-        handleLock={canvasState.handleLock}
-        handleUnlock={canvasState.handleUnlock}
-        updateElement={canvasState.updateElement}
-        deleteElement={canvasState.deleteElement}
-        onPositionChange={canvasState.setCanvasPosition}
-        onFitToScreen={() => {}}
-        onResetView={() => {}}
-        onPanSpeedChange={canvasState.setPanSpeed}
-        onLineWidthChange={canvasState.setLineWidth}
-        onLineStyleChange={canvasState.setLineStyle}
-        onPenModeSelect={canvasState.setSelectedPenMode}
-        onFileUpload={(files) => {}}
         onNew={() => {}}
         onOpen={() => {}}
+        handleCopy={canvasState.handleCopy}
+        showGrid={canvasState.showGrid}
+        onGridToggle={() => canvasState.setShowGrid(!canvasState.showGrid)}
+        snapEnabled={canvasState.snapEnabled}
+        onSnapToggle={() => canvasState.setSnapEnabled(!canvasState.snapEnabled)}
+        gridSize={canvasState.gridSize}
+        onGridSizeChange={canvasState.handleGridSizeChange}
+        gridShape="dots"
+        onGridShapeChange={(shape) => {}}
         onSmartProjectGenerate={() => {}}
+      />
+      
+      {/* Bottom Toolbar */}
+      <CanvasBottomSection
+        selectedTool={canvasState.selectedTool}
+        onToolSelect={canvasState.setSelectedTool}
+      />
+      
+      {/* Floating Panel Controls */}
+      <FloatingPanelControls
+        showSmartAssistant={showSmartAssistant}
+        showLayers={showLayers}
+        showAppearance={showAppearance}
+        showCollaboration={showCollaboration}
+        showTools={showTools}
+        onTogglePanel={handleTogglePanel}
+      />
+      
+      {/* Floating Panels */}
+      <FloatingPanels
+        showSmartAssistant={showSmartAssistant}
+        showLayers={showLayers}
+        showAppearance={showAppearance}
+        showCollaboration={showCollaboration}
+        showTools={showTools}
+        onTogglePanel={handleTogglePanel}
+        layers={canvasState.layers}
+        selectedLayerId={canvasState.selectedLayerId}
+        onLayerSelect={canvasState.handleLayerSelect}
+        selectedElementId={canvasState.selectedElementId}
+        elements={canvasState.elements}
       />
     </div>
   );
