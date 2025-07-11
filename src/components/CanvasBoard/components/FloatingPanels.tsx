@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -42,7 +42,7 @@ interface FloatingPanelsProps {
   elements?: any[];
 }
 
-export const FloatingPanels: React.FC<FloatingPanelsProps> = ({
+export const FloatingPanels: React.FC<FloatingPanelsProps> = memo(({
   showSmartAssistant,
   showLayers,
   showAppearance,
@@ -68,14 +68,14 @@ export const FloatingPanels: React.FC<FloatingPanelsProps> = ({
     { id: 4, text: "إضافة خلفية", action: "add_background", priority: "medium" }
   ];
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = useCallback((priority: string) => {
     switch (priority) {
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
       case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'low': return 'bg-green-100 text-green-800 border-green-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
-  };
+  }, []);
 
   return (
     <>
@@ -396,4 +396,6 @@ export const FloatingPanels: React.FC<FloatingPanelsProps> = ({
       )}
     </>
   );
-};
+});
+
+FloatingPanels.displayName = 'FloatingPanels';

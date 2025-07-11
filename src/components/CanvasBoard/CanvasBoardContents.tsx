@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { useEnhancedCanvasState } from './hooks/useEnhancedCanvasState';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { CanvasBoardContentsProps } from './types';
 import { DefaultView } from './components';
 import { useCanvasEventHandlers } from './components';
@@ -10,7 +11,7 @@ import { CanvasBottomSection } from './components/CanvasBottomSection';
 import { FloatingPanels } from './components/FloatingPanels';
 import { FloatingPanelControls } from './components/FloatingPanelControls';
 
-const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
+const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = memo(({ 
   projectId = 'default', 
   userId = 'user1' 
 }) => {
@@ -32,34 +33,63 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     deleteElement: canvasState.deleteElement
   });
 
-  const handleTogglePanel = (panel: string) => {
+  const handleTogglePanel = useCallback((panel: string) => {
     switch (panel) {
       case 'smartAssistant':
-        setShowSmartAssistant(!showSmartAssistant);
+        setShowSmartAssistant(prev => !prev);
         break;
       case 'layers':
-        setShowLayers(!showLayers);
+        setShowLayers(prev => !prev);
         break;
       case 'appearance':
-        setShowAppearance(!showAppearance);
+        setShowAppearance(prev => !prev);
         break;
       case 'collaboration':
-        setShowCollaboration(!showCollaboration);
+        setShowCollaboration(prev => !prev);
         break;
       case 'tools':
-        setShowTools(!showTools);
+        setShowTools(prev => !prev);
         break;
       default:
         break;
     }
-  };
+  }, []);
+
+  // Enhanced keyboard shortcuts
+  useKeyboardShortcuts({
+    onUndo: canvasState.undo,
+    onRedo: canvasState.redo,
+    onSave: canvasState.saveCanvas,
+    onCopy: canvasState.handleCopy,
+    onDelete: () => {
+      if (canvasState.selectedElementId) {
+        canvasState.deleteElement(canvasState.selectedElementId);
+      }
+    },
+    onSelectAll: () => {
+      // Implement select all logic
+      console.log('Select all');
+    },
+    onZoomIn: () => {
+      // Implement zoom in
+      console.log('Zoom in');
+    },
+    onZoomOut: () => {
+      // Implement zoom out
+      console.log('Zoom out');
+    },
+    onZoomReset: () => {
+      // Implement zoom reset
+      console.log('Zoom reset');
+    }
+  });
 
   if (canvasState.showDefaultView) {
     return <DefaultView onStartCanvas={eventHandlers.handleStartCanvas} />;
   }
 
   return (
-    <div className="relative w-full h-full bg-white">
+    <div className="relative w-full h-full bg-gradient-to-br from-background to-muted/10 animate-fade-in">
       {/* Main Canvas Area */}
       <CanvasWrapper
         showGrid={canvasState.showGrid}
@@ -144,6 +174,8 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
       />
     </div>
   );
-};
+});
+
+CanvasBoardContents.displayName = 'CanvasBoardContents';
 
 export default CanvasBoardContents;

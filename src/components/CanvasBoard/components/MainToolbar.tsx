@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { 
@@ -35,10 +35,14 @@ const tools = [
   { id: 'brainstorm', icon: Lightbulb, label: 'عصف ذهني' }
 ];
 
-export const MainToolbar: React.FC<MainToolbarProps> = ({
+export const MainToolbar: React.FC<MainToolbarProps> = memo(({
   selectedTool,
   onToolSelect
 }) => {
+  const handleToolSelect = useCallback((toolId: string) => {
+    onToolSelect(toolId);
+  }, [onToolSelect]);
+
   return (
     <div className="flex items-center gap-1 p-2 bg-background/95 backdrop-blur-lg rounded-lg border shadow-lg animate-fade-in">
       {tools.map((tool, index) => (
@@ -46,18 +50,18 @@ export const MainToolbar: React.FC<MainToolbarProps> = ({
           <Button
             variant={selectedTool === tool.id ? "default" : "ghost"}
             size="sm"
-            onClick={() => onToolSelect(tool.id)}
+            onClick={() => handleToolSelect(tool.id)}
             className={cn(
-              "w-10 h-10 transition-all duration-200 hover:scale-105",
-              selectedTool === tool.id && "bg-primary text-primary-foreground shadow-md"
+              "w-10 h-10 transition-all duration-200 hover:scale-105 hover-scale",
+              selectedTool === tool.id && "bg-primary text-primary-foreground shadow-md animate-scale-in"
             )}
             title={tool.label}
           >
             <tool.icon className="h-4 w-4" />
           </Button>
-          {index === 1 || index === 5 ? <Separator orientation="vertical" className="h-6 mx-1" /> : null}
+          {(index === 1 || index === 5) && <Separator orientation="vertical" className="h-6 mx-1" />}
         </div>
       ))}
     </div>
   );
-};
+});
