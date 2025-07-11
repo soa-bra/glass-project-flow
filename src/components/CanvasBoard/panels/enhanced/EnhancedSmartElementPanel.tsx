@@ -1,25 +1,19 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { 
-  Sparkles, Users, BarChart3, GitBranch, Lightbulb,
-  Vote, Calendar, Target, Brain, Workflow,
-  Play, Settings2, Zap
+  Sparkles, GitBranch, MessageSquare, Clock, Brain, 
+  Lightbulb, Target, Network, Upload, Calendar,
+  Bot, Zap, Settings, Play, Pause
 } from 'lucide-react';
-
-interface SmartElement {
-  id: string;
-  name: string;
-  icon: any;
-  category: 'collaboration' | 'planning' | 'analysis';
-  description: string;
-  settings?: any;
-}
 
 interface EnhancedSmartElementPanelProps {
   onAddSmartElement: (type: string, config: any) => void;
@@ -28,319 +22,572 @@ interface EnhancedSmartElementPanelProps {
   onToggleAI: (enabled: boolean) => void;
 }
 
-const EnhancedSmartElementPanel: React.FC<EnhancedSmartElementPanelProps> = ({
+const EnhancedSmartElementPanel: React.FC<EnhancedSmartElementPanelProps> = ({ 
   onAddSmartElement,
   onPreviewElement,
   isAIEnabled,
   onToggleAI
 }) => {
-  const [selectedElement, setSelectedElement] = useState<SmartElement | null>(null);
-  const [elementConfig, setElementConfig] = useState<any>({});
+  const [activeElement, setActiveElement] = useState<string>('brainstorm');
+  const [activeTab, setActiveTab] = useState('elements');
+  
+  // Root connector settings
+  const [connectionType, setConnectionType] = useState('curved');
+  const [connectionStyle, setConnectionStyle] = useState('arrow');
+  const [autoRoute, setAutoRoute] = useState(true);
+  
+  // Brainstorm settings
+  const [brainstormMode, setBrainstormMode] = useState('collaborative');
+  const [maxParticipants, setMaxParticipants] = useState(10);
+  const [timeLimit, setTimeLimit] = useState(30);
+  const [enableAIAnalysis, setEnableAIAnalysis] = useState(true);
+  
+  // Timeline settings
+  const [timelineStart, setTimelineStart] = useState('');
+  const [timelineEnd, setTimelineEnd] = useState('');
+  const [timelineType, setTimelineType] = useState('project');
+  const [autoSchedule, setAutoSchedule] = useState(false);
+  
+  // Mindmap settings
+  const [mindMapMethod, setMindMapMethod] = useState('hybrid');
+  const [mindMapInput, setMindMapInput] = useState('');
+  const [maxDepth, setMaxDepth] = useState(5);
+  const [autoExpand, setAutoExpand] = useState(true);
+  
+  // Moodboard settings
+  const [autoLink, setAutoLink] = useState(true);
+  const [aiSuggestions, setAiSuggestions] = useState(true);
+  const [themeDetection, setThemeDetection] = useState(true);
 
-  const smartElements: SmartElement[] = [
-    // أدوات التعاون
+  const smartElements = [
     {
-      id: 'think-board',
-      name: 'ثينك بورد',
-      icon: Users,
-      category: 'collaboration',
-      description: 'لوحة تفاعلية للعصف الذهني والتعاون',
-      settings: {
-        columns: { type: 'number', default: 3, label: 'عدد الأعمدة' },
-        categories: { type: 'text', default: 'أفكار,مشاكل,حلول', label: 'أسماء الفئات' }
-      }
-    },
-    {
-      id: 'kanban',
-      name: 'كانبان',
-      icon: BarChart3,
-      category: 'collaboration',
-      description: 'لوحة إدارة المهام والمشاريع',
-      settings: {
-        statuses: { type: 'select', options: ['To Do,In Progress,Done', 'مخطط,قيد التنفيذ,مكتمل'], default: 'To Do,In Progress,Done', label: 'حالات المهام' }
-      }
-    },
-    {
-      id: 'voting',
-      name: 'تصويت',
-      icon: Vote,
-      category: 'collaboration',
-      description: 'أداة التصويت والاستطلاع التفاعلي',
-      settings: {
-        optionsCount: { type: 'number', default: 4, label: 'عدد الخيارات' },
-        duration: { type: 'number', default: 5, label: 'المدة (دقائق)' }
-      }
-    },
-    {
-      id: 'brainstorm-engine',
-      name: 'محرك العصف الذهني',
+      id: 'brainstorm',
+      label: 'محرك العصف الذهني',
       icon: Lightbulb,
-      category: 'collaboration',
-      description: 'عمود دردشة مخصص للعصف الذهني',
-      settings: {
-        mode: { type: 'select', options: ['تعاوني', 'صامت'], default: 'تعاوني', label: 'وضع العصف' },
-        participants: { type: 'number', default: 5, label: 'عدد المشاركين' },
-        duration: { type: 'number', default: 10, label: 'المدة (دقائق)' }
-      }
-    },
-    // أدوات التخطيط
-    {
-      id: 'timeline',
-      name: 'خط زمني',
-      icon: Calendar,
-      category: 'planning',
-      description: 'إضافة خط زمني أو مخططات جانت',
-      settings: {
-        type: { type: 'select', options: ['خط زمني', 'جانت'], default: 'خط زمني', label: 'نوع المخطط' },
-        duration: { type: 'number', default: 30, label: 'المدة (أيام)' }
-      }
-    },
-    {
-      id: 'stakeholder-map',
-      name: 'خريطة أصحاب المصلحة',
-      icon: Target,
-      category: 'planning',
-      description: 'تحديد وتصنيف أصحاب المصلحة',
-      settings: {
-        categories: { type: 'text', default: 'عالي,متوسط,منخفض', label: 'مستويات التأثير' }
-      }
-    },
-    {
-      id: 'decision-matrix',
-      name: 'مصفوفة القرارات',
-      icon: GitBranch,
-      category: 'planning',
-      description: 'مصفوفة لتقييم الخيارات والقرارات',
-      settings: {
-        criteria: { type: 'number', default: 4, label: 'عدد المعايير' },
-        options: { type: 'number', default: 3, label: 'عدد الخيارات' }
-      }
+      description: 'عمود دردشة مخصص للعصف الذهني التفاعلي',
+      color: 'text-yellow-500',
+      category: 'collaborative',
+      features: ['تعاون فوري', 'تحليل ذكي', 'تصنيف تلقائي']
     },
     {
       id: 'root-connector',
-      name: 'الجذر',
+      label: 'الجذر الذكي',
       icon: GitBranch,
+      description: 'أداة ربط متقدمة مع خطوط ذكية ومرنة',
+      color: 'text-blue-500',
+      category: 'connection',
+      features: ['ربط تلقائي', 'مسارات ذكية', 'تحليل العلاقات']
+    },
+    {
+      id: 'timeline',
+      label: 'الخط الزمني الذكي',
+      icon: Clock,
+      description: 'خطوط زمنية تفاعلية مع مخططات جانت',
+      color: 'text-green-500',
       category: 'planning',
-      description: 'أداة للربط بين العناصر',
-      settings: {
-        connectionType: { type: 'select', options: ['مباشر', 'منحني', 'زاوية'], default: 'منحني', label: 'نوع الاتصال' }
-      }
-    },
-    // أدوات التحليل
-    {
-      id: 'smart-flowchart',
-      name: 'مخطط انسيابي ذكي',
-      icon: Workflow,
-      category: 'analysis',
-      description: 'مخطط انسيابي بالذكاء الاصطناعي',
-      settings: {
-        complexity: { type: 'select', options: ['بسيط', 'متوسط', 'معقد'], default: 'متوسط', label: 'مستوى التعقيد' }
-      }
+      features: ['جدولة تلقائية', 'تتبع التقدم', 'تنبيهات ذكية']
     },
     {
-      id: 'smart-mindmap',
-      name: 'خرائط ذهنية ذكية',
-      icon: Brain,
+      id: 'ai-mindmap',
+      label: 'الخرائط الذهنية الذكية',
+      icon: Target,
+      description: 'خرائط ذهنية بالذكاء الاصطناعي',
+      color: 'text-purple-500',
       category: 'analysis',
-      description: 'رسم الخرائط الذهنية يدوياً أو بالذكاء الاصطناعي',
-      settings: {
-        generation: { type: 'select', options: ['يدوي', 'ذكاء اصطناعي', 'مختلط'], default: 'ذكاء اصطناعي', label: 'طريقة التوليد' },
-        depth: { type: 'number', default: 3, label: 'عمق الفروع' }
-      }
+      features: ['توليد تلقائي', 'تحليل المحتوى', 'توسع ذكي']
+    },
+    {
+      id: 'smart-moodboard',
+      label: 'مودبورد ذكية',
+      icon: Network,
+      description: 'جمع وربط العناصر بذكاء اصطناعي',
+      color: 'text-indigo-500',
+      category: 'creative',
+      features: ['ربط تلقائي', 'اقتراحات ذكية', 'كشف الموضوع']
     }
   ];
 
-  const categories = {
-    collaboration: { label: 'أدوات التعاون', icon: Users },
-    planning: { label: 'أدوات التخطيط', icon: Target },
-    analysis: { label: 'أدوات التحليل', icon: BarChart3 }
-  };
+  const brainstormModes = [
+    { id: 'collaborative', label: 'تعاوني', description: 'دردشة جماعية مفتوحة' },
+    { id: 'silent', label: 'صامت', description: 'كتابة دون رؤية رسائل الآخرين' },
+    { id: 'rapid', label: 'سريع', description: 'جلسة عصف ذهني سريعة' },
+    { id: 'structured', label: 'منظم', description: 'عصف ذهني منظم بمراحل' }
+  ];
 
-  const handleElementSelect = (element: SmartElement) => {
-    setSelectedElement(element);
-    // تعيين القيم الافتراضية
-    const defaultConfig: any = {};
-    if (element.settings) {
-      Object.entries(element.settings).forEach(([key, setting]: [string, any]) => {
-        defaultConfig[key] = setting.default;
-      });
-    }
-    setElementConfig(defaultConfig);
-  };
+  const connectionTypes = [
+    { id: 'straight', label: 'مستقيم' },
+    { id: 'curved', label: 'منحني' },
+    { id: 'orthogonal', label: 'متعامد' },
+    { id: 'organic', label: 'عضوي' }
+  ];
 
-  const handleConfigChange = (key: string, value: any) => {
-    setElementConfig(prev => ({ ...prev, [key]: value }));
-  };
+  const timelineTypes = [
+    { id: 'project', label: 'مشروع' },
+    { id: 'milestone', label: 'معالم' },
+    { id: 'gantt', label: 'جانت' },
+    { id: 'roadmap', label: 'خارطة طريق' }
+  ];
+
+  const mindMapMethods = [
+    { id: 'manual', label: 'يدوي', description: 'رسم يدوي كامل' },
+    { id: 'ai', label: 'ذكاء اصطناعي', description: 'توليد تلقائي بالكامل' },
+    { id: 'hybrid', label: 'مختلط', description: 'دمج العمل اليدوي والذكي' }
+  ];
 
   const handleAddElement = () => {
-    if (selectedElement) {
-      onAddSmartElement(selectedElement.id, elementConfig);
-      setSelectedElement(null);
-      setElementConfig({});
-    }
+    const configs = {
+      'brainstorm': {
+        mode: brainstormMode,
+        maxParticipants,
+        timeLimit,
+        aiAnalysis: enableAIAnalysis,
+        isAIEnabled
+      },
+      'root-connector': {
+        connectionType,
+        connectionStyle,
+        autoRoute,
+        snapEnabled: true
+      },
+      'timeline': {
+        startDate: timelineStart,
+        endDate: timelineEnd,
+        type: timelineType,
+        autoSchedule
+      },
+      'ai-mindmap': {
+        method: mindMapMethod,
+        input: mindMapInput,
+        maxDepth,
+        autoExpand
+      },
+      'smart-moodboard': {
+        autoLink,
+        aiSuggestions,
+        themeDetection
+      }
+    };
+
+    onAddSmartElement(activeElement, configs[activeElement as keyof typeof configs] || {});
   };
 
-  const handlePreviewElement = () => {
-    if (selectedElement) {
-      onPreviewElement(selectedElement.id, elementConfig);
-    }
+  const handlePreview = () => {
+    const configs = {
+      'brainstorm': { mode: brainstormMode, aiAnalysis: enableAIAnalysis },
+      'root-connector': { connectionType, connectionStyle },
+      'timeline': { type: timelineType, startDate: timelineStart },
+      'ai-mindmap': { method: mindMapMethod, input: mindMapInput },
+      'smart-moodboard': { autoLink, aiSuggestions }
+    };
+
+    onPreviewElement(activeElement, configs[activeElement as keyof typeof configs] || {});
   };
 
-  const renderElementsByCategory = (category: string) => {
-    const categoryElements = smartElements.filter(el => el.category === category);
-    
-    return (
-      <div className="grid grid-cols-2 gap-2">
-        {categoryElements.map((element) => {
-          const Icon = element.icon;
-          return (
-            <Button
-              key={element.id}
-              onClick={() => handleElementSelect(element)}
-              variant={selectedElement?.id === element.id ? "default" : "outline"}
-              className="h-20 flex flex-col items-center p-2 text-xs font-arabic"
-            >
-              <Icon className="w-6 h-6 mb-1" />
-              <span className="text-center leading-tight">{element.name}</span>
-            </Button>
-          );
-        })}
-      </div>
-    );
-  };
+  const renderElementConfig = () => {
+    switch (activeElement) {
+      case 'brainstorm':
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label className="text-xs font-arabic mb-2 block">وضع العصف الذهني</Label>
+              <Select value={brainstormMode} onValueChange={setBrainstormMode}>
+                <SelectTrigger className="rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {brainstormModes.map(mode => (
+                    <SelectItem key={mode.id} value={mode.id}>
+                      <div>
+                        <div className="font-medium">{mode.label}</div>
+                        <div className="text-xs text-gray-500">{mode.description}</div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs font-arabic">المشاركون</Label>
+                <Input
+                  type="number"
+                  value={maxParticipants}
+                  onChange={(e) => setMaxParticipants(parseInt(e.target.value) || 10)}
+                  className="rounded-xl"
+                  min={2}
+                  max={50}
+                />
+              </div>
+              <div>
+                <Label className="text-xs font-arabic">المدة (دقيقة)</Label>
+                <Input
+                  type="number"
+                  value={timeLimit}
+                  onChange={(e) => setTimeLimit(parseInt(e.target.value) || 30)}
+                  className="rounded-xl"
+                  min={5}
+                  max={120}
+                />
+              </div>
+            </div>
 
-  const renderElementSettings = () => {
-    if (!selectedElement || !selectedElement.settings) return null;
-
-    return (
-      <div className="space-y-3">
-        <h4 className="text-sm font-medium font-arabic">إعدادات {selectedElement.name}</h4>
-        {Object.entries(selectedElement.settings).map(([key, setting]: [string, any]) => (
-          <div key={key}>
-            <label className="text-xs font-arabic text-gray-600 mb-1 block">
-              {setting.label}
-            </label>
-            {setting.type === 'number' && (
-              <Input
-                type="number"
-                value={elementConfig[key] || setting.default}
-                onChange={(e) => handleConfigChange(key, parseInt(e.target.value))}
-                className="text-sm"
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-arabic">تحليل بالذكاء الاصطناعي</Label>
+              <Switch
+                checked={enableAIAnalysis}
+                onCheckedChange={setEnableAIAnalysis}
               />
-            )}
-            {setting.type === 'text' && (
-              <Input
-                type="text"
-                value={elementConfig[key] || setting.default}
-                onChange={(e) => handleConfigChange(key, e.target.value)}
-                className="text-sm"
-                placeholder={setting.default}
-              />
-            )}
-            {setting.type === 'select' && (
-              <select
-                value={elementConfig[key] || setting.default}
-                onChange={(e) => handleConfigChange(key, e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
-              >
-                {setting.options.map((option: string) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            )}
+            </div>
           </div>
-        ))}
-      </div>
-    );
+        );
+
+      case 'root-connector':
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label className="text-xs font-arabic mb-2 block">نوع الاتصال</Label>
+              <Select value={connectionType} onValueChange={setConnectionType}>
+                <SelectTrigger className="rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {connectionTypes.map(type => (
+                    <SelectItem key={type.id} value={type.id}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-arabic">توجيه تلقائي</Label>
+              <Switch
+                checked={autoRoute}
+                onCheckedChange={setAutoRoute}
+              />
+            </div>
+
+            <div className="bg-blue-50 p-3 rounded-xl">
+              <h5 className="text-sm font-medium font-arabic mb-2">كيفية الاستخدام:</h5>
+              <div className="text-xs text-blue-800 font-arabic space-y-1">
+                <div>1. انقر على العنصر الأول</div>
+                <div>2. اسحب للعنصر الثاني</div>
+                <div>3. اتركه لإنشاء الرابط</div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'timeline':
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label className="text-xs font-arabic mb-2 block">نوع الخط الزمني</Label>
+              <Select value={timelineType} onValueChange={setTimelineType}>
+                <SelectTrigger className="rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {timelineTypes.map(type => (
+                    <SelectItem key={type.id} value={type.id}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs font-arabic">تاريخ البداية</Label>
+                <Input
+                  type="date"
+                  value={timelineStart}
+                  onChange={(e) => setTimelineStart(e.target.value)}
+                  className="rounded-xl"
+                />
+              </div>
+              <div>
+                <Label className="text-xs font-arabic">تاريخ النهاية</Label>
+                <Input
+                  type="date"
+                  value={timelineEnd}
+                  onChange={(e) => setTimelineEnd(e.target.value)}
+                  className="rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-arabic">جدولة تلقائية</Label>
+              <Switch
+                checked={autoSchedule}
+                onCheckedChange={setAutoSchedule}
+              />
+            </div>
+          </div>
+        );
+
+      case 'ai-mindmap':
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label className="text-xs font-arabic mb-2 block">طريقة الإنشاء</Label>
+              <Select value={mindMapMethod} onValueChange={setMindMapMethod}>
+                <SelectTrigger className="rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {mindMapMethods.map(method => (
+                    <SelectItem key={method.id} value={method.id}>
+                      <div>
+                        <div className="font-medium">{method.label}</div>
+                        <div className="text-xs text-gray-500">{method.description}</div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {mindMapMethod !== 'manual' && (
+              <div>
+                <Label className="text-xs font-arabic mb-2 block">النص المدخل</Label>
+                <Textarea
+                  value={mindMapInput}
+                  onChange={(e) => setMindMapInput(e.target.value)}
+                  placeholder="أدخل النص أو المحتوى لتحليله وتحويله إلى خريطة ذهنية..."
+                  className="font-arabic text-sm rounded-xl resize-none"
+                  rows={3}
+                />
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs font-arabic">العمق الأقصى</Label>
+                <Input
+                  type="number"
+                  value={maxDepth}
+                  onChange={(e) => setMaxDepth(parseInt(e.target.value) || 5)}
+                  className="rounded-xl"
+                  min={2}
+                  max={10}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-arabic">توسع تلقائي</Label>
+                <Switch
+                  checked={autoExpand}
+                  onCheckedChange={setAutoExpand}
+                />
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'smart-moodboard':
+        return (
+          <div className="space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-arabic">ربط تلقائي</Label>
+                <Switch
+                  checked={autoLink}
+                  onCheckedChange={setAutoLink}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-arabic">اقتراحات ذكية</Label>
+                <Switch
+                  checked={aiSuggestions}
+                  onCheckedChange={setAiSuggestions}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-arabic">كشف الموضوع</Label>
+                <Switch
+                  checked={themeDetection}
+                  onCheckedChange={setThemeDetection}
+                />
+              </div>
+            </div>
+
+            <div className="bg-indigo-50 p-3 rounded-xl">
+              <h5 className="text-sm font-medium font-arabic mb-2">مودبورد ذكية:</h5>
+              <div className="text-xs text-indigo-800 font-arabic space-y-1">
+                <div>• جمع العناصر من مصادر متعددة</div>
+                <div>• توليد روابط ذكية تلقائياً</div>
+                <div>• تطوير الأفكار إلى عناصر جديدة</div>
+                <div>• تحليل العلاقات والأنماط</div>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
   };
 
   return (
     <Card className="w-80 bg-white/95 backdrop-blur-xl shadow-lg border border-white/20 rounded-[24px]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-blue-500" />
-          العنصر الذكي
-          <div className="flex items-center gap-2 ml-auto">
-            <Switch
-              checked={isAIEnabled}
-              onCheckedChange={onToggleAI}
-            />
-            <Zap className={`w-4 h-4 ${isAIEnabled ? 'text-yellow-500' : 'text-gray-400'}`} />
-          </div>
+          <Sparkles className="w-5 h-5 text-orange-500" />
+          العناصر الذكية المتقدمة
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Tabs defaultValue="collaboration" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            {Object.entries(categories).map(([key, category]) => {
-              const Icon = category.icon;
-              return (
-                <TabsTrigger 
-                  key={key} 
-                  value={key} 
-                  className="text-xs font-arabic flex flex-col items-center p-2 gap-1"
-                >
-                  <Icon className="w-3 h-3" />
-                  <span className="hidden sm:inline">{category.label.split(' ')[1]}</span>
-                </TabsTrigger>
-              );
-            })}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="elements" className="text-xs font-arabic">العناصر</TabsTrigger>
+            <TabsTrigger value="ai-settings" className="text-xs font-arabic">الذكاء الاصطناعي</TabsTrigger>
           </TabsList>
-
-          {Object.keys(categories).map((category) => (
-            <TabsContent key={category} value={category} className="space-y-4">
-              {renderElementsByCategory(category)}
-            </TabsContent>
-          ))}
-        </Tabs>
-
-        {/* معلومات العنصر المحدد */}
-        {selectedElement && (
-          <div className="space-y-3">
-            <div className="bg-blue-50 p-3 rounded-xl border border-blue-200">
-              <div className="font-medium text-sm font-arabic mb-1">
-                {selectedElement.name}
-              </div>
-              <div className="text-xs text-blue-800 font-arabic">
-                {selectedElement.description}
+          
+          <TabsContent value="elements" className="space-y-4">
+            {/* اختيار العنصر الذكي */}
+            <div>
+              <h4 className="text-sm font-medium font-arabic mb-3">العناصر الذكية</h4>
+              <div className="space-y-2">
+                {smartElements.map(element => {
+                  const Icon = element.icon;
+                  return (
+                    <button
+                      key={element.id}
+                      onClick={() => setActiveElement(element.id)}
+                      className={`w-full p-3 rounded-xl border transition-all ${
+                        activeElement === element.id 
+                          ? 'bg-orange-500 text-white border-orange-500 shadow-lg' 
+                          : 'bg-white border-gray-200 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="text-right flex-1">
+                          <div className="flex items-center gap-2 justify-end mb-1">
+                            <div className="font-medium text-sm font-arabic">{element.label}</div>
+                            <Badge variant="secondary" className="text-xs">
+                              {element.category}
+                            </Badge>
+                          </div>
+                          <div className="text-xs opacity-80 font-arabic mb-2">{element.description}</div>
+                          <div className="flex flex-wrap gap-1 justify-end">
+                            {element.features.map((feature, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs">
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <Icon className={`w-5 h-5 flex-shrink-0 ${activeElement === element.id ? 'text-white' : element.color}`} />
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* إعدادات العنصر */}
-            {renderElementSettings()}
+            <Separator />
+
+            {/* إعدادات العنصر المحدد */}
+            <div>
+              <h4 className="text-sm font-medium font-arabic mb-3">
+                إعدادات {smartElements.find(e => e.id === activeElement)?.label}
+              </h4>
+              {renderElementConfig()}
+            </div>
+
+            <Separator />
 
             {/* أزرار الإجراءات */}
             <div className="grid grid-cols-2 gap-2">
               <Button
-                onClick={handlePreviewElement}
+                onClick={handlePreview}
                 variant="outline"
                 size="sm"
                 className="text-xs font-arabic rounded-xl"
               >
-                <Play className="w-3 h-3 ml-1" />
+                <Play className="w-3 h-3 mr-1" />
                 معاينة
               </Button>
               <Button
                 onClick={handleAddElement}
                 size="sm"
-                className="text-xs font-arabic rounded-xl bg-blue-500 hover:bg-blue-600"
+                className="text-xs font-arabic rounded-xl bg-orange-500 hover:bg-orange-600"
               >
-                <Sparkles className="w-3 h-3 ml-1" />
-                إضافة
+                <Sparkles className="w-3 h-3 mr-1" />
+                إضافة العنصر
               </Button>
             </div>
-          </div>
-        )}
+          </TabsContent>
 
-        {/* نصائح الاستخدام */}
-        <div className="bg-blue-50 p-3 rounded-xl border border-blue-200">
-          <div className="text-xs text-blue-800 font-arabic space-y-1">
-            <div>🧠 العناصر الذكية تدعم الذكاء الاصطناعي</div>
-            <div>🎯 اختر العنصر وعدّل إعداداته</div>
-            <div>👥 أدوات التعاون تحفز المشاركة الجماعية</div>
-            <div>⌨️ S تفعيل | Enter إضافة | Esc إلغاء</div>
+          <TabsContent value="ai-settings" className="space-y-4">
+            {/* حالة الذكاء الاصطناعي */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-medium font-arabic">الذكاء الاصطناعي</h4>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={isAIEnabled}
+                    onCheckedChange={onToggleAI}
+                  />
+                  <Badge variant={isAIEnabled ? "default" : "secondary"}>
+                    {isAIEnabled ? 'نشط' : 'متوقف'}
+                  </Badge>
+                </div>
+              </div>
+              
+              <div className={`p-3 rounded-xl border ${isAIEnabled ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                <div className="flex items-center gap-2 text-sm font-arabic">
+                  <Bot className={`w-4 h-4 ${isAIEnabled ? 'text-green-600' : 'text-gray-500'}`} />
+                  <span className={isAIEnabled ? 'text-green-800' : 'text-gray-600'}>
+                    {isAIEnabled ? 'الذكاء الاصطناعي متاح' : 'الذكاء الاصطناعي متوقف'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* إعدادات الأداء */}
+            <div>
+              <h4 className="text-sm font-medium font-arabic mb-3">إعدادات الأداء</h4>
+              <div className="space-y-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs font-arabic rounded-xl justify-start"
+                  disabled={!isAIEnabled}
+                >
+                  <Zap className="w-3 h-3 mr-1" />
+                  تحسين الأداء
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs font-arabic rounded-xl justify-start"
+                  disabled={!isAIEnabled}
+                >
+                  <Settings className="w-3 h-3 mr-1" />
+                  إعدادات متقدمة
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        {/* معلومات إضافية */}
+        <div className="bg-orange-50 p-3 rounded-xl border border-orange-200">
+          <div className="text-xs text-orange-800 font-arabic space-y-1">
+            <div>🧠 العناصر الذكية تتعلم من استخدامك</div>
+            <div>🔗 تتفاعل مع العناصر الأخرى تلقائياً</div>
+            <div>📊 تحلل البيانات وتقترح التحسينات</div>
+            <div>⚡ تحديثات مستمرة للذكاء الاصطناعي</div>
           </div>
         </div>
       </CardContent>

@@ -1,25 +1,36 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { 
-  MessageSquare, Pen, Sparkles, Mic, MicOff,
-  Send, Users, Tag, Reply
+  MessageSquare, Reply, Sparkles, Pen, Bot, 
+  Users, Clock, Tag, Pin, Volume2, VolumeX
 } from 'lucide-react';
 
+interface Comment {
+  id: string;
+  text: string;
+  author: string;
+  timestamp: Date;
+  type: 'text' | 'voice' | 'ai';
+  resolved: boolean;
+  tags: string[];
+}
+
 interface EnhancedCommentPanelProps {
-  onAddComment: (text: string, type: string, tags?: string[]) => void;
+  onAddComment: (text: string, type: 'text' | 'voice' | 'ai', tags?: string[]) => void;
   onToggleCommentPen: () => void;
   onResolveComment: (commentId: string) => void;
   onReplyToComment: (commentId: string, reply: string) => void;
   isCommentPenActive: boolean;
   isVoiceEnabled: boolean;
-  comments: any[];
+  comments: Comment[];
   collaborators: string[];
   onToggleVoice: (enabled: boolean) => void;
   onMentionUser: (username: string) => void;
@@ -28,262 +39,337 @@ interface EnhancedCommentPanelProps {
 const EnhancedCommentPanel: React.FC<EnhancedCommentPanelProps> = ({
   onAddComment,
   onToggleCommentPen,
+  onResolveComment,
+  onReplyToComment,
   isCommentPenActive,
   isVoiceEnabled,
+  comments,
   collaborators,
   onToggleVoice,
   onMentionUser
 }) => {
   const [commentText, setCommentText] = useState('');
-  const [selectedBubbleStyle, setSelectedBubbleStyle] = useState('normal');
-  const [selectedBubbleColor, setSelectedBubbleColor] = useState('yellow');
-  const [drawingColor, setDrawingColor] = useState('red');
-  const [strokeWidth, setStrokeWidth] = useState(2);
+  const [commentType, setCommentType] = useState<'text' | 'voice' | 'ai'>('text');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [autoResolve, setAutoResolve] = useState(false);
+  const [showResolved, setShowResolved] = useState(false);
 
-  const bubbleStyles = [
-    { id: 'normal', label: 'عادي' },
-    { id: 'featured', label: 'مميز' }
+  const commentTypes = [
+    { id: 'text', label: 'نص', icon: MessageSquare, color: 'text-blue-500' },
+    { id: 'voice', label: 'صوتي', icon: Volume2, color: 'text-green-500' },
+    { id: 'ai', label: 'ذكي', icon: Bot, color: 'text-purple-500' }
   ];
 
-  const bubbleColors = [
-    { id: 'yellow', label: 'أصفر', color: '#FEF3C7' },
-    { id: 'blue', label: 'أزرق', color: '#DBEAFE' },
-    { id: 'gray', label: 'رمادي', color: '#F3F4F6' }
+  const commonTags = [
+    'عاجل', 'تصميم', 'وظيفة', 'خطأ', 'تحسين', 'اقتراح', 'مراجعة', 'موافقة'
   ];
 
-  const drawingColors = [
-    { id: 'red', label: 'أحمر', color: '#EF4444' },
-    { id: 'green', label: 'أخضر', color: '#10B981' },
-    { id: 'black', label: 'أسود', color: '#1F2937' }
-  ];
-
-  const strokeWidths = [2, 4, 6];
-
-  const handleAddComment = (useAI = false) => {
+  const handleAddComment = () => {
     if (commentText.trim()) {
-      const type = useAI ? 'ai-enhanced' : 'normal';
-      onAddComment(commentText.trim(), type);
+      onAddComment(commentText.trim(), commentType, selectedTags);
       setCommentText('');
+      setSelectedTags([]);
     }
   };
 
-  const handleMention = (username: string) => {
-    setCommentText(prev => prev + `@${username} `);
-    onMentionUser(username);
+  const handleVoiceRecord = () => {
+    setIsRecording(!isRecording);
+    if (!isRecording) {
+      // بدء التسجيل
+      console.log('بدء التسجيل الصوتي');
+    } else {
+      // إيقاف التسجيل وإضافة التعليق
+      console.log('إيقاف التسجيل');
+      onAddComment('تعليق صوتي', 'voice', selectedTags);
+      setSelectedTags([]);
+    }
   };
+
+  const handleAIComment = () => {
+    const aiSuggestion = "اقتراح تحسين: يمكن تحسين هذا العنصر عبر...";
+    onAddComment(aiSuggestion, 'ai', ['ai-suggestion', ...selectedTags]);
+    setSelectedTags([]);
+  };
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
+
+  const filteredComments = showResolved 
+    ? comments 
+    : comments.filter(c => !c.resolved);
 
   return (
     <Card className="w-80 bg-white/95 backdrop-blur-xl shadow-lg border border-white/20 rounded-[24px]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2">
           <MessageSquare className="w-5 h-5 text-blue-500" />
-          أداة التعليق التفاعلي
+          التعليقات التفاعلية
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Tabs defaultValue="text-comment" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="text-comment" className="text-xs font-arabic">
-              تعليق نصي
-            </TabsTrigger>
-            <TabsTrigger value="drawing-comment" className="text-xs font-arabic">
-              رسم توضيحي
-            </TabsTrigger>
-          </TabsList>
+        {/* قلم التعليق */}
+        <div>
+          <h4 className="text-sm font-medium font-arabic mb-2">أدوات التعليق</h4>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              onClick={onToggleCommentPen}
+              variant={isCommentPenActive ? "default" : "outline"}
+              size="sm"
+              className={`text-xs font-arabic rounded-xl ${
+                isCommentPenActive ? 'bg-blue-500 text-white' : ''
+              }`}
+            >
+              <Pen className="w-3 h-3 mr-1" />
+              {isCommentPenActive ? 'إيقاف القلم' : 'تفعيل القلم'}
+            </Button>
+            
+            <Button
+              onClick={() => onToggleVoice(!isVoiceEnabled)}
+              variant={isVoiceEnabled ? "default" : "outline"}
+              size="sm"
+              className={`text-xs font-arabic rounded-xl ${
+                isVoiceEnabled ? 'bg-green-500 text-white' : ''
+              }`}
+            >
+              {isVoiceEnabled ? <Volume2 className="w-3 h-3 mr-1" /> : <VolumeX className="w-3 h-3 mr-1" />}
+              التعليق الصوتي
+            </Button>
+          </div>
+        </div>
 
-          {/* تبويب التعليق النصي */}
-          <TabsContent value="text-comment" className="space-y-4">
-            {/* مربع إدخال النص */}
-            <div>
-              <h4 className="text-sm font-medium font-arabic mb-2">إضافة تعليق</h4>
-              <Textarea
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                placeholder="اكتب تعليقك هنا..."
-                className="font-arabic text-sm rounded-xl border-gray-200 resize-none min-h-[80px]"
-                rows={3}
-              />
-            </div>
+        <Separator />
 
-            {/* اختيار شكل الفقاعة */}
-            <div>
-              <h4 className="text-sm font-medium font-arabic mb-2">شكل الفقاعة</h4>
-              <div className="grid grid-cols-2 gap-2">
-                {bubbleStyles.map((style) => (
-                  <Button
-                    key={style.id}
-                    size="sm"
-                    variant={selectedBubbleStyle === style.id ? "default" : "outline"}
-                    onClick={() => setSelectedBubbleStyle(style.id)}
-                    className="text-xs font-arabic"
-                  >
-                    {style.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
+        {/* نوع التعليق */}
+        <div>
+          <h4 className="text-sm font-medium font-arabic mb-2">نوع التعليق</h4>
+          <div className="flex gap-1 p-1 bg-gray-100 rounded-xl">
+            {commentTypes.map(type => {
+              const Icon = type.icon;
+              return (
+                <button
+                  key={type.id}
+                  onClick={() => setCommentType(type.id as any)}
+                  className={`flex-1 py-2 px-3 rounded-lg text-xs font-arabic transition-colors flex items-center justify-center gap-1 ${
+                    commentType === type.id 
+                      ? 'bg-white shadow-sm text-blue-600' 
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  <Icon className={`w-3 h-3 ${commentType === type.id ? type.color : ''}`} />
+                  {type.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-            {/* ألوان الفقاعة */}
-            <div>
-              <h4 className="text-sm font-medium font-arabic mb-2">لون الفقاعة</h4>
-              <div className="grid grid-cols-3 gap-2">
-                {bubbleColors.map((color) => (
-                  <Button
-                    key={color.id}
-                    size="sm"
-                    variant={selectedBubbleColor === color.id ? "default" : "outline"}
-                    onClick={() => setSelectedBubbleColor(color.id)}
-                    className="text-xs font-arabic h-10"
-                    style={{ 
-                      backgroundColor: selectedBubbleColor === color.id ? color.color : undefined 
-                    }}
-                  >
-                    {color.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
+        {/* كتابة التعليق */}
+        {commentType === 'text' && (
+          <div>
+            <h4 className="text-sm font-medium font-arabic mb-2">إضافة تعليق</h4>
+            <Textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="اكتب تعليقك هنا... استخدم @ لذكر المتعاونين"
+              className="font-arabic text-sm rounded-xl border-gray-200 resize-none"
+              rows={3}
+            />
+          </div>
+        )}
 
-            {/* ذكر المتعاونين */}
-            {collaborators.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium font-arabic mb-2">ذكر متعاون</h4>
-                <div className="flex flex-wrap gap-1">
-                  {collaborators.map((user) => (
-                    <Badge
-                      key={user}
-                      variant="outline"
-                      className="cursor-pointer hover:bg-blue-100 text-xs"
-                      onClick={() => handleMention(user)}
-                    >
-                      @{user}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* التحكم الصوتي */}
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-arabic">التعليق الصوتي</span>
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={isVoiceEnabled}
-                  onCheckedChange={onToggleVoice}
-                />
-                {isVoiceEnabled ? (
-                  <Mic className="w-4 h-4 text-green-500" />
-                ) : (
-                  <MicOff className="w-4 h-4 text-gray-400" />
-                )}
-              </div>
-            </div>
-
-            {/* أزرار الإجراءات */}
-            <div className="grid grid-cols-2 gap-2">
+        {/* التسجيل الصوتي */}
+        {commentType === 'voice' && (
+          <div>
+            <h4 className="text-sm font-medium font-arabic mb-2">تسجيل صوتي</h4>
+            <div className="flex items-center justify-center p-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
               <Button
-                onClick={() => handleAddComment(false)}
-                disabled={!commentText.trim()}
-                size="sm"
-                variant="outline"
-                className="text-xs font-arabic rounded-xl"
+                onClick={handleVoiceRecord}
+                size="lg"
+                variant={isRecording ? "destructive" : "default"}
+                className={`rounded-full w-16 h-16 ${isRecording ? 'animate-pulse' : ''}`}
               >
-                <Send className="w-3 h-3 ml-1" />
-                إضافة تعليق
-              </Button>
-              <Button
-                onClick={() => handleAddComment(true)}
-                disabled={!commentText.trim()}
-                size="sm"
-                className="text-xs font-arabic rounded-xl bg-purple-500 hover:bg-purple-600"
-              >
-                <Sparkles className="w-3 h-3 ml-1" />
-                تعليق ذكي
+                <Volume2 className="w-6 h-6" />
               </Button>
             </div>
-          </TabsContent>
+            <div className="text-xs text-gray-500 text-center font-arabic mt-2">
+              {isRecording ? 'جاري التسجيل... اضغط لإيقاف' : 'اضغط لبدء التسجيل'}
+            </div>
+          </div>
+        )}
 
-          {/* تبويب الرسم التوضيحي */}
-          <TabsContent value="drawing-comment" className="space-y-4">
-            {/* تفعيل قلم التعليق */}
-            <div>
-              <h4 className="text-sm font-medium font-arabic mb-2">قلم التعليق</h4>
-              <Button
-                onClick={onToggleCommentPen}
-                variant={isCommentPenActive ? "default" : "outline"}
-                className={`w-full text-xs font-arabic rounded-xl ${
-                  isCommentPenActive ? 'bg-blue-500 text-white' : ''
+        {/* الوسوم */}
+        <div>
+          <h4 className="text-sm font-medium font-arabic mb-2">الوسوم</h4>
+          <div className="flex flex-wrap gap-1">
+            {commonTags.map(tag => (
+              <button
+                key={tag}
+                onClick={() => toggleTag(tag)}
+                className={`px-2 py-1 rounded-lg text-xs font-arabic border transition-colors ${
+                  selectedTags.includes(tag)
+                    ? 'bg-blue-500 text-white border-blue-500'
+                    : 'bg-white border-gray-200 hover:bg-gray-50'
                 }`}
               >
-                <Pen className="w-3 h-3 ml-1" />
-                {isCommentPenActive ? 'إيقاف قلم التعليق' : 'تفعيل قلم التعليق'}
-              </Button>
-              <div className="text-xs text-gray-500 font-arabic mt-1">
-                يتطلب تفويض من المضيف
-              </div>
+                {tag}
+              </button>
+            ))}
+          </div>
+          
+          {selectedTags.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1">
+              {selectedTags.map(tag => (
+                <Badge key={tag} variant="secondary" className="text-xs">
+                  <Tag className="w-2 h-2 mr-1" />
+                  {tag}
+                </Badge>
+              ))}
             </div>
+          )}
+        </div>
 
-            <Separator />
+        <Separator />
 
-            {/* ألوان الرسم */}
-            <div>
-              <h4 className="text-sm font-medium font-arabic mb-2">لون الرسم</h4>
-              <div className="grid grid-cols-3 gap-2">
-                {drawingColors.map((color) => (
-                  <Button
-                    key={color.id}
-                    size="sm"
-                    variant={drawingColor === color.id ? "default" : "outline"}
-                    onClick={() => setDrawingColor(color.id)}
-                    className="text-xs font-arabic h-10"
-                    style={{ 
-                      backgroundColor: drawingColor === color.id ? color.color : undefined,
-                      color: drawingColor === color.id ? 'white' : undefined
-                    }}
-                  >
-                    {color.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* سمك الخط */}
-            <div>
-              <h4 className="text-sm font-medium font-arabic mb-2">سمك الخط</h4>
-              <div className="grid grid-cols-3 gap-2">
-                {strokeWidths.map((width) => (
-                  <Button
-                    key={width}
-                    size="sm"
-                    variant={strokeWidth === width ? "default" : "outline"}
-                    onClick={() => setStrokeWidth(width)}
-                    className="text-xs font-arabic"
-                  >
-                    {width}px
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* مسح الكل */}
+        {/* أزرار الإجراءات */}
+        <div className="grid grid-cols-3 gap-2">
+          {commentType === 'text' && (
             <Button
-              variant="outline"
+              onClick={handleAddComment}
+              disabled={!commentText.trim()}
               size="sm"
-              className="w-full text-xs font-arabic rounded-xl text-red-600 hover:text-red-700"
+              className="text-xs font-arabic rounded-xl bg-blue-500 hover:bg-blue-600"
             >
-              مسح الكل
+              <MessageSquare className="w-3 h-3 mr-1" />
+              إضافة
             </Button>
-          </TabsContent>
-        </Tabs>
+          )}
+          
+          <Button
+            onClick={handleAIComment}
+            size="sm"
+            className="text-xs font-arabic rounded-xl bg-purple-500 hover:bg-purple-600"
+          >
+            <Sparkles className="w-3 h-3 mr-1" />
+            اقتراح ذكي
+          </Button>
+          
+          <Button
+            onClick={() => console.log('ذكر مستخدم')}
+            size="sm"
+            variant="outline"
+            className="text-xs font-arabic rounded-xl"
+          >
+            <Users className="w-3 h-3 mr-1" />
+            ذكر
+          </Button>
+        </div>
+
+        <Separator />
+
+        {/* إعدادات التعليقات */}
+        <div>
+          <h4 className="text-sm font-medium font-arabic mb-3">إعدادات</h4>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="auto-resolve" className="text-sm font-arabic">
+                حل تلقائي بعد الرد
+              </Label>
+              <Switch
+                id="auto-resolve"
+                checked={autoResolve}
+                onCheckedChange={setAutoResolve}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <Label htmlFor="show-resolved" className="text-sm font-arabic">
+                إظهار المحلولة
+              </Label>
+              <Switch
+                id="show-resolved"
+                checked={showResolved}
+                onCheckedChange={setShowResolved}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* قائمة التعليقات */}
+        {comments.length > 0 && (
+          <>
+            <Separator />
+            <div>
+              <h4 className="text-sm font-medium font-arabic mb-2">
+                التعليقات ({filteredComments.length})
+              </h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {filteredComments.map(comment => (
+                  <div key={comment.id} className="p-2 bg-gray-50 rounded-xl border">
+                    <div className="flex items-start justify-between mb-1">
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs font-medium font-arabic">{comment.author}</span>
+                        {comment.type === 'ai' && (
+                          <Badge variant="secondary" className="text-xs">
+                            <Bot className="w-2 h-2 mr-1" />
+                            ذكي
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {comment.tags.map(tag => (
+                          <Badge key={tag} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-xs font-arabic text-gray-700">{comment.text}</p>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-xs text-gray-500">
+                        <Clock className="w-2 h-2 inline mr-1" />
+                        {comment.timestamp.toLocaleTimeString('ar')}
+                      </span>
+                      <div className="flex gap-1">
+                        <Button
+                          onClick={() => onReplyToComment(comment.id, '')}
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 px-2 text-xs"
+                        >
+                          <Reply className="w-2 h-2" />
+                        </Button>
+                        {!comment.resolved && (
+                          <Button
+                            onClick={() => onResolveComment(comment.id)}
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 px-2 text-xs"
+                          >
+                            ✓
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
         {/* نصائح الاستخدام */}
         <div className="bg-blue-50 p-3 rounded-xl border border-blue-200">
           <div className="text-xs text-blue-800 font-arabic space-y-1">
-            <div>💬 انقر على الكانفاس لإضافة تعليق</div>
-            <div>🖊️ قلم التعليق يظهر للمتعاونين فقط</div>
-            <div>✨ الذكاء الصناعي يحسن التعليقات تلقائياً</div>
-            <div>👥 استخدم @ لذكر المتعاونين</div>
-            <div>⌨️ C تفعيل | Enter إضافة | Esc إلغاء</div>
+            <div>💬 انقر على الكانفس لإضافة تعليق</div>
+            <div>🎤 استخدم التعليق الصوتي للسرعة</div>
+            <div>🤖 الاقتراح الذكي يحلل العناصر</div>
+            <div>👥 اذكر المتعاونين بـ @اسم</div>
           </div>
         </div>
       </CardContent>

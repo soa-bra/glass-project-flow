@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   TextPanel, 
@@ -6,6 +5,7 @@ import {
   HandPanel,
   UploadPanel,
   GridPanel,
+  LayersPanel
 } from '../panels';
 import { 
   EnhancedSelectionPanel,
@@ -14,7 +14,15 @@ import {
   EnhancedZoomPanel,
   EnhancedCommentPanel
 } from '../panels/enhanced';
-import { CanvasElement, CanvasLayer } from '../types';
+import { CanvasElement } from '../types';
+
+interface Layer {
+  id: string;
+  name: string;
+  visible: boolean;
+  locked: boolean;
+  elements: string[];
+}
 
 interface ToolPanelManagerProps {
   selectedTool: string;
@@ -29,7 +37,7 @@ interface ToolPanelManagerProps {
   snapEnabled: boolean;
   gridSize: number;
   gridShape: string;
-  layers: CanvasLayer[];
+  layers: Layer[];
   selectedLayerId: string | null;
   
   // Handlers
@@ -48,7 +56,7 @@ interface ToolPanelManagerProps {
   onLineStyleChange: (style: string) => void;
   onPenModeSelect: (mode: string) => void;
   onFileUpload: (files: File[]) => void;
-  onLayerReorder: (layers: CanvasLayer[]) => void;
+  onLayerReorder: (layers: Layer[]) => void;
   onLayerSelect: (layerId: string) => void;
   onGridToggle: () => void;
   onSnapToggle: () => void;
@@ -100,7 +108,6 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
     selectedElementsCount: selectedElements.length,
     zoom
   });
-
   const renderToolPanel = () => {
     switch (selectedTool) {
       case 'select':
@@ -124,6 +131,55 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
             onDistribute={(type) => console.log('توزيع:', type)}
             layers={layers}
             onLayerReorder={onLayerReorder}
+          />
+        );
+
+      case 'comment':
+        return (
+          <EnhancedCommentPanel
+            onAddComment={(text, type, tags) => console.log('تعليق:', text, type, tags)}
+            onToggleCommentPen={() => console.log('تبديل قلم التعليق')}
+            onResolveComment={(id) => console.log('حل تعليق:', id)}
+            onReplyToComment={(id, reply) => console.log('رد:', id, reply)}
+            isCommentPenActive={false}
+            isVoiceEnabled={true}
+            comments={[]}
+            collaborators={['محمد', 'فاطمة', 'أحمد']}
+            onToggleVoice={(enabled) => console.log('تبديل الصوت:', enabled)}
+            onMentionUser={(username) => console.log('ذكر:', username)}
+          />
+        );
+
+      case 'text':
+        return (
+          <TextPanel
+            onAddText={(type, config) => {
+              console.log('نص:', type, config);
+              // This will be handled by the canvas click event when text tool is selected
+            }}
+          />
+        );
+
+      case 'shape':
+        return (
+          <ShapePanel
+            onAddShape={(type, data) => {
+              console.log('شكل:', type, data);
+              // This will be handled by the canvas click/drag event when shape tool is selected
+            }}
+          />
+        );
+
+      case 'smart-element':
+        return (
+          <EnhancedSmartElementPanel
+            onAddSmartElement={(type, config) => {
+              console.log('عنصر ذكي:', type, config);
+              // This will be handled by canvas click when smart-element tool is selected
+            }}
+            onPreviewElement={(type, config) => console.log('معاينة:', type, config)}
+            isAIEnabled={true}
+            onToggleAI={(enabled) => console.log('تبديل الذكاء الاصطناعي:', enabled)}
           />
         );
 
@@ -183,62 +239,6 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
           />
         );
 
-      case 'comment':
-        return (
-          <EnhancedCommentPanel
-            onAddComment={(text, type, tags) => console.log('تعليق:', text, type, tags)}
-            onToggleCommentPen={() => console.log('تبديل قلم التعليق')}
-            onResolveComment={(id) => console.log('حل تعليق:', id)}
-            onReplyToComment={(id, reply) => console.log('رد:', id, reply)}
-            isCommentPenActive={false}
-            isVoiceEnabled={true}
-            comments={[]}
-            collaborators={['محمد', 'فاطمة', 'أحمد']}
-            onToggleVoice={(enabled) => console.log('تبديل الصوت:', enabled)}
-            onMentionUser={(username) => console.log('ذكر:', username)}
-          />
-        );
-
-      case 'text':
-        return (
-          <TextPanel
-            onAddText={(type, config) => {
-              console.log('نص:', type, config);
-              // This will be handled by the canvas click event when text tool is selected
-            }}
-          />
-        );
-
-      case 'shape':
-        return (
-          <ShapePanel
-            onAddShape={(type, data) => {
-              console.log('شكل:', type, data);
-              // This will be handled by the canvas click/drag event when shape tool is selected
-            }}
-          />
-        );
-
-      case 'smart-element':
-        return (
-          <EnhancedSmartElementPanel
-            onAddSmartElement={(type, config) => {
-              console.log('عنصر ذكي:', type, config);
-              // This will be handled by canvas click when smart-element tool is selected
-            }}
-            onPreviewElement={(type, config) => console.log('معاينة:', type, config)}
-            isAIEnabled={true}
-            onToggleAI={(enabled) => console.log('تبديل الذكاء الاصطناعي:', enabled)}
-          />
-        );
-
-      case 'upload':
-        return (
-          <UploadPanel
-            onFileUpload={onFileUpload}
-          />
-        );
-
       case 'grid':
         return (
           <GridPanel
@@ -255,11 +255,23 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
         );
 
       case 'layers':
-        // Using the new enhanced LayersPanel - handled directly in EnhancedCanvasBoard
-        return null;
+        return (
+          <LayersPanel
+            layers={layers}
+            selectedLayerId={selectedLayerId}
+            onLayerUpdate={onLayerReorder}
+            onLayerSelect={onLayerSelect}
+          />
+        );
+
+      case 'upload':
+        return (
+          <UploadPanel
+            onFileUpload={onFileUpload}
+          />
+        );
 
       default:
-        // For any other tools not explicitly handled, return null
         return null;
     }
   };

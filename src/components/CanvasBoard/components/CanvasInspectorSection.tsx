@@ -18,6 +18,9 @@ export const CanvasInspectorSection: React.FC<CanvasInspectorSectionProps> = ({
   return (
     <Inspector 
       selectedElementId={selectedElementId}
+      elements={elements}
+      onUpdateElement={onUpdateElement}
+      onDeleteElement={onDeleteElement}
     />
   );
 };
