@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
 import { 
   Bot, 
   Send, 
@@ -16,7 +17,12 @@ import {
   Clock,
   Check,
   X,
-  RefreshCw
+  RefreshCw,
+  BarChart3,
+  Users,
+  TrendingUp,
+  Target,
+  Activity
 } from 'lucide-react';
 import { SmartSuggestion, AssistantAction } from '../types/index';
 
@@ -40,14 +46,39 @@ const SmartAssistantPanel: React.FC<SmartAssistantPanelProps> = ({
   isLoading = false
 }) => {
   const [message, setMessage] = useState('');
-  const [activeTab, setActiveTab] = useState<'suggestions' | 'history'>('suggestions');
+  const [activeTab, setActiveTab] = useState<'suggestions' | 'history' | 'analytics'>('suggestions');
+  const [processingProgress, setProcessingProgress] = useState(0);
+  const [contextInsights, setContextInsights] = useState({
+    elementsCount: 15,
+    collaborators: 3,
+    completionRate: 67,
+    lastActivity: '5 دقائق'
+  });
 
   const handleSendMessage = () => {
     if (message.trim()) {
+      setProcessingProgress(0);
       onSendMessage(message);
       setMessage('');
+      
+      // Simulate processing progress
+      const interval = setInterval(() => {
+        setProcessingProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 200);
     }
   };
+
+  useEffect(() => {
+    if (isLoading) {
+      setProcessingProgress(0);
+    }
+  }, [isLoading]);
 
   const getSuggestionIcon = (type: string) => {
     switch (type) {
@@ -101,6 +132,14 @@ const SmartAssistantPanel: React.FC<SmartAssistantPanelProps> = ({
           >
             السجل
           </Button>
+          <Button
+            variant={activeTab === 'analytics' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveTab('analytics')}
+            className="text-xs flex-1"
+          >
+            التحليلات
+          </Button>
         </div>
       </CardHeader>
 
@@ -133,6 +172,17 @@ const SmartAssistantPanel: React.FC<SmartAssistantPanelProps> = ({
             )}
           </Button>
         </div>
+
+        {/* Progress Indicator */}
+        {isLoading && processingProgress > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">معالجة...</span>
+              <span className="text-xs text-muted-foreground">{processingProgress}%</span>
+            </div>
+            <Progress value={processingProgress} className="h-1" />
+          </div>
+        )}
 
         <Separator />
 
@@ -185,7 +235,7 @@ const SmartAssistantPanel: React.FC<SmartAssistantPanelProps> = ({
                 })
               )}
             </div>
-          ) : (
+          ) : activeTab === 'history' ? (
             <div className="space-y-2">
               {history.length === 0 ? (
                 <div className="text-center text-muted-foreground text-sm py-8">
@@ -209,6 +259,68 @@ const SmartAssistantPanel: React.FC<SmartAssistantPanelProps> = ({
                   </div>
                 ))
               )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Context Insights */}
+              <Card className="p-3">
+                <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4" />
+                  رؤى سريعة
+                </h4>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-primary">{contextInsights.elementsCount}</div>
+                    <div className="text-xs text-muted-foreground">عنصر</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-primary">{contextInsights.collaborators}</div>
+                    <div className="text-xs text-muted-foreground">متعاون</div>
+                  </div>
+                </div>
+                
+                <Separator className="my-3" />
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-muted-foreground">نسبة الإنجاز</span>
+                    <span className="text-xs font-medium">{contextInsights.completionRate}%</span>
+                  </div>
+                  <Progress value={contextInsights.completionRate} className="h-1" />
+                </div>
+                
+                <div className="mt-3 text-xs text-muted-foreground">
+                  آخر نشاط: {contextInsights.lastActivity}
+                </div>
+              </Card>
+              
+              {/* Quick Metrics */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 rounded border">
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-3 h-3 text-primary" />
+                    <span className="text-xs">الإنتاجية</span>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">مرتفعة</Badge>
+                </div>
+                
+                <div className="flex items-center justify-between p-2 rounded border">
+                  <div className="flex items-center gap-2">
+                    <Target className="w-3 h-3 text-primary" />
+                    <span className="text-xs">التركيز</span>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">جيد</Badge>
+                </div>
+                
+                <div className="flex items-center justify-between p-2 rounded border">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-3 h-3 text-primary" />
+                    <span className="text-xs">التحسن</span>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">+12%</Badge>
+                </div>
+              </div>
             </div>
           )}
         </ScrollArea>

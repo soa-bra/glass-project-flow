@@ -1,37 +1,63 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { CANVAS_TOOLS } from '../constants';
+import { Separator } from '@/components/ui/separator';
+import { 
+  MousePointer2, 
+  Hand, 
+  Square, 
+  Circle, 
+  Type, 
+  Pen, 
+  StickyNote,
+  Image,
+  Upload,
+  Brain,
+  Lightbulb
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface MainToolbarProps {
   selectedTool: string;
-  onToolSelect: (toolId: string) => void;
+  onToolSelect: (tool: string) => void;
 }
 
-const MainToolbar: React.FC<MainToolbarProps> = ({ selectedTool, onToolSelect }) => {
+const tools = [
+  { id: 'select', icon: MousePointer2, label: 'تحديد' },
+  { id: 'hand', icon: Hand, label: 'يد' },
+  { id: 'rectangle', icon: Square, label: 'مستطيل' },
+  { id: 'circle', icon: Circle, label: 'دائرة' },
+  { id: 'text', icon: Type, label: 'نص' },
+  { id: 'pen', icon: Pen, label: 'قلم' },
+  { id: 'sticky', icon: StickyNote, label: 'ملصق' },
+  { id: 'image', icon: Image, label: 'صورة' },
+  { id: 'upload', icon: Upload, label: 'رفع' },
+  { id: 'smart', icon: Brain, label: 'ذكي' },
+  { id: 'brainstorm', icon: Lightbulb, label: 'عصف ذهني' }
+];
+
+export const MainToolbar: React.FC<MainToolbarProps> = ({
+  selectedTool,
+  onToolSelect
+}) => {
   return (
-    <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50">
-      <Card className="bg-white/95 backdrop-blur-md shadow-sm border border-gray-300 rounded-[40px]">
-        <CardContent className="flex items-center gap-2 p-3">
-          {CANVAS_TOOLS.map((tool) => {
-            const Icon = tool.icon;
-            return (
-              <Button
-                key={tool.id}
-                variant={selectedTool === tool.id ? "default" : "ghost"}
-                size="sm"
-                className={`h-10 px-3 rounded-full ${selectedTool === tool.id ? 'bg-black text-white' : 'text-gray-600 hover:bg-soabra-new-secondary-4'}`}
-                onClick={() => onToolSelect(tool.id)}
-                title={tool.label}
-              >
-                <Icon className="w-4 h-4" />
-              </Button>
-            );
-          })}
-        </CardContent>
-      </Card>
+    <div className="flex items-center gap-1 p-2 bg-background/95 backdrop-blur rounded-lg border shadow-sm">
+      {tools.map((tool, index) => (
+        <React.Fragment key={tool.id}>
+          <Button
+            variant={selectedTool === tool.id ? "default" : "ghost"}
+            size="sm"
+            onClick={() => onToolSelect(tool.id)}
+            className={cn(
+              "w-10 h-10",
+              selectedTool === tool.id && "bg-primary text-primary-foreground"
+            )}
+            title={tool.label}
+          >
+            <tool.icon className="h-4 w-4" />
+          </Button>
+          {index === 1 || index === 5 ? <Separator orientation="vertical" className="h-6" /> : null}
+        </React.Fragment>
+      ))}
     </div>
   );
 };
-
-export default MainToolbar;

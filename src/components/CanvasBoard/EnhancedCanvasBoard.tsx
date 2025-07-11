@@ -211,10 +211,10 @@ const EnhancedCanvasBoard: React.FC<EnhancedCanvasBoardProps> = ({
           selectedTool={canvasState.selectedTool}
           selectedElementIds={canvasState.selectedElementIds}
           onElementSelect={(elementId) => {
-            canvasState.setSelectedElementIds([elementId]);
+            canvasState.setSelectedElementId(elementId);
           }}
           onElementsChange={(elements) => {
-            canvasState.setElements(elements);
+            // Elements are managed internally
           }}
           zoom={canvasState.zoom}
           canvasPosition={canvasState.canvasPosition}

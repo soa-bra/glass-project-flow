@@ -1,117 +1,119 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trash2 } from 'lucide-react';
-import { ELEMENT_COLORS } from '../constants';
-import { CanvasElement } from '../types';
+import { Slider } from '@/components/ui/slider';
+import { Separator } from '@/components/ui/separator';
+import { Settings, Palette, Move, RotateCw, Layers } from 'lucide-react';
+
 interface InspectorProps {
-  selectedElementId: string | null;
-  elements: CanvasElement[];
-  onUpdateElement: (elementId: string, updates: Partial<CanvasElement>) => void;
-  onDeleteElement: (elementId: string) => void;
+  selectedElementId?: string;
 }
-const Inspector: React.FC<InspectorProps> = ({
-  selectedElementId,
-  elements,
-  onUpdateElement,
-  onDeleteElement
-}) => {
-  const selectedElement = elements.find(el => el.id === selectedElementId);
-  const [text, setText] = useState('');
-  const [selectedColor, setSelectedColor] = useState('bg-yellow-200');
-  useEffect(() => {
-    if (selectedElement) {
-      setText(selectedElement.content || '');
-      setSelectedColor(selectedElement.style?.backgroundColor || 'bg-yellow-200');
-    }
-  }, [selectedElement]);
-  const handleTextChange = (newText: string) => {
-    setText(newText);
-    if (selectedElementId) {
-      onUpdateElement(selectedElementId, {
-        content: newText
-      });
-    }
-  };
-  const handleColorChange = (color: string) => {
-    setSelectedColor(color);
-    if (selectedElementId) {
-      onUpdateElement(selectedElementId, {
-        style: {
-          ...selectedElement?.style,
-          backgroundColor: color
-        }
-      });
-    }
-  };
-  const handleDelete = () => {
-    if (selectedElementId) {
-      onDeleteElement(selectedElementId);
-    }
-  };
-  return <div className="fixed top-4 right-4 z-40 w-80">
-      <Card className="bg-white/95 backdrop-blur-md shadow-sm border border-gray-300 rounded-[40px]">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-arabic">خصائص العنصر</CardTitle>
+
+export const Inspector: React.FC<InspectorProps> = ({ selectedElementId }) => {
+  if (!selectedElementId) {
+    return (
+      <Card className="w-64">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <Settings className="h-4 w-4" />
+            خصائص العنصر
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          {selectedElementId && selectedElement ? <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium font-arabic">النص</label>
-                <Input 
-                  placeholder="أدخل النص..." 
-                  value={text} 
-                  onChange={e => handleTextChange(e.target.value)}
-                  className="rounded-full border-gray-300 mt-1"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium font-arabic">اللون</label>
-                <div className="flex gap-2 mt-1">
-                  {ELEMENT_COLORS.map(color => <div key={color} className={`w-8 h-8 rounded cursor-pointer border-2 ${color} ${selectedColor === color ? 'border-blue-500' : 'border-gray-300'}`} onClick={() => handleColorChange(color)} />)}
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium font-arabic">النوع</label>
-                <p className="text-sm text-gray-600">{selectedElement.type}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium font-arabic">الموقع</label>
-                <div className="flex gap-2 mt-1">
-                  <Input 
-                    type="number" 
-                    placeholder="X" 
-                    value={Math.round(selectedElement.position.x)} 
-                    onChange={e => onUpdateElement(selectedElementId, {
-                      position: {
-                        ...selectedElement.position,
-                        x: parseInt(e.target.value) || 0
-                      }
-                    })}
-                    className="rounded-full border-gray-300"
-                  />
-                  <Input 
-                    type="number" 
-                    placeholder="Y" 
-                    value={Math.round(selectedElement.position.y)} 
-                    onChange={e => onUpdateElement(selectedElementId, {
-                      position: {
-                        ...selectedElement.position,
-                        y: parseInt(e.target.value) || 0
-                      }
-                    })}
-                    className="rounded-full border-gray-300"
-                  />
-                </div>
-              </div>
-              <Button variant="destructive" size="sm" onClick={handleDelete} className="w-full rounded-full">
-                <Trash2 className="w-4 h-4 mr-2" />
-                حذف العنصر
-              </Button>
-            </div> : <p className="text-gray-500 text-center font-arabic">حدد عنصراً لتحريره</p>}
+          <p className="text-sm text-muted-foreground text-center py-8">
+            اختر عنصراً لعرض خصائصه
+          </p>
         </CardContent>
       </Card>
-    </div>;
+    );
+  }
+
+  return (
+    <Card className="w-64">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <Settings className="h-4 w-4" />
+          خصائص العنصر
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Position */}
+        <div>
+          <Label className="flex items-center gap-2 text-xs font-medium mb-2">
+            <Move className="h-3 w-3" />
+            الموقع
+          </Label>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-xs text-muted-foreground">X</Label>
+              <Input type="number" defaultValue="100" className="h-8" />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Y</Label>
+              <Input type="number" defaultValue="100" className="h-8" />
+            </div>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Size */}
+        <div>
+          <Label className="text-xs font-medium mb-2">الحجم</Label>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-xs text-muted-foreground">العرض</Label>
+              <Input type="number" defaultValue="120" className="h-8" />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">الارتفاع</Label>
+              <Input type="number" defaultValue="80" className="h-8" />
+            </div>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Opacity */}
+        <div>
+          <Label className="flex items-center gap-2 text-xs font-medium mb-2">
+            <Layers className="h-3 w-3" />
+            الشفافية
+          </Label>
+          <Slider defaultValue={[100]} max={100} step={1} className="w-full" />
+        </div>
+
+        <Separator />
+
+        {/* Rotation */}
+        <div>
+          <Label className="flex items-center gap-2 text-xs font-medium mb-2">
+            <RotateCw className="h-3 w-3" />
+            الدوران
+          </Label>
+          <Input type="number" defaultValue="0" className="h-8" />
+        </div>
+
+        <Separator />
+
+        {/* Style */}
+        <div>
+          <Label className="flex items-center gap-2 text-xs font-medium mb-2">
+            <Palette className="h-3 w-3" />
+            النمط
+          </Label>
+          <div className="space-y-2">
+            <Button variant="outline" size="sm" className="w-full justify-start h-8">
+              لون الخلفية
+            </Button>
+            <Button variant="outline" size="sm" className="w-full justify-start h-8">
+              لون الحدود
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 };
-export default Inspector;
