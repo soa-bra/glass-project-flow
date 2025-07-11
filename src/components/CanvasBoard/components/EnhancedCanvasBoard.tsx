@@ -3,11 +3,12 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useEnhancedCanvasState } from '../hooks/useEnhancedCanvasState';
 import { EnhancedKeyboardShortcuts } from './EnhancedKeyboardShortcuts';
 import PerformanceOptimizedCanvas from './PerformanceOptimizedCanvas';
-import { AnimatedToolbar } from './AnimatedToolbar';
+import { CanvasBottomSection } from './CanvasBottomSection';
 import { SmartStatusIndicator } from './SmartStatusIndicator';
 import { FloatingPanelControls } from './FloatingPanelControls';
 import { FloatingPanels } from './FloatingPanels';
 import { CanvasTopSection } from './CanvasTopSection';
+import ToolPanelManager from './ToolPanelManager';
 import { CanvasElement } from '../types/index';
 import { toast } from 'sonner';
 
@@ -185,14 +186,57 @@ export const EnhancedCanvasBoard: React.FC<EnhancedCanvasBoardProps> = ({
         />
       </div>
 
-      {/* Bottom Animated Toolbar */}
+      {/* Bottom Toolbar */}
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-        <AnimatedToolbar
+        <CanvasBottomSection
           selectedTool={canvasState.selectedTool}
           onToolSelect={handleToolSelect}
-          recentTools={recentTools}
         />
       </div>
+
+      {/* Tool Panel - Right Side */}
+      {canvasState.selectedTool && canvasState.selectedTool !== 'select' && (
+        <div className="fixed right-6 top-1/2 transform -translate-y-1/2 z-40">
+          <ToolPanelManager
+            selectedTool={canvasState.selectedTool}
+            selectedElements={canvasState.selectedElementId ? [canvasState.elements.find(e => e.id === canvasState.selectedElementId)].filter(Boolean) as CanvasElement[] : []}
+            zoom={canvasState.zoom}
+            canvasPosition={canvasState.canvasPosition || { x: 0, y: 0 }}
+            panSpeed={1}
+            lineWidth={2}
+            lineStyle="solid"
+            selectedPenMode="smart-draw"
+            showGrid={canvasState.showGrid}
+            snapEnabled={canvasState.snapEnabled}
+            gridSize={canvasState.gridSize}
+            gridShape="dots"
+            layers={canvasState.layers}
+            selectedLayerId={canvasState.selectedLayerId}
+            onUpdateElement={(id, updates) => console.log('تحديث عنصر:', id, updates)}
+            onCopy={canvasState.handleCopy}
+            onCut={() => console.log('قص')}
+            onPaste={() => console.log('لصق')}
+            onDelete={() => canvasState.selectedElementId && canvasState.deleteElement(canvasState.selectedElementId)}
+            onGroup={() => console.log('تجميع')}
+            onZoomChange={(zoom) => console.log('تغيير الزوم:', zoom)}
+            onPositionChange={(pos) => console.log('تغيير الموضع:', pos)}
+            onFitToScreen={() => console.log('ملاءمة الشاشة')}
+            onResetView={() => console.log('إعادة تعيين العرض')}
+            onPanSpeedChange={(speed) => console.log('تغيير سرعة التحريك:', speed)}
+            onLineWidthChange={(width) => console.log('تغيير عرض الخط:', width)}
+            onLineStyleChange={(style) => console.log('تغيير نمط الخط:', style)}
+            onPenModeSelect={(mode) => console.log('تحديد وضع القلم:', mode)}
+            onFileUpload={(files) => console.log('رفع ملفات:', files)}
+            onLayerReorder={(layers) => console.log('إعادة ترتيب الطبقات:', layers)}
+            onLayerSelect={(id) => console.log('تحديد طبقة:', id)}
+            onGridToggle={() => canvasState.setShowGrid(!canvasState.showGrid)}
+            onSnapToggle={() => canvasState.setSnapEnabled(!canvasState.snapEnabled)}
+            onGridSizeChange={canvasState.handleGridSizeChange}
+            onGridShapeChange={(shape) => console.log('تغيير شكل الشبكة:', shape)}
+            onAlignToGrid={() => console.log('محاذاة للشبكة')}
+          />
+        </div>
+      )}
 
       {/* Floating Panel Controls */}
       <FloatingPanelControls

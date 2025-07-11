@@ -259,6 +259,7 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
         return null;
 
       default:
+        // For any other tools not explicitly handled, return null
         return null;
     }
   };

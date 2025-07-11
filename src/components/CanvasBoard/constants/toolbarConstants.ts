@@ -47,14 +47,12 @@ export const GRID_SIZES = [
 
 export const MAIN_TOOLBAR_TOOLS = [
   'select',
-  'hand', 
-  'rectangle',
-  'circle',
-  'text',
-  'pen',
-  'sticky',
-  'image',
+  'smart-pen', 
+  'zoom',
+  'hand',
   'upload',
-  'smart',
-  'brainstorm'
+  'comment',
+  'text',
+  'shape',
+  'smart-element'
 ];

@@ -1,9 +1,18 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { MAIN_TOOLBAR_TOOLS } from '../constants';
+import { 
+  MousePointer, 
+  Pen, 
+  ZoomIn, 
+  Hand, 
+  Upload, 
+  MessageSquare, 
+  Type, 
+  Shapes, 
+  Sparkles 
+} from 'lucide-react';
 
 interface NewMainToolbarProps {
   selectedTool: string;
@@ -14,34 +23,43 @@ const NewMainToolbar: React.FC<NewMainToolbarProps> = ({
   selectedTool, 
   onToolSelect 
 }) => {
+  // تعريف الأدوات مع الأيقونات والتسميات
+  const getToolConfig = (toolId: string) => {
+    switch (toolId) {
+      case 'select': return { icon: MousePointer, label: 'تحديد' };
+      case 'smart-pen': return { icon: Pen, label: 'القلم الذكي' };
+      case 'zoom': return { icon: ZoomIn, label: 'زوم' };
+      case 'hand': return { icon: Hand, label: 'كف' };
+      case 'upload': return { icon: Upload, label: 'رفع مرفق' };
+      case 'comment': return { icon: MessageSquare, label: 'تعليق' };
+      case 'text': return { icon: Type, label: 'نص' };
+      case 'shape': return { icon: Shapes, label: 'شكل' };
+      case 'smart-element': return { icon: Sparkles, label: 'عنصر ذكي' };
+      default: return { icon: MousePointer, label: toolId };
+    }
+  };
+
   // المجموعة الأولى: التحديد والقلم الذكي
-  const group1Tools = MAIN_TOOLBAR_TOOLS.filter(tool => 
-    ['select', 'smart-pen'].includes(tool.id)
-  );
+  const group1Tools = ['select', 'smart-pen'];
   
   // المجموعة الثانية: الزوم والكف
-  const group2Tools = MAIN_TOOLBAR_TOOLS.filter(tool => 
-    ['zoom', 'hand'].includes(tool.id)
-  );
+  const group2Tools = ['zoom', 'hand'];
   
   // المجموعة الثالثة: الرفع والتعليق
-  const group3Tools = MAIN_TOOLBAR_TOOLS.filter(tool => 
-    ['upload', 'comment'].includes(tool.id)
-  );
+  const group3Tools = ['upload', 'comment'];
   
   // المجموعة الرابعة: النص والشكل والعنصر الذكي
-  const group4Tools = MAIN_TOOLBAR_TOOLS.filter(tool => 
-    ['text', 'shape', 'smart-element'].includes(tool.id)
-  );
+  const group4Tools = ['text', 'shape', 'smart-element'];
 
-  const renderToolGroup = (tools: typeof MAIN_TOOLBAR_TOOLS, groupName: string) => (
+  const renderToolGroup = (tools: string[], groupName: string) => (
     <div className="flex items-center gap-1">
-      {tools.map((tool) => {
-        const Icon = tool.icon;
-        const isSelected = selectedTool === tool.id;
+      {tools.map((toolId) => {
+        const toolConfig = getToolConfig(toolId);
+        const Icon = toolConfig.icon;
+        const isSelected = selectedTool === toolId;
         return (
           <Button
-            key={tool.id}
+            key={toolId}
             variant={isSelected ? "default" : "ghost"}
             size="sm"
             className={`h-12 w-12 rounded-xl transition-all duration-200 ${
@@ -49,8 +67,8 @@ const NewMainToolbar: React.FC<NewMainToolbarProps> = ({
                 ? 'bg-black text-white shadow-lg' 
                 : 'text-gray-600 hover:bg-gray-100 hover:text-black'
             }`}
-            onClick={() => onToolSelect(tool.id)}
-            title={tool.label}
+            onClick={() => onToolSelect(toolId)}
+            title={toolConfig.label}
           >
             <Icon className="w-5 h-5" />
           </Button>
@@ -87,7 +105,7 @@ const NewMainToolbar: React.FC<NewMainToolbarProps> = ({
       {selectedTool && (
         <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
           <div className="bg-black text-white px-4 py-2 rounded-lg text-sm font-arabic whitespace-nowrap">
-            {MAIN_TOOLBAR_TOOLS.find(t => t.id === selectedTool)?.label}
+            {getToolConfig(selectedTool).label}
           </div>
         </div>
       )}

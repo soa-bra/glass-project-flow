@@ -1,6 +1,6 @@
 
 import React, { memo } from 'react';
-import { AnimatedToolbar } from './AnimatedToolbar';
+import { CanvasBottomSection } from './CanvasBottomSection';
 
 interface MainToolbarProps {
   selectedTool: string;
@@ -12,10 +12,9 @@ export const MainToolbar: React.FC<MainToolbarProps> = memo(({
   onToolSelect
 }) => {
   return (
-    <AnimatedToolbar
+    <CanvasBottomSection
       selectedTool={selectedTool}
       onToolSelect={onToolSelect}
-      recentTools={[]} // This will be managed by the parent component
     />
   );
 });
