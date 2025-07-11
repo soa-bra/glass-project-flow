@@ -31,41 +31,68 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [currentColor, setCurrentColor] = useState('#000000');
+  const [activeColor, setActiveColor] = useState('#000000');
   const [brushWidth, setBrushWidth] = useState(2);
 
-  // Initialize Fabric.js canvas
+  // Initialize Fabric.js canvas with v6 API
   useEffect(() => {
     if (!canvasRef.current) return;
 
     const canvas = new FabricCanvas(canvasRef.current, {
-      width: 1200,
-      height: 800,
+      width: window.innerWidth - 100,
+      height: window.innerHeight - 200,
       backgroundColor: theme?.colors?.background || '#ffffff',
       selection: true,
     });
 
-    // Configure drawing brush
-    if (canvas.freeDrawingBrush) {
-      canvas.freeDrawingBrush.color = currentColor;
-      canvas.freeDrawingBrush.width = brushWidth;
-    }
+    // Initialize the freeDrawingBrush right after canvas creation (v6 requirement)
+    canvas.freeDrawingBrush.color = activeColor;
+    canvas.freeDrawingBrush.width = brushWidth;
 
     // Add grid if enabled
     if (showGrid) {
       addGridToCanvas(canvas);
     }
 
+    // Handle object selection events
+    canvas.on('selection:created', (e) => {
+      if (e.selected && e.selected.length > 0) {
+        const selectedObject = e.selected[0];
+        const objectId = (selectedObject as any).objectId || `object-${Date.now()}`;
+        onElementSelect(objectId);
+      }
+    });
+
+    canvas.on('selection:updated', (e) => {
+      if (e.selected && e.selected.length > 0) {
+        const selectedObject = e.selected[0];
+        const objectId = (selectedObject as any).objectId || `object-${Date.now()}`;
+        onElementSelect(objectId);
+      }
+    });
+
     setFabricCanvas(canvas);
     onCanvasReady?.(canvas);
-    toast.success('Canvas ready!');
+    toast.success('Canvas ready! Start creating!');
+
+    // Handle window resize
+    const handleResize = () => {
+      canvas.setDimensions({
+        width: window.innerWidth - 100,
+        height: window.innerHeight - 200
+      });
+      canvas.renderAll();
+    };
+
+    window.addEventListener('resize', handleResize);
 
     return () => {
+      window.removeEventListener('resize', handleResize);
       canvas.dispose();
     };
   }, []);
 
-  // Handle tool changes
+  // Handle tool changes with proper v6 API
   useEffect(() => {
     if (!fabricCanvas) return;
 
@@ -74,11 +101,11 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
     fabricCanvas.selection = true;
 
     switch (selectedTool) {
-      case 'smart-pen':
+      case 'pen':
       case 'draw':
         fabricCanvas.isDrawingMode = true;
         if (fabricCanvas.freeDrawingBrush) {
-          fabricCanvas.freeDrawingBrush.color = currentColor;
+          fabricCanvas.freeDrawingBrush.color = activeColor;
           fabricCanvas.freeDrawingBrush.width = brushWidth;
         }
         break;
@@ -89,7 +116,7 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
         fabricCanvas.selection = false;
         break;
     }
-  }, [selectedTool, fabricCanvas, currentColor, brushWidth]);
+  }, [selectedTool, fabricCanvas, activeColor, brushWidth]);
 
   // Handle zoom changes
   useEffect(() => {
@@ -160,53 +187,58 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
     }
   }, [showGrid, fabricCanvas, addGridToCanvas]);
 
-  // Add shape based on selected tool
-  const addShape = useCallback((pointer: { x: number; y: number }) => {
+  // Enhanced tool handlers
+  const handleToolClick = useCallback((tool: string) => {
     if (!fabricCanvas) return;
 
-    switch (selectedTool) {
-      case 'shape':
+    const pointer = fabricCanvas.getCenter();
+
+    switch (tool) {
       case 'rectangle':
         const rect = new Rect({
-          left: pointer.x,
-          top: pointer.y,
-          fill: currentColor,
+          left: pointer.left - 50,
+          top: pointer.top - 40,
+          fill: activeColor,
           width: 100,
           height: 80,
           stroke: '#000000',
           strokeWidth: 1,
         });
+        (rect as any).objectId = `rect-${Date.now()}`;
         fabricCanvas.add(rect);
         break;
 
       case 'circle':
         const circle = new Circle({
-          left: pointer.x,
-          top: pointer.y,
-          fill: currentColor,
+          left: pointer.left - 50,
+          top: pointer.top - 50,
+          fill: activeColor,
           radius: 50,
           stroke: '#000000',
           strokeWidth: 1,
         });
+        (circle as any).objectId = `circle-${Date.now()}`;
         fabricCanvas.add(circle);
         break;
 
       case 'text':
         const text = new Textbox('اكتب هنا...', {
-          left: pointer.x,
-          top: pointer.y,
-          fill: currentColor,
+          left: pointer.left - 100,
+          top: pointer.top - 10,
+          fill: activeColor,
           fontSize: 16,
           fontFamily: 'Arial',
           width: 200,
+          textAlign: 'right', // RTL support
         });
+        (text as any).objectId = `text-${Date.now()}`;
         fabricCanvas.add(text);
         break;
 
       case 'sticky':
         const stickyNote = new Rect({
-          left: pointer.x,
-          top: pointer.y,
+          left: pointer.left - 75,
+          top: pointer.top - 50,
           fill: '#ffeb3b',
           width: 150,
           height: 100,
@@ -216,22 +248,26 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
           ry: 5,
         });
         const stickyText = new Textbox('ملاحظة...', {
-          left: pointer.x + 10,
-          top: pointer.y + 10,
+          left: pointer.left - 65,
+          top: pointer.top - 40,
           fill: '#333333',
           fontSize: 12,
           fontFamily: 'Arial',
           width: 130,
+          textAlign: 'right',
         });
+        (stickyNote as any).objectId = `sticky-${Date.now()}`;
+        (stickyText as any).objectId = `sticky-text-${Date.now()}`;
         fabricCanvas.add(stickyNote);
         fabricCanvas.add(stickyText);
         break;
     }
 
     fabricCanvas.renderAll();
-  }, [selectedTool, fabricCanvas, currentColor]);
+    toast.success(`تم إضافة ${tool === 'rectangle' ? 'مستطيل' : tool === 'circle' ? 'دائرة' : tool === 'text' ? 'نص' : 'ملصق'}`);
+  }, [fabricCanvas, activeColor]);
 
-  // Handle canvas events
+  // Handle canvas mouse events
   useEffect(() => {
     if (!fabricCanvas) return;
 
@@ -245,9 +281,8 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
         fabricCanvas.selection = false;
         lastPosX = event.e.clientX;
         lastPosY = event.e.clientY;
-      } else if (['shape', 'rectangle', 'circle', 'text', 'sticky'].includes(selectedTool)) {
-        const pointer = fabricCanvas.getPointer(event.e);
-        addShape(pointer);
+      } else if (['rectangle', 'circle', 'text', 'sticky'].includes(selectedTool)) {
+        handleToolClick(selectedTool);
       }
     };
 
@@ -272,83 +307,34 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
       }
     };
 
-    const handleObjectSelection = (event: any) => {
-      if (event.selected && event.selected.length > 0) {
-        const selectedObject = event.selected[0];
-        const objectId = (selectedObject as any).objectId || `object-${Date.now()}`;
-        onElementSelect(objectId);
-      }
-    };
-
-    const handlePathCreated = (event: any) => {
-      if (selectedTool === 'smart-pen') {
-        // Smart pen logic - could implement shape recognition here
-        const path = event.path;
-        if (path) {
-          // Simple shape recognition based on path complexity
-          const pathData = path.path;
-          if (isCircleLike(pathData)) {
-            fabricCanvas.remove(path);
-            const bounds = path.getBoundingRect();
-            const circle = new Circle({
-              left: bounds.left,
-              top: bounds.top,
-              radius: Math.min(bounds.width, bounds.height) / 2,
-              fill: 'transparent',
-              stroke: currentColor,
-              strokeWidth: brushWidth,
-            });
-            fabricCanvas.add(circle);
-            toast.success('تم تحويل الرسم إلى دائرة!');
-          } else if (isRectangleLike(pathData)) {
-            fabricCanvas.remove(path);
-            const bounds = path.getBoundingRect();
-            const rect = new Rect({
-              left: bounds.left,
-              top: bounds.top,
-              width: bounds.width,
-              height: bounds.height,
-              fill: 'transparent',
-              stroke: currentColor,
-              strokeWidth: brushWidth,
-            });
-            fabricCanvas.add(rect);
-            toast.success('تم تحويل الرسم إلى مستطيل!');
-          }
-        }
-      }
-    };
-
     // Add event listeners
     fabricCanvas.on('mouse:down', handleMouseDown);
     fabricCanvas.on('mouse:move', handleMouseMove);
     fabricCanvas.on('mouse:up', handleMouseUp);
-    fabricCanvas.on('selection:created', handleObjectSelection);
-    fabricCanvas.on('selection:updated', handleObjectSelection);
-    fabricCanvas.on('path:created', handlePathCreated);
 
     return () => {
       fabricCanvas.off('mouse:down', handleMouseDown);
       fabricCanvas.off('mouse:move', handleMouseMove);
       fabricCanvas.off('mouse:up', handleMouseUp);
-      fabricCanvas.off('selection:created', handleObjectSelection);
-      fabricCanvas.off('selection:updated', handleObjectSelection);
-      fabricCanvas.off('path:created', handlePathCreated);
     };
-  }, [fabricCanvas, selectedTool, addShape, onElementSelect, currentColor, brushWidth]);
+  }, [fabricCanvas, selectedTool, handleToolClick]);
 
-  // Simple shape recognition functions
-  const isCircleLike = (pathData: any[]): boolean => {
-    // Simple heuristic for circle detection
-    return pathData.length > 10 && pathData.length < 50;
-  };
+  // Handle clear canvas
+  const handleClear = useCallback(() => {
+    if (!fabricCanvas) return;
+    
+    fabricCanvas.clear();
+    fabricCanvas.backgroundColor = theme?.colors?.background || '#ffffff';
+    
+    if (showGrid) {
+      addGridToCanvas(fabricCanvas);
+    }
+    
+    fabricCanvas.renderAll();
+    toast.success('تم مسح اللوحة!');
+  }, [fabricCanvas, theme, showGrid, addGridToCanvas]);
 
-  const isRectangleLike = (pathData: any[]): boolean => {
-    // Simple heuristic for rectangle detection
-    return pathData.length >= 4 && pathData.length <= 20;
-  };
-
-  // Export canvas data
+  // Enhanced export functionality
   const exportCanvas = useCallback(() => {
     if (!fabricCanvas) return null;
     
@@ -359,10 +345,10 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
       position: { x: obj.left || 0, y: obj.top || 0 },
       size: { width: obj.width || 0, height: obj.height || 0 },
       style: {
-        fill: obj.fill,
-        stroke: obj.stroke,
-        strokeWidth: obj.strokeWidth,
-        opacity: obj.opacity,
+        fill: obj.fill as string,
+        stroke: obj.stroke as string,
+        strokeWidth: obj.strokeWidth || 1,
+        opacity: obj.opacity || 1,
       }
     }));
 
@@ -378,12 +364,42 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
     return 'smart';
   };
 
-  // Cleanup and export on unmount
+  // Export JSON data
+  const exportJSON = useCallback(() => {
+    if (!fabricCanvas) return null;
+    return fabricCanvas.toJSON();
+  }, [fabricCanvas]);
+
+  // Import JSON data
+  const importJSON = useCallback((jsonData: any) => {
+    if (!fabricCanvas) return;
+    
+    fabricCanvas.loadFromJSON(jsonData, () => {
+      fabricCanvas.renderAll();
+      toast.success('تم استيراد البيانات بنجاح!');
+    });
+  }, [fabricCanvas]);
+
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       exportCanvas();
     };
   }, [exportCanvas]);
+
+  // Expose canvas methods globally for external control
+  useEffect(() => {
+    if (fabricCanvas) {
+      (window as any).canvasMethods = {
+        clear: handleClear,
+        export: exportCanvas,
+        exportJSON,
+        importJSON,
+        setColor: setActiveColor,
+        setBrushWidth,
+      };
+    }
+  }, [fabricCanvas, handleClear, exportCanvas, exportJSON, importJSON]);
 
   return (
     <div className="relative w-full h-full bg-background rounded-lg overflow-hidden shadow-lg">
@@ -391,17 +407,45 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
         ref={canvasRef}
         className="block"
         style={{
-          cursor: selectedTool === 'hand' ? 'grab' : 'crosshair'
+          cursor: selectedTool === 'hand' ? 'grab' : selectedTool === 'pen' ? 'crosshair' : 'default'
         }}
       />
       
-      {/* Canvas overlay for additional UI elements */}
-      <div className="absolute top-4 left-4 bg-background/90 backdrop-blur-sm rounded-md p-2 shadow-sm">
+      {/* Canvas overlay for status */}
+      <div className="absolute top-4 left-4 bg-background/90 backdrop-blur-sm rounded-md p-2 shadow-sm animate-fade-in">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>Zoom: {zoom}%</span>
+          <span>Zoom: {Math.round(zoom)}%</span>
           <span>•</span>
           <span>Tool: {selectedTool}</span>
+          {fabricCanvas && (
+            <>
+              <span>•</span>
+              <span>Objects: {fabricCanvas.getObjects().filter(obj => !(obj as any).isGrid).length}</span>
+            </>
+          )}
         </div>
+      </div>
+
+      {/* Quick actions */}
+      <div className="absolute top-4 right-4 flex gap-2">
+        <button
+          onClick={handleClear}
+          className="px-3 py-1 bg-destructive text-destructive-foreground rounded text-xs hover:bg-destructive/90 transition-colors"
+        >
+          مسح
+        </button>
+        <button
+          onClick={() => {
+            const json = exportJSON();
+            if (json) {
+              navigator.clipboard.writeText(JSON.stringify(json));
+              toast.success('تم نسخ البيانات!');
+            }
+          }}
+          className="px-3 py-1 bg-primary text-primary-foreground rounded text-xs hover:bg-primary/90 transition-colors"
+        >
+          نسخ
+        </button>
       </div>
     </div>
   );
