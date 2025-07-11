@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
 import { 
-  MousePointer, Copy, Scissors, Clipboard, Trash2, 
-  Group, Lock, Unlock, RotateCcw, FlipHorizontal, 
-  FlipVertical, AlignLeft, AlignCenter, AlignRight, Move3D
+  MousePointer, Copy, Cut, Trash2, Group, Ungroup, 
+  Lock, Unlock, FlipHorizontal, FlipVertical, 
+  RotateCw, AlignLeft, AlignCenter, AlignRight,
+  AlignTop, AlignBottom, AlignMiddle, Layers
 } from 'lucide-react';
-import { CanvasElement } from '../../types';
+import { CanvasElement, CanvasLayer } from '../../types';
 
 interface EnhancedSelectionPanelProps {
   selectedElements: CanvasElement[];
@@ -28,15 +26,14 @@ interface EnhancedSelectionPanelProps {
   onFlipHorizontal: () => void;
   onFlipVertical: () => void;
   onRotate: (angle: number) => void;
-  onAlign: (type: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
-  onDistribute: (type: 'horizontal' | 'vertical') => void;
-  layers: any[];
-  onLayerReorder: (layers: any[]) => void;
+  onAlign: (type: string) => void;
+  onDistribute: (type: string) => void;
+  layers: CanvasLayer[];
+  onLayerReorder: (layers: CanvasLayer[]) => void;
 }
 
 const EnhancedSelectionPanel: React.FC<EnhancedSelectionPanelProps> = ({
   selectedElements,
-  onUpdateElement,
   onCopy,
   onCut,
   onPaste,
@@ -44,328 +41,249 @@ const EnhancedSelectionPanel: React.FC<EnhancedSelectionPanelProps> = ({
   onGroup,
   onUngroup,
   onLock,
-  onUnlock,  
+  onUnlock,
   onDuplicate,
   onFlipHorizontal,
   onFlipVertical,
   onRotate,
   onAlign,
-  onDistribute,
-  layers,
-  onLayerReorder
+  onDistribute
 }) => {
-  const [lockAspectRatio, setLockAspectRatio] = useState(false);
-  const selectedElement = selectedElements[0];
-  const multipleSelected = selectedElements.length > 1;
-
-  const handlePositionChange = (axis: 'x' | 'y', value: number) => {
-    if (selectedElement) {
-      onUpdateElement(selectedElement.id, {
-        position: { ...selectedElement.position, [axis]: value }
-      });
-    }
-  };
-
-  const handleSizeChange = (dimension: 'width' | 'height', value: number) => {
-    if (!selectedElement) return;
-    
-    if (lockAspectRatio && selectedElement.size.width && selectedElement.size.height) {
-      const aspectRatio = selectedElement.size.width / selectedElement.size.height;
-      if (dimension === 'width') {
-        onUpdateElement(selectedElement.id, {
-          size: { width: value, height: value / aspectRatio }
-        });
-      } else {
-        onUpdateElement(selectedElement.id, {
-          size: { width: value * aspectRatio, height: value }
-        });
-      }
-    } else {
-      onUpdateElement(selectedElement.id, {
-        size: { ...selectedElement.size, [dimension]: value }
-      });
-    }
-  };
+  const hasSelection = selectedElements.length > 0;
+  const multipleSelection = selectedElements.length > 1;
 
   return (
     <Card className="w-80 bg-white/95 backdrop-blur-xl shadow-lg border border-white/20 rounded-[24px]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2">
           <MousePointer className="w-5 h-5 text-blue-500" />
-          أداة التحديد المتقدمة
+          أداة التحديد
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Tabs defaultValue="transform" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="transform" className="text-xs font-arabic">تحويل</TabsTrigger>
-            <TabsTrigger value="arrange" className="text-xs font-arabic">ترتيب</TabsTrigger>
-            <TabsTrigger value="layers" className="text-xs font-arabic">طبقات</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="transform" className="space-y-4">
-            {/* معلومات التحديد */}
-            <div>
-              <h4 className="text-sm font-medium font-arabic mb-2">التحديد الحالي</h4>
-              <div className="text-xs text-gray-600 font-arabic">
-                {selectedElements.length === 0 && "لا توجد عناصر محددة"}
-                {selectedElements.length === 1 && `عنصر واحد محدد: ${selectedElement?.type}`}
-                {selectedElements.length > 1 && `${selectedElements.length} عناصر محددة`}
-              </div>
-            </div>
+        {/* الإجراءات الأساسية */}
+        <div>
+          <h4 className="text-sm font-medium font-arabic mb-2">الإجراءات الأساسية</h4>
+          <div className="grid grid-cols-4 gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onCut}
+              disabled={!hasSelection}
+              className="flex flex-col items-center p-2 h-12 text-xs font-arabic"
+            >
+              <Cut className="w-4 h-4 mb-1" />
+              قص
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onCopy}
+              disabled={!hasSelection}
+              className="flex flex-col items-center p-2 h-12 text-xs font-arabic"
+            >
+              <Copy className="w-4 h-4 mb-1" />
+              نسخ
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onPaste}
+              className="flex flex-col items-center p-2 h-12 text-xs font-arabic"
+            >
+              <Copy className="w-4 h-4 mb-1" />
+              لصق
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onDelete}
+              disabled={!hasSelection}
+              className="flex flex-col items-center p-2 h-12 text-xs font-arabic text-red-600 hover:text-red-700"
+            >
+              <Trash2 className="w-4 h-4 mb-1" />
+              حذف
+            </Button>
+          </div>
+        </div>
 
-            {selectedElement && !multipleSelected && (
-              <>
-                <Separator />
-                
-                {/* الموقع والمقاس */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-medium font-arabic">الموقع والمقاس</h4>
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        checked={lockAspectRatio}
-                        onCheckedChange={setLockAspectRatio}
-                        id="aspect-ratio"
-                      />
-                      <Label htmlFor="aspect-ratio" className="text-xs font-arabic">قفل النسبة</Label>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <Label className="text-xs font-arabic">س (X)</Label>
-                      <Input
-                        type="number"
-                        value={Math.round(selectedElement.position.x)}
-                        onChange={(e) => handlePositionChange('x', parseInt(e.target.value) || 0)}
-                        className="h-8 text-xs rounded-xl"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs font-arabic">ص (Y)</Label>
-                      <Input
-                        type="number"
-                        value={Math.round(selectedElement.position.y)}
-                        onChange={(e) => handlePositionChange('y', parseInt(e.target.value) || 0)}
-                        className="h-8 text-xs rounded-xl"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs font-arabic">العرض</Label>
-                      <Input
-                        type="number"
-                        value={Math.round(selectedElement.size.width)}
-                        onChange={(e) => handleSizeChange('width', parseInt(e.target.value) || 0)}
-                        className="h-8 text-xs rounded-xl"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs font-arabic">الارتفاع</Label>
-                      <Input
-                        type="number"
-                        value={Math.round(selectedElement.size.height)}
-                        onChange={(e) => handleSizeChange('height', parseInt(e.target.value) || 0)}
-                        className="h-8 text-xs rounded-xl"
-                      />
-                    </div>
-                  </div>
-                </div>
+        <Separator />
 
-                <Separator />
+        {/* التجميع */}
+        <div>
+          <h4 className="text-sm font-medium font-arabic mb-2">التجميع</h4>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onGroup}
+              disabled={!multipleSelection}
+              className="flex items-center gap-2 text-xs font-arabic"
+            >
+              <Group className="w-4 h-4" />
+              تجميع
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onUngroup}
+              disabled={!hasSelection}
+              className="flex items-center gap-2 text-xs font-arabic"
+            >
+              <Ungroup className="w-4 h-4" />
+              إلغاء التجميع
+            </Button>
+          </div>
+        </div>
 
-                {/* التحويلات */}
-                <div>
-                  <h4 className="text-sm font-medium font-arabic mb-2">التحويلات</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      onClick={onFlipHorizontal}
-                      size="sm"
-                      variant="outline"
-                      className="text-xs font-arabic rounded-xl"
-                    >
-                      <FlipHorizontal className="w-3 h-3 mr-1" />
-                      قلب أفقي
-                    </Button>
-                    <Button
-                      onClick={onFlipVertical}
-                      size="sm"
-                      variant="outline"
-                      className="text-xs font-arabic rounded-xl"
-                    >
-                      <FlipVertical className="w-3 h-3 mr-1" />
-                      قلب عمودي
-                    </Button>
-                    <Button
-                      onClick={() => onRotate(90)}
-                      size="sm"
-                      variant="outline"
-                      className="text-xs font-arabic rounded-xl"
-                    >
-                      <RotateCcw className="w-3 h-3 mr-1" />
-                      دوران 90°
-                    </Button>
-                    <Button
-                      onClick={() => onRotate(-90)}
-                      size="sm"
-                      variant="outline"
-                      className="text-xs font-arabic rounded-xl"
-                    >
-                      <RotateCcw className="w-3 h-3 mr-1" />
-                      دوران -90°
-                    </Button>
-                  </div>
-                </div>
-              </>
-            )}
+        <Separator />
 
-            <Separator />
+        {/* القفل والحماية */}
+        <div>
+          <h4 className="text-sm font-medium font-arabic mb-2">القفل والحماية</h4>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onLock}
+              disabled={!hasSelection}
+              className="flex items-center gap-2 text-xs font-arabic"
+            >
+              <Lock className="w-4 h-4" />
+              قفل
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onUnlock}
+              disabled={!hasSelection}
+              className="flex items-center gap-2 text-xs font-arabic"
+            >
+              <Unlock className="w-4 h-4" />
+              إلغاء القفل
+            </Button>
+          </div>
+        </div>
 
-            {/* أدوات التحرير */}
-            <div>
-              <h4 className="text-sm font-medium font-arabic mb-2">أدوات التحرير</h4>
-              <div className="grid grid-cols-2 gap-2">
-                <Button onClick={onCut} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
-                  <Scissors className="w-3 h-3 mr-1" />
-                  قص
-                </Button>
-                <Button onClick={onCopy} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
-                  <Copy className="w-3 h-3 mr-1" />
-                  نسخ
-                </Button>
-                <Button onClick={onPaste} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
-                  <Clipboard className="w-3 h-3 mr-1" />
-                  لصق
-                </Button>
-                <Button onClick={onDuplicate} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
-                  <Copy className="w-3 h-3 mr-1" />
-                  تكرار
-                </Button>
-                <Button onClick={onLock} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
-                  <Lock className="w-3 h-3 mr-1" />
-                  قفل
-                </Button>
-                <Button onClick={onUnlock} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
-                  <Unlock className="w-3 h-3 mr-1" />
-                  إلغاء القفل
-                </Button>
-                <Button 
-                  onClick={onDelete} 
-                  size="sm" 
-                  variant="destructive" 
-                  className="text-xs font-arabic rounded-xl col-span-2"
-                >
-                  <Trash2 className="w-3 h-3 mr-1" />
-                  حذف ({selectedElements.length})
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
+        <Separator />
 
-          <TabsContent value="arrange" className="space-y-4">
-            {/* المحاذاة */}
-            <div>
-              <h4 className="text-sm font-medium font-arabic mb-2">المحاذاة</h4>
-              <div className="grid grid-cols-3 gap-1">
-                <Button onClick={() => onAlign('left')} size="sm" variant="outline" className="text-xs rounded-lg">
-                  <AlignLeft className="w-3 h-3" />
-                </Button>
-                <Button onClick={() => onAlign('center')} size="sm" variant="outline" className="text-xs rounded-lg">
-                  <AlignCenter className="w-3 h-3" />
-                </Button>
-                <Button onClick={() => onAlign('right')} size="sm" variant="outline" className="text-xs rounded-lg">
-                  <AlignRight className="w-3 h-3" />
-                </Button>
-                <Button onClick={() => onAlign('top')} size="sm" variant="outline" className="text-xs rounded-lg">
-                  <AlignLeft className="w-3 h-3" />
-                </Button>
-                <Button onClick={() => onAlign('middle')} size="sm" variant="outline" className="text-xs rounded-lg">
-                  <AlignCenter className="w-3 h-3" />
-                </Button>
-                <Button onClick={() => onAlign('bottom')} size="sm" variant="outline" className="text-xs rounded-lg">
-                  <AlignRight className="w-3 h-3" />
-                </Button>
-              </div>
-            </div>
+        {/* التحويل */}
+        <div>
+          <h4 className="text-sm font-medium font-arabic mb-2">التحويل</h4>
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onFlipHorizontal}
+              disabled={!hasSelection}
+              className="flex flex-col items-center p-2 h-12 text-xs font-arabic"
+            >
+              <FlipHorizontal className="w-4 h-4 mb-1" />
+              قلب أفقي
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onFlipVertical}
+              disabled={!hasSelection}
+              className="flex flex-col items-center p-2 h-12 text-xs font-arabic"
+            >
+              <FlipVertical className="w-4 h-4 mb-1" />
+              قلب عمودي
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onRotate(90)}
+              disabled={!hasSelection}
+              className="flex flex-col items-center p-2 h-12 text-xs font-arabic"
+            >
+              <RotateCw className="w-4 h-4 mb-1" />
+              دوران
+            </Button>
+          </div>
+        </div>
 
-            <Separator />
+        <Separator />
 
-            {/* التوزيع */}
-            {multipleSelected && (
-              <>
-                <div>
-                  <h4 className="text-sm font-medium font-arabic mb-2">التوزيع</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button 
-                      onClick={() => onDistribute('horizontal')} 
-                      size="sm" 
-                      variant="outline" 
-                      className="text-xs font-arabic rounded-xl"
-                    >
-                      <Move3D className="w-3 h-3 mr-1" />
-                      أفقي
-                    </Button>
-                    <Button 
-                      onClick={() => onDistribute('vertical')} 
-                      size="sm" 
-                      variant="outline" 
-                      className="text-xs font-arabic rounded-xl"
-                    >
-                      <Move3D className="w-3 h-3 mr-1" />
-                      عمودي
-                    </Button>
-                  </div>
-                </div>
+        {/* المحاذاة */}
+        <div>
+          <h4 className="text-sm font-medium font-arabic mb-2">المحاذاة</h4>
+          <div className="grid grid-cols-3 gap-1">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onAlign('left')}
+              disabled={!multipleSelection}
+              className="flex flex-col items-center p-1 h-10 text-xs font-arabic"
+            >
+              <AlignLeft className="w-3 h-3 mb-1" />
+              يسار
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onAlign('center')}
+              disabled={!multipleSelection}
+              className="flex flex-col items-center p-1 h-10 text-xs font-arabic"
+            >
+              <AlignCenter className="w-3 h-3 mb-1" />
+              وسط
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onAlign('right')}
+              disabled={!multipleSelection}
+              className="flex flex-col items-center p-1 h-10 text-xs font-arabic"
+            >
+              <AlignRight className="w-3 h-3 mb-1" />
+              يمين
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onAlign('top')}
+              disabled={!multipleSelection}
+              className="flex flex-col items-center p-1 h-10 text-xs font-arabic"
+            >
+              <AlignTop className="w-3 h-3 mb-1" />
+              أعلى
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onAlign('middle')}
+              disabled={!multipleSelection}
+              className="flex flex-col items-center p-1 h-10 text-xs font-arabic"
+            >
+              <AlignMiddle className="w-3 h-3 mb-1" />
+              منتصف
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onAlign('bottom')}
+              disabled={!multipleSelection}
+              className="flex flex-col items-center p-1 h-10 text-xs font-arabic"
+            >
+              <AlignBottom className="w-3 h-3 mb-1" />
+              أسفل
+            </Button>
+          </div>
+        </div>
 
-                <Separator />
-              </>
-            )}
-
-            {/* التجميع */}
-            <div>
-              <h4 className="text-sm font-medium font-arabic mb-2">التجميع</h4>
-              <div className="grid grid-cols-2 gap-2">
-                <Button onClick={onGroup} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
-                  <Group className="w-3 h-3 mr-1" />
-                  تجميع
-                </Button>
-                <Button onClick={onUngroup} size="sm" variant="outline" className="text-xs font-arabic rounded-xl">
-                  <Group className="w-3 h-3 mr-1" />
-                  إلغاء التجميع
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="layers" className="space-y-4">
-            {/* قائمة الطبقات */}
-            <div>
-              <h4 className="text-sm font-medium font-arabic mb-2">الطبقات ({layers.length})</h4>
-              <div className="space-y-1 max-h-48 overflow-y-auto">
-                {layers.map((layer, index) => (
-                  <div
-                    key={layer.id}
-                    className="flex items-center justify-between p-2 bg-gray-50 rounded-xl text-xs border border-gray-200"
-                  >
-                    <span className="font-arabic">{layer.name || `طبقة ${index + 1}`}</span>
-                    <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full opacity-80"></div>
-                      <span className="text-gray-500">{layer.elements?.length || 0}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        {/* نصائح الاستخدام */}
+        {/* معلومات التحديد */}
         <div className="bg-blue-50 p-3 rounded-xl border border-blue-200">
-          <div className="text-xs text-blue-800 font-arabic space-y-1">
-            <div>⚡ Ctrl + النقر للتحديد المتعدد</div>
-            <div>🔒 العناصر المقفلة لا يمكن تحديدها</div>
-            <div>📐 قفل النسبة يحافظ على شكل العنصر</div>
-            <div>🎯 المحاذاة تعمل مع عدة عناصر</div>
+          <div className="text-xs text-blue-800 font-arabic">
+            {hasSelection ? (
+              <>
+                <div>🎯 محدد: {selectedElements.length} عنصر</div>
+                <div className="mt-1">⌨️ Ctrl+C نسخ | Ctrl+G تجميع | Delete حذف</div>
+              </>
+            ) : (
+              <div>📌 انقر لتحديد عنصر أو اسحب لتحديد مجموعة</div>
+            )}
           </div>
         </div>
       </CardContent>

@@ -1,3 +1,4 @@
+
 import { 
   MousePointer, Pen, ZoomIn, Hand, File, Upload, 
   MessageSquare, Type, Shapes, Sparkles, Clock, GitBranch, Layout,
@@ -6,19 +7,17 @@ import {
 } from 'lucide-react';
 import { Tool } from './types';
 
-// أدوات شريت الأدوات الرئيسي (أسفل) - بالترتيب المطلوب
+// أدوات شريط الأدوات الرئيسي (أسفل) - بالترتيب المطلوب
 export const MAIN_TOOLBAR_TOOLS: Tool[] = [
-  { id: 'select', label: 'تحديد', icon: MousePointer, category: 'basic' },
-  { id: 'smart-pen', label: 'القلم الذكي', icon: Pen, category: 'basic' },
-  { id: 'zoom', label: 'زوم', icon: ZoomIn, category: 'basic' },
-  { id: 'hand', label: 'كف', icon: Hand, category: 'navigation' },
-  { id: 'grid', label: 'شبكة', icon: Grid3X3, category: 'navigation' },
-  { id: 'layers', label: 'طبقات', icon: Layers, category: 'navigation' },
-  { id: 'upload', label: 'رفع مرفق', icon: Upload, category: 'file' },
-  { id: 'comment', label: 'تعليق', icon: MessageSquare, category: 'collaboration' },
-  { id: 'text', label: 'نص', icon: Type, category: 'content' },
-  { id: 'shape', label: 'شكل', icon: Shapes, category: 'content' },
-  { id: 'smart-element', label: 'عنصر ذكي', icon: Sparkles, category: 'smart' }
+  { id: 'select', label: 'تحديد', icon: MousePointer, category: 'basic', shortcut: 'V' },
+  { id: 'smart-pen', label: 'القلم الذكي', icon: Pen, category: 'basic', shortcut: 'P' },
+  { id: 'zoom', label: 'زوم', icon: ZoomIn, category: 'basic', shortcut: 'Z' },
+  { id: 'hand', label: 'كف', icon: Hand, category: 'navigation', shortcut: 'H' },
+  { id: 'upload', label: 'رفع مرفق', icon: Upload, category: 'file', shortcut: 'U' },
+  { id: 'comment', label: 'تعليق', icon: MessageSquare, category: 'collaboration', shortcut: 'C' },
+  { id: 'text', label: 'نص', icon: Type, category: 'content', shortcut: 'T' },
+  { id: 'shape', label: 'شكل', icon: Shapes, category: 'content', shortcut: 'R' },
+  { id: 'smart-element', label: 'عنصر ذكي', icon: Sparkles, category: 'smart', shortcut: 'S' }
 ];
 
 // أدوات شريط الأدوات العلوي
