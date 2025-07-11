@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Canvas as FabricCanvas, Circle, Rect, Textbox, Line, Path, FabricObject } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Rect, Textbox, Line, Path, FabricObject, Point } from 'fabric';
 import { toast } from 'sonner';
 import { CanvasElement, Tool } from '../types/index';
 
@@ -104,10 +104,8 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
   useEffect(() => {
     if (!fabricCanvas) return;
     
-    fabricCanvas.absolutePan({
-      x: canvasPosition.x,
-      y: canvasPosition.y
-    });
+    const point = new Point(canvasPosition.x, canvasPosition.y);
+    fabricCanvas.absolutePan(point);
   }, [canvasPosition, fabricCanvas]);
 
   // Add grid to canvas
@@ -117,7 +115,9 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
     const canvasHeight = canvas.height || 800;
 
     // Remove existing grid
-    const existingGrid = canvas.getObjects().filter(obj => obj.name === 'grid-line');
+    const existingGrid = canvas.getObjects().filter(obj => 
+      (obj as any).isGrid === true
+    );
     existingGrid.forEach(line => canvas.remove(line));
 
     // Add vertical lines
@@ -127,8 +127,8 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
         strokeWidth: 1,
         selectable: false,
         evented: false,
-        name: 'grid-line'
       });
+      (line as any).isGrid = true;
       canvas.add(line);
     }
 
@@ -139,8 +139,8 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
         strokeWidth: 1,
         selectable: false,
         evented: false,
-        name: 'grid-line'
       });
+      (line as any).isGrid = true;
       canvas.add(line);
     }
 
@@ -154,7 +154,7 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
     if (showGrid) {
       addGridToCanvas(fabricCanvas);
     } else {
-      const gridLines = fabricCanvas.getObjects().filter(obj => obj.name === 'grid-line');
+      const gridLines = fabricCanvas.getObjects().filter(obj => (obj as any).isGrid === true);
       gridLines.forEach(line => fabricCanvas.remove(line));
       fabricCanvas.renderAll();
     }
@@ -235,12 +235,16 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
   useEffect(() => {
     if (!fabricCanvas) return;
 
+    let isDragging = false;
+    let lastPosX = 0;
+    let lastPosY = 0;
+
     const handleMouseDown = (event: any) => {
       if (selectedTool === 'hand') {
-        fabricCanvas.isDragging = true;
+        isDragging = true;
         fabricCanvas.selection = false;
-        fabricCanvas.lastPosX = event.e.clientX;
-        fabricCanvas.lastPosY = event.e.clientY;
+        lastPosX = event.e.clientX;
+        lastPosY = event.e.clientY;
       } else if (['shape', 'rectangle', 'circle', 'text', 'sticky'].includes(selectedTool)) {
         const pointer = fabricCanvas.getPointer(event.e);
         addShape(pointer);
@@ -248,14 +252,14 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
     };
 
     const handleMouseMove = (event: any) => {
-      if (fabricCanvas.isDragging && selectedTool === 'hand') {
+      if (isDragging && selectedTool === 'hand') {
         const vpt = fabricCanvas.viewportTransform;
         if (vpt) {
-          vpt[4] += event.e.clientX - fabricCanvas.lastPosX;
-          vpt[5] += event.e.clientY - fabricCanvas.lastPosY;
+          vpt[4] += event.e.clientX - lastPosX;
+          vpt[5] += event.e.clientY - lastPosY;
           fabricCanvas.requestRenderAll();
-          fabricCanvas.lastPosX = event.e.clientX;
-          fabricCanvas.lastPosY = event.e.clientY;
+          lastPosX = event.e.clientX;
+          lastPosY = event.e.clientY;
         }
       }
     };
@@ -263,7 +267,7 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
     const handleMouseUp = () => {
       if (selectedTool === 'hand') {
         fabricCanvas.setViewportTransform(fabricCanvas.viewportTransform);
-        fabricCanvas.isDragging = false;
+        isDragging = false;
         fabricCanvas.selection = true;
       }
     };
@@ -271,7 +275,8 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
     const handleObjectSelection = (event: any) => {
       if (event.selected && event.selected.length > 0) {
         const selectedObject = event.selected[0];
-        onElementSelect(selectedObject.id || '');
+        const objectId = (selectedObject as any).objectId || `object-${Date.now()}`;
+        onElementSelect(objectId);
       }
     };
 
@@ -347,9 +352,9 @@ const FabricCanvasComponent: React.FC<FabricCanvasComponentProps> = ({
   const exportCanvas = useCallback(() => {
     if (!fabricCanvas) return null;
     
-    const objects = fabricCanvas.getObjects().filter(obj => obj.name !== 'grid-line');
+    const objects = fabricCanvas.getObjects().filter(obj => !(obj as any).isGrid);
     const elements: CanvasElement[] = objects.map((obj, index) => ({
-      id: obj.id || `element-${index}`,
+      id: (obj as any).objectId || `element-${index}`,
       type: getElementType(obj),
       position: { x: obj.left || 0, y: obj.top || 0 },
       size: { width: obj.width || 0, height: obj.height || 0 },
