@@ -1,14 +1,20 @@
 
 export { useCanvasHistory } from './useCanvasHistory';
+export { useCanvasElements } from './useCanvasElements';
+export { useCanvasInteraction } from './useCanvasInteraction';
 export { useEnhancedCanvasState } from './useEnhancedCanvasState';
+export { useKeyboardControls } from './useKeyboardControls';
 
-// Core interaction hooks
+// Refactored focused hooks
+export { useCanvasBasicState } from './useCanvasBasicState';
+
+// New refactored interaction hooks
 export { useCanvasSelectionInteraction } from './useCanvasSelectionInteraction';
 export { useCanvasDrawingInteraction } from './useCanvasDrawingInteraction';
 export { useCanvasElementInteraction } from './useCanvasElementInteraction';
 export { useRefactoredCanvasInteraction } from './useRefactoredCanvasInteraction';
 
-// State management hooks
+// Enhanced state management hooks
 export { useCanvasElementManagement } from './useCanvasElementManagement';
 export { useCanvasClipboardActions } from './useCanvasClipboardActions';
 export { useCanvasElementActions } from './useCanvasElementActions';

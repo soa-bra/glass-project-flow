@@ -12,13 +12,14 @@ export const useCanvasDrawingInteraction = (canvasRef: React.RefObject<HTMLDivEl
     return snapEnabled ? Math.round(value / GRID_SIZE) * GRID_SIZE : value;
   };
 
-  const getCanvasCoordinates = useCallback((
+  // Enhanced drawing for smart pen
+  const handleSmartPenStart = useCallback((
     e: React.MouseEvent,
     zoom: number,
     canvasPosition: { x: number; y: number },
     snapEnabled: boolean = false
   ) => {
-    if (!canvasRef.current) return { x: 0, y: 0 };
+    if (!canvasRef.current) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
     let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
@@ -27,21 +28,10 @@ export const useCanvasDrawingInteraction = (canvasRef: React.RefObject<HTMLDivEl
     x = snapToGrid(x, snapEnabled);
     y = snapToGrid(y, snapEnabled);
     
-    return { x, y };
-  }, []);
-
-  // Smart pen drawing
-  const handleSmartPenStart = useCallback((
-    e: React.MouseEvent,
-    zoom: number,
-    canvasPosition: { x: number; y: number },
-    snapEnabled: boolean = false
-  ) => {
-    const coords = getCanvasCoordinates(e, zoom, canvasPosition, snapEnabled);
     setIsDrawing(true);
-    setDrawStart(coords);
-    setDrawEnd(coords);
-  }, [getCanvasCoordinates]);
+    setDrawStart({ x, y });
+    setDrawEnd({ x, y });
+  }, []);
 
   const handleSmartPenMove = useCallback((
     e: React.MouseEvent,
@@ -49,64 +39,30 @@ export const useCanvasDrawingInteraction = (canvasRef: React.RefObject<HTMLDivEl
     canvasPosition: { x: number; y: number },
     snapEnabled: boolean = false
   ) => {
-    if (!isDrawing) return;
+    if (!isDrawing || !drawStart || !canvasRef.current) return;
     
-    const coords = getCanvasCoordinates(e, zoom, canvasPosition, snapEnabled);
-    setDrawEnd(coords);
-  }, [isDrawing, getCanvasCoordinates]);
+    const rect = canvasRef.current.getBoundingClientRect();
+    let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    let y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    
+    x = snapToGrid(x, snapEnabled);
+    y = snapToGrid(y, snapEnabled);
+    
+    setDrawEnd({ x, y });
+  }, [isDrawing, drawStart]);
 
   const handleSmartPenEnd = useCallback((
-    addElement: (type: string, x: number, y: number, width?: number, height?: number) => void
+    addElement: (type: string, startX: number, startY: number, endX: number, endY: number) => void
   ) => {
     if (!isDrawing || !drawStart || !drawEnd) return;
     
-    // Create a line element
-    addElement('line', drawStart.x, drawStart.y, Math.abs(drawEnd.x - drawStart.x), Math.abs(drawEnd.y - drawStart.y));
-    
-    setIsDrawing(false);
-    setDrawStart(null);
-    setDrawEnd(null);
-  }, [isDrawing, drawStart, drawEnd]);
-
-  // Drag create for shapes and elements
-  const handleDragCreate = useCallback((
-    e: React.MouseEvent,
-    tool: string,
-    zoom: number,
-    canvasPosition: { x: number; y: number },
-    snapEnabled: boolean = false
-  ) => {
-    const coords = getCanvasCoordinates(e, zoom, canvasPosition, snapEnabled);
-    setIsDrawing(true);
-    setDrawStart(coords);
-    setDrawEnd(coords);
-  }, [getCanvasCoordinates]);
-
-  const handleDragCreateMove = useCallback((
-    e: React.MouseEvent,
-    zoom: number,
-    canvasPosition: { x: number; y: number },
-    snapEnabled: boolean = false
-  ) => {
-    if (!isDrawing) return;
-    
-    const coords = getCanvasCoordinates(e, zoom, canvasPosition, snapEnabled);
-    setDrawEnd(coords);
-  }, [isDrawing, getCanvasCoordinates]);
-
-  const handleDragCreateEnd = useCallback((
-    tool: string,
-    addElement: (type: string, x: number, y: number, width?: number, height?: number) => void
-  ) => {
-    if (!isDrawing || !drawStart || !drawEnd) return;
-    
+    // Calculate the line dimensions
     const width = Math.abs(drawEnd.x - drawStart.x);
     const height = Math.abs(drawEnd.y - drawStart.y);
-    const x = Math.min(drawStart.x, drawEnd.x);
-    const y = Math.min(drawStart.y, drawEnd.y);
     
-    if (width > 10 && height > 10) { // Minimum size threshold
-      addElement(tool, x, y, width, height);
+    // Only create if there's enough movement
+    if (width > 10 || height > 10) {
+      addElement('line', drawStart.x, drawStart.y, drawEnd.x, drawEnd.y);
     }
     
     setIsDrawing(false);
@@ -114,17 +70,90 @@ export const useCanvasDrawingInteraction = (canvasRef: React.RefObject<HTMLDivEl
     setDrawEnd(null);
   }, [isDrawing, drawStart, drawEnd]);
 
-  // Text click handler
+  // Shape and smart element drag creation
+  const handleDragCreate = useCallback((
+    e: React.MouseEvent,
+    selectedTool: string,
+    zoom: number,
+    canvasPosition: { x: number; y: number },
+    snapEnabled: boolean = false
+  ) => {
+    if (!canvasRef?.current || !['shape', 'smart-element', 'text-box'].includes(selectedTool)) {
+      return;
+    }
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    let y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    
+    x = snapToGrid(x, snapEnabled);
+    y = snapToGrid(y, snapEnabled);
+    
+    setIsDrawing(true);
+    setDrawStart({ x, y });
+    setDrawEnd({ x, y });
+  }, []);
+
+  const handleDragCreateMove = useCallback((
+    e: React.MouseEvent,
+    zoom: number,
+    canvasPosition: { x: number; y: number },
+    snapEnabled: boolean = false
+  ) => {
+    if (!isDrawing || !drawStart || !canvasRef?.current) {
+      return; // Silent fail for performance
+    }
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    let y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    
+    x = snapToGrid(x, snapEnabled);
+    y = snapToGrid(y, snapEnabled);
+    
+    setDrawEnd({ x, y });
+  }, [isDrawing, drawStart]);
+
+  const handleDragCreateEnd = useCallback((
+    selectedTool: string,
+    addElement: (type: string, x: number, y: number, width: number, height: number) => void
+  ) => {
+    if (!isDrawing || !drawStart || !drawEnd) {
+      return;
+    }
+    
+    const width = Math.abs(drawEnd.x - drawStart.x);
+    const height = Math.abs(drawEnd.y - drawStart.y);
+    const x = Math.min(drawStart.x, drawEnd.x);
+    const y = Math.min(drawStart.y, drawEnd.y);
+    
+    if (width > 10 && height > 10) {
+      addElement(selectedTool, x, y, Math.max(width, 30), Math.max(height, 30));
+    }
+    
+    setIsDrawing(false);
+    setDrawStart(null);
+    setDrawEnd(null);
+  }, [isDrawing, drawStart, drawEnd]);
+
   const handleTextClick = useCallback((
     e: React.MouseEvent,
     zoom: number,
     canvasPosition: { x: number; y: number },
-    addElement: (type: string, x: number, y: number, width?: number, height?: number) => void,
+    addElement: (type: string, x: number, y: number) => void,
     snapEnabled: boolean = false
   ) => {
-    const coords = getCanvasCoordinates(e, zoom, canvasPosition, snapEnabled);
-    addElement('text', coords.x, coords.y, 120, 60);
-  }, [getCanvasCoordinates]);
+    if (!canvasRef?.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    let x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    let y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    
+    x = snapToGrid(x, snapEnabled);
+    y = snapToGrid(y, snapEnabled);
+    
+    addElement('text', x, y);
+  }, []);
 
   return {
     isDrawing,

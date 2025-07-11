@@ -1,4 +1,3 @@
-
 import { CanvasElement } from '../types';
 
 export interface Layer {
@@ -10,15 +9,21 @@ export interface Layer {
 }
 
 export interface CanvasPanelLayoutProps {
+  // History props
+  historyIndex: number;
+  history: any[];
+  onUndo: () => void;
+  onRedo: () => void;
+  onSave: () => void;
+  onExport: () => void;
+  onSettings: () => void;
+  
+  // Tool props
   selectedTool: string;
   selectedElementId: string | null;
   selectedElements: string[];
   zoom: number;
-  canvasPosition: { x: number; y: number };
-  panSpeed: number;
-  lineWidth: number;
-  lineStyle: string;
-  selectedPenMode: string;
+  selectedSmartElement: string;
   showGrid: boolean;
   snapEnabled: boolean;
   gridSize: number;
@@ -26,6 +31,11 @@ export interface CanvasPanelLayoutProps {
   layers: Layer[];
   selectedLayerId: string | null;
   elements: CanvasElement[];
+  canvasPosition: { x: number; y: number };
+  panSpeed: number;
+  lineWidth: number;
+  lineStyle: string;
+  selectedPenMode: string;
   
   // Handlers
   setSelectedTool: (tool: string) => void;
@@ -46,7 +56,7 @@ export interface CanvasPanelLayoutProps {
   handleUngroup: () => void;
   handleLock: () => void;
   handleUnlock: () => void;
-  updateElement: (elementId: string, updates: Partial<CanvasElement>) => void;
+  updateElement: (elementId: string, updates: any) => void;
   deleteElement: (elementId: string) => void;
   onPositionChange: (position: { x: number; y: number }) => void;
   onFitToScreen: () => void;
@@ -58,13 +68,5 @@ export interface CanvasPanelLayoutProps {
   onFileUpload: (files: File[]) => void;
   onNew: () => void;
   onOpen: () => void;
-  onSave: () => void;
-  onExport: () => void;
-  onUndo: () => void;
-  onRedo: () => void;
-  onSettings: () => void;
   onSmartProjectGenerate: () => void;
-  historyIndex: number;
-  history: any[];
-  selectedSmartElement: string | null;
 }
