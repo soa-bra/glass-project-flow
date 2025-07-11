@@ -6,5 +6,7 @@ export { default as NewTopToolbar } from './NewTopToolbar';
 export { default as MainToolbar } from './MainToolbar';
 export { CleanCanvasPanelLayout } from './CleanCanvasPanelLayout';
 export { CanvasWrapper } from './CanvasWrapper';
-export { DefaultView } from './DefaultView';
+export { default as DefaultView } from './DefaultView';
 export { FloatingPanelLayout } from './FloatingPanelLayout';
+export { default as Canvas } from './Canvas';
+export { CollabBar } from '../collaboration/CollabBar';
