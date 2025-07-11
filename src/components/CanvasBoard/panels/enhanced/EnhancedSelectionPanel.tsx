@@ -4,10 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { 
-  MousePointer, Copy, Cut, Trash2, Group, Ungroup, 
+  MousePointer, Copy, Scissors, Trash2, Group, Ungroup, 
   Lock, Unlock, FlipHorizontal, FlipVertical, 
   RotateCw, AlignLeft, AlignCenter, AlignRight,
-  AlignTop, AlignBottom, AlignMiddle, Layers
+  AlignStartVertical, AlignEndVertical, AlignCenterVertical, Layers
 } from 'lucide-react';
 import { CanvasElement, CanvasLayer } from '../../types';
 
@@ -72,7 +72,7 @@ const EnhancedSelectionPanel: React.FC<EnhancedSelectionPanelProps> = ({
               disabled={!hasSelection}
               className="flex flex-col items-center p-2 h-12 text-xs font-arabic"
             >
-              <Cut className="w-4 h-4 mb-1" />
+              <Scissors className="w-4 h-4 mb-1" />
               قص
             </Button>
             <Button
@@ -247,7 +247,7 @@ const EnhancedSelectionPanel: React.FC<EnhancedSelectionPanelProps> = ({
               disabled={!multipleSelection}
               className="flex flex-col items-center p-1 h-10 text-xs font-arabic"
             >
-              <AlignTop className="w-3 h-3 mb-1" />
+              <AlignStartVertical className="w-3 h-3 mb-1" />
               أعلى
             </Button>
             <Button
@@ -257,7 +257,7 @@ const EnhancedSelectionPanel: React.FC<EnhancedSelectionPanelProps> = ({
               disabled={!multipleSelection}
               className="flex flex-col items-center p-1 h-10 text-xs font-arabic"
             >
-              <AlignMiddle className="w-3 h-3 mb-1" />
+              <AlignCenterVertical className="w-3 h-3 mb-1" />
               منتصف
             </Button>
             <Button
@@ -267,7 +267,7 @@ const EnhancedSelectionPanel: React.FC<EnhancedSelectionPanelProps> = ({
               disabled={!multipleSelection}
               className="flex flex-col items-center p-1 h-10 text-xs font-arabic"
             >
-              <AlignBottom className="w-3 h-3 mb-1" />
+              <AlignEndVertical className="w-3 h-3 mb-1" />
               أسفل
             </Button>
           </div>

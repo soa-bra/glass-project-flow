@@ -266,7 +266,6 @@ const EnhancedSmartElementPanel: React.FC<EnhancedSmartElementPanelProps> = ({
             <Switch
               checked={isAIEnabled}
               onCheckedChange={onToggleAI}
-              size="sm"
             />
             <Zap className={`w-4 h-4 ${isAIEnabled ? 'text-yellow-500' : 'text-gray-400'}`} />
           </div>
