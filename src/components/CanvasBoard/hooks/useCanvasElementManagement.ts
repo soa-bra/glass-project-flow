@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import { CanvasElement } from '../types';
 
-export const useCanvasElementManagement = (saveToHistory: () => void) => {
+export const useCanvasElementManagement = (saveToHistory: (elements: CanvasElement[]) => void) => {
   const [elements, setElements] = useState<CanvasElement[]>([]);
 
   const addElement = useCallback((type: string, x: number, y: number, width?: number, height?: number) => {
@@ -18,9 +18,10 @@ export const useCanvasElementManagement = (saveToHistory: () => void) => {
       zIndex: 1
     };
 
-    setElements(prev => [...prev, newElement]);
-    saveToHistory();
-  }, [saveToHistory]);
+    const newElements = [...elements, newElement];
+    setElements(newElements);
+    saveToHistory(newElements);
+  }, [elements, saveToHistory]);
 
   const addDrawingElement = useCallback((type: string, path: { x: number; y: number }[], lineWidth: number, color: string) => {
     const newElement: CanvasElement = {
@@ -34,25 +35,26 @@ export const useCanvasElementManagement = (saveToHistory: () => void) => {
       zIndex: 1
     };
 
-    setElements(prev => [...prev, newElement]);
-    saveToHistory();
-  }, [saveToHistory]);
+    const newElements = [...elements, newElement];
+    setElements(newElements);
+    saveToHistory(newElements);
+  }, [elements, saveToHistory]);
 
   const updateElement = useCallback((elementId: string, updates: Partial<CanvasElement>) => {
-    setElements(prev => 
-      prev.map(element => 
-        element.id === elementId 
-          ? { ...element, ...updates }
-          : element
-      )
+    const newElements = elements.map(element => 
+      element.id === elementId 
+        ? { ...element, ...updates }
+        : element
     );
-    saveToHistory();
-  }, [saveToHistory]);
+    setElements(newElements);
+    saveToHistory(newElements);
+  }, [elements, saveToHistory]);
 
   const deleteElement = useCallback((elementId: string) => {
-    setElements(prev => prev.filter(element => element.id !== elementId));
-    saveToHistory();
-  }, [saveToHistory]);
+    const newElements = elements.filter(element => element.id !== elementId);
+    setElements(newElements);
+    saveToHistory(newElements);
+  }, [elements, saveToHistory]);
 
   return {
     elements,
