@@ -1,80 +1,20 @@
+// Core Canvas Board Types
 export interface CanvasElement {
   id: string;
-  type: 'text' | 'shape' | 'sticky' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'smart' | 'brainstorm' | 'root' | 'moodboard' | 'line';
+  type: 'text' | 'shape' | 'sticky' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'smart' | 'brainstorm' | 'root' | 'moodboard' | 'line' | 'image' | 'file' | 'connector';
   position: { x: number; y: number };
   size: { width: number; height: number };
   content?: string;
   style?: Record<string, any>;
   locked?: boolean;
+  layerId?: string;
+  zIndex?: number;
+  opacity?: number;
+  rotation?: number;
+  connections?: string[];
+  metadata?: Record<string, any>;
 }
 
-export interface CanvasBoardContentsProps {
-  projectId?: string;
-  userId?: string;
-}
-
-export interface CanvasState {
-  selectedTool: string;
-  selectedElementIds: string[];
-  showGrid: boolean;
-  snapEnabled: boolean;
-  elements: CanvasElement[];
-  layers: CanvasLayer[];
-  activeLayerId: string;
-  showDefaultView: boolean;
-  searchQuery: string;
-  zoom: number;
-  canvasPosition: { x: number; y: number };
-  theme: CanvasTheme;
-  panels: CanvasPanel[];
-  smartAssistant: SmartAssistant;
-  collaborationUsers: CollaborationUser[];
-  comments: CanvasComment[];
-  versions: CanvasVersion[];
-  isCollaborationMode: boolean;
-  isDarkMode: boolean;
-}
-
-export interface CanvasItem {
-  id: string;
-  type: 'sticky-note' | 'task' | 'idea' | 'goal' | 'timeline' | 'team';
-  title: string;
-  content: string;
-  position: { x: number; y: number };
-  color: string;
-  tags: string[];
-  assignee?: string;
-  dueDate?: string;
-  priority?: 'high' | 'medium' | 'low';
-  status?: 'pending' | 'in-progress' | 'completed';
-}
-
-export interface FloatingPanel {
-  id: string;
-  title: string;
-  isVisible: boolean;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-}
-
-export interface Tool {
-  id: string;
-  label: string;
-  icon: any;
-  category: 'basic' | 'smart' | 'file' | 'project' | 'navigation' | 'collaboration' | 'content' | 'ai';
-  shortcut?: string;
-  description?: string;
-  isActive?: boolean;
-  subTools?: Tool[];
-}
-
-export interface PlanningMode {
-  id: string;
-  label: string;
-  icon: any;
-}
-
-// Enhanced types for comprehensive Canvas Board system
 export interface CanvasLayer {
   id: string;
   name: string;
@@ -122,6 +62,17 @@ export interface AssistantAction {
   description: string;
   timestamp: Date;
   success: boolean;
+}
+
+export interface Tool {
+  id: string;
+  label: string;
+  icon: any;
+  category: 'basic' | 'smart' | 'file' | 'project' | 'navigation' | 'collaboration' | 'content' | 'ai';
+  shortcut?: string;
+  description?: string;
+  isActive?: boolean;
+  subTools?: Tool[];
 }
 
 export interface CanvasTheme {
@@ -185,4 +136,60 @@ export interface VersionChange {
   type: 'added' | 'modified' | 'deleted';
   elementId: string;
   description: string;
+}
+
+export interface CanvasState {
+  selectedTool: string;
+  selectedElementIds: string[];
+  showGrid: boolean;
+  snapEnabled: boolean;
+  elements: CanvasElement[];
+  layers: CanvasLayer[];
+  activeLayerId: string;
+  showDefaultView: boolean;
+  searchQuery: string;
+  zoom: number;
+  canvasPosition: { x: number; y: number };
+  theme: CanvasTheme;
+  panels: CanvasPanel[];
+  smartAssistant: SmartAssistant;
+  collaborationUsers: CollaborationUser[];
+  comments: CanvasComment[];
+  versions: CanvasVersion[];
+  isCollaborationMode: boolean;
+  isDarkMode: boolean;
+}
+
+// Legacy types for backward compatibility
+export interface CanvasItem {
+  id: string;
+  type: 'sticky-note' | 'task' | 'idea' | 'goal' | 'timeline' | 'team';
+  title: string;
+  content: string;
+  position: { x: number; y: number };
+  color: string;
+  tags: string[];
+  assignee?: string;
+  dueDate?: string;
+  priority?: 'high' | 'medium' | 'low';
+  status?: 'pending' | 'in-progress' | 'completed';
+}
+
+export interface FloatingPanel {
+  id: string;
+  title: string;
+  isVisible: boolean;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+}
+
+export interface PlanningMode {
+  id: string;
+  label: string;
+  icon: any;
+}
+
+export interface CanvasBoardContentsProps {
+  projectId?: string;
+  userId?: string;
 }
