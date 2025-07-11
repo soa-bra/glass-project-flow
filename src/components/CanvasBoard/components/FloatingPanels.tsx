@@ -81,7 +81,7 @@ export const FloatingPanels: React.FC<FloatingPanelsProps> = ({
     <>
       {/* Smart Assistant Panel */}
       {showSmartAssistant && (
-        <Card className="fixed top-24 right-4 w-80 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40 animate-fade-in">
+        <Card className="fixed top-24 right-4 w-80 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40 animate-slide-in-right">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -147,7 +147,7 @@ export const FloatingPanels: React.FC<FloatingPanelsProps> = ({
 
       {/* Layers Panel */}
       {showLayers && (
-        <Card className="fixed top-24 left-4 w-72 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40">
+        <Card className="fixed top-24 left-4 w-72 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40 animate-slide-in-right">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -228,7 +228,7 @@ export const FloatingPanels: React.FC<FloatingPanelsProps> = ({
 
       {/* Appearance Panel */}
       {showAppearance && (
-        <Card className="fixed bottom-24 right-4 w-80 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40">
+        <Card className="fixed bottom-24 right-4 w-80 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40 animate-slide-in-right">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -297,7 +297,7 @@ export const FloatingPanels: React.FC<FloatingPanelsProps> = ({
 
       {/* Collaboration Panel */}
       {showCollaboration && (
-        <Card className="fixed bottom-24 left-4 w-64 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40">
+        <Card className="fixed bottom-24 left-4 w-64 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40 animate-slide-in-right">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -344,7 +344,7 @@ export const FloatingPanels: React.FC<FloatingPanelsProps> = ({
 
       {/* Tools Panel */}
       {showTools && (
-        <Card className="fixed top-1/2 left-4 transform -translate-y-1/2 w-64 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40">
+        <Card className="fixed top-1/2 left-4 transform -translate-y-1/2 w-64 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40 animate-slide-in-right">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

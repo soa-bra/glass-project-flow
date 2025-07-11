@@ -65,7 +65,7 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
   ];
 
   return (
-    <Card className="fixed top-1/2 right-4 transform -translate-y-1/2 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-50">
+    <Card className="fixed top-1/2 right-4 transform -translate-y-1/2 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-50 animate-fade-in">
       <div className="flex flex-col gap-1 p-2">
         {panels.map((panel) => {
           const Icon = panel.icon;
@@ -75,7 +75,7 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
               variant={panel.active ? "default" : "ghost"}
               size="sm"
               onClick={() => onTogglePanel(panel.id)}
-              className={`w-12 h-12 p-0 ${panel.active ? '' : 'hover:bg-gray-100'}`}
+              className={`w-12 h-12 p-0 transition-all duration-200 hover:scale-105 ${panel.active ? 'shadow-md' : 'hover:bg-gray-100'}`}
               title={panel.label}
             >
               <Icon className={`w-5 h-5 ${panel.active ? 'text-white' : panel.color}`} />

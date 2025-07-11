@@ -10,3 +10,4 @@ export { CanvasTopSection } from './CanvasTopSection';
 export { CanvasBottomSection } from './CanvasBottomSection';
 export { FloatingPanels } from './FloatingPanels';
 export { FloatingPanelControls } from './FloatingPanelControls';
+export { KeyboardShortcuts } from './KeyboardShortcuts';

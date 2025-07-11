@@ -40,23 +40,23 @@ export const MainToolbar: React.FC<MainToolbarProps> = ({
   onToolSelect
 }) => {
   return (
-    <div className="flex items-center gap-1 p-2 bg-background/95 backdrop-blur rounded-lg border shadow-sm">
+    <div className="flex items-center gap-1 p-2 bg-background/95 backdrop-blur-lg rounded-lg border shadow-lg animate-fade-in">
       {tools.map((tool, index) => (
-        <React.Fragment key={tool.id}>
+        <div key={tool.id} className="flex items-center gap-1">
           <Button
             variant={selectedTool === tool.id ? "default" : "ghost"}
             size="sm"
             onClick={() => onToolSelect(tool.id)}
             className={cn(
-              "w-10 h-10",
-              selectedTool === tool.id && "bg-primary text-primary-foreground"
+              "w-10 h-10 transition-all duration-200 hover:scale-105",
+              selectedTool === tool.id && "bg-primary text-primary-foreground shadow-md"
             )}
             title={tool.label}
           >
             <tool.icon className="h-4 w-4" />
           </Button>
-          {index === 1 || index === 5 ? <Separator orientation="vertical" className="h-6" /> : null}
-        </React.Fragment>
+          {index === 1 || index === 5 ? <Separator orientation="vertical" className="h-6 mx-1" /> : null}
+        </div>
       ))}
     </div>
   );
