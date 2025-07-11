@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { TOP_TOOLBAR_TOOLS, GRID_SHAPES, GRID_SIZES } from '../constants';
+import { TOP_TOOLBAR_TOOLS, GRID_SHAPES, GRID_SIZES } from '../constants/toolbarConstants';
 import { ChevronDown } from 'lucide-react';
 
 interface NewTopToolbarProps {

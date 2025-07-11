@@ -6,3 +6,7 @@ export { MainToolbar } from './MainToolbar';
 export { CollabBar } from './CollabBar';
 export { Inspector } from './Inspector';
 export { CanvasGestures } from './CanvasGestures';
+export { CanvasTopSection } from './CanvasTopSection';
+export { CanvasBottomSection } from './CanvasBottomSection';
+export { FloatingPanels } from './FloatingPanels';
+export { FloatingPanelControls } from './FloatingPanelControls';

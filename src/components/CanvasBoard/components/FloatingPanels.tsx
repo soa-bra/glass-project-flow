@@ -81,11 +81,11 @@ export const FloatingPanels: React.FC<FloatingPanelsProps> = ({
     <>
       {/* Smart Assistant Panel */}
       {showSmartAssistant && (
-        <Card className="fixed top-24 right-4 w-80 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40">
+        <Card className="fixed top-24 right-4 w-80 bg-white/95 backdrop-blur-lg shadow-lg border border-gray-200/50 z-40 animate-fade-in">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Bot className="w-5 h-5 text-primary" />
+                <Bot className="w-5 h-5 text-primary animate-pulse" />
                 <CardTitle className="text-sm font-arabic">المساعد الذكي</CardTitle>
               </div>
               <div className="flex items-center gap-1">
