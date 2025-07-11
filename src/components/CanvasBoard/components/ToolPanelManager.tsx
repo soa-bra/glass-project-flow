@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   TextPanel, 
@@ -19,14 +18,7 @@ import {
   EnhancedCommentPanel
 } from '../panels/enhanced';
 import { CanvasElement } from '../types';
-
-interface Layer {
-  id: string;
-  name: string;
-  visible: boolean;
-  locked: boolean;
-  elements: string[];
-}
+import { Layer } from './CanvasPanelTypes';
 
 interface ToolPanelManagerProps {
   selectedTool: string;
@@ -181,7 +173,7 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
             onRotate={(angle) => console.log('دوران:', angle)}
             onAlign={(type) => console.log('محاذاة:', type)}
             onDistribute={(type) => console.log('توزيع:', type)}
-            layers={[]} // حذف تبويب الطبقات
+            layers={[]}
             onLayerReorder={() => {}}
           />
         );
@@ -279,9 +271,9 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
                 { name: 'الجذر', icon: '🌳' },
                 { name: 'العصف الذهني', icon: '💡' },
                 { name: 'الخط الزمني', icon: '📅' },
-                { name: 'ثينك بورد', icon: '🎨' }, // تم تغيير الاسم من مود بورد
-                { name: 'كانبان', icon: '📋' }, // إضافة جديدة
-                { name: 'أداة التصويت', icon: '🗳️' }, // إضافة جديدة
+                { name: 'ثينك بورد', icon: '🎨' },
+                { name: 'كانبان', icon: '📋' },
+                { name: 'أداة التصويت', icon: '🗳️' },
                 { name: 'خريطة ذهنية', icon: '🧠' },
                 { name: 'مخطط تدفق', icon: '🔀' }
               ].map((element, index) => (

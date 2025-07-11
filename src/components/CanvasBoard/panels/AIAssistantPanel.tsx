@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { FastForward, Search, Broom, Bot, Send } from 'lucide-react';
+import { FastForward, Search, Trash2, Bot, Send } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AIAssistantPanelProps {
@@ -114,7 +114,7 @@ const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
             className="flex flex-col items-center gap-1 h-auto p-3 rounded-xl border-gray-300 hover:bg-gray-100 transition-colors"
             title="التنظيف الذكي"
           >
-            <Broom className="w-4 h-4" />
+            <Trash2 className="w-4 h-4" />
             <span className="text-xs font-arabic">تنظيف ذكي</span>
           </Button>
         </div>

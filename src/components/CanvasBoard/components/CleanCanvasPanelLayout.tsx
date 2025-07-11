@@ -109,6 +109,7 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
       <CanvasToolsSection
         selectedTool={selectedTool}
         selectedElements={selectedElementsAsElements}
+        selectedElementIds={selectedElements}
         zoom={zoom}
         canvasPosition={canvasPosition}
         panSpeed={panSpeed}
