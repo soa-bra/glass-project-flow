@@ -24,7 +24,6 @@ export { CanvasInspectorSection } from './CanvasInspectorSection';
 export { CanvasAISection } from './CanvasAISection';
 export { CanvasToolsSection } from './CanvasToolsSection';
 export { CanvasBottomSection } from './CanvasBottomSection';
-export { FloatingPanelLayout } from './FloatingPanelLayout';
 
 // Types
 export type { CanvasPanelLayoutProps, Layer } from './CanvasPanelTypes';

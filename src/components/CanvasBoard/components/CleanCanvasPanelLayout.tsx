@@ -1,8 +1,11 @@
 import React from 'react';
 import { CanvasPanelLayoutProps } from './CanvasPanelTypes';
 import { CanvasTopSection } from './CanvasTopSection';
+import { CanvasCollaborationSection } from './CanvasCollaborationSection';
+import { CanvasInspectorSection } from './CanvasInspectorSection';
+import { CanvasAISection } from './CanvasAISection';
+import { CanvasToolsSection } from './CanvasToolsSection';
 import { CanvasBottomSection } from './CanvasBottomSection';
-import { FloatingPanelLayout } from './FloatingPanelLayout';
 
 export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
   historyIndex,
@@ -88,12 +91,24 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
         onSmartProjectGenerate={onSmartProjectGenerate}
       />
       
-      {/* Floating Panels Layout */}
-      <FloatingPanelLayout
+      {/* Collaboration Section */}
+      <CanvasCollaborationSection />
+      
+      {/* Inspector Section */}
+      <CanvasInspectorSection 
+        selectedElementId={selectedElementId}
+        elements={elements}
+        onUpdateElement={updateElement}
+        onDeleteElement={deleteElement}
+      />
+      
+      {/* AI Assistant Section */}
+      <CanvasAISection />
+      
+      {/* Tools Section */}
+      <CanvasToolsSection
         selectedTool={selectedTool}
         selectedElements={selectedElementsAsElements}
-        elements={elements}
-        selectedElementId={selectedElementId}
         zoom={zoom}
         canvasPosition={canvasPosition}
         panSpeed={panSpeed}
