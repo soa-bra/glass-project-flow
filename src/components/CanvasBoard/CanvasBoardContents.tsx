@@ -3,7 +3,7 @@ import React from 'react';
 import { useEnhancedCanvasState } from './hooks/useEnhancedCanvasState';
 import { CanvasBoardContentsProps } from './types';
 import { DefaultView } from './components';
-import { useCanvasEventHandlers } from './components/CanvasEventHandlers';
+import { useCanvasEventHandlers } from './components';
 import { CleanCanvasPanelLayout } from './components/CleanCanvasPanelLayout';
 import { CanvasWrapper } from './components/CanvasWrapper';
 
