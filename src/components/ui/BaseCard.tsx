@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 
@@ -37,7 +36,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   const variantClasses = {
     glass: 'bg-white/40 backdrop-blur-[20px] border border-white/20',
     flat: 'bg-opacity-100',
-    operations: 'border border-gray-200/50'
+    operations: 'bg-[#f2ffff] border border-gray-200/50'
   };
 
   const colorClasses = {
@@ -55,13 +54,6 @@ export const BaseCard: React.FC<BaseCardProps> = ({
     error: 'ring-2 ring-red-400/30 ring-offset-2'
   };
 
-  // استخدام نفس الخلفية والتأثيرات الموجودة في تبويب النظرة العامة
-  const finalStyle = variant === 'operations' ? {
-    backgroundColor: '#f3ffff',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-    ...style
-  } : style;
-
   return (
     <div 
       className={cn(
@@ -73,7 +65,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
         variant === 'operations' && sizeClasses[size],
         className
       )}
-      style={finalStyle}
+      style={style}
     >
       {header && (
         <div className="mb-6">

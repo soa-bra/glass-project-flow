@@ -55,14 +55,14 @@ interface ProjectsTabProps {
 
 export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
   if (loading || !data) {
-    return <div className="h-full flex items-center justify-center text-sm font-normal text-black font-arabic">جارٍ التحميل...</div>;
+    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
 
   return (
-    <div className="space-y-6 h-full overflow-auto px-4">
+    <div className="space-y-6 h-full overflow-auto">
       <div className="text-right">
-        <h2 className="text-large font-semibold text-black font-arabic mb-1">إدارة المشاريع</h2>
-        <p className="text-sm font-normal text-black font-arabic">تتبع التقدم الإجمالي ومعالجة الانحرافات</p>
+        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">إدارة المشاريع</h2>
+        <p className="text-gray-600 text-sm">تتبع التقدم الإجمالي ومعالجة الانحرافات</p>
       </div>
       
       {/* ملخص التقدم الإجمالي */}
