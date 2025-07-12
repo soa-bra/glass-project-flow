@@ -29,11 +29,11 @@ export const FinancialKPICards: React.FC<FinancialKPICardsProps> = ({ kpis }) =>
   const getTrendColor = (trend: string) => {
     switch (trend) {
       case 'up':
-        return '#bdeed3'; // أخضر للاتجاه الإيجابي
+        return '#bdeed3';
       case 'down':
-        return '#f1b5b9'; // أحمر للاتجاه السلبي
+        return '#f1b5b9';
       default:
-        return '#d0e0e2'; // اللون الأساسي
+        return '#f3ffff';
     }
   };
 
@@ -42,8 +42,11 @@ export const FinancialKPICards: React.FC<FinancialKPICardsProps> = ({ kpis }) =>
       {kpis.map((kpi) => (
         <div 
           key={kpi.id} 
-          className="p-6 rounded-3xl border border-black/10"
-          style={{ backgroundColor: getTrendColor(kpi.trend) }}
+          className="p-6 rounded-3xl border border-gray-200/50"
+          style={{ 
+            backgroundColor: getTrendColor(kpi.trend),
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+          }}
         >
           <div className="text-center">
             <h3 className="text-sm font-bold text-black font-arabic mb-2">{kpi.title}</h3>

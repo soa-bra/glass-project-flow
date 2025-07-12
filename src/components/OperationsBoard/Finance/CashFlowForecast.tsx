@@ -16,7 +16,7 @@ interface CashFlowForecastProps {
 
 export const CashFlowForecast: React.FC<CashFlowForecastProps> = ({ cashFlowData }) => {
   return (
-    <div className="p-6 rounded-3xl border border-black/10" style={{ backgroundColor: '#d0e0e2' }}>
+    <div className="p-6 rounded-3xl border border-gray-200/50" style={{ backgroundColor: '#f3ffff', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}>
       <div className="mb-6">
         <h3 className="text-large font-semibold text-black font-arabic">توقعات التدفق النقدي</h3>
       </div>

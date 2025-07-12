@@ -29,10 +29,10 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
           className={cn(
             "relative px-6 py-3 text-lg font-medium font-arabic transition-all duration-300 rounded-xl whitespace-nowrap",
             activeTab === tab.value
-              ? "bg-black text-white shadow-lg"
+              ? "bg-white text-black shadow-lg"
               : "text-black hover:bg-white/30"
           )}
-          style={{ fontSize: '1.3rem' }} // زيادة حجم النص بنسبة 30%
+          style={{ fontSize: '1.3rem' }}
         >
           {tab.label}
         </button>
