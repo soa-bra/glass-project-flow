@@ -79,7 +79,7 @@ export const SmartElementsToolPanel: React.FC = () => {
   ];
 
   const handleElementSelect = (elementId: string) => {
-    console.log('تم اختيار العنصر الذكي:', elementId);
+    // Smart element selection logic
   };
 
   const renderElementButton = (element: typeof smartElements[0], colorClass: string) => (

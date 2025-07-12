@@ -22,7 +22,7 @@ export { CanvasTopSection } from './CanvasTopSection';
 export { CanvasCollaborationSection } from './CanvasCollaborationSection';
 export { CanvasInspectorSection } from './CanvasInspectorSection';
 export { CanvasAISection } from './CanvasAISection';
-export { CanvasToolsSection } from './CanvasToolsSection';
+// Removed unused CanvasToolsSection
 export { CanvasBottomSection } from './CanvasBottomSection';
 export { FloatingPanelLayout } from './FloatingPanelLayout';
 

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import ArchiveSidebar from './ArchiveSidebar';
-import ArchivePanel from './ArchivePanel';
+import ArchivePanel from './ArchivePanel/ArchivePanel';
 
 interface ArchiveWorkspaceProps {
   isSidebarCollapsed: boolean;

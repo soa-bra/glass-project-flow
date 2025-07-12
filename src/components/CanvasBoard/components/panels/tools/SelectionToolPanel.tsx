@@ -27,7 +27,7 @@ export const SelectionToolPanel: React.FC<SelectionToolPanelProps> = ({
   const multipleSelection = selectedElements.length > 1;
 
   const handleUngroup = () => {
-    console.log('إلغاء التجميع');
+    // Ungroup logic
   };
 
   const handleLock = () => {
@@ -44,27 +44,27 @@ export const SelectionToolPanel: React.FC<SelectionToolPanelProps> = ({
 
   const handleRotate = () => {
     selectedElements.forEach(element => {
-      console.log('دوران العنصر:', element.id);
+      // Rotate element logic
       // TODO: Implement rotation when CanvasElement type supports it
     });
   };
 
   const handleFlipHorizontal = () => {
     selectedElements.forEach(element => {
-      console.log('قلب أفقي للعنصر:', element.id);
+      // Flip horizontal logic
       // TODO: Implement horizontal flip when CanvasElement type supports it
     });
   };
 
   const handleFlipVertical = () => {
     selectedElements.forEach(element => {
-      console.log('قلب عمودي للعنصر:', element.id);
+      // Flip vertical logic
       // TODO: Implement vertical flip when CanvasElement type supports it
     });
   };
 
   const handleAlign = (type: string) => {
-    console.log('محاذاة:', type);
+    // Alignment logic
   };
 
   return (

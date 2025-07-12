@@ -5,15 +5,14 @@ import {
   HandPanel,
   UploadPanel,
   GridPanel,
-  LayersPanel
+  LayersPanel,
+  SelectionPanel,
+  SmartPenPanel,
+  SmartElementPanel,
+  ZoomPanel,
+  CommentPanel
 } from '../panels';
-import { 
-  EnhancedSelectionPanel,
-  EnhancedSmartPenPanel,
-  EnhancedSmartElementPanel,
-  EnhancedZoomPanel,
-  EnhancedCommentPanel
-} from '../panels/enhanced';
+// Enhanced panels have been removed - using basic panels instead
 import { CanvasElement } from '../types';
 
 interface Layer {
@@ -103,16 +102,12 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
   onGridShapeChange,
   onAlignToGrid
 }) => {
-  console.log('🔧 ToolPanelManager render:', {
-    selectedTool,
-    selectedElementsCount: selectedElements.length,
-    zoom
-  });
+  // Tool panel manager logic
   const renderToolPanel = () => {
     switch (selectedTool) {
       case 'select':
         return (
-          <EnhancedSelectionPanel
+          <SelectionPanel
             selectedElements={selectedElements}
             onUpdateElement={onUpdateElement}
             onCopy={onCopy}
@@ -120,15 +115,6 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
             onPaste={onPaste}
             onDelete={onDelete}
             onGroup={onGroup}
-            onUngroup={() => console.log('إلغاء التجميع')}
-            onLock={() => console.log('قفل')}
-            onUnlock={() => console.log('إلغاء القفل')}
-            onDuplicate={() => console.log('تكرار')}
-            onFlipHorizontal={() => console.log('قلب أفقي')}
-            onFlipVertical={() => console.log('قلب عمودي')}
-            onRotate={(angle) => console.log('دوران:', angle)}
-            onAlign={(type) => console.log('محاذاة:', type)}
-            onDistribute={(type) => console.log('توزيع:', type)}
             layers={layers}
             onLayerReorder={onLayerReorder}
           />
@@ -136,17 +122,10 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
 
       case 'comment':
         return (
-          <EnhancedCommentPanel
-            onAddComment={(text, type, tags) => console.log('تعليق:', text, type, tags)}
-            onToggleCommentPen={() => console.log('تبديل قلم التعليق')}
-            onResolveComment={(id) => console.log('حل تعليق:', id)}
-            onReplyToComment={(id, reply) => console.log('رد:', id, reply)}
+          <CommentPanel
+            onAddComment={(text) => {/* Add comment logic */}}
+            onToggleCommentPen={() => {/* Toggle comment pen logic */}}
             isCommentPenActive={false}
-            isVoiceEnabled={true}
-            comments={[]}
-            collaborators={['محمد', 'فاطمة', 'أحمد']}
-            onToggleVoice={(enabled) => console.log('تبديل الصوت:', enabled)}
-            onMentionUser={(username) => console.log('ذكر:', username)}
           />
         );
 
@@ -154,7 +133,7 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
         return (
           <TextPanel
             onAddText={(type, config) => {
-              console.log('نص:', type, config);
+              // Add text element logic
               // This will be handled by the canvas click event when text tool is selected
             }}
           />
@@ -164,7 +143,7 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
         return (
           <ShapePanel
             onAddShape={(type, data) => {
-              console.log('شكل:', type, data);
+              // Add shape element logic
               // This will be handled by the canvas click/drag event when shape tool is selected
             }}
           />
@@ -172,59 +151,37 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
 
       case 'smart-element':
         return (
-          <EnhancedSmartElementPanel
+          <SmartElementPanel
             onAddSmartElement={(type, config) => {
-              console.log('عنصر ذكي:', type, config);
+              // Add smart element logic
               // This will be handled by canvas click when smart-element tool is selected
             }}
-            onPreviewElement={(type, config) => console.log('معاينة:', type, config)}
-            isAIEnabled={true}
-            onToggleAI={(enabled) => console.log('تبديل الذكاء الاصطناعي:', enabled)}
           />
         );
 
       case 'smart-pen':
         return (
-          <EnhancedSmartPenPanel
+          <SmartPenPanel
             selectedPenMode={selectedPenMode}
             lineWidth={lineWidth}
             lineStyle={lineStyle}
-            penColor="#000000"
-            smoothing={50}
-            snapSensitivity={20}
-            autoGroup={true}
-            smartRecognition={true}
             onPenModeSelect={onPenModeSelect}
             onLineWidthChange={onLineWidthChange}
             onLineStyleChange={onLineStyleChange}
-            onColorChange={(color) => console.log('لون:', color)}
-            onSmoothingChange={(smoothing) => console.log('تنعيم:', smoothing)}
-            onSnapSensitivityChange={(sensitivity) => console.log('حساسية:', sensitivity)}
-            onAutoGroupToggle={(enabled) => console.log('تجميع تلقائي:', enabled)}
-            onSmartRecognitionToggle={(enabled) => console.log('تعرف ذكي:', enabled)}
-            onCalibratePen={() => console.log('معايرة القلم')}
           />
         );
 
       case 'zoom':
         return (
-          <EnhancedZoomPanel
+          <ZoomPanel
             zoom={zoom}
             canvasPosition={canvasPosition}
             panSpeed={panSpeed}
-            smoothZoom={true}
-            zoomToMouse={true}
-            fitPadding={20}
             onZoomChange={onZoomChange}
             onPositionChange={onPositionChange}
             onFitToScreen={onFitToScreen}
-            onFitToSelection={() => console.log('ملاءمة التحديد')}
             onResetView={onResetView}
             onPanSpeedChange={onPanSpeedChange}
-            onSmoothZoomToggle={(enabled) => console.log('زوم سلس:', enabled)}
-            onZoomToMouseToggle={(enabled) => console.log('زوم للماوس:', enabled)}
-            onFitPaddingChange={(padding) => console.log('هامش:', padding)}
-            onCenterOnElement={(id) => console.log('توسيط العنصر:', id)}
           />
         );
 

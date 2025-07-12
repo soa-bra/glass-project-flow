@@ -12,17 +12,17 @@ export const InteractiveCommentsToolPanel: React.FC = () => {
 
   const handleAddComment = () => {
     if (!commentText.trim()) return;
-    console.log('إضافة تعليق:', commentText);
+    // Add comment logic here
     setCommentText('');
   };
 
   const toggleDrawingMode = () => {
     setIsDrawingMode(!isDrawingMode);
-    console.log('تبديل وضع الرسم التوضيحي:', !isDrawingMode);
+    // Toggle drawing mode logic
   };
 
   const clearAllDrawings = () => {
-    console.log('مسح جميع الرسومات التوضيحية');
+    // Clear all annotations logic
   };
 
   return (

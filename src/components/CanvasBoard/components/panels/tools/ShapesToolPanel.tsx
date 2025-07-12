@@ -52,7 +52,7 @@ export const ShapesToolPanel: React.FC = () => {
   ];
 
   const handleShapeSelect = (shapeId: string) => {
-    console.log('تم اختيار الشكل:', shapeId);
+    // Shape selection logic
   };
 
   const renderShapeGrid = (shapes: typeof basicShapes, colorClass: string) => (

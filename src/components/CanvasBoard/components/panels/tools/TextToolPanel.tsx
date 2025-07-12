@@ -26,15 +26,15 @@ export const TextToolPanel: React.FC = () => {
   ];
 
   const handleAddHeading = (level: number) => {
-    console.log(`إضافة عنوان مستوى ${level}`);
+    // Add heading logic
   };
 
   const handleAddParagraph = () => {
-    console.log('إضافة فقرة');
+    // Add paragraph logic
   };
 
   const handleAddList = (type: 'bullet' | 'numbered') => {
-    console.log(`إضافة قائمة ${type === 'bullet' ? 'نقطية' : 'مرقمة'}`);
+    // Add list logic
   };
 
   return (
