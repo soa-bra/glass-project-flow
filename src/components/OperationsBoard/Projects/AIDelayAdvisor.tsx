@@ -1,6 +1,7 @@
-
 import React from 'react';
-import { AlertTriangle, Lightbulb, TrendingUp } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Bot, Lightbulb, AlertTriangle, TrendingUp } from 'lucide-react';
 
 interface AIAdvice {
   id: string;
@@ -16,69 +17,103 @@ interface AIDelayAdvisorProps {
 }
 
 export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
-  const getAdviceIcon = (type: string) => {
+  const getTypeIcon = (type: string) => {
     switch (type) {
       case 'warning':
-        return AlertTriangle;
+        return <AlertTriangle className="h-5 w-5 text-red-500" />;
       case 'suggestion':
-        return Lightbulb;
+        return <Lightbulb className="h-5 w-5 text-yellow-500" />;
       case 'optimization':
-        return TrendingUp;
+        return <TrendingUp className="h-5 w-5 text-green-500" />;
       default:
-        return Lightbulb;
+        return <Bot className="h-5 w-5 text-blue-500" />;
     }
   };
 
-  const getAdviceColor = (type: string) => {
+  const getTypeColor = (type: string) => {
     switch (type) {
       case 'warning':
-        return '#f1b5b9';
+        return 'bg-red-100 text-red-800 border-red-200';
       case 'suggestion':
-        return '#a4e2f6';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'optimization':
-        return '#bdeed3';
+        return 'bg-green-100 text-green-800 border-green-200';
       default:
-        return '#d0e0e2';
+        return 'bg-blue-100 text-blue-800 border-blue-200';
     }
+  };
+
+  const getTypeText = (type: string) => {
+    switch (type) {
+      case 'warning':
+        return 'تحذير';
+      case 'suggestion':
+        return 'اقتراح';
+      case 'optimization':
+        return 'تحسين';
+      default:
+        return 'عام';
+    }
+  };
+
+  const getConfidenceColor = (confidence: number) => {
+    if (confidence >= 90) return 'text-green-600';
+    if (confidence >= 70) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
   return (
-    <div className="p-6 rounded-3xl border border-black/10" style={{ backgroundColor: '#d0e0e2' }}>
-      <div className="mb-6">
-        <h3 className="text-large font-semibold text-black font-arabic">مستشار الذكاء الاصطناعي</h3>
-      </div>
-      <div className="space-y-4">
-        {aiAdvice.map((advice) => {
-          const Icon = getAdviceIcon(advice.type);
-          return (
-            <div 
-              key={advice.id} 
-              className="p-4 rounded-2xl border border-black/10"
-              style={{ backgroundColor: getAdviceColor(advice.type) }}
-            >
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full border border-black/20 bg-transparent flex items-center justify-center">
-                  <Icon className="w-4 h-4 text-black" />
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-sm font-bold text-black font-arabic mb-1">{advice.title}</h4>
-                  <p className="text-sm font-medium text-black font-arabic mb-2">{advice.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-normal text-gray-400 font-arabic">
-                      درجة الثقة: {advice.confidence}%
-                    </span>
-                    {advice.projectId && (
-                      <span className="text-xs font-normal text-gray-400 font-arabic">
-                        المشروع: {advice.projectId}
-                      </span>
-                    )}
+    <Card className="glass-enhanced rounded-[40px]">
+      <CardHeader>
+        <CardTitle className="text-right font-arabic text-lg flex items-center justify-between">
+          <span>مستشار التأخير بالذكاء الاصطناعي</span>
+          <Bot className="h-6 w-6 text-blue-500" />
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-6">
+        <div className="space-y-4 max-h-[400px] overflow-y-auto">
+          {aiAdvice.length === 0 ? (
+            <div className="text-center py-8 text-gray-500 font-arabic">
+              لا توجد توصيات حالياً
+            </div>
+          ) : (
+            aiAdvice.map((advice) => (
+              <div 
+                key={advice.id} 
+                className={`border rounded-lg p-4 ${getTypeColor(advice.type)} transition-all duration-200 hover:shadow-md`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    {getTypeIcon(advice.type)}
+                    <Badge variant="outline" className="font-arabic">
+                      {getTypeText(advice.type)}
+                    </Badge>
+                  </div>
+                  <div className={`text-sm font-semibold ${getConfidenceColor(advice.confidence)}`}>
+                    دقة {advice.confidence}%
                   </div>
                 </div>
+                
+                <h4 className="font-semibold text-gray-800 font-arabic mb-2 text-right">
+                  {advice.title}
+                </h4>
+                
+                <p className="text-gray-700 text-sm font-arabic text-right leading-relaxed">
+                  {advice.description}
+                </p>
+                
+                {advice.projectId && (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <span className="text-xs text-gray-500 font-arabic">
+                      المشروع المتأثر: {advice.projectId}
+                    </span>
+                  </div>
+                )}
               </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+            ))
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
