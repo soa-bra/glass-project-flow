@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, CircleDollarSign, Percent } from 'lucide-react';
-
 interface MarketingKPI {
   id: string;
   title: string;
@@ -10,13 +9,14 @@ interface MarketingKPI {
   format: 'currency' | 'percentage' | 'number';
   trend: 'up' | 'down' | 'stable';
 }
-
 interface MarketingKPIsProps {
   kpis: MarketingKPI[];
   totalROAS: number;
 }
-
-export const MarketingKPIs: React.FC<MarketingKPIsProps> = ({ kpis, totalROAS }) => {
+export const MarketingKPIs: React.FC<MarketingKPIsProps> = ({
+  kpis,
+  totalROAS
+}) => {
   const formatValue = (value: number, format: string) => {
     switch (format) {
       case 'currency':
@@ -27,7 +27,6 @@ export const MarketingKPIs: React.FC<MarketingKPIsProps> = ({ kpis, totalROAS })
         return value.toLocaleString();
     }
   };
-
   const getTrendIcon = (trend: string) => {
     switch (trend) {
       case 'up':
@@ -38,18 +37,15 @@ export const MarketingKPIs: React.FC<MarketingKPIsProps> = ({ kpis, totalROAS })
         return <div className="w-4 h-4 rounded-full bg-gray-400" />;
     }
   };
-
   const getIcon = (id: string) => {
     if (id.includes('cpa') || id.includes('ltv')) {
       return <CircleDollarSign className="w-5 h-5 text-primary" />;
     }
     return <Percent className="w-5 h-5 text-primary" />;
   };
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+  return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
       {/* Total ROAS Card */}
-      <Card className="glass-enhanced rounded-[40px]">
+      <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="text-right">
@@ -62,13 +58,11 @@ export const MarketingKPIs: React.FC<MarketingKPIsProps> = ({ kpis, totalROAS })
       </Card>
 
       {/* KPI Cards */}
-      {kpis.map((kpi) => {
-        const achievementRate = (kpi.value / kpi.target) * 100;
-        const isGood = achievementRate >= 100;
-
-        return (
-          <Card key={kpi.id} className="glass-enhanced rounded-[40px]">
-            <CardContent className="p-4">
+      {kpis.map(kpi => {
+      const achievementRate = kpi.value / kpi.target * 100;
+      const isGood = achievementRate >= 100;
+      return <Card key={kpi.id} className="glass-enhanced rounded-[40px]">
+            <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-right flex-1">
                   <p className="text-sm text-gray-600 leading-tight">{kpi.title}</p>
@@ -93,18 +87,13 @@ export const MarketingKPIs: React.FC<MarketingKPIsProps> = ({ kpis, totalROAS })
 
               <div className="mt-2">
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      isGood ? 'bg-green-500' : 'bg-red-500'
-                    }`}
-                    style={{ width: `${Math.min(achievementRate, 100)}%` }}
-                  />
+                  <div className={`h-2 rounded-full transition-all duration-300 ${isGood ? 'bg-green-500' : 'bg-red-500'}`} style={{
+                width: `${Math.min(achievementRate, 100)}%`
+              }} />
                 </div>
               </div>
             </CardContent>
-          </Card>
-        );
-      })}
-    </div>
-  );
+          </Card>;
+    })}
+    </div>;
 };
