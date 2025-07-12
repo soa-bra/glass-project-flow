@@ -1,6 +1,5 @@
+
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface FinancialKPI {
   id: string;
@@ -23,76 +22,40 @@ export const FinancialKPICards: React.FC<FinancialKPICardsProps> = ({ kpis }) =>
       case 'percentage':
         return `${value}%`;
       default:
-        return value.toLocaleString();
-    }
-  };
-
-  const getTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'up':
-        return <TrendingUp className="h-4 w-4 text-green-600" />;
-      case 'down':
-        return <TrendingDown className="h-4 w-4 text-red-600" />;
-      default:
-        return <Minus className="h-4 w-4 text-gray-500" />;
+        return value.toString();
     }
   };
 
   const getTrendColor = (trend: string) => {
     switch (trend) {
       case 'up':
-        return 'text-green-600';
+        return '#bdeed3'; // أخضر للاتجاه الإيجابي
       case 'down':
-        return 'text-red-600';
+        return '#f1b5b9'; // أحمر للاتجاه السلبي
       default:
-        return 'text-gray-500';
+        return '#d0e0e2'; // اللون الأساسي
     }
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      {kpis.map((kpi) => {
-        const achievementRate = Math.round((kpi.value / kpi.target) * 100);
-        
-        return (
-          <Card key={kpi.id} className="relative overflow-hidden">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-600 font-arabic text-right">
-                  {kpi.title}
-                </h3>
-                {getTrendIcon(kpi.trend)}
-              </div>
-              
-              <div className="space-y-2">
-                <div className="text-2xl font-bold text-gray-900 text-right">
-                  {formatValue(kpi.value, kpi.format)}
-                </div>
-                
-                <div className="flex items-center justify-between text-sm">
-                  <div className={`font-medium ${getTrendColor(kpi.trend)}`}>
-                    {achievementRate}%
-                  </div>
-                  <div className="text-gray-500 font-arabic">
-                    من الهدف: {formatValue(kpi.target, kpi.format)}
-                  </div>
-                </div>
-                
-                {/* شريط التقدم */}
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      achievementRate >= 100 ? 'bg-green-500' : 
-                      achievementRate >= 80 ? 'bg-yellow-500' : 'bg-red-500'
-                    }`}
-                    style={{ width: `${Math.min(achievementRate, 100)}%` }}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {kpis.map((kpi) => (
+        <div 
+          key={kpi.id} 
+          className="p-6 rounded-3xl border border-black/10"
+          style={{ backgroundColor: getTrendColor(kpi.trend) }}
+        >
+          <div className="text-center">
+            <h3 className="text-sm font-bold text-black font-arabic mb-2">{kpi.title}</h3>
+            <div className="text-2xl font-bold text-black font-arabic mb-1">
+              {formatValue(kpi.value, kpi.format)}
+            </div>
+            <div className="text-xs font-normal text-gray-400 font-arabic">
+              الهدف: {formatValue(kpi.target, kpi.format)}
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

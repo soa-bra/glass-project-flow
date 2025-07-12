@@ -1,7 +1,5 @@
+
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
 interface CriticalProject {
   id: string;
@@ -17,92 +15,55 @@ interface MiniGanttChartProps {
   criticalProjects: CriticalProject[];
 }
 
-const chartConfig = {
-  progress: {
-    label: "التقدم",
-    color: "hsl(var(--chart-1))",
-  },
-};
-
 export const MiniGanttChart: React.FC<MiniGanttChartProps> = ({ criticalProjects }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'on-track':
-        return 'hsl(142, 76%, 36%)';
+        return '#bdeed3';
       case 'at-risk':
-        return 'hsl(48, 96%, 53%)';
+        return '#fbe2aa';
       case 'delayed':
-        return 'hsl(0, 84%, 60%)';
+        return '#f1b5b9';
       default:
-        return 'hsl(var(--chart-1))';
+        return '#d0e0e2';
     }
   };
 
-  const formatProgress = (progress: number) => `${progress}%`;
-
   return (
-    <Card className="glass-enhanced rounded-[40px]">
-      <CardHeader>
-        <CardTitle className="text-right font-arabic text-lg">
-          أعلى 10 مشاريع حرجة (Gantt مصغر)
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-6">
-        <ChartContainer config={chartConfig} className="h-[400px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart 
-              data={criticalProjects.slice(0, 10)} 
-              layout="horizontal"
-              margin={{ top: 5, right: 30, left: 5, bottom: 5 }}
-            >
-              <XAxis 
-                type="number" 
-                domain={[0, 100]}
-                tick={{ fontSize: 12 }}
-                tickFormatter={formatProgress}
-              />
-              <YAxis 
-                type="category" 
-                dataKey="name" 
-                tick={{ fontSize: 11 }}
-                width={120}
-              />
-              <ChartTooltip 
-                content={
-                  <ChartTooltipContent 
-                    formatter={(value: number, name: string) => [
-                      `${value}%`,
-                      'التقدم'
-                    ]}
-                    labelFormatter={(label) => `المشروع: ${label}`}
-                  />
-                }
-              />
-              <Bar 
-                dataKey="progress" 
-                fill="hsl(var(--primary))"
-                radius={[0, 4, 4, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartContainer>
-        
-        {/* مفتاح الألوان */}
-        <div className="flex justify-center mt-4 space-x-4 space-x-reverse text-sm">
-          <div className="flex items-center space-x-2 space-x-reverse">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="font-arabic">في المسار</span>
+    <div className="p-6 rounded-3xl border border-black/10" style={{ backgroundColor: '#d0e0e2' }}>
+      <div className="mb-6">
+        <h3 className="text-large font-semibold text-black font-arabic">المشاريع الحرجة</h3>
+      </div>
+      <div className="space-y-4">
+        {criticalProjects.map((project) => (
+          <div key={project.id} className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-bold text-black font-arabic">{project.name}</span>
+              <span 
+                className="px-3 py-1 rounded-full text-xs font-normal text-black"
+                style={{ backgroundColor: getStatusColor(project.status) }}
+              >
+                {project.status === 'on-track' ? 'في المسار' : 
+                 project.status === 'at-risk' ? 'معرض للخطر' : 'متأخر'}
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="h-2 rounded-full transition-all duration-300" 
+                style={{ 
+                  width: `${project.progress}%`,
+                  backgroundColor: getStatusColor(project.status)
+                }}
+              ></div>
+            </div>
+            <div className="flex justify-between text-xs font-normal text-gray-400 font-arabic">
+              <span>{project.startDate}</span>
+              <span>{project.progress}%</span>
+              <span>{project.endDate}</span>
+            </div>
           </div>
-          <div className="flex items-center space-x-2 space-x-reverse">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <span className="font-arabic">في خطر</span>
-          </div>
-          <div className="flex items-center space-x-2 space-x-reverse">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <span className="font-arabic">متأخر</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        ))}
+      </div>
+    </div>
   );
 };

@@ -45,14 +45,14 @@ interface FinanceTabProps {
 
 export const FinanceTab: React.FC<FinanceTabProps> = ({ data, loading }) => {
   if (loading || !data) {
-    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
+    return <div className="h-full flex items-center justify-center text-sm font-normal text-black font-arabic">جارٍ التحميل...</div>;
   }
 
   return (
-    <div className="space-y-6 h-full overflow-auto">
+    <div className="space-y-6 h-full overflow-auto px-4">
       <div className="text-right">
-        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">الوضع المالي</h2>
-        <p className="text-gray-600 text-sm">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
+        <h2 className="text-large font-semibold text-black font-arabic mb-1">الوضع المالي</h2>
+        <p className="text-sm font-normal text-black font-arabic">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
       </div>
       
       {/* مؤشرات الأداء المالي الرئيسية */}
@@ -66,7 +66,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({ data, loading }) => {
       
       {/* أدوات التصدير والتحليل */}
       <div className="flex justify-between items-center pt-4">
-        <div className="text-sm text-gray-600 font-arabic">
+        <div className="text-sm font-normal text-black font-arabic">
           دقة التنبؤات: {data.forecastAccuracy}%
         </div>
         <ExportButton />

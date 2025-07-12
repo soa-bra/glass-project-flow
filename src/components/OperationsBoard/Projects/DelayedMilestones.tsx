@@ -1,7 +1,5 @@
+
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Clock } from 'lucide-react';
 
 interface DelayedMilestone {
   id: string;
@@ -21,78 +19,44 @@ export const DelayedMilestones: React.FC<DelayedMilestonesProps> = ({ delayedMil
   const getImpactColor = (impact: string) => {
     switch (impact) {
       case 'high':
-        return 'bg-red-100 text-red-800';
+        return '#f1b5b9';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return '#fbe2aa';
       case 'low':
-        return 'bg-blue-100 text-blue-800';
+        return '#bdeed3';
       default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getImpactText = (impact: string) => {
-    switch (impact) {
-      case 'high':
-        return 'تأثير عالي';
-      case 'medium':
-        return 'تأثير متوسط';
-      case 'low':
-        return 'تأثير منخفض';
-      default:
-        return 'غير محدد';
+        return '#d0e0e2';
     }
   };
 
   return (
-    <Card className="glass-enhanced rounded-[40px]">
-      <CardHeader>
-        <CardTitle className="text-right font-arabic text-lg flex items-center justify-between">
-          <span>المعالم المتأخرة</span>
-          <AlertTriangle className="h-5 w-5 text-red-500" />
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-6">
-        <div className="space-y-4 max-h-[350px] overflow-y-auto">
-          {delayedMilestones.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 font-arabic">
-              لا توجد معالم متأخرة حالياً
-            </div>
-          ) : (
-            delayedMilestones.map((milestone) => (
-              <div 
-                key={milestone.id} 
-                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <div className="text-right flex-1">
-                    <h4 className="font-semibold text-gray-800 font-arabic mb-1">
-                      {milestone.milestone}
-                    </h4>
-                    <p className="text-sm text-gray-600 font-arabic">
-                      المشروع: {milestone.projectName}
-                    </p>
-                  </div>
-                  <Badge className={getImpactColor(milestone.impact)}>
-                    {getImpactText(milestone.impact)}
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center justify-between text-sm text-gray-500 mt-3">
-                  <div className="flex items-center space-x-1 space-x-reverse">
-                    <Clock className="h-4 w-4" />
-                    <span className="font-arabic">متأخر {milestone.delayDays} أيام</span>
-                  </div>
-                  <div className="text-left">
-                    <div className="font-arabic">الموعد الأصلي: {milestone.originalDate}</div>
-                    <div className="font-arabic">الموعد الحالي: {milestone.currentDate}</div>
-                  </div>
-                </div>
+    <div className="p-6 rounded-3xl border border-black/10" style={{ backgroundColor: '#d0e0e2' }}>
+      <div className="mb-6">
+        <h3 className="text-large font-semibold text-black font-arabic">المعالم المتأخرة</h3>
+      </div>
+      <div className="space-y-4">
+        {delayedMilestones.map((milestone) => (
+          <div key={milestone.id} className="p-4 rounded-2xl bg-white/50 border border-black/10">
+            <div className="flex justify-between items-start mb-2">
+              <div>
+                <h4 className="text-sm font-bold text-black font-arabic">{milestone.projectName}</h4>
+                <p className="text-sm font-medium text-black font-arabic">{milestone.milestone}</p>
               </div>
-            ))
-          )}
-        </div>
-      </CardContent>
-    </Card>
+              <span 
+                className="px-3 py-1 rounded-full text-xs font-normal text-black"
+                style={{ backgroundColor: getImpactColor(milestone.impact) }}
+              >
+                {milestone.impact === 'high' ? 'تأثير عالي' : 
+                 milestone.impact === 'medium' ? 'تأثير متوسط' : 'تأثير منخفض'}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs font-normal text-gray-400 font-arabic">
+              <span>التاريخ الأصلي: {milestone.originalDate}</span>
+              <span>متأخر {milestone.delayDays} يوم</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
