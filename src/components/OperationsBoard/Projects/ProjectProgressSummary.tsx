@@ -34,7 +34,7 @@ export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({
 
       {/* المشاريع في المسار */}
       <Card className="glass-enhanced rounded-[40px]">
-        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
+        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff] py-[10px]">
           <div className="flex items-center justify-between mb-2">
             <div className="text-right">
               <p className="text-sm text-gray-600">في المسار</p>
@@ -51,7 +51,7 @@ export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({
 
       {/* المشاريع في خطر */}
       <Card className="glass-enhanced rounded-[40px]">
-        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
+        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff] py-[10px]">
           <div className="flex items-center justify-between mb-2">
             <div className="text-right">
               <p className="text-sm text-gray-600">في خطر</p>
@@ -68,7 +68,7 @@ export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({
 
       {/* المشاريع المتأخرة */}
       <Card className="glass-enhanced rounded-[40px]">
-        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
+        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff] py-[10px]">
           <div className="flex items-center justify-between mb-2">
             <div className="text-right">
               <p className="text-sm text-gray-600">متأخرة</p>
@@ -84,7 +84,7 @@ export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({
       </Card>
 
       {/* معدل الإنجاز الإجمالي */}
-      <Card className="glass-enhanced rounded-[40px] col-span-full">
+      <Card className="glass-enhanced rounded-[40px] col-span-full my-0 py-[20px]">
         <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
           <div className="text-right mb-4">
             <h3 className="text-lg font-semibold text-gray-800 font-arabic">معدل الإنجاز الإجمالي</h3>
