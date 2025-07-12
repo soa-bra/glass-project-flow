@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { CanvasElement } from '../types';
+import { TOOL_KEYBOARD_SHORTCUTS } from '../constants';
 
 interface UseKeyboardControlsProps {
   selectedElementId: string | null;

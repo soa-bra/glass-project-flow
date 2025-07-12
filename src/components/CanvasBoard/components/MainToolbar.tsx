@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { MAIN_TOOLBAR_TOOLS } from '../constants';
+import { ShortcutIndicator } from './ShortcutIndicator';
 
 interface MainToolbarProps {
   selectedTool: string;
@@ -58,7 +59,15 @@ const MainToolbar: React.FC<MainToolbarProps> = ({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="top" className="bg-black text-white">
-              <p className="text-sm">{tooltipContent}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm">{tool.label}</p>
+                {tool.shortcut && (
+                  <ShortcutIndicator 
+                    shortcut={tool.shortcut} 
+                    className="bg-white/20 text-white border-white/30" 
+                  />
+                )}
+              </div>
               {tool.description && (
                 <p className="text-xs text-gray-300 mt-1 max-w-60">{tool.description}</p>
               )}

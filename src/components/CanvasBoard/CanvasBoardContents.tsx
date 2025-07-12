@@ -1,11 +1,13 @@
 
 import React from 'react';
 import { useEnhancedCanvasState } from './hooks/useEnhancedCanvasState';
+import { useToolShortcuts } from './hooks/useToolShortcuts';
 import { CanvasBoardContentsProps } from './types';
 import { DefaultView } from './components';
 import { useCanvasEventHandlers } from './components/CanvasEventHandlers';
 import { CleanCanvasPanelLayout } from './components/CleanCanvasPanelLayout';
 import { CanvasWrapper } from './components/CanvasWrapper';
+import { ShortcutNotification } from './components/ShortcutNotification';
 import { useCanvasCollaboration } from '@/hooks/useCanvasCollaboration';
 
 const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
@@ -14,6 +16,13 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
 }) => {
   // Initialize enhanced canvas state
   const canvasState = useEnhancedCanvasState(projectId, userId);
+  
+  // Initialize tool shortcuts
+  const toolShortcuts = useToolShortcuts({
+    selectedTool: canvasState.selectedTool,
+    onToolSelect: canvasState.setSelectedTool,
+    disabled: canvasState.showDefaultView
+  });
   
   // Initialize collaboration features
   const collaboration = useCanvasCollaboration({
@@ -126,6 +135,14 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         onNew={() => {}}
         onOpen={() => {}}
         onSmartProjectGenerate={() => {}}
+      />
+      
+      {/* إشعارات الاختصارات */}
+      <ShortcutNotification
+        toolName={toolShortcuts.notification.toolName}
+        shortcut={toolShortcuts.notification.shortcut}
+        show={toolShortcuts.notification.show}
+        onHide={toolShortcuts.hideNotification}
       />
     </div>
   );

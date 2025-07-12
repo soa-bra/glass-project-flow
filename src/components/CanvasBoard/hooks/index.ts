@@ -4,6 +4,7 @@ export { useCanvasElements } from './useCanvasElements';
 export { useCanvasInteraction } from './useCanvasInteraction';
 export { useEnhancedCanvasState } from './useEnhancedCanvasState';
 export { useKeyboardControls } from './useKeyboardControls';
+export { useToolShortcuts } from './useToolShortcuts';
 
 // Refactored focused hooks
 export { useCanvasBasicState } from './useCanvasBasicState';
