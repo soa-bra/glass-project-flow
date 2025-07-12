@@ -11,6 +11,12 @@ export { TextToolPanel } from './TextToolPanel';
 export { ShapesToolPanel } from './ShapesToolPanel';
 export { SmartElementsToolPanel } from './SmartElementsToolPanel';
 
+// Export additional components
+export { ShortcutIndicator } from '../../ShortcutIndicator';
+export { ShortcutsPanel } from '../../ShortcutsPanel';
+export { ShortcutNotification } from '../../ShortcutNotification';
+export { ShortcutsStatusBar } from '../../ShortcutsStatusBar';
+
 // Mapping of tool IDs to their corresponding panel names
 export const TOOL_PANEL_MAPPING = {
   'select': 'SelectionToolPanel',
