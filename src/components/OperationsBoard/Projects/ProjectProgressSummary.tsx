@@ -84,14 +84,14 @@ export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({
       </Card>
 
       {/* معدل الإنجاز الإجمالي */}
-      <Card className="glass-enhanced rounded-[40px] col-span-full my-0 py-0">
+      <Card className="glass-enhanced rounded-[40px] col-span-full my-0 py-[20px]">
         <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
           <div className="text-right mb-4">
             <h3 className="text-lg font-semibold text-gray-800 font-arabic">معدل الإنجاز الإجمالي</h3>
             <p className="text-3xl font-bold text-primary">{summary.completionRate}%</p>
           </div>
           <Progress value={summary.completionRate} className="h-3" />
-          <div className="grid grid-cols-0 gap-4 text-sm mt-0 my-0 text-center">
+          <div className="grid grid-cols-3 gap-4 text-center text-sm mt-4">
             <div>
               <p className="text-green-600 font-bold">{summary.onTrack}</p>
               <p className="text-gray-600">في المسار</p>
