@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Heart, AlertTriangle, Meh, Calendar, Phone, Mail } from 'lucide-react';
-
 interface SentimentData {
   clientId: string;
   clientName: string;
@@ -12,12 +11,12 @@ interface SentimentData {
   lastInteraction: string;
   riskLevel: 'low' | 'medium' | 'high';
 }
-
 interface ClientSentimentProps {
   sentimentData: SentimentData[];
 }
-
-export const ClientSentiment: React.FC<ClientSentimentProps> = ({ sentimentData }) => {
+export const ClientSentiment: React.FC<ClientSentimentProps> = ({
+  sentimentData
+}) => {
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
       case 'positive':
@@ -28,7 +27,6 @@ export const ClientSentiment: React.FC<ClientSentimentProps> = ({ sentimentData 
         return <Meh className="w-5 h-5 text-yellow-500" />;
     }
   };
-
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
       case 'positive':
@@ -39,7 +37,6 @@ export const ClientSentiment: React.FC<ClientSentimentProps> = ({ sentimentData 
         return 'bg-yellow-100 text-yellow-800';
     }
   };
-
   const getSentimentText = (sentiment: string) => {
     switch (sentiment) {
       case 'positive':
@@ -50,7 +47,6 @@ export const ClientSentiment: React.FC<ClientSentimentProps> = ({ sentimentData 
         return 'محايد';
     }
   };
-
   const getRiskColor = (riskLevel: string) => {
     switch (riskLevel) {
       case 'high':
@@ -63,7 +59,6 @@ export const ClientSentiment: React.FC<ClientSentimentProps> = ({ sentimentData 
         return 'bg-gray-100 text-gray-800';
     }
   };
-
   const getRiskText = (riskLevel: string) => {
     switch (riskLevel) {
       case 'high':
@@ -76,15 +71,12 @@ export const ClientSentiment: React.FC<ClientSentimentProps> = ({ sentimentData 
         return 'غير محدد';
     }
   };
-
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
     return 'text-red-600';
   };
-
-  return (
-    <Card className="glass-enhanced rounded-[40px]">
+  return <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
       <CardHeader>
         <CardTitle className="text-right font-arabic flex items-center gap-2">
           <Heart className="w-5 h-5" />
@@ -93,8 +85,7 @@ export const ClientSentiment: React.FC<ClientSentimentProps> = ({ sentimentData 
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sentimentData.map((client) => (
-            <div key={client.clientId} className="bg-white/20 rounded-2xl p-4 hover:bg-white/30 transition-colors">
+          {sentimentData.map(client => <div key={client.clientId} className="bg-white/20 rounded-2xl p-4 hover:bg-white/30 transition-colors">
               <div className="flex items-start justify-between mb-3">
                 <div className="text-right flex-1">
                   <h4 className="font-medium text-sm">{client.clientName}</h4>
@@ -122,13 +113,9 @@ export const ClientSentiment: React.FC<ClientSentimentProps> = ({ sentimentData 
 
               <div className="space-y-2">
                 <div className="bg-gray-200 h-2 rounded-full">
-                  <div 
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      client.score >= 80 ? 'bg-green-500' : 
-                      client.score >= 60 ? 'bg-yellow-500' : 'bg-red-500'
-                    }`}
-                    style={{ width: `${client.score}%` }}
-                  />
+                  <div className={`h-2 rounded-full transition-all duration-300 ${client.score >= 80 ? 'bg-green-500' : client.score >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`} style={{
+                width: `${client.score}%`
+              }} />
                 </div>
 
                 <div className="flex gap-2">
@@ -143,15 +130,12 @@ export const ClientSentiment: React.FC<ClientSentimentProps> = ({ sentimentData 
                 </div>
               </div>
 
-              {client.riskLevel === 'high' && (
-                <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-lg">
+              {client.riskLevel === 'high' && <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-lg">
                   <p className="text-xs text-red-700 text-right">
                     ⚠️ يتطلب متابعة عاجلة - خطر فقدان العميل
                   </p>
-                </div>
-              )}
-            </div>
-          ))}
+                </div>}
+            </div>)}
         </div>
 
         <div className="mt-6 border-t pt-4">
@@ -177,6 +161,5 @@ export const ClientSentiment: React.FC<ClientSentimentProps> = ({ sentimentData 
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };

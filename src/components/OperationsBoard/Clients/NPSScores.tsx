@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Star, TrendingUp, MessageCircle } from 'lucide-react';
-
 interface NPSScore {
   id: number;
   score: number;
@@ -12,19 +10,18 @@ interface NPSScore {
   feedback?: string;
   date: string;
 }
-
 interface NPSScoresProps {
   nps: NPSScore[];
 }
-
-export const NPSScores: React.FC<NPSScoresProps> = ({ nps }) => {
+export const NPSScores: React.FC<NPSScoresProps> = ({
+  nps
+}) => {
   const getNPSColor = (score: number): string => {
     if (score >= 90) return 'bg-green-500';
     if (score >= 75) return 'bg-green-400';
     if (score >= 60) return 'bg-yellow-400';
     return 'bg-red-500';
   };
-
   const getNPSRating = (score: number): string => {
     if (score >= 90) return 'ممتاز';
     if (score >= 75) return 'جيد جداً';
@@ -32,7 +29,6 @@ export const NPSScores: React.FC<NPSScoresProps> = ({ nps }) => {
     if (score >= 40) return 'مقبول';
     return 'ضعيف';
   };
-
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'promoter':
@@ -45,7 +41,6 @@ export const NPSScores: React.FC<NPSScoresProps> = ({ nps }) => {
         return 'bg-gray-100 text-gray-800';
     }
   };
-
   const getCategoryText = (category: string) => {
     switch (category) {
       case 'promoter':
@@ -58,11 +53,8 @@ export const NPSScores: React.FC<NPSScoresProps> = ({ nps }) => {
         return 'غير محدد';
     }
   };
-
   const averageNPS = nps.length > 0 ? Math.round(nps.reduce((sum, item) => sum + item.score, 0) / nps.length) : 0;
-
-  return (
-    <Card className="glass-enhanced rounded-[40px]">
+  return <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
       <CardHeader>
         <CardTitle className="text-right font-arabic flex items-center gap-2">
           <Star className="w-5 h-5" />
@@ -80,18 +72,16 @@ export const NPSScores: React.FC<NPSScoresProps> = ({ nps }) => {
             </div>
             <div className="flex items-center gap-2">
               <TrendingUp className="w-8 h-8 text-green-500" />
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: getNPSColor(averageNPS) }}></div>
+              <div className="w-4 h-4 rounded-full" style={{
+              backgroundColor: getNPSColor(averageNPS)
+            }}></div>
             </div>
           </div>
         </div>
 
         {/* قائمة العملاء */}
         <div className="space-y-3 max-h-[400px] overflow-y-auto">
-          {nps.map(item => (
-            <div 
-              key={item.id}
-              className="bg-white/20 rounded-2xl p-4 transition-all duration-200 hover:bg-white/30"
-            >
+          {nps.map(item => <div key={item.id} className="bg-white/20 rounded-2xl p-4 transition-all duration-200 hover:bg-white/30">
               <div className="flex items-start justify-between mb-2">
                 <div className="text-right flex-1">
                   <h4 className="font-medium text-sm">{item.client}</h4>
@@ -105,26 +95,19 @@ export const NPSScores: React.FC<NPSScoresProps> = ({ nps }) => {
                 </div>
               </div>
               
-              {item.feedback && (
-                <div className="flex items-start gap-2 mt-3 p-2 bg-white/20 rounded-lg">
+              {item.feedback && <div className="flex items-start gap-2 mt-3 p-2 bg-white/20 rounded-lg">
                   <MessageCircle className="w-4 h-4 text-gray-500 mt-0.5" />
                   <p className="text-xs text-gray-700 leading-relaxed">{item.feedback}</p>
-                </div>
-              )}
+                </div>}
               
               <div className="mt-3 bg-gray-200 h-2 rounded-full">
-                <div 
-                  className={`h-2 rounded-full transition-all duration-300`}
-                  style={{ 
-                    width: `${item.score}%`,
-                    backgroundColor: getNPSColor(item.score)
-                  }}
-                ></div>
+                <div className={`h-2 rounded-full transition-all duration-300`} style={{
+              width: `${item.score}%`,
+              backgroundColor: getNPSColor(item.score)
+            }}></div>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
