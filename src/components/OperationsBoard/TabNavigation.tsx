@@ -2,6 +2,8 @@
 import React from 'react';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { TabItem } from './types';
+import { RefreshCw, Settings } from 'lucide-react';
+import { CircularIconButton } from '@/components/ui/CircularIconButton';
 
 interface TabNavigationProps {
   tabItems: TabItem[];
@@ -22,12 +24,18 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   return (
     <div className="w-full overflow-x-auto overflow-y-hidden no-scrollbar px-0 flex items-center justify-between" dir="rtl">
       <div className="flex gap-2">
-        <button className="w-8 h-8 rounded-full border border-black/20 flex items-center justify-center hover:bg-black/10">
-          <span className="text-sm text-black">🔄</span>
-        </button>
-        <button className="w-8 h-8 rounded-full border border-black/20 flex items-center justify-center hover:bg-black/10">
-          <span className="text-sm text-black">🎨</span>
-        </button>
+        <CircularIconButton 
+          icon={RefreshCw} 
+          size="sm"
+          variant="default"
+          onClick={() => window.location.reload()}
+        />
+        <CircularIconButton 
+          icon={Settings} 
+          size="sm"
+          variant="default"
+          onClick={() => console.log('Settings clicked')}
+        />
       </div>
       
       <AnimatedTabs 
