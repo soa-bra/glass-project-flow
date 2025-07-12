@@ -5,7 +5,6 @@ import { Progress } from '@/components/ui/progress';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Users, Star } from 'lucide-react';
-
 interface ResourceUtilization {
   employeeId: string;
   name: string;
@@ -16,28 +15,25 @@ interface ResourceUtilization {
   skills: string[];
   performance: number;
 }
-
 interface ResourceHeatMapProps {
   resourceData: ResourceUtilization[];
 }
-
-export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({ resourceData }) => {
+export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({
+  resourceData
+}) => {
   const getUtilizationColor = (utilization: number) => {
     if (utilization >= 90) return 'bg-red-500';
     if (utilization >= 80) return 'bg-yellow-500';
     if (utilization >= 60) return 'bg-green-500';
     return 'bg-blue-500';
   };
-
   const getUtilizationText = (utilization: number) => {
     if (utilization >= 90) return 'مرهق';
     if (utilization >= 80) return 'مثقل';
     if (utilization >= 60) return 'مثالي';
     return 'متاح';
   };
-
-  return (
-    <Card className="glass-enhanced rounded-[40px]">
+  return <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
       <CardHeader>
         <CardTitle className="text-right font-arabic flex items-center gap-2">
           <Users className="w-5 h-5" />
@@ -46,8 +42,7 @@ export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({ resourceData }
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {resourceData.map((resource) => (
-            <div key={resource.employeeId} className="bg-white/20 rounded-2xl p-4">
+          {resourceData.map(resource => <div key={resource.employeeId} className="bg-white/20 rounded-2xl p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-right">
                   <h4 className="font-medium">{resource.name}</h4>
@@ -73,43 +68,32 @@ export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({ resourceData }
                 <div>
                   <p className="text-xs text-gray-600 mb-1">المشاريع:</p>
                   <div className="flex flex-wrap gap-1">
-                    {resource.projects.slice(0, 2).map((project, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
+                    {resource.projects.slice(0, 2).map((project, idx) => <Badge key={idx} variant="outline" className="text-xs">
                         {project}
-                      </Badge>
-                    ))}
-                    {resource.projects.length > 2 && (
-                      <Badge variant="outline" className="text-xs">
+                      </Badge>)}
+                    {resource.projects.length > 2 && <Badge variant="outline" className="text-xs">
                         +{resource.projects.length - 2}
-                      </Badge>
-                    )}
+                      </Badge>}
                   </div>
                 </div>
                 
                 <div>
                   <p className="text-xs text-gray-600 mb-1">المهارات:</p>
                   <div className="flex flex-wrap gap-1">
-                    {resource.skills.slice(0, 2).map((skill, idx) => (
-                      <Badge key={idx} variant="secondary" className="text-xs">
+                    {resource.skills.slice(0, 2).map((skill, idx) => <Badge key={idx} variant="secondary" className="text-xs">
                         {skill}
-                      </Badge>
-                    ))}
-                    {resource.skills.length > 2 && (
-                      <Badge variant="secondary" className="text-xs">
+                      </Badge>)}
+                    {resource.skills.length > 2 && <Badge variant="secondary" className="text-xs">
                         +{resource.skills.length - 2}
-                      </Badge>
-                    )}
+                      </Badge>}
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 interface SkillGap {
   skill: string;
   current: number;
@@ -117,23 +101,22 @@ interface SkillGap {
   gap: number;
   priority: 'high' | 'medium' | 'low';
 }
-
 interface SkillGapRadarProps {
   skillGaps: SkillGap[];
 }
-
-export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({ skillGaps }) => {
+export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({
+  skillGaps
+}) => {
   const chartConfig = {
     current: {
       label: "المستوى الحالي",
-      color: "hsl(var(--primary))",
+      color: "hsl(var(--primary))"
     },
     required: {
       label: "المستوى المطلوب",
-      color: "hsl(var(--secondary))",
-    },
+      color: "hsl(var(--secondary))"
+    }
   };
-
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
@@ -146,7 +129,6 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({ skillGaps }) => {
         return 'bg-gray-100 text-gray-800';
     }
   };
-
   const getPriorityText = (priority: string) => {
     switch (priority) {
       case 'high':
@@ -159,9 +141,7 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({ skillGaps }) => {
         return priority;
     }
   };
-
-  return (
-    <Card className="glass-enhanced rounded-[40px]">
+  return <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
       <CardHeader>
         <CardTitle className="text-right font-arabic">تحليل فجوات المهارات</CardTitle>
       </CardHeader>
@@ -170,8 +150,12 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({ skillGaps }) => {
           <ResponsiveContainer width="100%" height={300}>
             <RadarChart data={skillGaps}>
               <PolarGrid />
-              <PolarAngleAxis dataKey="skill" tick={{ fontSize: 12 }} />
-              <PolarRadiusAxis domain={[0, 10]} tick={{ fontSize: 10 }} />
+              <PolarAngleAxis dataKey="skill" tick={{
+              fontSize: 12
+            }} />
+              <PolarRadiusAxis domain={[0, 10]} tick={{
+              fontSize: 10
+            }} />
               <Radar name="الحالي" dataKey="current" stroke="var(--color-current)" fill="var(--color-current)" fillOpacity={0.3} />
               <Radar name="المطلوب" dataKey="required" stroke="var(--color-required)" fill="var(--color-required)" fillOpacity={0.3} />
               <Tooltip content={<ChartTooltipContent />} />
@@ -180,8 +164,7 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({ skillGaps }) => {
         </ChartContainer>
 
         <div className="mt-4 space-y-3">
-          {skillGaps.map((skill, index) => (
-            <div key={index} className="flex items-center justify-between p-3 bg-white/20 rounded-2xl">
+          {skillGaps.map((skill, index) => <div key={index} className="flex items-center justify-between p-3 bg-white/20 rounded-2xl">
               <div className="text-right">
                 <p className="font-medium text-sm">{skill.skill}</p>
                 <p className="text-xs text-gray-600">
@@ -197,55 +180,50 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({ skillGaps }) => {
                   <p className="font-bold">{skill.current}/{skill.required}</p>
                 </div>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 interface WorkloadData {
   department: string;
   current: number;
   capacity: number;
   efficiency: number;
 }
-
 interface WorkloadBalanceProps {
   workloadData: WorkloadData[];
 }
-
-export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({ workloadData }) => {
+export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({
+  workloadData
+}) => {
   const chartConfig = {
     current: {
       label: "الحمولة الحالية",
-      color: "hsl(var(--primary))",
+      color: "hsl(var(--primary))"
     },
     capacity: {
       label: "السعة الكاملة",
-      color: "hsl(var(--secondary))",
-    },
+      color: "hsl(var(--secondary))"
+    }
   };
-
-  return (
-    <Card className="glass-enhanced rounded-[40px]">
+  return <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
       <CardHeader>
         <CardTitle className="text-right font-arabic">توازن أعباء العمل</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={workloadData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <BarChart data={workloadData} margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5
+          }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="department" 
-                tick={{ fontSize: 12 }}
-                interval={0}
-                angle={-45}
-                textAnchor="end"
-                height={80}
-              />
+              <XAxis dataKey="department" tick={{
+              fontSize: 12
+            }} interval={0} angle={-45} textAnchor="end" height={80} />
               <YAxis />
               <Tooltip content={<ChartTooltipContent />} />
               <Bar dataKey="current" fill="var(--color-current)" radius={[4, 4, 0, 0]} />
@@ -256,11 +234,9 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({ workloadData }
 
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {workloadData.map((dept, index) => {
-            const utilizationRate = (dept.current / dept.capacity) * 100;
-            const isOverloaded = utilizationRate > 90;
-
-            return (
-              <div key={index} className="bg-white/20 rounded-2xl p-4">
+          const utilizationRate = dept.current / dept.capacity * 100;
+          const isOverloaded = utilizationRate > 90;
+          return <div key={index} className="bg-white/20 rounded-2xl p-4">
                 <div className="text-right mb-2">
                   <h4 className="font-medium text-sm">{dept.department}</h4>
                   <p className="text-xs text-gray-600">كفاءة: {dept.efficiency}%</p>
@@ -273,10 +249,7 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({ workloadData }
                     </span>
                     <span>{dept.current}/{dept.capacity}</span>
                   </div>
-                  <Progress 
-                    value={utilizationRate} 
-                    className={`h-2 ${isOverloaded ? 'bg-red-100' : ''}`}
-                  />
+                  <Progress value={utilizationRate} className={`h-2 ${isOverloaded ? 'bg-red-100' : ''}`} />
                 </div>
 
                 <div className="mt-2 text-center">
@@ -284,11 +257,9 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({ workloadData }
                     {isOverloaded ? 'مرهق' : 'طبيعي'}
                   </Badge>
                 </div>
-              </div>
-            );
-          })}
+              </div>;
+        })}
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
