@@ -63,23 +63,24 @@ export const MarketingTab: React.FC<MarketingTabProps> = ({ data, loading }) => 
   }
 
   return (
-    <div className="space-y-6 h-full overflow-auto">
-      <div className="text-right">
-        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">التسويق</h2>
-        <p className="text-gray-600 text-sm">ربط الاستثمار التسويقي بأداء المشاريع</p>
+    <div className="font-arabic px-[15px] py-0">
+      {/* مؤشرات الأداء التسويقية */}
+      <div className="mb-6 py-0 px-0 my-0">
+        <MarketingKPIs kpis={data.kpis} totalROAS={data.totalROAS} />
       </div>
       
-      {/* مؤشرات الأداء التسويقية */}
-      <MarketingKPIs kpis={data.kpis} totalROAS={data.totalROAS} />
-      
       {/* الرسوم البيانية الأساسية */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <MarketingROAS roasData={data.roasData} />
-        <AttributionChart attribution={data.attribution} />
+      <div className="mb-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <MarketingROAS roasData={data.roasData} />
+          <AttributionChart attribution={data.attribution} />
+        </div>
       </div>
       
       {/* الحملات النشطة */}
-      <ActiveCampaigns campaigns={data.campaigns} />
+      <div className="py-0">
+        <ActiveCampaigns campaigns={data.campaigns} />
+      </div>
     </div>
   );
 };

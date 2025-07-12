@@ -59,23 +59,24 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
   }
 
   return (
-    <div className="space-y-6 h-full overflow-auto">
-      <div className="text-right">
-        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">إدارة المشاريع</h2>
-        <p className="text-gray-600 text-sm">تتبع التقدم الإجمالي ومعالجة الانحرافات</p>
+    <div className="font-arabic px-[15px] py-0">
+      {/* ملخص التقدم الإجمالي */}
+      <div className="mb-6 py-0 px-0 my-0">
+        <ProjectProgressSummary summary={data.summary} />
       </div>
       
-      {/* ملخص التقدم الإجمالي */}
-      <ProjectProgressSummary summary={data.summary} />
-      
       {/* الرسوم البيانية الأساسية */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <MiniGanttChart criticalProjects={data.criticalProjects} />
-        <DelayedMilestones delayedMilestones={data.delayedMilestones} />
+      <div className="mb-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <MiniGanttChart criticalProjects={data.criticalProjects} />
+          <DelayedMilestones delayedMilestones={data.delayedMilestones} />
+        </div>
       </div>
       
       {/* مستشار التأخير بالذكاء الاصطناعي */}
-      <AIDelayAdvisor aiAdvice={data.aiAdvice} />
+      <div className="py-0">
+        <AIDelayAdvisor aiAdvice={data.aiAdvice} />
+      </div>
     </div>
   );
 };

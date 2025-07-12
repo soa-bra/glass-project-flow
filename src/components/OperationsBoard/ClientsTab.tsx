@@ -57,23 +57,24 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({ data, loading }) => {
   }
 
   return (
-    <div className="space-y-6 h-full overflow-auto">
-      <div className="text-right">
-        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">علاقات العملاء</h2>
-        <p className="text-gray-600 text-sm">مواءمة صحة المحفظة مع تجربة العملاء</p>
+    <div className="font-arabic px-[15px] py-0">
+      {/* صحة محفظة العملاء */}
+      <div className="mb-6 py-0 px-0 my-0">
+        <ClientPortfolioHealth portfolioHealth={data.portfolioHealth} />
       </div>
       
-      {/* صحة محفظة العملاء */}
-      <ClientPortfolioHealth portfolioHealth={data.portfolioHealth} />
-      
       {/* الرسوم البيانية الأساسية */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <OpportunityFunnel funnelData={data.opportunityFunnel} />
-        <NPSScores nps={data.npsScores} />
+      <div className="mb-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <OpportunityFunnel funnelData={data.opportunityFunnel} />
+          <NPSScores nps={data.npsScores} />
+        </div>
       </div>
       
       {/* تحليل المشاعر */}
-      <ClientSentiment sentimentData={data.sentimentData} />
+      <div className="py-0">
+        <ClientSentiment sentimentData={data.sentimentData} />
+      </div>
     </div>
   );
 };

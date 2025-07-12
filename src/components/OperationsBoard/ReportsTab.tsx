@@ -49,23 +49,24 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ data, loading }) => {
   }
 
   return (
-    <div className="space-y-6 h-full overflow-auto">
-      <div className="text-right">
-        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">التقارير</h2>
-        <p className="text-gray-600 text-sm">إخراج تقارير تنفيذية أو تفصيلية عند الطلب</p>
+    <div className="font-arabic px-[15px] py-0">
+      {/* إحصائيات التقارير */}
+      <div className="mb-6 py-0 px-0 my-0">
+        <ReportStats statistics={data.statistics} />
       </div>
       
-      {/* إحصائيات التقارير */}
-      <ReportStats statistics={data.statistics} />
-      
       {/* الأدوات الأساسية */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <ReportLibrary templates={data.templates} />
-        <CustomReportWizard />
+      <div className="mb-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <ReportLibrary templates={data.templates} />
+          <CustomReportWizard />
+        </div>
       </div>
       
       {/* مولد التقارير الذكي */}
-      <AIReportGenerator suggestions={data.aiSuggestions} />
+      <div className="py-0">
+        <AIReportGenerator suggestions={data.aiSuggestions} />
+      </div>
     </div>
   );
 };

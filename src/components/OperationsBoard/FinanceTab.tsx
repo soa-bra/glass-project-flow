@@ -49,27 +49,28 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({ data, loading }) => {
   }
 
   return (
-    <div className="space-y-6 h-full overflow-auto">
-      <div className="text-right">
-        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">الوضع المالي</h2>
-        <p className="text-gray-600 text-sm">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
+    <div className="font-arabic px-[15px] py-0">
+      {/* مؤشرات الأداء المالي الرئيسية */}
+      <div className="mb-6 py-0 px-0 my-0">
+        <FinancialKPICards kpis={data.kpis} />
       </div>
       
-      {/* مؤشرات الأداء المالي الرئيسية */}
-      <FinancialKPICards kpis={data.kpis} />
-      
       {/* الرسوم البيانية الأساسية */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <BudgetVsActualChart monthlyData={data.monthlyBudget} />
-        <CashFlowForecast cashFlowData={data.cashFlow} />
+      <div className="mb-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <BudgetVsActualChart monthlyData={data.monthlyBudget} />
+          <CashFlowForecast cashFlowData={data.cashFlow} />
+        </div>
       </div>
       
       {/* أدوات التصدير والتحليل */}
-      <div className="flex justify-between items-center pt-4">
-        <div className="text-sm text-gray-600 font-arabic">
-          دقة التنبؤات: {data.forecastAccuracy}%
+      <div className="py-0">
+        <div className="flex justify-between items-center pt-4">
+          <div className="text-sm text-gray-600 font-arabic">
+            دقة التنبؤات: {data.forecastAccuracy}%
+          </div>
+          <ExportButton />
         </div>
-        <ExportButton />
       </div>
     </div>
   );
