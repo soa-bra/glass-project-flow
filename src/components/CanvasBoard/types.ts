@@ -6,6 +6,9 @@ export interface CanvasElement {
   content?: string;
   style?: Record<string, any>;
   locked?: boolean;
+  rotation?: number;
+  flipX?: boolean;
+  flipY?: boolean;
 }
 
 export interface CanvasBoardContentsProps {

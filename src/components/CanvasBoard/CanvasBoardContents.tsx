@@ -9,6 +9,7 @@ import { CleanCanvasPanelLayout } from './components/CleanCanvasPanelLayout';
 import { CanvasWrapper } from './components/CanvasWrapper';
 import { ShortcutNotification } from './components/ShortcutNotification';
 import { useCanvasCollaboration } from '@/hooks/useCanvasCollaboration';
+import { SelectionTool } from './tools/SelectionTool';
 
 const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
   projectId = 'default', 
@@ -135,6 +136,55 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         onNew={() => {}}
         onOpen={() => {}}
         onSmartProjectGenerate={() => {}}
+      />
+      
+      {/* Selection Tool */}
+      <SelectionTool
+        selectedTool={canvasState.selectedTool}
+        selectedElements={canvasState.selectedElementIds.map(id => 
+          canvasState.elements.find(el => el.id === id)
+        ).filter(Boolean)}
+        onCopy={canvasState.handleCopy}
+        onCut={canvasState.handleCut}
+        onPaste={canvasState.handlePaste}
+        onDelete={eventHandlers.handleDeleteSelected}
+        onGroup={canvasState.handleGroup}
+        onUngroup={canvasState.handleUngroup}
+        onLock={canvasState.handleLock}
+        onUnlock={canvasState.handleUnlock}
+        onSelectAll={() => canvasState.setSelectedElementIds(canvasState.elements.map(el => el.id))}
+        onDeselectAll={() => canvasState.setSelectedElementIds([])}
+        onMoveElement={(elementId, direction, distance) => {
+          const element = canvasState.elements.find(el => el.id === elementId);
+          if (element) {
+            const newX = direction === 'left' ? element.position.x - distance :
+                        direction === 'right' ? element.position.x + distance : element.position.x;
+            const newY = direction === 'up' ? element.position.y - distance :
+                        direction === 'down' ? element.position.y + distance : element.position.y;
+            canvasState.updateElement(elementId, { position: { x: newX, y: newY } });
+          }
+        }}
+        onRotateElement={(elementId, angle) => {
+          const element = canvasState.elements.find(el => el.id === elementId);
+          if (element) {
+            const currentRotation = element.rotation || 0;
+            canvasState.updateElement(elementId, { rotation: currentRotation + angle });
+          }
+        }}
+        onFlipElement={(elementId, direction) => {
+          const element = canvasState.elements.find(el => el.id === elementId);
+          if (element) {
+            const updates = direction === 'horizontal' 
+              ? { flipX: !(element.flipX || false) }
+              : { flipY: !(element.flipY || false) };
+            canvasState.updateElement(elementId, updates);
+          }
+        }}
+        onAlignElements={(elementIds, direction) => {
+          // Implement alignment logic
+          console.log('Aligning elements:', elementIds, direction);
+        }}
+        onUpdateElement={canvasState.updateElement}
       />
       
       {/* إشعارات الاختصارات */}
