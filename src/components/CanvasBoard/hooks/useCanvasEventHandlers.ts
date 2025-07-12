@@ -15,17 +15,12 @@ export const useCanvasEventHandlers = (
   updateElement: (elementId: string, updates: any) => void
 ) => {
   const handleCanvasClick = useCallback((e: React.MouseEvent) => {
-    if (selectedTool === 'select') {
-      setSelectedElementId(null);
-      setSelectedElementIds([]);
-    }
-  }, [selectedTool, setSelectedElementId, setSelectedElementIds]);
+    setSelectedElementId(null);
+    setSelectedElementIds([]);
+  }, [setSelectedElementId, setSelectedElementIds]);
 
   const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
-    if (selectedTool === 'select') {
-      interaction.handleSelectionStart(e, zoom, canvasPosition, snapEnabled);
-      return;
-    }
+    if (selectedTool === 'select') return;
 
     if (selectedTool === 'text') {
       interaction.handleTextClick(e, zoom, canvasPosition, addElement, snapEnabled);
@@ -90,15 +85,12 @@ export const useCanvasEventHandlers = (
   }, [interaction]);
 
   const handleResizeMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
-    e.stopPropagation();
-    interaction.handleResizeStart(e, handle, zoom, canvasPosition);
-  }, [interaction, zoom, canvasPosition]);
+    // Logic for resize start
+  }, []);
 
   const handleResizeMouseMove = useCallback((e: React.MouseEvent) => {
-    if (interaction.isResizing) {
-      interaction.handleResizeMove(e, zoom, canvasPosition, updateElement, snapEnabled);
-    }
-  }, [interaction, zoom, canvasPosition, updateElement, snapEnabled]);
+    // Logic for resize move
+  }, []);
 
   return {
     handleCanvasClick,
