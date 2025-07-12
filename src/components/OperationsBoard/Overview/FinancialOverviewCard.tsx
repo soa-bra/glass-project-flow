@@ -1,24 +1,37 @@
 
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, ResponsiveContainer } from 'recharts';
 import { Settings, RotateCcw } from 'lucide-react';
 
-// بيانات الشرائط المالية - كل شريط يمثل نسبة من الخسارة
-const createFinancialBars = (lossPercentage: number) => {
-  const totalBars = 10;
-  return Array.from({ length: totalBars }, (_, index) => ({
-    id: index,
-    value: index < (lossPercentage / 10) ? 1 : 0,
-    color: index < (lossPercentage / 10) ? '#f1b5b9' : '#96d8d0'
-  }));
+// إنشاء شرائط دائرية للمخطط المالي
+const createCircularBars = (lossPercentage: number) => {
+  const totalBars = 60; // عدد الشرائط حول الدائرة
+  const filledBars = Math.floor((lossPercentage / 100) * totalBars);
+  
+  return Array.from({ length: totalBars }, (_, index) => {
+    const angle = (index * 360) / totalBars;
+    const isFilled = index < filledBars;
+    
+    // تدرج اللون من الأخضر إلى الأحمر بناءً على النسبة
+    const greenIntensity = Math.max(0, 1 - (lossPercentage / 100));
+    const redIntensity = lossPercentage / 100;
+    const color = isFilled 
+      ? `rgb(${Math.floor(241 * redIntensity + 150 * greenIntensity)}, ${Math.floor(181 * greenIntensity + 181 * (1 - redIntensity))}, ${Math.floor(185 * (1 - redIntensity) + 208 * greenIntensity)})` 
+      : `rgba(${Math.floor(241 * redIntensity + 150 * greenIntensity)}, ${Math.floor(181 * greenIntensity + 181 * (1 - redIntensity))}, ${Math.floor(185 * (1 - redIntensity) + 208 * greenIntensity)}, 0.3)`;
+    
+    return {
+      id: index,
+      angle,
+      isFilled,
+      color
+    };
+  });
 };
 
 const totalRevenue = 78; // مليون
 const lossPercentage = 30; // نسبة الخسارة (0-100)
 const isProfit = lossPercentage < 50;
-const financialData = createFinancialBars(lossPercentage);
+const circularBars = createCircularBars(lossPercentage);
 
 export const FinancialOverviewCard: React.FC = () => {
   return (
@@ -77,44 +90,53 @@ export const FinancialOverviewCard: React.FC = () => {
           </div>
         </div>
 
-        {/* الرسم البياني - 3/5 من المساحة مع تكبير 300% */}
+        {/* الرسم البياني الدائري - 3/5 من المساحة */}
         <div className="w-3/5 flex justify-center items-center overflow-hidden">
-          <div className="w-full h-full flex items-center justify-center">
-            <ChartContainer
-              config={{
-                value: { label: "القيمة", color: isProfit ? "#96d8d0" : "#f1b5b9" }
-              }}
-              className="w-full h-full"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={financialData}
-                  margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
-                >
-                  <Bar 
-                    dataKey="value" 
-                    fill={isProfit ? "#96d8d0" : "#f1b5b9"}
-                    radius={[2, 2, 0, 0]}
-                    strokeWidth={1}
-                    stroke="#000000"
+          <div className="relative w-48 h-48">
+            {/* الرقم المركزي */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="text-4xl font-bold text-black font-arabic mb-1">
+                {totalRevenue}
+              </div>
+              <div className="text-xs font-normal text-black font-arabic text-center px-2">
+                إجمالي الأرباح والخسائر
+              </div>
+            </div>
+            
+            {/* الشرائط الدائرية */}
+            <svg className="w-full h-full" viewBox="0 0 200 200">
+              {circularBars.map((bar, index) => {
+                const radius = 85;
+                const centerX = 100;
+                const centerY = 100;
+                const barWidth = 3;
+                const barHeight = bar.isFilled ? 12 : 8;
+                
+                const startRadius = radius - (barHeight / 2);
+                const endRadius = radius + (barHeight / 2);
+                
+                const startAngle = (bar.angle - 1.5) * (Math.PI / 180);
+                const endAngle = (bar.angle + 1.5) * (Math.PI / 180);
+                
+                const x1 = centerX + startRadius * Math.cos(startAngle);
+                const y1 = centerY + startRadius * Math.sin(startAngle);
+                const x2 = centerX + endRadius * Math.cos(startAngle);
+                const y2 = centerY + endRadius * Math.sin(startAngle);
+                
+                return (
+                  <line
+                    key={bar.id}
+                    x1={x1}
+                    y1={y1}
+                    x2={x2}
+                    y2={y2}
+                    stroke={bar.color}
+                    strokeWidth={barWidth}
+                    strokeLinecap="round"
                   />
-                  <ChartTooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className="bg-white p-2 border rounded shadow-lg">
-                            <p className="font-arabic text-sm">
-                              {payload[0].value === 1 ? 'خسارة' : 'ربح'}
-                            </p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+                );
+              })}
+            </svg>
           </div>
         </div>
       </div>
