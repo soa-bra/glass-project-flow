@@ -61,24 +61,24 @@ export const OverviewGrid: React.FC = () => {
         chartType="line" 
       />
 
-      {/* الصف الثاني */}
-      <StatisticsCard 
-        title="بيانات" 
-        value="03" 
-        unit="مليار" 
-        description="هذا النص مثال للشكل البياني" 
-        chartType="line" 
-      />
+      {/* الصف الثاني - نقل التنبيهات هنا */}
+      <AlertsCard />
 
       <StatisticsCard 
         title="نسبة" 
         value="75" 
         unit="مئوية" 
         description="هذا النص مثال للشكل البياني" 
-        chartType="simple"
+        chartType="donut"
       />
 
-      <AlertsCard />
+      <StatisticsCard 
+        title="بيانات" 
+        value="03" 
+        unit="مليار" 
+        description="هذا النص مثال للشكل البياني" 
+        chartType="area" 
+      />
 
       {/* الصف الثالث */}
       <div className="col-span-2">
@@ -90,7 +90,7 @@ export const OverviewGrid: React.FC = () => {
         value="85" 
         unit="نسبة" 
         description="هذا النص مثال للشكل البياني" 
-        chartType="simple"
+        chartType="radial"
       />
 
       {/* الصف الرابع */}
@@ -115,7 +115,7 @@ export const OverviewGrid: React.FC = () => {
         value="91" 
         unit="نسبة" 
         description="هذا النص مثال للشكل البياني" 
-        chartType="simple"
+        chartType="gauge"
       />
 
       {/* الصف الخامس الجديد */}

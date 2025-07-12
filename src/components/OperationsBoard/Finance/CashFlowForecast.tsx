@@ -1,7 +1,6 @@
+
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface CashFlowData {
   date: string;
@@ -15,78 +14,43 @@ interface CashFlowForecastProps {
   cashFlowData: CashFlowData[];
 }
 
-const chartConfig = {
-  cumulativeBalance: {
-    label: "الرصيد التراكمي",
-    color: "hsl(var(--chart-3))",
-  },
-  netFlow: {
-    label: "التدفق الصافي",
-    color: "hsl(var(--chart-4))",
-  },
-};
-
 export const CashFlowForecast: React.FC<CashFlowForecastProps> = ({ cashFlowData }) => {
   return (
-    <Card className="w-full rounded-3xl" style={{ backgroundColor: '#f3ffff' }}>
-      <CardHeader>
-        <CardTitle className="text-right font-arabic text-lg font-semibold text-black">
-          التنبؤ بالتدفق النقدي
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-6">
-        <ChartContainer config={chartConfig} className="h-[350px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={cashFlowData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <defs>
-                <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-cumulativeBalance)" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="var(--color-cumulativeBalance)" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <XAxis 
-                dataKey="date" 
-                tick={{ fontSize: 12 }}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis 
-                tick={{ fontSize: 12 }}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `${value / 1000}ك`}
-              />
-              <ChartTooltip 
-                content={
-                  <ChartTooltipContent 
-                    formatter={(value: number, name: string) => [
-                      `${value.toLocaleString()} ر.س`,
-                      name
-                    ]}
-                  />
-                }
-              />
-              <Area
-                type="monotone"
-                dataKey="cumulativeBalance"
-                stroke="var(--color-cumulativeBalance)"
-                fillOpacity={1}
-                fill="url(#colorBalance)"
-                strokeWidth={2}
-                name="الرصيد التراكمي"
-              />
-              <Line
-                type="monotone"
-                dataKey="netFlow"
-                stroke="var(--color-netFlow)"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                name="التدفق الصافي"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <div className="p-6 rounded-3xl border border-gray-200/50" style={{ backgroundColor: '#f3ffff', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}>
+      <div className="mb-6">
+        <h3 className="text-large font-semibold text-black font-arabic">توقعات التدفق النقدي</h3>
+      </div>
+      <div className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={cashFlowData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.1} />
+            <XAxis 
+              dataKey="date" 
+              stroke="#000000" 
+              tick={{ fill: '#000000', fontSize: 12, fontFamily: 'IBM Plex Sans Arabic' }} 
+            />
+            <YAxis 
+              stroke="#000000" 
+              tick={{ fill: '#000000', fontSize: 12, fontFamily: 'IBM Plex Sans Arabic' }} 
+            />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(0, 0, 0, 0.1)',
+                borderRadius: '12px',
+                color: '#000000',
+                fontFamily: 'IBM Plex Sans Arabic'
+              }}
+              labelStyle={{ color: '#000000', fontFamily: 'IBM Plex Sans Arabic' }}
+            />
+            <Legend wrapperStyle={{ color: '#000000', fontFamily: 'IBM Plex Sans Arabic' }} />
+            <Line type="monotone" dataKey="inflow" stroke="#bdeed3" strokeWidth={3} name="التدفق الداخل" />
+            <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} name="التدفق الخارج" />
+            <Line type="monotone" dataKey="netFlow" stroke="#d9d2fd" strokeWidth={3} name="صافي التدفق" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 };
