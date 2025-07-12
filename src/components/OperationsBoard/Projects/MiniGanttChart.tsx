@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
-
 interface CriticalProject {
   id: string;
   name: string;
@@ -12,19 +11,18 @@ interface CriticalProject {
   status: 'on-track' | 'at-risk' | 'delayed';
   priority: 'high' | 'medium' | 'low';
 }
-
 interface MiniGanttChartProps {
   criticalProjects: CriticalProject[];
 }
-
 const chartConfig = {
   progress: {
     label: "التقدم",
-    color: "hsl(var(--chart-1))",
-  },
+    color: "hsl(var(--chart-1))"
+  }
 };
-
-export const MiniGanttChart: React.FC<MiniGanttChartProps> = ({ criticalProjects }) => {
+export const MiniGanttChart: React.FC<MiniGanttChartProps> = ({
+  criticalProjects
+}) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'on-track':
@@ -37,11 +35,8 @@ export const MiniGanttChart: React.FC<MiniGanttChartProps> = ({ criticalProjects
         return 'hsl(var(--chart-1))';
     }
   };
-
   const formatProgress = (progress: number) => `${progress}%`;
-
-  return (
-    <Card className="glass-enhanced rounded-[40px]">
+  return <Card className="rounded-[40px] bg-[#f3ffff] ">
       <CardHeader>
         <CardTitle className="text-right font-arabic text-lg">
           أعلى 10 مشاريع حرجة (Gantt مصغر)
@@ -50,39 +45,20 @@ export const MiniGanttChart: React.FC<MiniGanttChartProps> = ({ criticalProjects
       <CardContent className="p-6">
         <ChartContainer config={chartConfig} className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart 
-              data={criticalProjects.slice(0, 10)} 
-              layout="horizontal"
-              margin={{ top: 5, right: 30, left: 5, bottom: 5 }}
-            >
-              <XAxis 
-                type="number" 
-                domain={[0, 100]}
-                tick={{ fontSize: 12 }}
-                tickFormatter={formatProgress}
-              />
-              <YAxis 
-                type="category" 
-                dataKey="name" 
-                tick={{ fontSize: 11 }}
-                width={120}
-              />
-              <ChartTooltip 
-                content={
-                  <ChartTooltipContent 
-                    formatter={(value: number, name: string) => [
-                      `${value}%`,
-                      'التقدم'
-                    ]}
-                    labelFormatter={(label) => `المشروع: ${label}`}
-                  />
-                }
-              />
-              <Bar 
-                dataKey="progress" 
-                fill="hsl(var(--primary))"
-                radius={[0, 4, 4, 0]}
-              />
+            <BarChart data={criticalProjects.slice(0, 10)} layout="horizontal" margin={{
+            top: 5,
+            right: 30,
+            left: 5,
+            bottom: 5
+          }}>
+              <XAxis type="number" domain={[0, 100]} tick={{
+              fontSize: 12
+            }} tickFormatter={formatProgress} />
+              <YAxis type="category" dataKey="name" tick={{
+              fontSize: 11
+            }} width={120} />
+              <ChartTooltip content={<ChartTooltipContent formatter={(value: number, name: string) => [`${value}%`, 'التقدم']} labelFormatter={label => `المشروع: ${label}`} />} />
+              <Bar dataKey="progress" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartContainer>
@@ -103,6 +79,5 @@ export const MiniGanttChart: React.FC<MiniGanttChartProps> = ({ criticalProjects
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };

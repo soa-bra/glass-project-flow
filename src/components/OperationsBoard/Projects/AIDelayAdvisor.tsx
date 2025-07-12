@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bot, Lightbulb, AlertTriangle, TrendingUp } from 'lucide-react';
-
 interface AIAdvice {
   id: string;
   type: 'warning' | 'suggestion' | 'optimization';
@@ -11,12 +10,12 @@ interface AIAdvice {
   confidence: number;
   projectId?: string;
 }
-
 interface AIDelayAdvisorProps {
   aiAdvice: AIAdvice[];
 }
-
-export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
+export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({
+  aiAdvice
+}) => {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'warning':
@@ -29,7 +28,6 @@ export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
         return <Bot className="h-5 w-5 text-blue-500" />;
     }
   };
-
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'warning':
@@ -42,7 +40,6 @@ export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
         return 'bg-blue-100 text-blue-800 border-blue-200';
     }
   };
-
   const getTypeText = (type: string) => {
     switch (type) {
       case 'warning':
@@ -55,15 +52,12 @@ export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
         return 'عام';
     }
   };
-
   const getConfidenceColor = (confidence: number) => {
     if (confidence >= 90) return 'text-green-600';
     if (confidence >= 70) return 'text-yellow-600';
     return 'text-red-600';
   };
-
-  return (
-    <Card className="glass-enhanced rounded-[40px]">
+  return <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
       <CardHeader>
         <CardTitle className="text-right font-arabic text-lg flex items-center justify-between">
           <span>مستشار التأخير بالذكاء الاصطناعي</span>
@@ -72,16 +66,9 @@ export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
       </CardHeader>
       <CardContent className="p-6">
         <div className="space-y-4 max-h-[400px] overflow-y-auto">
-          {aiAdvice.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 font-arabic">
+          {aiAdvice.length === 0 ? <div className="text-center py-8 text-gray-500 font-arabic">
               لا توجد توصيات حالياً
-            </div>
-          ) : (
-            aiAdvice.map((advice) => (
-              <div 
-                key={advice.id} 
-                className={`border rounded-lg p-4 ${getTypeColor(advice.type)} transition-all duration-200 hover:shadow-md`}
-              >
+            </div> : aiAdvice.map(advice => <div key={advice.id} className={`border rounded-lg p-4 ${getTypeColor(advice.type)} transition-all duration-200 hover:shadow-md`}>
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-2 space-x-reverse">
                     {getTypeIcon(advice.type)}
@@ -102,18 +89,13 @@ export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
                   {advice.description}
                 </p>
                 
-                {advice.projectId && (
-                  <div className="mt-3 pt-3 border-t border-gray-200">
+                {advice.projectId && <div className="mt-3 pt-3 border-t border-gray-200">
                     <span className="text-xs text-gray-500 font-arabic">
                       المشروع المتأثر: {advice.projectId}
                     </span>
-                  </div>
-                )}
-              </div>
-            ))
-          )}
+                  </div>}
+              </div>)}
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };

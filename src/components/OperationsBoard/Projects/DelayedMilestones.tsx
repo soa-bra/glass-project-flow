@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, Clock } from 'lucide-react';
-
 interface DelayedMilestone {
   id: string;
   projectName: string;
@@ -12,12 +11,12 @@ interface DelayedMilestone {
   delayDays: number;
   impact: 'high' | 'medium' | 'low';
 }
-
 interface DelayedMilestonesProps {
   delayedMilestones: DelayedMilestone[];
 }
-
-export const DelayedMilestones: React.FC<DelayedMilestonesProps> = ({ delayedMilestones }) => {
+export const DelayedMilestones: React.FC<DelayedMilestonesProps> = ({
+  delayedMilestones
+}) => {
   const getImpactColor = (impact: string) => {
     switch (impact) {
       case 'high':
@@ -30,7 +29,6 @@ export const DelayedMilestones: React.FC<DelayedMilestonesProps> = ({ delayedMil
         return 'bg-gray-100 text-gray-800';
     }
   };
-
   const getImpactText = (impact: string) => {
     switch (impact) {
       case 'high':
@@ -43,9 +41,7 @@ export const DelayedMilestones: React.FC<DelayedMilestonesProps> = ({ delayedMil
         return 'غير محدد';
     }
   };
-
-  return (
-    <Card className="glass-enhanced rounded-[40px]">
+  return <Card className="rounded-[40px] bg-[#f0fafa]">
       <CardHeader>
         <CardTitle className="text-right font-arabic text-lg flex items-center justify-between">
           <span>المعالم المتأخرة</span>
@@ -54,16 +50,9 @@ export const DelayedMilestones: React.FC<DelayedMilestonesProps> = ({ delayedMil
       </CardHeader>
       <CardContent className="p-6">
         <div className="space-y-4 max-h-[350px] overflow-y-auto">
-          {delayedMilestones.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 font-arabic">
+          {delayedMilestones.length === 0 ? <div className="text-center py-8 text-gray-500 font-arabic">
               لا توجد معالم متأخرة حالياً
-            </div>
-          ) : (
-            delayedMilestones.map((milestone) => (
-              <div 
-                key={milestone.id} 
-                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-              >
+            </div> : delayedMilestones.map(milestone => <div key={milestone.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-2">
                   <div className="text-right flex-1">
                     <h4 className="font-semibold text-gray-800 font-arabic mb-1">
@@ -88,11 +77,8 @@ export const DelayedMilestones: React.FC<DelayedMilestonesProps> = ({ delayedMil
                     <div className="font-arabic">الموعد الحالي: {milestone.currentDate}</div>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
+              </div>)}
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };

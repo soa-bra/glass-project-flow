@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { TrendingUp, TrendingDown, Users, FolderOpen } from 'lucide-react';
-
 interface ProjectSummary {
   totalProjects: number;
   onTrack: number;
@@ -10,20 +9,18 @@ interface ProjectSummary {
   delayed: number;
   completionRate: number;
 }
-
 interface ProjectProgressSummaryProps {
   summary: ProjectSummary;
 }
-
-export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({ summary }) => {
-  const onTrackPercentage = (summary.onTrack / summary.totalProjects) * 100;
-  const atRiskPercentage = (summary.atRisk / summary.totalProjects) * 100;
-  const delayedPercentage = (summary.delayed / summary.totalProjects) * 100;
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({
+  summary
+}) => {
+  const onTrackPercentage = summary.onTrack / summary.totalProjects * 100;
+  const atRiskPercentage = summary.atRisk / summary.totalProjects * 100;
+  const delayedPercentage = summary.delayed / summary.totalProjects * 100;
+  return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {/* إجمالي المشاريع */}
-      <Card className="glass-enhanced rounded-[40px]">
+      <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="text-right">
@@ -37,7 +34,7 @@ export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({ 
 
       {/* المشاريع في المسار */}
       <Card className="glass-enhanced rounded-[40px]">
-        <CardContent className="p-4">
+        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
           <div className="flex items-center justify-between mb-2">
             <div className="text-right">
               <p className="text-sm text-gray-600">في المسار</p>
@@ -54,13 +51,13 @@ export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({ 
 
       {/* المشاريع في خطر */}
       <Card className="glass-enhanced rounded-[40px]">
-        <CardContent className="p-4">
+        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
           <div className="flex items-center justify-between mb-2">
             <div className="text-right">
               <p className="text-sm text-gray-600">في خطر</p>
               <p className="text-2xl font-bold text-yellow-600">{summary.atRisk}</p>
             </div>
-            <Users className="w-8 h-8 text-yellow-500" />
+            <Users className="w-8 h-8 text-yellow-500 bg-transparent" />
           </div>
           <div className="mt-2">
             <Progress value={atRiskPercentage} className="h-2" />
@@ -71,7 +68,7 @@ export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({ 
 
       {/* المشاريع المتأخرة */}
       <Card className="glass-enhanced rounded-[40px]">
-        <CardContent className="p-4">
+        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
           <div className="flex items-center justify-between mb-2">
             <div className="text-right">
               <p className="text-sm text-gray-600">متأخرة</p>
@@ -88,7 +85,7 @@ export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({ 
 
       {/* معدل الإنجاز الإجمالي */}
       <Card className="glass-enhanced rounded-[40px] col-span-full">
-        <CardContent className="p-4">
+        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
           <div className="text-right mb-4">
             <h3 className="text-lg font-semibold text-gray-800 font-arabic">معدل الإنجاز الإجمالي</h3>
             <p className="text-3xl font-bold text-primary">{summary.completionRate}%</p>
@@ -110,6 +107,5 @@ export const ProjectProgressSummary: React.FC<ProjectProgressSummaryProps> = ({ 
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
