@@ -49,24 +49,24 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({ data, loading }) => {
   }
 
   return (
-    <div className="space-y-6 h-full overflow-auto">
-      <div className="text-right">
-        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">الوضع المالي</h2>
-        <p className="text-gray-600 text-sm">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
+    <div className="space-y-6 h-full overflow-auto" style={{ backgroundColor: '#f3ffff' }}>
+      <div className="text-right p-6" style={{ backgroundColor: '#f3ffff' }}>
+        <h2 className="text-lg font-semibold text-black font-arabic mb-1">الوضع المالي</h2>
+        <p className="text-xs font-normal text-gray-400 font-arabic">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
       </div>
       
       {/* مؤشرات الأداء المالي الرئيسية */}
       <FinancialKPICards kpis={data.kpis} />
       
       {/* الرسوم البيانية الأساسية */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 p-6">
         <BudgetVsActualChart monthlyData={data.monthlyBudget} />
         <CashFlowForecast cashFlowData={data.cashFlow} />
       </div>
       
       {/* أدوات التصدير والتحليل */}
-      <div className="flex justify-between items-center pt-4">
-        <div className="text-sm text-gray-600 font-arabic">
+      <div className="flex justify-between items-center pt-4 p-6">
+        <div className="text-sm font-normal text-black font-arabic">
           دقة التنبؤات: {data.forecastAccuracy}%
         </div>
         <ExportButton />

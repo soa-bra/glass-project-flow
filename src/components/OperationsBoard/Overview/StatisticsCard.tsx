@@ -2,7 +2,7 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LineChart, Line, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
 
 interface StatisticsCardProps {
   title: string;
@@ -50,8 +50,19 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
             className="w-full h-full"
           >
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData || sampleLineData}>
-                <Line type="monotone" dataKey="value" stroke="#d9d2fd" strokeWidth={2} dot={false} />
+              <LineChart data={chartData || sampleLineData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: '#000000' }}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: '#000000' }}
+                />
+                <Line type="monotone" dataKey="value" stroke="#d9d2fd" strokeWidth={2} dot={{ fill: '#000000', r: 2 }} />
                 <ChartTooltip content={<ChartTooltipContent />} />
               </LineChart>
             </ResponsiveContainer>
@@ -73,8 +84,19 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
             className="w-full h-full"
           >
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData || sampleBarData}>
-                <Bar dataKey="value" fill="#bdeed3" radius={[2, 2, 0, 0]} />
+              <BarChart data={chartData || sampleBarData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: '#000000' }}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: '#000000' }}
+                />
+                <Bar dataKey="value" fill="#bdeed3" radius={[2, 2, 0, 0]} stroke="#000000" strokeWidth={1} />
                 <ChartTooltip content={<ChartTooltipContent />} />
               </BarChart>
             </ResponsiveContainer>
@@ -93,23 +115,23 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
         size="md" 
         className="h-[180px]" 
         style={{
-          backgroundColor: '#f2ffff'
+          backgroundColor: '#f3ffff'
         }} 
         header={
-          <h3 className="text-sm font-bold text-gray-800 font-arabic">{title}</h3>
+          <h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>
         }
       >
         <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden">
           <div className="flex items-baseline gap-2 mb-2">
-            <div className="text-3xl font-bold text-black font-arabic">
+            <div className="text-2xl font-bold text-black font-arabic">
               {value}
             </div>
-            <div className="text-sm font-bold text-gray-700 font-arabic">
+            <div className="text-sm font-bold text-black font-arabic">
               {unit}
             </div>
           </div>
           
-          <div className="text-xs text-gray-600 font-arabic">
+          <div className="text-xs font-normal text-gray-400 font-arabic">
             {description}
           </div>
         </div>
@@ -123,35 +145,32 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
       size="md" 
       className="h-[180px]" 
       style={{
-        backgroundColor: '#f2ffff'
+        backgroundColor: '#f3ffff'
       }} 
       header={
-        <h3 className="text-sm font-bold text-gray-800 font-arabic">{title}</h3>
+        <h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>
       }
     >
-      <div className="flex-1 flex gap-4 h-full overflow-hidden">
-        {/* النصوص والأرقام - النصف الأول */}
-        <div className="flex-1 flex flex-col justify-center overflow-hidden">
+      <div className="flex gap-4 h-full overflow-hidden">
+        {/* النصوص والأرقام - 2/5 من المساحة */}
+        <div className="w-2/5 flex flex-col justify-center overflow-hidden">
           <div className="flex items-baseline gap-2 mb-2">
-            <div className="text-3xl font-bold text-black font-arabic">
+            <div className="text-2xl font-bold text-black font-arabic">
               {value}
             </div>
-            <div className="text-sm font-bold text-gray-700 font-arabic">
+            <div className="text-sm font-bold text-black font-arabic">
               {unit}
             </div>
           </div>
           
-          <div className="text-xs text-gray-600 font-arabic">
+          <div className="text-xs font-normal text-gray-400 font-arabic">
             {description}
           </div>
         </div>
 
-        {/* الرسم البياني - النصف الثاني بنسبة 16:9 */}
-        <div className="flex-1 flex justify-center items-center overflow-hidden">
-          <div 
-            className="w-full max-w-[120px]"
-            style={{ aspectRatio: '16/9' }}
-          >
+        {/* الرسم البياني - 3/5 من المساحة */}
+        <div className="w-3/5 flex justify-center items-center overflow-hidden">
+          <div className="w-full h-full">
             {renderChart()}
           </div>
         </div>

@@ -27,9 +27,9 @@ const chartConfig = {
 
 export const BudgetVsActualChart: React.FC<BudgetVsActualChartProps> = ({ monthlyData }) => {
   return (
-    <Card className="w-full">
+    <Card className="w-full rounded-3xl border border-gray-200/50 shadow-sm" style={{ backgroundColor: '#f3ffff' }}>
       <CardHeader>
-        <CardTitle className="text-right font-arabic text-lg">
+        <CardTitle className="text-right font-arabic text-lg font-semibold text-black">
           الميزانية مقابل الإنفاق الفعلي (شهري)
         </CardTitle>
       </CardHeader>
@@ -62,15 +62,19 @@ export const BudgetVsActualChart: React.FC<BudgetVsActualChartProps> = ({ monthl
               <Legend />
               <Bar 
                 dataKey="budget" 
-                fill="var(--color-budget)" 
+                fill="#bdeed3" 
                 radius={[4, 4, 0, 0]}
                 name="الميزانية المخططة"
+                stroke="#000000"
+                strokeWidth={1}
               />
               <Bar 
                 dataKey="actual" 
-                fill="var(--color-actual)" 
+                fill="#a4e2f6" 
                 radius={[4, 4, 0, 0]}
                 name="الإنفاق الفعلي"
+                stroke="#000000"
+                strokeWidth={1}
               />
             </BarChart>
           </ResponsiveContainer>

@@ -28,9 +28,9 @@ const chartConfig = {
 
 export const CashFlowForecast: React.FC<CashFlowForecastProps> = ({ cashFlowData }) => {
   return (
-    <Card className="w-full">
+    <Card className="w-full rounded-3xl border border-gray-200/50 shadow-sm" style={{ backgroundColor: '#f3ffff' }}>
       <CardHeader>
-        <CardTitle className="text-right font-arabic text-lg">
+        <CardTitle className="text-right font-arabic text-lg font-semibold text-black">
           التنبؤ بالتدفق النقدي
         </CardTitle>
       </CardHeader>
@@ -69,18 +69,18 @@ export const CashFlowForecast: React.FC<CashFlowForecastProps> = ({ cashFlowData
               <Area
                 type="monotone"
                 dataKey="cumulativeBalance"
-                stroke="var(--color-cumulativeBalance)"
+                stroke="#a4e2f6"
                 fillOpacity={1}
-                fill="url(#colorBalance)"
+                fill="#d9d2fd"
                 strokeWidth={2}
                 name="الرصيد التراكمي"
               />
               <Line
                 type="monotone"
                 dataKey="netFlow"
-                stroke="var(--color-netFlow)"
+                stroke="#000000"
                 strokeWidth={2}
-                dot={{ r: 4 }}
+                dot={{ r: 4, fill: '#000000' }}
                 name="التدفق الصافي"
               />
             </AreaChart>

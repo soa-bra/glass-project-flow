@@ -19,16 +19,16 @@ export const ProjectSummaryCard: React.FC = () => {
       variant="glass" 
       size="sm"
       className="h-[180px] w-full"
-      style={{ backgroundColor: '#f2ffff' }}
+      style={{ backgroundColor: '#f3ffff' }}
       header={
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-gray-800 font-arabic">ملخص للمشاريع</h3>
+          <h3 className="text-lg font-semibold text-black font-arabic">ملخص للمشاريع</h3>
           <div className="flex gap-2">
-            <button className="p-1 rounded-full hover:bg-white/20">
-              <span className="text-sm">←</span>
+            <button className="w-8 h-8 border border-black/20 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
+              <span className="text-sm text-black">←</span>
             </button>
-            <button className="p-1 rounded-full hover:bg-white/20">
-              <span className="text-sm">⋯</span>
+            <button className="w-8 h-8 border border-black/20 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
+              <span className="text-sm text-black">⋯</span>
             </button>
           </div>
         </div>
@@ -38,16 +38,16 @@ export const ProjectSummaryCard: React.FC = () => {
         {/* النصوص والأرقام - النصف الأول */}
         <div className="flex-1 flex flex-col justify-center gap-1 overflow-hidden">
           <div className="text-right">
-            <div className="text-base font-bold text-black font-arabic">140</div>
-            <div className="text-xs text-gray-700 font-arabic">هذا النص مثال</div>
+            <div className="text-2xl font-bold text-black font-arabic">140</div>
+            <div className="text-xs font-normal text-gray-400 font-arabic">هذا النص مثال</div>
           </div>
           <div className="text-right">
-            <div className="text-base font-bold text-black font-arabic">50</div>
-            <div className="text-xs text-gray-700 font-arabic">هذا النص مثال</div>
+            <div className="text-2xl font-bold text-black font-arabic">50</div>
+            <div className="text-xs font-normal text-gray-400 font-arabic">هذا النص مثال</div>
           </div>
           <div className="text-right">
-            <div className="text-base font-bold text-black font-arabic">02</div>
-            <div className="text-xs text-gray-700 font-arabic">النص مثال</div>
+            <div className="text-2xl font-bold text-black font-arabic">02</div>
+            <div className="text-xs font-normal text-gray-400 font-arabic">النص مثال</div>
           </div>
         </div>
 
@@ -72,15 +72,13 @@ export const ProjectSummaryCard: React.FC = () => {
                     tickLine={false}
                     tick={{ fontSize: 8, fill: '#666' }}
                   />
-                  <Bar dataKey="value" radius={[2, 2, 0, 0]}>
-                    {projectData.map((entry, index) => (
-                      <Bar 
-                        key={`bar-${index}`} 
-                        dataKey="value"
-                        fill={index === 3 ? '#000000' : '#f2ffff'} 
-                      />
-                    ))}
-                  </Bar>
+                  <Bar 
+                    dataKey="value" 
+                    fill="#bdeed3"
+                    radius={[2, 2, 0, 0]}
+                    stroke="#000000"
+                    strokeWidth={1}
+                  />
                   <ChartTooltip content={<ChartTooltipContent />} />
                 </BarChart>
               </ResponsiveContainer>
