@@ -27,9 +27,9 @@ const chartConfig = {
 
 export const BudgetVsActualChart: React.FC<BudgetVsActualChartProps> = ({ monthlyData }) => {
   return (
-    <Card className="w-full">
+    <Card className="w-full rounded-3xl" style={{ backgroundColor: '#f3ffff' }}>
       <CardHeader>
-        <CardTitle className="text-right font-arabic text-lg">
+        <CardTitle className="text-right font-arabic text-lg font-semibold text-black">
           الميزانية مقابل الإنفاق الفعلي (شهري)
         </CardTitle>
       </CardHeader>

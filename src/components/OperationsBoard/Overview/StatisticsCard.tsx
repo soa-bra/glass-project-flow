@@ -50,8 +50,8 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
             className="w-full h-full"
           >
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData || sampleLineData}>
-                <Line type="monotone" dataKey="value" stroke="#d9d2fd" strokeWidth={2} dot={false} />
+              <LineChart data={chartData || sampleLineData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <Line type="monotone" dataKey="value" stroke="#d9d2fd" strokeWidth={2} dot={{ r: 3 }} />
                 <ChartTooltip content={<ChartTooltipContent />} />
               </LineChart>
             </ResponsiveContainer>
@@ -73,7 +73,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
             className="w-full h-full"
           >
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData || sampleBarData}>
+              <BarChart data={chartData || sampleBarData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                 <Bar dataKey="value" fill="#bdeed3" radius={[2, 2, 0, 0]} />
                 <ChartTooltip content={<ChartTooltipContent />} />
               </BarChart>
@@ -131,7 +131,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
     >
       <div className="flex-1 flex gap-4 h-full overflow-hidden">
         {/* النصوص والأرقام - النصف الأول */}
-        <div className="flex-1 flex flex-col justify-center overflow-hidden">
+        <div className="flex-[2] flex flex-col justify-center overflow-hidden">
           <div className="flex items-baseline gap-2 mb-2">
             <div className="text-3xl font-bold text-black font-arabic">
               {value}
@@ -146,12 +146,9 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
           </div>
         </div>
 
-        {/* الرسم البياني - النصف الثاني بنسبة 16:9 */}
-        <div className="flex-1 flex justify-center items-center overflow-hidden">
-          <div 
-            className="w-full max-w-[120px]"
-            style={{ aspectRatio: '16/9' }}
-          >
+        {/* الرسم البياني - النصف الثاني */}
+        <div className="flex-[3] flex justify-center items-center overflow-hidden">
+          <div className="w-full h-full">
             {renderChart()}
           </div>
         </div>

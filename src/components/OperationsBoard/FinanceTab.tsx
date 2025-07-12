@@ -49,10 +49,10 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({ data, loading }) => {
   }
 
   return (
-    <div className="space-y-6 h-full overflow-auto">
+    <div className="space-y-6 h-full overflow-auto px-[15px]">
       <div className="text-right">
-        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">الوضع المالي</h2>
-        <p className="text-gray-600 text-sm">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
+        <h2 className="text-xl font-semibold text-black font-arabic mb-1">الوضع المالي</h2>
+        <p className="text-sm font-normal text-gray-400 font-arabic">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
       </div>
       
       {/* مؤشرات الأداء المالي الرئيسية */}

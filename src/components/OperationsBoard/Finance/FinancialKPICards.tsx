@@ -55,17 +55,17 @@ export const FinancialKPICards: React.FC<FinancialKPICardsProps> = ({ kpis }) =>
         const achievementRate = Math.round((kpi.value / kpi.target) * 100);
         
         return (
-          <Card key={kpi.id} className="relative overflow-hidden">
+          <Card key={kpi.id} className="relative overflow-hidden rounded-3xl" style={{ backgroundColor: '#f3ffff' }}>
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-600 font-arabic text-right">
+                <h3 className="text-lg font-semibold text-black font-arabic text-right">
                   {kpi.title}
                 </h3>
                 {getTrendIcon(kpi.trend)}
               </div>
               
               <div className="space-y-2">
-                <div className="text-2xl font-bold text-gray-900 text-right">
+                <div className="text-2xl font-bold text-black text-right">
                   {formatValue(kpi.value, kpi.format)}
                 </div>
                 
@@ -73,7 +73,7 @@ export const FinancialKPICards: React.FC<FinancialKPICardsProps> = ({ kpis }) =>
                   <div className={`font-medium ${getTrendColor(kpi.trend)}`}>
                     {achievementRate}%
                   </div>
-                  <div className="text-gray-500 font-arabic">
+                  <div className="text-xs font-normal text-gray-400 font-arabic">
                     من الهدف: {formatValue(kpi.target, kpi.format)}
                   </div>
                 </div>
@@ -82,8 +82,8 @@ export const FinancialKPICards: React.FC<FinancialKPICardsProps> = ({ kpis }) =>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
                     className={`h-2 rounded-full transition-all duration-300 ${
-                      achievementRate >= 100 ? 'bg-green-500' : 
-                      achievementRate >= 80 ? 'bg-yellow-500' : 'bg-red-500'
+                      achievementRate >= 100 ? 'bg-[#bdeed3]' : 
+                      achievementRate >= 80 ? 'bg-[#fbe2aa]' : 'bg-[#f1b5b9]'
                     }`}
                     style={{ width: `${Math.min(achievementRate, 100)}%` }}
                   />
