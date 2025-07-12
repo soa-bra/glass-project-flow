@@ -149,7 +149,22 @@ export const ToolCustomizationPanel: React.FC<ToolCustomizationPanelProps> = ({
   const renderToolContent = () => {
     switch (selectedTool) {
       case 'select':
-        return <SelectionToolPanel selectedElements={selectedElements} onCopy={onCopy} onCut={onCut} onPaste={onPaste} onDelete={onDelete} onGroup={onGroup} onUpdateElement={onUpdateElement} />;
+        return <SelectionToolPanel 
+          selectedElements={selectedElements} 
+          onCopy={onCopy} 
+          onCut={onCut} 
+          onPaste={onPaste} 
+          onDelete={onDelete} 
+          onGroup={onGroup} 
+          onUngroup={() => {}}
+          onLock={() => {}}
+          onUnlock={() => {}}
+          onRotate={() => {}}
+          onFlipHorizontal={() => {}}
+          onFlipVertical={() => {}}
+          onAlign={() => {}}
+          onUpdateElement={onUpdateElement} 
+        />;
       case 'smart-pen':
         return <SmartPenToolPanel lineWidth={lineWidth} lineStyle={lineStyle} selectedPenMode={selectedPenMode} onLineWidthChange={onLineWidthChange} onLineStyleChange={onLineStyleChange} onPenModeSelect={onPenModeSelect} />;
       case 'zoom':
