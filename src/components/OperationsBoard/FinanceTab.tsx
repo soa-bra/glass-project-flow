@@ -45,25 +45,28 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
   }
   return <div style={{
     backgroundColor: '#f3ffff'
-  }} className="space-y-6 h-full overflow-auto bg-transparent">
-      <div style={{
-      backgroundColor: '#f3ffff'
-    }} className="text-right p-6 bg-transparent">
-        <h2 className="text-lg font-semibold text-black font-arabic mb-1">الوضع المالي</h2>
-        <p className="text-xs font-normal text-gray-400 font-arabic">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
+  }} className="space-y-4 h-full overflow-auto bg-transparent">
+      {/* العنوان و KPI في نفس السطر */}
+      <div className="flex justify-between items-start px-6 pt-6" style={{
+        backgroundColor: '#f3ffff'
+      }}>
+        <div className="text-right">
+          <h2 className="text-lg font-semibold text-black font-arabic mb-1">الوضع المالي</h2>
+          <p className="text-xs font-normal text-gray-400 font-arabic">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
+        </div>
+        <div className="flex-1 max-w-2xl">
+          <FinancialKPICards kpis={data.kpis} />
+        </div>
       </div>
       
-      {/* مؤشرات الأداء المالي الرئيسية */}
-      <FinancialKPICards kpis={data.kpis} />
-      
       {/* الرسوم البيانية الأساسية */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 p-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 px-6">
         <BudgetVsActualChart monthlyData={data.monthlyBudget} />
         <CashFlowForecast cashFlowData={data.cashFlow} />
       </div>
       
       {/* أدوات التصدير والتحليل */}
-      <div className="flex justify-between items-center pt-4 p-6">
+      <div className="flex justify-between items-center pt-4 px-6">
         <div className="text-sm font-normal text-black font-arabic">
           دقة التنبؤات: {data.forecastAccuracy}%
         </div>
