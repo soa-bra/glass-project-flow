@@ -2,21 +2,84 @@ import {
   MousePointer, Pen, ZoomIn, Hand, File, Upload, 
   MessageSquare, Type, Shapes, Sparkles, Clock, GitBranch, Layout,
   Grid3X3, RotateCcw, RotateCw, Save, FolderOpen, Copy, Layers,
-  Lightbulb, Target, Rocket
+  Lightbulb, Target, Rocket, Move, Search, Crosshair, Zap
 } from 'lucide-react';
 import { Tool } from './types';
 
 // أدوات شريط الأدوات الرئيسي (أسفل) - 9 أدوات بالضبط
 export const MAIN_TOOLBAR_TOOLS: Tool[] = [
-  { id: 'select', label: 'تحديد', icon: MousePointer, category: 'basic' },
-  { id: 'smart-pen', label: 'القلم الذكي', icon: Pen, category: 'basic' },
-  { id: 'zoom', label: 'زوم', icon: ZoomIn, category: 'navigation' },
-  { id: 'hand', label: 'كف', icon: Hand, category: 'navigation' },
-  { id: 'upload', label: 'رفع مرفق', icon: Upload, category: 'file' },
-  { id: 'comment', label: 'تعليق', icon: MessageSquare, category: 'collaboration' },
-  { id: 'text', label: 'نص', icon: Type, category: 'content' },
-  { id: 'shape', label: 'شكل', icon: Shapes, category: 'content' },
-  { id: 'smart-element', label: 'عنصر ذكي', icon: Sparkles, category: 'smart' }
+  { 
+    id: 'select', 
+    label: 'أداة التحديد', 
+    icon: MousePointer, 
+    category: 'basic',
+    shortcut: 'V',
+    description: 'تمكّن المستخدم من تحديد وتحريك وتعديل وتجميع ومحاذاة العناصر داخل الكانفاس'
+  },
+  { 
+    id: 'smart-pen', 
+    label: 'القلم الذكي', 
+    icon: Pen, 
+    category: 'basic',
+    shortcut: 'P',
+    description: 'رسم حر يتم تحليله تلقائيًا وتحويله إلى شكل هندسي، جذر، تجميع أو مسح'
+  },
+  { 
+    id: 'zoom', 
+    label: 'أداة الزوم', 
+    icon: Search, 
+    category: 'navigation',
+    shortcut: 'Z',
+    description: 'تُستخدم للتحكم في تكبير أو تصغير الكانفاس لتسهيل المعاينة الدقيقة أو الشاملة'
+  },
+  { 
+    id: 'hand', 
+    label: 'أداة الكف', 
+    icon: Move, 
+    category: 'navigation',
+    shortcut: 'H',
+    description: 'تتيح تحريك الكانفاس أفقيًا وعموديًا دون التأثير على المكونات'
+  },
+  { 
+    id: 'upload', 
+    label: 'رفع المرفقات', 
+    icon: Upload, 
+    category: 'file',
+    shortcut: 'U',
+    description: 'رفع الملفات وإدراجها أو تحويلها إلى عناصر ذكية باستخدام الذكاء الصناعي'
+  },
+  { 
+    id: 'comment', 
+    label: 'التعليقات التفاعلية', 
+    icon: MessageSquare, 
+    category: 'collaboration',
+    shortcut: 'C',
+    description: 'تتيح إضافة تعليقات نصية أو رسومية مؤقتة فوق العناصر داخل الكانفاس'
+  },
+  { 
+    id: 'text', 
+    label: 'أداة النص', 
+    icon: Type, 
+    category: 'content',
+    shortcut: 'T',
+    description: 'تتيح إدراج نص حر، مربع نص، أو ربط النص مباشرة داخل مكونات الكانفاس'
+  },
+  { 
+    id: 'shape', 
+    label: 'أداة الأشكال', 
+    icon: Crosshair, 
+    category: 'content',
+    shortcut: 'R',
+    description: 'تُستخدم لإدراج أشكال مرئية إلى الكانفاس بالنقر والسحب أو عبر إدراج مباشر'
+  },
+  { 
+    id: 'smart-element', 
+    label: 'العناصر الذكية', 
+    icon: Zap, 
+    category: 'smart',
+    shortcut: 'S',
+    description: 'تُستخدم لإدراج عناصر ذكية تفاعلية إلى الكانفاس مثل ثينك بورد، جانت، كنابان وغيرها'
+  }
 ];
 
 // أدوات شريط الأدوات العلوي

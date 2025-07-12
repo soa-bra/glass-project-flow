@@ -52,6 +52,8 @@ export interface Tool {
   label: string;
   icon: any;
   category: 'basic' | 'smart' | 'file' | 'project' | 'navigation' | 'collaboration' | 'content';
+  shortcut?: string;
+  description?: string;
 }
 
 export interface PlanningMode {
