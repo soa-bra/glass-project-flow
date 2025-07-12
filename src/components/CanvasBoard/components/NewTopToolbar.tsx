@@ -58,7 +58,7 @@ const NewTopToolbar: React.FC<NewTopToolbarProps> = ({
   ]);
 
   return (
-    <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
+    <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 pointer-events-auto">
       <Card className="bg-white/95 backdrop-blur-lg shadow-sm border border-gray-200/50 rounded-[20px]">
         <CardContent className="flex items-center justify-center gap-4 px-4 py-2">
           {/* أدوات سجل العمليات */}

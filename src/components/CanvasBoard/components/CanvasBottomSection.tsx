@@ -11,9 +11,11 @@ export const CanvasBottomSection: React.FC<CanvasBottomSectionProps> = ({
   onToolSelect
 }) => {
   return (
-    <MainToolbar
-      selectedTool={selectedTool}
-      onToolSelect={onToolSelect}
-    />
+    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 pointer-events-auto">
+      <MainToolbar
+        selectedTool={selectedTool}
+        onToolSelect={onToolSelect}
+      />
+    </div>
   );
 };

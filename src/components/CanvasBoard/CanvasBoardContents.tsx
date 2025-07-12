@@ -35,8 +35,9 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   }
 
   return (
-    <div className="relative w-full h-full pointer-events-none">
-      <div className="pointer-events-auto">
+    <div className="relative w-full h-full">
+      {/* Canvas Layer - Behind all UI elements */}
+      <div className="absolute inset-0 pointer-events-auto">
         <CanvasWrapper
           showGrid={canvasState.showGrid}
           snapEnabled={canvasState.snapEnabled}
@@ -68,6 +69,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         />
       </div>
       
+      {/* UI Layer - All toolbars and panels */}
       <CleanCanvasPanelLayout
         historyIndex={canvasState.historyIndex}
         history={canvasState.history}
