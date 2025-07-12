@@ -72,11 +72,12 @@ const MainToolbar: React.FC<MainToolbarProps> = ({
         </CardContent>
       </Card>
       
-      {/* عرض اسم الأداة المحددة */}
+      {/* عرض اسم الأداة المحددة مع تأثير */}
       {selectedTool && (
-        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
-          <div className="bg-black text-white px-4 py-2 rounded-lg text-sm font-arabic whitespace-nowrap">
+        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 animate-fade-in">
+          <div className="bg-black text-white px-4 py-2 rounded-lg text-sm font-arabic whitespace-nowrap shadow-lg">
             {MAIN_TOOLBAR_TOOLS.find(t => t.id === selectedTool)?.label}
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black"></div>
           </div>
         </div>
       )}
