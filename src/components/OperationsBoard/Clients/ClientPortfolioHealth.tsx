@@ -16,7 +16,7 @@ interface ClientPortfolioHealthProps {
 export const ClientPortfolioHealth: React.FC<ClientPortfolioHealthProps> = ({
   portfolioHealth
 }) => {
-  return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+  return <div className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
       {/* إجمالي العملاء */}
       <Card className="glass-enhanced rounded-[40px]">
         <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
