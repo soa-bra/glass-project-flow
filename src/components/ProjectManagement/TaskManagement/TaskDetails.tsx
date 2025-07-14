@@ -103,6 +103,7 @@ const TaskListItem: React.FC<TaskListItemProps> = ({
 }) => {
   const dueDate = new Date(task.dueDate);
   const daysLeft = Math.max(Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)), 0);
+  
   const statusColorMap = {
     completed: '#bdeed3',
     'in-progress': '#a4e2f6',
@@ -111,6 +112,7 @@ const TaskListItem: React.FC<TaskListItemProps> = ({
     treating: '#d9d2fd',
     late: '#fbe2aa'
   };
+  
   const statusTextMap = {
     completed: 'مكتملة',
     'in-progress': 'قيد التنفيذ',
@@ -119,54 +121,123 @@ const TaskListItem: React.FC<TaskListItemProps> = ({
     treating: 'تحت المعالجة',
     late: 'متأخرة'
   };
+  
   const priorityIcons = {
     urgent: '🔴',
     high: '🟠',
     medium: '🟡',
     low: '🟢'
   };
-  return <div className={`p-4 rounded-2xl border cursor-pointer transition-all ${isSelected ? 'border-black bg-white shadow-sm' : 'border-black/10 bg-white/50 hover:bg-white hover:border-black/20'}`} onClick={() => onSelect(task.id)}>
-      <div className="flex items-start justify-between mb-3">
-        <h4 className="text-sm font-medium text-black line-clamp-2 flex-1">
-          {task.title}
-        </h4>
-        <span className="text-lg ml-2 flex-shrink-0">
+
+  const getCardStyle = () => {
+    const baseStyle = {
+      width: '100%',
+      height: '140px',
+      backgroundColor: '#EAF2F5',
+      borderRadius: '40px',
+      padding: '8px',
+      direction: 'rtl' as const,
+      display: 'flex',
+      flexDirection: 'column' as const,
+      justifyContent: 'space-between',
+      fontFamily: 'IBM Plex Sans Arabic',
+      cursor: 'pointer',
+      transition: 'opacity 0.2s ease-in-out',
+      opacity: isSelected ? 1 : 0.5 // Selected card is normal, others are faded
+    };
+    
+    return baseStyle;
+  };
+
+  const pillStyle = {
+    backgroundColor: '#F7FFFF',
+    borderRadius: '15px',
+    padding: '3px 8px',
+    fontSize: '10px',
+    fontWeight: 500,
+    color: '#858789',
+    fontFamily: 'IBM Plex Sans Arabic',
+    height: '20px'
+  };
+
+  return (
+    <div 
+      style={getCardStyle()}
+      onClick={() => onSelect(task.id)}
+    >
+      {/* Header Section */}
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'flex-start', 
+        justifyContent: 'space-between',
+        marginBottom: '8px'
+      }}>
+        <div style={{ flex: 1, marginRight: '8px' }}>
+          <h4 style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            color: '#000000',
+            fontFamily: 'IBM Plex Sans Arabic',
+            lineHeight: '1.2',
+            marginBottom: '4px',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}>
+            {task.title}
+          </h4>
+          <p style={{
+            fontSize: '10px',
+            color: '#858789',
+            fontFamily: 'IBM Plex Sans Arabic',
+            display: '-webkit-box',
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}>
+            {task.description || 'لا يوجد وصف'}
+          </p>
+        </div>
+        <span style={{ fontSize: '18px', flexShrink: 0 }}>
           {priorityIcons[task.priority]}
         </span>
       </div>
 
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs">
-          <span className="px-2 py-1 rounded-full font-medium text-black" style={{
-          backgroundColor: statusColorMap[task.status]
+      {/* Footer Section */}
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        gap: '6px',
+        flexWrap: 'wrap',
+        marginTop: '8px'
+      }}>
+        <div style={{
+          ...pillStyle,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px'
         }}>
-            {statusTextMap[task.status]}
-          </span>
-          <span className="text-black/60">
-            {daysLeft === 0 ? 'اليوم' : `${daysLeft} يوم`}
-          </span>
+          <div style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: statusColorMap[task.status]
+          }}></div>
+          {statusTextMap[task.status]}
         </div>
 
-        <div className="text-xs text-black/60">
-          المكلف: {task.assignee}
+        <div style={pillStyle}>
+          {daysLeft === 0 ? 'اليوم' : `${daysLeft} يوم`}
         </div>
-
-        {task.progress > 0 && <div className="space-y-1">
-            <div className="flex justify-between text-xs text-black/60">
-              <span>التقدم</span>
-              <span>{task.progress}%</span>
-            </div>
-            <div className="w-full bg-black/10 rounded-full h-1.5">
-              <div className="bg-black h-1.5 rounded-full transition-all" style={{
-            width: `${task.progress}%`
-          }} />
-            </div>
-          </div>}
-
-        <div className="flex items-center gap-3 text-xs text-black/60">
-          {task.attachments > 0 && <span>📎 {task.attachments}</span>}
-          {task.comments > 0 && <span>💬 {task.comments}</span>}
+        
+        <div style={pillStyle}>{task.assignee}</div>
+        
+        <div style={pillStyle}>
+          {task.comments > 0 ? `💬 ${task.comments}` : 'لا توجد تعليقات'}
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };

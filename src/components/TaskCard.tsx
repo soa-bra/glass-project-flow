@@ -97,7 +97,12 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
         onClick={handleCardClick}
         style={{ cursor: 'pointer' }}
       >
-        <TaskCardLayout id={id.toString()}>
+        <TaskCardLayout 
+          id={id.toString()}
+          isSelected={isSelected}
+          isSelectionMode={isSelectionMode}
+          isOtherSelected={isSelectionMode && !isSelected}
+        >
           <TaskCardHeader
             daysLeft={daysLeft}
             title={taskData.title}
