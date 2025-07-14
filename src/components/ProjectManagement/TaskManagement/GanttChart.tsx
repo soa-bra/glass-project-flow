@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { UnifiedTask, TaskFilters } from '@/types/task';
+import { TaskDetails } from './TaskDetails';
 
 interface GanttChartProps {
   projectId: string;
@@ -10,6 +11,7 @@ interface GanttChartProps {
 export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) => {
   const { getProjectTasks } = useUnifiedTasks(projectId);
   const tasks = getProjectTasks(filters);
+  const [selectedTaskForDetails, setSelectedTaskForDetails] = useState<UnifiedTask | null>(null);
 
   const getStatusColor = (status: UnifiedTask['status']) => {
     switch (status) {
@@ -105,7 +107,10 @@ export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) =>
                 <div key={task.id} className="flex items-center">
                   {/* Task Info */}
                   <div className="w-64 flex-shrink-0 pr-4">
-                    <div className="bg-white rounded-2xl p-3 border border-black/10">
+                    <div 
+                      className="bg-white rounded-2xl p-3 border border-black/10 cursor-pointer hover:bg-gray-50 transition-colors"
+                      onDoubleClick={() => setSelectedTaskForDetails(task)}
+                    >
                       <h4 className="text-sm font-semibold text-black mb-1">{task.title}</h4>
                       <p className="text-xs text-gray-600 mb-2">{task.assignee}</p>
                       <div className="flex items-center gap-2">
@@ -166,6 +171,15 @@ export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) =>
           </div>
         </div>
       </div>
+
+      {/* Task Details Modal */}
+      {selectedTaskForDetails && (
+        <TaskDetails
+          task={selectedTaskForDetails}
+          isOpen={!!selectedTaskForDetails}
+          onClose={() => setSelectedTaskForDetails(null)}
+        />
+      )}
     </div>
   );
 };
