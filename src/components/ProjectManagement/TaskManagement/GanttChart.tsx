@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { UnifiedTask, TaskFilters } from '@/types/task';
+import { TaskDetails } from './TaskDetails';
+import { Button } from '@/components/ui/button';
 
 interface GanttChartProps {
   projectId: string;
@@ -10,6 +12,8 @@ interface GanttChartProps {
 export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) => {
   const { getProjectTasks } = useUnifiedTasks(projectId);
   const tasks = getProjectTasks(filters);
+  const [showTaskDetails, setShowTaskDetails] = useState(false);
+  const [selectedTaskForDetails, setSelectedTaskForDetails] = useState<UnifiedTask | null>(null);
 
   const getStatusColor = (status: UnifiedTask['status']) => {
     switch (status) {
@@ -70,9 +74,32 @@ export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) =>
     timelineHeaders.push(date.toLocaleDateString('ar-SA', { month: 'short', day: 'numeric' }));
   }
 
+  const handleTaskDoubleClick = (task: UnifiedTask) => {
+    setSelectedTaskForDetails(task);
+    setShowTaskDetails(true);
+  };
+
+  if (showTaskDetails) {
+    return (
+      <TaskDetails
+        selectedTask={selectedTaskForDetails}
+        onClose={() => setShowTaskDetails(false)}
+        projectId={projectId}
+      />
+    );
+  }
+
   return (
     <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10 h-full overflow-auto">
-      <h3 className="text-lg font-semibold text-black mb-6">مخطط جانت - جدولة المهام</h3>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold text-black">مخطط جانت - جدولة المهام</h3>
+        <Button
+          variant="outline"
+          onClick={() => setShowTaskDetails(true)}
+        >
+          تفاصيل المهام
+        </Button>
+      </div>
       
       <div className="overflow-x-auto">
         <div className="min-w-[800px]">
@@ -105,7 +132,10 @@ export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) =>
                 <div key={task.id} className="flex items-center">
                   {/* Task Info */}
                   <div className="w-64 flex-shrink-0 pr-4">
-                    <div className="bg-white rounded-2xl p-3 border border-black/10">
+                    <div 
+                      className="bg-white rounded-2xl p-3 border border-black/10 cursor-pointer hover:shadow-md transition-shadow"
+                      onDoubleClick={() => handleTaskDoubleClick(task)}
+                    >
                       <h4 className="text-sm font-semibold text-black mb-1">{task.title}</h4>
                       <p className="text-xs text-gray-600 mb-2">{task.assignee}</p>
                       <div className="flex items-center gap-2">
