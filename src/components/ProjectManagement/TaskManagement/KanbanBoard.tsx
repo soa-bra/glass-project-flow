@@ -4,8 +4,6 @@ import { AddTaskButton } from './AddTaskButton';
 import { BulkActionsBar } from './BulkActionsBar';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { UnifiedTask, TaskFilters, mapToTaskCardProps } from '@/types/task';
-import { TaskDetails } from './TaskDetails';
-import { Button } from '@/components/ui/button';
 
 interface KanbanColumn {
   name: string;
@@ -33,8 +31,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [draggedTask, setDraggedTask] = useState<UnifiedTask | null>(null);
   const [draggedFromStatus, setDraggedFromStatus] = useState<UnifiedTask['status'] | "">("");
-  const [showTaskDetails, setShowTaskDetails] = useState(false);
-  const [selectedTaskForDetails, setSelectedTaskForDetails] = useState<UnifiedTask | null>(null);
 
   const handleDragStart = (task: UnifiedTask, fromStatus: UnifiedTask['status']) => {
     setDraggedTask(task);
@@ -63,33 +59,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
     );
   };
 
-  const handleTaskDoubleClick = (task: UnifiedTask) => {
-    setSelectedTaskForDetails(task);
-    setShowTaskDetails(true);
-  };
-
-  if (showTaskDetails) {
-    return (
-      <TaskDetails
-        selectedTask={selectedTaskForDetails}
-        onClose={() => setShowTaskDetails(false)}
-        projectId={projectId}
-      />
-    );
-  }
-
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">لوحة كانبان</h2>
-        <Button
-          variant="outline"
-          onClick={() => setShowTaskDetails(true)}
-        >
-          تفاصيل المهام
-        </Button>
-      </div>
-
       {/* Bulk Actions Bar */}
       {selectedTasks.length > 0 && (
         <BulkActionsBar 
@@ -133,7 +104,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
                       key={task.id}
                       draggable
                       onDragStart={() => handleDragStart(task, column.status)}
-                      onDoubleClick={() => handleTaskDoubleClick(task)}
                     >
                       <TaskCard
                         {...taskCardProps}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -11,8 +11,6 @@ import {
   Legend,
   ChartOptions
 } from 'chart.js';
-import { TaskDetails } from './TaskDetails';
-import { Button } from '@/components/ui/button';
 
 ChartJS.register(
   CategoryScale,
@@ -29,8 +27,6 @@ interface SprintBurndownChartProps {
 }
 
 export const SprintBurndownChart: React.FC<SprintBurndownChartProps> = ({ projectId }) => {
-  const [showTaskDetails, setShowTaskDetails] = useState(false);
-  const [selectedTaskForDetails, setSelectedTaskForDetails] = useState<any>(null);
   // Mock data for the burndown chart
   const chartData = {
     labels: [
@@ -155,33 +151,12 @@ export const SprintBurndownChart: React.FC<SprintBurndownChartProps> = ({ projec
     }
   };
 
-  const handleTaskDoubleClick = (task: any) => {
-    setSelectedTaskForDetails(task);
-    setShowTaskDetails(true);
-  };
-
-  if (showTaskDetails) {
-    return (
-      <TaskDetails
-        selectedTask={selectedTaskForDetails}
-        onClose={() => setShowTaskDetails(false)}
-        projectId={projectId}
-      />
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* Chart Header */}
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-black">مخطط السبرنت الحرق</h3>
-          <Button
-            variant="outline"
-            onClick={() => setShowTaskDetails(true)}
-          >
-            تفاصيل المهام
-          </Button>
           <div className="flex items-center gap-4">
             <div className="text-sm font-medium text-black">
               المتبقي: <span className="font-bold">3 مهام</span>
@@ -216,10 +191,7 @@ export const SprintBurndownChart: React.FC<SprintBurndownChartProps> = ({ projec
               </div>
               
               {/* Task Info */}
-              <div 
-                className="flex-1 flex items-center justify-between p-4 bg-transparent border border-black/10 rounded-full cursor-pointer hover:shadow-md transition-shadow"
-                onDoubleClick={() => handleTaskDoubleClick(task)}
-              >
+              <div className="flex-1 flex items-center justify-between p-4 bg-transparent border border-black/10 rounded-full">
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-bold text-black">{task.name}</span>
                   {task.dependencies.length > 0 && (
