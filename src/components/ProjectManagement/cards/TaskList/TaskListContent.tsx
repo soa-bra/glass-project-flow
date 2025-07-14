@@ -68,12 +68,10 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
 
   const handleTaskSelect = (taskId: string) => {
     console.log('تحديد/إلغاء تحديد المهمة:', taskId);
-    toggleTaskSelection(taskId);
-
-    // تفعيل نمط التحديد عند تحديد أول مهمة
-    if (!isSelectionMode) {
-      setIsSelectionMode(true);
-    }
+    
+    // في تبويب النظرة العامة، نريد تحديد مهمة واحدة فقط
+    clearSelection(); // مسح كل التحديدات السابقة
+    toggleTaskSelection(taskId); // تحديد المهمة الجديدة فقط
   };
 
   const handleClearSelection = () => {
