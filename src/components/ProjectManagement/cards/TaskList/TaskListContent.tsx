@@ -2,10 +2,11 @@
 import React, { useState, useEffect, useImperativeHandle } from 'react';
 import type { TaskData } from '@/types';
 import type { TaskCardProps } from '@/components/TaskCard/types';
-import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import TaskCard from '@/components/TaskCard';
 import { useTaskSelection } from '@/hooks/useTaskSelection';
+import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
+import { mapToTaskCardProps, mapFromTaskData } from '@/types/task';
 
 export interface TaskListContentRef {
   addTask: (task: TaskData) => void;
@@ -17,7 +18,7 @@ interface TaskListContentProps {
 }
 
 export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListContentProps>(({ projectId }, ref) => {
-  const { getProjectTasks, addTaskToProject, addTasksToProject, updateTaskInProject, removeTaskFromProject } = useProjectTasksContext();
+  const unifiedTasks = useUnifiedTasks(projectId || 'default');
   const {
     selectedTasks,
     toggleTaskSelection,
@@ -26,95 +27,20 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
   const [showBulkArchiveDialog, setShowBulkArchiveDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  
-  // الحصول على مهام المشروع من context أو استخدام البيانات الافتراضية
-  const contextTasks = projectId ? getProjectTasks(projectId) : [];
-  const [defaultTasks] = useState([{
-    id: 1,
-    title: 'تصميم الواجهة',
-    description: 'تطوير موقع سوبرا',
-    status: 'وفق الخطة',
-    statusColor: '#A1E8B8',
-    date: '28 May',
-    assignee: 'د. أسامة',
-    members: 'غير مضيف',
-    daysLeft: 1,
-    priority: 'urgent-not-important' as const
-  }, {
-    id: 2,
-    title: 'كتابة الكود',
-    description: 'تطوير موقع سوبرا',
-    status: 'وفق الخطة',
-    statusColor: '#A1E8B8',
-    date: '29 May',
-    assignee: 'د. أسامة',
-    members: 'عضو',
-    daysLeft: 2,
-    priority: 'urgent-important' as const
-  }, {
-    id: 3,
-    title: 'تطوير قواعد البيانات',
-    description: 'تطوير موقع سوبرا',
-    status: 'وفق الخطة',
-    statusColor: '#A1E8B8',
-    date: '01 Jun',
-    assignee: 'د. أسامة',
-    members: 'عضوين',
-    daysLeft: 5,
-    priority: 'not-urgent-important' as const
-  }, {
-    id: 4,
-    title: 'التسليم',
-    description: 'تسليم الموقع النهائي',
-    status: 'وفق الخطة',
-    statusColor: '#A1E8B8',
-    date: '05 Jun',
-    assignee: 'د. أسامة',
-    members: 'غير مضيف',
-    daysLeft: 10,
-    priority: 'not-urgent-not-important' as const
-  }]);
 
-  const mapTask = (task: TaskData): TaskCardProps => {
-    const dueDate = new Date(task.dueDate);
-    const daysLeft = Math.max(
-      Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
-      0
-    );
-
-    return {
-      id: task.id,
-      title: task.title,
-      description: task.description,
-      status: 'وفق الخطة',
-      statusColor: '#A1E8B8',
-      date: dueDate.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: 'short'
-      }),
-      assignee: task.assignee || 'غير محدد',
-      members: 'غير مضيف',
-      daysLeft,
-      priority: task.priority
-    };
-  };
-
-  // دمج المهام من context مع المهام الافتراضية
-  const allTasks = [
-    ...defaultTasks,
-    ...contextTasks.map(mapTask)
-  ];
+  // الحصول على المهام من النظام الموحد
+  const allTasks = unifiedTasks.tasks.map(mapToTaskCardProps);
 
   const addTask = (task: TaskData) => {
-    if (projectId) {
-      addTaskToProject(projectId, task);
-    }
+    const unifiedTask = mapFromTaskData(task);
+    unifiedTasks.addTask(unifiedTask);
   };
 
   const addTasks = (newTasks: TaskData[]) => {
-    if (projectId) {
-      addTasksToProject(projectId, newTasks);
-    }
+    newTasks.forEach(task => {
+      const unifiedTask = mapFromTaskData(task);
+      unifiedTasks.addTask(unifiedTask);
+    });
   };
 
   useImperativeHandle(ref, () => ({ addTask, addTasks }));
@@ -162,32 +88,24 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
 
   const handleTaskUpdated = (updatedTask: TaskData) => {
     console.log('تحديث المهمة:', updatedTask);
-    
-    if (projectId) {
-      updateTaskInProject(projectId, updatedTask);
-    }
+    const unifiedTask = mapFromTaskData(updatedTask);
+    unifiedTasks.updateTask(updatedTask.id.toString(), unifiedTask);
   };
 
   const handleTaskArchive = (taskId: string) => {
-    if (projectId) {
-      removeTaskFromProject(projectId, parseInt(taskId));
-    }
+    unifiedTasks.removeTask(taskId);
     console.log('تم أرشفة المهمة:', taskId);
   };
 
   const handleTaskDelete = (taskId: string) => {
-    if (projectId) {
-      removeTaskFromProject(projectId, parseInt(taskId));
-    }
+    unifiedTasks.removeTask(taskId);
     console.log('تم حذف المهمة:', taskId);
   };
 
   const handleBulkArchive = () => {
-    if (projectId) {
-      selectedTasks.forEach(taskId => {
-        removeTaskFromProject(projectId, parseInt(taskId));
-      });
-    }
+    selectedTasks.forEach(taskId => {
+      unifiedTasks.removeTask(taskId);
+    });
     clearSelection();
     setIsSelectionMode(false);
     setShowBulkArchiveDialog(false);
@@ -195,11 +113,9 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
   };
 
   const handleBulkDelete = () => {
-    if (projectId) {
-      selectedTasks.forEach(taskId => {
-        removeTaskFromProject(projectId, parseInt(taskId));
-      });
-    }
+    selectedTasks.forEach(taskId => {
+      unifiedTasks.removeTask(taskId);
+    });
     clearSelection();
     setIsSelectionMode(false);
     setShowBulkDeleteDialog(false);

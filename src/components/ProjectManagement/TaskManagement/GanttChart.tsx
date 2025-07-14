@@ -1,90 +1,36 @@
 import React from 'react';
-
-interface Task {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  progress: number;
-  assignee: string;
-  status: 'todo' | 'in-progress' | 'completed';
-  dependencies?: string[];
-}
+import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
+import { UnifiedTask, TaskFilters } from '@/types/task';
 
 interface GanttChartProps {
   projectId: string;
-  filters?: {
-    assignee: string;
-    priority: string;
-    status: string;
-    search: string;
-  };
+  filters?: TaskFilters;
 }
 
 export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) => {
-  // Mock data for demonstration
-  const tasks: Task[] = [
-    {
-      id: '1',
-      name: 'تحليل المتطلبات',
-      startDate: '2024-01-01',
-      endDate: '2024-01-10',
-      progress: 100,
-      assignee: 'أحمد محمد',
-      status: 'completed'
-    },
-    {
-      id: '2',
-      name: 'تصميم الواجهات',
-      startDate: '2024-01-08',
-      endDate: '2024-01-20',
-      progress: 75,
-      assignee: 'فاطمة علي',
-      status: 'in-progress'
-    },
-    {
-      id: '3',
-      name: 'تطوير النظام',
-      startDate: '2024-01-15',
-      endDate: '2024-02-15',
-      progress: 45,
-      assignee: 'محمد حسن',
-      status: 'in-progress'
-    },
-    {
-      id: '4',
-      name: 'اختبار النظام',
-      startDate: '2024-02-10',
-      endDate: '2024-02-25',
-      progress: 0,
-      assignee: 'سارة أحمد',
-      status: 'todo'
-    },
-    {
-      id: '5',
-      name: 'النشر والتشغيل',
-      startDate: '2024-02-20',
-      endDate: '2024-03-01',
-      progress: 0,
-      assignee: 'عمر خالد',
-      status: 'todo'
-    }
-  ];
+  const { getProjectTasks } = useUnifiedTasks(projectId);
+  const tasks = getProjectTasks(filters);
 
-  const getStatusColor = (status: Task['status']) => {
+  const getStatusColor = (status: UnifiedTask['status']) => {
     switch (status) {
       case 'completed':
         return 'bg-[#bdeed3]';
       case 'in-progress':
         return 'bg-[#a4e2f6]';
       case 'todo':
+        return 'bg-[#dfecf2]';
+      case 'stopped':
         return 'bg-[#f1b5b9]';
+      case 'treating':
+        return 'bg-[#d9d2fd]';
+      case 'late':
+        return 'bg-[#fbe2aa]';
       default:
         return 'bg-gray-200';
     }
   };
 
-  const getProgressColor = (status: Task['status']) => {
+  const getProgressColor = (status: UnifiedTask['status']) => {
     switch (status) {
       case 'completed':
         return 'bg-[#bdeed3]';
@@ -92,22 +38,29 @@ export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) =>
         return 'bg-[#a4e2f6]';
       case 'todo':
         return 'bg-[#d9d2fd]';
+      case 'stopped':
+        return 'bg-[#f1b5b9]';
+      case 'treating':
+        return 'bg-[#d9d2fd]';
+      case 'late':
+        return 'bg-[#fbe2aa]';
       default:
         return 'bg-gray-300';
     }
   };
 
-  // Calculate date range for the timeline
-  const startDate = new Date('2024-01-01');
-  const endDate = new Date('2024-03-01');
+  // Calculate date range for the timeline based on actual tasks
+  const taskDates = tasks.map(task => new Date(task.dueDate).getTime());
+  const startDate = tasks.length > 0 ? new Date(Math.min(...taskDates) - 7 * 24 * 60 * 60 * 1000) : new Date();
+  const endDate = tasks.length > 0 ? new Date(Math.max(...taskDates) + 7 * 24 * 60 * 60 * 1000) : new Date();
   const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
-  const calculatePosition = (taskStartDate: string, taskEndDate: string) => {
-    const taskStart = new Date(taskStartDate);
-    const taskEnd = new Date(taskEndDate);
+  const calculatePosition = (task: UnifiedTask) => {
+    const taskStart = new Date(task.dueDate);
+    const taskEnd = new Date(taskStart.getTime() + 7 * 24 * 60 * 60 * 1000); // مدة افتراضية 7 أيام
     const left = ((taskStart.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) / totalDays * 100;
-    const width = ((taskEnd.getTime() - taskStart.getTime()) / (1000 * 60 * 60 * 24)) / totalDays * 100;
-    return { left: `${left}%`, width: `${width}%` };
+    const width = 7 / totalDays * 100; // عرض ثابت للمهام
+    return { left: `${Math.max(0, left)}%`, width: `${Math.min(width, 100 - left)}%` };
   };
 
   // Generate timeline headers
@@ -138,18 +91,26 @@ export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) =>
           {/* Tasks */}
           <div className="space-y-4">
             {tasks.map((task) => {
-              const position = calculatePosition(task.startDate, task.endDate);
+              const position = calculatePosition(task);
+              const statusText = {
+                completed: 'مكتملة',
+                'in-progress': 'قيد التنفيذ',
+                todo: 'لم تبدأ',
+                stopped: 'متوقفة',
+                treating: 'تحت المعالجة',
+                late: 'متأخرة'
+              };
               
               return (
                 <div key={task.id} className="flex items-center">
                   {/* Task Info */}
                   <div className="w-64 flex-shrink-0 pr-4">
                     <div className="bg-white rounded-2xl p-3 border border-black/10">
-                      <h4 className="text-sm font-semibold text-black mb-1">{task.name}</h4>
+                      <h4 className="text-sm font-semibold text-black mb-1">{task.title}</h4>
                       <p className="text-xs text-gray-600 mb-2">{task.assignee}</p>
                       <div className="flex items-center gap-2">
                         <div className={`px-2 py-1 rounded-full text-xs font-medium text-black ${getStatusColor(task.status)}`}>
-                          {task.status === 'completed' ? 'مكتملة' : task.status === 'in-progress' ? 'قيد التنفيذ' : 'لم تبدأ'}
+                          {statusText[task.status]}
                         </div>
                         <span className="text-xs text-gray-600">{task.progress}%</span>
                       </div>
@@ -188,8 +149,20 @@ export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) =>
             <span className="text-black">قيد التنفيذ</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-[#f1b5b9]"></div>
+            <div className="w-4 h-4 rounded bg-[#dfecf2]"></div>
             <span className="text-black">لم تبدأ</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded bg-[#f1b5b9]"></div>
+            <span className="text-black">متوقفة</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded bg-[#d9d2fd]"></div>
+            <span className="text-black">تحت المعالجة</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded bg-[#fbe2aa]"></div>
+            <span className="text-black">متأخرة</span>
           </div>
         </div>
       </div>
