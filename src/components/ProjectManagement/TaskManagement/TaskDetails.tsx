@@ -4,11 +4,15 @@ import { TaskFilters } from './TaskFilters';
 import { Project } from '@/types/project';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { TaskFilters as UnifiedTaskFilters, UnifiedTask } from '@/types/task';
+import { mapToTaskCardProps } from '@/types/task';
 import { Edit, Archive, Trash2, FileText, MessageSquare, Paperclip, Clock, User, Calendar, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import TaskCard from '@/components/TaskCard';
+import { useTaskSelection } from '@/hooks/useTaskSelection';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 interface TaskDetailsProps {
   project: Project;
@@ -22,12 +26,86 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({ project }) => {
     status: '',
     search: ''
   });
+  const [showBulkArchiveDialog, setShowBulkArchiveDialog] = useState(false);
+  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
   
-  const { tasks } = useUnifiedTasks(project.id);
-  const selectedTask = selectedTaskId ? tasks.find(t => t.id === selectedTaskId) : null;
+  const unifiedTasks = useUnifiedTasks(project.id);
+  const {
+    selectedTasks,
+    toggleTaskSelection,
+    clearSelection
+  } = useTaskSelection();
+  
+  const selectedTask = selectedTaskId ? unifiedTasks.tasks.find(t => t.id === selectedTaskId) : null;
+  
+  // الحصول على المهام من النظام الموحد مع الفلترة
+  const allTasks = unifiedTasks.tasks.map(mapToTaskCardProps).filter(task => {
+    const matchesSearch = !filters.search || 
+      task.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+      task.description?.toLowerCase().includes(filters.search.toLowerCase());
+    const matchesStatus = !filters.status || task.status === filters.status;
+    const matchesPriority = !filters.priority || task.priority === filters.priority;
+    const matchesAssignee = !filters.assignee || task.assignee?.includes(filters.assignee);
+    
+    return matchesSearch && matchesStatus && matchesPriority && matchesAssignee;
+  });
 
   const handleTaskSelect = (taskId: string) => {
-    setSelectedTaskId(taskId);
+    console.log('تحديد/إلغاء تحديد المهمة:', taskId);
+    toggleTaskSelection(taskId);
+
+    // تفعيل نمط التحديد عند تحديد أول مهمة
+    if (!isSelectionMode) {
+      setIsSelectionMode(true);
+    }
+  };
+
+  const handleTaskClick = (taskId: string | number) => {
+    setSelectedTaskId(taskId.toString());
+  };
+
+  const handleClearSelection = () => {
+    clearSelection();
+    setIsSelectionMode(false);
+  };
+
+  const handleTaskEdit = (taskId: string) => {
+    console.log('تعديل المهمة:', taskId);
+  };
+
+  const handleTaskUpdated = (updatedTask: any) => {
+    console.log('تحديث المهمة:', updatedTask);
+  };
+
+  const handleTaskArchive = (taskId: string) => {
+    unifiedTasks.removeTask(taskId);
+    console.log('تم أرشفة المهمة:', taskId);
+  };
+
+  const handleTaskDelete = (taskId: string) => {
+    unifiedTasks.removeTask(taskId);
+    console.log('تم حذف المهمة:', taskId);
+  };
+
+  const handleBulkArchive = () => {
+    selectedTasks.forEach(taskId => {
+      unifiedTasks.removeTask(taskId);
+    });
+    clearSelection();
+    setIsSelectionMode(false);
+    setShowBulkArchiveDialog(false);
+    console.log('تم أرشفة المهام المحددة:', selectedTasks);
+  };
+
+  const handleBulkDelete = () => {
+    selectedTasks.forEach(taskId => {
+      unifiedTasks.removeTask(taskId);
+    });
+    clearSelection();
+    setIsSelectionMode(false);
+    setShowBulkDeleteDialog(false);
+    console.log('تم حذف المهام المحددة:', selectedTasks);
   };
 
   const getPriorityColor = (priority: string) => {
@@ -80,45 +158,103 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({ project }) => {
         </div>
         
         <div className="flex-1 overflow-hidden">
-          <div className="space-y-3 overflow-y-auto h-full">
-            {tasks.filter(task => {
-              const matchesSearch = !filters.search || 
-                task.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-                task.description.toLowerCase().includes(filters.search.toLowerCase());
-              const matchesStatus = !filters.status || task.status === filters.status;
-              const matchesPriority = !filters.priority || task.priority === filters.priority;
-              const matchesAssignee = !filters.assignee || task.assignee?.includes(filters.assignee);
-              
-              return matchesSearch && matchesStatus && matchesPriority && matchesAssignee;
-            }).map(task => (
-              <Card 
-                key={task.id} 
-                className={`cursor-pointer transition-all hover:shadow-md ${
-                  selectedTaskId === task.id ? 'ring-2 ring-black' : ''
-                }`}
-                onClick={() => handleTaskSelect(task.id)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-black truncate flex-1">{task.title}</h4>
-                    <Badge className={getStatusColor(task.status)}>
-                      {task.status === 'completed' ? 'مكتملة' :
-                       task.status === 'in-progress' ? 'قيد التنفيذ' :
-                       task.status === 'todo' ? 'مجدولة' :
-                       task.status === 'late' ? 'متأخرة' :
-                       task.status === 'stopped' ? 'متوقفة' :
-                       task.status === 'treating' ? 'تحت المعالجة' : task.status}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-gray-600 truncate mb-2">{task.description}</p>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>الأولوية: {task.priority === 'high' ? 'عالية' : task.priority === 'medium' ? 'متوسطة' : 'منخفضة'}</span>
-                    <span>{task.progress}% مكتمل</span>
-                  </div>
-                </CardContent>
-              </Card>
+          {/* شريط الإجراءات الجماعية */}
+          {selectedTasks.length > 0 && (
+            <div style={{
+              direction: 'rtl',
+              backgroundColor: 'transparent'
+            }} className="mb-4 p-3 flex justify-between items-center font-arabic bg-transparent">
+              <span style={{
+                color: '#000000'
+              }} className="text-sm">
+                تم تحديد {selectedTasks.length} مهمة
+              </span>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setShowBulkArchiveDialog(true)} 
+                  style={{
+                    backgroundColor: '#fbe2aa'
+                  }}
+                  className="px-3 py-1 text-sm transition-colors rounded-full text-black hover:opacity-80"
+                >
+                  أرشفة المحدد
+                </button>
+                <button 
+                  onClick={() => setShowBulkDeleteDialog(true)} 
+                  style={{
+                    backgroundColor: '#f1b5b9'
+                  }}
+                  className="px-3 py-1 text-sm transition-colors rounded-full text-black hover:opacity-80"
+                >
+                  حذف المحدد
+                </button>
+                <button 
+                  onClick={handleClearSelection} 
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: '1px solid #000000'
+                  }}
+                  className="px-3 py-1 text-sm transition-colors rounded-full text-black hover:opacity-80"
+                >
+                  إلغاء التحديد
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-4 pr-1 py-0 my-0 overflow-y-auto h-full">
+            {allTasks.map(task => (
+              <div key={task.id} onClick={() => handleTaskClick(task.id)}>
+                <TaskCard 
+                  {...task} 
+                  isSelected={selectedTasks.includes(task.id.toString())} 
+                  isSelectionMode={isSelectionMode} 
+                  onSelect={handleTaskSelect} 
+                  onEdit={handleTaskEdit} 
+                  onArchive={handleTaskArchive} 
+                  onDelete={handleTaskDelete} 
+                  onTaskUpdated={handleTaskUpdated}
+                />
+              </div>
             ))}
           </div>
+
+          {/* حوارات التأكيد للإجراءات الجماعية */}
+          <AlertDialog open={showBulkArchiveDialog} onOpenChange={setShowBulkArchiveDialog}>
+            <AlertDialogContent className="font-arabic" style={{
+              direction: 'rtl'
+            }}>
+              <AlertDialogHeader>
+                <AlertDialogTitle>تأكيد الأرشفة الجماعية</AlertDialogTitle>
+                <AlertDialogDescription>
+                  هل أنت متأكد من أنك تريد أرشفة {selectedTasks.length} مهمة؟ يمكنك استعادتها لاحقاً من الأرشيف.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                <AlertDialogAction onClick={handleBulkArchive}>أرشفة الكل</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <AlertDialog open={showBulkDeleteDialog} onOpenChange={setShowBulkDeleteDialog}>
+            <AlertDialogContent className="font-arabic" style={{
+              direction: 'rtl'
+            }}>
+              <AlertDialogHeader>
+                <AlertDialogTitle>تأكيد الحذف الجماعي</AlertDialogTitle>
+                <AlertDialogDescription>
+                  هل أنت متأكد من أنك تريد حذف {selectedTasks.length} مهمة نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                <AlertDialogAction onClick={handleBulkDelete} className="bg-red-600 hover:bg-red-700">
+                  حذف الكل نهائياً
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 
