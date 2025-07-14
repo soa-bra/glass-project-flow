@@ -58,23 +58,28 @@ const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
   }
 
   return (
-    <div className="space-y-6 h-full overflow-auto">
-      <div className="text-right">
-        <h2 className="text-2xl font-arabic font-semibold text-gray-800 mb-1">الموارد البشرية</h2>
-        <p className="text-gray-600 text-sm">موازنة الحمل وتحديد النقص في المهارات</p>
+    <div className="space-y-4 h-full overflow-auto bg-transparent">
+      {/* العنوان و KPI في نفس السطر */}
+      <div className="flex justify-between items-start px-6 pt-6">
+        <div className="text-right">
+          <h2 className="text-lg font-semibold text-black font-arabic mb-1">الموارد البشرية</h2>
+          <p className="text-xs font-normal text-gray-400 font-arabic">موازنة الحمل وتحديد النقص في المهارات</p>
+        </div>
+        <div className="flex-1 max-w-2xl">
+          <HRStatsCards stats={data.stats} />
+        </div>
       </div>
       
-      {/* إحصائيات الموارد البشرية */}
-      <HRStatsCards stats={data.stats} />
-      
       {/* الرسوم البيانية الأساسية */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 px-6">
         <ResourceHeatMap resourceData={data.resourceUtilization} />
         <SkillGapRadar skillGaps={data.skillGaps} />
       </div>
       
       {/* توازن أعباء العمل */}
-      <WorkloadBalance workloadData={data.workloadBalance} />
+      <div className="px-6">
+        <WorkloadBalance workloadData={data.workloadBalance} />
+      </div>
     </div>
   );
 };
