@@ -24,9 +24,9 @@ const TaskCardLayout = ({
     
     if (isSelectionMode) {
       if (isSelected) {
-        backgroundColor = '#EAF2F5'; // Keep normal color for selected
-      } else if (isOtherSelected) {
-        opacity = 0.5; // Fade out unselected cards when others are selected
+        opacity = 1; // Selected card stays normal
+      } else {
+        opacity = 0.5; // Unselected cards are faded
       }
     }
     

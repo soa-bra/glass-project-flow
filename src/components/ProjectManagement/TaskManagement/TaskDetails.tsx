@@ -3,6 +3,9 @@ import { UnifiedTask, TaskFilters } from '@/types/task';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { TaskListCard } from '../cards/TaskListCard';
 import { TaskDetailsPanel } from './TaskDetailsPanel';
+import TaskCardLayout from '@/components/TaskCard/TaskCardLayout';
+import TaskCardHeader from '@/components/TaskCard/TaskCardHeader';
+import TaskCardFooterSimple from '@/components/TaskCard/TaskCardFooterSimple';
 interface TaskDetailsProps {
   projectId: string;
   filters: TaskFilters;
@@ -121,123 +124,42 @@ const TaskListItem: React.FC<TaskListItemProps> = ({
     treating: 'تحت المعالجة',
     late: 'متأخرة'
   };
-  
-  const priorityIcons = {
-    urgent: '🔴',
-    high: '🟠',
-    medium: '🟡',
-    low: '🟢'
-  };
 
-  const getCardStyle = () => {
-    const baseStyle = {
-      width: '100%',
-      height: '140px',
-      backgroundColor: '#EAF2F5',
-      borderRadius: '40px',
-      padding: '8px',
-      direction: 'rtl' as const,
-      display: 'flex',
-      flexDirection: 'column' as const,
-      justifyContent: 'space-between',
-      fontFamily: 'IBM Plex Sans Arabic',
-      cursor: 'pointer',
-      transition: 'opacity 0.2s ease-in-out',
-      opacity: isSelected ? 1 : 0.5 // Selected card is normal, others are faded
-    };
-    
-    return baseStyle;
-  };
+  const priorityMap = {
+    urgent: 'urgent-important',
+    high: 'urgent-not-important', 
+    medium: 'not-urgent-important',
+    low: 'not-urgent-not-important'
+  } as const;
 
-  const pillStyle = {
-    backgroundColor: '#F7FFFF',
-    borderRadius: '15px',
-    padding: '3px 8px',
-    fontSize: '10px',
-    fontWeight: 500,
-    color: '#858789',
-    fontFamily: 'IBM Plex Sans Arabic',
-    height: '20px'
+  const handleCardClick = () => {
+    onSelect(task.id);
   };
 
   return (
-    <div 
-      style={getCardStyle()}
-      onClick={() => onSelect(task.id)}
-    >
-      {/* Header Section */}
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'flex-start', 
-        justifyContent: 'space-between',
-        marginBottom: '8px'
-      }}>
-        <div style={{ flex: 1, marginRight: '8px' }}>
-          <h4 style={{
-            fontSize: '14px',
-            fontWeight: 600,
-            color: '#000000',
-            fontFamily: 'IBM Plex Sans Arabic',
-            lineHeight: '1.2',
-            marginBottom: '4px',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
-          }}>
-            {task.title}
-          </h4>
-          <p style={{
-            fontSize: '10px',
-            color: '#858789',
-            fontFamily: 'IBM Plex Sans Arabic',
-            display: '-webkit-box',
-            WebkitLineClamp: 1,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
-          }}>
-            {task.description || 'لا يوجد وصف'}
-          </p>
-        </div>
-        <span style={{ fontSize: '18px', flexShrink: 0 }}>
-          {priorityIcons[task.priority]}
-        </span>
-      </div>
-
-      {/* Footer Section */}
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        gap: '6px',
-        flexWrap: 'wrap',
-        marginTop: '8px'
-      }}>
-        <div style={{
-          ...pillStyle,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px'
-        }}>
-          <div style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: statusColorMap[task.status]
-          }}></div>
-          {statusTextMap[task.status]}
-        </div>
-
-        <div style={pillStyle}>
-          {daysLeft === 0 ? 'اليوم' : `${daysLeft} يوم`}
-        </div>
+    <div onClick={handleCardClick} style={{ cursor: 'pointer' }}>
+      <TaskCardLayout 
+        id={task.id.toString()}
+        isSelected={isSelected}
+        isSelectionMode={true}
+        isOtherSelected={false}
+      >
+        <TaskCardHeader
+          daysLeft={daysLeft}
+          title={task.title}
+          description={task.description || 'لا يوجد وصف'}
+          priority={priorityMap[task.priority] || 'not-urgent-not-important'}
+        />
         
-        <div style={pillStyle}>{task.assignee}</div>
-        
-        <div style={pillStyle}>
-          {task.comments > 0 ? `💬 ${task.comments}` : 'لا توجد تعليقات'}
-        </div>
-      </div>
+        <TaskCardFooterSimple
+          status={statusTextMap[task.status]}
+          statusColor={statusColorMap[task.status]}
+          date={daysLeft === 0 ? 'اليوم' : `${daysLeft} يوم`}
+          assignee={task.assignee}
+          members={task.comments > 0 ? `💬 ${task.comments}` : 'لا توجد تعليقات'}
+          isSelected={isSelected}
+        />
+      </TaskCardLayout>
     </div>
   );
 };
