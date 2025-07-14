@@ -2,7 +2,7 @@ import React from 'react';
 import { Project } from '@/types/project';
 import { NotificationsCard } from './cards/NotificationsCard';
 import { TaskListCard } from './cards/TaskListCard';
-import { FinancialOverviewCard } from './cards/FinancialOverviewCard';
+import { BudgetCard } from './cards/BudgetCard';
 import { DataVisualizationCard } from './cards/DataVisualizationCard';
 import { AISuggestedPerformanceCard } from './cards/AISuggestedPerformanceCard';
 interface ProjectCardGridProps {
@@ -29,7 +29,7 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
 
       {/* الصف الثاني والثالث - العمود الثالث - النظرة المالية */}
       <div className="col-span-1 row-span-2">
-        <FinancialOverviewCard />
+        <BudgetCard project={project} />
       </div>
 
       {/* الصف الثالث - العمود الثاني - بطاقة أداء ذكية */}
