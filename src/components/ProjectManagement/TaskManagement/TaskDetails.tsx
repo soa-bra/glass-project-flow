@@ -73,11 +73,17 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({
             <div className="space-y-4 pr-1 py-0 my-0">
               {filteredTasks.map(task => {
                 const taskCardProps = mapToTaskCardProps(task);
+                const isSelected = selectedTaskId === task.id;
+                const shouldFade = selectedTaskId !== null && !isSelected;
+                
                 return (
-                  <div key={task.id}>
+                  <div 
+                    key={task.id}
+                    className={`transition-opacity duration-300 ${shouldFade ? 'opacity-30' : 'opacity-100'}`}
+                  >
                     <TaskCard 
                       {...taskCardProps}
-                      isSelected={selectedTaskId === task.id}
+                      isSelected={isSelected}
                       isSelectionMode={false}
                       onSelect={handleTaskSelect}
                       onEdit={() => {}}
