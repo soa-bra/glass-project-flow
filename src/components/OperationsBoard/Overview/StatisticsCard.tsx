@@ -96,7 +96,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
                   tickLine={false}
                   tick={{ fontSize: 10, fill: '#000000' }}
                 />
-                <Bar dataKey="value" fill="#bdeed3" radius={[2, 2, 0, 0]} stroke="#000000" strokeWidth={1} />
+                <Bar dataKey="value" fill="#bdeed3" radius={[2, 2, 0, 0]} />
                 <ChartTooltip content={<ChartTooltipContent />} />
               </BarChart>
             </ResponsiveContainer>

@@ -56,9 +56,9 @@ export const CashFlowForecast: React.FC<CashFlowForecastProps> = ({
             }} tickLine={false} axisLine={false} tickFormatter={value => `${value / 1000}ك`} />
               <ChartTooltip content={<ChartTooltipContent formatter={(value: number, name: string) => [`${value.toLocaleString()} ر.س`, name]} />} />
               <Area type="monotone" dataKey="cumulativeBalance" stroke="#a4e2f6" fillOpacity={1} fill="#d9d2fd" strokeWidth={2} name="الرصيد التراكمي" />
-              <Line type="monotone" dataKey="netFlow" stroke="#000000" strokeWidth={2} dot={{
+              <Line type="monotone" dataKey="netFlow" stroke="#a4e2f6" strokeWidth={2} dot={{
               r: 4,
-              fill: '#000000'
+              fill: '#a4e2f6'
             }} name="التدفق الصافي" />
             </AreaChart>
           </ResponsiveContainer>

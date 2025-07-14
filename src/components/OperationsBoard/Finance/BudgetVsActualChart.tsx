@@ -70,16 +70,12 @@ export const BudgetVsActualChart: React.FC<BudgetVsActualChartProps> = ({ monthl
               fill="#bdeed3" 
               radius={[4, 4, 0, 0]}
               name="الميزانية المخططة"
-              stroke="#000000"
-              strokeWidth={1}
             />
             <Bar 
               dataKey="actual" 
               fill="#a4e2f6" 
               radius={[4, 4, 0, 0]}
               name="الإنفاق الفعلي"
-              stroke="#000000"
-              strokeWidth={1}
             />
           </BarChart>
         </ResponsiveContainer>

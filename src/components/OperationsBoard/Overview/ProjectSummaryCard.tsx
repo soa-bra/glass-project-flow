@@ -76,8 +76,6 @@ export const ProjectSummaryCard: React.FC = () => {
                     dataKey="value" 
                     fill="#bdeed3"
                     radius={[2, 2, 0, 0]}
-                    stroke="#000000"
-                    strokeWidth={1}
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
                 </BarChart>
