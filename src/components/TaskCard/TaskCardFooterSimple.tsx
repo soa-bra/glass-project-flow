@@ -56,27 +56,6 @@ const TaskCardFooterSimple = ({
       <div style={pillStyle}>{date}</div>
       <div style={pillStyle}>{assignee}</div>
       <div style={pillStyle}>{members}</div>
-      
-      {/* أيقونة التحديد */}
-      <div
-        style={{
-          ...pillStyle,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '20px',
-          height: '20px',
-          borderRadius: '50%',
-          padding: '0',
-          border: isSelected ? 'none' : '1px solid #858789',
-          backgroundColor: isSelected ? '#858789' : 'transparent',
-          color: isSelected ? '#fff' : '#858789'
-        }}
-      >
-        {isSelected ? (
-          <Check size={12} color="white" />
-        ) : null}
-      </div>
     </div>
   );
 };
