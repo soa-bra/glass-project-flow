@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { KanbanBoard } from './TaskManagement/KanbanBoard';
 import { SprintBurndownChart } from './TaskManagement/SprintBurndownChart';
 import { GanttChart } from './TaskManagement/GanttChart';
+import { TaskDetails } from './TaskManagement/TaskDetails';
 import { AITaskAssistant } from './TaskManagement/AITaskAssistant';
 import { TaskFilters } from './TaskManagement/TaskFilters';
 import { Project } from '@/types/project';
@@ -13,7 +14,7 @@ interface TaskManagementTabProps {
 }
 
 export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project }) => {
-  const [viewMode, setViewMode] = useState<'kanban' | 'chart' | 'gantt'>('kanban');
+  const [viewMode, setViewMode] = useState<'kanban' | 'chart' | 'gantt' | 'details'>('kanban');
   const [filters, setFilters] = useState<UnifiedTaskFilters>({
     assignee: '',
     priority: '',
@@ -61,6 +62,16 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project })
                 }`}
               >
                 مخطط جانت
+              </button>
+              <button
+                onClick={() => setViewMode('details')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  viewMode === 'details'
+                    ? 'bg-black text-white'
+                    : 'text-black hover:bg-black/5'
+                }`}
+              >
+                تفاصيل المهام
               </button>
             </div>
             
@@ -120,8 +131,10 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project })
           <KanbanBoard projectId={project.id} filters={filters} />
         ) : viewMode === 'chart' ? (
           <SprintBurndownChart projectId={project.id} />
-        ) : (
+        ) : viewMode === 'gantt' ? (
           <GanttChart projectId={project.id} filters={filters} />
+        ) : (
+          <TaskDetails projectId={project.id} filters={filters} />
         )}
       </div>
 

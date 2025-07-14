@@ -1,0 +1,386 @@
+import React, { useState } from 'react';
+import { UnifiedTask } from '@/types/task';
+import { Edit, Archive, Trash2, MessageSquare, Paperclip, Activity, Calendar, User, Tag, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+
+interface TaskDetailsPanelProps {
+  task: UnifiedTask;
+}
+
+export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({ task }) => {
+  const [activeTab, setActiveTab] = useState<'details' | 'activity' | 'attachments' | 'comments'>('details');
+
+  const dueDate = new Date(task.dueDate);
+  const createdDate = new Date(task.createdAt);
+  const updatedDate = new Date(task.updatedAt);
+
+  const statusColorMap = {
+    completed: '#bdeed3',
+    'in-progress': '#a4e2f6',
+    todo: '#dfecf2', 
+    stopped: '#f1b5b9',
+    treating: '#d9d2fd',
+    late: '#fbe2aa'
+  };
+
+  const statusTextMap = {
+    completed: 'مكتملة',
+    'in-progress': 'قيد التنفيذ', 
+    todo: 'لم تبدأ',
+    stopped: 'متوقفة',
+    treating: 'تحت المعالجة',
+    late: 'متأخرة'
+  };
+
+  const priorityMap = {
+    urgent: { text: 'عاجل جداً', color: '#f1b5b9' },
+    high: { text: 'عاجل', color: '#fbe2aa' },
+    medium: { text: 'متوسط', color: '#a4e2f6' },
+    low: { text: 'منخفض', color: '#bdeed3' }
+  };
+
+  const handleEdit = () => {
+    console.log('Edit task:', task.id);
+  };
+
+  const handleArchive = () => {
+    console.log('Archive task:', task.id);
+  };
+
+  const handleDelete = () => {
+    console.log('Delete task:', task.id);
+  };
+
+  return (
+    <div className="bg-[#F2FFFF] rounded-3xl border border-black/10 h-full flex flex-col">
+      {/* Header with actions */}
+      <div className="p-6 border-b border-black/10">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <h2 className="text-xl font-semibold text-black mb-2">{task.title}</h2>
+            <p className="text-sm text-black/70">{task.description}</p>
+          </div>
+          
+          <div className="flex items-center gap-2 ml-4">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleEdit}
+              className="text-black border-black/20 hover:bg-black hover:text-white"
+            >
+              <Edit className="w-4 h-4 mr-1" />
+              تعديل
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleArchive}
+              className="text-black border-black/20 hover:bg-black hover:text-white"
+            >
+              <Archive className="w-4 h-4 mr-1" />
+              أرشفة
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleDelete}
+              className="text-red-600 border-red-200 hover:bg-red-600 hover:text-white"
+            >
+              <Trash2 className="w-4 h-4 mr-1" />
+              حذف
+            </Button>
+          </div>
+        </div>
+
+        {/* Task metadata */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="flex items-center gap-2">
+            <div 
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: statusColorMap[task.status] }}
+            />
+            <span className="text-sm text-black">{statusTextMap[task.status]}</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Tag className="w-4 h-4 text-black/60" />
+            <span 
+              className="text-sm px-2 py-1 rounded-full"
+              style={{ 
+                backgroundColor: priorityMap[task.priority].color,
+                color: '#000'
+              }}
+            >
+              {priorityMap[task.priority].text}
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <User className="w-4 h-4 text-black/60" />
+            <span className="text-sm text-black">{task.assignee}</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-black/60" />
+            <span className="text-sm text-black">
+              {dueDate.toLocaleDateString('ar-SA')}
+            </span>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        {task.progress > 0 && (
+          <div className="mt-4">
+            <div className="flex justify-between text-sm text-black mb-2">
+              <span>التقدم</span>
+              <span>{task.progress}%</span>
+            </div>
+            <div className="w-full bg-black/10 rounded-full h-2">
+              <div 
+                className="bg-black h-2 rounded-full transition-all"
+                style={{ width: `${task.progress}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Tabs */}
+      <div className="px-6 py-4 border-b border-black/10">
+        <div className="flex gap-4">
+          {[
+            { key: 'details', label: 'التفاصيل', icon: Activity },
+            { key: 'activity', label: 'سجل الأنشطة', icon: Clock },
+            { key: 'attachments', label: 'المرفقات', icon: Paperclip },
+            { key: 'comments', label: 'التعليقات', icon: MessageSquare }
+          ].map(tab => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key as any)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  activeTab === tab.key
+                    ? 'bg-black text-white'
+                    : 'text-black hover:bg-black/5'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Tab content */}
+      <div className="flex-1 overflow-auto p-6">
+        {activeTab === 'details' && (
+          <TaskDetailsTab task={task} />
+        )}
+        
+        {activeTab === 'activity' && (
+          <TaskActivityTab task={task} />
+        )}
+        
+        {activeTab === 'attachments' && (
+          <TaskAttachmentsTab task={task} />
+        )}
+        
+        {activeTab === 'comments' && (
+          <TaskCommentsTab task={task} />
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Tab Components
+const TaskDetailsTab: React.FC<{ task: UnifiedTask }> = ({ task }) => {
+  const createdDate = new Date(task.createdAt);
+  const updatedDate = new Date(task.updatedAt);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h4 className="text-sm font-semibold text-black mb-3">معلومات المهمة</h4>
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <span className="text-black/60">تاريخ الإنشاء:</span>
+            <p className="text-black">{createdDate.toLocaleDateString('ar-SA')}</p>
+          </div>
+          <div>
+            <span className="text-black/60">آخر تحديث:</span>
+            <p className="text-black">{updatedDate.toLocaleDateString('ar-SA')}</p>
+          </div>
+          <div>
+            <span className="text-black/60">المرفقات:</span>
+            <p className="text-black">{task.attachments} ملف</p>
+          </div>
+          <div>
+            <span className="text-black/60">التعليقات:</span>
+            <p className="text-black">{task.comments} تعليق</p>
+          </div>
+        </div>
+      </div>
+
+      {task.tags.length > 0 && (
+        <div>
+          <h4 className="text-sm font-semibold text-black mb-3">العلامات</h4>
+          <div className="flex flex-wrap gap-2">
+            {task.tags.map((tag, index) => (
+              <Badge key={index} variant="secondary" className="bg-black/10 text-black">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {task.linkedTasks.length > 0 && (
+        <div>
+          <h4 className="text-sm font-semibold text-black mb-3">المهام المرتبطة</h4>
+          <div className="space-y-2">
+            {task.linkedTasks.map(taskId => (
+              <div key={taskId} className="text-sm text-black/70 p-2 bg-black/5 rounded-lg">
+                مهمة #{taskId.split('-').pop()}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const TaskActivityTab: React.FC<{ task: UnifiedTask }> = ({ task }) => {
+  const activities = [
+    { time: '2024-01-15 14:30', action: 'تم إنشاء المهمة', user: 'النظام' },
+    { time: '2024-01-16 09:15', action: 'تم تعيين المهمة للمطور', user: 'مدير المشروع' },
+    { time: '2024-01-17 11:45', action: 'تم بدء العمل على المهمة', user: task.assignee },
+    { time: '2024-01-18 16:20', action: 'تم رفع تقدم 25%', user: task.assignee },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <h4 className="text-sm font-semibold text-black">سجل الأنشطة</h4>
+      <div className="space-y-3">
+        {activities.map((activity, index) => (
+          <div key={index} className="flex gap-3 p-3 bg-white/50 rounded-lg">
+            <div className="w-2 h-2 bg-black rounded-full mt-2 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm text-black">{activity.action}</p>
+              <div className="flex items-center gap-2 mt-1 text-xs text-black/60">
+                <span>{activity.user}</span>
+                <span>•</span>
+                <span>{activity.time}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const TaskAttachmentsTab: React.FC<{ task: UnifiedTask }> = ({ task }) => {
+  const attachments = Array.from({ length: task.attachments }, (_, i) => ({
+    id: i + 1,
+    name: `مرفق_${i + 1}.pdf`,
+    size: '2.5 MB',
+    uploadedAt: '2024-01-15'
+  }));
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-semibold text-black">المرفقات ({task.attachments})</h4>
+        <Button size="sm" className="bg-black text-white hover:bg-black/80">
+          <Paperclip className="w-4 h-4 mr-1" />
+          إضافة مرفق
+        </Button>
+      </div>
+      
+      {attachments.length > 0 ? (
+        <div className="space-y-2">
+          {attachments.map(attachment => (
+            <div key={attachment.id} className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
+              <div className="w-10 h-10 bg-black/10 rounded-lg flex items-center justify-center">
+                <Paperclip className="w-5 h-5 text-black/60" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-black">{attachment.name}</p>
+                <p className="text-xs text-black/60">{attachment.size} • {attachment.uploadedAt}</p>
+              </div>
+              <Button variant="outline" size="sm">
+                تحميل
+              </Button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center text-black/50 py-8">
+          <Paperclip className="w-8 h-8 mx-auto mb-2 opacity-50" />
+          <p>لا توجد مرفقات</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const TaskCommentsTab: React.FC<{ task: UnifiedTask }> = ({ task }) => {
+  const comments = Array.from({ length: task.comments }, (_, i) => ({
+    id: i + 1,
+    author: i % 2 === 0 ? task.assignee : 'مدير المشروع',
+    content: `تعليق رقم ${i + 1} على هذه المهمة. يمكن أن يكون هذا التعليق طويلاً ويحتوي على تفاصيل مهمة حول المهمة.`,
+    time: `منذ ${i + 1} ساعات`
+  }));
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-semibold text-black">التعليقات ({task.comments})</h4>
+      </div>
+      
+      {/* Add comment form */}
+      <div className="bg-white/50 rounded-lg p-4">
+        <textarea 
+          placeholder="أضف تعليقاً جديداً..."
+          className="w-full bg-transparent border border-black/10 rounded-lg p-3 text-sm text-black resize-none"
+          rows={3}
+        />
+        <div className="flex justify-end mt-2">
+          <Button size="sm" className="bg-black text-white hover:bg-black/80">
+            <MessageSquare className="w-4 h-4 mr-1" />
+            إضافة تعليق
+          </Button>
+        </div>
+      </div>
+      
+      {/* Comments list */}
+      {comments.length > 0 ? (
+        <div className="space-y-3">
+          {comments.map(comment => (
+            <div key={comment.id} className="bg-white/50 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 bg-black/10 rounded-full flex items-center justify-center">
+                  <User className="w-3 h-3 text-black/60" />
+                </div>
+                <span className="text-sm font-medium text-black">{comment.author}</span>
+                <span className="text-xs text-black/60">•</span>
+                <span className="text-xs text-black/60">{comment.time}</span>
+              </div>
+              <p className="text-sm text-black/80">{comment.content}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center text-black/50 py-8">
+          <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+          <p>لا توجد تعليقات</p>
+        </div>
+      )}
+    </div>
+  );
+};
