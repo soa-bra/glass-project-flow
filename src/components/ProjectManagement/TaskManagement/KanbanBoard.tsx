@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import TaskCard from '@/components/TaskCard';
 import { AddTaskButton } from './AddTaskButton';
 import { BulkActionsBar } from './BulkActionsBar';
-import { TaskDetails } from './TaskDetails';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { UnifiedTask, TaskFilters, mapToTaskCardProps } from '@/types/task';
 
@@ -28,11 +27,10 @@ const columns: KanbanColumn[] = [
 ];
 
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) => {
-  const { getTasksByStatus, updateTaskStatus, getProjectTasks } = useUnifiedTasks(projectId);
+  const { getTasksByStatus, updateTaskStatus } = useUnifiedTasks(projectId);
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [draggedTask, setDraggedTask] = useState<UnifiedTask | null>(null);
   const [draggedFromStatus, setDraggedFromStatus] = useState<UnifiedTask['status'] | "">("");
-  const [selectedTaskForDetails, setSelectedTaskForDetails] = useState<UnifiedTask | null>(null);
 
   const handleDragStart = (task: UnifiedTask, fromStatus: UnifiedTask['status']) => {
     setDraggedTask(task);
@@ -59,14 +57,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
         ? prev.filter(id => id !== taskId)
         : [...prev, taskId]
     );
-  };
-
-  const handleTaskDoubleClick = (taskId: string) => {
-    const allTasks = getProjectTasks();
-    const task = allTasks.find(t => t.id === taskId);
-    if (task) {
-      setSelectedTaskForDetails(task);
-    }
   };
 
   return (
@@ -120,7 +110,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
                         isSelected={selectedTasks.includes(task.id)}
                         isSelectionMode={false}
                         onSelect={() => handleTaskSelect(task.id)}
-                        onDoubleClick={handleTaskDoubleClick}
                       />
                     </div>
                   );
@@ -133,15 +122,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
           );
         })}
       </div>
-
-      {/* Task Details Modal */}
-      {selectedTaskForDetails && (
-        <TaskDetails
-          task={selectedTaskForDetails}
-          isOpen={!!selectedTaskForDetails}
-          onClose={() => setSelectedTaskForDetails(null)}
-        />
-      )}
     </div>
   );
 };

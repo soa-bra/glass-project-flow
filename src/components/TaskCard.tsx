@@ -15,7 +15,6 @@ interface ExtendedTaskCardProps extends TaskCardProps {
   onArchive?: (taskId: string) => void;
   onDelete?: (taskId: string) => void;
   onTaskUpdated?: (task: TaskData) => void;
-  onDoubleClick?: (taskId: string) => void;
 }
 
 const TaskCard: React.FC<ExtendedTaskCardProps> = ({
@@ -35,8 +34,7 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
   onEdit,
   onArchive,
   onDelete,
-  onTaskUpdated,
-  onDoubleClick
+  onTaskUpdated
 }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [taskData, setTaskData] = useState<TaskData>({
@@ -77,14 +75,6 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
     }
   };
 
-  const handleDoubleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onDoubleClick) {
-      onDoubleClick(id.toString());
-    }
-  };
-
   const handleEdit = (taskId: string, taskData?: TaskData) => {
     console.log('فتح لوحة تعديل المهمة:', taskId);
     setShowEditModal(true);
@@ -105,7 +95,6 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
     <>
       <div 
         onClick={handleCardClick}
-        onDoubleClick={handleDoubleClick}
         style={{ cursor: 'pointer' }}
       >
         <TaskCardLayout id={id.toString()}>
