@@ -12,7 +12,7 @@ interface TeamMember {
   email: string;
   phone: string;
   avatar?: string;
-  utilization: number; // نسبة الاستخدام من 0 إلى 100
+  Productivity: number; // معدل الإنتاجية من 0 إلى 100
   availability: 'available' | 'busy' | 'away' | 'offline';
   currentTasks: number;
   hoursLogged: number;
@@ -31,7 +31,7 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
     role: 'مطور أول',
     email: 'ahmed.ali@company.com',
     phone: '+966501234567',
-    utilization: 85,
+    Productivity: 85,
     availability: 'available',
     currentTasks: 3,
     hoursLogged: 34,
@@ -42,7 +42,7 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
     role: 'مصممة UX/UI',
     email: 'fatima.salem@company.com',
     phone: '+966507654321',
-    utilization: 92,
+    Productivity: 92,
     availability: 'busy',
     currentTasks: 5,
     hoursLogged: 37,
@@ -53,7 +53,7 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
     role: 'محلل أعمال',
     email: 'khalid.rahman@company.com',
     phone: '+966509876543',
-    utilization: 68,
+    Productivity: 68,
     availability: 'available',
     currentTasks: 2,
     hoursLogged: 27,
@@ -64,7 +64,7 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
     role: 'مختبرة برمجيات',
     email: 'nora.mutairi@company.com',
     phone: '+966502468135',
-    utilization: 74,
+    Productivity: 74,
     availability: 'away',
     currentTasks: 4,
     hoursLogged: 30,
@@ -105,10 +105,10 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
         };
     }
   };
-  const getUtilizationColor = (utilization: number) => {
-    if (utilization >= 90) return 'text-red-600';
-    if (utilization >= 80) return 'text-yellow-600';
-    if (utilization >= 60) return 'text-green-600';
+  const getProductivityColor = (Productivity: number) => {
+    if (Productivity >= 90) return 'text-greenr-600';
+    if (Productivity >= 80) return 'text-yellow-600';
+    if (Productivity >= 60) return 'text-red-600';
     return 'text-blue-600';
   };
   return <div className="space-y-4">
@@ -116,13 +116,13 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
       <div className="grid grid-cols-4 gap-2 text-center text-xs">
         <div className="p-2 bg-white/20 rounded-xl">
           <p className="font-bold text-lg">{teamData.length}</p>
-          <p className="text-gray-600">إجمالي الفريق</p>
+          <p className="text-gray-600">إجمالي أعضاء الفريق</p>
         </div>
         <div className="p-2 bg-white/20 rounded-xl">
           <p className="font-bold text-lg text-green-600">
             {teamData.filter(m => m.availability === 'available').length}
           </p>
-          <p className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">متاح</p>
+          <p className="text-gray-600">متاح</p>
         </div>
         <div className="p-2 bg-white/20 rounded-xl">
           <p className="text-black font-normal text-xs">
@@ -132,9 +132,9 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
         </div>
         <div className="p-2 bg-white/20 rounded-xl">
           <p className="text-black font-normal text-xs">
-            {Math.round(teamData.reduce((sum, m) => sum + m.utilization, 0) / teamData.length)}%
+            {Math.round(teamData.reduce((sum, m) => sum + m.Productivity, 0) / teamData.length)}%
           </p>
-          <p className="text-gray-600">متوسط الاستخدام</p>
+          <p className="text-gray-600">متوسط الإنتاجية</p>
         </div>
       </div>
 
@@ -167,12 +167,12 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs">
-                        <span className={`font-bold ${getUtilizationColor(member.utilization)}`}>
-                          {member.utilization}%
+                        <span className={`font-bold ${getProductivityColor(member.Productivity)}`}>
+                          {member.Productivity}%
                         </span>
                         <span className="text-gray-600">معدل الانتاجية</span>
                       </div>
-                      <Progress value={member.utilization} className="h-2" />
+                      <Progress value={member.Productivity} className="h-2" />
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 text-xs text-gray-600">
@@ -199,17 +199,6 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
                 </div>
               </div>;
         })}
-        </div>
-      </ScrollArea>
-
-      {/* أزرار التحكم */}
-      <div className="flex gap-2">
-        <Button size="sm" className="flex-1">
-          إضافة عضو جديد
-        </Button>
-        <Button size="sm" variant="outline" className="flex-1">
-          تصدير التقرير
-        </Button>
       </div>
     </div>;
 };
