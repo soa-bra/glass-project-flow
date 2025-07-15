@@ -6,9 +6,10 @@ import { DocumentsGrid } from '@/components/custom/DocumentsGrid';
 import { TemplateLibrary } from '@/components/custom/TemplateLibrary';
 
 // تبويب الوضع المالي
-export const FinancialTab = ({ data }: any) => {
-  return (
-    <div className="space-y-6">
+export const FinancialTab = ({
+  data
+}: any) => {
+  return <div className="space-y-6">
       {/* حالة الميزانية */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-3">
@@ -102,10 +103,8 @@ export const FinancialTab = ({ data }: any) => {
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-black">التدفق النقدي المتوقع (الأشهر القادمة)</h3>
           <div className="flex gap-2">
-            <button className="px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
-              تعديل الميزانية
-            </button>
-            <button className="px-4 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+            
+            <button className="px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تصدير التقرير
             </button>
           </div>
@@ -115,28 +114,28 @@ export const FinancialTab = ({ data }: any) => {
             <h4 className="text-sm font-bold text-black mb-2">الشهر الحالي</h4>
             <p className="text-2xl font-bold text-black mb-1">8,000 ر.س</p>
             <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">مدفوعات جزئية</span>
+              <span className="text-xs font-normal text-black">مدفوعات جزئية</span>
             </div>
           </div>
           <div className="p-4 bg-transparent border border-black/10 rounded-3xl">
             <h4 className="text-sm font-bold text-black mb-2">الشهر القادم</h4>
             <p className="text-2xl font-bold text-black mb-1">12,000 ر.س</p>
             <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">مرحلة متوسطة</span>
+              <span className="text-xs font-normal text-black">مرحلة متوسطة</span>
             </div>
           </div>
           <div className="p-4 bg-transparent border border-black/10 rounded-3xl">
             <h4 className="text-sm font-bold text-black mb-2">بعد شهرين</h4>
             <p className="text-2xl font-bold text-black mb-1">15,000 ر.س</p>
             <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">مرحلة نهائية</span>
+              <span className="text-xs font-normal text-black">مرحلة نهائية</span>
             </div>
           </div>
           <div className="p-4 bg-transparent border border-black/10 rounded-3xl">
             <h4 className="text-sm font-bold text-black mb-2">المتبقي بعد التسليم</h4>
             <p className="text-2xl font-bold text-black mb-1">15,000 ر.س</p>
             <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">دفعة إغلاق</span>
+              <span className="text-xs font-normal text-black">دفعة إغلاق</span>
             </div>
           </div>
         </div>
@@ -146,35 +145,36 @@ export const FinancialTab = ({ data }: any) => {
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة ميزانية المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
-            <h4 className="text-sm font-bold text-black mb-3">إضافة مصروف جديد</h4>
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
+            <h4 className="font-bold text-black mb-3 text-base">إضافة مصروف جديد</h4>
             <p className="text-xs text-black/70 mb-3">تسجيل مصروف جديد وتصنيفه حسب الفئة</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إضافة مصروف
             </button>
           </div>
-          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
-            <h4 className="text-sm font-bold text-black mb-3">طلب موافقة مالية</h4>
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
+            <h4 className="font-bold text-black mb-3 text-base">طلب موافقة مالية</h4>
             <p className="text-xs text-black/70 mb-3">تقديم طلب موافقة على تعديل الميزانية</p>
-            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               طلب موافقة
             </button>
           </div>
-          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
-            <h4 className="text-sm font-bold text-black mb-3">تحليل الانحرافات</h4>
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
+            <h4 className="font-bold text-black mb-3 text-base">تحليل الانحرافات</h4>
             <p className="text-xs text-black/70 mb-3">مراجعة الانحرافات عن الميزانية المخططة</p>
-            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               عرض التحليل
             </button>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
 
 // تبويب العميل
-export const ClientTab = ({ clientData }: any) => {
+export const ClientTab = ({
+  clientData
+}: any) => {
   const mockClient = {
     id: '1',
     name: 'شركة التقنية المتقدمة',
@@ -187,9 +187,7 @@ export const ClientTab = ({ clientData }: any) => {
     totalProjects: 5,
     sentiment: 0.85
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       {/* حالة رضا العميل */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-3">
@@ -227,69 +225,63 @@ export const ClientTab = ({ clientData }: any) => {
       </div>
       
       <ClientProfile client={mockClient} />
-    </div>
-  );
+    </div>;
 };
 
 // تبويب الفريق
-export const TeamTab = ({ teamData }: any) => {
-  const mockTeamData = [
-    { 
-      id: '1', 
-      name: 'أحمد محمد', 
-      role: 'مطور رئيسي', 
-      email: 'ahmed@company.com',
-      phone: '+966501234567',
-      avatar: '', 
-      utilization: 85, 
-      availability: 'available' as const,
-      currentTasks: 3,
-      hoursLogged: 156,
-      targetHours: 180
-    },
-    { 
-      id: '2', 
-      name: 'فاطمة علي', 
-      role: 'مصممة واجهات', 
-      email: 'fatima@company.com',
-      phone: '+966502345678',
-      avatar: '', 
-      utilization: 95, 
-      availability: 'busy' as const,
-      currentTasks: 4,
-      hoursLogged: 168,
-      targetHours: 180
-    },
-    { 
-      id: '3', 
-      name: 'محمد خالد', 
-      role: 'محلل أنظمة', 
-      email: 'mohammed@company.com',
-      phone: '+966503456789',
-      avatar: '', 
-      utilization: 70, 
-      availability: 'available' as const,
-      currentTasks: 2,
-      hoursLogged: 125,
-      targetHours: 180
-    },
-    { 
-      id: '4', 
-      name: 'نورا سعد', 
-      role: 'مختبرة جودة', 
-      email: 'nora@company.com',
-      phone: '+966504567890',
-      avatar: '', 
-      utilization: 0, 
-      availability: 'away' as const,
-      currentTasks: 0,
-      hoursLogged: 0,
-      targetHours: 180
-    }
-  ];
-
-  return (
-    <div className="space-y-6">
+export const TeamTab = ({
+  teamData
+}: any) => {
+  const mockTeamData = [{
+    id: '1',
+    name: 'أحمد محمد',
+    role: 'مطور رئيسي',
+    email: 'ahmed@company.com',
+    phone: '+966501234567',
+    avatar: '',
+    utilization: 85,
+    availability: 'available' as const,
+    currentTasks: 3,
+    hoursLogged: 156,
+    targetHours: 180
+  }, {
+    id: '2',
+    name: 'فاطمة علي',
+    role: 'مصممة واجهات',
+    email: 'fatima@company.com',
+    phone: '+966502345678',
+    avatar: '',
+    utilization: 95,
+    availability: 'busy' as const,
+    currentTasks: 4,
+    hoursLogged: 168,
+    targetHours: 180
+  }, {
+    id: '3',
+    name: 'محمد خالد',
+    role: 'محلل أنظمة',
+    email: 'mohammed@company.com',
+    phone: '+966503456789',
+    avatar: '',
+    utilization: 70,
+    availability: 'available' as const,
+    currentTasks: 2,
+    hoursLogged: 125,
+    targetHours: 180
+  }, {
+    id: '4',
+    name: 'نورا سعد',
+    role: 'مختبرة جودة',
+    email: 'nora@company.com',
+    phone: '+966504567890',
+    avatar: '',
+    utilization: 0,
+    availability: 'away' as const,
+    currentTasks: 0,
+    hoursLogged: 0,
+    targetHours: 180
+  }];
+  return <div className="space-y-6">
       {/* حالة الفريق */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-3">
@@ -373,7 +365,9 @@ export const TeamTab = ({ teamData }: any) => {
               <span className="text-sm font-bold text-black">85%</span>
             </div>
             <div className="w-full bg-transparent border border-black/10 rounded-full h-3">
-              <div className="bg-[#bdeed3] h-3 rounded-full" style={{ width: '85%' }}></div>
+              <div className="bg-[#bdeed3] h-3 rounded-full" style={{
+              width: '85%'
+            }}></div>
             </div>
           </div>
           <div className="space-y-4">
@@ -382,7 +376,9 @@ export const TeamTab = ({ teamData }: any) => {
               <span className="text-sm font-bold text-black">92%</span>
             </div>
             <div className="w-full bg-transparent border border-black/10 rounded-full h-3">
-              <div className="bg-[#a4e2f6] h-3 rounded-full" style={{ width: '92%' }}></div>
+              <div className="bg-[#a4e2f6] h-3 rounded-full" style={{
+              width: '92%'
+            }}></div>
             </div>
           </div>
           <div className="space-y-4">
@@ -391,7 +387,9 @@ export const TeamTab = ({ teamData }: any) => {
               <span className="text-sm font-bold text-black">78%</span>
             </div>
             <div className="w-full bg-transparent border border-black/10 rounded-full h-3">
-              <div className="bg-[#d9d2fd] h-3 rounded-full" style={{ width: '78%' }}></div>
+              <div className="bg-[#d9d2fd] h-3 rounded-full" style={{
+              width: '78%'
+            }}></div>
             </div>
           </div>
           <div className="space-y-4">
@@ -400,66 +398,62 @@ export const TeamTab = ({ teamData }: any) => {
               <span className="text-sm font-bold text-black">88%</span>
             </div>
             <div className="w-full bg-transparent border border-black/10 rounded-full h-3">
-              <div className="bg-[#f1b5b9] h-3 rounded-full" style={{ width: '88%' }}></div>
+              <div className="bg-[#f1b5b9] h-3 rounded-full" style={{
+              width: '88%'
+            }}></div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
 
 // تبويب المرفقات
-export const AttachmentsTab = ({ documents }: any) => {
-  const mockDocuments = [
-    { 
-      id: '1', 
-      name: 'مواصفات المشروع.pdf', 
-      type: 'document' as const, 
-      size: '2.5 MB', 
-      uploadDate: '2024-01-15',
-      classification: 'Medium' as const,
-      version: '1.0',
-      uploadedBy: 'أحمد محمد',
-      tags: ['مواصفات', 'متطلبات']
-    },
-    { 
-      id: '2', 
-      name: 'التصاميم الأولية.figma', 
-      type: 'image' as const, 
-      size: '15.8 MB', 
-      uploadDate: '2024-01-20',
-      classification: 'High' as const,
-      version: '2.1',
-      uploadedBy: 'فاطمة علي',
-      tags: ['تصميم', 'واجهات']
-    },
-    { 
-      id: '3', 
-      name: 'خطة المشروع.xlsx', 
-      type: 'document' as const, 
-      size: '1.2 MB', 
-      uploadDate: '2024-01-18',
-      classification: 'High' as const,
-      version: '1.5',
-      uploadedBy: 'محمد خالد',
-      tags: ['تخطيط', 'جدولة']
-    },
-    { 
-      id: '4', 
-      name: 'تقرير الاختبار.docx', 
-      type: 'document' as const, 
-      size: '3.7 MB', 
-      uploadDate: '2024-01-22',
-      classification: 'Low' as const,
-      version: '1.0',
-      uploadedBy: 'نورا سعد',
-      tags: ['اختبار', 'جودة']
-    }
-  ];
-
-  return (
-    <div className="space-y-6">
+export const AttachmentsTab = ({
+  documents
+}: any) => {
+  const mockDocuments = [{
+    id: '1',
+    name: 'مواصفات المشروع.pdf',
+    type: 'document' as const,
+    size: '2.5 MB',
+    uploadDate: '2024-01-15',
+    classification: 'Medium' as const,
+    version: '1.0',
+    uploadedBy: 'أحمد محمد',
+    tags: ['مواصفات', 'متطلبات']
+  }, {
+    id: '2',
+    name: 'التصاميم الأولية.figma',
+    type: 'image' as const,
+    size: '15.8 MB',
+    uploadDate: '2024-01-20',
+    classification: 'High' as const,
+    version: '2.1',
+    uploadedBy: 'فاطمة علي',
+    tags: ['تصميم', 'واجهات']
+  }, {
+    id: '3',
+    name: 'خطة المشروع.xlsx',
+    type: 'document' as const,
+    size: '1.2 MB',
+    uploadDate: '2024-01-18',
+    classification: 'High' as const,
+    version: '1.5',
+    uploadedBy: 'محمد خالد',
+    tags: ['تخطيط', 'جدولة']
+  }, {
+    id: '4',
+    name: 'تقرير الاختبار.docx',
+    type: 'document' as const,
+    size: '3.7 MB',
+    uploadDate: '2024-01-22',
+    classification: 'Low' as const,
+    version: '1.0',
+    uploadedBy: 'نورا سعد',
+    tags: ['اختبار', 'جودة']
+  }];
+  return <div className="space-y-6">
       {/* حالة المرفقات */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-3">
@@ -567,23 +561,51 @@ export const AttachmentsTab = ({ documents }: any) => {
       </div>
 
       <DocumentsGrid documents={mockDocuments} />
-    </div>
-  );
+    </div>;
 };
 
 // تبويب القوالب
-export const TemplatesTab = ({ templates }: any) => {
-  const mockTemplates = [
-    { id: '1', name: 'قالب تقرير المشروع الشهري', category: 'تقارير', downloads: 45, lastUsed: '2024-01-20' },
-    { id: '2', name: 'نموذج اتفاقية العمل', category: 'قانوني', downloads: 32, lastUsed: '2024-01-18' },
-    { id: '3', name: 'قالب خطة المشروع', category: 'تخطيط', downloads: 67, lastUsed: '2024-01-22' },
-    { id: '4', name: 'نموذج تقييم الأداء', category: 'موارد بشرية', downloads: 28, lastUsed: '2024-01-15' },
-    { id: '5', name: 'قالب المراسلات الرسمية', category: 'إداري', downloads: 51, lastUsed: '2024-01-19' },
-    { id: '6', name: 'نموذج محضر الاجتماع', category: 'إداري', downloads: 38, lastUsed: '2024-01-21' }
-  ];
-
-  return (
-    <div className="space-y-6">
+export const TemplatesTab = ({
+  templates
+}: any) => {
+  const mockTemplates = [{
+    id: '1',
+    name: 'قالب تقرير المشروع الشهري',
+    category: 'تقارير',
+    downloads: 45,
+    lastUsed: '2024-01-20'
+  }, {
+    id: '2',
+    name: 'نموذج اتفاقية العمل',
+    category: 'قانوني',
+    downloads: 32,
+    lastUsed: '2024-01-18'
+  }, {
+    id: '3',
+    name: 'قالب خطة المشروع',
+    category: 'تخطيط',
+    downloads: 67,
+    lastUsed: '2024-01-22'
+  }, {
+    id: '4',
+    name: 'نموذج تقييم الأداء',
+    category: 'موارد بشرية',
+    downloads: 28,
+    lastUsed: '2024-01-15'
+  }, {
+    id: '5',
+    name: 'قالب المراسلات الرسمية',
+    category: 'إداري',
+    downloads: 51,
+    lastUsed: '2024-01-19'
+  }, {
+    id: '6',
+    name: 'نموذج محضر الاجتماع',
+    category: 'إداري',
+    downloads: 38,
+    lastUsed: '2024-01-21'
+  }];
+  return <div className="space-y-6">
       {/* حالة مكتبة القوالب */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-3">
@@ -670,6 +692,5 @@ export const TemplatesTab = ({ templates }: any) => {
       </div>
 
       <TemplateLibrary templates={mockTemplates} />
-    </div>
-  );
+    </div>;
 };
