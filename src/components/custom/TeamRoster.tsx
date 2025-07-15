@@ -21,10 +21,11 @@ interface TeamMember {
 }
 
 interface TeamRosterProps {
-  data: TeamMember[];
+  data?: TeamMember[];
+  onRemoveMember?: (memberId: string) => void;
 }
 
-export const TeamRoster: React.FC<TeamRosterProps> = ({ data = [] }) => {
+export const TeamRoster: React.FC<TeamRosterProps> = ({ data = [], onRemoveMember }) => {
   // بيانات وهمية في حالة عدم وجود بيانات
   const defaultTeamData: TeamMember[] = [
     {
@@ -178,13 +179,23 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({ data = [] }) => {
                         <span>{member.currentTasks} مهام</span>
                       </div>
                       <div className="text-center">
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 flex-wrap justify-center">
                           <Button size="sm" variant="ghost" className="p-1 h-6 w-6">
                             <Phone className="w-3 h-3" />
                           </Button>
                           <Button size="sm" variant="ghost" className="p-1 h-6 w-6">
                             <Mail className="w-3 h-3" />
                           </Button>
+                          {onRemoveMember && (
+                            <Button 
+                              size="sm" 
+                              variant="destructive"
+                              onClick={() => onRemoveMember(member.id)}
+                              className="px-2 py-1 h-6 text-xs bg-[#f1b5b9] hover:bg-[#ee9ca3] text-black border-0"
+                            >
+                              استبعاد
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>

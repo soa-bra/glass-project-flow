@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, User, Check } from 'lucide-react';
+import { X, User, Check, Sparkles } from 'lucide-react';
 
 interface AvailableMember {
   id: string;
@@ -32,40 +32,46 @@ export const AddTeamMemberModal: React.FC<AddTeamMemberModalProps> = ({
 }) => {
   const [selectedMemberId, setSelectedMemberId] = useState<string>('');
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState<{
+    memberId: string;
+    taskIds: string[];
+    reason: string;
+  } | null>(null);
 
   // Mock data - available members not in current project
   const availableMembers: AvailableMember[] = [
     {
       id: '5',
       name: 'سارة أحمد',
-      role: 'مطورة واجهات خلفية',
+      role: 'مطورة واجهات أمامية',
       department: 'التطوير',
-      skills: ['Node.js', 'Python', 'MongoDB'],
+      skills: ['React', 'TypeScript', 'CSS', 'UI/UX'],
       email: 'sara@company.com'
     },
     {
       id: '6',
-      name: 'عبدالله محمد',
-      role: 'مهندس DevOps',
-      department: 'البنية التحتية',
-      skills: ['Docker', 'Kubernetes', 'AWS'],
-      email: 'abdullah@company.com'
+      name: 'خالد عبدالله',
+      role: 'مطور واجهات خلفية',
+      department: 'التطوير',
+      skills: ['Node.js', 'Python', 'Database', 'API'],
+      email: 'khalid@company.com'
     },
     {
       id: '7',
-      name: 'ريم سالم',
-      role: 'محللة أعمال',
-      department: 'التحليل',
-      skills: ['تحليل الأعمال', 'تجربة المستخدم', 'Figma'],
-      email: 'reem@company.com'
+      name: 'هند محمد',
+      role: 'مختص أمان',
+      department: 'الأمن السيبراني',
+      skills: ['Security', 'Penetration Testing', 'Compliance'],
+      email: 'hind@company.com'
     },
     {
       id: '8',
-      name: 'خالد عبدالرحمن',
-      role: 'مختص أمن معلومات',
-      department: 'الأمن السيبراني',
-      skills: ['أمن المعلومات', 'Penetration Testing', 'CISSP'],
-      email: 'khalid@company.com'
+      name: 'عمر علي',
+      role: 'مطور تطبيقات جوال',
+      department: 'التطوير',
+      skills: ['React Native', 'Flutter', 'Mobile Dev'],
+      email: 'omar@company.com'
     }
   ];
 
@@ -109,14 +115,6 @@ export const AddTeamMemberModal: React.FC<AddTeamMemberModalProps> = ({
       priority: 'high',
       estimatedHours: 18,
       status: 'pending'
-    },
-    {
-      id: '6',
-      title: 'تحسين الأداء والأمان',
-      description: 'مراجعة وتحسين أداء التطبيق وأمانه',
-      priority: 'medium',
-      estimatedHours: 24,
-      status: 'pending'
     }
   ];
 
@@ -144,14 +142,71 @@ export const AddTeamMemberModal: React.FC<AddTeamMemberModalProps> = ({
     // Reset form
     setSelectedMemberId('');
     setSelectedTaskIds([]);
-    onClose();
+    setAiSuggestion(null);
+  };
+
+  const handleAISuggestion = async () => {
+    setIsLoadingAI(true);
+    
+    // محاكاة تحليل الذكاء الاصطناعي
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // تحليل المهارات والمهام لاقتراح أفضل عضو
+    const skills = {
+      '5': ['React', 'TypeScript', 'CSS', 'UI/UX'], // سارة أحمد
+      '6': ['Node.js', 'Python', 'Database', 'API'], // خالد عبدالله
+      '7': ['Security', 'Penetration Testing', 'Compliance'], // هند محمد
+      '8': ['React Native', 'Flutter', 'Mobile Dev'] // عمر علي
+    };
+    
+    const taskRequirements = {
+      '1': ['React', 'TypeScript'],
+      '2': ['Node.js', 'API'],
+      '3': ['Database'],
+      '4': ['Testing'],
+      '5': ['API', 'Node.js']
+    };
+    
+    // العثور على أفضل تطابق
+    let bestMatch = { memberId: '5', score: 0, matchedTasks: [] as string[] };
+    
+    availableMembers.forEach(member => {
+      const memberSkills = skills[member.id as keyof typeof skills] || [];
+      let score = 0;
+      const matchedTasks: string[] = [];
+      
+      projectTasks.forEach(task => {
+        const taskReqs = taskRequirements[task.id as keyof typeof taskRequirements] || [];
+        const matchCount = taskReqs.filter(req => memberSkills.includes(req)).length;
+        if (matchCount > 0) {
+          score += matchCount;
+          matchedTasks.push(task.id);
+        }
+      });
+      
+      if (score > bestMatch.score) {
+        bestMatch = { memberId: member.id, score, matchedTasks };
+      }
+    });
+    
+    const suggestedMember = availableMembers.find(m => m.id === bestMatch.memberId);
+    
+    setAiSuggestion({
+      memberId: bestMatch.memberId,
+      taskIds: bestMatch.matchedTasks.slice(0, 3), // أقصى 3 مهام
+      reason: `تم اختيار ${suggestedMember?.name} بناءً على تطابق المهارات مع متطلبات المشروع (نسبة التطابق: ${Math.round((bestMatch.score / 5) * 100)}%)`
+    });
+    
+    setSelectedMemberId(bestMatch.memberId);
+    setSelectedTaskIds(bestMatch.matchedTasks.slice(0, 3));
+    setIsLoadingAI(false);
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
+      case 'high': return 'bg-[#f1b5b9] text-black';
+      case 'medium': return 'bg-[#fbe2aa] text-black';
+      case 'low': return 'bg-[#bdeed3] text-black';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -171,21 +226,44 @@ export const AddTeamMemberModal: React.FC<AddTeamMemberModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-black/10 w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-black/10 w-full max-w-3xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-black/10">
           <h2 className="text-xl font-bold text-black">إضافة عضو جديد للمشروع</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-black/5 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5 text-black" />
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleAISuggestion}
+              disabled={isLoadingAI}
+              className="flex items-center gap-2 px-4 py-2 bg-[#96d8d0] text-black rounded-full text-sm hover:bg-[#84c5bd] transition-colors disabled:opacity-50"
+            >
+              <Sparkles className="w-4 h-4" />
+              {isLoadingAI ? 'جاري التحليل...' : 'اقتراح العضو الأنسب'}
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-black/5 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5 text-black" />
+            </button>
+          </div>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)] space-y-6">
+          {/* اقتراح الذكاء الاصطناعي */}
+          {aiSuggestion && (
+            <div className="bg-[#96d8d0]/20 border border-[#96d8d0] rounded-2xl p-4">
+              <h3 className="text-sm font-bold text-black mb-2">🤖 اقتراح الذكاء الاصطناعي</h3>
+              <p className="text-xs text-black/70 mb-3">{aiSuggestion.reason}</p>
+              <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+                <span className="text-xs font-medium text-black">
+                  {availableMembers.find(m => m.id === aiSuggestion.memberId)?.name} - {aiSuggestion.taskIds.length} مهام مقترحة
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Member Selection */}
-          <div className="mb-6">
+          <div>
             <label className="block text-sm font-semibold text-black mb-3">
               اختيار عضو الفريق
             </label>
@@ -217,7 +295,7 @@ export const AddTeamMemberModal: React.FC<AddTeamMemberModalProps> = ({
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {selectedMember.skills.map(skill => (
-                    <span key={skill} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                    <span key={skill} className="bg-[#a4e2f6] text-black px-2 py-1 rounded-full text-xs">
                       {skill}
                     </span>
                   ))}
@@ -227,7 +305,7 @@ export const AddTeamMemberModal: React.FC<AddTeamMemberModalProps> = ({
           </div>
 
           {/* Task Selection */}
-          <div className="mb-6">
+          <div>
             <label className="block text-sm font-semibold text-black mb-3">
               اختيار المهام المراد إسنادها ({selectedTaskIds.length} مهمة محددة)
             </label>
@@ -269,7 +347,7 @@ export const AddTeamMemberModal: React.FC<AddTeamMemberModalProps> = ({
 
           {/* Summary */}
           {selectedMemberId && selectedTaskIds.length > 0 && (
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl border border-black/10 p-4">
+            <div className="bg-[#F2FFFF] rounded-2xl border border-black/10 p-4">
               <h3 className="text-sm font-semibold text-black mb-2">ملخص الإضافة</h3>
               <p className="text-sm text-black/70 mb-2">
                 سيتم إضافة <strong>{selectedMember?.name}</strong> للمشروع وإسناد <strong>{selectedTaskIds.length}</strong> مهمة إليه

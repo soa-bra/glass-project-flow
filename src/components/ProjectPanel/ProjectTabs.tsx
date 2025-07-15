@@ -317,7 +317,8 @@ export const TeamTab = ({
   const [isManualTaskDistributionModalOpen, setIsManualTaskDistributionModalOpen] = useState(false);
   const [isPerformanceEvaluationModalOpen, setIsPerformanceEvaluationModalOpen] = useState(false);
   
-  const mockTeamData = [{
+  // إدارة حالة الفريق والمهام
+  const [teamMembers, setTeamMembers] = useState([{
     id: '1',
     name: 'أحمد محمد',
     role: 'مطور رئيسي',
@@ -365,7 +366,54 @@ export const TeamTab = ({
     currentTasks: 0,
     hoursLogged: 0,
     targetHours: 180
-  }];
+  }]);
+
+  // معالج إضافة عضو جديد
+  const handleAddTeamMember = (memberId: string, taskIds: string[]) => {
+    const availableMembers = [
+      { id: '5', name: 'سارة أحمد', role: 'مطور واجهات أمامية', email: 'sara@company.com', phone: '+966505678901' },
+      { id: '6', name: 'خالد عبدالله', role: 'مطور خلفية', email: 'khalid@company.com', phone: '+966506789012' },
+      { id: '7', name: 'هند محمد', role: 'مختص أمان', email: 'hind@company.com', phone: '+966507890123' },
+      { id: '8', name: 'عمر علي', role: 'مطور تطبيقات جوال', email: 'omar@company.com', phone: '+966508901234' }
+    ];
+    
+    const memberToAdd = availableMembers.find(m => m.id === memberId);
+    if (memberToAdd) {
+      const newMember = {
+        ...memberToAdd,
+        avatar: '',
+        productivity: 0,
+        availability: 'available' as const,
+        currentTasks: taskIds.length,
+        hoursLogged: 0,
+        targetHours: 180
+      };
+      setTeamMembers(prev => [...prev, newMember]);
+    }
+  };
+
+  // معالج إزالة عضو
+  const handleRemoveMember = (memberId: string) => {
+    const userRole = 'admin'; // This should come from user context
+    const hasPermission = ['admin', 'owner', 'general_manager'].includes(userRole);
+    
+    if (!hasPermission) {
+      alert('غير مصرح لك بإستبعاد الأعضاء. هذه الميزة متاحة فقط لمدير التطبيق.');
+      return;
+    }
+
+    const member = teamMembers.find(m => m.id === memberId);
+    if (member && window.confirm(`هل تريد بالتأكيد استبعاد ${member.name} من الفريق؟`)) {
+      setTeamMembers(prev => prev.filter(m => m.id !== memberId));
+    }
+  };
+
+  // معالج توزيع المهام
+  const handleTaskDistribution = (redistributedTasks: any[]) => {
+    // تحديث توزيع المهام حسب النتائج
+    console.log('توزيع المهام يدوياً أو بالذكاء الاصطناعي:', redistributedTasks);
+  };
+
   return <div className="space-y-6">
       {/* حالة الفريق */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
@@ -410,7 +458,7 @@ export const TeamTab = ({
         </div>
       </div>
 
-      <TeamRoster data={mockTeamData} />
+      <TeamRoster data={teamMembers} onRemoveMember={handleRemoveMember} />
 
       {/* أدوات إدارة الفريق */}
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
@@ -532,8 +580,8 @@ export const TeamTab = ({
         isOpen={isAddTeamMemberModalOpen}
         onClose={() => setIsAddTeamMemberModalOpen(false)}
         onSave={(memberId, taskIds) => {
-          console.log('إضافة عضو وإسناد مهام:', { memberId, taskIds });
-          alert(`تم إضافة العضو وإسناد ${taskIds.length} مهام بنجاح`);
+          handleAddTeamMember(memberId, taskIds);
+          setIsAddTeamMemberModalOpen(false);
         }}
       />
 
@@ -541,8 +589,8 @@ export const TeamTab = ({
         isOpen={isManualTaskDistributionModalOpen}
         onClose={() => setIsManualTaskDistributionModalOpen(false)}
         onSave={(redistributedTasks) => {
-          console.log('توزيع المهام يدوياً أو بالذكاء الاصطناعي:', redistributedTasks);
-          alert(`تم حفظ توزيع المهام الجديد بنجاح`);
+          handleTaskDistribution(redistributedTasks);
+          setIsManualTaskDistributionModalOpen(false);
         }}
       />
 
