@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ExpenseModal } from './ExpenseModal';
+import { ApprovalRequestModal } from './ApprovalRequestModal';
 import { StatusBox } from '@/components/custom/StatusBox';
 import { ClientProfile } from '@/components/custom/ClientProfile';
 import { TeamRoster } from '@/components/custom/TeamRoster';
@@ -9,6 +10,8 @@ import { TemplateLibrary } from '@/components/custom/TemplateLibrary';
 // تبويب الوضع المالي
 export const FinancialTab = (data: any) => {
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [isApprovalRequestModalOpen, setIsApprovalRequestModalOpen] = useState(false);
+  const [approvalRequests, setApprovalRequests] = useState(data?.approvalRequests || []);
   const [expenses, setExpenses] = useState(data?.expenses || [
     { id: 1, category: 'تشغيلية', amount: 25000, description: 'إيجار المكتب', date: '2024-01-15' },
     { id: 2, category: 'مواد وأدوات', amount: 15000, description: 'أجهزة كمبيوتر', date: '2024-01-10' },
@@ -18,12 +21,33 @@ export const FinancialTab = (data: any) => {
   const totalExpenses = expenses.reduce((sum: number, expense: any) => sum + expense.amount, 0);
   const budgetRemaining = (data?.totalBudget || 200000) - totalExpenses;
 
+  // Mock user role - in real app this would come from auth context
+  const userRole = data?.userRole || 'project_manager';
+
   const handleAddExpense = (newExpense: any) => {
     const expense = {
       id: expenses.length + 1,
       ...newExpense
     };
     setExpenses(prev => [...prev, expense]);
+  };
+
+  const handleApprovalRequest = (request: any) => {
+    const newRequest = {
+      id: approvalRequests.length + 1,
+      ...request,
+      status: 'pending',
+      requestDate: new Date().toISOString(),
+      requestedBy: 'مدير المشروع' // In real app, get from auth context
+    };
+    
+    setApprovalRequests(prev => [...prev, newRequest]);
+    
+    // Send notification to financial manager and admin
+    console.log('إرسال إشعار للمدير المالي والإدارة:', newRequest);
+    
+    // Show success message
+    alert('تم تقديم طلب الموافقة المالية بنجاح. سيتم إشعارك بنتيجة المراجعة.');
   };
 
   return (
@@ -148,7 +172,10 @@ export const FinancialTab = (data: any) => {
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">طلب موافقة مالية</h4>
             <p className="text-xs text-black/70 mb-3">تقديم طلب موافقة على تعديل الميزانية</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button 
+              onClick={() => setIsApprovalRequestModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
               طلب موافقة
             </button>
           </div>
@@ -167,6 +194,14 @@ export const FinancialTab = (data: any) => {
         isOpen={isExpenseModalOpen}
         onClose={() => setIsExpenseModalOpen(false)}
         onSave={handleAddExpense}
+      />
+
+      {/* مودال طلب الموافقة المالية */}
+      <ApprovalRequestModal
+        isOpen={isApprovalRequestModalOpen}
+        onClose={() => setIsApprovalRequestModalOpen(false)}
+        onSubmit={handleApprovalRequest}
+        userRole={userRole}
       />
     </div>
   );
