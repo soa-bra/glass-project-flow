@@ -1,14 +1,62 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StatusBox } from '@/components/custom/StatusBox';
 import { ClientProfile } from '@/components/custom/ClientProfile';
 import { TeamRoster } from '@/components/custom/TeamRoster';
 import { DocumentsGrid } from '@/components/custom/DocumentsGrid';
 import { TemplateLibrary } from '@/components/custom/TemplateLibrary';
+import { ExpenseModal } from '@/components/custom/ExpenseModal';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
   data
 }: any) => {
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [financialData, setFinancialData] = useState({
+    totalBudget: 50000,
+    totalExpenses: 35000,
+    expenses: [
+      { category: 'رواتب الفريق والمكافآت', amount: 20000, percentage: 57, color: '#fbe2aa' },
+      { category: 'أدوات وبرمجيات متخصصة', amount: 8000, percentage: 23, color: '#a4e2f6' },
+      { category: 'استشارات خارجية وخدمات', amount: 5000, percentage: 14, color: '#d9d2fd' },
+      { category: 'مصاريف إدارية وأخرى', amount: 2000, percentage: 6, color: '#f1b5b9' }
+    ]
+  });
+
+  const handleAddExpense = (expense: {
+    category: string;
+    amount: number;
+    description: string;
+    date: string;
+  }) => {
+    setFinancialData(prev => {
+      const newTotalExpenses = prev.totalExpenses + expense.amount;
+      const newExpenses = [...prev.expenses];
+      
+      // Find and update the category
+      const categoryIndex = newExpenses.findIndex(exp => exp.category === expense.category);
+      if (categoryIndex !== -1) {
+        newExpenses[categoryIndex].amount += expense.amount;
+      }
+      
+      // Recalculate percentages
+      const updatedExpenses = newExpenses.map(exp => ({
+        ...exp,
+        percentage: Math.round((exp.amount / newTotalExpenses) * 100)
+      }));
+
+      return {
+        ...prev,
+        totalExpenses: newTotalExpenses,
+        expenses: updatedExpenses
+      };
+    });
+  };
+
+  const remainingBudget = financialData.totalBudget - financialData.totalExpenses;
+  const remainingPercentage = Math.round((remainingBudget / financialData.totalBudget) * 100);
+  const expensePercentage = Math.round((financialData.totalExpenses / financialData.totalBudget) * 100);
+  const expectedProfit = remainingBudget - (financialData.totalBudget * 0.1); // Assuming 10% operational costs
+
   return <div className="space-y-6">
       {/* حالة الميزانية */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
@@ -25,18 +73,18 @@ export const FinancialTab = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">المتبقي من الميزانية</h4>
-          <p className="text-2xl font-bold text-black mb-1">15,000 ر.س</p>
-          <p className="text-sm font-normal text-black">من إجمالي 50,000 ر.س</p>
+          <p className="text-2xl font-bold text-black mb-1">{remainingBudget.toLocaleString()} ر.س</p>
+          <p className="text-sm font-normal text-black">من إجمالي {financialData.totalBudget.toLocaleString()} ر.س</p>
           <div className="mt-3">
             <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
-              <span className="text-sm font-medium text-black">30% متبقية</span>
+              <span className="text-sm font-medium text-black">{remainingPercentage}% متبقية</span>
             </div>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي المصروفات</h4>
-          <p className="text-2xl font-bold text-black mb-1">35,000 ر.س</p>
-          <p className="text-sm font-normal text-black">70% من الميزانية المخططة</p>
+          <p className="text-2xl font-bold text-black mb-1">{financialData.totalExpenses.toLocaleString()} ر.س</p>
+          <p className="text-sm font-normal text-black">{expensePercentage}% من الميزانية المخططة</p>
           <div className="mt-3">
             <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
               <span className="text-sm font-medium text-black">ضمن الحدود</span>
@@ -45,8 +93,8 @@ export const FinancialTab = ({
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">الربح المتوقع</h4>
-          <p className="text-2xl font-bold text-black mb-1">12,000 ر.س</p>
-          <p className="text-sm font-normal text-black">24% هامش ربح متوقع</p>
+          <p className="text-2xl font-bold text-black mb-1">{Math.max(0, expectedProfit).toLocaleString()} ر.س</p>
+          <p className="text-sm font-normal text-black">{Math.round((expectedProfit / financialData.totalBudget) * 100)}% هامش ربح متوقع</p>
           <div className="mt-3">
             <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
               <span className="text-sm font-medium text-black">مربح</span>
@@ -59,42 +107,17 @@ export const FinancialTab = ({
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <h3 className="text-lg font-semibold text-black mb-6">تفصيل المصروفات حسب الفئة</h3>
         <div className="space-y-4">
-          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#fbe2aa] px-3 py-1 rounded-full">
-                <span className="text-sm font-medium text-black">57%</span>
+          {financialData.expenses.map((expense, index) => (
+            <div key={index} className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
+              <div className="flex items-center gap-3">
+                <div className={`px-3 py-1 rounded-full`} style={{ backgroundColor: expense.color }}>
+                  <span className="text-sm font-medium text-black">{expense.percentage}%</span>
+                </div>
+                <span className="text-sm font-bold text-black">{expense.amount.toLocaleString()} ر.س</span>
               </div>
-              <span className="text-sm font-bold text-black">20,000 ر.س</span>
+              <span className="text-sm font-bold text-black">{expense.category}</span>
             </div>
-            <span className="text-sm font-bold text-black">رواتب الفريق والمكافآت</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#a4e2f6] px-3 py-1 rounded-full">
-                <span className="text-sm font-medium text-black">23%</span>
-              </div>
-              <span className="text-sm font-bold text-black">8,000 ر.س</span>
-            </div>
-            <span className="text-sm font-bold text-black">أدوات وبرمجيات متخصصة</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#d9d2fd] px-3 py-1 rounded-full">
-                <span className="text-sm font-medium text-black">14%</span>
-              </div>
-              <span className="text-sm font-bold text-black">5,000 ر.س</span>
-            </div>
-            <span className="text-sm font-bold text-black">استشارات خارجية وخدمات</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#f1b5b9] px-3 py-1 rounded-full">
-                <span className="text-sm font-medium text-black">6%</span>
-              </div>
-              <span className="text-sm font-bold text-black">2,000 ر.س</span>
-            </div>
-            <span className="text-sm font-bold text-black">مصاريف إدارية وأخرى</span>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -148,7 +171,10 @@ export const FinancialTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">إضافة مصروف جديد</h4>
             <p className="text-xs text-black/70 mb-3">تسجيل مصروف جديد وتصنيفه حسب الفئة</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button 
+              onClick={() => setIsExpenseModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
               إضافة مصروف
             </button>
           </div>
@@ -168,6 +194,12 @@ export const FinancialTab = ({
           </div>
         </div>
       </div>
+
+      <ExpenseModal
+        isOpen={isExpenseModalOpen}
+        onClose={() => setIsExpenseModalOpen(false)}
+        onSave={handleAddExpense}
+      />
     </div>;
 };
 
