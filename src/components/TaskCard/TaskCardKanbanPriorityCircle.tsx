@@ -38,8 +38,8 @@ const TaskCardKanbanPriorityCircle = ({
       position: 'absolute',
       top: '0px',
       right: '0px',
-      width: '15px',
-      height: '15px',
+      width: '30px',
+      height: '30px',
       borderRadius: '50%',
       backgroundColor: config.bg,
       display: 'flex',
@@ -48,7 +48,7 @@ const TaskCardKanbanPriorityCircle = ({
       justifyContent: 'center'
     }}>
       <span style={{
-        fontSize: '2.5px',
+        fontSize: '5px',
         fontWeight: 600,
         color: '#000000',
         lineHeight: 1,
@@ -57,7 +57,7 @@ const TaskCardKanbanPriorityCircle = ({
         {config.line1}
       </span>
       <span style={{
-        fontSize: '2px',
+        fontSize: '4px',
         fontWeight: 400,
         color: '#000000',
         marginTop: '0.25px',

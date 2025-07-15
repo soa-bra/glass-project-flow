@@ -39,19 +39,26 @@ export const TaskFilterModal: React.FC<TaskFilterModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/20 backdrop-blur-sm flex items-center justify-center">
-      <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 w-full max-w-md mx-4 border border-white/20 shadow-2xl shadow-black/10">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-black">فلترة المهام</h3>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5"
-          >
-            <X size={16} />
-          </button>
+    <div className="fixed inset-0 z-[99999] bg-black/20 backdrop-blur-sm flex items-center justify-center">
+      <div className="w-full max-w-md mx-4 p-0 font-arabic" style={{
+        background: 'rgba(255,255,255,0.4)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.2)',
+        borderRadius: '24px'
+      }}>
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black/30 w-[32px] h-[32px] flex items-center justify-center transition z-10"
+        >
+          <X size={18} className="text-black" />
+        </button>
+
+        <div className="px-8 pt-8 pb-4">
+          <h3 className="text-2xl font-bold text-right font-arabic">فلترة المهام</h3>
         </div>
 
-        <div className="space-y-4">
+        <div className="px-8 space-y-4">
           {/* المسؤول */}
           <div>
             <label className="block text-sm font-bold text-black mb-2">المسؤول</label>
@@ -119,7 +126,7 @@ export const TaskFilterModal: React.FC<TaskFilterModalProps> = ({
           </div>
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div className="flex gap-3 mt-6 px-8 pb-8">
           <Button
             onClick={handleReset}
             variant="outline"

@@ -8,8 +8,8 @@ const TaskCardKanbanDaysCircle = ({ daysLeft }: TaskCardKanbanDaysCircleProps) =
       position: 'absolute',
       top: '0px',
       left: '0px',
-      width: '30px',
-      height: '30px',
+      width: '60px',
+      height: '60px',
       borderRadius: '50%',
       border: '1px solid #000000',
       backgroundColor: 'transparent',
@@ -19,7 +19,7 @@ const TaskCardKanbanDaysCircle = ({ daysLeft }: TaskCardKanbanDaysCircleProps) =
       justifyContent: 'center'
     }}>
       <span style={{
-        fontSize: '8px',
+        fontSize: '16px',
         fontWeight: 700,
         color: '#000000',
         lineHeight: 1,
@@ -28,7 +28,7 @@ const TaskCardKanbanDaysCircle = ({ daysLeft }: TaskCardKanbanDaysCircleProps) =
         {daysLeft.toString().padStart(2, '0')}
       </span>
       <span style={{
-        fontSize: '5px',
+        fontSize: '10px',
         fontWeight: 400,
         color: '#000000',
         marginTop: '1px',

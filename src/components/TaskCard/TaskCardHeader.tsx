@@ -22,8 +22,8 @@ const TaskCardHeader = ({
       <TaskCardPriorityCircle priority={priority} />
       <div style={{
         marginTop: '0px',
-        marginLeft: '30px',
-        marginRight: '30px',
+        marginLeft: '60px',
+        marginRight: '60px',
         textAlign: 'center',
         paddingTop: '2px'
       }}>
