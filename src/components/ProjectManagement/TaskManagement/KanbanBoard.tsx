@@ -104,16 +104,13 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
                       key={task.id}
                       draggable
                       onDragStart={() => handleDragStart(task, column.status)}
-                      className="w-full"
                     >
-                      <div className="w-full max-w-full">
-                        <TaskCard
-                          {...taskCardProps}
-                          isSelected={selectedTasks.includes(task.id)}
-                          isSelectionMode={false}
-                          onSelect={() => handleTaskSelect(task.id)}
-                        />
-                      </div>
+                      <TaskCard
+                        {...taskCardProps}
+                        isSelected={selectedTasks.includes(task.id)}
+                        isSelectionMode={false}
+                        onSelect={() => handleTaskSelect(task.id)}
+                      />
                     </div>
                   );
                 })}

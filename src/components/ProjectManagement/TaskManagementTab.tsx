@@ -14,25 +14,76 @@ interface TaskManagementTabProps {
 }
 
 export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project }) => {
-  const { tasks } = useUnifiedTasks(project.id);
+  const [viewMode, setViewMode] = useState<'kanban' | 'chart' | 'gantt' | 'details'>('kanban');
   const [filters, setFilters] = useState<UnifiedTaskFilters>({
     assignee: '',
     priority: '',
     status: '',
     search: ''
   });
+  
+  const { tasks } = useUnifiedTasks(project.id);
 
   return (
     <div className="flex-1 overflow-auto space-y-6">
-      {/* Header */}
+      {/* Header with view toggle and AI assistant */}
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-black">إدارة المهام</h3>
-          <AITaskAssistant projectId={project.id} />
+          <div className="flex items-center gap-4">
+            {/* View mode toggle */}
+            <div className="flex bg-transparent border border-black/10 rounded-full p-1">
+              <button
+                onClick={() => setViewMode('kanban')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  viewMode === 'kanban'
+                    ? 'bg-black text-white'
+                    : 'text-black hover:bg-black/5'
+                }`}
+              >
+                لوحة كانبان
+              </button>
+              <button
+                onClick={() => setViewMode('chart')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  viewMode === 'chart'
+                    ? 'bg-black text-white'
+                    : 'text-black hover:bg-black/5'
+                }`}
+              >
+                مخطط السبرنت
+              </button>
+              <button
+                onClick={() => setViewMode('gantt')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  viewMode === 'gantt'
+                    ? 'bg-black text-white'
+                    : 'text-black hover:bg-black/5'
+                }`}
+              >
+                مخطط جانت
+              </button>
+              <button
+                onClick={() => setViewMode('details')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  viewMode === 'details'
+                    ? 'bg-black text-white'
+                    : 'text-black hover:bg-black/5'
+                }`}
+              >
+                تفاصيل المهام
+              </button>
+            </div>
+            
+            {/* AI Assistant Button */}
+            <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-black/80 transition-colors">
+              🤖 مساعد الذكاء الاصطناعي
+            </button>
+          </div>
         </div>
         
         <p className="text-sm font-medium text-black">
-          إدارة شاملة للمهام مع لوحة كانبان للتخطيط والمتابعة
+          إدارة شاملة للمهام مع أدوات ذكية للتخطيط والمتابعة والتحليل
         </p>
       </div>
 
@@ -75,17 +126,20 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project })
       <TaskFilters filters={filters} onFiltersChange={setFilters} />
 
       {/* Main Content Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
-        {/* Kanban Board */}
-        <div className="lg:col-span-2">
+      <div className="flex-1 min-h-0">
+        {viewMode === 'kanban' ? (
           <KanbanBoard projectId={project.id} filters={filters} />
-        </div>
-        
-        {/* Task Details Panel */}
-        <div className="lg:col-span-1">
+        ) : viewMode === 'chart' ? (
+          <SprintBurndownChart projectId={project.id} />
+        ) : viewMode === 'gantt' ? (
+          <GanttChart projectId={project.id} filters={filters} />
+        ) : (
           <TaskDetails projectId={project.id} filters={filters} />
-        </div>
+        )}
       </div>
+
+      {/* AI Assistant Panel */}
+      <AITaskAssistant projectId={project.id} />
     </div>
   );
 };

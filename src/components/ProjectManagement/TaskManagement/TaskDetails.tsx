@@ -21,8 +21,6 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({
 
   // Filter tasks based on filters
   const filteredTasks = tasks.filter(task => {
-    if (!filters) return true; // Safety check for undefined filters
-    
     if (filters.assignee && !task.assignee.toLowerCase().includes(filters.assignee.toLowerCase())) {
       return false;
     }
