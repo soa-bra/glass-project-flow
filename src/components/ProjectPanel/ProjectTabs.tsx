@@ -9,6 +9,7 @@ import { ApprovalRequestModal } from '@/components/custom/ApprovalRequestModal';
 import { FinancialAnalysisModal } from '@/components/custom/FinancialAnalysisModal';
 import { TaskAssignmentModal } from '@/components/custom/TaskAssignmentModal';
 import { TaskRedistributionModal } from '@/components/custom/TaskRedistributionModal';
+import { AddTeamMemberModal } from '@/components/custom/AddTeamMemberModal';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -310,6 +311,7 @@ export const TeamTab = ({
 }: any) => {
   const [isTaskAssignmentModalOpen, setIsTaskAssignmentModalOpen] = useState(false);
   const [isTaskRedistributionModalOpen, setIsTaskRedistributionModalOpen] = useState(false);
+  const [isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen] = useState(false);
   
   const mockTeamData = [{
     id: '1',
@@ -414,7 +416,7 @@ export const TeamTab = ({
             <h4 className="text-sm font-bold text-black mb-3">إسناد مهام للموارد البشرية</h4>
             <p className="text-xs text-black/70 mb-3">إسناد مهام المشروع لموظفي قسم الموارد البشرية</p>
             <button 
-              onClick={() => setIsTaskAssignmentModalOpen(true)}
+              onClick={() => setIsAddTeamMemberModalOpen(true)}
               className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
             >
               إضافة عضو
@@ -506,6 +508,15 @@ export const TeamTab = ({
         onRedistribute={(redistributedTasks) => {
           console.log('إعادة توزيع المهام:', redistributedTasks);
           alert(`تم إعادة توزيع ${redistributedTasks.length} مهام بنجاح باستخدام الذكاء الاصطناعي`);
+        }}
+      />
+
+      <AddTeamMemberModal
+        isOpen={isAddTeamMemberModalOpen}
+        onClose={() => setIsAddTeamMemberModalOpen(false)}
+        onSave={(memberId, taskIds) => {
+          console.log('إضافة عضو وإسناد مهام:', { memberId, taskIds });
+          alert(`تم إضافة العضو وإسناد ${taskIds.length} مهام بنجاح`);
         }}
       />
     </div>;
