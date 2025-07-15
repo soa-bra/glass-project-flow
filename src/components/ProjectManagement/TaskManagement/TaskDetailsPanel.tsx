@@ -3,6 +3,10 @@ import { UnifiedTask } from '@/types/task';
 import { Edit, Archive, Trash2, MessageSquare, Paperclip, Activity, Calendar, User, Tag, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AddTaskModal } from '@/components/ProjectsColumn/AddTaskModal';
+
+import type { TaskData } from '@/types';
 interface TaskDetailsPanelProps {
   task: UnifiedTask;
 }
@@ -47,15 +51,50 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
       color: '#bdeed3'
     }
   };
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   const handleEdit = () => {
     console.log('Edit task:', task.id);
+    setShowEditModal(true);
   };
   const handleArchive = () => {
     console.log('Archive task:', task.id);
+    setShowArchiveDialog(true);
   };
   const handleDelete = () => {
     console.log('Delete task:', task.id);
+    setShowDeleteDialog(true);
   };
+
+  const confirmArchive = () => {
+    console.log('تم أرشفة المهمة:', task.id);
+    setShowArchiveDialog(false);
+  };
+
+  const confirmDelete = () => {
+    console.log('تم حذف المهمة:', task.id);
+    setShowDeleteDialog(false);
+  };
+
+  const handleTaskUpdated = (updatedTask: any) => {
+    console.log('تم تحديث المهمة:', updatedTask);
+    setShowEditModal(false);
+  };
+
+  // تحويل UnifiedTask إلى TaskData
+  const convertToTaskData = (unifiedTask: UnifiedTask): TaskData => ({
+    id: parseInt(unifiedTask.id.split('-').pop() || '0'),
+    title: unifiedTask.title,
+    description: unifiedTask.description,
+    dueDate: unifiedTask.dueDate,
+    assignee: unifiedTask.assignee,
+    priority: unifiedTask.priority as TaskData['priority'],
+    attachments: [],
+    stage: 'planning',
+    createdAt: unifiedTask.createdAt
+  });
   return <div className="bg-[#F2FFFF] rounded-3xl border border-black/10 h-full flex flex-col">
       {/* Header with actions */}
       <div className="p-6 border-b border-black/10">
@@ -166,6 +205,48 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
         
         {activeTab === 'comments' && <TaskCommentsTab task={task} />}
       </div>
+      
+      {/* حوارات التأكيد والنوافذ */}
+      <AlertDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
+        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد الأرشفة</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من أنك تريد أرشفة هذه المهمة؟ يمكنك استعادتها لاحقاً من الأرشيف.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2">
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmArchive}>أرشفة</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من أنك تريد حذف هذه المهمة نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2">
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+              حذف نهائي
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AddTaskModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onTaskAdded={() => {}}
+        onTaskUpdated={handleTaskUpdated}
+        editingTask={convertToTaskData(task)}
+        isEditMode={true}
+      />
     </div>;
 };
 

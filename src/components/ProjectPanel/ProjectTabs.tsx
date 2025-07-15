@@ -99,7 +99,17 @@ export const FinancialTab = ({ data }: any) => {
 
       {/* التدفق النقدي المتوقع */}
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
-        <h3 className="text-lg font-semibold text-black mb-6">التدفق النقدي المتوقع (الأشهر القادمة)</h3>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-black">التدفق النقدي المتوقع (الأشهر القادمة)</h3>
+          <div className="flex gap-2">
+            <button className="px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+              تعديل الميزانية
+            </button>
+            <button className="px-4 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+              تصدير التقرير
+            </button>
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
           <div className="p-4 bg-transparent border border-black/10 rounded-3xl">
             <h4 className="text-sm font-bold text-black mb-2">الشهر الحالي</h4>
@@ -128,6 +138,34 @@ export const FinancialTab = ({ data }: any) => {
             <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
               <span className="text-xs font-normal text-gray-400">دفعة إغلاق</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* أدوات إدارة الميزانية */}
+      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+        <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة ميزانية المشروع</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+            <h4 className="text-sm font-bold text-black mb-3">إضافة مصروف جديد</h4>
+            <p className="text-xs text-black/70 mb-3">تسجيل مصروف جديد وتصنيفه حسب الفئة</p>
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+              إضافة مصروف
+            </button>
+          </div>
+          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+            <h4 className="text-sm font-bold text-black mb-3">طلب موافقة مالية</h4>
+            <p className="text-xs text-black/70 mb-3">تقديم طلب موافقة على تعديل الميزانية</p>
+            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+              طلب موافقة
+            </button>
+          </div>
+          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+            <h4 className="text-sm font-bold text-black mb-3">تحليل الانحرافات</h4>
+            <p className="text-xs text-black/70 mb-3">مراجعة الانحرافات عن الميزانية المخططة</p>
+            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+              عرض التحليل
+            </button>
           </div>
         </div>
       </div>
@@ -297,6 +335,34 @@ export const TeamTab = ({ teamData }: any) => {
 
       <TeamRoster data={mockTeamData} />
 
+      {/* أدوات إدارة الفريق */}
+      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+        <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة فريق المشروع</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+            <h4 className="text-sm font-bold text-black mb-3">إضافة عضو جديد</h4>
+            <p className="text-xs text-black/70 mb-3">دعوة عضو جديد للانضمام إلى الفريق</p>
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+              إضافة عضو
+            </button>
+          </div>
+          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+            <h4 className="text-sm font-bold text-black mb-3">توزيع المهام</h4>
+            <p className="text-xs text-black/70 mb-3">إعادة توزيع المهام بين أعضاء الفريق</p>
+            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+              توزيع المهام
+            </button>
+          </div>
+          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+            <h4 className="text-sm font-bold text-black mb-3">تقييم الأداء</h4>
+            <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق</p>
+            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+              تقييم الأداء
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* تحليل توزيع المهارات */}
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <h3 className="text-lg font-semibold text-black mb-6">توزيع المهارات والكفاءات في الفريق</h3>
@@ -433,6 +499,34 @@ export const AttachmentsTab = ({ documents }: any) => {
           <p className="text-2xl font-bold text-black mb-1">5</p>
           <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">خلال اليوم</span>
+          </div>
+        </div>
+      </div>
+
+      {/* أدوات إدارة المرفقات */}
+      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+        <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة مرفقات المشروع</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+            <h4 className="text-sm font-bold text-black mb-3">رفع ملف جديد</h4>
+            <p className="text-xs text-black/70 mb-3">إضافة مستندات وملفات جديدة للمشروع</p>
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+              رفع ملف
+            </button>
+          </div>
+          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+            <h4 className="text-sm font-bold text-black mb-3">تنظيم المجلدات</h4>
+            <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم مجلدات المشروع</p>
+            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+              تنظيم المجلدات
+            </button>
+          </div>
+          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+            <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
+            <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للملفات</p>
+            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+              إدارة الصلاحيات
+            </button>
           </div>
         </div>
       </div>

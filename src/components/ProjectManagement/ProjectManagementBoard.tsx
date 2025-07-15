@@ -34,13 +34,17 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
   const handleDeleteProject = () => {
     console.log('حذف المشروع:', project.id);
+    // تنفيذ عملية حذف المشروع
     setShowDeleteDialog(false);
+    onProjectUpdated?.(editingProjectData);
     onClose();
   };
 
   const handleArchiveProject = () => {
     console.log('أرشفة المشروع:', project.id);
+    // تنفيذ عملية أرشفة المشروع
     setShowArchiveDialog(false);
+    onProjectUpdated?.(editingProjectData);
     onClose();
   };
 
@@ -75,16 +79,16 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       label: 'إدارة المهام'
     }, {
       id: 'finance',
-      label: 'الوضع المالي'
+      label: 'الإدارة المالية'
     }, {
       id: 'team',
-      label: 'الفريق'
+      label: 'إدارة الفريق'
     }, {
       id: 'client',
       label: 'العميل'
     }, {
       id: 'files',
-      label: 'المرفقات'
+      label: 'إدارة المرفقات'
     }, {
       id: 'templates',
       label: 'النماذج والقوالب'

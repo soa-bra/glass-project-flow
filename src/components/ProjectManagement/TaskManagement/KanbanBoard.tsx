@@ -116,7 +116,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
                 })}
                 
                 {/* Add Task Button */}
-                <AddTaskButton column={column.name} />
+                <AddTaskButton column={column.name} projectId={projectId} />
               </div>
             </div>
           );
