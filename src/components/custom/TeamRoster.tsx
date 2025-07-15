@@ -122,7 +122,7 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
           <p className="font-bold text-lg text-green-600">
             {teamData.filter(m => m.availability === 'available').length}
           </p>
-          <p className="text-gray-600">متاح</p>
+          <p className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">متاح</p>
         </div>
         <div className="p-2 bg-white/20 rounded-xl">
           <p className="font-bold text-lg text-red-600">
@@ -139,7 +139,7 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
       </div>
 
       <ScrollArea className="h-[500px]">
-        <div className="space-y-3">
+        <div className="">
           {teamData.map(member => {
           const availabilityConfig = getAvailabilityConfig(member.availability);
           return <div key={member.id} className="bg-white/20 rounded-2xl p-4 hover:bg-white/30 transition-colors">
