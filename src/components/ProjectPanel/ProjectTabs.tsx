@@ -438,9 +438,19 @@ export const TeamTab = ({
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تقييم الأداء</h4>
-            <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق</p>
+            <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق (متاحة فقط لمدير قسم فأعلى)</p>
             <button 
-              onClick={() => setIsPerformanceEvaluationModalOpen(true)}
+              onClick={() => {
+                // Check if user has permission (Department Manager or above)
+                const userRole = 'department_manager'; // This should come from user context
+                const hasPermission = ['department_manager', 'admin', 'owner'].includes(userRole);
+                
+                if (hasPermission) {
+                  setIsPerformanceEvaluationModalOpen(true);
+                } else {
+                  alert('غير مصرح لك بالوصول إلى تقييم الأداء. هذه الميزة متاحة فقط لمدير القسم فأعلى.');
+                }
+              }}
               className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
             >
               تقييم الأداء

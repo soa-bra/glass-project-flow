@@ -122,8 +122,8 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-black/10 w-full max-w-5xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 glass-backdrop flex items-center justify-center z-50 p-4">
+      <div className="glass-modal rounded-3xl w-full max-w-5xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-black/10">
           <h2 className="text-xl font-bold text-black">تقييم الأداء بالذكاء الاصطناعي</h2>
