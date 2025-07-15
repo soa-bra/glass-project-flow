@@ -7,6 +7,7 @@ import { TemplateLibrary } from '@/components/custom/TemplateLibrary';
 import { ExpenseModal } from '@/components/custom/ExpenseModal';
 import { ApprovalRequestModal } from '@/components/custom/ApprovalRequestModal';
 import { FinancialAnalysisModal } from '@/components/custom/FinancialAnalysisModal';
+import { TaskAssignmentModal } from '@/components/custom/TaskAssignmentModal';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -306,6 +307,8 @@ export const ClientTab = ({
 export const TeamTab = ({
   teamData
 }: any) => {
+  const [isTaskAssignmentModalOpen, setIsTaskAssignmentModalOpen] = useState(false);
+  
   const mockTeamData = [{
     id: '1',
     name: 'أحمد محمد',
@@ -406,10 +409,13 @@ export const TeamTab = ({
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة فريق المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
-            <h4 className="text-sm font-bold text-black mb-3">إضافة عضو جديد</h4>
-            <p className="text-xs text-black/70 mb-3">دعوة عضو جديد للانضمام إلى الفريق</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
-              إضافة عضو
+            <h4 className="text-sm font-bold text-black mb-3">إسناد مهام للموارد البشرية</h4>
+            <p className="text-xs text-black/70 mb-3">إسناد مهام المشروع لموظفي قسم الموارد البشرية</p>
+            <button 
+              onClick={() => setIsTaskAssignmentModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
+              إسناد مهام HR
             </button>
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
@@ -479,6 +485,15 @@ export const TeamTab = ({
           </div>
         </div>
       </div>
+
+      <TaskAssignmentModal
+        isOpen={isTaskAssignmentModalOpen}
+        onClose={() => setIsTaskAssignmentModalOpen(false)}
+        onSave={(employeeId, taskIds) => {
+          console.log('إسناد مهام:', { employeeId, taskIds });
+          alert(`تم إسناد ${taskIds.length} مهام بنجاح إلى الموظف المحدد`);
+        }}
+      />
     </div>;
 };
 
