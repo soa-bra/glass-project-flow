@@ -39,32 +39,26 @@ export const TaskFilterModal: React.FC<TaskFilterModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-black/20 backdrop-blur-sm flex items-center justify-center">
-      <div style={{
-        background: 'rgba(255,255,255,0.4)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255,255,255,0.2)',
-        borderRadius: '24px'
-      }} className="p-8 w-full max-w-md mx-4 shadow-2xl shadow-black/10 font-arabic">
-        <div className="flex items-center justify-between mb-6 relative">
-          <h3 className="text-2xl font-bold text-right text-black font-arabic">فلترة المهام</h3>
+    <div className="fixed inset-0 z-[9999] bg-black/20 backdrop-blur-sm flex items-center justify-center">
+      <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 w-full max-w-md mx-4 border border-white/20 shadow-2xl shadow-black/10">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-black">فلترة المهام</h3>
           <button
             onClick={onClose}
-            className="absolute top-0 left-0 rounded-full bg-transparent hover:bg-black/10 border border-black/30 w-[32px] h-[32px] flex items-center justify-center transition"
+            className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5"
           >
-            <X size={18} className="text-black" />
+            <X size={16} />
           </button>
         </div>
 
         <div className="space-y-4">
           {/* المسؤول */}
           <div>
-            <label className="block text-sm font-bold text-black mb-3 text-right font-arabic">المسؤول</label>
+            <label className="block text-sm font-bold text-black mb-2">المسؤول</label>
             <select
               value={filters.assignee}
               onChange={(e) => setFilters(prev => ({ ...prev, assignee: e.target.value }))}
-              className="w-full p-4 border border-black/20 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-black/50 bg-white/50 backdrop-blur-sm font-arabic text-right"
+              className="w-full p-3 border border-black/10 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-black"
             >
               <option value="">جميع الأعضاء</option>
               <option value="أحمد محمد">أحمد محمد</option>
@@ -76,11 +70,11 @@ export const TaskFilterModal: React.FC<TaskFilterModalProps> = ({
 
           {/* الأولوية */}
           <div>
-            <label className="block text-sm font-bold text-black mb-3 text-right font-arabic">الأولوية</label>
+            <label className="block text-sm font-bold text-black mb-2">الأولوية</label>
             <select
               value={filters.priority}
               onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
-              className="w-full p-4 border border-black/20 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-black/50 bg-white/50 backdrop-blur-sm font-arabic text-right"
+              className="w-full p-3 border border-black/10 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-black"
             >
               <option value="">جميع الأولويات</option>
               <option value="urgent">عاجل</option>
@@ -92,11 +86,11 @@ export const TaskFilterModal: React.FC<TaskFilterModalProps> = ({
 
           {/* الحالة */}
           <div>
-            <label className="block text-sm font-bold text-black mb-3 text-right font-arabic">الحالة</label>
+            <label className="block text-sm font-bold text-black mb-2">الحالة</label>
             <select
               value={filters.status}
               onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-              className="w-full p-4 border border-black/20 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-black/50 bg-white/50 backdrop-blur-sm font-arabic text-right"
+              className="w-full p-3 border border-black/10 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-black"
             >
               <option value="">جميع الحالات</option>
               <option value="todo">مجدولة</option>
@@ -110,11 +104,11 @@ export const TaskFilterModal: React.FC<TaskFilterModalProps> = ({
 
           {/* الفترة الزمنية */}
           <div>
-            <label className="block text-sm font-bold text-black mb-3 text-right font-arabic">الفترة الزمنية</label>
+            <label className="block text-sm font-bold text-black mb-2">الفترة الزمنية</label>
             <select
               value={filters.dateRange}
               onChange={(e) => setFilters(prev => ({ ...prev, dateRange: e.target.value }))}
-              className="w-full p-4 border border-black/20 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-black/50 bg-white/50 backdrop-blur-sm font-arabic text-right"
+              className="w-full p-3 border border-black/10 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-black"
             >
               <option value="all">جميع المهام</option>
               <option value="today">اليوم</option>
@@ -125,17 +119,17 @@ export const TaskFilterModal: React.FC<TaskFilterModalProps> = ({
           </div>
         </div>
 
-        <div className="flex gap-4 mt-8">
+        <div className="flex gap-3 mt-6">
           <Button
             onClick={handleReset}
             variant="outline"
-            className="flex-1 text-black border-black/30 hover:bg-black/10 rounded-xl font-arabic py-3"
+            className="flex-1 text-black border-black/20 hover:bg-black/5"
           >
             إعادة تعيين
           </Button>
           <Button
             onClick={handleApply}
-            className="flex-1 bg-black text-white hover:bg-black/80 rounded-xl font-arabic py-3"
+            className="flex-1 bg-black text-white hover:bg-black/80"
           >
             تطبيق الفلاتر
           </Button>
