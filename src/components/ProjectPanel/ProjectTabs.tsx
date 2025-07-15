@@ -8,6 +8,7 @@ import { ExpenseModal } from '@/components/custom/ExpenseModal';
 import { ApprovalRequestModal } from '@/components/custom/ApprovalRequestModal';
 import { FinancialAnalysisModal } from '@/components/custom/FinancialAnalysisModal';
 import { TaskAssignmentModal } from '@/components/custom/TaskAssignmentModal';
+import { TaskRedistributionModal } from '@/components/custom/TaskRedistributionModal';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -308,6 +309,7 @@ export const TeamTab = ({
   teamData
 }: any) => {
   const [isTaskAssignmentModalOpen, setIsTaskAssignmentModalOpen] = useState(false);
+  const [isTaskRedistributionModalOpen, setIsTaskRedistributionModalOpen] = useState(false);
   
   const mockTeamData = [{
     id: '1',
@@ -421,7 +423,10 @@ export const TeamTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">توزيع المهام</h4>
             <p className="text-xs text-black/70 mb-3">إعادة توزيع المهام بين أعضاء الفريق</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button 
+              onClick={() => setIsTaskRedistributionModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
               توزيع المهام
             </button>
           </div>
@@ -492,6 +497,15 @@ export const TeamTab = ({
         onSave={(employeeId, taskIds) => {
           console.log('إسناد مهام:', { employeeId, taskIds });
           alert(`تم إسناد ${taskIds.length} مهام بنجاح إلى الموظف المحدد`);
+        }}
+      />
+
+      <TaskRedistributionModal
+        isOpen={isTaskRedistributionModalOpen}
+        onClose={() => setIsTaskRedistributionModalOpen(false)}
+        onRedistribute={(redistributedTasks) => {
+          console.log('إعادة توزيع المهام:', redistributedTasks);
+          alert(`تم إعادة توزيع ${redistributedTasks.length} مهام بنجاح باستخدام الذكاء الاصطناعي`);
         }}
       />
     </div>;
