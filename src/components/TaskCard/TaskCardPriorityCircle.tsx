@@ -34,8 +34,8 @@ const TaskCardPriorityCircle = ({
     position: 'absolute',
     top: '0px',
     right: '0px',
-    width: '30px',
-    height: '30px',
+    width: '60px',
+    height: '60px',
     borderRadius: '50%',
     backgroundColor: config.bg,
     display: 'flex',
@@ -44,7 +44,7 @@ const TaskCardPriorityCircle = ({
     justifyContent: 'center'
   }}>
       <span style={{
-      fontSize: '5px',
+      fontSize: '10px',
       fontWeight: 600,
       color: '#000000',
       lineHeight: 1,
@@ -53,10 +53,10 @@ const TaskCardPriorityCircle = ({
         {config.line1}
       </span>
       <span style={{
-      fontSize: '4px',
+      fontSize: '8px',
       fontWeight: 400,
       color: '#000000',
-      marginTop: '0.5px',
+      marginTop: '1px',
       fontFamily: 'IBM Plex Sans Arabic'
     }} className="text-xs">
         {config.line2}

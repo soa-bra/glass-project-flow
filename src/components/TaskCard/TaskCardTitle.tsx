@@ -9,7 +9,7 @@ const TaskCardTitle = ({
   description
 }: TaskCardTitleProps) => {
   return (
-    <div className="mx-0 px-0 my-[2px]">
+    <div className="mx-0 px-0 my-[5px]">
       <h4 style={{
         fontSize: '16px',
         fontWeight: 700,
@@ -28,7 +28,7 @@ const TaskCardTitle = ({
         marginBottom: '0px',
         lineHeight: 1.1,
         fontFamily: 'IBM Plex Sans Arabic'
-      }} className="text-right my-[2px] mx-[8px] text-sm font-normal text-gray-600">
+      }} className="text-right my-[3px] mx-[8px] text-sm font-normal text-gray-600">
         {description}
       </p>
     </div>

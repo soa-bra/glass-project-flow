@@ -344,43 +344,18 @@ const TaskAttachmentsTab: React.FC<{
 }> = ({
   task
 }) => {
-  const [attachments, setAttachments] = React.useState(Array.from({
+  const attachments = Array.from({
     length: task.attachments
   }, (_, i) => ({
     id: i + 1,
     name: `مرفق_${i + 1}.pdf`,
     size: '2.5 MB',
     uploadedAt: '2024-01-15'
-  })));
-
-  const handleAddAttachment = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-    input.onchange = (e) => {
-      const files = (e.target as HTMLInputElement).files;
-      if (files) {
-        const newAttachments = Array.from(files).map((file, index) => ({
-          id: attachments.length + index + 1,
-          name: file.name,
-          size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-          uploadedAt: new Date().toLocaleDateString('ar-SA')
-        }));
-        setAttachments(prev => [...prev, ...newAttachments]);
-        console.log('تم إضافة المرفقات:', newAttachments.map(f => f.name));
-      }
-    };
-    input.click();
-  };
-
+  }));
   return <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-black">المرفقات ({attachments.length})</h4>
-        <Button 
-          size="sm" 
-          className="bg-black text-white hover:bg-black/80"
-          onClick={handleAddAttachment}
-        >
+        <h4 className="text-sm font-semibold text-black">المرفقات ({task.attachments})</h4>
+        <Button size="sm" className="bg-black text-white hover:bg-black/80">
           <Paperclip className="w-4 h-4 mr-1" />
           إضافة مرفق
         </Button>
@@ -410,30 +385,14 @@ const TaskCommentsTab: React.FC<{
 }> = ({
   task
 }) => {
-  const [comments, setComments] = React.useState(Array.from({
+  const comments = Array.from({
     length: task.comments
   }, (_, i) => ({
     id: i + 1,
     author: i % 2 === 0 ? task.assignee : 'مدير المشروع',
     content: `تعليق رقم ${i + 1} على هذه المهمة. يمكن أن يكون هذا التعليق طويلاً ويحتوي على تفاصيل مهمة حول المهمة.`,
     time: `منذ ${i + 1} ساعات`
-  })));
-
-  const handleAddComment = () => {
-    const textarea = document.getElementById('new-comment') as HTMLTextAreaElement;
-    const comment = textarea?.value.trim();
-    if (comment) {
-      const newComment = {
-        id: comments.length + 1,
-        author: 'المستخدم الحالي',
-        content: comment,
-        time: 'الآن'
-      };
-      setComments(prev => [...prev, newComment]);
-      textarea.value = '';
-      console.log('تم إضافة تعليق جديد:', comment);
-    }
-  };
+  }));
   return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold text-black">التعليقات ({task.comments})</h4>
@@ -441,18 +400,9 @@ const TaskCommentsTab: React.FC<{
       
       {/* Add comment form */}
       <div className="bg-white/50 rounded-lg p-4">
-        <textarea 
-          id="new-comment" 
-          placeholder="أضف تعليقاً جديداً..." 
-          className="w-full bg-transparent border border-black/10 rounded-lg p-3 text-sm text-black resize-none" 
-          rows={3} 
-        />
+        <textarea placeholder="أضف تعليقاً جديداً..." className="w-full bg-transparent border border-black/10 rounded-lg p-3 text-sm text-black resize-none" rows={3} />
         <div className="flex justify-end mt-2">
-          <Button 
-            size="sm" 
-            className="bg-black text-white hover:bg-black/80"
-            onClick={handleAddComment}
-          >
+          <Button size="sm" className="bg-black text-white hover:bg-black/80">
             <MessageSquare className="w-4 h-4 mr-1" />
             إضافة تعليق
           </Button>

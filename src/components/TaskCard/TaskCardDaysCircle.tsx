@@ -32,7 +32,7 @@ const TaskCardDaysCircle = ({ daysLeft }: TaskCardDaysCircleProps) => {
         fontSize: '10px',
         fontWeight: 400,
         color: '#000000',
-        marginTop: '1px',
+        marginTop: '2px',
         fontFamily: 'IBM Plex Sans Arabic'
       }}>
         يوم

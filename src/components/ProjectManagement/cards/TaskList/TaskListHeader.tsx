@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Plus, Filter, Sparkles, RefreshCw } from 'lucide-react';
 import { AddTaskModal } from '@/components/ProjectsColumn/AddTaskModal';
 import { SmartTaskGenerationModal } from './SmartTaskGenerationModal';
-import { TaskFilterModal } from './TaskFilterModal';
 import type { TaskData } from '@/types';
 interface TaskListHeaderProps {
   onTaskAdded: (task: TaskData) => void;
@@ -14,7 +13,6 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
 }) => {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showSmartGenerationModal, setShowSmartGenerationModal] = useState(false);
-  const [showFilterModal, setShowFilterModal] = useState(false);
   const handleTaskAdded = (task: TaskData) => {
     onTaskAdded(task);
   };
@@ -22,18 +20,12 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
     onTasksGenerated(tasks);
   };
   const handleUpdateTasks = () => {
-    console.log('تم تحديث قائمة المهام');
-    // تحديث قائمة المهام دون إعادة تحميل الصفحة
-    window.dispatchEvent(new CustomEvent('refreshTasks'));
+    console.log('تحديث المهام');
+    // يمكن إضافة منطق تحديث المهام هنا
   };
-  
   const handleFilterTasks = () => {
-    setShowFilterModal(true);
-  };
-
-  const handleApplyFilters = (filters: any) => {
-    console.log('تم تطبيق الفلاتر:', filters);
-    // يمكن إضافة منطق تطبيق الفلاتر هنا
+    console.log('فلترة المهام');
+    // يمكن إضافة منطق فلترة المهام هنا
   };
   return <>
       <div className="flex items-center justify-between mb-6 px-0 mx-[15px] my-[15px]">
@@ -63,12 +55,6 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
 
       <AddTaskModal isOpen={showAddTaskModal} onClose={() => setShowAddTaskModal(false)} onTaskAdded={handleTaskAdded} />
 
-      <SmartTaskGenerationModal isOpen={showSmartGenerationModal} onClose={() => setShowSmartGenerationModal(false)} onTasksGenerated={handleTasksGenerated} />
-
-      <TaskFilterModal 
-        isOpen={showFilterModal} 
-        onClose={() => setShowFilterModal(false)} 
-        onApplyFilters={handleApplyFilters}
-      />
-    </>;
+        <SmartTaskGenerationModal isOpen={showSmartGenerationModal} onClose={() => setShowSmartGenerationModal(false)} onTasksGenerated={handleTasksGenerated} />
+      </>;
 };
