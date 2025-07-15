@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { Settings, RotateCcw } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // إنشاء شرائط دائرية للمخطط المالي
 const createCircularBars = (lossPercentage: number) => {
@@ -34,6 +35,12 @@ const isProfit = lossPercentage < 50;
 const circularBars = createCircularBars(lossPercentage);
 
 export const FinancialOverviewCard: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleFinancialClick = () => {
+    navigate('/departments/financial');
+  };
+
   return (
     <BaseCard 
       variant="glass" 
@@ -43,14 +50,12 @@ export const FinancialOverviewCard: React.FC = () => {
       header={
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-black font-arabic">النظرة المالية</h3>
-          <div className="flex gap-2">
-            <button className="w-8 h-8 border border-black/20 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
-              <RotateCcw className="w-4 h-4 text-black" />
-            </button>
-            <button className="w-8 h-8 border border-black/20 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
-              <Settings className="w-4 h-4 text-black" />
-            </button>
-          </div>
+          <button 
+            onClick={handleFinancialClick}
+            className="w-8 h-8 bg-transparent border border-black/20 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors"
+          >
+            <TrendingUp className="w-4 h-4 text-black" />
+          </button>
         </div>
       }
     >

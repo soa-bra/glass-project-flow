@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UnifiedTask } from '@/types/task';
-import { Edit, Archive, Trash2, MessageSquare, Paperclip, Activity, Calendar, User, Tag, Clock } from 'lucide-react';
+import { Edit, Archive, Trash2, MessageSquare, Paperclip, Activity, Calendar, User, Tag, Clock, X, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -344,19 +344,45 @@ const TaskAttachmentsTab: React.FC<{
 }> = ({
   task
 }) => {
-  const attachments = Array.from({
+  const [attachments, setAttachments] = useState(Array.from({
     length: task.attachments
   }, (_, i) => ({
     id: i + 1,
     name: `مرفق_${i + 1}.pdf`,
     size: '2.5 MB',
     uploadedAt: '2024-01-15'
-  }));
+  })));
+  const [showDeleteDialog, setShowDeleteDialog] = useState<number | null>(null);
+
+  const handleAddAttachment = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    input.onchange = (e) => {
+      const files = (e.target as HTMLInputElement).files;
+      if (files) {
+        const newAttachments = Array.from(files).map((file, index) => ({
+          id: attachments.length + index + 1,
+          name: file.name,
+          size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+          uploadedAt: new Date().toISOString().split('T')[0]
+        }));
+        setAttachments([...attachments, ...newAttachments]);
+      }
+    };
+    input.click();
+  };
+
+  const handleDeleteAttachment = (id: number) => {
+    setAttachments(attachments.filter(att => att.id !== id));
+    setShowDeleteDialog(null);
+  };
+
   return <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-black">المرفقات ({task.attachments})</h4>
-        <Button size="sm" className="bg-black text-white hover:bg-black/80">
-          <Paperclip className="w-4 h-4 mr-1" />
+        <h4 className="text-sm font-semibold text-black">المرفقات ({attachments.length})</h4>
+        <Button size="sm" className="bg-black text-white hover:bg-black/80" onClick={handleAddAttachment}>
+          <Upload className="w-4 h-4 mr-1" />
           إضافة مرفق
         </Button>
       </div>
@@ -370,14 +396,45 @@ const TaskAttachmentsTab: React.FC<{
                 <p className="text-sm font-medium text-black">{attachment.name}</p>
                 <p className="text-xs text-black/60">{attachment.size} • {attachment.uploadedAt}</p>
               </div>
-              <Button variant="outline" size="sm">
-                تحميل
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm">
+                  تحميل
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowDeleteDialog(attachment.id)}
+                  className="text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
             </div>)}
         </div> : <div className="text-center text-black/50 py-8">
           <Paperclip className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>لا توجد مرفقات</p>
         </div>}
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={showDeleteDialog !== null} onOpenChange={() => setShowDeleteDialog(null)}>
+        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من أنك تريد حذف هذا المرفق؟ لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2">
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => showDeleteDialog && handleDeleteAttachment(showDeleteDialog)}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              حذف المرفق
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>;
 };
 const TaskCommentsTab: React.FC<{
@@ -385,24 +442,50 @@ const TaskCommentsTab: React.FC<{
 }> = ({
   task
 }) => {
-  const comments = Array.from({
+  const [comments, setComments] = useState(Array.from({
     length: task.comments
   }, (_, i) => ({
     id: i + 1,
     author: i % 2 === 0 ? task.assignee : 'مدير المشروع',
     content: `تعليق رقم ${i + 1} على هذه المهمة. يمكن أن يكون هذا التعليق طويلاً ويحتوي على تفاصيل مهمة حول المهمة.`,
     time: `منذ ${i + 1} ساعات`
-  }));
+  })));
+  const [newComment, setNewComment] = useState('');
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      const comment = {
+        id: comments.length + 1,
+        author: 'المستخدم الحالي',
+        content: newComment.trim(),
+        time: 'الآن'
+      };
+      setComments([comment, ...comments]);
+      setNewComment('');
+    }
+  };
+
   return <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-black">التعليقات ({task.comments})</h4>
+        <h4 className="text-sm font-semibold text-black">التعليقات ({comments.length})</h4>
       </div>
       
       {/* Add comment form */}
       <div className="bg-white/50 rounded-lg p-4">
-        <textarea placeholder="أضف تعليقاً جديداً..." className="w-full bg-transparent border border-black/10 rounded-lg p-3 text-sm text-black resize-none" rows={3} />
+        <textarea 
+          placeholder="أضف تعليقاً جديداً..." 
+          className="w-full bg-transparent border border-black/10 rounded-lg p-3 text-sm text-black resize-none" 
+          rows={3}
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+        />
         <div className="flex justify-end mt-2">
-          <Button size="sm" className="bg-black text-white hover:bg-black/80">
+          <Button 
+            size="sm" 
+            className="bg-black text-white hover:bg-black/80"
+            onClick={handleAddComment}
+            disabled={!newComment.trim()}
+          >
             <MessageSquare className="w-4 h-4 mr-1" />
             إضافة تعليق
           </Button>

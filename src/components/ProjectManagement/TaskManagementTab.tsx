@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { KanbanBoard } from './TaskManagement/KanbanBoard';
-import { SprintBurndownChart } from './TaskManagement/SprintBurndownChart';
-import { GanttChart } from './TaskManagement/GanttChart';
 import { TaskDetails } from './TaskManagement/TaskDetails';
 import { AITaskAssistant } from './TaskManagement/AITaskAssistant';
-import { TaskFilters } from './TaskManagement/TaskFilters';
 import { Project } from '@/types/project';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { TaskFilters as UnifiedTaskFilters } from '@/types/task';
@@ -14,7 +11,7 @@ interface TaskManagementTabProps {
 }
 
 export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project }) => {
-  const [viewMode, setViewMode] = useState<'kanban' | 'chart' | 'gantt' | 'details'>('kanban');
+  const [viewMode, setViewMode] = useState<'kanban' | 'details'>('kanban');
   const [filters, setFilters] = useState<UnifiedTaskFilters>({
     assignee: '',
     priority: '',
@@ -42,26 +39,6 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project })
                 }`}
               >
                 لوحة كانبان
-              </button>
-              <button
-                onClick={() => setViewMode('chart')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  viewMode === 'chart'
-                    ? 'bg-black text-white'
-                    : 'text-black hover:bg-black/5'
-                }`}
-              >
-                مخطط السبرنت
-              </button>
-              <button
-                onClick={() => setViewMode('gantt')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  viewMode === 'gantt'
-                    ? 'bg-black text-white'
-                    : 'text-black hover:bg-black/5'
-                }`}
-              >
-                مخطط جانت
               </button>
               <button
                 onClick={() => setViewMode('details')}
@@ -122,17 +99,10 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project })
         </div>
       </div>
 
-      {/* Filters */}
-      <TaskFilters filters={filters} onFiltersChange={setFilters} />
-
       {/* Main Content Area */}
       <div className="flex-1 min-h-0">
         {viewMode === 'kanban' ? (
           <KanbanBoard projectId={project.id} filters={filters} />
-        ) : viewMode === 'chart' ? (
-          <SprintBurndownChart projectId={project.id} />
-        ) : viewMode === 'gantt' ? (
-          <GanttChart projectId={project.id} filters={filters} />
         ) : (
           <TaskDetails projectId={project.id} filters={filters} />
         )}
