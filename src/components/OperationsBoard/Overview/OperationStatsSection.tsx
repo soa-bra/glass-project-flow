@@ -26,10 +26,10 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
   }
   console.log('OperationStatsSection received stats:', stats);
   return <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-0 mx-[5px]">
-      {/* الإيرادات المتوقعة */}
+      {/* ميزانية المشروع */}
       <div className="text-right p-6 py-0 my-[15px]">
         <div className="mb-2">
-          <span className="text-sm text-black font-arabic font-medium">الإيرادات المتوقعة</span>
+          <span className="text-sm text-black font-arabic font-medium">ميزانية المشروع</span>
         </div>
         <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
@@ -40,18 +40,18 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
         <div className="text-xs font-Regular text-black font-arabic">ريال سعودي عن الربع الأول</div>
       </div>
 
-      {/* الشكاوى */}
+      {/* عدد الأيام المتبقية */}
       <div className="text-right p-6 mx-0 px-[24px] py-0 my-[15px]">
         <div className="mb-2">
-          <span className="text-sm text-black font-arabic font-medium">الشكاوى</span>
+          <span className="text-sm text-black font-arabic font-medium">عدد الأيام المتبقية</span>
         </div>
         <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
             {String(stats.complaints || 0).padStart(2, '0')}
           </div>
-          <div className="text-xs text-black font-arabic font-bold">شكاوى</div>
+          <div className="text-xs text-black font-arabic font-bold">يوم</div>
         </div>
-        <div className="text-xs font-Regular text-black font-arabic">الشكاوى والملاحظات التي المكررة</div>
+        <div className="text-xs font-Regular text-black font-arabic">وعدد المهام المتبقية: 5 مهام</div>
       </div>
 
       {/* المشاريع المتأخرة */}

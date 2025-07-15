@@ -32,19 +32,23 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
 
   const Icon = getIcon();
 
-  // بيانات وهمية للرسوم البيانية
+  // بيانات مكتملة للرسوم البيانية
   const lineData = [
     { name: 'يناير', value: 65 },
     { name: 'فبراير', value: 78 },
     { name: 'مارس', value: 90 },
-    { name: 'أبريل', value: 94 }
+    { name: 'أبريل', value: 94 },
+    { name: 'مايو', value: 88 },
+    { name: 'يونيو', value: 92 }
   ];
 
   const barData = [
     { name: 'أ', value: 20 },
     { name: 'ب', value: 35 },
     { name: 'ج', value: 25 },
-    { name: 'د', value: 30 }
+    { name: 'د', value: 30 },
+    { name: 'هـ', value: 40 },
+    { name: 'و', value: 28 }
   ];
 
   const pieData = [
@@ -59,7 +63,16 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
         return (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={lineData}>
-              <Line type="monotone" dataKey="value" stroke="#000000" strokeWidth={2} dot={false} />
+              <XAxis dataKey="name" hide />
+              <YAxis hide />
+              <Line 
+                type="monotone" 
+                dataKey="value" 
+                stroke="#000000" 
+                strokeWidth={2} 
+                dot={{ fill: '#000000', strokeWidth: 2, r: 3 }}
+                activeDot={{ r: 4, fill: '#000000' }}
+              />
             </LineChart>
           </ResponsiveContainer>
         );
@@ -67,7 +80,15 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
         return (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={barData}>
-              <Bar dataKey="value" fill="#aec2cf" radius={[2, 2, 0, 0]} />
+              <XAxis dataKey="name" hide />
+              <YAxis hide />
+              <Bar 
+                dataKey="value" 
+                fill="#aec2cf" 
+                radius={[2, 2, 0, 0]}
+                stroke="#000000"
+                strokeWidth={1}
+              />
             </BarChart>
           </ResponsiveContainer>
         );
