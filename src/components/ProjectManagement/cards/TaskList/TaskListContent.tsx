@@ -172,12 +172,13 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 pr-1 py-0 my-0">
-          {allTasks.map(task => {
+          {allTasks.map((task, index) => {
+            const taskKey = `task-${task.id}-${index}`;
             const isTaskSelected = selectedTasks.includes(task.id.toString());
             console.log(`البطاقة ${task.id}: محددة = ${isTaskSelected}, وضع التحديد = ${isSelectionMode}`);
             
             return (
-              <div key={task.id}>
+              <div key={taskKey}>
                 <TaskCard 
                   {...task} 
                   isSelected={isTaskSelected} 
