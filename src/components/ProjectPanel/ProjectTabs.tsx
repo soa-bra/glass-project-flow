@@ -11,6 +11,7 @@ import { TaskAssignmentModal } from '@/components/custom/TaskAssignmentModal';
 import { TaskRedistributionModal } from '@/components/custom/TaskRedistributionModal';
 import { AddTeamMemberModal } from '@/components/custom/AddTeamMemberModal';
 import { ManualTaskDistributionModal } from '@/components/custom/ManualTaskDistributionModal';
+import { PerformanceEvaluationModal } from '@/components/custom/PerformanceEvaluationModal';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -314,6 +315,7 @@ export const TeamTab = ({
   const [isTaskRedistributionModalOpen, setIsTaskRedistributionModalOpen] = useState(false);
   const [isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen] = useState(false);
   const [isManualTaskDistributionModalOpen, setIsManualTaskDistributionModalOpen] = useState(false);
+  const [isPerformanceEvaluationModalOpen, setIsPerformanceEvaluationModalOpen] = useState(false);
   
   const mockTeamData = [{
     id: '1',
@@ -437,7 +439,10 @@ export const TeamTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تقييم الأداء</h4>
             <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button 
+              onClick={() => setIsPerformanceEvaluationModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
               تقييم الأداء
             </button>
           </div>
@@ -529,6 +534,11 @@ export const TeamTab = ({
           console.log('توزيع المهام يدوياً أو بالذكاء الاصطناعي:', redistributedTasks);
           alert(`تم حفظ توزيع المهام الجديد بنجاح`);
         }}
+      />
+
+      <PerformanceEvaluationModal
+        isOpen={isPerformanceEvaluationModalOpen}
+        onClose={() => setIsPerformanceEvaluationModalOpen(false)}
       />
     </div>;
 };
