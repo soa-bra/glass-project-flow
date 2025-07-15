@@ -334,21 +334,21 @@ export const TeamTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">إضافة عضو جديد</h4>
             <p className="text-xs text-black/70 mb-3">دعوة عضو جديد للانضمام إلى الفريق</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إضافة عضو
             </button>
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">توزيع المهام</h4>
             <p className="text-xs text-black/70 mb-3">إعادة توزيع المهام بين أعضاء الفريق</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               توزيع المهام
             </button>
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تقييم الأداء</h4>
             <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تقييم الأداء
             </button>
           </div>
