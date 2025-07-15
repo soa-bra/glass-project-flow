@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ExpenseModal } from './ExpenseModal';
 import { ApprovalRequestModal } from './ApprovalRequestModal';
+import { AnalysisModal } from './AnalysisModal';
 import { StatusBox } from '@/components/custom/StatusBox';
 import { ClientProfile } from '@/components/custom/ClientProfile';
 import { TeamRoster } from '@/components/custom/TeamRoster';
@@ -11,6 +12,7 @@ import { TemplateLibrary } from '@/components/custom/TemplateLibrary';
 export const FinancialTab = (data: any) => {
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [isApprovalRequestModalOpen, setIsApprovalRequestModalOpen] = useState(false);
+  const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
   const [approvalRequests, setApprovalRequests] = useState(data?.approvalRequests || []);
   const [expenses, setExpenses] = useState(data?.expenses || [
     { id: 1, category: 'تشغيلية', amount: 25000, description: 'إيجار المكتب', date: '2024-01-15' },
@@ -182,7 +184,10 @@ export const FinancialTab = (data: any) => {
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">تحليل الانحرافات</h4>
             <p className="text-xs text-black/70 mb-3">مراجعة الانحرافات عن الميزانية المخططة</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button 
+              onClick={() => setIsAnalysisModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
               عرض التحليل
             </button>
           </div>
@@ -201,6 +206,19 @@ export const FinancialTab = (data: any) => {
         isOpen={isApprovalRequestModalOpen}
         onClose={() => setIsApprovalRequestModalOpen(false)}
         onSubmit={handleApprovalRequest}
+        userRole={userRole}
+      />
+
+      {/* مودال تحليل الانحرافات */}
+      <AnalysisModal
+        isOpen={isAnalysisModalOpen}
+        onClose={() => setIsAnalysisModalOpen(false)}
+        data={{
+          totalBudget: data?.totalBudget || 200000,
+          totalExpenses,
+          budgetRemaining,
+          expenses
+        }}
         userRole={userRole}
       />
     </div>
