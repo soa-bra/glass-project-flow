@@ -15,6 +15,12 @@ interface TaskManagementTabProps {
 
 export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project }) => {
   const { tasks } = useUnifiedTasks(project.id);
+  const [filters, setFilters] = useState<UnifiedTaskFilters>({
+    assignee: '',
+    priority: '',
+    status: '',
+    search: ''
+  });
 
   return (
     <div className="flex-1 overflow-auto space-y-6">
@@ -22,6 +28,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project })
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-black">إدارة المهام</h3>
+          <AITaskAssistant projectId={project.id} />
         </div>
         
         <p className="text-sm font-medium text-black">
@@ -64,14 +71,20 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project })
         </div>
       </div>
 
-      {/* Main Content Area - Kanban Board Only */}
-      <div className="flex-1 min-h-0">
-        <KanbanBoard projectId={project.id} filters={{
-          assignee: '',
-          priority: '',
-          status: '',
-          search: ''
-        }} />
+      {/* Filters */}
+      <TaskFilters filters={filters} onFiltersChange={setFilters} />
+
+      {/* Main Content Area */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
+        {/* Kanban Board */}
+        <div className="lg:col-span-2">
+          <KanbanBoard projectId={project.id} filters={filters} />
+        </div>
+        
+        {/* Task Details Panel */}
+        <div className="lg:col-span-1">
+          <TaskDetails projectId={project.id} filters={filters} />
+        </div>
       </div>
     </div>
   );
