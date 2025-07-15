@@ -5,6 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { User, Phone, Mail, Clock, Calendar } from 'lucide-react';
+
 interface TeamMember {
   id: string;
   name: string;
@@ -12,106 +13,96 @@ interface TeamMember {
   email: string;
   phone: string;
   avatar?: string;
-  Productivity: number; // معدل الإنتاجية من 0 إلى 100
+  productivity: number; //  معدل الإنتاجية من 0 إلى 100
   availability: 'available' | 'busy' | 'away' | 'offline';
   currentTasks: number;
   hoursLogged: number;
   targetHours: number;
 }
+
 interface TeamRosterProps {
   data: TeamMember[];
 }
-export const TeamRoster: React.FC<TeamRosterProps> = ({
-  data = []
-}) => {
+
+export const TeamRoster: React.FC<TeamRosterProps> = ({ data = [] }) => {
   // بيانات وهمية في حالة عدم وجود بيانات
-  const defaultTeamData: TeamMember[] = [{
-    id: '1',
-    name: 'أحمد محمد علي',
-    role: 'مطور أول',
-    email: 'ahmed.ali@company.com',
-    phone: '+966501234567',
-    Productivity: 85,
-    availability: 'available',
-    currentTasks: 3,
-    hoursLogged: 34,
-    targetHours: 40
-  }, {
-    id: '2',
-    name: 'فاطمة أحمد السالم',
-    role: 'مصممة UX/UI',
-    email: 'fatima.salem@company.com',
-    phone: '+966507654321',
-    Productivity: 92,
-    availability: 'busy',
-    currentTasks: 5,
-    hoursLogged: 37,
-    targetHours: 40
-  }, {
-    id: '3',
-    name: 'خالد عبدالرحمن',
-    role: 'محلل أعمال',
-    email: 'khalid.rahman@company.com',
-    phone: '+966509876543',
-    Productivity: 68,
-    availability: 'available',
-    currentTasks: 2,
-    hoursLogged: 27,
-    targetHours: 40
-  }, {
-    id: '4',
-    name: 'نورا سعد المطيري',
-    role: 'مختبرة برمجيات',
-    email: 'nora.mutairi@company.com',
-    phone: '+966502468135',
-    Productivity: 74,
-    availability: 'away',
-    currentTasks: 4,
-    hoursLogged: 30,
-    targetHours: 40
-  }];
+  const defaultTeamData: TeamMember[] = [
+    {
+      id: '1',
+      name: 'أحمد محمد علي',
+      role: 'مطور أول',
+      email: 'ahmed.ali@company.com',
+      phone: '+966501234567',
+      productivity: 85,
+      availability: 'available',
+      currentTasks: 3,
+      hoursLogged: 34,
+      targetHours: 40
+    },
+    {
+      id: '2',
+      name: 'فاطمة أحمد السالم',
+      role: 'مصممة UX/UI',
+      email: 'fatima.salem@company.com',
+      phone: '+966507654321',
+      productivity: 92,
+      availability: 'busy',
+      currentTasks: 5,
+      hoursLogged: 37,
+      targetHours: 40
+    },
+    {
+      id: '3',
+      name: 'خالد عبدالرحمن',
+      role: 'محلل أعمال',
+      email: 'khalid.rahman@company.com',
+      phone: '+966509876543',
+      productivity: 68,
+      availability: 'available',
+      currentTasks: 2,
+      hoursLogged: 27,
+      targetHours: 40
+    },
+    {
+      id: '4',
+      name: 'نورا سعد المطيري',
+      role: 'مختبرة برمجيات',
+      email: 'nora.mutairi@company.com',
+      phone: '+966502468135',
+      productivity: 74,
+      availability: 'away',
+      currentTasks: 4,
+      hoursLogged: 30,
+      targetHours: 40
+    }
+  ];
+
   const teamData = data.length > 0 ? data : defaultTeamData;
+
   const getAvailabilityConfig = (availability: string) => {
     switch (availability) {
       case 'available':
-        return {
-          color: 'bg-green-100 text-green-800',
-          text: 'متاح',
-          dot: 'bg-green-500'
-        };
+        return { color: 'bg-green-100 text-green-800', text: 'متاح', dot: 'bg-green-500' };
       case 'busy':
-        return {
-          color: 'bg-red-100 text-red-800',
-          text: 'مشغول',
-          dot: 'bg-red-500'
-        };
+        return { color: 'bg-red-100 text-red-800', text: 'مشغول', dot: 'bg-red-500' };
       case 'away':
-        return {
-          color: 'bg-yellow-100 text-yellow-800',
-          text: 'خارج المكتب',
-          dot: 'bg-yellow-500'
-        };
+        return { color: 'bg-yellow-100 text-yellow-800', text: 'خارج المكتب', dot: 'bg-yellow-500' };
       case 'offline':
-        return {
-          color: 'bg-gray-100 text-gray-800',
-          text: 'غير متصل',
-          dot: 'bg-gray-500'
-        };
+        return { color: 'bg-gray-100 text-gray-800', text: 'غير متصل', dot: 'bg-gray-500' };
       default:
-        return {
-          color: 'bg-gray-100 text-gray-800',
-          text: 'غير محدد',
-          dot: 'bg-gray-500'
-        };
+        return { color: 'bg-gray-100 text-gray-800', text: 'غير محدد', dot: 'bg-gray-500' };
     }
   };
-  const getProductivityColor = (Productivity: number) => {
-    if (Productivity >= 90) return 'text-greenr-600';
-    if (Productivity >= 80) return 'text-yellow-600';
-    if (Productivity >= 60) return 'text-red-600';
+
+  const getproductivityColor = (productivity: number) => {
+    if (productivity >= 90) return 'text-red-600';
+    if (productivity >= 80) return 'text-yellow-600';
+    if (productivity >= 60) return 'text-green-600';
     return 'text-blue-600';
   };
-  return <div className="space-y-4">
+
+  return (
+    <div className="space-y-4">
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-4 gap-2 text-center text-xs">
         <div className="p-2 bg-white/20 rounded-xl">
@@ -125,24 +116,26 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
           <p className="text-gray-600">متاح</p>
         </div>
         <div className="p-2 bg-white/20 rounded-xl">
-          <p className="text-black font-normal text-xs">
+          <p className="font-bold text-lg text-red-600">
             {teamData.filter(m => m.availability === 'busy').length}
           </p>
           <p className="text-gray-600">مشغول</p>
         </div>
         <div className="p-2 bg-white/20 rounded-xl">
-          <p className="text-black font-normal text-xs">
-            {Math.round(teamData.reduce((sum, m) => sum + m.Productivity, 0) / teamData.length)}%
+          <p className="font-bold text-lg">
+            {Math.round(teamData.reduce((sum, m) => sum + m.productivity, 0) / teamData.length)}%
           </p>
           <p className="text-gray-600">متوسط الإنتاجية</p>
         </div>
       </div>
 
       <ScrollArea className="h-[500px]">
-        <div className="">
-          {teamData.map(member => {
-          const availabilityConfig = getAvailabilityConfig(member.availability);
-          return <div key={member.id} className="bg-white/20 rounded-2xl p-4 hover:bg-white/30 transition-colors">
+        <div className="space-y-3">
+          {teamData.map((member) => {
+            const availabilityConfig = getAvailabilityConfig(member.availability);
+            
+            return (
+              <div key={member.id} className="bg-white/20 rounded-2xl p-4 hover:bg-white/30 transition-colors">
                 <div className="flex items-start gap-3">
                   <div className="relative">
                     <Avatar className="w-12 h-12">
@@ -167,12 +160,12 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs">
-                        <span className={`font-bold ${getProductivityColor(member.Productivity)}`}>
-                          {member.Productivity}%
+                        <span className={`font-bold ${getproductivityColor(member.productivity)}`}>
+                          {member.productivity}%
                         </span>
-                        <span className="text-gray-600">معدل الانتاجية</span>
+                        <span className="text-gray-600">معدل الٌنتاجية</span>
                       </div>
-                      <Progress value={member.Productivity} className="h-2" />
+                      <Progress value={member.productivity} className="h-2" />
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 text-xs text-gray-600">
@@ -197,8 +190,12 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
                     </div>
                   </div>
                 </div>
-              </div>;
-        })}
+              </div>
+            );
+          })}
+
+        </Button>
       </div>
-    </div>;
+    </div>
+  );
 };
