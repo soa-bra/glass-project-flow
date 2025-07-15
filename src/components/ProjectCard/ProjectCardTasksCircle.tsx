@@ -1,11 +1,15 @@
 
+import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
+
 interface ProjectCardTasksCircleProps {
-  tasksCount: number;
+  projectId: string;
 }
 
 const ProjectCardTasksCircle = ({
-  tasksCount
+  projectId
 }: ProjectCardTasksCircleProps) => {
+  const unifiedTasks = useUnifiedTasks(projectId);
+  const tasksCount = unifiedTasks.tasks.length;
   return (
     <div 
       className="w-[75px] h-[75px] rounded-full flex flex-col items-center justify-center px-0 py-0 my-0"

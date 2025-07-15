@@ -37,7 +37,7 @@ const ProjectCard = ({
         daysLeft={daysLeft}
         title={name}
         description={description}
-        tasksCount={tasksCount}
+        projectId={id.toString()}
         status={status}
       />
       

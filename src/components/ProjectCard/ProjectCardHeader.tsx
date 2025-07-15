@@ -7,7 +7,7 @@ interface ProjectCardHeaderProps {
   daysLeft: number;
   title: string;
   description: string;
-  tasksCount: number;
+  projectId: string;
   status: 'success' | 'warning' | 'error' | 'info';
 }
 
@@ -15,7 +15,7 @@ const ProjectCardHeader = ({
   daysLeft,
   title,
   description,
-  tasksCount,
+  projectId,
   status
 }: ProjectCardHeaderProps) => {
   return (
@@ -24,7 +24,7 @@ const ProjectCardHeader = ({
         <ProjectCardDaysCircle daysLeft={daysLeft} />
       </div>
       <ProjectCardTitle title={title} description={description} />
-      <ProjectCardTasksCircle tasksCount={tasksCount} />
+      <ProjectCardTasksCircle projectId={projectId} />
     </div>
   );
 };
