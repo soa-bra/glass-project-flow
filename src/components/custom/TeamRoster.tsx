@@ -125,13 +125,13 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({
           <p className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">متاح</p>
         </div>
         <div className="p-2 bg-white/20 rounded-xl">
-          <p className="font-bold text-lg text-red-600">
+          <p className="text-black font-normal text-xs">
             {teamData.filter(m => m.availability === 'busy').length}
           </p>
           <p className="text-gray-600">مشغول</p>
         </div>
         <div className="p-2 bg-white/20 rounded-xl">
-          <p className="font-bold text-lg">
+          <p className="text-black font-normal text-xs">
             {Math.round(teamData.reduce((sum, m) => sum + m.utilization, 0) / teamData.length)}%
           </p>
           <p className="text-gray-600">متوسط الاستخدام</p>

@@ -331,24 +331,24 @@ export const TeamTab = ({
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة فريق المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">إضافة عضو جديد</h4>
             <p className="text-xs text-black/70 mb-3">دعوة عضو جديد للانضمام إلى الفريق</p>
             <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
               إضافة عضو
             </button>
           </div>
-          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">توزيع المهام</h4>
             <p className="text-xs text-black/70 mb-3">إعادة توزيع المهام بين أعضاء الفريق</p>
-            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               توزيع المهام
             </button>
           </div>
-          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تقييم الأداء</h4>
             <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق</p>
-            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تقييم الأداء
             </button>
           </div>
@@ -395,7 +395,7 @@ export const TeamTab = ({
           <div className="space-y-4 bg-transparent">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-bold text-black">اختبار الجودة والأمان</span>
-              <span className="font-bold text-slate-50 text-sm bg-black">88%</span>
+              <span className="text-sm font-bold text-black bg-transparent ">88%</span>
             </div>
             <div className="w-full bg-transparent border border-black/10 rounded-full h-3">
               <div className="bg-[#f1b5b9] h-3 rounded-full" style={{
