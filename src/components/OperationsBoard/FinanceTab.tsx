@@ -49,7 +49,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
       {/* العنوان و KPI في نفس السطر */}
       <div style={{
       backgroundColor: '#f3ffff'
-    }} className="flex justify-between items-start pt-6 bg-transparent ">
+    }} className="flex justify-between items-start pt-6 bg-transparent mx-[50px]">
         <div className="text-right">
           <h2 className="text-lg font-semibold text-black font-arabic mb-1">الوضع المالي</h2>
           <p className="text-xs font-normal text-gray-400 font-arabic">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
