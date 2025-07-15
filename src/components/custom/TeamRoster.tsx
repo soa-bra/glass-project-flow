@@ -193,9 +193,8 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({ data = [] }) => {
               </div>
             );
           })}
-
-        </Button>
-      </div>
+        </div>
+      </ScrollArea>
     </div>
   );
 };
