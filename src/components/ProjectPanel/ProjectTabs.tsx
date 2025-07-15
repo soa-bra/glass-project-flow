@@ -10,6 +10,7 @@ import { FinancialAnalysisModal } from '@/components/custom/FinancialAnalysisMod
 import { TaskAssignmentModal } from '@/components/custom/TaskAssignmentModal';
 import { TaskRedistributionModal } from '@/components/custom/TaskRedistributionModal';
 import { AddTeamMemberModal } from '@/components/custom/AddTeamMemberModal';
+import { ManualTaskDistributionModal } from '@/components/custom/ManualTaskDistributionModal';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -312,6 +313,7 @@ export const TeamTab = ({
   const [isTaskAssignmentModalOpen, setIsTaskAssignmentModalOpen] = useState(false);
   const [isTaskRedistributionModalOpen, setIsTaskRedistributionModalOpen] = useState(false);
   const [isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen] = useState(false);
+  const [isManualTaskDistributionModalOpen, setIsManualTaskDistributionModalOpen] = useState(false);
   
   const mockTeamData = [{
     id: '1',
@@ -426,7 +428,7 @@ export const TeamTab = ({
             <h4 className="text-sm font-bold text-black mb-3">توزيع المهام</h4>
             <p className="text-xs text-black/70 mb-3">إعادة توزيع المهام بين أعضاء الفريق</p>
             <button 
-              onClick={() => setIsTaskRedistributionModalOpen(true)}
+              onClick={() => setIsManualTaskDistributionModalOpen(true)}
               className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
             >
               توزيع المهام
@@ -517,6 +519,15 @@ export const TeamTab = ({
         onSave={(memberId, taskIds) => {
           console.log('إضافة عضو وإسناد مهام:', { memberId, taskIds });
           alert(`تم إضافة العضو وإسناد ${taskIds.length} مهام بنجاح`);
+        }}
+      />
+
+      <ManualTaskDistributionModal
+        isOpen={isManualTaskDistributionModalOpen}
+        onClose={() => setIsManualTaskDistributionModalOpen(false)}
+        onSave={(redistributedTasks) => {
+          console.log('توزيع المهام يدوياً أو بالذكاء الاصطناعي:', redistributedTasks);
+          alert(`تم حفظ توزيع المهام الجديد بنجاح`);
         }}
       />
     </div>;
