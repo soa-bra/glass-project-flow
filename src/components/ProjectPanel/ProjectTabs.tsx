@@ -5,12 +5,15 @@ import { TeamRoster } from '@/components/custom/TeamRoster';
 import { DocumentsGrid } from '@/components/custom/DocumentsGrid';
 import { TemplateLibrary } from '@/components/custom/TemplateLibrary';
 import { ExpenseModal } from '@/components/custom/ExpenseModal';
+import { ApprovalRequestModal } from '@/components/custom/ApprovalRequestModal';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
   data
 }: any) => {
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [isApprovalRequestOpen, setIsApprovalRequestOpen] = useState(false);
+  const [approvalRequests, setApprovalRequests] = useState<any[]>([]);
   const [financialData, setFinancialData] = useState({
     totalBudget: 50000,
     totalExpenses: 35000,
@@ -50,6 +53,26 @@ export const FinancialTab = ({
         expenses: updatedExpenses
       };
     });
+  };
+
+  const handleApprovalRequest = (request: {
+    requiredBudget: number;
+    justification: string;
+    attachments: File[];
+  }) => {
+    const newRequest = {
+      id: Date.now().toString(),
+      ...request,
+      status: 'pending',
+      submittedAt: new Date().toISOString(),
+      submittedBy: 'مدير المشروع', // This should come from user context
+    };
+    
+    setApprovalRequests(prev => [...prev, newRequest]);
+    
+    // Here you would typically send notifications to Financial Manager and Admin
+    console.log('طلب موافقة مالية جديد:', newRequest);
+    alert('تم إرسال طلب الموافقة المالية بنجاح وسيتم مراجعته من قبل الإدارة المالية');
   };
 
   const remainingBudget = financialData.totalBudget - financialData.totalExpenses;
@@ -181,7 +204,10 @@ export const FinancialTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">طلب موافقة مالية</h4>
             <p className="text-xs text-black/70 mb-3">تقديم طلب موافقة على تعديل الميزانية</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button 
+              onClick={() => setIsApprovalRequestOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
               طلب موافقة
             </button>
           </div>
@@ -199,6 +225,12 @@ export const FinancialTab = ({
         isOpen={isExpenseModalOpen}
         onClose={() => setIsExpenseModalOpen(false)}
         onSave={handleAddExpense}
+      />
+      
+      <ApprovalRequestModal
+        isOpen={isApprovalRequestOpen}
+        onClose={() => setIsApprovalRequestOpen(false)}
+        onSave={handleApprovalRequest}
       />
     </div>;
 };
