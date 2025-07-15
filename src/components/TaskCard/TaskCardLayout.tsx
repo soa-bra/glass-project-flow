@@ -32,10 +32,10 @@ const TaskCardLayout = ({
     
     return {
       width: '100%',
-      height: '140px',
+      height: '120px',
       backgroundColor,
-      borderRadius: '40px',
-      padding: '8px',
+      borderRadius: '32px',
+      padding: '12px',
       direction: 'rtl',
       display: 'flex',
       flexDirection: 'column',

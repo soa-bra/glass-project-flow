@@ -13,38 +13,71 @@ export const useSmartTasks = () => {
     },
     teamMembers: string[]
   ): TaskData[] => {
-    const smartTasks: TaskData[] = [
+    const baseDate = new Date(projectData.startDate || new Date());
+    const projectTeam = [projectData.manager, ...(projectData.team || [])].filter(Boolean);
+    const allMembers = projectTeam.length > 0 ? projectTeam : teamMembers.length > 0 ? teamMembers : ['فريق المشروع'];
+
+    const taskTemplates = [
       {
-        id: Date.now() + 1,
-        title: 'تحليل المتطلبات',
-        description: 'تحليل وتوثيق متطلبات المشروع',
-        assignee: projectData.manager || teamMembers[0],
-        dueDate: projectData.startDate || new Date().toISOString().split('T')[0],
-        priority: 'urgent-important',
-        stage: 'planning',
-        attachments: []
+        title: 'تحليل المتطلبات وجمع البيانات',
+        description: 'دراسة وتحليل متطلبات المشروع وجمع البيانات اللازمة لبدء التنفيذ',
+        priority: 'urgent-important' as const,
+        stage: 'planning' as const,
+        daysOffset: 0
       },
       {
-        id: Date.now() + 2,
-        title: 'إعداد خطة العمل',
-        description: 'وضع خطة زمنية تفصيلية للمشروع',
-        assignee: projectData.manager || teamMembers[0],
-        dueDate: projectData.startDate || new Date().toISOString().split('T')[0],
-        priority: 'urgent-important',
-        stage: 'planning',
-        attachments: []
+        title: 'إعداد خطة العمل التفصيلية',
+        description: 'وضع خطة زمنية مفصلة للمشروع مع تحديد المعالم الرئيسية والموارد المطلوبة',
+        priority: 'urgent-important' as const,
+        stage: 'planning' as const,
+        daysOffset: 2
       },
       {
-        id: Date.now() + 3,
-        title: 'مراجعة الميزانية',
-        description: 'مراجعة وتوزيع الميزانية على مراحل المشروع',
-        assignee: projectData.team?.[0] || teamMembers[1],
-        dueDate: projectData.startDate || new Date().toISOString().split('T')[0],
-        priority: 'not-urgent-important',
-        stage: 'planning',
-        attachments: []
+        title: 'تصميم النموذج الأولي',
+        description: 'إعداد النموذج الأولي أو التصميم المبدئي للمشروع',
+        priority: 'urgent-not-important' as const,
+        stage: 'development' as const,
+        daysOffset: 5
+      },
+      {
+        title: 'مراجعة الميزانية والموارد',
+        description: 'مراجعة الميزانية المخصصة وتوزيعها على مراحل المشروع المختلفة',
+        priority: 'not-urgent-important' as const,
+        stage: 'planning' as const,
+        daysOffset: 3
+      },
+      {
+        title: 'إعداد البيئة التقنية',
+        description: 'تحضير البيئة التقنية والأدوات اللازمة لتنفيذ المشروع',
+        priority: 'urgent-not-important' as const,
+        stage: 'development' as const,
+        daysOffset: 7
+      },
+      {
+        title: 'تنفيذ المرحلة الأولى',
+        description: 'بدء تنفيذ المرحلة الأولى من المشروع وفقاً للخطة الموضوعة',
+        priority: 'urgent-important' as const,
+        stage: 'development' as const,
+        daysOffset: 10
       }
     ];
+
+    const smartTasks: TaskData[] = taskTemplates.map((template, index) => {
+      const dueDate = new Date(baseDate);
+      dueDate.setDate(dueDate.getDate() + template.daysOffset);
+      
+      return {
+        id: Date.now() + index + 1,
+        title: template.title,
+        description: template.description,
+        assignee: allMembers[index % allMembers.length],
+        dueDate: dueDate.toISOString().split('T')[0],
+        priority: template.priority,
+        stage: template.stage,
+        attachments: [],
+        createdAt: new Date().toISOString()
+      };
+    });
 
     toast({
       title: "تم توليد المهام بنجاح",

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { UnifiedTask, TaskFilters } from '@/types/task';
+import { UnifiedTask, TaskFilters, mapFromTaskData } from '@/types/task';
 
 // Mock data - في التطبيق الحقيقي سيأتي من API
 const generateMockTasks = (projectId: string): UnifiedTask[] => [
@@ -119,6 +119,25 @@ export const useUnifiedTasks = (projectId: string) => {
     }
   }, [projectId, allTasks]);
 
+  // دالة لدمج المهام من ProjectTasksContext
+  const mergeTasks = (additionalTasks: any[]) => {
+    if (!additionalTasks || additionalTasks.length === 0) return;
+    
+    const convertedTasks = additionalTasks.map(task => mapFromTaskData(task));
+    
+    setAllTasks(prev => {
+      const existingTasks = prev[projectId] || [];
+      const newTasks = convertedTasks.filter(newTask => 
+        !existingTasks.some(existing => existing.id === newTask.id)
+      );
+      
+      return {
+        ...prev,
+        [projectId]: [...existingTasks, ...newTasks]
+      };
+    });
+  };
+
   const getProjectTasks = (filters?: TaskFilters): UnifiedTask[] => {
     const tasks = allTasks[projectId] || [];
     
@@ -194,6 +213,7 @@ export const useUnifiedTasks = (projectId: string) => {
     addTask,
     updateTask,
     updateTaskStatus,
-    removeTask
+    removeTask,
+    mergeTasks
   };
 };

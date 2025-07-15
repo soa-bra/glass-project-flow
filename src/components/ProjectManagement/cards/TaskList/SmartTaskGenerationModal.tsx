@@ -28,11 +28,11 @@ interface SmartTaskGenerationModalProps {
 }
 
 const taskTypes = [
-  { id: 'financial', label: 'مالي' },
-  { id: 'legal', label: 'قانوني' },
-  { id: 'technical', label: 'تقني' },
-  { id: 'executive', label: 'تنفيذي' },
+  { id: 'planning', label: 'تخطيط' },
+  { id: 'development', label: 'تطوير' },
+  { id: 'testing', label: 'اختبار' },
   { id: 'review', label: 'مراجعة' },
+  { id: 'design', label: 'تصميم' },
 ];
 
 export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> = ({
@@ -75,18 +75,68 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
       // محاكاة عملية التوليد (يمكن استبدالها بـ Supabase Function لاحقاً)
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // توليد مهام وهمية للاختبار
-      const generatedTasks: TaskData[] = Array.from({ length: taskCount }, (_, index) => ({
-        id: Date.now() + index,
-        title: `مهمة مولدة ${index + 1}`,
-        description: `وصف المهمة المولدة تلقائياً`,
-        priority: (['urgent-important', 'urgent-not-important', 'not-urgent-important', 'not-urgent-not-important'] as const)[Math.floor(Math.random() * 4)],
-        dueDate: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        stage: 'planning' as const,
-        assignee: '',
-        attachments: [], // إضافة الخاصية المطلوبة
-        createdAt: new Date().toISOString(),
-      }));
+      // إنشاء قوالب المهام حسب النوع المختار
+      const taskTemplates = {
+        planning: [
+          { title: 'تحليل المتطلبات والاحتياجات', description: 'دراسة شاملة لمتطلبات المشروع واحتياجات العملاء' },
+          { title: 'وضع الخطة الزمنية', description: 'إعداد جدول زمني تفصيلي للمشروع مع تحديد المعالم' },
+          { title: 'تحديد الموارد المطلوبة', description: 'حصر وتقدير الموارد البشرية والمالية والتقنية' },
+          { title: 'دراسة الجدوى', description: 'تقييم الجدوى الاقتصادية والتقنية للمشروع' }
+        ],
+        design: [
+          { title: 'تصميم الواجهات الأساسية', description: 'إنشاء التصاميم الأولية للواجهات الرئيسية' },
+          { title: 'إعداد دليل الهوية البصرية', description: 'تحديد الألوان والخطوط والعناصر البصرية' },
+          { title: 'تصميم تجربة المستخدم', description: 'رسم خرائط رحلة المستخدم وتحسين التفاعل' },
+          { title: 'إنشاء النماذج الأولية', description: 'بناء نماذج تفاعلية للاختبار والتطوير' }
+        ],
+        development: [
+          { title: 'إعداد البيئة التطويرية', description: 'تكوين بيئة العمل والأدوات المطلوبة للتطوير' },
+          { title: 'تطوير الواجهة الأمامية', description: 'برمجة وتطوير واجهات المستخدم التفاعلية' },
+          { title: 'تطوير الواجهة الخلفية', description: 'بناء APIs وقواعد البيانات والخوادم' },
+          { title: 'تكامل الأنظمة', description: 'ربط مكونات النظام وضمان التوافق بينها' }
+        ],
+        testing: [
+          { title: 'اختبار الوحدات', description: 'اختبار المكونات الفردية للنظام' },
+          { title: 'اختبار التكامل', description: 'اختبار التفاعل بين مكونات النظام المختلفة' },
+          { title: 'اختبار الأداء', description: 'قياس أداء النظام تحت ضغوط مختلفة' },
+          { title: 'اختبار الأمان', description: 'فحص الثغرات الأمنية والحماية' }
+        ],
+        review: [
+          { title: 'مراجعة التصميم', description: 'فحص ومراجعة التصاميم والواجهات' },
+          { title: 'مراجعة الكود', description: 'مراجعة جودة الكود والممارسات البرمجية' },
+          { title: 'مراجعة الوثائق', description: 'مراجعة الوثائق والدلائل الفنية' },
+          { title: 'اعتماد المخرجات', description: 'اعتماد النتائج النهائية للمرحلة' }
+        ]
+      };
+
+      const selectedTaskTypes = formData.selectedTypes.length > 0 ? formData.selectedTypes : ['planning'];
+      const generatedTasks: TaskData[] = [];
+      
+      let taskIndex = 0;
+      for (let i = 0; i < taskCount; i++) {
+        const taskType = selectedTaskTypes[i % selectedTaskTypes.length];
+        const templates = taskTemplates[taskType as keyof typeof taskTemplates] || taskTemplates.planning;
+        const template = templates[taskIndex % templates.length];
+        
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + Math.floor(Math.random() * 21) + 7); // 7-28 days from now
+        
+        generatedTasks.push({
+          id: Date.now() + i,
+          title: template.title,
+          description: template.description,
+          priority: (['urgent-important', 'urgent-not-important', 'not-urgent-important', 'not-urgent-not-important'] as const)[Math.floor(Math.random() * 4)],
+          dueDate: dueDate.toISOString().split('T')[0],
+          stage: taskType as any,
+          assignee: ['أحمد محمد', 'فاطمة علي', 'محمد خالد', 'نورا سعد'][Math.floor(Math.random() * 4)],
+          attachments: [],
+          createdAt: new Date().toISOString(),
+        });
+        
+        if ((i + 1) % selectedTaskTypes.length === 0) {
+          taskIndex++;
+        }
+      }
 
       onTasksGenerated(generatedTasks);
 

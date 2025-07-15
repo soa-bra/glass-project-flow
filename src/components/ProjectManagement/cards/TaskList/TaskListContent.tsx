@@ -1,7 +1,8 @@
-import React, { useImperativeHandle } from 'react';
+import React, { useImperativeHandle, useEffect } from 'react';
 import type { TaskData } from '@/types';
 import TaskCard from '@/components/TaskCard';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
+import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
 import { mapToTaskCardProps, mapFromTaskData } from '@/types/task';
 
 export interface TaskListContentRef {
@@ -15,6 +16,17 @@ interface TaskListContentProps {
 
 export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListContentProps>(({ projectId }, ref) => {
   const unifiedTasks = useUnifiedTasks(projectId || 'default');
+  const projectTasksContext = useProjectTasksContext();
+
+  // دمج المهام من ProjectTasksContext عند التحديث
+  useEffect(() => {
+    if (projectId) {
+      const contextTasks = projectTasksContext.getProjectTasks(projectId);
+      if (contextTasks.length > 0) {
+        unifiedTasks.mergeTasks(contextTasks);
+      }
+    }
+  }, [projectId, projectTasksContext.projectTasks[projectId || '']]);
 
   // الحصول على المهام من النظام الموحد
   const allTasks = unifiedTasks.tasks.map(mapToTaskCardProps);
@@ -57,8 +69,8 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="space-y-4 pr-1 py-0 my-0">
-        {allTasks.map(task => (
-          <div key={task.id}>
+        {allTasks.map((task, index) => (
+          <div key={`task-${task.id}-${index}`}>
             <TaskCard 
               {...task} 
               onEdit={handleTaskEdit} 
