@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ExpenseModal } from './ExpenseModal';
 import { StatusBox } from '@/components/custom/StatusBox';
 import { ClientProfile } from '@/components/custom/ClientProfile';
 import { TeamRoster } from '@/components/custom/TeamRoster';
@@ -6,10 +7,27 @@ import { DocumentsGrid } from '@/components/custom/DocumentsGrid';
 import { TemplateLibrary } from '@/components/custom/TemplateLibrary';
 
 // تبويب الوضع المالي
-export const FinancialTab = ({
-  data
-}: any) => {
-  return <div className="space-y-6">
+export const FinancialTab = (data: any) => {
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [expenses, setExpenses] = useState(data?.expenses || [
+    { id: 1, category: 'تشغيلية', amount: 25000, description: 'إيجار المكتب', date: '2024-01-15' },
+    { id: 2, category: 'مواد وأدوات', amount: 15000, description: 'أجهزة كمبيوتر', date: '2024-01-10' },
+    { id: 3, category: 'استشارات', amount: 12500, description: 'استشارة قانونية', date: '2024-01-08' }
+  ]);
+  
+  const totalExpenses = expenses.reduce((sum: number, expense: any) => sum + expense.amount, 0);
+  const budgetRemaining = (data?.totalBudget || 200000) - totalExpenses;
+
+  const handleAddExpense = (newExpense: any) => {
+    const expense = {
+      id: expenses.length + 1,
+      ...newExpense
+    };
+    setExpenses(prev => [...prev, expense]);
+  };
+
+  return (
+    <div className="space-y-6">
       {/* حالة الميزانية */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-3">
@@ -25,18 +43,18 @@ export const FinancialTab = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">المتبقي من الميزانية</h4>
-          <p className="text-2xl font-bold text-black mb-1">15,000 ر.س</p>
-          <p className="text-sm font-normal text-black">من إجمالي 50,000 ر.س</p>
+          <p className="text-2xl font-bold text-black mb-1">{budgetRemaining.toLocaleString()} ر.س</p>
+          <p className="text-sm font-normal text-black">من إجمالي {(data?.totalBudget || 200000).toLocaleString()} ر.س</p>
           <div className="mt-3">
             <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
-              <span className="text-sm font-medium text-black">30% متبقية</span>
+              <span className="text-sm font-medium text-black">{Math.round((budgetRemaining / (data?.totalBudget || 200000)) * 100)}% متبقية</span>
             </div>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي المصروفات</h4>
-          <p className="text-2xl font-bold text-black mb-1">35,000 ر.س</p>
-          <p className="text-sm font-normal text-black">70% من الميزانية المخططة</p>
+          <p className="text-2xl font-bold text-black mb-1">{totalExpenses.toLocaleString()} ر.س</p>
+          <p className="text-sm font-normal text-black">{Math.round((totalExpenses / (data?.totalBudget || 200000)) * 100)}% من الميزانية المخططة</p>
           <div className="mt-3">
             <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
               <span className="text-sm font-medium text-black">ضمن الحدود</span>
@@ -45,7 +63,7 @@ export const FinancialTab = ({
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">الربح المتوقع</h4>
-          <p className="text-2xl font-bold text-black mb-1">12,000 ر.س</p>
+          <p className="text-2xl font-bold text-black mb-1">{(budgetRemaining * 0.24).toLocaleString()} ر.س</p>
           <p className="text-sm font-normal text-black">24% هامش ربح متوقع</p>
           <div className="mt-3">
             <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
@@ -58,43 +76,16 @@ export const FinancialTab = ({
       {/* تفاصيل المصروفات */}
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <h3 className="text-lg font-semibold text-black mb-6">تفصيل المصروفات حسب الفئة</h3>
-        <div className="space-y-4">
-          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#fbe2aa] px-3 py-1 rounded-full">
-                <span className="text-sm font-medium text-black">57%</span>
+        <div className="space-y-2">
+          {expenses.map((expense: any) => (
+            <div key={expense.id} className="flex justify-between items-center p-3 bg-[#F2FFFF] rounded-2xl border border-black/10">
+              <div className="flex flex-col">
+                <span className="text-sm text-black font-semibold">{expense.category}</span>
+                <span className="text-xs text-black/60">{expense.description}</span>
               </div>
-              <span className="text-sm font-bold text-black">20,000 ر.س</span>
+              <span className="text-sm font-bold text-black">{expense.amount.toLocaleString()} ر.س</span>
             </div>
-            <span className="text-sm font-bold text-black">رواتب الفريق والمكافآت</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#a4e2f6] px-3 py-1 rounded-full">
-                <span className="text-sm font-medium text-black">23%</span>
-              </div>
-              <span className="text-sm font-bold text-black">8,000 ر.س</span>
-            </div>
-            <span className="text-sm font-bold text-black">أدوات وبرمجيات متخصصة</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#d9d2fd] px-3 py-1 rounded-full">
-                <span className="text-sm font-medium text-black">14%</span>
-              </div>
-              <span className="text-sm font-bold text-black">5,000 ر.س</span>
-            </div>
-            <span className="text-sm font-bold text-black">استشارات خارجية وخدمات</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#f1b5b9] px-3 py-1 rounded-full">
-                <span className="text-sm font-medium text-black">6%</span>
-              </div>
-              <span className="text-sm font-bold text-black">2,000 ر.س</span>
-            </div>
-            <span className="text-sm font-bold text-black">مصاريف إدارية وأخرى</span>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -103,7 +94,6 @@ export const FinancialTab = ({
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-black">التدفق النقدي المتوقع (الأشهر القادمة)</h3>
           <div className="flex gap-2">
-            
             <button className="px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تصدير التقرير
             </button>
@@ -148,7 +138,10 @@ export const FinancialTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">إضافة مصروف جديد</h4>
             <p className="text-xs text-black/70 mb-3">تسجيل مصروف جديد وتصنيفه حسب الفئة</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button 
+              onClick={() => setIsExpenseModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
               إضافة مصروف
             </button>
           </div>
@@ -168,7 +161,15 @@ export const FinancialTab = ({
           </div>
         </div>
       </div>
-    </div>;
+
+      {/* مودال إضافة المصروف */}
+      <ExpenseModal
+        isOpen={isExpenseModalOpen}
+        onClose={() => setIsExpenseModalOpen(false)}
+        onSave={handleAddExpense}
+      />
+    </div>
+  );
 };
 
 // تبويب العميل
