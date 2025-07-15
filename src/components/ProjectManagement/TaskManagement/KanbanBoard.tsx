@@ -4,6 +4,9 @@ import { AddTaskButton } from './AddTaskButton';
 import { BulkActionsBar } from './BulkActionsBar';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { UnifiedTask, TaskFilters, mapToTaskCardProps } from '@/types/task';
+import TaskCardKanbanLayout from '@/components/TaskCard/TaskCardKanbanLayout';
+import TaskCardKanbanHeader from '@/components/TaskCard/TaskCardKanbanHeader';
+import TaskCardFooterSimple from '@/components/TaskCard/TaskCardFooterSimple';
 
 interface KanbanColumn {
   name: string;
@@ -25,6 +28,84 @@ const columns: KanbanColumn[] = [
   { name: "In Progress", color: "#a4e2f6", description: "المهام الجارية", status: "in-progress" },
   { name: "Done", color: "#bdeed3", description: "المهام المكتملة", status: "completed" }
 ];
+
+interface KanbanTaskCardProps {
+  task: UnifiedTask;
+  isSelected: boolean;
+  isSelectionMode: boolean;
+  isOtherSelected: boolean;
+  onSelect: () => void;
+  onDragStart: () => void;
+}
+
+const KanbanTaskCard: React.FC<KanbanTaskCardProps> = ({
+  task,
+  isSelected,
+  isSelectionMode,
+  isOtherSelected,
+  onSelect,
+  onDragStart
+}) => {
+  const dueDate = new Date(task.dueDate);
+  const daysLeft = Math.max(Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)), 0);
+  
+  const statusColorMap = {
+    completed: '#bdeed3',
+    'in-progress': '#a4e2f6',
+    todo: '#dfecf2',
+    stopped: '#f1b5b9',
+    treating: '#d9d2fd',
+    late: '#fbe2aa'
+  };
+  
+  const statusTextMap = {
+    completed: 'مكتملة',
+    'in-progress': 'قيد التنفيذ',
+    todo: 'لم تبدأ',
+    stopped: 'متوقفة',
+    treating: 'تحت المعالجة',
+    late: 'متأخرة'
+  };
+
+  const priorityMap = {
+    urgent: 'urgent-important',
+    high: 'urgent-not-important', 
+    medium: 'not-urgent-important',
+    low: 'not-urgent-not-important'
+  } as const;
+
+  return (
+    <div 
+      draggable
+      onDragStart={onDragStart}
+      onClick={onSelect}
+      style={{ cursor: 'pointer' }}
+    >
+      <TaskCardKanbanLayout 
+        id={task.id.toString()}
+        isSelected={isSelected}
+        isSelectionMode={isSelectionMode}
+        isOtherSelected={isOtherSelected}
+      >
+        <TaskCardKanbanHeader
+          daysLeft={daysLeft}
+          title={task.title}
+          description={task.description || 'لا يوجد وصف'}
+          priority={priorityMap[task.priority] || 'not-urgent-not-important'}
+        />
+        
+        <TaskCardFooterSimple
+          status={statusTextMap[task.status]}
+          statusColor={statusColorMap[task.status]}
+          date={daysLeft === 0 ? 'اليوم' : `${daysLeft} يوم`}
+          assignee={task.assignee}
+          members={task.comments > 0 ? `💬 ${task.comments}` : 'لا توجد تعليقات'}
+          isSelected={isSelected}
+        />
+      </TaskCardKanbanLayout>
+    </div>
+  );
+};
 
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) => {
   const { getTasksByStatus, updateTaskStatus } = useUnifiedTasks(projectId);
@@ -98,20 +179,16 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
               {/* Tasks Container */}
               <div className="flex-1 p-4 space-y-3 min-h-[400px]">
                 {columnTasks.map(task => {
-                  const taskCardProps = mapToTaskCardProps(task);
                   return (
-                    <div 
+                    <KanbanTaskCard
                       key={task.id}
-                      draggable
+                      task={task}
+                      isSelected={selectedTasks.includes(task.id)}
+                      isSelectionMode={selectedTasks.length > 0}
+                      isOtherSelected={selectedTasks.length > 0 && !selectedTasks.includes(task.id)}
+                      onSelect={() => handleTaskSelect(task.id)}
                       onDragStart={() => handleDragStart(task, column.status)}
-                    >
-                      <TaskCard
-                        {...taskCardProps}
-                        isSelected={selectedTasks.includes(task.id)}
-                        isSelectionMode={false}
-                        onSelect={() => handleTaskSelect(task.id)}
-                      />
-                    </div>
+                    />
                   );
                 })}
                 

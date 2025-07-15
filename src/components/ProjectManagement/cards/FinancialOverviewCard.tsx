@@ -29,11 +29,15 @@ export const FinancialOverviewCard: React.FC = () => {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-arabic font-semibold text-gray-800">النظرة المالية</h3>
         <div className="flex gap-2">
-          <button className="p-1 rounded-full hover:bg-white/20 text-gray-600">
-            <span className="text-sm">←</span>
-          </button>
-          <button className="p-1 rounded-full hover:bg-white/20 text-gray-600">
-            <span className="text-sm">⋯</span>
+          <button 
+            onClick={() => {
+              // التنقل إلى تبويب الإدارة المالية
+              window.dispatchEvent(new CustomEvent('navigateToFinancialTab'));
+              console.log('التنقل إلى تبويب الإدارة المالية');
+            }}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95"
+          >
+            <span className="text-sm">↗</span>
           </button>
         </div>
       </div>
