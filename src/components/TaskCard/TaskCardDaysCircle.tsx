@@ -9,10 +9,10 @@ const TaskCardDaysCircle = ({ daysLeft }: TaskCardDaysCircleProps) => {
       position: 'absolute',
       top: '0px',
       left: '0px',
-      width: '30px',
-      height: '30px',
+      width: '60px',
+      height: '60px',
       borderRadius: '50%',
-      border: '1px solid #000000',
+      border: '2px solid #000000',
       backgroundColor: 'transparent',
       display: 'flex',
       flexDirection: 'column',
@@ -20,7 +20,7 @@ const TaskCardDaysCircle = ({ daysLeft }: TaskCardDaysCircleProps) => {
       justifyContent: 'center'
     }}>
       <span style={{
-        fontSize: '8px',
+        fontSize: '16px',
         fontWeight: 700,
         color: '#000000',
         lineHeight: 1,
@@ -29,10 +29,10 @@ const TaskCardDaysCircle = ({ daysLeft }: TaskCardDaysCircleProps) => {
         {daysLeft.toString().padStart(2, '0')}
       </span>
       <span style={{
-        fontSize: '5px',
+        fontSize: '10px',
         fontWeight: 400,
         color: '#000000',
-        marginTop: '1px',
+        marginTop: '2px',
         fontFamily: 'IBM Plex Sans Arabic'
       }}>
         يوم
