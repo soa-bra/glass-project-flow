@@ -239,7 +239,7 @@ export const TeamTab = ({
     email: 'ahmed@company.com',
     phone: '+966501234567',
     avatar: '',
-    productivity: 85,
+    utilization: 85,
     availability: 'available' as const,
     currentTasks: 3,
     hoursLogged: 156,
@@ -251,7 +251,7 @@ export const TeamTab = ({
     email: 'fatima@company.com',
     phone: '+966502345678',
     avatar: '',
-    productivity: 95,
+    utilization: 95,
     availability: 'busy' as const,
     currentTasks: 4,
     hoursLogged: 168,
@@ -263,7 +263,7 @@ export const TeamTab = ({
     email: 'mohammed@company.com',
     phone: '+966503456789',
     avatar: '',
-    productivity: 70,
+    utilization: 70,
     availability: 'available' as const,
     currentTasks: 2,
     hoursLogged: 125,
@@ -275,7 +275,7 @@ export const TeamTab = ({
     email: 'nora@company.com',
     phone: '+966504567890',
     avatar: '',
-    productivity: 0,
+    utilization: 0,
     availability: 'away' as const,
     currentTasks: 0,
     hoursLogged: 0,
@@ -341,14 +341,14 @@ export const TeamTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">توزيع المهام</h4>
             <p className="text-xs text-black/70 mb-3">إعادة توزيع المهام بين أعضاء الفريق</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
               توزيع المهام
             </button>
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تقييم الأداء</h4>
             <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
               تقييم الأداء
             </button>
           </div>
