@@ -1,27 +1,26 @@
-
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Project } from '@/types/project';
-
 interface BudgetCardProps {
   project: Project;
 }
-
-export const BudgetCard: React.FC<BudgetCardProps> = ({ project }) => {
+export const BudgetCard: React.FC<BudgetCardProps> = ({
+  project
+}) => {
   const totalBudget = parseInt(project.value.replace(/[^\d]/g, ''));
   const spentAmount = Math.floor(totalBudget * 0.75); // 75% مصروف
   const remainingAmount = totalBudget - spentAmount;
-  const spentPercentage = (spentAmount / totalBudget) * 100;
+  const spentPercentage = spentAmount / totalBudget * 100;
   const isOverBudget = spentAmount > totalBudget;
 
   // إنشاء الأشرطة للتمثيل البصري - حلقة دائرية
   const totalBars = 60; // عدد الشرائط في الحلقة
-  const filledBars = Math.round((spentPercentage / 100) * totalBars);
-  
+  const filledBars = Math.round(spentPercentage / 100 * totalBars);
+
   // تحديد ألوان الشرائط بناءً على النسبة
   const getBarColor = (index: number) => {
     if (index >= filledBars) return 'bg-gray-200'; // الشرائط الفارغة
-    
+
     const fillRatio = (index + 1) / totalBars;
     if (fillRatio <= 0.3) return 'bg-[#96d8d0]'; // أخضر فاتح
     if (fillRatio <= 0.6) return 'bg-[#7bc5bd]'; // أخضر متوسط
@@ -31,11 +30,9 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({ project }) => {
 
   // تحديد لون خلفية الكارد
   const cardBgColor = isOverBudget ? 'bg-[#f1b5b9]' : 'bg-[#96d8d0]';
-
-  return (
-    <BaseCard className={`h-full flex flex-col items-center justify-center relative ${cardBgColor} border-0`}>
+  return <BaseCard className={`h-full flex flex-col items-center justify-center relative ${cardBgColor} border-0`}>
       {/* أيقونة التوسيع */}
-      <button className="absolute top-4 left-4 w-8 h-8 bg-black/20 text-black rounded-full flex items-center justify-center text-sm hover:bg-black/30 transition-colors">
+      <button className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
         ↗
       </button>
 
@@ -50,26 +47,21 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({ project }) => {
       <div className="relative w-80 h-80 mb-8 flex items-center justify-center">
         {/* الشرائط الدائرية */}
         <div className="absolute inset-0">
-          {Array.from({ length: totalBars }).map((_, index) => {
-            const angle = (index / totalBars) * 360;
-            const isVisible = index < filledBars || index >= filledBars;
-            
-            return (
-              <div
-                key={index}
-                className={`absolute w-1 h-12 ${getBarColor(index)} transition-all duration-500`}
-                style={{
-                  transformOrigin: '50% 160px',
-                  transform: `rotate(${angle}deg)`,
-                  left: '50%',
-                  top: '20px',
-                  marginLeft: '-2px',
-                  opacity: isVisible ? 1 : 0.3,
-                  animationDelay: `${index * 50}ms`
-                }}
-              />
-            );
-          })}
+          {Array.from({
+          length: totalBars
+        }).map((_, index) => {
+          const angle = index / totalBars * 360;
+          const isVisible = index < filledBars || index >= filledBars;
+          return <div key={index} className={`absolute w-1 h-12 ${getBarColor(index)} transition-all duration-500`} style={{
+            transformOrigin: '50% 160px',
+            transform: `rotate(${angle}deg)`,
+            left: '50%',
+            top: '20px',
+            marginLeft: '-2px',
+            opacity: isVisible ? 1 : 0.3,
+            animationDelay: `${index * 50}ms`
+          }} />;
+        })}
         </div>
         
         {/* المحتوى المركزي */}
@@ -118,6 +110,5 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({ project }) => {
           هذا النص مثال للشكل النهائي
         </div>
       </div>
-    </BaseCard>
-  );
+    </BaseCard>;
 };
