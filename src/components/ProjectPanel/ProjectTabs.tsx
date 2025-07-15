@@ -417,7 +417,7 @@ export const TeamTab = ({
               onClick={() => setIsTaskAssignmentModalOpen(true)}
               className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
             >
-              إسناد مهام HR
+              إضافة عضو
             </button>
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
