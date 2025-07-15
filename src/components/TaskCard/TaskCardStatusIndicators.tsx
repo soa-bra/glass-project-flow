@@ -85,7 +85,6 @@ const TaskCardStatusIndicators = ({
 
   const handleDropdownClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    e.preventDefault();
   };
 
   return (
@@ -125,24 +124,17 @@ const TaskCardStatusIndicators = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '24px',
-              height: '24px',
+              width: '20px',
+              height: '20px',
               borderRadius: '50%',
               padding: '0',
-              border: isSelected ? '2px solid #3B82F6' : '2px solid #858789',
-              backgroundColor: isSelected ? '#3B82F6' : 'transparent',
-              color: isSelected ? '#fff' : '#858789',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease-in-out'
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log(`نقر على أيقونة التحديد للمهمة: ${taskId}`);
-              if (onSelect) onSelect(taskId);
+              border: isSelected ? 'none' : '1px solid #858789',
+              backgroundColor: isSelected ? '#858789' : 'transparent',
+              color: isSelected ? '#fff' : '#858789'
             }}
           >
             {isSelected ? (
-              <Check size={14} color="white" strokeWidth={3} />
+              <Check size={12} color="white" />
             ) : null}
           </div>
         ) : (
