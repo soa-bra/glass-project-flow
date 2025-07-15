@@ -355,7 +355,23 @@ const TaskAttachmentsTab: React.FC<{
   return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold text-black">المرفقات ({task.attachments})</h4>
-        <Button size="sm" className="bg-black text-white hover:bg-black/80">
+        <Button 
+          size="sm" 
+          className="bg-black text-white hover:bg-black/80"
+          onClick={() => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.multiple = true;
+            input.onchange = (e) => {
+              const files = (e.target as HTMLInputElement).files;
+              if (files) {
+                console.log('تم تحديد المرفقات:', Array.from(files).map(f => f.name));
+                // يمكن إضافة منطق رفع الملفات هنا
+              }
+            };
+            input.click();
+          }}
+        >
           <Paperclip className="w-4 h-4 mr-1" />
           إضافة مرفق
         </Button>
@@ -400,9 +416,26 @@ const TaskCommentsTab: React.FC<{
       
       {/* Add comment form */}
       <div className="bg-white/50 rounded-lg p-4">
-        <textarea placeholder="أضف تعليقاً جديداً..." className="w-full bg-transparent border border-black/10 rounded-lg p-3 text-sm text-black resize-none" rows={3} />
+        <textarea 
+          id="new-comment" 
+          placeholder="أضف تعليقاً جديداً..." 
+          className="w-full bg-transparent border border-black/10 rounded-lg p-3 text-sm text-black resize-none" 
+          rows={3} 
+        />
         <div className="flex justify-end mt-2">
-          <Button size="sm" className="bg-black text-white hover:bg-black/80">
+          <Button 
+            size="sm" 
+            className="bg-black text-white hover:bg-black/80"
+            onClick={() => {
+              const textarea = document.getElementById('new-comment') as HTMLTextAreaElement;
+              const comment = textarea?.value.trim();
+              if (comment) {
+                console.log('تم إضافة تعليق جديد:', comment);
+                textarea.value = '';
+                // يمكن إضافة منطق حفظ التعليق هنا
+              }
+            }}
+          >
             <MessageSquare className="w-4 h-4 mr-1" />
             إضافة تعليق
           </Button>

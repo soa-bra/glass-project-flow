@@ -70,6 +70,7 @@ export function AnimatedTabs({ tabs, activeTab, onTabChange, className = "" }: A
               key={tab.value}
               ref={isActive ? activeTabRef : null}
               onClick={() => onTabChange(tab.value)}
+              data-tab={tab.value}
               className="flex h-8 items-center cursor-pointer rounded-full px-3 py-2 text-sm font-medium text-gray-700 whitespace-nowrap"
             >
               {tab.label}

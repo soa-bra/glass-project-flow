@@ -20,12 +20,14 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
     onTasksGenerated(tasks);
   };
   const handleUpdateTasks = () => {
-    console.log('تحديث المهام');
-    // يمكن إضافة منطق تحديث المهام هنا
+    console.log('تم تحديث قائمة المهام');
+    // تحديث قائمة المهام دون إعادة تحميل الصفحة
+    window.dispatchEvent(new CustomEvent('refreshTasks'));
   };
   const handleFilterTasks = () => {
-    console.log('فلترة المهام');
-    // يمكن إضافة منطق فلترة المهام هنا
+    console.log('فتح نافذة فلترة المهام');
+    // يمكن إضافة نافذة فلترة هنا
+    alert('نافذة الفلترة ستُضاف قريباً');
   };
   return <>
       <div className="flex items-center justify-between mb-6 px-0 mx-[15px] my-[15px]">

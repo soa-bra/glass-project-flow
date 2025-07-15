@@ -34,14 +34,18 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({ project }) => {
 
   return (
     <BaseCard className={`h-full flex flex-col items-center justify-center relative ${cardBgColor} border-0`}>
-      {/* أيقونة التوسيع */}
-      <button className="absolute top-4 left-4 w-8 h-8 bg-black/20 text-black rounded-full flex items-center justify-center text-sm hover:bg-black/30 transition-colors">
+      {/* زر انتقال للإدارة المالية */}
+      <button 
+        className="absolute top-4 left-4 w-8 h-8 bg-transparent border border-black rounded-full flex items-center justify-center text-sm hover:bg-black/5 transition-all hover:scale-105"
+        onClick={() => {
+          // انتقال إلى تبويب الإدارة المالية
+          const financeTab = document.querySelector('[data-tab="finance"]') as HTMLElement;
+          if (financeTab) {
+            financeTab.click();
+          }
+        }}
+      >
         ↗
-      </button>
-
-      {/* أيقونة النقاط */}
-      <button className="absolute top-4 left-16 w-8 h-8 bg-black/20 text-black rounded-full flex items-center justify-center text-lg hover:bg-black/30 transition-colors">
-        •••
       </button>
 
       <h3 className="text-xl font-arabic font-bold mb-8 text-center text-black">النظرة المالية</h3>

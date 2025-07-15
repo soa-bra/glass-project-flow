@@ -141,10 +141,10 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
               {/* الإحصائيات */}
               <div className="flex-shrink-0">
                 <div className="grid grid-cols-3 gap-6 px-[45px] my-0">
-                  {/* الإيرادات المتوقعة */}
+                  {/* ميزانية المشروع */}
                   <div className="text-right p-6 py-0 px-[20px]">
                     <div className="mb-2">
-                      <span className="text-sm text-black font-arabic font-medium">الإيرادات المتوقعة</span>
+                      <span className="text-sm text-black font-arabic font-medium">ميزانية المشروع</span>
                     </div>
                     <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
                       <div className="text-3xl font-normal text-gray-900 font-arabic">
@@ -155,10 +155,10 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                     <div className="text-xs font-Regular text-black font-arabic">ريال سعودي والمتبقي منها 25 الف</div>
                   </div>
 
-                  {/* الشكاوى */}
+                  {/* عدد الآيام المتبقية */}
                   <div className="text-right p-6 mx-0 py-0 px-[20px]">
                     <div className="mb-2">
-                      <span className="text-sm text-black font-arabic font-medium">الشكاوى</span>
+                      <span className="text-sm text-black font-arabic font-medium">عدد الآيام المتبقية</span>
                     </div>
                     <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
                       <div className="text-3xl font-normal text-gray-900 font-arabic">
