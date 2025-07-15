@@ -68,10 +68,14 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
 
   const handleTaskSelect = (taskId: string) => {
     console.log('تحديد/إلغاء تحديد المهمة:', taskId);
+    console.log('المهام المحددة حالياً:', selectedTasks);
+    console.log('وضع التحديد الحالي:', isSelectionMode);
+    
     toggleTaskSelection(taskId);
 
     // تفعيل نمط التحديد عند تحديد أول مهمة
     if (!isSelectionMode) {
+      console.log('تفعيل وضع التحديد');
       setIsSelectionMode(true);
     }
   };
@@ -168,18 +172,25 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 pr-1 py-0 my-0">
-          {allTasks.map(task => <div key={task.id}>
-              <TaskCard 
-                {...task} 
-                isSelected={selectedTasks.includes(task.id.toString())} 
-                isSelectionMode={isSelectionMode} 
-                onSelect={handleTaskSelect} 
-                onEdit={handleTaskEdit} 
-                onArchive={handleTaskArchive} 
-                onDelete={handleTaskDelete} 
-                onTaskUpdated={handleTaskUpdated}
-              />
-            </div>)}
+          {allTasks.map(task => {
+            const isTaskSelected = selectedTasks.includes(task.id.toString());
+            console.log(`البطاقة ${task.id}: محددة = ${isTaskSelected}, وضع التحديد = ${isSelectionMode}`);
+            
+            return (
+              <div key={task.id}>
+                <TaskCard 
+                  {...task} 
+                  isSelected={isTaskSelected} 
+                  isSelectionMode={isSelectionMode} 
+                  onSelect={handleTaskSelect} 
+                  onEdit={handleTaskEdit} 
+                  onArchive={handleTaskArchive} 
+                  onDelete={handleTaskDelete} 
+                  onTaskUpdated={handleTaskUpdated}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 
