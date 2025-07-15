@@ -85,6 +85,7 @@ const TaskCardStatusIndicators = ({
 
   const handleDropdownClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
   };
 
   return (
@@ -130,7 +131,12 @@ const TaskCardStatusIndicators = ({
               padding: '0',
               border: isSelected ? 'none' : '1px solid #858789',
               backgroundColor: isSelected ? '#858789' : 'transparent',
-              color: isSelected ? '#fff' : '#858789'
+              color: isSelected ? '#fff' : '#858789',
+              cursor: 'pointer'
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onSelect) onSelect(taskId);
             }}
           >
             {isSelected ? (
