@@ -6,6 +6,7 @@ import { DocumentsGrid } from '@/components/custom/DocumentsGrid';
 import { TemplateLibrary } from '@/components/custom/TemplateLibrary';
 import { ExpenseModal } from '@/components/custom/ExpenseModal';
 import { ApprovalRequestModal } from '@/components/custom/ApprovalRequestModal';
+import { FinancialAnalysisModal } from '@/components/custom/FinancialAnalysisModal';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -13,6 +14,7 @@ export const FinancialTab = ({
 }: any) => {
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [isApprovalRequestOpen, setIsApprovalRequestOpen] = useState(false);
+  const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
   const [approvalRequests, setApprovalRequests] = useState<any[]>([]);
   const [financialData, setFinancialData] = useState({
     totalBudget: 50000,
@@ -214,7 +216,10 @@ export const FinancialTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">تحليل الانحرافات</h4>
             <p className="text-xs text-black/70 mb-3">مراجعة الانحرافات عن الميزانية المخططة</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button 
+              onClick={() => setIsAnalysisModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
               عرض التحليل
             </button>
           </div>
@@ -231,6 +236,11 @@ export const FinancialTab = ({
         isOpen={isApprovalRequestOpen}
         onClose={() => setIsApprovalRequestOpen(false)}
         onSave={handleApprovalRequest}
+      />
+      
+      <FinancialAnalysisModal
+        isOpen={isAnalysisModalOpen}
+        onClose={() => setIsAnalysisModalOpen(false)}
       />
     </div>;
 };
