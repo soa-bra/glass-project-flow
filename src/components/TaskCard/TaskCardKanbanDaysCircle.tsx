@@ -8,10 +8,10 @@ const TaskCardKanbanDaysCircle = ({ daysLeft }: TaskCardKanbanDaysCircleProps) =
       position: 'absolute',
       top: '0px',
       left: '0px',
-      width: '15px',
-      height: '15px',
+      width: '30px',
+      height: '30px',
       borderRadius: '50%',
-      border: '0.5px solid #000000',
+      border: '1px solid #000000',
       backgroundColor: 'transparent',
       display: 'flex',
       flexDirection: 'column',
@@ -19,7 +19,7 @@ const TaskCardKanbanDaysCircle = ({ daysLeft }: TaskCardKanbanDaysCircleProps) =
       justifyContent: 'center'
     }}>
       <span style={{
-        fontSize: '4px',
+        fontSize: '8px',
         fontWeight: 700,
         color: '#000000',
         lineHeight: 1,
@@ -28,10 +28,10 @@ const TaskCardKanbanDaysCircle = ({ daysLeft }: TaskCardKanbanDaysCircleProps) =
         {daysLeft.toString().padStart(2, '0')}
       </span>
       <span style={{
-        fontSize: '2.5px',
+        fontSize: '5px',
         fontWeight: 400,
         color: '#000000',
-        marginTop: '0.5px',
+        marginTop: '1px',
         fontFamily: 'IBM Plex Sans Arabic'
       }}>
         يوم

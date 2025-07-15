@@ -21,10 +21,10 @@ const TaskCardKanbanHeader = ({
       <TaskCardKanbanPriorityCircle priority={priority} />
       <div style={{
         marginTop: '0px',
-        marginLeft: '15px',
-        marginRight: '15px',
+        marginLeft: '30px',
+        marginRight: '30px',
         textAlign: 'center',
-        paddingTop: '1px'
+        paddingTop: '2px'
       }}>
         <TaskCardKanbanTitle title={title} description={description} />
       </div>

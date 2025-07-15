@@ -39,8 +39,8 @@ export const TaskFilterModal: React.FC<TaskFilterModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/20 flex items-center justify-center">
-      <div className="bg-white rounded-3xl p-6 w-full max-w-md mx-4 border border-black/10">
+    <div className="fixed inset-0 z-[9999] bg-black/20 backdrop-blur-sm flex items-center justify-center">
+      <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 w-full max-w-md mx-4 border border-white/20 shadow-2xl shadow-black/10">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-black">فلترة المهام</h3>
           <button
