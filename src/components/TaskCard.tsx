@@ -65,11 +65,16 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
   }, [id, title, description, date, assignee, priority]);
 
   const handleCardClick = (e: React.MouseEvent) => {
+    console.log(`نقر على البطاقة ${id}, وضع التحديد: ${isSelectionMode}, محددة: ${isSelected}`);
+    
     // منع انتشار الحدث إذا تم النقر على قائمة النقاط الثلاث في الوضع العادي
     if (!isSelectionMode && (e.target as HTMLElement).closest('[data-dropdown-trigger]')) {
+      console.log('تم تجاهل النقر - قائمة النقاط الثلاث');
       return;
     }
     
+    // في وضع التحديد، نريد دائماً استجابة للنقر
+    console.log(`استدعاء onSelect للمهمة: ${id}`);
     if (onSelect) {
       onSelect(id.toString());
     }

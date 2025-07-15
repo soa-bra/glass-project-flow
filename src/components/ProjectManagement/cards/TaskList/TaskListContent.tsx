@@ -62,7 +62,11 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
   // تحديث وضع التحديد بناءً على المهام المحددة
   useEffect(() => {
     if (selectedTasks.length === 0 && isSelectionMode) {
-      setIsSelectionMode(false);
+      // تأخير إلغاء وضع التحديد لإظهار التغيير البصري
+      const timeout = setTimeout(() => {
+        setIsSelectionMode(false);
+      }, 300);
+      return () => clearTimeout(timeout);
     }
   }, [selectedTasks.length, isSelectionMode]);
 

@@ -21,12 +21,17 @@ const TaskCardLayout = ({
   const getCardStyle = () => {
     let backgroundColor = '#EAF2F5';
     let opacity = 1;
+    let border = 'none';
+    let boxShadow = 'none';
     
     if (isSelectionMode) {
       if (isSelected) {
-        opacity = 1; // Selected card stays normal
+        backgroundColor = '#E8F4FD'; // لون مختلف للبطاقة المحددة
+        border = '2px solid #3B82F6'; // حدود زرقاء للبطاقة المحددة
+        boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)'; // ظل أزرق
+        opacity = 1;
       } else {
-        opacity = 0.5; // Unselected cards are faded
+        opacity = 0.6; // البطاقات غير المحددة أكثر شفافية
       }
     }
     
@@ -42,7 +47,9 @@ const TaskCardLayout = ({
       justifyContent: 'space-between',
       fontFamily: 'IBM Plex Sans Arabic',
       opacity,
-      transition: 'opacity 0.2s ease-in-out'
+      border,
+      boxShadow,
+      transition: 'all 0.2s ease-in-out'
     } as CSSProperties;
   };
 

@@ -125,22 +125,24 @@ const TaskCardStatusIndicators = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '20px',
-              height: '20px',
+              width: '24px',
+              height: '24px',
               borderRadius: '50%',
               padding: '0',
-              border: isSelected ? 'none' : '1px solid #858789',
-              backgroundColor: isSelected ? '#858789' : 'transparent',
+              border: isSelected ? '2px solid #3B82F6' : '2px solid #858789',
+              backgroundColor: isSelected ? '#3B82F6' : 'transparent',
               color: isSelected ? '#fff' : '#858789',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              transition: 'all 0.2s ease-in-out'
             }}
             onClick={(e) => {
               e.stopPropagation();
+              console.log(`نقر على أيقونة التحديد للمهمة: ${taskId}`);
               if (onSelect) onSelect(taskId);
             }}
           >
             {isSelected ? (
-              <Check size={12} color="white" />
+              <Check size={14} color="white" strokeWidth={3} />
             ) : null}
           </div>
         ) : (
