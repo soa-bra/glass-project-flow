@@ -5,12 +5,12 @@ import { AITaskAssistant } from './TaskManagement/AITaskAssistant';
 import { Project } from '@/types/project';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { TaskFilters as UnifiedTaskFilters } from '@/types/task';
-
 interface TaskManagementTabProps {
   project: Project;
 }
-
-export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project }) => {
+export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
+  project
+}) => {
   const [viewMode, setViewMode] = useState<'kanban' | 'details'>('kanban');
   const [filters, setFilters] = useState<UnifiedTaskFilters>({
     assignee: '',
@@ -18,11 +18,10 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project })
     status: '',
     search: ''
   });
-  
-  const { tasks } = useUnifiedTasks(project.id);
-
-  return (
-    <div className="flex-1 overflow-auto space-y-6">
+  const {
+    tasks
+  } = useUnifiedTasks(project.id);
+  return <div className="flex-1 overflow-auto space-y-6">
       {/* Header with view toggle and AI assistant */}
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-4">
@@ -30,32 +29,16 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project })
           <div className="flex items-center gap-4">
             {/* View mode toggle */}
             <div className="flex bg-transparent border border-black/10 rounded-full p-1">
-              <button
-                onClick={() => setViewMode('kanban')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  viewMode === 'kanban'
-                    ? 'bg-black text-white'
-                    : 'text-black hover:bg-black/5'
-                }`}
-              >
+              <button onClick={() => setViewMode('kanban')} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${viewMode === 'kanban' ? 'bg-black text-white' : 'text-black hover:bg-black/5'}`}>
                 لوحة كانبان
               </button>
-              <button
-                onClick={() => setViewMode('details')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  viewMode === 'details'
-                    ? 'bg-black text-white'
-                    : 'text-black hover:bg-black/5'
-                }`}
-              >
+              <button onClick={() => setViewMode('details')} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${viewMode === 'details' ? 'bg-black text-white' : 'text-black hover:bg-black/5'}`}>
                 تفاصيل المهام
               </button>
             </div>
             
             {/* AI Assistant Button */}
-            <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-black/80 transition-colors">
-              🤖 مساعد الذكاء الاصطناعي
-            </button>
+            
           </div>
         </div>
         
@@ -78,7 +61,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project })
           <h4 className="text-lg font-semibold text-black mb-2">المكتملة</h4>
           <p className="text-2xl font-bold text-black mb-1">{tasks.filter(t => t.status === 'completed').length}</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">{Math.round((tasks.filter(t => t.status === 'completed').length / Math.max(tasks.length, 1)) * 100)}%</span>
+            <span className="text-sm font-medium text-black">{Math.round(tasks.filter(t => t.status === 'completed').length / Math.max(tasks.length, 1) * 100)}%</span>
           </div>
         </div>
         
@@ -101,15 +84,10 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({ project })
 
       {/* Main Content Area */}
       <div className="flex-1 min-h-0">
-        {viewMode === 'kanban' ? (
-          <KanbanBoard projectId={project.id} filters={filters} />
-        ) : (
-          <TaskDetails projectId={project.id} filters={filters} />
-        )}
+        {viewMode === 'kanban' ? <KanbanBoard projectId={project.id} filters={filters} /> : <TaskDetails projectId={project.id} filters={filters} />}
       </div>
 
       {/* AI Assistant Panel */}
       <AITaskAssistant projectId={project.id} />
-    </div>
-  );
+    </div>;
 };
