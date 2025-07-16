@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { User, Camera, Key, Globe, Save } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { SecurityDisclaimer } from '../../ui/security-disclaimer';
+import { ValidationSchemas, FormValidator, InputSanitizer, RateLimiter } from '../../../utils/validation';
 
 interface AccountSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
@@ -26,6 +28,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
 
   const [lastAutosave, setLastAutosave] = useState<string>('');
   const [suggestedPassword, setSuggestedPassword] = useState<string>('');
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const userId = 'user123';
 
   const { loadDraft, clearDraft } = useAutosave({
@@ -38,7 +41,45 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
     }
   });
 
+  const validateField = (field: string, value: string) => {
+    let error: string | null = null;
+    
+    switch (field) {
+      case 'fullName':
+        error = FormValidator.validateField(ValidationSchemas.name, value);
+        break;
+      case 'email':
+        error = FormValidator.validateField(ValidationSchemas.email, value);
+        break;
+      case 'phone':
+        error = FormValidator.validateField(ValidationSchemas.phone, value);
+        break;
+      case 'newPassword':
+        if (value) {
+          error = FormValidator.validateField(ValidationSchemas.password, value);
+        }
+        break;
+      case 'confirmPassword':
+        if (value !== formData.password.new) {
+          error = 'كلمة المرور غير متطابقة';
+        }
+        break;
+    }
+    
+    setValidationErrors(prev => ({
+      ...prev,
+      [field]: error || ''
+    }));
+    
+    return !error;
+  };
+
   const generateStrongPassword = async () => {
+    if (!RateLimiter.isAllowed('generatePassword', 5, 60000)) { // 5 attempts per minute
+      alert('تم تجاوز الحد المسموح لتوليد كلمات المرور. حاول مرة أخرى بعد دقيقة.');
+      return;
+    }
+
     // هنا سيكون استدعاء GPT-Pass-Suggest
     const mockSuggestion = 'Sp@rK2024!mN$';
     setSuggestedPassword(mockSuggestion);
@@ -46,10 +87,23 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
       ...prev,
       password: { ...prev.password, new: mockSuggestion }
     }));
+    validateField('newPassword', mockSuggestion);
   };
 
   const handleSave = async () => {
     try {
+      // Validate all fields before saving
+      const isNameValid = validateField('fullName', formData.profile.fullName);
+      const isEmailValid = validateField('email', formData.profile.email);
+      const isPhoneValid = validateField('phone', formData.profile.phone);
+      const isPasswordValid = !formData.password.new || validateField('newPassword', formData.password.new);
+      const isConfirmValid = !formData.password.confirm || validateField('confirmPassword', formData.password.confirm);
+      
+      if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isConfirmValid) {
+        alert('يرجى تصحيح الأخطاء قبل الحفظ');
+        return;
+      }
+
       console.log('Saving account settings to /settings/account/commit');
       clearDraft();
       
@@ -82,6 +136,12 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
       {/* Content */}
       <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
         <div className="space-y-6">
+        
+        {/* Security Disclaimer */}
+        <SecurityDisclaimer 
+          type="frontend-only" 
+          className="mb-4"
+        />
           {/* Header */}
           <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
             <div className="flex items-center gap-4 mb-3">
@@ -127,33 +187,54 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                   <input 
                     type="text" 
                     value={formData.profile.fullName}
-                    className="w-full p-2 rounded-lg border text-sm"
+                    className={`w-full p-2 rounded-lg border text-sm ${validationErrors.fullName ? 'border-red-500' : ''}`}
                     placeholder="الاسم الكامل"
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      profile: { ...prev.profile, fullName: e.target.value }
-                    }))}
+                    onChange={(e) => {
+                      const sanitized = InputSanitizer.sanitizeText(e.target.value);
+                      setFormData(prev => ({
+                        ...prev,
+                        profile: { ...prev.profile, fullName: sanitized }
+                      }));
+                      validateField('fullName', sanitized);
+                    }}
                   />
+                  {validationErrors.fullName && (
+                    <p className="text-red-500 text-xs mt-1">{validationErrors.fullName}</p>
+                  )}
                   <input 
                     type="email" 
                     value={formData.profile.email}
-                    className="w-full p-2 rounded-lg border text-sm"
+                    className={`w-full p-2 rounded-lg border text-sm ${validationErrors.email ? 'border-red-500' : ''}`}
                     placeholder="البريد الإلكتروني"
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      profile: { ...prev.profile, email: e.target.value }
-                    }))}
+                    onChange={(e) => {
+                      const sanitized = InputSanitizer.sanitizeEmail(e.target.value);
+                      setFormData(prev => ({
+                        ...prev,
+                        profile: { ...prev.profile, email: sanitized }
+                      }));
+                      validateField('email', sanitized);
+                    }}
                   />
+                  {validationErrors.email && (
+                    <p className="text-red-500 text-xs mt-1">{validationErrors.email}</p>
+                  )}
                   <input 
                     type="tel" 
                     value={formData.profile.phone}
-                    className="w-full p-2 rounded-lg border text-sm"
+                    className={`w-full p-2 rounded-lg border text-sm ${validationErrors.phone ? 'border-red-500' : ''}`}
                     placeholder="رقم الجوال"
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      profile: { ...prev.profile, phone: e.target.value }
-                    }))}
+                    onChange={(e) => {
+                      const sanitized = InputSanitizer.sanitizeNumeric(e.target.value);
+                      setFormData(prev => ({
+                        ...prev,
+                        profile: { ...prev.profile, phone: sanitized }
+                      }));
+                      validateField('phone', sanitized);
+                    }}
                   />
+                  {validationErrors.phone && (
+                    <p className="text-red-500 text-xs mt-1">{validationErrors.phone}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -180,23 +261,35 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                   <input 
                     type="password" 
                     placeholder="كلمة المرور الجديدة"
-                    className="w-full p-2 rounded-lg border text-sm"
+                    className={`w-full p-2 rounded-lg border text-sm ${validationErrors.newPassword ? 'border-red-500' : ''}`}
                     value={formData.password.new}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      password: { ...prev.password, new: e.target.value }
-                    }))}
+                    onChange={(e) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        password: { ...prev.password, new: e.target.value }
+                      }));
+                      validateField('newPassword', e.target.value);
+                    }}
                   />
+                  {validationErrors.newPassword && (
+                    <p className="text-red-500 text-xs mt-1">{validationErrors.newPassword}</p>
+                  )}
                   <input 
                     type="password" 
                     placeholder="تأكيد كلمة المرور"
-                    className="w-full p-2 rounded-lg border text-sm"
+                    className={`w-full p-2 rounded-lg border text-sm ${validationErrors.confirmPassword ? 'border-red-500' : ''}`}
                     value={formData.password.confirm}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      password: { ...prev.password, confirm: e.target.value }
-                    }))}
+                    onChange={(e) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        password: { ...prev.password, confirm: e.target.value }
+                      }));
+                      validateField('confirmPassword', e.target.value);
+                    }}
                   />
+                  {validationErrors.confirmPassword && (
+                    <p className="text-red-500 text-xs mt-1">{validationErrors.confirmPassword}</p>
+                  )}
                 </div>
               </div>
 

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Smartphone, Key, Monitor, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { SecurityDisclaimer, SecuritySetupPrompt } from '../../ui/security-disclaimer';
+import { RateLimiter } from '../../../utils/validation';
 
 interface SecuritySettingsPanelProps {
   isMainSidebarCollapsed: boolean;
@@ -48,6 +50,11 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
   });
 
   const generateNewApiKey = () => {
+    if (!RateLimiter.isAllowed('generateApiKey', 3, 300000)) { // 3 attempts per 5 minutes
+      alert('تم تجاوز الحد المسموح لإنشاء مفاتيح API. حاول مرة أخرى بعد 5 دقائق.');
+      return;
+    }
+
     const newKey = {
       id: Date.now().toString(),
       name: 'API Key جديد',
@@ -108,6 +115,14 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
       {/* Content */}
       <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
         <div className="space-y-6">
+        
+        {/* Security Disclaimer */}
+        <SecurityDisclaimer 
+          type="frontend-only" 
+          className="mb-4"
+        />
+        
+        <SecuritySetupPrompt className="mb-6" />
       {/* Header */}
       <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
         <div className="flex items-center gap-4 mb-3">
@@ -147,6 +162,11 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
 
       {/* التحقق الثنائي */}
       <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+        <SecurityDisclaimer 
+          type="mock" 
+          feature="المصادقة الثنائية"
+          className="mb-4"
+        />
         <h3 className="text-md font-bold text-black mb-4">التحقق الثنائي (MFA)</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -210,6 +230,11 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
 
       {/* إدارة مفاتيح API */}
       <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+        <SecurityDisclaimer 
+          type="demo" 
+          feature="مفاتيح API"
+          className="mb-4"
+        />
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-md font-bold text-black">مفاتيح API</h3>
           <button

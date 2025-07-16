@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ValidationSchemas, FormValidator, InputSanitizer } from '../../../utils/validation';
 
 interface ContractPayment {
   id: number;
@@ -29,6 +30,30 @@ export const ContractForm: React.FC<ContractFormProps> = ({
   onRemovePayment,
   onUpdatePayment,
 }) => {
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  const validateField = (field: string, value: string) => {
+    let error: string | null = null;
+    
+    switch (field) {
+      case 'contractValue':
+        error = FormValidator.validateField(ValidationSchemas.contractValue, value);
+        break;
+      case 'paymentAmount':
+        error = FormValidator.validateField(ValidationSchemas.currency, value);
+        break;
+      case 'paymentDate':
+        error = FormValidator.validateField(ValidationSchemas.date, value);
+        break;
+    }
+    
+    setValidationErrors(prev => ({
+      ...prev,
+      [field]: error || ''
+    }));
+    
+    return !error;
+  };
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -50,12 +75,19 @@ export const ContractForm: React.FC<ContractFormProps> = ({
           <div className="space-y-2">
             <Label className="font-arabic text-right">قيمة العقد (ر.س)</Label>
             <Input
-              type="number"
+              type="text"
               value={projectData.contractValue}
-              onChange={(e) => onInputChange('contractValue', e.target.value)}
-              className="text-right font-arabic"
+              onChange={(e) => {
+                const sanitized = InputSanitizer.sanitizeNumeric(e.target.value);
+                onInputChange('contractValue', sanitized);
+                validateField('contractValue', sanitized);
+              }}
+              className={`text-right font-arabic ${validationErrors.contractValue ? 'border-red-500' : ''}`}
               placeholder="0"
             />
+            {validationErrors.contractValue && (
+              <p className="text-red-500 text-sm mt-1 text-right">{validationErrors.contractValue}</p>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -88,9 +120,17 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                     <Input
                       type="date"
                       value={payment.date}
-                      onChange={(e) => onUpdatePayment(payment.id, 'date', e.target.value)}
-                      className="text-right font-arabic text-sm"
+                      onChange={(e) => {
+                        onUpdatePayment(payment.id, 'date', e.target.value);
+                        validateField(`paymentDate_${payment.id}`, e.target.value);
+                      }}
+                      className={`text-right font-arabic text-sm ${
+                        validationErrors[`paymentDate_${payment.id}`] ? 'border-red-500' : ''
+                      }`}
                     />
+                    {validationErrors[`paymentDate_${payment.id}`] && (
+                      <p className="text-red-500 text-xs mt-1 text-right">{validationErrors[`paymentDate_${payment.id}`]}</p>
+                    )}
                   </div>
 
                   <div className="space-y-1">
@@ -98,12 +138,21 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                       المبلغ - دفعة {payment.id}
                     </Label>
                     <Input
-                      type="number"
+                      type="text"
                       value={payment.amount}
-                      onChange={(e) => onUpdatePayment(payment.id, 'amount', e.target.value)}
-                      className="text-right font-arabic text-sm"
+                      onChange={(e) => {
+                        const sanitized = InputSanitizer.sanitizeNumeric(e.target.value);
+                        onUpdatePayment(payment.id, 'amount', sanitized);
+                        validateField(`paymentAmount_${payment.id}`, sanitized);
+                      }}
+                      className={`text-right font-arabic text-sm ${
+                        validationErrors[`paymentAmount_${payment.id}`] ? 'border-red-500' : ''
+                      }`}
                       placeholder="0"
                     />
+                    {validationErrors[`paymentAmount_${payment.id}`] && (
+                      <p className="text-red-500 text-xs mt-1 text-right">{validationErrors[`paymentAmount_${payment.id}`]}</p>
+                    )}
                   </div>
                 </div>
               ))}

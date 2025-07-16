@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import SecureStorage from '../../../utils/secureStorage';
 
 interface AutosaveConfig {
   interval: number; // in milliseconds
@@ -23,13 +24,13 @@ export const useAutosave = ({ interval, userId, section, data, onSave }: Autosav
       timeoutRef.current = setTimeout(() => {
         const path = `draft_settings/${userId}/${section}`;
         
-        // Save to localStorage as a fallback
+        // Save to secure storage with encryption
         try {
-          localStorage.setItem(path, JSON.stringify({
+          SecureStorage.setItem(path, {
             data,
             timestamp: new Date().toISOString(),
             section
-          }));
+          }, 24); // Expire after 24 hours
           
           lastSavedDataRef.current = data;
           
@@ -37,9 +38,19 @@ export const useAutosave = ({ interval, userId, section, data, onSave }: Autosav
             onSave(data);
           }
           
-          console.log(`Autosaved settings for ${section} at ${new Date().toLocaleTimeString()}`);
+          console.log(`Securely autosaved settings for ${section} at ${new Date().toLocaleTimeString()}`);
         } catch (error) {
-          console.error('Failed to autosave settings:', error);
+          console.error('Failed to autosave settings securely:', error);
+          // Fallback to regular localStorage for non-sensitive data
+          try {
+            localStorage.setItem(`fallback_${path}`, JSON.stringify({
+              data,
+              timestamp: new Date().toISOString(),
+              section
+            }));
+          } catch (fallbackError) {
+            console.error('Fallback save also failed:', fallbackError);
+          }
         }
       }, interval);
     }
@@ -54,15 +65,25 @@ export const useAutosave = ({ interval, userId, section, data, onSave }: Autosav
   const loadDraft = () => {
     try {
       const path = `draft_settings/${userId}/${section}`;
-      const saved = localStorage.getItem(path);
+      const saved = SecureStorage.getItem(path);
       
-      if (saved) {
-        const parsed = JSON.parse(saved);
+      if (saved && typeof saved === 'object' && saved !== null) {
+        const typedSaved = saved as { data: any; timestamp: string; section: string };
         return {
-          data: parsed.data,
-          timestamp: parsed.timestamp,
-          section: parsed.section
+          data: typedSaved.data,
+          timestamp: typedSaved.timestamp,
+          section: typedSaved.section
         };
+      }
+      
+      // Fallback to regular localStorage
+      const fallbackSaved = localStorage.getItem(`fallback_${path}`);
+      if (fallbackSaved) {
+        const parsed = JSON.parse(fallbackSaved);
+        // Migrate to secure storage
+        SecureStorage.setItem(path, parsed, 24);
+        localStorage.removeItem(`fallback_${path}`);
+        return parsed;
       }
     } catch (error) {
       console.error('Failed to load draft settings:', error);
@@ -74,7 +95,9 @@ export const useAutosave = ({ interval, userId, section, data, onSave }: Autosav
   const clearDraft = () => {
     try {
       const path = `draft_settings/${userId}/${section}`;
-      localStorage.removeItem(path);
+      SecureStorage.removeItem(path);
+      // Also clear any fallback data
+      localStorage.removeItem(`fallback_${path}`);
     } catch (error) {
       console.error('Failed to clear draft settings:', error);
     }
