@@ -250,64 +250,6 @@ export const FolderEditModal: React.FC<FolderEditModalProps> = ({
               </div>
             </div>
 
-            {/* إدارة الملفات */}
-            <div className="bg-white/30 rounded-3xl p-6 border border-black/10">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-black">الملفات في المجلد</h3>
-                <button
-                  onClick={handleAddNewFile}
-                  className="px-4 py-2 bg-black hover:bg-black/90 rounded-full text-white text-sm font-medium transition-colors flex items-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  إضافة ملف
-                </button>
-              </div>
-
-              <div className="space-y-3 max-h-60 overflow-y-auto">
-                {folderFiles.length > 0 ? (
-                  folderFiles.map((file) => (
-                    <div key={file.id} className="flex items-center gap-3 p-3 bg-white/20 rounded-2xl border border-black/10">
-                      <div className="w-8 h-8 bg-black/10 rounded-lg flex items-center justify-center">
-                        {getFileIcon(file.type)}
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-black truncate">{file.name}</p>
-                        <div className="flex items-center gap-3 text-xs text-black/70">
-                          <span>{formatFileSize(file.size)}</span>
-                          <span>تم الرفع: {new Date(file.uploadedAt).toLocaleDateString('ar-SA')}</span>
-                        </div>
-                      </div>
-                      
-                      <button
-                        onClick={() => handleRemoveFile(file.id)}
-                        className="p-2 bg-red-500/20 hover:bg-red-500/30 rounded-xl transition-colors"
-                        title="حذف الملف"
-                      >
-                        <Trash2 className="w-4 h-4 text-red-600" />
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8">
-                    <Upload className="w-12 h-12 text-black/30 mx-auto mb-3" />
-                    <p className="text-black/70">لا توجد ملفات في هذا المجلد</p>
-                    <p className="text-xs text-black/50">انقر على "إضافة ملف" لبدء إضافة الملفات</p>
-                  </div>
-                )}
-              </div>
-
-              {folderFiles.length > 0 && (
-                <div className="mt-4 p-3 bg-white/20 rounded-2xl border border-black/10">
-                  <p className="text-sm text-black">
-                    <span className="font-bold">{folderFiles.length}</span> ملف • 
-                    الحجم الإجمالي: <span className="font-bold">
-                      {formatFileSize(folderFiles.reduce((total, file) => total + file.size, 0))}
-                    </span>
-                  </p>
-                </div>
-              )}
-            </div>
           </div>
         </div>
 
