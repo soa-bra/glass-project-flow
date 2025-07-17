@@ -13,6 +13,7 @@ import { AddTeamMemberModal } from '@/components/custom/AddTeamMemberModal';
 import { ManualTaskDistributionModal } from '@/components/custom/ManualTaskDistributionModal';
 import { PerformanceEvaluationModal } from '@/components/custom/PerformanceEvaluationModal';
 import { FileUploadModal } from '@/components/custom/FileUploadModal';
+import { FolderOrganizationModal } from '@/components/custom/FolderOrganizationModal';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -586,6 +587,7 @@ export const AttachmentsTab = ({
   documents
 }: any) => {
   const [isFileUploadModalOpen, setIsFileUploadModalOpen] = useState(false);
+  const [isFolderOrganizationModalOpen, setIsFolderOrganizationModalOpen] = useState(false);
   const [projectFiles, setProjectFiles] = useState<any[]>([]);
 
   // مهام المشروع الوهمية للربط
@@ -619,6 +621,14 @@ export const AttachmentsTab = ({
     setIsFileUploadModalOpen(false);
     
     console.log('ملفات جديدة تم رفعها:', newFiles);
+  };
+
+  const handleFolderOrganization = (data: {
+    folders: any[];
+    actions: any[];
+  }) => {
+    console.log('تنظيم المجلدات:', data);
+    setIsFolderOrganizationModalOpen(false);
   };
   const mockDocuments = [{
     id: '1',
@@ -722,7 +732,10 @@ export const AttachmentsTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تنظيم المجلدات</h4>
             <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم مجلدات المشروع</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button 
+              onClick={() => setIsFolderOrganizationModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
               تنظيم المجلدات
             </button>
           </div>
@@ -780,6 +793,13 @@ export const AttachmentsTab = ({
         onSave={handleFileUpload}
         projectTasks={projectTasks}
         projectId="current-project-id"
+      />
+
+      {/* نافذة تنظيم المجلدات */}
+      <FolderOrganizationModal
+        isOpen={isFolderOrganizationModalOpen}
+        onClose={() => setIsFolderOrganizationModalOpen(false)}
+        onSave={handleFolderOrganization}
       />
     </div>;
 };
