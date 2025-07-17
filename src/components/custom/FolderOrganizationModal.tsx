@@ -1,6 +1,22 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { FolderPlus, X, Folder, Edit3, Trash2, Move, FileText } from 'lucide-react';
+import { 
+  FolderPlus, 
+  X, 
+  Folder, 
+  Edit3, 
+  Trash2, 
+  Move, 
+  FileText,
+  FolderOpen,
+  Archive,
+  Image,
+  Video,
+  Music,
+  File,
+  Plus,
+  Upload
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FolderEditModal } from './FolderEditModal';
 
@@ -95,6 +111,18 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     '#a4e2f6', '#d9d2fd', '#bdeed3', '#fbe2aa', '#f1b5b9'
   ];
 
+  // الأيقونات المتاحة للمجلدات
+  const folderIcons = [
+    { id: 'folder', icon: Folder, name: 'مجلد عادي' },
+    { id: 'folder-open', icon: FolderOpen, name: 'مجلد مفتوح' },
+    { id: 'archive', icon: Archive, name: 'أرشيف' },
+    { id: 'file-text', icon: FileText, name: 'مستندات' },
+    { id: 'image', icon: Image, name: 'صور' },
+    { id: 'video', icon: Video, name: 'فيديو' },
+    { id: 'music', icon: Music, name: 'موسيقى' },
+    { id: 'file', icon: File, name: 'ملفات عامة' },
+  ];
+
   const handleAdvancedEdit = (folder: FolderData) => {
     setFolderToEdit(folder);
     setShowFolderEditModal(true);
@@ -111,6 +139,84 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     }]);
     setShowFolderEditModal(false);
     setFolderToEdit(null);
+  };
+
+  const handleUpdateFolderIcon = (folderId: string, iconId: string) => {
+    setFolders(prev => 
+      prev.map(folder => 
+        folder.id === folderId 
+          ? { ...folder, icon: iconId }
+          : folder
+      )
+    );
+    
+    toast({
+      title: "تم تحديث أيقونة المجلد",
+      description: "تم تغيير أيقونة المجلد بنجاح",
+    });
+  };
+
+  const handleAddFileToFolder = (folderId: string) => {
+    // محاكاة إضافة ملف جديد
+    const newFile = {
+      id: Date.now().toString(),
+      name: 'ملف جديد.pdf',
+      type: 'application/pdf',
+      size: 1024 * 1024, // 1MB
+      uploadedAt: new Date().toISOString()
+    };
+
+    setFolders(prev => 
+      prev.map(folder => 
+        folder.id === folderId 
+          ? { 
+              ...folder, 
+              files: [...(folder.files || []), newFile],
+              filesCount: (folder.files?.length || 0) + 1
+            }
+          : folder
+      )
+    );
+    
+    toast({
+      title: "تم إضافة الملف",
+      description: "تم إضافة ملف جديد للمجلد بنجاح",
+    });
+  };
+
+  const handleRemoveFileFromFolder = (folderId: string, fileId: string) => {
+    setFolders(prev => 
+      prev.map(folder => 
+        folder.id === folderId 
+          ? { 
+              ...folder, 
+              files: folder.files?.filter(f => f.id !== fileId) || [],
+              filesCount: Math.max(0, folder.filesCount - 1)
+            }
+          : folder
+      )
+    );
+    
+    toast({
+      title: "تم حذف الملف",
+      description: "تم حذف الملف من المجلد بنجاح",
+    });
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const getFileIcon = (fileType: string) => {
+    if (fileType.startsWith('image/')) return <Image className="w-4 h-4" />;
+    if (fileType.startsWith('video/')) return <Video className="w-4 h-4" />;
+    if (fileType.startsWith('audio/')) return <Music className="w-4 h-4" />;
+    if (fileType.includes('pdf') || fileType.includes('doc')) return <FileText className="w-4 h-4" />;
+    return <File className="w-4 h-4" />;
   };
 
   const handleCreateFolder = () => {
@@ -311,74 +417,155 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
             <div className="bg-white/30 rounded-3xl p-6 border border-black/10">
               <h3 className="text-lg font-bold text-black mb-4">المجلدات الموجودة</h3>
               
-              <div className="space-y-3">
-                {folders.map((folder) => (
-                  <div key={folder.id} className="flex items-center gap-4 p-4 bg-white/20 rounded-2xl border border-black/10">
-                    <div 
-                      className="w-10 h-10 rounded-2xl flex items-center justify-center"
-                      style={{ backgroundColor: folder.color }}
-                    >
-                      <Folder className="w-5 h-5 text-black" />
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      {editingFolder === folder.id ? (
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={editingName}
-                            onChange={(e) => setEditingName(e.target.value)}
-                            className="flex-1 px-3 py-2 bg-white/50 border border-black/20 rounded-xl text-black focus:outline-none focus:border-black"
-                            autoFocus
-                          />
-                          <button
-                            onClick={handleSaveEdit}
-                            className="px-3 py-2 bg-black text-white rounded-xl text-xs hover:bg-black/90 transition-colors"
-                          >
-                            حفظ
-                          </button>
-                          <button
-                            onClick={handleCancelEdit}
-                            className="px-3 py-2 bg-white/30 border border-black/20 text-black rounded-xl text-xs hover:bg-white/40 transition-colors"
-                          >
-                            إلغاء
-                          </button>
+              <div className="space-y-6">
+                {folders.map((folder) => {
+                  const FolderIconComponent = folderIcons.find(icon => icon.id === (folder.icon || 'folder'))?.icon || Folder;
+                  
+                  return (
+                    <div key={folder.id} className="bg-white/20 rounded-2xl p-4 border border-black/10 space-y-4">
+                      {/* معلومات المجلد الأساسية */}
+                      <div className="flex items-center gap-4">
+                        <div 
+                          className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                          style={{ backgroundColor: folder.color }}
+                        >
+                          <FolderIconComponent className="w-6 h-6 text-black" />
                         </div>
-                      ) : (
-                        <>
-                          <h4 className="font-medium text-black">{folder.name}</h4>
-                          <div className="flex items-center gap-4 text-xs text-black/70">
-                            <span className="flex items-center gap-1">
-                              <FileText className="w-3 h-3" />
-                              {folder.filesCount} ملف
-                            </span>
-                            <span>تم الإنشاء: {folder.createdAt}</span>
+                        
+                        <div className="flex-1 min-w-0">
+                          {editingFolder === folder.id ? (
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                value={editingName}
+                                onChange={(e) => setEditingName(e.target.value)}
+                                className="flex-1 px-3 py-2 bg-white/50 border border-black/20 rounded-xl text-black focus:outline-none focus:border-black"
+                                autoFocus
+                              />
+                              <button
+                                onClick={handleSaveEdit}
+                                className="px-3 py-2 bg-black text-white rounded-xl text-xs hover:bg-black/90 transition-colors"
+                              >
+                                حفظ
+                              </button>
+                              <button
+                                onClick={handleCancelEdit}
+                                className="px-3 py-2 bg-white/30 border border-black/20 text-black rounded-xl text-xs hover:bg-white/40 transition-colors"
+                              >
+                                إلغاء
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <h4 className="font-medium text-black text-lg">{folder.name}</h4>
+                              <div className="flex items-center gap-4 text-xs text-black/70">
+                                <span className="flex items-center gap-1">
+                                  <FileText className="w-3 h-3" />
+                                  {folder.filesCount} ملف
+                                </span>
+                                <span>تم الإنشاء: {folder.createdAt}</span>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                        
+                        {editingFolder !== folder.id && (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleAdvancedEdit(folder)}
+                              className="p-2 bg-blue-500/20 hover:bg-blue-500/30 rounded-xl transition-colors"
+                              title="تعديل متقدم"
+                            >
+                              <Edit3 className="w-4 h-4 text-blue-600" />
+                            </button>
+                            
+                            <button
+                              onClick={() => handleDeleteFolder(folder.id)}
+                              className="p-2 bg-red-500/20 hover:bg-red-500/30 rounded-xl transition-colors"
+                              title="حذف المجلد"
+                            >
+                              <Trash2 className="w-4 h-4 text-red-600" />
+                            </button>
                           </div>
-                        </>
+                        )}
+                      </div>
+
+                      {/* تحرير أيقونة المجلد */}
+                      {editingFolder !== folder.id && (
+                        <div className="space-y-3">
+                          <h5 className="text-sm font-bold text-black">أيقونة المجلد:</h5>
+                          <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                            {folderIcons.map((iconData) => {
+                              const IconComponent = iconData.icon;
+                              const isSelected = (folder.icon || 'folder') === iconData.id;
+                              
+                              return (
+                                <button
+                                  key={iconData.id}
+                                  onClick={() => handleUpdateFolderIcon(folder.id, iconData.id)}
+                                  className={`p-2 rounded-xl border transition-all hover:scale-105 ${
+                                    isSelected
+                                      ? 'border-black bg-black/10 scale-105'
+                                      : 'border-black/20 bg-white/20 hover:border-black/40'
+                                  }`}
+                                  title={iconData.name}
+                                >
+                                  <IconComponent className="w-4 h-4 text-black" />
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* إدارة الملفات */}
+                      {editingFolder !== folder.id && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h5 className="text-sm font-bold text-black">الملفات في المجلد:</h5>
+                            <button
+                              onClick={() => handleAddFileToFolder(folder.id)}
+                              className="px-3 py-1 bg-black hover:bg-black/90 rounded-full text-white text-xs font-medium transition-colors flex items-center gap-1"
+                            >
+                              <Plus className="w-3 h-3" />
+                              إضافة
+                            </button>
+                          </div>
+
+                          <div className="space-y-2 max-h-32 overflow-y-auto">
+                            {folder.files && folder.files.length > 0 ? (
+                              folder.files.map((file) => (
+                                <div key={file.id} className="flex items-center gap-2 p-2 bg-white/30 rounded-xl">
+                                  <div className="w-6 h-6 bg-black/10 rounded-lg flex items-center justify-center">
+                                    {getFileIcon(file.type)}
+                                  </div>
+                                  
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-medium text-black truncate">{file.name}</p>
+                                    <p className="text-xs text-black/60">{formatFileSize(file.size)}</p>
+                                  </div>
+                                  
+                                  <button
+                                    onClick={() => handleRemoveFileFromFolder(folder.id, file.id)}
+                                    className="p-1 bg-red-500/20 hover:bg-red-500/30 rounded-lg transition-colors"
+                                    title="حذف الملف"
+                                  >
+                                    <X className="w-3 h-3 text-red-600" />
+                                  </button>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-center py-4">
+                                <Upload className="w-8 h-8 text-black/30 mx-auto mb-2" />
+                                <p className="text-xs text-black/60">لا توجد ملفات</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       )}
                     </div>
-                    
-                    {editingFolder !== folder.id && (
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleAdvancedEdit(folder)}
-                          className="p-2 bg-white/30 hover:bg-white/40 rounded-xl transition-colors"
-                          title="تعديل متقدم"
-                        >
-                          <Edit3 className="w-4 h-4 text-black" />
-                        </button>
-                        
-                        <button
-                          onClick={() => handleDeleteFolder(folder.id)}
-                          className="p-2 bg-red-500/20 hover:bg-red-500/30 rounded-xl transition-colors"
-                          title="حذف المجلد"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-600" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
                 
                 {folders.length === 0 && (
                   <div className="text-center py-8">
