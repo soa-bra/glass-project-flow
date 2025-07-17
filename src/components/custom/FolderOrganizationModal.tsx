@@ -65,38 +65,52 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     {
       id: '1',
       name: 'مستندات المشروع',
-      filesCount: 8,
+      filesCount: 2,
       createdAt: '2024-01-15',
       color: '#a4e2f6',
       icon: 'folder',
       files: [
-        { id: '1', name: 'مواصفات المشروع.pdf', type: 'application/pdf', size: 2048000, uploadedAt: '2024-01-15T10:00:00Z' },
-        { id: '2', name: 'خطة العمل.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: 1024000, uploadedAt: '2024-01-16T14:30:00Z' }
+        { id: 'file1', name: 'مواصفات المشروع.pdf', type: 'application/pdf', size: 2048000, uploadedAt: '2024-01-15T10:00:00Z' },
+        { id: 'file2', name: 'خطة العمل.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: 1024000, uploadedAt: '2024-01-16T14:30:00Z' }
       ]
     },
     {
       id: '2', 
       name: 'التصاميم',
-      filesCount: 12,
+      filesCount: 2,
       createdAt: '2024-01-18',
       color: '#d9d2fd',
       icon: 'image',
       files: [
-        { id: '3', name: 'تصميم الواجهة.png', type: 'image/png', size: 5120000, uploadedAt: '2024-01-18T09:15:00Z' },
-        { id: '4', name: 'الشعار.svg', type: 'image/svg+xml', size: 256000, uploadedAt: '2024-01-19T11:45:00Z' }
+        { id: 'file3', name: 'تصميم الواجهة.png', type: 'image/png', size: 5120000, uploadedAt: '2024-01-18T09:15:00Z' },
+        { id: 'file4', name: 'الشعار.svg', type: 'image/svg+xml', size: 256000, uploadedAt: '2024-01-19T11:45:00Z' }
       ]
     },
     {
       id: '3',
       name: 'تقارير',
-      filesCount: 5,
+      filesCount: 1,
       createdAt: '2024-01-20',
       color: '#bdeed3',
       icon: 'file-text',
       files: [
-        { id: '5', name: 'تقرير الأداء.xlsx', type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size: 3072000, uploadedAt: '2024-01-20T16:20:00Z' }
+        { id: 'file5', name: 'تقرير الأداء.xlsx', type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size: 3072000, uploadedAt: '2024-01-20T16:20:00Z' }
       ]
     }
+  ]);
+
+  // جميع ملفات المشروع المتاحة
+  const [projectFiles] = useState([
+    { id: 'file1', name: 'مواصفات المشروع.pdf', type: 'application/pdf', size: 2048000, uploadedAt: '2024-01-15T10:00:00Z' },
+    { id: 'file2', name: 'خطة العمل.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: 1024000, uploadedAt: '2024-01-16T14:30:00Z' },
+    { id: 'file3', name: 'تصميم الواجهة.png', type: 'image/png', size: 5120000, uploadedAt: '2024-01-18T09:15:00Z' },
+    { id: 'file4', name: 'الشعار.svg', type: 'image/svg+xml', size: 256000, uploadedAt: '2024-01-19T11:45:00Z' },
+    { id: 'file5', name: 'تقرير الأداء.xlsx', type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size: 3072000, uploadedAt: '2024-01-20T16:20:00Z' },
+    { id: 'file6', name: 'دليل المستخدم.pdf', type: 'application/pdf', size: 1536000, uploadedAt: '2024-01-22T08:45:00Z' },
+    { id: 'file7', name: 'صورة الغلاف.jpg', type: 'image/jpeg', size: 2048000, uploadedAt: '2024-01-23T12:15:00Z' },
+    { id: 'file8', name: 'فيديو توضيحي.mp4', type: 'video/mp4', size: 15728640, uploadedAt: '2024-01-24T16:30:00Z' },
+    { id: 'file9', name: 'ملف البيانات.json', type: 'application/json', size: 512000, uploadedAt: '2024-01-25T10:20:00Z' },
+    { id: 'file10', name: 'العرض التقديمي.pptx', type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', size: 4096000, uploadedAt: '2024-01-26T14:10:00Z' }
   ]);
 
   const [actions, setActions] = useState<FolderAction[]>([]);
@@ -106,6 +120,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
   const [selectedColor, setSelectedColor] = useState('#a4e2f6');
   const [showFolderEditModal, setShowFolderEditModal] = useState(false);
   const [folderToEdit, setFolderToEdit] = useState<FolderData | null>(null);
+  const [showFileSelection, setShowFileSelection] = useState<string | null>(null);
 
   const folderColors = [
     '#a4e2f6', '#d9d2fd', '#bdeed3', '#fbe2aa', '#f1b5b9'
@@ -156,51 +171,63 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     });
   };
 
-  const handleAddFileToFolder = (folderId: string) => {
-    // محاكاة إضافة ملف جديد
-    const newFile = {
-      id: Date.now().toString(),
-      name: 'ملف جديد.pdf',
-      type: 'application/pdf',
-      size: 1024 * 1024, // 1MB
-      uploadedAt: new Date().toISOString()
-    };
+  const handleAddFileToFolder = (folderId: string, fileId: string) => {
+    // التحقق من أن الملف غير موجود في المجلد
+    const folder = folders.find(f => f.id === folderId);
+    if (folder?.files?.some(f => f.id === fileId)) {
+      toast({
+        title: "الملف موجود بالفعل",
+        description: "هذا الملف موجود بالفعل في المجلد",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const fileToAdd = projectFiles.find(f => f.id === fileId);
+    if (!fileToAdd) return;
 
     setFolders(prev => 
       prev.map(folder => 
         folder.id === folderId 
           ? { 
               ...folder, 
-              files: [...(folder.files || []), newFile],
+              files: [...(folder.files || []), fileToAdd],
               filesCount: (folder.files?.length || 0) + 1
             }
           : folder
       )
     );
     
+    setShowFileSelection(null);
+    
     toast({
       title: "تم إضافة الملف",
-      description: "تم إضافة ملف جديد للمجلد بنجاح",
+      description: `تم إضافة "${fileToAdd.name}" للمجلد بنجاح`,
     });
   };
 
   const handleRemoveFileFromFolder = (folderId: string, fileId: string) => {
-    setFolders(prev => 
-      prev.map(folder => 
-        folder.id === folderId 
-          ? { 
-              ...folder, 
-              files: folder.files?.filter(f => f.id !== fileId) || [],
-              filesCount: Math.max(0, folder.filesCount - 1)
-            }
-          : folder
-      )
-    );
+    const folder = folders.find(f => f.id === folderId);
+    const file = folder?.files?.find(f => f.id === fileId);
     
-    toast({
-      title: "تم حذف الملف",
-      description: "تم حذف الملف من المجلد بنجاح",
-    });
+    if (file && window.confirm(`هل تريد بالتأكيد إزالة "${file.name}" من المجلد؟`)) {
+      setFolders(prev => 
+        prev.map(folder => 
+          folder.id === folderId 
+            ? { 
+                ...folder, 
+                files: folder.files?.filter(f => f.id !== fileId) || [],
+                filesCount: Math.max(0, folder.filesCount - 1)
+              }
+            : folder
+        )
+      );
+      
+      toast({
+        title: "تم إزالة الملف",
+        description: `تم إزالة "${file.name}" من المجلد`,
+      });
+    }
   };
 
   const formatFileSize = (bytes: number) => {
@@ -217,6 +244,13 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     if (fileType.startsWith('audio/')) return <Music className="w-4 h-4" />;
     if (fileType.includes('pdf') || fileType.includes('doc')) return <FileText className="w-4 h-4" />;
     return <File className="w-4 h-4" />;
+  };
+
+  // الحصول على الملفات المتاحة للإضافة (غير موجودة في المجلد حالياً)
+  const getAvailableFiles = (folderId: string) => {
+    const folder = folders.find(f => f.id === folderId);
+    const folderFileIds = folder?.files?.map(f => f.id) || [];
+    return projectFiles.filter(file => !folderFileIds.includes(file.id));
   };
 
   const handleCreateFolder = () => {
@@ -523,13 +557,47 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <h5 className="text-sm font-bold text-black">الملفات في المجلد:</h5>
-                            <button
-                              onClick={() => handleAddFileToFolder(folder.id)}
-                              className="px-3 py-1 bg-black hover:bg-black/90 rounded-full text-white text-xs font-medium transition-colors flex items-center gap-1"
-                            >
-                              <Plus className="w-3 h-3" />
-                              إضافة
-                            </button>
+                            <div className="relative">
+                              <button
+                                onClick={() => setShowFileSelection(showFileSelection === folder.id ? null : folder.id)}
+                                className="px-3 py-1 bg-black hover:bg-black/90 rounded-full text-white text-xs font-medium transition-colors flex items-center gap-1"
+                              >
+                                <Plus className="w-3 h-3" />
+                                إضافة من المشروع
+                              </button>
+                              
+                              {/* قائمة الملفات المتاحة */}
+                              {showFileSelection === folder.id && (
+                                <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-2xl border border-black/20 shadow-lg z-10 max-h-48 overflow-y-auto">
+                                  <div className="p-3">
+                                    <h6 className="text-sm font-bold text-black mb-2">اختر ملف من المشروع:</h6>
+                                    {getAvailableFiles(folder.id).length > 0 ? (
+                                      <div className="space-y-2">
+                                        {getAvailableFiles(folder.id).map((file) => (
+                                          <button
+                                            key={file.id}
+                                            onClick={() => handleAddFileToFolder(folder.id, file.id)}
+                                            className="w-full text-right p-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors flex items-center gap-2"
+                                          >
+                                            <div className="w-6 h-6 bg-black/10 rounded-lg flex items-center justify-center">
+                                              {getFileIcon(file.type)}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-xs font-medium text-black truncate">{file.name}</p>
+                                              <p className="text-xs text-black/60">{formatFileSize(file.size)}</p>
+                                            </div>
+                                          </button>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <p className="text-xs text-black/60 text-center py-4">
+                                        جميع ملفات المشروع موجودة في هذا المجلد
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
 
                           <div className="space-y-2 max-h-32 overflow-y-auto">
@@ -548,7 +616,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
                                   <button
                                     onClick={() => handleRemoveFileFromFolder(folder.id, file.id)}
                                     className="p-1 bg-red-500/20 hover:bg-red-500/30 rounded-lg transition-colors"
-                                    title="حذف الملف"
+                                    title="إزالة من المجلد"
                                   >
                                     <X className="w-3 h-3 text-red-600" />
                                   </button>
@@ -557,7 +625,8 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
                             ) : (
                               <div className="text-center py-4">
                                 <Upload className="w-8 h-8 text-black/30 mx-auto mb-2" />
-                                <p className="text-xs text-black/60">لا توجد ملفات</p>
+                                <p className="text-xs text-black/60">لا توجد ملفات في هذا المجلد</p>
+                                <p className="text-xs text-black/50">انقر على "إضافة من المشروع" لإضافة ملفات</p>
                               </div>
                             )}
                           </div>
