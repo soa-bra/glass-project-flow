@@ -3,21 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { 
-  FileText, 
-  Image, 
-  Video, 
-  Music, 
-  Archive, 
-  Download, 
-  Eye, 
-  Edit3, 
-  Trash2,
-  Search,
-  Filter,
-  Upload
-} from 'lucide-react';
-
+import { FileText, Image, Video, Music, Archive, Download, Eye, Edit3, Trash2, Search, Filter, Upload } from 'lucide-react';
 interface Document {
   id: string;
   name: string;
@@ -29,76 +15,68 @@ interface Document {
   uploadedBy: string;
   tags: string[];
 }
-
 interface DocumentsGridProps {
   documents: Document[];
 }
-
-export const DocumentsGrid: React.FC<DocumentsGridProps> = ({ documents = [] }) => {
+export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
+  documents = []
+}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
 
   // بيانات وهمية في حالة عدم وجود مستندات
-  const defaultDocuments: Document[] = [
-    {
-      id: '1',
-      name: 'وثيقة المتطلبات الفنية.pdf',
-      type: 'document',
-      size: '2.4 MB',
-      uploadDate: '2024-01-15',
-      classification: 'High',
-      version: 'v2.1',
-      uploadedBy: 'أحمد محمد',
-      tags: ['متطلبات', 'فني', 'مواصفات']
-    },
-    {
-      id: '2',
-      name: 'تصميم واجهة المستخدم.fig',
-      type: 'image',
-      size: '15.7 MB',
-      uploadDate: '2024-01-14',
-      classification: 'Medium',
-      version: 'v1.3',
-      uploadedBy: 'فاطمة أحمد',
-      tags: ['تصميم', 'واجهة', 'UX']
-    },
-    {
-      id: '3',
-      name: 'عرض تقديمي للعميل.pptx',
-      type: 'document',
-      size: '8.9 MB',
-      uploadDate: '2024-01-13',
-      classification: 'Medium',
-      version: 'v1.0',
-      uploadedBy: 'خالد عبدالرحمن',
-      tags: ['عرض', 'عميل', 'تقديم']
-    },
-    {
-      id: '4',
-      name: 'فيديو شرح النظام.mp4',
-      type: 'video',
-      size: '125.3 MB',
-      uploadDate: '2024-01-12',
-      classification: 'Low',
-      version: 'v1.0',
-      uploadedBy: 'نورا سعد',
-      tags: ['فيديو', 'شرح', 'تدريب']
-    },
-    {
-      id: '5',
-      name: 'ملف النسخ الاحتياطية.zip',
-      type: 'archive',
-      size: '45.2 MB',
-      uploadDate: '2024-01-11',
-      classification: 'High',
-      version: 'v3.0',
-      uploadedBy: 'أحمد محمد',
-      tags: ['نسخ احتياطي', 'أرشيف']
-    }
-  ];
-
+  const defaultDocuments: Document[] = [{
+    id: '1',
+    name: 'وثيقة المتطلبات الفنية.pdf',
+    type: 'document',
+    size: '2.4 MB',
+    uploadDate: '2024-01-15',
+    classification: 'High',
+    version: 'v2.1',
+    uploadedBy: 'أحمد محمد',
+    tags: ['متطلبات', 'فني', 'مواصفات']
+  }, {
+    id: '2',
+    name: 'تصميم واجهة المستخدم.fig',
+    type: 'image',
+    size: '15.7 MB',
+    uploadDate: '2024-01-14',
+    classification: 'Medium',
+    version: 'v1.3',
+    uploadedBy: 'فاطمة أحمد',
+    tags: ['تصميم', 'واجهة', 'UX']
+  }, {
+    id: '3',
+    name: 'عرض تقديمي للعميل.pptx',
+    type: 'document',
+    size: '8.9 MB',
+    uploadDate: '2024-01-13',
+    classification: 'Medium',
+    version: 'v1.0',
+    uploadedBy: 'خالد عبدالرحمن',
+    tags: ['عرض', 'عميل', 'تقديم']
+  }, {
+    id: '4',
+    name: 'فيديو شرح النظام.mp4',
+    type: 'video',
+    size: '125.3 MB',
+    uploadDate: '2024-01-12',
+    classification: 'Low',
+    version: 'v1.0',
+    uploadedBy: 'نورا سعد',
+    tags: ['فيديو', 'شرح', 'تدريب']
+  }, {
+    id: '5',
+    name: 'ملف النسخ الاحتياطية.zip',
+    type: 'archive',
+    size: '45.2 MB',
+    uploadDate: '2024-01-11',
+    classification: 'High',
+    version: 'v3.0',
+    uploadedBy: 'أحمد محمد',
+    tags: ['نسخ احتياطي', 'أرشيف']
+  }];
   const docs = documents.length > 0 ? documents : defaultDocuments;
-
   const getFileIcon = (type: string) => {
     switch (type) {
       case 'document':
@@ -115,7 +93,6 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({ documents = [] }) 
         return FileText;
     }
   };
-
   const getClassificationColor = (classification: string) => {
     switch (classification) {
       case 'High':
@@ -128,7 +105,6 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({ documents = [] }) 
         return 'bg-gray-100 text-gray-800';
     }
   };
-
   const getClassificationText = (classification: string) => {
     switch (classification) {
       case 'High':
@@ -141,32 +117,22 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({ documents = [] }) 
         return 'غير محدد';
     }
   };
-
   const filteredDocs = docs.filter(doc => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doc.tags.some(tag => tag.includes(searchTerm));
+    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase()) || doc.tags.some(tag => tag.includes(searchTerm));
     const matchesFilter = selectedFilter === 'all' || doc.type === selectedFilter;
     return matchesSearch && matchesFilter;
   });
-
   const getTypeCount = (type: string) => {
     return docs.filter(doc => doc.type === type).length;
   };
-
-  return (
-    <div className="space-y-4">
+  return <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
       {/* شريط البحث والتصفية */}
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input
-            placeholder="البحث في المستندات..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pr-10 text-right"
-          />
+          <Input placeholder="البحث في المستندات..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pr-10 text-right" />
         </div>
-        <Button size="sm" variant="outline" className="gap-1">
+        <Button size="sm" variant="outline" className="gap-1 text-white bg-black rounded-full">
           <Upload className="w-4 h-4" />
           رفع
         </Button>
@@ -174,32 +140,16 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({ documents = [] }) 
 
       {/* فلاتر سريعة */}
       <div className="flex gap-2 overflow-x-auto pb-2">
-        <Button
-          size="sm"
-          variant={selectedFilter === 'all' ? 'default' : 'outline'}
-          onClick={() => setSelectedFilter('all')}
-        >
+        <Button size="sm" variant={selectedFilter === 'all' ? 'default' : 'outline'} onClick={() => setSelectedFilter('all')} className="rounded-full">
           الكل ({docs.length})
         </Button>
-        <Button
-          size="sm"
-          variant={selectedFilter === 'document' ? 'default' : 'outline'}
-          onClick={() => setSelectedFilter('document')}
-        >
+        <Button size="sm" variant={selectedFilter === 'document' ? 'default' : 'outline'} onClick={() => setSelectedFilter('document')} className="rounded-full">
           مستندات ({getTypeCount('document')})
         </Button>
-        <Button
-          size="sm"
-          variant={selectedFilter === 'image' ? 'default' : 'outline'}
-          onClick={() => setSelectedFilter('image')}
-        >
+        <Button size="sm" variant={selectedFilter === 'image' ? 'default' : 'outline'} onClick={() => setSelectedFilter('image')} className="rounded-full">
           صور ({getTypeCount('image')})
         </Button>
-        <Button
-          size="sm"
-          variant={selectedFilter === 'video' ? 'default' : 'outline'}
-          onClick={() => setSelectedFilter('video')}
-        >
+        <Button size="sm" variant={selectedFilter === 'video' ? 'default' : 'outline'} onClick={() => setSelectedFilter('video')} className="rounded-full">
           فيديو ({getTypeCount('video')})
         </Button>
       </div>
@@ -207,11 +157,9 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({ documents = [] }) 
       {/* شبكة المستندات */}
       <ScrollArea className="h-[400px]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filteredDocs.map((doc) => {
-            const FileIcon = getFileIcon(doc.type);
-            
-            return (
-              <div key={doc.id} className="bg-white/20 rounded-xl p-4 hover:bg-white/30 transition-colors">
+          {filteredDocs.map(doc => {
+          const FileIcon = getFileIcon(doc.type);
+          return <div key={doc.id} className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -242,16 +190,12 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({ documents = [] }) 
 
                     {/* التاغز */}
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {doc.tags.slice(0, 2).map((tag, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
+                      {doc.tags.slice(0, 2).map((tag, idx) => <Badge key={idx} variant="secondary" className="text-xs">
                           {tag}
-                        </Badge>
-                      ))}
-                      {doc.tags.length > 2 && (
-                        <Badge variant="secondary" className="text-xs">
+                        </Badge>)}
+                      {doc.tags.length > 2 && <Badge variant="secondary" className="text-xs">
                           +{doc.tags.length - 2}
-                        </Badge>
-                      )}
+                        </Badge>}
                     </div>
 
                     {/* أزرار الإجراءات */}
@@ -271,9 +215,8 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({ documents = [] }) 
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              </div>;
+        })}
         </div>
       </ScrollArea>
 
@@ -302,6 +245,5 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({ documents = [] }) 
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };

@@ -24,14 +24,28 @@ export const FinancialTab = ({
   const [financialData, setFinancialData] = useState({
     totalBudget: 50000,
     totalExpenses: 35000,
-    expenses: [
-      { category: 'رواتب الفريق والمكافآت', amount: 20000, percentage: 57, color: '#fbe2aa' },
-      { category: 'أدوات وبرمجيات متخصصة', amount: 8000, percentage: 23, color: '#a4e2f6' },
-      { category: 'استشارات خارجية وخدمات', amount: 5000, percentage: 14, color: '#d9d2fd' },
-      { category: 'مصاريف إدارية وأخرى', amount: 2000, percentage: 6, color: '#f1b5b9' }
-    ]
+    expenses: [{
+      category: 'رواتب الفريق والمكافآت',
+      amount: 20000,
+      percentage: 57,
+      color: '#fbe2aa'
+    }, {
+      category: 'أدوات وبرمجيات متخصصة',
+      amount: 8000,
+      percentage: 23,
+      color: '#a4e2f6'
+    }, {
+      category: 'استشارات خارجية وخدمات',
+      amount: 5000,
+      percentage: 14,
+      color: '#d9d2fd'
+    }, {
+      category: 'مصاريف إدارية وأخرى',
+      amount: 2000,
+      percentage: 6,
+      color: '#f1b5b9'
+    }]
   });
-
   const handleAddExpense = (expense: {
     category: string;
     amount: number;
@@ -41,19 +55,18 @@ export const FinancialTab = ({
     setFinancialData(prev => {
       const newTotalExpenses = prev.totalExpenses + expense.amount;
       const newExpenses = [...prev.expenses];
-      
+
       // Find and update the category
       const categoryIndex = newExpenses.findIndex(exp => exp.category === expense.category);
       if (categoryIndex !== -1) {
         newExpenses[categoryIndex].amount += expense.amount;
       }
-      
+
       // Recalculate percentages
       const updatedExpenses = newExpenses.map(exp => ({
         ...exp,
-        percentage: Math.round((exp.amount / newTotalExpenses) * 100)
+        percentage: Math.round(exp.amount / newTotalExpenses * 100)
       }));
-
       return {
         ...prev,
         totalExpenses: newTotalExpenses,
@@ -61,7 +74,6 @@ export const FinancialTab = ({
       };
     });
   };
-
   const handleApprovalRequest = (request: {
     requiredBudget: number;
     justification: string;
@@ -72,20 +84,18 @@ export const FinancialTab = ({
       ...request,
       status: 'pending',
       submittedAt: new Date().toISOString(),
-      submittedBy: 'مدير المشروع', // This should come from user context
+      submittedBy: 'مدير المشروع' // This should come from user context
     };
-    
     setApprovalRequests(prev => [...prev, newRequest]);
-    
+
     // Here you would typically send notifications to Financial Manager and Admin
     console.log('طلب موافقة مالية جديد:', newRequest);
     alert('تم إرسال طلب الموافقة المالية بنجاح وسيتم مراجعته من قبل الإدارة المالية');
   };
-
   const remainingBudget = financialData.totalBudget - financialData.totalExpenses;
-  const remainingPercentage = Math.round((remainingBudget / financialData.totalBudget) * 100);
-  const expensePercentage = Math.round((financialData.totalExpenses / financialData.totalBudget) * 100);
-  const expectedProfit = remainingBudget - (financialData.totalBudget * 0.1); // Assuming 10% operational costs
+  const remainingPercentage = Math.round(remainingBudget / financialData.totalBudget * 100);
+  const expensePercentage = Math.round(financialData.totalExpenses / financialData.totalBudget * 100);
+  const expectedProfit = remainingBudget - financialData.totalBudget * 0.1; // Assuming 10% operational costs
 
   return <div className="space-y-6">
       {/* حالة الميزانية */}
@@ -124,7 +134,7 @@ export const FinancialTab = ({
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">الربح المتوقع</h4>
           <p className="text-2xl font-bold text-black mb-1">{Math.max(0, expectedProfit).toLocaleString()} ر.س</p>
-          <p className="text-sm font-normal text-black">{Math.round((expectedProfit / financialData.totalBudget) * 100)}% هامش ربح متوقع</p>
+          <p className="text-sm font-normal text-black">{Math.round(expectedProfit / financialData.totalBudget * 100)}% هامش ربح متوقع</p>
           <div className="mt-3">
             <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
               <span className="text-sm font-medium text-black">مربح</span>
@@ -137,17 +147,17 @@ export const FinancialTab = ({
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <h3 className="text-lg font-semibold text-black mb-6">تفصيل المصروفات حسب الفئة</h3>
         <div className="space-y-4">
-          {financialData.expenses.map((expense, index) => (
-            <div key={index} className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
+          {financialData.expenses.map((expense, index) => <div key={index} className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
               <div className="flex items-center gap-3">
-                <div className={`px-3 py-1 rounded-full`} style={{ backgroundColor: expense.color }}>
+                <div className={`px-3 py-1 rounded-full`} style={{
+              backgroundColor: expense.color
+            }}>
                   <span className="text-sm font-medium text-black">{expense.percentage}%</span>
                 </div>
                 <span className="text-sm font-bold text-black">{expense.amount.toLocaleString()} ر.س</span>
               </div>
               <span className="text-sm font-bold text-black">{expense.category}</span>
-            </div>
-          ))}
+            </div>)}
         </div>
       </div>
 
@@ -201,52 +211,32 @@ export const FinancialTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">إضافة مصروف جديد</h4>
             <p className="text-xs text-black/70 mb-3">تسجيل مصروف جديد وتصنيفه حسب الفئة</p>
-            <button 
-              onClick={() => setIsExpenseModalOpen(true)}
-              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
-            >
+            <button onClick={() => setIsExpenseModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إضافة مصروف
             </button>
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">طلب موافقة مالية</h4>
             <p className="text-xs text-black/70 mb-3">تقديم طلب موافقة على تعديل الميزانية</p>
-            <button 
-              onClick={() => setIsApprovalRequestOpen(true)}
-              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
-            >
+            <button onClick={() => setIsApprovalRequestOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               طلب موافقة
             </button>
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">تحليل الانحرافات</h4>
             <p className="text-xs text-black/70 mb-3">مراجعة الانحرافات عن الميزانية المخططة</p>
-            <button 
-              onClick={() => setIsAnalysisModalOpen(true)}
-              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
-            >
+            <button onClick={() => setIsAnalysisModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               عرض التحليل
             </button>
           </div>
         </div>
       </div>
 
-      <ExpenseModal
-        isOpen={isExpenseModalOpen}
-        onClose={() => setIsExpenseModalOpen(false)}
-        onSave={handleAddExpense}
-      />
+      <ExpenseModal isOpen={isExpenseModalOpen} onClose={() => setIsExpenseModalOpen(false)} onSave={handleAddExpense} />
       
-      <ApprovalRequestModal
-        isOpen={isApprovalRequestOpen}
-        onClose={() => setIsApprovalRequestOpen(false)}
-        onSave={handleApprovalRequest}
-      />
+      <ApprovalRequestModal isOpen={isApprovalRequestOpen} onClose={() => setIsApprovalRequestOpen(false)} onSave={handleApprovalRequest} />
       
-      <FinancialAnalysisModal
-        isOpen={isAnalysisModalOpen}
-        onClose={() => setIsAnalysisModalOpen(false)}
-      />
+      <FinancialAnalysisModal isOpen={isAnalysisModalOpen} onClose={() => setIsAnalysisModalOpen(false)} />
     </div>;
 };
 
@@ -316,7 +306,7 @@ export const TeamTab = ({
   const [isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen] = useState(false);
   const [isManualTaskDistributionModalOpen, setIsManualTaskDistributionModalOpen] = useState(false);
   const [isPerformanceEvaluationModalOpen, setIsPerformanceEvaluationModalOpen] = useState(false);
-  
+
   // إدارة حالة الفريق والمهام
   const [teamMembers, setTeamMembers] = useState([{
     id: '1',
@@ -370,13 +360,31 @@ export const TeamTab = ({
 
   // معالج إضافة عضو جديد
   const handleAddTeamMember = (memberId: string, taskIds: string[]) => {
-    const availableMembers = [
-      { id: '5', name: 'سارة أحمد', role: 'مطور واجهات أمامية', email: 'sara@company.com', phone: '+966505678901' },
-      { id: '6', name: 'خالد عبدالله', role: 'مطور خلفية', email: 'khalid@company.com', phone: '+966506789012' },
-      { id: '7', name: 'هند محمد', role: 'مختص أمان', email: 'hind@company.com', phone: '+966507890123' },
-      { id: '8', name: 'عمر علي', role: 'مطور تطبيقات جوال', email: 'omar@company.com', phone: '+966508901234' }
-    ];
-    
+    const availableMembers = [{
+      id: '5',
+      name: 'سارة أحمد',
+      role: 'مطور واجهات أمامية',
+      email: 'sara@company.com',
+      phone: '+966505678901'
+    }, {
+      id: '6',
+      name: 'خالد عبدالله',
+      role: 'مطور خلفية',
+      email: 'khalid@company.com',
+      phone: '+966506789012'
+    }, {
+      id: '7',
+      name: 'هند محمد',
+      role: 'مختص أمان',
+      email: 'hind@company.com',
+      phone: '+966507890123'
+    }, {
+      id: '8',
+      name: 'عمر علي',
+      role: 'مطور تطبيقات جوال',
+      email: 'omar@company.com',
+      phone: '+966508901234'
+    }];
     const memberToAdd = availableMembers.find(m => m.id === memberId);
     if (memberToAdd) {
       const newMember = {
@@ -396,12 +404,10 @@ export const TeamTab = ({
   const handleRemoveMember = (memberId: string) => {
     const userRole = 'admin'; // This should come from user context
     const hasPermission = ['admin', 'owner', 'general_manager'].includes(userRole);
-    
     if (!hasPermission) {
       alert('غير مصرح لك بإستبعاد الأعضاء. هذه الميزة متاحة فقط لمدير التطبيق.');
       return;
     }
-
     const member = teamMembers.find(m => m.id === memberId);
     if (member && window.confirm(`هل تريد بالتأكيد استبعاد ${member.name} من الفريق؟`)) {
       setTeamMembers(prev => prev.filter(m => m.id !== memberId));
@@ -413,7 +419,6 @@ export const TeamTab = ({
     // تحديث توزيع المهام حسب النتائج
     console.log('توزيع المهام يدوياً أو بالذكاء الاصطناعي:', redistributedTasks);
   };
-
   return <div className="space-y-6">
       {/* حالة الفريق */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
@@ -467,40 +472,30 @@ export const TeamTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">إسناد مهام للموارد البشرية</h4>
             <p className="text-xs text-black/70 mb-3">إسناد مهام المشروع لموظفي قسم الموارد البشرية</p>
-            <button 
-              onClick={() => setIsAddTeamMemberModalOpen(true)}
-              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
-            >
+            <button onClick={() => setIsAddTeamMemberModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إضافة عضو
             </button>
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">توزيع المهام</h4>
             <p className="text-xs text-black/70 mb-3">إعادة توزيع المهام بين أعضاء الفريق</p>
-            <button 
-              onClick={() => setIsManualTaskDistributionModalOpen(true)}
-              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
-            >
+            <button onClick={() => setIsManualTaskDistributionModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               توزيع المهام
             </button>
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تقييم الأداء</h4>
             <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق (متاحة فقط لمدير قسم فأعلى)</p>
-            <button 
-              onClick={() => {
-                // Check if user has permission (Department Manager or above)
-                const userRole = 'department_manager'; // This should come from user context
-                const hasPermission = ['department_manager', 'admin', 'owner'].includes(userRole);
-                
-                if (hasPermission) {
-                  setIsPerformanceEvaluationModalOpen(true);
-                } else {
-                  alert('غير مصرح لك بالوصول إلى تقييم الأداء. هذه الميزة متاحة فقط لمدير القسم فأعلى.');
-                }
-              }}
-              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
-            >
+            <button onClick={() => {
+            // Check if user has permission (Department Manager or above)
+            const userRole = 'department_manager'; // This should come from user context
+            const hasPermission = ['department_manager', 'admin', 'owner'].includes(userRole);
+            if (hasPermission) {
+              setIsPerformanceEvaluationModalOpen(true);
+            } else {
+              alert('غير مصرح لك بالوصول إلى تقييم الأداء. هذه الميزة متاحة فقط لمدير القسم فأعلى.');
+            }
+          }} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تقييم الأداء
             </button>
           </div>
@@ -558,46 +553,30 @@ export const TeamTab = ({
         </div>
       </div>
 
-      <TaskAssignmentModal
-        isOpen={isTaskAssignmentModalOpen}
-        onClose={() => setIsTaskAssignmentModalOpen(false)}
-        onSave={(employeeId, taskIds) => {
-          console.log('إسناد مهام:', { employeeId, taskIds });
-          alert(`تم إسناد ${taskIds.length} مهام بنجاح إلى الموظف المحدد`);
-        }}
-      />
+      <TaskAssignmentModal isOpen={isTaskAssignmentModalOpen} onClose={() => setIsTaskAssignmentModalOpen(false)} onSave={(employeeId, taskIds) => {
+      console.log('إسناد مهام:', {
+        employeeId,
+        taskIds
+      });
+      alert(`تم إسناد ${taskIds.length} مهام بنجاح إلى الموظف المحدد`);
+    }} />
 
-      <TaskRedistributionModal
-        isOpen={isTaskRedistributionModalOpen}
-        onClose={() => setIsTaskRedistributionModalOpen(false)}
-        onRedistribute={(redistributedTasks) => {
-          console.log('إعادة توزيع المهام:', redistributedTasks);
-          alert(`تم إعادة توزيع ${redistributedTasks.length} مهام بنجاح باستخدام الذكاء الاصطناعي`);
-        }}
-      />
+      <TaskRedistributionModal isOpen={isTaskRedistributionModalOpen} onClose={() => setIsTaskRedistributionModalOpen(false)} onRedistribute={redistributedTasks => {
+      console.log('إعادة توزيع المهام:', redistributedTasks);
+      alert(`تم إعادة توزيع ${redistributedTasks.length} مهام بنجاح باستخدام الذكاء الاصطناعي`);
+    }} />
 
-      <AddTeamMemberModal
-        isOpen={isAddTeamMemberModalOpen}
-        onClose={() => setIsAddTeamMemberModalOpen(false)}
-        onSave={(memberId, taskIds) => {
-          handleAddTeamMember(memberId, taskIds);
-          setIsAddTeamMemberModalOpen(false);
-        }}
-      />
+      <AddTeamMemberModal isOpen={isAddTeamMemberModalOpen} onClose={() => setIsAddTeamMemberModalOpen(false)} onSave={(memberId, taskIds) => {
+      handleAddTeamMember(memberId, taskIds);
+      setIsAddTeamMemberModalOpen(false);
+    }} />
 
-      <ManualTaskDistributionModal
-        isOpen={isManualTaskDistributionModalOpen}
-        onClose={() => setIsManualTaskDistributionModalOpen(false)}
-        onSave={(redistributedTasks) => {
-          handleTaskDistribution(redistributedTasks);
-          setIsManualTaskDistributionModalOpen(false);
-        }}
-      />
+      <ManualTaskDistributionModal isOpen={isManualTaskDistributionModalOpen} onClose={() => setIsManualTaskDistributionModalOpen(false)} onSave={redistributedTasks => {
+      handleTaskDistribution(redistributedTasks);
+      setIsManualTaskDistributionModalOpen(false);
+    }} />
 
-      <PerformanceEvaluationModal
-        isOpen={isPerformanceEvaluationModalOpen}
-        onClose={() => setIsPerformanceEvaluationModalOpen(false)}
-      />
+      <PerformanceEvaluationModal isOpen={isPerformanceEvaluationModalOpen} onClose={() => setIsPerformanceEvaluationModalOpen(false)} />
     </div>;
 };
 
@@ -694,24 +673,24 @@ export const AttachmentsTab = ({
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة مرفقات المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">رفع ملف جديد</h4>
             <p className="text-xs text-black/70 mb-3">إضافة مستندات وملفات جديدة للمشروع</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               رفع ملف
             </button>
           </div>
-          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تنظيم المجلدات</h4>
             <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم مجلدات المشروع</p>
-            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تنظيم المجلدات
             </button>
           </div>
-          <div className="p-4 bg-white/50 rounded-2xl border border-black/10">
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
             <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للملفات</p>
-            <button className="w-full px-3 py-2 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إدارة الصلاحيات
             </button>
           </div>
@@ -726,28 +705,28 @@ export const AttachmentsTab = ({
             <p className="text-2xl font-bold text-black mb-1">7</p>
             <h4 className="text-sm font-bold text-black mb-2">مستندات PDF</h4>
             <div className="bg-[#f1b5b9] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">تقارير رسمية</span>
+              <span className="text-xs font-normal text-black">تقارير رسمية</span>
             </div>
           </div>
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
             <p className="text-2xl font-bold text-black mb-1">5</p>
             <h4 className="text-sm font-bold text-black mb-2">مستندات Word</h4>
             <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">وثائق تحريرية</span>
+              <span className="text-xs font-normal text-black">وثائق تحريرية</span>
             </div>
           </div>
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
             <p className="text-2xl font-bold text-black mb-1">4</p>
             <h4 className="text-sm font-bold text-black mb-2">جداول Excel</h4>
             <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">بيانات تحليلية</span>
+              <span className="text-xs font-normal text-black">بيانات تحليلية</span>
             </div>
           </div>
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
             <p className="text-2xl font-bold text-black mb-1">7</p>
             <h4 className="text-sm font-bold text-black mb-2">ملفات أخرى</h4>
             <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">صور وتصاميم</span>
+              <span className="text-xs font-normal text-black">صور وتصاميم</span>
             </div>
           </div>
         </div>
