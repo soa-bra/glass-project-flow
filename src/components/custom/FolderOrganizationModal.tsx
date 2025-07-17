@@ -118,6 +118,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
   const [editingFolder, setEditingFolder] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
   const [selectedColor, setSelectedColor] = useState('#a4e2f6');
+  const [selectedIcon, setSelectedIcon] = useState('folder');
   const [showFolderEditModal, setShowFolderEditModal] = useState(false);
   const [folderToEdit, setFolderToEdit] = useState<FolderData | null>(null);
   const [showFileSelection, setShowFileSelection] = useState<string | null>(null);
@@ -268,7 +269,8 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
       name: newFolderName,
       filesCount: 0,
       createdAt: new Date().toISOString().split('T')[0],
-      color: selectedColor
+      color: selectedColor,
+      icon: selectedIcon
     };
 
     setFolders(prev => [...prev, newFolder]);
@@ -434,6 +436,30 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
                         />
                       ))}
                     </div>
+                  </div>
+                </div>
+                
+                {/* اختيار أيقونة المجلد */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-bold text-black">أيقونة المجلد</label>
+                  <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                    {folderIcons.map((iconData) => {
+                      const IconComponent = iconData.icon;
+                      return (
+                        <button
+                          key={iconData.id}
+                          onClick={() => setSelectedIcon(iconData.id)}
+                          className={`p-2 rounded-xl border transition-all hover:scale-105 ${
+                            selectedIcon === iconData.id
+                              ? 'border-black bg-black/10 scale-105'
+                              : 'border-black/20 bg-white/20 hover:border-black/40'
+                          }`}
+                          title={iconData.name}
+                        >
+                          <IconComponent className="w-5 h-5 text-black mx-auto" />
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
                 
