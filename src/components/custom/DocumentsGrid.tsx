@@ -3,7 +3,24 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { FileText, Image, Video, Music, Archive, Download, Eye, Edit3, Trash2, Search, Filter, Upload } from 'lucide-react';
+import { 
+  FileText, 
+  Image, 
+  Video, 
+  Music, 
+  Archive, 
+  Download, 
+  Eye, 
+  Edit3, 
+  Trash2, 
+  Search, 
+  Filter, 
+  Upload,
+  Folder,
+  FolderOpen,
+  File
+} from 'lucide-react';
+
 interface Document {
   id: string;
   name: string;
@@ -14,15 +31,39 @@ interface Document {
   version: string;
   uploadedBy: string;
   tags: string[];
+  folderId?: string;
 }
+
+interface FolderData {
+  id: string;
+  name: string;
+  parentId?: string;
+  filesCount: number;
+  createdAt: string;
+  color?: string;
+  icon?: string;
+  files?: Array<{
+    id: string;
+    name: string;
+    type: string;
+    size: number;
+    uploadedAt: string;
+  }>;
+}
+
 interface DocumentsGridProps {
-  documents: Document[];
+  documents?: Document[];
+  folders?: FolderData[];
+  onFolderClick?: (folderId: string) => void;
 }
 export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
-  documents = []
+  documents = [],
+  folders = [],
+  onFolderClick
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
+  const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
 
   // بيانات وهمية في حالة عدم وجود مستندات
   const defaultDocuments: Document[] = [{
@@ -77,6 +118,28 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
     tags: ['نسخ احتياطي', 'أرشيف']
   }];
   const docs = documents.length > 0 ? documents : defaultDocuments;
+  // الحصول على أيقونة المجلد
+  const getFolderIcon = (iconId?: string) => {
+    switch (iconId) {
+      case 'folder-open':
+        return FolderOpen;
+      case 'archive':
+        return Archive;
+      case 'file-text':
+        return FileText;
+      case 'image':
+        return Image;
+      case 'video':
+        return Video;
+      case 'music':
+        return Music;
+      case 'file':
+        return File;
+      default:
+        return Folder;
+    }
+  };
+
   const getFileIcon = (type: string) => {
     switch (type) {
       case 'document':
@@ -117,17 +180,55 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
         return 'غير محدد';
     }
   };
-  const filteredDocs = docs.filter(doc => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase()) || doc.tags.some(tag => tag.includes(searchTerm));
+  // فلترة المجلدات والملفات حسب المجلد الحالي
+  const currentFolders = folders.filter(folder => 
+    !currentFolderId ? !folder.parentId : folder.parentId === currentFolderId
+  );
+  
+  const currentDocs = docs.filter(doc => {
+    const inCurrentFolder = !currentFolderId ? !doc.folderId : doc.folderId === currentFolderId;
+    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         doc.tags.some(tag => tag.includes(searchTerm));
     const matchesFilter = selectedFilter === 'all' || doc.type === selectedFilter;
-    return matchesSearch && matchesFilter;
+    return inCurrentFolder && matchesSearch && matchesFilter;
   });
+
+  const filteredFolders = currentFolders.filter(folder =>
+    folder.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const getTypeCount = (type: string) => {
-    return docs.filter(doc => doc.type === type).length;
+    return currentDocs.filter(doc => doc.type === type).length;
+  };
+
+  const handleFolderClick = (folderId: string) => {
+    setCurrentFolderId(folderId);
+    onFolderClick?.(folderId);
+  };
+
+  const handleBackClick = () => {
+    setCurrentFolderId(null);
   };
   return <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+      {/* شريط التنقل */}
+      {currentFolderId && (
+        <div className="flex items-center gap-2 mb-4">
+          <Button 
+            size="sm" 
+            variant="outline" 
+            onClick={handleBackClick}
+            className="rounded-full"
+          >
+            ← العودة
+          </Button>
+          <span className="text-sm text-gray-600">
+            {folders.find(f => f.id === currentFolderId)?.name}
+          </span>
+        </div>
+      )}
+
       {/* شريط البحث والتصفية */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 mb-4">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input placeholder="البحث في المستندات..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pr-10 text-right" />
@@ -139,9 +240,9 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
       </div>
 
       {/* فلاتر سريعة */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
         <Button size="sm" variant={selectedFilter === 'all' ? 'default' : 'outline'} onClick={() => setSelectedFilter('all')} className="rounded-full">
-          الكل ({docs.length})
+          الكل ({currentDocs.length})
         </Button>
         <Button size="sm" variant={selectedFilter === 'document' ? 'default' : 'outline'} onClick={() => setSelectedFilter('document')} className="rounded-full">
           مستندات ({getTypeCount('document')})
@@ -154,12 +255,40 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
         </Button>
       </div>
 
-      {/* شبكة المستندات */}
+      {/* شبكة المجلدات والمستندات */}
       <ScrollArea className="h-[400px]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filteredDocs.map(doc => {
-          const FileIcon = getFileIcon(doc.type);
-          return <div key={doc.id} className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+          {/* عرض المجلدات أولاً */}
+          {filteredFolders.map(folder => {
+            const FolderIcon = getFolderIcon(folder.icon);
+            return (
+              <div 
+                key={`folder-${folder.id}`} 
+                className="bg-white/40 rounded-3xl p-4 border border-black/10 cursor-pointer hover:bg-white/60 transition-all"
+                onClick={() => handleFolderClick(folder.id)}
+              >
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                    style={{ backgroundColor: folder.color || '#a4e2f6' }}
+                  >
+                    <FolderIcon className="w-6 h-6 text-black" />
+                  </div>
+                  <div className="flex-1 text-right">
+                    <h4 className="font-medium text-sm text-black">{folder.name}</h4>
+                    <p className="text-xs text-gray-600">{folder.filesCount} ملف</p>
+                    <p className="text-xs text-gray-500">{new Date(folder.createdAt).toLocaleDateString('ar-SA')}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* عرض الملفات */}
+          {currentDocs.map(doc => {
+            const FileIcon = getFileIcon(doc.type);
+            return (
+              <div key={doc.id} className="bg-[#F2FFFF] rounded-3xl p-4 border border-black/10">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -190,12 +319,16 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
                     {/* التاغز */}
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {doc.tags.slice(0, 2).map((tag, idx) => <Badge key={idx} variant="secondary" className="text-xs">
+                      {doc.tags.slice(0, 2).map((tag, idx) => (
+                        <Badge key={idx} variant="secondary" className="text-xs">
                           {tag}
-                        </Badge>)}
-                      {doc.tags.length > 2 && <Badge variant="secondary" className="text-xs">
+                        </Badge>
+                      ))}
+                      {doc.tags.length > 2 && (
+                        <Badge variant="secondary" className="text-xs">
                           +{doc.tags.length - 2}
-                        </Badge>}
+                        </Badge>
+                      )}
                     </div>
 
                     {/* أزرار الإجراءات */}
@@ -215,8 +348,9 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
                     </div>
                   </div>
                 </div>
-              </div>;
-        })}
+              </div>
+            );
+          })}
         </div>
       </ScrollArea>
 
