@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { FolderPlus, X, Folder, Edit3, Trash2, Move, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { FolderEditModal } from './FolderEditModal';
 
 interface FolderOrganizationModalProps {
   isOpen: boolean;
@@ -19,6 +20,14 @@ interface FolderData {
   filesCount: number;
   createdAt: string;
   color?: string;
+  icon?: string;
+  files?: Array<{
+    id: string;
+    name: string;
+    type: string;
+    size: number;
+    uploadedAt: string;
+  }>;
 }
 
 interface FolderAction {
@@ -42,21 +51,35 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
       name: 'مستندات المشروع',
       filesCount: 8,
       createdAt: '2024-01-15',
-      color: '#a4e2f6'
+      color: '#a4e2f6',
+      icon: 'folder',
+      files: [
+        { id: '1', name: 'مواصفات المشروع.pdf', type: 'application/pdf', size: 2048000, uploadedAt: '2024-01-15T10:00:00Z' },
+        { id: '2', name: 'خطة العمل.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: 1024000, uploadedAt: '2024-01-16T14:30:00Z' }
+      ]
     },
     {
       id: '2', 
       name: 'التصاميم',
       filesCount: 12,
       createdAt: '2024-01-18',
-      color: '#d9d2fd'
+      color: '#d9d2fd',
+      icon: 'image',
+      files: [
+        { id: '3', name: 'تصميم الواجهة.png', type: 'image/png', size: 5120000, uploadedAt: '2024-01-18T09:15:00Z' },
+        { id: '4', name: 'الشعار.svg', type: 'image/svg+xml', size: 256000, uploadedAt: '2024-01-19T11:45:00Z' }
+      ]
     },
     {
       id: '3',
       name: 'تقارير',
       filesCount: 5,
       createdAt: '2024-01-20',
-      color: '#bdeed3'
+      color: '#bdeed3',
+      icon: 'file-text',
+      files: [
+        { id: '5', name: 'تقرير الأداء.xlsx', type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size: 3072000, uploadedAt: '2024-01-20T16:20:00Z' }
+      ]
     }
   ]);
 
@@ -65,10 +88,30 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
   const [editingFolder, setEditingFolder] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
   const [selectedColor, setSelectedColor] = useState('#a4e2f6');
+  const [showFolderEditModal, setShowFolderEditModal] = useState(false);
+  const [folderToEdit, setFolderToEdit] = useState<FolderData | null>(null);
 
   const folderColors = [
     '#a4e2f6', '#d9d2fd', '#bdeed3', '#fbe2aa', '#f1b5b9'
   ];
+
+  const handleAdvancedEdit = (folder: FolderData) => {
+    setFolderToEdit(folder);
+    setShowFolderEditModal(true);
+  };
+
+  const handleFolderEditSave = (updatedFolder: FolderData) => {
+    setFolders(prev => 
+      prev.map(f => f.id === updatedFolder.id ? updatedFolder : f)
+    );
+    setActions(prev => [...prev, { 
+      type: 'rename', 
+      folderId: updatedFolder.id, 
+      newName: updatedFolder.name 
+    }]);
+    setShowFolderEditModal(false);
+    setFolderToEdit(null);
+  };
 
   const handleCreateFolder = () => {
     if (!newFolderName.trim()) {
@@ -194,7 +237,8 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
           zIndex: 9999,
         }}
-      >
+        >
+          <DialogTitle className="sr-only">تنظيم المجلدات</DialogTitle>
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-black/10">
           <div className="flex items-center gap-3">
@@ -317,9 +361,9 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
                     {editingFolder !== folder.id && (
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => handleStartEdit(folder)}
+                          onClick={() => handleAdvancedEdit(folder)}
                           className="p-2 bg-white/30 hover:bg-white/40 rounded-xl transition-colors"
-                          title="تعديل الاسم"
+                          title="تعديل متقدم"
                         >
                           <Edit3 className="w-4 h-4 text-black" />
                         </button>
@@ -374,6 +418,19 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
           </button>
         </div>
       </DialogContent>
+
+      {/* نافذة التعديل المتقدم */}
+      {folderToEdit && (
+        <FolderEditModal
+          isOpen={showFolderEditModal}
+          onClose={() => {
+            setShowFolderEditModal(false);
+            setFolderToEdit(null);
+          }}
+          folder={folderToEdit}
+          onSave={handleFolderEditSave}
+        />
+      )}
     </Dialog>
   );
 };

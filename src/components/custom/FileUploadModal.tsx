@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Upload, X, FileText, Image, Video, Archive } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -182,7 +182,8 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
           zIndex: 9999,
         }}
-      >
+        >
+          <DialogTitle className="sr-only">رفع ملف جديد</DialogTitle>
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-black/10">
           <div className="flex items-center gap-3">
