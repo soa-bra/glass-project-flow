@@ -14,6 +14,7 @@ import { ManualTaskDistributionModal } from '@/components/custom/ManualTaskDistr
 import { PerformanceEvaluationModal } from '@/components/custom/PerformanceEvaluationModal';
 import { FileUploadModal } from '@/components/custom/FileUploadModal';
 import { FolderOrganizationModal } from '@/components/custom/FolderOrganizationModal';
+import { PermissionsModal } from '@/components/custom/PermissionsModal';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -588,6 +589,7 @@ export const AttachmentsTab = ({
 }: any) => {
   const [isFileUploadModalOpen, setIsFileUploadModalOpen] = useState(false);
   const [isFolderOrganizationModalOpen, setIsFolderOrganizationModalOpen] = useState(false);
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
   const [projectFiles, setProjectFiles] = useState<any[]>([]);
 
   // مهام المشروع الوهمية للربط
@@ -742,7 +744,19 @@ export const AttachmentsTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
             <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للملفات</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button 
+              onClick={() => {
+                // التحقق من صلاحيات المستخدم (مدير المشروع فأعلى)
+                const userRole = 'project_manager'; // هذا يجب أن يأتي من سياق المستخدم
+                const hasPermission = ['project_manager', 'department_manager', 'admin', 'owner'].includes(userRole);
+                if (hasPermission) {
+                  setIsPermissionsModalOpen(true);
+                } else {
+                  alert('غير مصرح لك بالوصول إلى إدارة الصلاحيات. هذه الميزة متاحة فقط لمدير المشروع فأعلى.');
+                }
+              }}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
               إدارة الصلاحيات
             </button>
           </div>
@@ -800,6 +814,12 @@ export const AttachmentsTab = ({
         isOpen={isFolderOrganizationModalOpen}
         onClose={() => setIsFolderOrganizationModalOpen(false)}
         onSave={handleFolderOrganization}
+      />
+
+      {/* نافذة إدارة الصلاحيات */}
+      <PermissionsModal
+        isOpen={isPermissionsModalOpen}
+        onClose={() => setIsPermissionsModalOpen(false)}
       />
     </div>;
 };
