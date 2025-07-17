@@ -12,6 +12,7 @@ import { TaskRedistributionModal } from '@/components/custom/TaskRedistributionM
 import { AddTeamMemberModal } from '@/components/custom/AddTeamMemberModal';
 import { ManualTaskDistributionModal } from '@/components/custom/ManualTaskDistributionModal';
 import { PerformanceEvaluationModal } from '@/components/custom/PerformanceEvaluationModal';
+import { FileUploadModal } from '@/components/custom/FileUploadModal';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -584,6 +585,41 @@ export const TeamTab = ({
 export const AttachmentsTab = ({
   documents
 }: any) => {
+  const [isFileUploadModalOpen, setIsFileUploadModalOpen] = useState(false);
+  const [projectFiles, setProjectFiles] = useState<any[]>([]);
+
+  // مهام المشروع الوهمية للربط
+  const projectTasks = [
+    { id: '1', title: 'تصميم واجهة المستخدم' },
+    { id: '2', title: 'تطوير قاعدة البيانات' },
+    { id: '3', title: 'اختبار النظام' },
+    { id: '4', title: 'كتابة الوثائق' },
+    { id: '5', title: 'مراجعة الكود' },
+  ];
+
+  const handleFileUpload = (data: {
+    files: File[];
+    title: string;
+    linkedTasks: string[];
+    projectId: string;
+  }) => {
+    // معالجة رفع الملفات
+    const newFiles = data.files.map((file, index) => ({
+      id: Date.now() + index,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      title: data.title,
+      linkedTasks: data.linkedTasks,
+      uploadedAt: new Date().toISOString(),
+      status: 'uploaded'
+    }));
+    
+    setProjectFiles(prev => [...prev, ...newFiles]);
+    setIsFileUploadModalOpen(false);
+    
+    console.log('ملفات جديدة تم رفعها:', newFiles);
+  };
   const mockDocuments = [{
     id: '1',
     name: 'مواصفات المشروع.pdf',
@@ -676,7 +712,10 @@ export const AttachmentsTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">رفع ملف جديد</h4>
             <p className="text-xs text-black/70 mb-3">إضافة مستندات وملفات جديدة للمشروع</p>
-            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button 
+              onClick={() => setIsFileUploadModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
               رفع ملف
             </button>
           </div>
@@ -733,6 +772,15 @@ export const AttachmentsTab = ({
       </div>
 
       <DocumentsGrid documents={mockDocuments} />
+
+      {/* نافذة رفع الملفات */}
+      <FileUploadModal
+        isOpen={isFileUploadModalOpen}
+        onClose={() => setIsFileUploadModalOpen(false)}
+        onSave={handleFileUpload}
+        projectTasks={projectTasks}
+        projectId="current-project-id"
+      />
     </div>;
 };
 
