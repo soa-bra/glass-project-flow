@@ -524,33 +524,6 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
                         )}
                       </div>
 
-                      {/* تحرير أيقونة المجلد */}
-                      {editingFolder !== folder.id && (
-                        <div className="space-y-3">
-                          <h5 className="text-sm font-bold text-black">أيقونة المجلد:</h5>
-                          <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
-                            {folderIcons.map((iconData) => {
-                              const IconComponent = iconData.icon;
-                              const isSelected = (folder.icon || 'folder') === iconData.id;
-                              
-                              return (
-                                <button
-                                  key={iconData.id}
-                                  onClick={() => handleUpdateFolderIcon(folder.id, iconData.id)}
-                                  className={`p-2 rounded-xl border transition-all hover:scale-105 ${
-                                    isSelected
-                                      ? 'border-black bg-black/10 scale-105'
-                                      : 'border-black/20 bg-white/20 hover:border-black/40'
-                                  }`}
-                                  title={iconData.name}
-                                >
-                                  <IconComponent className="w-4 h-4 text-black" />
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
 
                       {/* إدارة الملفات */}
                       {editingFolder !== folder.id && (
