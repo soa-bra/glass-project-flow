@@ -269,56 +269,89 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
               </h3>
               
               <div className="space-y-6">
-                {[
-                  { 
-                    id: 'user1',
-                    name: 'أحمد محمد', 
-                    email: 'ahmed@company.com', 
-                    role: 'admin',
-                    avatar: '👨‍💼'
-                  },
-                  { 
-                    id: 'user2',
-                    name: 'فاطمة أحمد', 
-                    email: 'fatima@company.com', 
-                    role: 'editor',
-                    avatar: '👩‍💻'
-                  },
-                  { 
-                    id: 'user3',
-                    name: 'خالد سعد', 
-                    email: 'khalid@company.com', 
-                    role: 'viewer',
-                    avatar: '👨‍🎓'
-                  },
-                  { 
-                    id: 'user4',
-                    name: 'نورا عبدالله', 
-                    email: 'nora@company.com', 
-                    role: 'editor',
-                    avatar: '👩‍🎨'
-                  }
-                ].map((user) => {
-                  const userRole = userRoles.find(r => r.id === user.role);
+                {(() => {
+                  // نقل state خارج map لتجنب خطأ hooks
                   const [expandedUser, setExpandedUser] = useState<string | null>(null);
-                  const [userFilePermissions, setUserFilePermissions] = useState<{[key: string]: string[]}>({
-                    [`${user.id}_file1`]: ['view', 'download'],
-                    [`${user.id}_file2`]: ['view'],
-                    [`${user.id}_file3`]: user.role === 'admin' ? ['view', 'download', 'edit', 'delete'] : ['view'],
-                    [`${user.id}_file4`]: user.role !== 'viewer' ? ['view', 'download', 'edit'] : ['view'],
-                    [`${user.id}_file5`]: user.role === 'admin' ? ['view', 'download', 'upload', 'edit', 'delete'] : ['view']
-                  });
+                  const [userFilePermissions, setUserFilePermissions] = useState<{[key: string]: string[]}>({});
 
-                  const projectFiles = [
-                    { id: 'file1', name: 'وثيقة المتطلبات.pdf', type: 'document', size: '2.4 MB' },
-                    { id: 'file2', name: 'تصميم الواجهة.fig', type: 'design', size: '15.7 MB' },
-                    { id: 'file3', name: 'العرض التقديمي.pptx', type: 'presentation', size: '8.9 MB' },
-                    { id: 'file4', name: 'فيديو الشرح.mp4', type: 'video', size: '125.3 MB' },
-                    { id: 'file5', name: 'ملف البيانات.zip', type: 'archive', size: '45.2 MB' }
+                  // بيانات المستخدمين
+                  const users = [
+                    { 
+                      id: 'user1',
+                      name: 'أحمد محمد', 
+                      email: 'ahmed@company.com', 
+                      role: 'admin',
+                      avatar: '👨‍💼'
+                    },
+                    { 
+                      id: 'user2',
+                      name: 'فاطمة أحمد', 
+                      email: 'fatima@company.com', 
+                      role: 'editor',
+                      avatar: '👩‍💻'
+                    },
+                    { 
+                      id: 'user3',
+                      name: 'خالد سعد', 
+                      email: 'khalid@company.com', 
+                      role: 'viewer',
+                      avatar: '👨‍🎓'
+                    },
+                    { 
+                      id: 'user4',
+                      name: 'نورا عبدالله', 
+                      email: 'nora@company.com', 
+                      role: 'editor',
+                      avatar: '👩‍🎨'
+                    }
                   ];
 
-                  const toggleFilePermission = (fileId: string, permissionId: string) => {
-                    const key = `${user.id}_${fileId}`;
+                  // ملفات المشروع الفعلية (يجب استلامها من props أو context)
+                  const projectFiles = [
+                    { 
+                      id: 'file1', 
+                      name: 'وثيقة المتطلبات الفنية.pdf', 
+                      type: 'document', 
+                      size: '2.4 MB',
+                      uploadedBy: 'أحمد محمد',
+                      uploadDate: '2024-01-15'
+                    },
+                    { 
+                      id: 'file2', 
+                      name: 'تصميم واجهة المستخدم.fig', 
+                      type: 'design', 
+                      size: '15.7 MB',
+                      uploadedBy: 'فاطمة أحمد',
+                      uploadDate: '2024-01-14'
+                    },
+                    { 
+                      id: 'file3', 
+                      name: 'عرض تقديمي للعميل.pptx', 
+                      type: 'presentation', 
+                      size: '8.9 MB',
+                      uploadedBy: 'خالد عبدالرحمن',
+                      uploadDate: '2024-01-13'
+                    },
+                    { 
+                      id: 'file4', 
+                      name: 'فيديو شرح النظام.mp4', 
+                      type: 'video', 
+                      size: '125.3 MB',
+                      uploadedBy: 'نورا سعد',
+                      uploadDate: '2024-01-12'
+                    },
+                    { 
+                      id: 'file5', 
+                      name: 'ملف النسخ الاحتياطية.zip', 
+                      type: 'archive', 
+                      size: '45.2 MB',
+                      uploadedBy: 'أحمد محمد',
+                      uploadDate: '2024-01-11'
+                    }
+                  ];
+
+                  const toggleFilePermission = (userId: string, fileId: string, permissionId: string) => {
+                    const key = `${userId}_${fileId}`;
                     setUserFilePermissions(prev => ({
                       ...prev,
                       [key]: prev[key]?.includes(permissionId)
@@ -338,98 +371,126 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
                     }
                   };
 
-                  return (
-                    <div key={user.id} className="bg-white/20 rounded-2xl border border-black/10 overflow-hidden">
-                      {/* معلومات المستخدم */}
-                      <div 
-                        className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/30 transition-colors"
-                        onClick={() => setExpandedUser(expandedUser === user.id ? null : user.id)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-black/10 rounded-full flex items-center justify-center text-lg">
-                            {user.avatar}
-                          </div>
-                          <div>
-                            <h4 className="text-sm font-medium text-black">{user.name}</h4>
-                            <p className="text-xs text-black/70">{user.email}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-2">
-                            <div 
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: userRole?.color }}
-                            />
-                            <span className="text-sm text-black">{userRole?.name}</span>
-                          </div>
-                          <div className="text-xs text-black/50">
-                            {expandedUser === user.id ? '▲' : '▼'}
-                          </div>
-                        </div>
-                      </div>
+                  // إعداد الصلاحيات الافتراضية لكل مستخدم
+                  React.useEffect(() => {
+                    const defaultPermissions: {[key: string]: string[]} = {};
+                    users.forEach(user => {
+                      projectFiles.forEach(file => {
+                        const key = `${user.id}_${file.id}`;
+                        if (user.role === 'admin') {
+                          defaultPermissions[key] = ['view', 'download', 'upload', 'edit', 'delete'];
+                        } else if (user.role === 'editor') {
+                          defaultPermissions[key] = ['view', 'download', 'edit'];
+                        } else {
+                          defaultPermissions[key] = ['view'];
+                        }
+                      });
+                    });
+                    setUserFilePermissions(defaultPermissions);
+                  }, []);
 
-                      {/* صلاحيات الملفات */}
-                      {expandedUser === user.id && (
-                        <div className="px-4 pb-4 border-t border-black/10">
-                          <h5 className="text-sm font-bold text-black mb-3 mt-3">صلاحيات الملفات:</h5>
-                          <div className="space-y-3">
-                            {projectFiles.map((file) => {
-                              const currentFilePermissions = userFilePermissions[`${user.id}_${file.id}`] || [];
-                              
-                              return (
-                                <div key={file.id} className="bg-white/30 rounded-xl p-3 border border-black/10">
-                                  <div className="flex items-center gap-3 mb-2">
-                                    <span className="text-lg">{getFileIcon(file.type)}</span>
-                                    <div className="flex-1">
-                                      <h6 className="text-xs font-medium text-black">{file.name}</h6>
-                                      <p className="text-xs text-black/60">{file.size}</p>
+                  return users.map((user) => {
+                    const userRole = userRoles.find(r => r.id === user.role);
+
+                    return (
+                      <div key={user.id} className="bg-white/20 rounded-2xl border border-black/10 overflow-hidden">
+                        {/* معلومات المستخدم */}
+                        <div 
+                          className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/30 transition-colors"
+                          onClick={() => setExpandedUser(expandedUser === user.id ? null : user.id)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-black/10 rounded-full flex items-center justify-center text-lg">
+                              {user.avatar}
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-medium text-black">{user.name}</h4>
+                              <p className="text-xs text-black/70">{user.email}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              <div 
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: userRole?.color }}
+                              />
+                              <span className="text-sm text-black">{userRole?.name}</span>
+                            </div>
+                            <div className="text-xs text-black/50">
+                              {expandedUser === user.id ? '▲' : '▼'}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* صلاحيات الملفات */}
+                        {expandedUser === user.id && (
+                          <div className="px-4 pb-4 border-t border-black/10">
+                            <h5 className="text-sm font-bold text-black mb-3 mt-3">صلاحيات الملفات:</h5>
+                            <div className="space-y-3">
+                              {projectFiles.map((file) => {
+                                const currentFilePermissions = userFilePermissions[`${user.id}_${file.id}`] || [];
+                                
+                                return (
+                                  <div key={file.id} className="bg-white/30 rounded-xl p-3 border border-black/10">
+                                    <div className="flex items-center gap-3 mb-2">
+                                      <span className="text-lg">{getFileIcon(file.type)}</span>
+                                      <div className="flex-1">
+                                        <h6 className="text-xs font-medium text-black">{file.name}</h6>
+                                        <div className="flex items-center gap-2 text-xs text-black/60">
+                                          <span>{file.size}</span>
+                                          <span>•</span>
+                                          <span>رفعه: {file.uploadedBy}</span>
+                                          <span>•</span>
+                                          <span>{file.uploadDate}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-1">
+                                      {/* عرض الصلاحيات المفعلة */}
+                                      {filePermissions.filter(perm => currentFilePermissions.includes(perm.id)).map((permission) => {
+                                        const IconComponent = permission.icon;
+                                        
+                                        return (
+                                          <button
+                                            key={permission.id}
+                                            onClick={() => toggleFilePermission(user.id, file.id, permission.id)}
+                                            className="p-2 rounded-lg border bg-green-50 border-green-200 text-green-700 text-xs flex items-center gap-1"
+                                          >
+                                            <IconComponent className="w-3 h-3" />
+                                            <span className="hidden md:inline">
+                                              {permission.name}
+                                            </span>
+                                          </button>
+                                        );
+                                      })}
+                                      
+                                      {/* عرض الصلاحيات غير المفعلة */}
+                                      {filePermissions.filter(perm => !currentFilePermissions.includes(perm.id)).map((permission) => {
+                                        const IconComponent = permission.icon;
+                                        
+                                        return (
+                                          <button
+                                            key={permission.id}
+                                            onClick={() => toggleFilePermission(user.id, file.id, permission.id)}
+                                            className="p-2 rounded-lg border border-black/20 bg-white/50 text-black/50 text-xs flex items-center gap-1 hover:border-black/40 transition-colors"
+                                          >
+                                            <IconComponent className="w-3 h-3" />
+                                            <span className="hidden md:inline">{permission.name}</span>
+                                          </button>
+                                        );
+                                      })}
                                     </div>
                                   </div>
-                                  
-                                  <div className="grid grid-cols-2 md:grid-cols-5 gap-1">
-                                    {/* عرض الصلاحيات المفعلة */}
-                                    {filePermissions.filter(perm => currentFilePermissions.includes(perm.id)).map((permission) => {
-                                      const IconComponent = permission.icon;
-                                      
-                                      return (
-                                        <button
-                                          key={permission.id}
-                                          onClick={() => toggleFilePermission(file.id, permission.id)}
-                                          className="p-2 rounded-lg border bg-green-50 border-green-200 text-green-700 text-xs flex items-center gap-1"
-                                        >
-                                          <IconComponent className="w-3 h-3" />
-                                          <span className="hidden md:inline">
-                                            {permission.name}
-                                          </span>
-                                        </button>
-                                      );
-                                    })}
-                                    
-                                    {/* عرض الصلاحيات غير المفعلة */}
-                                    {filePermissions.filter(perm => !currentFilePermissions.includes(perm.id)).map((permission) => {
-                                      const IconComponent = permission.icon;
-                                      
-                                      return (
-                                        <button
-                                          key={permission.id}
-                                          onClick={() => toggleFilePermission(file.id, permission.id)}
-                                          className="p-2 rounded-lg border border-black/20 bg-white/50 text-black/50 text-xs flex items-center gap-1 hover:border-black/40 transition-colors"
-                                        >
-                                          <IconComponent className="w-3 h-3" />
-                                          <span className="hidden md:inline">{permission.name}</span>
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                        )}
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </div>
           </div>
