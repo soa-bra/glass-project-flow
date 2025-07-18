@@ -1,48 +1,11 @@
 
 import React from 'react';
-import { useToast } from '@/hooks/use-toast';
 
-interface ExportButtonProps {
-  userRole?: string;
-}
-
-export const ExportButton: React.FC<ExportButtonProps> = ({ 
-  userRole = 'team_member' 
-}) => {
-  const { toast } = useToast();
-  
-  // التحقق من صلاحيات المستخدم (مدير قسم فأعلى)
-  const hasPermission = ['department_manager', 'finance_admin', 'owner', 'cfo'].includes(userRole.toLowerCase());
-
-  const handleExport = () => {
-    if (!hasPermission) {
-      toast({
-        title: "غير مخول للوصول",
-        description: "وظيفة التصدير متاحة فقط لمدير القسم فأعلى",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "جارٍ تصدير التقرير",
-      description: "سيتم تحميل التقرير المالي قريباً",
-    });
-
-    // هنا يمكن إضافة منطق التصدير الفعلي
-    console.log('تصدير التقرير المالي...');
-  };
-
+export const ExportButton: React.FC = () => {
   return (
     <div className="flex justify-center mt-6">
       <button 
-        onClick={handleExport}
-        className={`
-          bg-black hover:bg-gray-800 text-white py-2 px-6 rounded-full 
-          transition-all transform hover:scale-105 active:scale-95 
-          flex items-center gap-2 font-arabic
-          ${!hasPermission ? 'opacity-70 cursor-not-allowed' : ''}
-        `}
+        className="bg-black hover:bg-gray-800 text-white py-2 px-6 rounded-full transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 font-arabic"
       >
         <div className="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">

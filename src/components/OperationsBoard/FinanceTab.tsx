@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BudgetVsActualChart } from './Finance/BudgetVsActualChart';
 import { CashFlowForecast } from './Finance/CashFlowForecast';
 import { FinancialKPICards } from './Finance/FinancialKPICards';
 import { ExportButton } from './Finance/ExportButton';
-import { FinancialManagementModal } from './Finance/FinancialManagementModal';
 interface MonthlyBudget {
   month: string;
   budget: number;
@@ -41,11 +40,6 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
   data,
   loading
 }) => {
-  const [showFinancialModal, setShowFinancialModal] = useState(false);
-  
-  // هذا يجب أن يأتي من context المستخدم الحقيقي
-  const userRole = 'department_manager'; // محاكاة دور المستخدم
-  
   if (loading || !data) {
     return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
   }
@@ -57,14 +51,6 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
       backgroundColor: '#f3ffff'
     }} className="flex justify-between items-start pt-6 bg-transparent mx-[50px]">
         <div className="text-right">
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => setShowFinancialModal(true)}
-              className="bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-full transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 font-arabic text-sm"
-            >
-              إدارة الأوضاع المالية
-            </button>
-          </div>
           <h2 className="text-lg font-semibold text-black font-arabic mb-1">الوضع المالي</h2>
           <p className="text-xs font-normal text-gray-400 font-arabic">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
         </div>
@@ -84,14 +70,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
         <div className="text-sm font-normal text-black font-arabic">
           دقة التنبؤات: {data.forecastAccuracy}%
         </div>
-        <ExportButton userRole={userRole} />
+        <ExportButton />
       </div>
-      
-      {/* نافذة إدارة الأوضاع المالية */}
-      <FinancialManagementModal
-        isOpen={showFinancialModal}
-        onClose={() => setShowFinancialModal(false)}
-        userRole={userRole}
-      />
     </div>;
 };
