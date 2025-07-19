@@ -408,9 +408,6 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
                           onClick={() => setExpandedUser(expandedUser === user.id ? null : user.id)}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-black/10 rounded-full flex items-center justify-center text-lg">
-                              {user.avatar}
-                            </div>
                             <div>
                               <h4 className="text-sm font-medium text-black">{user.name}</h4>
                               <p className="text-xs text-black/70">{user.email}</p>
