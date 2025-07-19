@@ -316,47 +316,158 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
                     }
                   ]);
 
-                  // ملفات المشروع الفعلية (يجب استلامها من props أو context)
+                  // ملفات المشروع الكاملة
                   const projectFiles = [
+                    // وثائق المشروع
                     { 
                       id: 'file1', 
-                      name: 'وثيقة المتطلبات الفنية.pdf', 
+                      name: 'وثيقة متطلبات المشروع.pdf', 
                       type: 'document', 
-                      size: '2.4 MB',
+                      size: '3.2 MB',
                       uploadedBy: 'أحمد محمد',
-                      uploadDate: '2024-01-15'
+                      uploadDate: '2024-01-20'
                     },
                     { 
                       id: 'file2', 
-                      name: 'تصميم واجهة المستخدم.fig', 
-                      type: 'design', 
-                      size: '15.7 MB',
+                      name: 'خطة المشروع التفصيلية.docx', 
+                      type: 'document', 
+                      size: '1.8 MB',
                       uploadedBy: 'فاطمة أحمد',
-                      uploadDate: '2024-01-14'
+                      uploadDate: '2024-01-19'
                     },
                     { 
                       id: 'file3', 
-                      name: 'عرض تقديمي للعميل.pptx', 
-                      type: 'presentation', 
-                      size: '8.9 MB',
-                      uploadedBy: 'خالد عبدالرحمن',
-                      uploadDate: '2024-01-13'
+                      name: 'مواصفات النظام الفنية.pdf', 
+                      type: 'document', 
+                      size: '4.1 MB',
+                      uploadedBy: 'خالد سعد',
+                      uploadDate: '2024-01-18'
                     },
+                    // تصاميم وواجهات
                     { 
                       id: 'file4', 
-                      name: 'فيديو شرح النظام.mp4', 
-                      type: 'video', 
-                      size: '125.3 MB',
-                      uploadedBy: 'نورا سعد',
-                      uploadDate: '2024-01-12'
+                      name: 'تصميم واجهة المستخدم.fig', 
+                      type: 'design', 
+                      size: '15.7 MB',
+                      uploadedBy: 'نورا عبدالله',
+                      uploadDate: '2024-01-17'
                     },
                     { 
                       id: 'file5', 
-                      name: 'ملف النسخ الاحتياطية.zip', 
-                      type: 'archive', 
-                      size: '45.2 MB',
+                      name: 'نماذج أولية للتطبيق.sketch', 
+                      type: 'design', 
+                      size: '22.3 MB',
+                      uploadedBy: 'فاطمة أحمد',
+                      uploadDate: '2024-01-16'
+                    },
+                    { 
+                      id: 'file6', 
+                      name: 'أيقونات النظام.svg', 
+                      type: 'design', 
+                      size: '892 KB',
+                      uploadedBy: 'نورا عبدالله',
+                      uploadDate: '2024-01-15'
+                    },
+                    // عروض تقديمية
+                    { 
+                      id: 'file7', 
+                      name: 'عرض المشروع للعميل.pptx', 
+                      type: 'presentation', 
+                      size: '8.9 MB',
                       uploadedBy: 'أحمد محمد',
+                      uploadDate: '2024-01-14'
+                    },
+                    { 
+                      id: 'file8', 
+                      name: 'تقرير التقدم الشهري.pptx', 
+                      type: 'presentation', 
+                      size: '5.6 MB',
+                      uploadedBy: 'خالد سعد',
+                      uploadDate: '2024-01-13'
+                    },
+                    // ملفات الوسائط
+                    { 
+                      id: 'file9', 
+                      name: 'فيديو شرح النظام.mp4', 
+                      type: 'video', 
+                      size: '125.3 MB',
+                      uploadedBy: 'فاطمة أحمد',
+                      uploadDate: '2024-01-12'
+                    },
+                    { 
+                      id: 'file10', 
+                      name: 'تسجيل اجتماع الفريق.mp4', 
+                      type: 'video', 
+                      size: '89.7 MB',
+                      uploadedBy: 'نورا عبدالله',
                       uploadDate: '2024-01-11'
+                    },
+                    { 
+                      id: 'file11', 
+                      name: 'صور واجهة النظام.zip', 
+                      type: 'image', 
+                      size: '12.4 MB',
+                      uploadedBy: 'أحمد محمد',
+                      uploadDate: '2024-01-10'
+                    },
+                    // ملفات البرمجة والكود
+                    { 
+                      id: 'file12', 
+                      name: 'كود المشروع الأساسي.zip', 
+                      type: 'code', 
+                      size: '45.2 MB',
+                      uploadedBy: 'خالد سعد',
+                      uploadDate: '2024-01-09'
+                    },
+                    { 
+                      id: 'file13', 
+                      name: 'ملفات قاعدة البيانات.sql', 
+                      type: 'database', 
+                      size: '2.8 MB',
+                      uploadedBy: 'فاطمة أحمد',
+                      uploadDate: '2024-01-08'
+                    },
+                    { 
+                      id: 'file14', 
+                      name: 'ملفات الإعدادات والبيئة.json', 
+                      type: 'config', 
+                      size: '156 KB',
+                      uploadedBy: 'أحمد محمد',
+                      uploadDate: '2024-01-07'
+                    },
+                    // ملفات البيانات والتقارير
+                    { 
+                      id: 'file15', 
+                      name: 'بيانات العملاء.xlsx', 
+                      type: 'spreadsheet', 
+                      size: '3.7 MB',
+                      uploadedBy: 'نورا عبدالله',
+                      uploadDate: '2024-01-06'
+                    },
+                    { 
+                      id: 'file16', 
+                      name: 'تقرير الاختبارات.xlsx', 
+                      type: 'spreadsheet', 
+                      size: '1.9 MB',
+                      uploadedBy: 'خالد سعد',
+                      uploadDate: '2024-01-05'
+                    },
+                    // أرشيف ونسخ احتياطية
+                    { 
+                      id: 'file17', 
+                      name: 'نسخة احتياطية كاملة.zip', 
+                      type: 'archive', 
+                      size: '256.8 MB',
+                      uploadedBy: 'أحمد محمد',
+                      uploadDate: '2024-01-04'
+                    },
+                    { 
+                      id: 'file18', 
+                      name: 'أرشيف الإصدار السابق.tar.gz', 
+                      type: 'archive', 
+                      size: '178.4 MB',
+                      uploadedBy: 'فاطمة أحمد',
+                      uploadDate: '2024-01-03'
                     }
                   ];
 
@@ -376,6 +487,11 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
                       case 'design': return '🎨';
                       case 'presentation': return '📊';
                       case 'video': return '🎥';
+                      case 'image': return '🖼️';
+                      case 'code': return '💻';
+                      case 'database': return '🗃️';
+                      case 'config': return '⚙️';
+                      case 'spreadsheet': return '📈';
                       case 'archive': return '📦';
                       default: return '📄';
                     }
