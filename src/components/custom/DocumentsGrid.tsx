@@ -65,67 +65,213 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
 
-  // قائمة ملفات المشروع الفعلية
+  // قائمة ملفات المشروع المطابقة لنافذة إدارة الصلاحيات
   const projectFiles: Document[] = [
-    // ملفات الكود والمكونات
-    { id: '1', name: 'main.tsx', type: 'document', size: '2.1 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['TypeScript', 'React', 'كود'] },
-    { id: '2', name: 'App.tsx', type: 'document', size: '5.8 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'تطبيق', 'كود'] },
-    { id: '3', name: 'index.css', type: 'document', size: '12.3 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['CSS', 'تصميم', 'أنماط'] },
-    
-    // مكونات الواجهة
-    { id: '4', name: 'DocumentsGrid.tsx', type: 'document', size: '18.7 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'مكون', 'ملفات'] },
-    { id: '5', name: 'OperationsBoard.tsx', type: 'document', size: '25.4 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'لوحة', 'عمليات'] },
-    { id: '6', name: 'CanvasBoard.tsx', type: 'document', size: '32.1 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'لوحة', 'رسم'] },
-    
-    // مكونات الـUI
-    { id: '7', name: 'button.tsx', type: 'document', size: '3.2 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['UI', 'زر', 'مكون'] },
-    { id: '8', name: 'input.tsx', type: 'document', size: '2.8 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['UI', 'إدخال', 'مكون'] },
-    { id: '9', name: 'badge.tsx', type: 'document', size: '1.9 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['UI', 'شارة', 'مكون'] },
-    { id: '10', name: 'dialog.tsx', type: 'document', size: '4.5 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['UI', 'حوار', 'مكون'] },
-    
-    // ملفات التكوين
-    { id: '11', name: 'tailwind.config.ts', type: 'document', size: '8.9 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['تكوين', 'Tailwind', 'أنماط'] },
-    { id: '12', name: 'tsconfig.json', type: 'document', size: '1.2 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['تكوين', 'TypeScript'] },
-    { id: '13', name: 'package.json', type: 'document', size: '3.8 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['تكوين', 'NPM', 'تبعيات'] },
-    { id: '14', name: 'vite.config.ts', type: 'document', size: '1.5 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['تكوين', 'Vite', 'بناء'] },
-    { id: '15', name: 'components.json', type: 'document', size: '0.8 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['تكوين', 'مكونات'] },
-    
-    // ملفات التوثيق
-    { id: '16', name: 'README.md', type: 'document', size: '4.2 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['توثيق', 'Markdown'] },
-    { id: '17', name: 'CHANGELOG.md', type: 'document', size: '2.1 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['توثيق', 'تغييرات'] },
-    { id: '18', name: 'OPERATIONS_BOARD_COMPLETION_PLAN.md', type: 'document', size: '8.7 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['توثيق', 'خطة', 'مشروع'] },
-    { id: '19', name: 'REFACTORING_SUMMARY.md', type: 'document', size: '5.3 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['توثيق', 'إعادة هيكلة'] },
-    
-    // ملفات HTML وCSS
-    { id: '20', name: 'index.html', type: 'document', size: '1.1 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['HTML', 'صفحة رئيسية'] },
-    { id: '21', name: 'postcss.config.js', type: 'document', size: '0.3 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['CSS', 'تكوين'] },
-    
-    // ملفات الصور والرموز
-    { id: '22', name: 'favicon.ico', type: 'image', size: '15.1 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['أيقونة', 'متصفح'] },
-    { id: '23', name: 'placeholder.svg', type: 'image', size: '2.3 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['SVG', 'بديل'] },
-    
-    // ملفات أمان ونظام
-    { id: '24', name: '.gitignore', type: 'document', size: '0.5 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['Git', 'تحكم إصدارات'] },
-    { id: '25', name: 'bun.lockb', type: 'archive', size: '125.8 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'النظام', tags: ['تبعيات', 'قفل'] },
-    { id: '26', name: 'package-lock.json', type: 'document', size: '890.2 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'النظام', tags: ['NPM', 'تبعيات', 'قفل'] },
-    
-    // مكونات متقدمة
-    { id: '27', name: 'BaseCard.tsx', type: 'document', size: '6.8 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'بطاقة', 'أساسي'] },
-    { id: '28', name: 'GenericCard.tsx', type: 'document', size: '4.9 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'بطاقة', 'عام'] },
-    { id: '29', name: 'SoaBraBadge.tsx', type: 'document', size: '3.1 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'شارة', 'علامة تجارية'] },
-    
-    // مكونات لوحة الرسم
-    { id: '30', name: 'MainToolbar.tsx', type: 'document', size: '12.4 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'أدوات', 'شريط'] },
-    { id: '31', name: 'ToolCustomizationPanel.tsx', type: 'document', size: '8.7 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'لوحة', 'تخصيص'] },
-    { id: '32', name: 'SelectionToolPanel.tsx', type: 'document', size: '5.2 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'أداة', 'تحديد'] },
-    { id: '33', name: 'SmartPenToolPanel.tsx', type: 'document', size: '6.1 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'قلم', 'ذكي'] },
-    { id: '34', name: 'ZoomToolPanel.tsx', type: 'document', size: '4.3 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'زوم', 'تكبير'] },
-    { id: '35', name: 'TextToolPanel.tsx', type: 'document', size: '7.8 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'نص', 'أداة'] },
-    { id: '36', name: 'ShapesToolPanel.tsx', type: 'document', size: '9.6 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'أشكال', 'أداة'] },
-    
-    // ملفات الثوابت والتكوين
-    { id: '37', name: 'constants.ts', type: 'document', size: '3.7 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['TypeScript', 'ثوابت'] },
-    { id: '38', name: 'index.ts', type: 'document', size: '0.8 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['TypeScript', 'تصدير'] }
+    // وثائق المشروع
+    {
+      id: 'file1',
+      name: 'وثيقة متطلبات المشروع.pdf',
+      type: 'document',
+      size: '3.2 MB',
+      uploadDate: '2024-01-20',
+      classification: 'High',
+      version: 'v1.0',
+      uploadedBy: 'أحمد محمد',
+      tags: ['وثيقة', 'متطلبات', 'مشروع']
+    },
+    {
+      id: 'file2',
+      name: 'خطة المشروع التفصيلية.docx',
+      type: 'document',
+      size: '1.8 MB',
+      uploadDate: '2024-01-19',
+      classification: 'High',
+      version: 'v1.0',
+      uploadedBy: 'فاطمة أحمد',
+      tags: ['خطة', 'مشروع', 'تفصيلية']
+    },
+    {
+      id: 'file3',
+      name: 'مواصفات النظام الفنية.pdf',
+      type: 'document',
+      size: '4.1 MB',
+      uploadDate: '2024-01-18',
+      classification: 'High',
+      version: 'v1.0',
+      uploadedBy: 'خالد سعد',
+      tags: ['مواصفات', 'نظام', 'فنية']
+    },
+    // تصاميم وواجهات
+    {
+      id: 'file4',
+      name: 'تصميم واجهة المستخدم.fig',
+      type: 'image',
+      size: '15.7 MB',
+      uploadDate: '2024-01-17',
+      classification: 'Medium',
+      version: 'v1.0',
+      uploadedBy: 'نورا عبدالله',
+      tags: ['تصميم', 'واجهة', 'مستخدم']
+    },
+    {
+      id: 'file5',
+      name: 'نماذج أولية للتطبيق.sketch',
+      type: 'image',
+      size: '22.3 MB',
+      uploadDate: '2024-01-16',
+      classification: 'Medium',
+      version: 'v1.0',
+      uploadedBy: 'فاطمة أحمد',
+      tags: ['نماذج', 'أولية', 'تطبيق']
+    },
+    {
+      id: 'file6',
+      name: 'أيقونات النظام.svg',
+      type: 'image',
+      size: '892 KB',
+      uploadDate: '2024-01-15',
+      classification: 'Medium',
+      version: 'v1.0',
+      uploadedBy: 'نورا عبدالله',
+      tags: ['أيقونات', 'نظام', 'SVG']
+    },
+    // عروض تقديمية
+    {
+      id: 'file7',
+      name: 'عرض المشروع للعميل.pptx',
+      type: 'document',
+      size: '8.9 MB',
+      uploadDate: '2024-01-14',
+      classification: 'Medium',
+      version: 'v1.0',
+      uploadedBy: 'أحمد محمد',
+      tags: ['عرض', 'مشروع', 'عميل']
+    },
+    {
+      id: 'file8',
+      name: 'تقرير التقدم الشهري.pptx',
+      type: 'document',
+      size: '5.6 MB',
+      uploadDate: '2024-01-13',
+      classification: 'Medium',
+      version: 'v1.0',
+      uploadedBy: 'خالد سعد',
+      tags: ['تقرير', 'تقدم', 'شهري']
+    },
+    // ملفات الوسائط
+    {
+      id: 'file9',
+      name: 'فيديو شرح النظام.mp4',
+      type: 'video',
+      size: '125.3 MB',
+      uploadDate: '2024-01-12',
+      classification: 'Low',
+      version: 'v1.0',
+      uploadedBy: 'فاطمة أحمد',
+      tags: ['فيديو', 'شرح', 'نظام']
+    },
+    {
+      id: 'file10',
+      name: 'تسجيل اجتماع الفريق.mp4',
+      type: 'video',
+      size: '89.7 MB',
+      uploadDate: '2024-01-11',
+      classification: 'Low',
+      version: 'v1.0',
+      uploadedBy: 'نورا عبدالله',
+      tags: ['تسجيل', 'اجتماع', 'فريق']
+    },
+    {
+      id: 'file11',
+      name: 'صور واجهة النظام.zip',
+      type: 'archive',
+      size: '12.4 MB',
+      uploadDate: '2024-01-10',
+      classification: 'Medium',
+      version: 'v1.0',
+      uploadedBy: 'أحمد محمد',
+      tags: ['صور', 'واجهة', 'نظام']
+    },
+    // ملفات البرمجة والكود
+    {
+      id: 'file12',
+      name: 'كود المشروع الأساسي.zip',
+      type: 'archive',
+      size: '45.2 MB',
+      uploadDate: '2024-01-09',
+      classification: 'High',
+      version: 'v1.0',
+      uploadedBy: 'خالد سعد',
+      tags: ['كود', 'مشروع', 'أساسي']
+    },
+    {
+      id: 'file13',
+      name: 'ملفات قاعدة البيانات.sql',
+      type: 'other',
+      size: '2.8 MB',
+      uploadDate: '2024-01-08',
+      classification: 'High',
+      version: 'v1.0',
+      uploadedBy: 'فاطمة أحمد',
+      tags: ['قاعدة بيانات', 'SQL', 'ملفات']
+    },
+    {
+      id: 'file14',
+      name: 'ملفات الإعدادات والبيئة.json',
+      type: 'other',
+      size: '156 KB',
+      uploadDate: '2024-01-07',
+      classification: 'High',
+      version: 'v1.0',
+      uploadedBy: 'أحمد محمد',
+      tags: ['إعدادات', 'بيئة', 'JSON']
+    },
+    // ملفات البيانات والتقارير
+    {
+      id: 'file15',
+      name: 'بيانات العملاء.xlsx',
+      type: 'document',
+      size: '3.7 MB',
+      uploadDate: '2024-01-06',
+      classification: 'High',
+      version: 'v1.0',
+      uploadedBy: 'نورا عبدالله',
+      tags: ['بيانات', 'عملاء', 'جدول']
+    },
+    {
+      id: 'file16',
+      name: 'تقرير الاختبارات.xlsx',
+      type: 'document',
+      size: '1.9 MB',
+      uploadDate: '2024-01-05',
+      classification: 'Medium',
+      version: 'v1.0',
+      uploadedBy: 'خالد سعد',
+      tags: ['تقرير', 'اختبارات', 'جدول']
+    },
+    // أرشيف ونسخ احتياطية
+    {
+      id: 'file17',
+      name: 'نسخة احتياطية كاملة.zip',
+      type: 'archive',
+      size: '256.8 MB',
+      uploadDate: '2024-01-04',
+      classification: 'High',
+      version: 'v1.0',
+      uploadedBy: 'أحمد محمد',
+      tags: ['نسخة احتياطية', 'كاملة', 'أرشيف']
+    },
+    {
+      id: 'file18',
+      name: 'أرشيف الإصدار السابق.tar.gz',
+      type: 'archive',
+      size: '178.4 MB',
+      uploadDate: '2024-01-03',
+      classification: 'High',
+      version: 'v1.0',
+      uploadedBy: 'فاطمة أحمد',
+      tags: ['أرشيف', 'إصدار سابق', 'ضغط']
+    }
   ];
   const docs = documents.length > 0 ? documents : projectFiles;
   // الحصول على أيقونة المجلد
