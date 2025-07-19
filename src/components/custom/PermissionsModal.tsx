@@ -94,18 +94,24 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
     {
       id: 'viewer',
       name: 'مشاهد',
+      permissions: ['view'],
+      color: '#6b7280'
+    },
+    {
+      id: 'commenter',
+      name: 'معلق',
       permissions: ['view', 'comment'],
       color: '#10b981'
     },
     {
-      id: 'editor',
-      name: 'محرر',
-      permissions: ['view', 'download', 'comment', 'edit'],
+      id: 'contributor',
+      name: 'مشارك',
+      permissions: ['view', 'download', 'comment', 'upload'],
       color: '#3b82f6'
     },
     {
-      id: 'admin',
-      name: 'مدير',
+      id: 'editor',
+      name: 'محرر',
       permissions: ['view', 'download', 'comment', 'upload', 'edit', 'delete'],
       color: '#ef4444'
     }
@@ -283,36 +289,32 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
                   const [userFilePermissions, setUserFilePermissions] = useState<{[key: string]: string[]}>({});
 
                   // بيانات المستخدمين
-                  const users = [
+                  const [users, setUsers] = useState([
                     { 
                       id: 'user1',
                       name: 'أحمد محمد', 
                       email: 'ahmed@company.com', 
-                      role: 'admin',
-                      avatar: '👨‍💼'
+                      role: 'editor'
                     },
                     { 
                       id: 'user2',
                       name: 'فاطمة أحمد', 
                       email: 'fatima@company.com', 
-                      role: 'editor',
-                      avatar: '👩‍💻'
+                      role: 'contributor'
                     },
                     { 
                       id: 'user3',
                       name: 'خالد سعد', 
                       email: 'khalid@company.com', 
-                      role: 'viewer',
-                      avatar: '👨‍🎓'
+                      role: 'commenter'
                     },
                     { 
                       id: 'user4',
                       name: 'نورا عبدالله', 
                       email: 'nora@company.com', 
-                      role: 'editor',
-                      avatar: '👩‍🎨'
+                      role: 'viewer'
                     }
-                  ];
+                  ]);
 
                   // ملفات المشروع الفعلية (يجب استلامها من props أو context)
                   const projectFiles = [
@@ -379,23 +381,44 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
                     }
                   };
 
+                  // تحديث دور المستخدم
+                  const updateUserRole = (userId: string, newRoleId: string) => {
+                    setUsers(prev => prev.map(user => 
+                      user.id === userId ? { ...user, role: newRoleId } : user
+                    ));
+                    
+                    // تحديث صلاحيات الملفات تلقائياً بناءً على الدور الجديد
+                    const newRole = userRoles.find(r => r.id === newRoleId);
+                    if (newRole) {
+                      const updatedPermissions: {[key: string]: string[]} = {};
+                      projectFiles.forEach(file => {
+                        const key = `${userId}_${file.id}`;
+                        updatedPermissions[key] = [...newRole.permissions];
+                      });
+                      setUserFilePermissions(prev => ({
+                        ...prev,
+                        ...updatedPermissions
+                      }));
+                    }
+                    
+                    toast({
+                      title: "تم تحديث الدور",
+                      description: `تم تحديث دور المستخدم إلى ${newRole?.name}`,
+                    });
+                  };
+
                   // إعداد الصلاحيات الافتراضية لكل مستخدم
                   React.useEffect(() => {
                     const defaultPermissions: {[key: string]: string[]} = {};
                     users.forEach(user => {
+                      const userRole = userRoles.find(r => r.id === user.role);
                       projectFiles.forEach(file => {
                         const key = `${user.id}_${file.id}`;
-                        if (user.role === 'admin') {
-                          defaultPermissions[key] = ['view', 'download', 'comment', 'upload', 'edit', 'delete'];
-                        } else if (user.role === 'editor') {
-                          defaultPermissions[key] = ['view', 'download', 'comment', 'edit'];
-                        } else {
-                          defaultPermissions[key] = ['view', 'comment'];
-                        }
+                        defaultPermissions[key] = userRole ? [...userRole.permissions] : ['view'];
                       });
                     });
                     setUserFilePermissions(defaultPermissions);
-                  }, []);
+                  }, [users]);
 
                   return users.map((user) => {
                     const userRole = userRoles.find(r => r.id === user.role);
@@ -445,10 +468,7 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
                                     return (
                                       <button
                                         key={role.id}
-                                        onClick={() => {
-                                          // تحديث دور المستخدم
-                                          console.log(`تحديث دور ${user.name} إلى ${role.name}`);
-                                        }}
+                                        onClick={() => updateUserRole(user.id, role.id)}
                                         className={`p-3 rounded-lg border text-xs transition-all ${
                                           isSelected
                                             ? 'border-blue-500 bg-blue-50 text-blue-700'
