@@ -65,59 +65,69 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
 
-  // بيانات وهمية في حالة عدم وجود مستندات
-  const defaultDocuments: Document[] = [{
-    id: '1',
-    name: 'وثيقة المتطلبات الفنية.pdf',
-    type: 'document',
-    size: '2.4 MB',
-    uploadDate: '2024-01-15',
-    classification: 'High',
-    version: 'v2.1',
-    uploadedBy: 'أحمد محمد',
-    tags: ['متطلبات', 'فني', 'مواصفات']
-  }, {
-    id: '2',
-    name: 'تصميم واجهة المستخدم.fig',
-    type: 'image',
-    size: '15.7 MB',
-    uploadDate: '2024-01-14',
-    classification: 'Medium',
-    version: 'v1.3',
-    uploadedBy: 'فاطمة أحمد',
-    tags: ['تصميم', 'واجهة', 'UX']
-  }, {
-    id: '3',
-    name: 'عرض تقديمي للعميل.pptx',
-    type: 'document',
-    size: '8.9 MB',
-    uploadDate: '2024-01-13',
-    classification: 'Medium',
-    version: 'v1.0',
-    uploadedBy: 'خالد عبدالرحمن',
-    tags: ['عرض', 'عميل', 'تقديم']
-  }, {
-    id: '4',
-    name: 'فيديو شرح النظام.mp4',
-    type: 'video',
-    size: '125.3 MB',
-    uploadDate: '2024-01-12',
-    classification: 'Low',
-    version: 'v1.0',
-    uploadedBy: 'نورا سعد',
-    tags: ['فيديو', 'شرح', 'تدريب']
-  }, {
-    id: '5',
-    name: 'ملف النسخ الاحتياطية.zip',
-    type: 'archive',
-    size: '45.2 MB',
-    uploadDate: '2024-01-11',
-    classification: 'High',
-    version: 'v3.0',
-    uploadedBy: 'أحمد محمد',
-    tags: ['نسخ احتياطي', 'أرشيف']
-  }];
-  const docs = documents.length > 0 ? documents : defaultDocuments;
+  // قائمة ملفات المشروع الفعلية
+  const projectFiles: Document[] = [
+    // ملفات الكود والمكونات
+    { id: '1', name: 'main.tsx', type: 'document', size: '2.1 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['TypeScript', 'React', 'كود'] },
+    { id: '2', name: 'App.tsx', type: 'document', size: '5.8 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'تطبيق', 'كود'] },
+    { id: '3', name: 'index.css', type: 'document', size: '12.3 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['CSS', 'تصميم', 'أنماط'] },
+    
+    // مكونات الواجهة
+    { id: '4', name: 'DocumentsGrid.tsx', type: 'document', size: '18.7 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'مكون', 'ملفات'] },
+    { id: '5', name: 'OperationsBoard.tsx', type: 'document', size: '25.4 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'لوحة', 'عمليات'] },
+    { id: '6', name: 'CanvasBoard.tsx', type: 'document', size: '32.1 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'لوحة', 'رسم'] },
+    
+    // مكونات الـUI
+    { id: '7', name: 'button.tsx', type: 'document', size: '3.2 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['UI', 'زر', 'مكون'] },
+    { id: '8', name: 'input.tsx', type: 'document', size: '2.8 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['UI', 'إدخال', 'مكون'] },
+    { id: '9', name: 'badge.tsx', type: 'document', size: '1.9 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['UI', 'شارة', 'مكون'] },
+    { id: '10', name: 'dialog.tsx', type: 'document', size: '4.5 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['UI', 'حوار', 'مكون'] },
+    
+    // ملفات التكوين
+    { id: '11', name: 'tailwind.config.ts', type: 'document', size: '8.9 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['تكوين', 'Tailwind', 'أنماط'] },
+    { id: '12', name: 'tsconfig.json', type: 'document', size: '1.2 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['تكوين', 'TypeScript'] },
+    { id: '13', name: 'package.json', type: 'document', size: '3.8 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['تكوين', 'NPM', 'تبعيات'] },
+    { id: '14', name: 'vite.config.ts', type: 'document', size: '1.5 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['تكوين', 'Vite', 'بناء'] },
+    { id: '15', name: 'components.json', type: 'document', size: '0.8 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['تكوين', 'مكونات'] },
+    
+    // ملفات التوثيق
+    { id: '16', name: 'README.md', type: 'document', size: '4.2 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['توثيق', 'Markdown'] },
+    { id: '17', name: 'CHANGELOG.md', type: 'document', size: '2.1 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['توثيق', 'تغييرات'] },
+    { id: '18', name: 'OPERATIONS_BOARD_COMPLETION_PLAN.md', type: 'document', size: '8.7 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['توثيق', 'خطة', 'مشروع'] },
+    { id: '19', name: 'REFACTORING_SUMMARY.md', type: 'document', size: '5.3 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['توثيق', 'إعادة هيكلة'] },
+    
+    // ملفات HTML وCSS
+    { id: '20', name: 'index.html', type: 'document', size: '1.1 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['HTML', 'صفحة رئيسية'] },
+    { id: '21', name: 'postcss.config.js', type: 'document', size: '0.3 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['CSS', 'تكوين'] },
+    
+    // ملفات الصور والرموز
+    { id: '22', name: 'favicon.ico', type: 'image', size: '15.1 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['أيقونة', 'متصفح'] },
+    { id: '23', name: 'placeholder.svg', type: 'image', size: '2.3 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['SVG', 'بديل'] },
+    
+    // ملفات أمان ونظام
+    { id: '24', name: '.gitignore', type: 'document', size: '0.5 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['Git', 'تحكم إصدارات'] },
+    { id: '25', name: 'bun.lockb', type: 'archive', size: '125.8 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'النظام', tags: ['تبعيات', 'قفل'] },
+    { id: '26', name: 'package-lock.json', type: 'document', size: '890.2 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'النظام', tags: ['NPM', 'تبعيات', 'قفل'] },
+    
+    // مكونات متقدمة
+    { id: '27', name: 'BaseCard.tsx', type: 'document', size: '6.8 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'بطاقة', 'أساسي'] },
+    { id: '28', name: 'GenericCard.tsx', type: 'document', size: '4.9 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'بطاقة', 'عام'] },
+    { id: '29', name: 'SoaBraBadge.tsx', type: 'document', size: '3.1 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'شارة', 'علامة تجارية'] },
+    
+    // مكونات لوحة الرسم
+    { id: '30', name: 'MainToolbar.tsx', type: 'document', size: '12.4 KB', uploadDate: '2024-01-15', classification: 'High', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'أدوات', 'شريط'] },
+    { id: '31', name: 'ToolCustomizationPanel.tsx', type: 'document', size: '8.7 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'لوحة', 'تخصيص'] },
+    { id: '32', name: 'SelectionToolPanel.tsx', type: 'document', size: '5.2 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'أداة', 'تحديد'] },
+    { id: '33', name: 'SmartPenToolPanel.tsx', type: 'document', size: '6.1 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'قلم', 'ذكي'] },
+    { id: '34', name: 'ZoomToolPanel.tsx', type: 'document', size: '4.3 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'زوم', 'تكبير'] },
+    { id: '35', name: 'TextToolPanel.tsx', type: 'document', size: '7.8 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'نص', 'أداة'] },
+    { id: '36', name: 'ShapesToolPanel.tsx', type: 'document', size: '9.6 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['React', 'أشكال', 'أداة'] },
+    
+    // ملفات الثوابت والتكوين
+    { id: '37', name: 'constants.ts', type: 'document', size: '3.7 KB', uploadDate: '2024-01-15', classification: 'Medium', version: 'v1.0', uploadedBy: 'المطور', tags: ['TypeScript', 'ثوابت'] },
+    { id: '38', name: 'index.ts', type: 'document', size: '0.8 KB', uploadDate: '2024-01-15', classification: 'Low', version: 'v1.0', uploadedBy: 'المطور', tags: ['TypeScript', 'تصدير'] }
+  ];
+  const docs = documents.length > 0 ? documents : projectFiles;
   // الحصول على أيقونة المجلد
   const getFolderIcon = (iconId?: string) => {
     switch (iconId) {
