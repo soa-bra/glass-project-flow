@@ -577,7 +577,7 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
                                   <User className="w-4 h-4" />
                                   تحديد الدور
                                 </h5>
-                                <div className="grid grid-cols-3 gap-2">
+                                <div className="grid grid-cols-4 gap-2">
                                   {userRoles.map((role) => {
                                     const isSelected = user.role === role.id;
                                     
@@ -619,9 +619,8 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
                                     
                                     return (
                                       <div key={file.id} className="bg-white/40 rounded-lg p-3 border border-black/10">
-                                        <div className="flex items-center gap-3 mb-2">
-                                          <span className="text-lg">{getFileIcon(file.type)}</span>
-                                          <div className="flex-1">
+                                         <div className="flex items-center gap-3 mb-2">
+                                           <div className="flex-1">
                                             <h6 className="text-xs font-medium text-black">{file.name}</h6>
                                             <div className="flex items-center gap-2 text-xs text-black/60">
                                               <span>{file.size}</span>
