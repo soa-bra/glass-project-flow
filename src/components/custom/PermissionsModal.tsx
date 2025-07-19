@@ -12,7 +12,8 @@ import {
   Users,
   Lock,
   Unlock,
-  Settings
+  Settings,
+  MessageCircle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -59,6 +60,13 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
       enabled: true
     },
     {
+      id: 'comment',
+      name: 'التعليق على الملفات',
+      description: 'إمكانية إضافة تعليقات على الملفات',
+      icon: MessageCircle,
+      enabled: true
+    },
+    {
       id: 'upload',
       name: 'رفع الملفات',
       description: 'إمكانية رفع ملفات جديدة',
@@ -86,19 +94,19 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
     {
       id: 'viewer',
       name: 'مشاهد',
-      permissions: ['view'],
+      permissions: ['view', 'comment'],
       color: '#10b981'
     },
     {
       id: 'editor',
       name: 'محرر',
-      permissions: ['view', 'download', 'edit'],
+      permissions: ['view', 'download', 'comment', 'edit'],
       color: '#3b82f6'
     },
     {
       id: 'admin',
       name: 'مدير',
-      permissions: ['view', 'download', 'upload', 'edit', 'delete'],
+      permissions: ['view', 'download', 'comment', 'upload', 'edit', 'delete'],
       color: '#ef4444'
     }
   ]);
@@ -378,11 +386,11 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
                       projectFiles.forEach(file => {
                         const key = `${user.id}_${file.id}`;
                         if (user.role === 'admin') {
-                          defaultPermissions[key] = ['view', 'download', 'upload', 'edit', 'delete'];
+                          defaultPermissions[key] = ['view', 'download', 'comment', 'upload', 'edit', 'delete'];
                         } else if (user.role === 'editor') {
-                          defaultPermissions[key] = ['view', 'download', 'edit'];
+                          defaultPermissions[key] = ['view', 'download', 'comment', 'edit'];
                         } else {
-                          defaultPermissions[key] = ['view'];
+                          defaultPermissions[key] = ['view', 'comment'];
                         }
                       });
                     });
