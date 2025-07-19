@@ -427,68 +427,116 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
                           </div>
                         </div>
 
-                        {/* صلاحيات الملفات */}
+                        {/* تخصيص الصلاحيات */}
                         {expandedUser === user.id && (
                           <div className="px-4 pb-4 border-t border-black/10">
-                            <h5 className="text-sm font-bold text-black mb-3 mt-3">صلاحيات الملفات:</h5>
-                            <div className="space-y-3">
-                              {projectFiles.map((file) => {
-                                const currentFilePermissions = userFilePermissions[`${user.id}_${file.id}`] || [];
-                                
-                                return (
-                                  <div key={file.id} className="bg-white/30 rounded-xl p-3 border border-black/10">
-                                    <div className="flex items-center gap-3 mb-2">
-                                      <span className="text-lg">{getFileIcon(file.type)}</span>
-                                      <div className="flex-1">
-                                        <h6 className="text-xs font-medium text-black">{file.name}</h6>
-                                        <div className="flex items-center gap-2 text-xs text-black/60">
-                                          <span>{file.size}</span>
-                                          <span>•</span>
-                                          <span>رفعه: {file.uploadedBy}</span>
-                                          <span>•</span>
-                                          <span>{file.uploadDate}</span>
+                            <div className="space-y-6 mt-4">
+                              
+                              {/* القسم الأول: تحديد الدور */}
+                              <div className="bg-white/30 rounded-xl p-4 border border-black/10">
+                                <h5 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
+                                  <User className="w-4 h-4" />
+                                  تحديد الدور
+                                </h5>
+                                <div className="grid grid-cols-3 gap-2">
+                                  {userRoles.map((role) => {
+                                    const isSelected = user.role === role.id;
+                                    
+                                    return (
+                                      <button
+                                        key={role.id}
+                                        onClick={() => {
+                                          // تحديث دور المستخدم
+                                          console.log(`تحديث دور ${user.name} إلى ${role.name}`);
+                                        }}
+                                        className={`p-3 rounded-lg border text-xs transition-all ${
+                                          isSelected
+                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                            : 'border-black/20 bg-white/50 text-black/70 hover:border-black/40'
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <div 
+                                            className="w-3 h-3 rounded-full"
+                                            style={{ backgroundColor: role.color }}
+                                          />
+                                          <span className="font-medium">{role.name}</span>
+                                        </div>
+                                        <div className="text-xs opacity-70 mt-1">
+                                          {role.permissions.length} صلاحية
+                                        </div>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* القسم الثاني: صلاحيات الملفات */}
+                              <div className="bg-white/30 rounded-xl p-4 border border-black/10">
+                                <h5 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
+                                  <Eye className="w-4 h-4" />
+                                  صلاحيات الملفات
+                                </h5>
+                                <div className="space-y-3">
+                                  {projectFiles.map((file) => {
+                                    const currentFilePermissions = userFilePermissions[`${user.id}_${file.id}`] || [];
+                                    
+                                    return (
+                                      <div key={file.id} className="bg-white/40 rounded-lg p-3 border border-black/10">
+                                        <div className="flex items-center gap-3 mb-2">
+                                          <span className="text-lg">{getFileIcon(file.type)}</span>
+                                          <div className="flex-1">
+                                            <h6 className="text-xs font-medium text-black">{file.name}</h6>
+                                            <div className="flex items-center gap-2 text-xs text-black/60">
+                                              <span>{file.size}</span>
+                                              <span>•</span>
+                                              <span>رفعه: {file.uploadedBy}</span>
+                                              <span>•</span>
+                                              <span>{file.uploadDate}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-2 md:grid-cols-5 gap-1">
+                                          {/* عرض الصلاحيات المفعلة */}
+                                          {filePermissions.filter(perm => currentFilePermissions.includes(perm.id)).map((permission) => {
+                                            const IconComponent = permission.icon;
+                                            
+                                            return (
+                                              <button
+                                                key={permission.id}
+                                                onClick={() => toggleFilePermission(user.id, file.id, permission.id)}
+                                                className="p-2 rounded-lg border bg-green-50 border-green-200 text-green-700 text-xs flex items-center gap-1"
+                                              >
+                                                <IconComponent className="w-3 h-3" />
+                                                <span className="hidden md:inline">
+                                                  {permission.name}
+                                                </span>
+                                              </button>
+                                            );
+                                          })}
+                                          
+                                          {/* عرض الصلاحيات غير المفعلة */}
+                                          {filePermissions.filter(perm => !currentFilePermissions.includes(perm.id)).map((permission) => {
+                                            const IconComponent = permission.icon;
+                                            
+                                            return (
+                                              <button
+                                                key={permission.id}
+                                                onClick={() => toggleFilePermission(user.id, file.id, permission.id)}
+                                                className="p-2 rounded-lg border border-black/20 bg-white/50 text-black/50 text-xs flex items-center gap-1 hover:border-black/40 transition-colors"
+                                              >
+                                                <IconComponent className="w-3 h-3" />
+                                                <span className="hidden md:inline">{permission.name}</span>
+                                              </button>
+                                            );
+                                          })}
                                         </div>
                                       </div>
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-1">
-                                      {/* عرض الصلاحيات المفعلة */}
-                                      {filePermissions.filter(perm => currentFilePermissions.includes(perm.id)).map((permission) => {
-                                        const IconComponent = permission.icon;
-                                        
-                                        return (
-                                          <button
-                                            key={permission.id}
-                                            onClick={() => toggleFilePermission(user.id, file.id, permission.id)}
-                                            className="p-2 rounded-lg border bg-green-50 border-green-200 text-green-700 text-xs flex items-center gap-1"
-                                          >
-                                            <IconComponent className="w-3 h-3" />
-                                            <span className="hidden md:inline">
-                                              {permission.name}
-                                            </span>
-                                          </button>
-                                        );
-                                      })}
-                                      
-                                      {/* عرض الصلاحيات غير المفعلة */}
-                                      {filePermissions.filter(perm => !currentFilePermissions.includes(perm.id)).map((permission) => {
-                                        const IconComponent = permission.icon;
-                                        
-                                        return (
-                                          <button
-                                            key={permission.id}
-                                            onClick={() => toggleFilePermission(user.id, file.id, permission.id)}
-                                            className="p-2 rounded-lg border border-black/20 bg-white/50 text-black/50 text-xs flex items-center gap-1 hover:border-black/40 transition-colors"
-                                          >
-                                            <IconComponent className="w-3 h-3" />
-                                            <span className="hidden md:inline">{permission.name}</span>
-                                          </button>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                );
-                              })}
+                                    );
+                                  })}
+                                </div>
+                              </div>
                             </div>
                           </div>
                         )}
