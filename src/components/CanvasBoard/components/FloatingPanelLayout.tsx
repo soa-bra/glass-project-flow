@@ -97,18 +97,18 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
   return <>
       {/* منطقة اللوحات الأولى - First Panels Area */}
       <div className="fixed top-20 bottom-6 right-6 w-80 z-30 pointer-events-auto flex flex-col">
-        {/* Collaboration Panel - 20% */}
-        <div className="h-[20%] mb-2.5" style={{ backdropFilter: 'blur(8px)' }}>
+        {/* Collaboration Panel - 30% */}
+        <div className="h-[30%] mb-2.5" style={{ backdropFilter: 'blur(8px)' }}>
           <CollaborationPanel />
         </div>
         
-        {/* Layers Panel - 60% */}
-        <div className="h-[60%] mb-2.5" style={{ backdropFilter: 'blur(8px)' }}>
+        {/* Layers Panel - 35% */}
+        <div className="h-[35%] mb-2.5" style={{ backdropFilter: 'blur(8px)' }}>
           <LayersPanel layers={layers} selectedLayerId={selectedLayerId} onLayerUpdate={onLayerReorder} onLayerSelect={onLayerSelect} elements={elements} />
         </div>
         
-        {/* AI Assistant Panel - 20% */}
-        <div className="h-[20%]" style={{ backdropFilter: 'blur(8px)' }}>
+        {/* AI Assistant Panel - 35% */}
+        <div className="h-[35%]" style={{ backdropFilter: 'blur(8px)' }}>
           <AIAssistantPanel />
         </div>
       </div>
