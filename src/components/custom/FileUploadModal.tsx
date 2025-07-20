@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Upload, X, FileText, Image, Video, Archive } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { ProjectFile } from '@/data/projectFiles';
 
 interface FileUploadModalProps {
   isOpen: boolean;
