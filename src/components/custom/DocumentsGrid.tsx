@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { FileText, Image, Video, Music, Archive, Download, Edit3, Trash2, Search, Filter, Folder, FolderOpen, File, MessageCircle } from 'lucide-react';
+import { FileText, Image, Video, Music, Archive, Download, Edit3, Trash2, Search, Filter, Folder, FolderOpen, File, MessageCircle, RefreshCw } from 'lucide-react';
 import { ProjectFile, Comment } from '@/data/projectFiles';
 import { useProjectFiles } from '@/hooks/useProjectFiles';
 import { CommentDialog } from './CommentDialog';
@@ -167,6 +167,18 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   const handleEditFile = (fileId: string, updates: Partial<ProjectFile>) => {
     updateFile(fileId, updates);
   };
+
+  const handleUpdateFile = () => {
+    // تحديث المكون DocumentsGrid
+    console.log('تحديث الملفات');
+    // يمكن إضافة منطق تحديث هنا
+  };
+
+  const handleFilterFile = () => {
+    // فتح نافذة الفلترة
+    console.log('فتح نافذة الفلترة');
+    // يمكن إضافة منطق فتح نافذة الفلترة هنا
+  };
   return <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
       {/* شريط التنقل */}
       {currentFolderId && <div className="flex items-center gap-2 mb-4">
@@ -184,23 +196,14 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input placeholder="البحث في المرفقات..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pr-10 text-right" />
         </div>
+        <button onClick={handleUpdateFile} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
+          <RefreshCw size={16} />
+        </button>
+        <button onClick={handleFilterFile} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
+          <Filter size={16} />
+        </button>
       </div>
 
-      {/* فلاتر سريعة */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
-        <Button size="sm" variant={selectedFilter === 'all' ? 'default' : 'outline'} onClick={() => setSelectedFilter('all')} className="rounded-full">
-          الكل ({currentDocs.length})
-        </Button>
-        <Button size="sm" variant={selectedFilter === 'document' ? 'default' : 'outline'} onClick={() => setSelectedFilter('document')} className="rounded-full">
-          مستندات ({getTypeCount('document')})
-        </Button>
-        <Button size="sm" variant={selectedFilter === 'image' ? 'default' : 'outline'} onClick={() => setSelectedFilter('image')} className="rounded-full">
-          صور ({getTypeCount('image')})
-        </Button>
-        <Button size="sm" variant={selectedFilter === 'video' ? 'default' : 'outline'} onClick={() => setSelectedFilter('video')} className="rounded-full">
-          فيديو ({getTypeCount('video')})
-        </Button>
-      </div>
 
       {/* شبكة المجلدات والمستندات */}
       <ScrollArea className="h-[400px]">
