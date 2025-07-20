@@ -154,22 +154,6 @@ export const EditFileDialog: React.FC<EditFileDialogProps> = ({
               />
             </div>
 
-            {/* المهمة المرتبطة */}
-            <div className="space-y-2">
-              <label className="block text-sm font-bold text-black">
-                المهمة المرتبطة (اختياري)
-              </label>
-              <p className="text-xs text-black/70">
-                ربط الملف بمهمة محددة في المشروع
-              </p>
-              <input
-                type="text"
-                value={linkedTask}
-                onChange={(e) => setLinkedTask(e.target.value)}
-                placeholder="أدخل اسم المهمة (اختياري)"
-                className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black placeholder-black/50 focus:outline-none focus:border-black transition-colors"
-              />
-            </div>
 
             {/* التاجات */}
             <div className="space-y-3">
