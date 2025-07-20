@@ -95,29 +95,32 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
   onAlignToGrid
 }) => {
   return <>
-      {/* منطقة اللوحات الأولى - First Panels Area */}
-      <div className="fixed top-20 bottom-6 right-6 w-80 z-30 pointer-events-auto flex flex-col">
-        {/* Collaboration Panel - 20% */}
-        <div className="h-[20%] mb-2.5" style={{ backdropFilter: 'blur(8px)' }}>
-          <CollaborationPanel />
-        </div>
-        
-        {/* Layers Panel - 60% */}
-        <div className="h-[60%] mb-2.5" style={{ backdropFilter: 'blur(8px)' }}>
-          <LayersPanel layers={layers} selectedLayerId={selectedLayerId} onLayerUpdate={onLayerReorder} onLayerSelect={onLayerSelect} elements={elements} />
-        </div>
-        
-        {/* AI Assistant Panel - 20% */}
-        <div className="h-[20%]" style={{ backdropFilter: 'blur(8px)' }}>
-          <AIAssistantPanel />
-        </div>
+      {/* AI Assistant Panel - Bottom Right (25% height) */}
+      <div style={{
+      backdropFilter: 'blur(8px)'
+    }} className="fixed top-10 bottom-20 right-5 w-60  z-30 pointer-events-auto my-0">
+        <AIAssistantPanel />
+      </div>
+
+      {/* Layers Panel - Above AI Assistant (50% height) */}
+      <div style={{
+      backdropFilter: 'blur(8px)'
+    }} className="fixed bottom-[27vh] right-6 w-80 h-[50vh] z-30 pointer-events-auto py-[104px] my-[39px]">
+        <LayersPanel layers={layers} selectedLayerId={selectedLayerId} onLayerUpdate={onLayerReorder} onLayerSelect={onLayerSelect} elements={elements} />
       </div>
 
       {/* Element Style Panel - Top Left (25% height) */}
-      <div style={{
+      <div className="fixed top-20 left-6 w-80 h-[25vh] z-30 pointer-events-auto" style={{
       backdropFilter: 'blur(8px)'
-    }} className="fixed top-20 left-6 w-80 h-[25vh] z-30 pointer-events-auto my-0">
+    }}>
         <ElementStylePanel selectedElement={selectedElementId ? elements.find(el => el.id === selectedElementId) : null} onUpdateElement={onUpdateElement} />
+      </div>
+
+      {/* Collaboration Panel - Top Right (25% height) */}
+      <div className="fixed top-20 right-6 w-80 h-[25vh] z-30 pointer-events-auto" style={{
+      backdropFilter: 'blur(8px)'
+    }}>
+        <CollaborationPanel />
       </div>
 
       {/* Tool Customization Panel - Left Side (75% height) */}
