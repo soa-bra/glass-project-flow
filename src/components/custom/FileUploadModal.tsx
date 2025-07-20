@@ -373,25 +373,6 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
               </div>
             </div>
 
-            {/* أهمية الملف */}
-            <div className="space-y-3">
-              <label className="block text-sm font-bold text-black">
-                أهمية الملف
-              </label>
-              <p className="text-xs text-black/70">
-                حدد مستوى أهمية الملف في المشروع
-              </p>
-              <Select value={importance} onValueChange={(value: 'Low' | 'Medium' | 'High') => setImportance(value)}>
-                <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="High">عالي - ملف مهم جداً</SelectItem>
-                  <SelectItem value="Medium">متوسط - ملف مهم</SelectItem>
-                  <SelectItem value="Low">منخفض - ملف عادي</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
 
             {/* ربط المهام */}
             {projectTasks.length > 0 && (
