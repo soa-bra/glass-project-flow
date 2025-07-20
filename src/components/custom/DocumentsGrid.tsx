@@ -229,11 +229,6 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
           const FileIcon = getFileIcon(doc.type);
           return <div key={doc.id} className="bg-[#F2FFFF] rounded-3xl p-4 border border-black/10">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <FileIcon className="w-5 h-5 text-primary" />
-                    </div>
-                  </div>
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
