@@ -109,7 +109,7 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
   };
   const renderLayer = (layer: Layer) => <div key={layer.id} className={`p-3 rounded-[16px] border transition-colors cursor-pointer ${selectedLayerId === layer.id ? 'border-[#96d8d0] bg-[#96d8d0]/10' : 'border-[#d1e1ea] bg-white hover:bg-[#e9eff4]/50'}`} onClick={() => onLayerSelect(layer.id)}>
       <div className="flex items-center justify-between mb-2">
-        <Input value={layer.name} onChange={e => updateLayerName(layer.id, e.target.value)} onClick={e => e.stopPropagation()} className="text-sm font-arabic border-none p-0 h-auto bg-transparent text-black my-0" />
+        <Input value={layer.name} onChange={e => updateLayerName(layer.id, e.target.value)} className="text-sm font-arabic border-none p-0 h-auto bg-transparent text-black" onClick={e => e.stopPropagation()} />
         <div className="flex items-center gap-1">
           <Button onClick={e => {
           e.stopPropagation();
@@ -132,7 +132,9 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
         </div>
       </div>
       
-      
+      <div className="text-xs text-black/70 font-arabic">
+        {layer.elements.length} عنصر
+      </div>
     </div>;
   const renderFolder = (folder: LayerFolder, depth = 0) => <div key={folder.id} style={{
     marginLeft: `${depth * 16}px`
@@ -155,31 +157,36 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
           </div>}
       </div>
     </div>;
-  return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden py-0 my-0">
+  return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden my-[140px] py-0">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-arabic flex items-center gap-2 text-black my-0">
+        <CardTitle className="text-lg font-arabic flex items-center gap-2 text-black">
           
           إدارة الطبقات
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="space-y-4 h-[calc(100%-4rem)] flex flex-col py-0 my-0">
+      <CardContent className="space-y-4 h-[calc(100%-4rem)] flex flex-col my-0">
         {/* Add New Layer/Folder */}
         <div className="space-y-2">
-          <div className="flex gap-2">
+          <div className="flex gap-2 bg-black text-base text-white rounded-2xl">
             <Input value={newLayerName} onChange={e => setNewLayerName(e.target.value)} placeholder="اسم الطبقة الجديدة" className="flex-1 font-arabic text-sm rounded-[16px] border-[#d1e1ea] text-black placeholder:text-black/50" onKeyPress={e => e.key === 'Enter' && addNewLayer()} />
             <Button onClick={addNewLayer} size="sm" className="rounded-[16px] bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none">
               <Plus className="w-4 h-4" />
             </Button>
           </div>
-          
+          <Button onClick={createFolder} size="sm" className="w-full rounded-[16px] bg-[#fbe2aa] hover:bg-[#fbe2aa]/80 text-black border-none">
+            <Folder className="w-4 h-4 mr-2" />
+            إنشاء ملف جديد
+          </Button>
         </div>
 
         <Separator className="bg-[#d1e1ea]" />
 
         {/* Layers and Folders List */}
-        <div className="flex-1 overflow-y-auto space-y-2 py-0 my-[120px]">
-          
+        <div className="flex-1 overflow-y-auto space-y-2 py-0">
+          <h4 className="text-sm font-medium font-arabic mb-2 text-black">
+            الطبقات والملفات ({layers.length + folders.length})
+          </h4>
           
           {/* Folders */}
           {folders.map(folder => renderFolder(folder))}
