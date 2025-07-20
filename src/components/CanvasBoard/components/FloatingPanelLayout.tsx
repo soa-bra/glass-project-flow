@@ -95,39 +95,35 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
   onAlignToGrid
 }) => {
   return <>
-      {/* AI Assistant Panel - Bottom Right (25% height) */}
-      <div style={{
-      backdropFilter: 'blur(8px)'
-    }} className="fixed top-8 bottom-20 right-5 w-60  z-30 pointer-events-auto my-0">
-        <AIAssistantPanel />
+      {/* منطقة اللوحات الأولى - First Panels Area */}
+      <div className="fixed top-20 bottom-6 right-6 w-80 z-30 pointer-events-auto flex flex-col">
+        {/* Collaboration Panel - 30% */}
+        <div className="h-[30%] mb-2.5" style={{ backdropFilter: 'blur(8px)' }}>
+          <CollaborationPanel />
+        </div>
+        
+        {/* Layers Panel - 35% */}
+        <div className="h-[35%] mb-2.5" style={{ backdropFilter: 'blur(8px)' }}>
+          <LayersPanel layers={layers} selectedLayerId={selectedLayerId} onLayerUpdate={onLayerReorder} onLayerSelect={onLayerSelect} elements={elements} />
+        </div>
+        
+        {/* AI Assistant Panel - 35% */}
+        <div className="h-[35%]" style={{ backdropFilter: 'blur(8px)' }}>
+          <AIAssistantPanel />
+        </div>
       </div>
 
-      {/* Layers Panel - Above AI Assistant (50% height) */}
-      <div style={{
-      backdropFilter: 'blur(8px)'
-    }} className="fixed bottom-[27vh] right-6 w-80 h-[50vh] z-30 pointer-events-auto py-[104px] my-[39px]">
-        <LayersPanel layers={layers} selectedLayerId={selectedLayerId} onLayerUpdate={onLayerReorder} onLayerSelect={onLayerSelect} elements={elements} />
-      </div>
-
-      {/* Element Style Panel - Top Left (25% height) */}
-      <div className="fixed top-20 left-6 w-80 h-[25vh] z-30 pointer-events-auto" style={{
-      backdropFilter: 'blur(8px)'
-    }}>
-        <ElementStylePanel selectedElement={selectedElementId ? elements.find(el => el.id === selectedElementId) : null} onUpdateElement={onUpdateElement} />
-      </div>
-
-      {/* Collaboration Panel - Top Right (25% height) */}
-      <div className="fixed top-20 right-6 w-80 h-[25vh] z-30 pointer-events-auto" style={{
-      backdropFilter: 'blur(8px)'
-    }}>
-        <CollaborationPanel />
-      </div>
-
-      {/* Tool Customization Panel - Left Side (75% height) */}
-      <div className="fixed top-[27vh] left-6 w-80 h-[75vh] z-30 pointer-events-auto" style={{
-      backdropFilter: 'blur(8px)'
-    }}>
-        <ToolCustomizationPanel selectedTool={selectedTool} selectedElements={selectedElements} zoom={zoom} canvasPosition={canvasPosition} panSpeed={panSpeed} lineWidth={lineWidth} lineStyle={lineStyle} selectedPenMode={selectedPenMode} showGrid={showGrid} snapEnabled={snapEnabled} gridSize={gridSize} gridShape={gridShape} layers={layers} selectedLayerId={selectedLayerId} onUpdateElement={onUpdateElement} onCopy={onCopy} onCut={onCut} onPaste={onPaste} onDelete={onDelete} onGroup={onGroup} onZoomChange={onZoomChange} onPositionChange={onPositionChange} onFitToScreen={onFitToScreen} onResetView={onResetView} onPanSpeedChange={onPanSpeedChange} onLineWidthChange={onLineWidthChange} onLineStyleChange={onLineStyleChange} onPenModeSelect={onPenModeSelect} onFileUpload={onFileUpload} onLayerReorder={onLayerReorder} onLayerSelect={onLayerSelect} onGridToggle={onGridToggle} onSnapToggle={onSnapToggle} onGridSizeChange={onGridSizeChange} onGridShapeChange={onGridShapeChange} onAlignToGrid={onAlignToGrid} />
+      {/* منطقة اللوحات الثانية - Second Panels Area */}
+      <div className="fixed top-20 bottom-6 left-6 w-80 z-30 pointer-events-auto flex flex-col">
+        {/* Element Style Panel - 30% */}
+        <div className="h-[30%] mb-2.5" style={{ backdropFilter: 'blur(8px)' }}>
+          <ElementStylePanel selectedElement={selectedElementId ? elements.find(el => el.id === selectedElementId) : null} onUpdateElement={onUpdateElement} />
+        </div>
+        
+        {/* Tool Customization Panel - 70% */}
+        <div className="h-[70%]" style={{ backdropFilter: 'blur(8px)' }}>
+          <ToolCustomizationPanel selectedTool={selectedTool} selectedElements={selectedElements} zoom={zoom} canvasPosition={canvasPosition} panSpeed={panSpeed} lineWidth={lineWidth} lineStyle={lineStyle} selectedPenMode={selectedPenMode} showGrid={showGrid} snapEnabled={snapEnabled} gridSize={gridSize} gridShape={gridShape} layers={layers} selectedLayerId={selectedLayerId} onUpdateElement={onUpdateElement} onCopy={onCopy} onCut={onCut} onPaste={onPaste} onDelete={onDelete} onGroup={onGroup} onZoomChange={onZoomChange} onPositionChange={onPositionChange} onFitToScreen={onFitToScreen} onResetView={onResetView} onPanSpeedChange={onPanSpeedChange} onLineWidthChange={onLineWidthChange} onLineStyleChange={onLineStyleChange} onPenModeSelect={onPenModeSelect} onFileUpload={onFileUpload} onLayerReorder={onLayerReorder} onLayerSelect={onLayerSelect} onGridToggle={onGridToggle} onSnapToggle={onSnapToggle} onGridSizeChange={onGridSizeChange} onGridShapeChange={onGridShapeChange} onAlignToGrid={onAlignToGrid} />
+        </div>
       </div>
     </>;
 };
