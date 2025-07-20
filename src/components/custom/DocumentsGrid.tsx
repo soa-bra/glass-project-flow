@@ -3,22 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { 
-  FileText, 
-  Image, 
-  Video, 
-  Music, 
-  Archive, 
-  Download, 
-  Eye, 
-  Edit3, 
-  Trash2, 
-  Search, 
-  Filter, 
-  Folder,
-  FolderOpen,
-  File
-} from 'lucide-react';
+import { FileText, Image, Video, Music, Archive, Download, Eye, Edit3, Trash2, Search, Filter, Folder, FolderOpen, File } from 'lucide-react';
 import { ProjectFile } from '@/data/projectFiles';
 import { useProjectFiles } from '@/hooks/useProjectFiles';
 
@@ -29,7 +14,6 @@ interface DocumentsGridProps {
   projectId?: string;
   currentUserId?: string;
 }
-
 export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   onFolderClick,
   projectId = 'current',
@@ -40,10 +24,10 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
 
   // استخدام hook البيانات المشتركة
-  const { 
-    files, 
-    folders, 
-    getProjectFiles, 
+  const {
+    files,
+    folders,
+    getProjectFiles,
     getFolderFiles,
     getFilteredFiles,
     isLoading,
@@ -53,7 +37,6 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
   // الحصول على الملفات المفلترة حسب الصلاحيات
   const docs = getFilteredFiles(currentUserId, projectId);
-  
   const getFolderIcon = (iconId?: string) => {
     switch (iconId) {
       case 'folder-open':
@@ -74,7 +57,6 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
         return Folder;
     }
   };
-
   const getFileIcon = (type: string) => {
     switch (type) {
       case 'document':
@@ -91,7 +73,6 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
         return FileText;
     }
   };
-
   const getClassificationColor = (classification: string) => {
     switch (classification) {
       case 'High':
@@ -104,7 +85,6 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
         return 'bg-gray-100 text-gray-800';
     }
   };
-
   const getClassificationText = (classification: string) => {
     switch (classification) {
       case 'High':
@@ -117,106 +97,60 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
         return 'غير محدد';
     }
   };
-
-  const currentFolders = folders.filter(folder => 
-    !currentFolderId ? !folder.parentId : folder.parentId === currentFolderId
-  );
-  
+  const currentFolders = folders.filter(folder => !currentFolderId ? !folder.parentId : folder.parentId === currentFolderId);
   const currentDocs = docs.filter(doc => {
     const inCurrentFolder = !currentFolderId ? !doc.folderId : doc.folderId === currentFolderId;
-    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         doc.tags.some(tag => tag.includes(searchTerm));
+    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase()) || doc.tags.some(tag => tag.includes(searchTerm));
     const matchesFilter = selectedFilter === 'all' || doc.type === selectedFilter;
     return inCurrentFolder && matchesSearch && matchesFilter;
   });
-
-  const filteredFolders = currentFolders.filter(folder =>
-    folder.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  const filteredFolders = currentFolders.filter(folder => folder.name.toLowerCase().includes(searchTerm.toLowerCase()));
   const getTypeCount = (type: string) => {
     return currentDocs.filter(doc => doc.type === type).length;
   };
-
   const handleDeleteFile = (fileId: string) => {
     if (window.confirm('هل تريد بالتأكيد حذف هذا الملف؟')) {
       deleteFile(fileId);
     }
   };
-
   const handleFolderClick = (folderId: string) => {
     setCurrentFolderId(folderId);
     onFolderClick?.(folderId);
   };
-
   const handleBackClick = () => {
     setCurrentFolderId(null);
   };
-
-  return (
-    <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+  return <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
       {/* شريط التنقل */}
-      {currentFolderId && (
-        <div className="flex items-center gap-2 mb-4">
-          <Button 
-            size="sm" 
-            variant="outline" 
-            onClick={handleBackClick}
-            className="rounded-full"
-          >
+      {currentFolderId && <div className="flex items-center gap-2 mb-4">
+          <Button size="sm" variant="outline" onClick={handleBackClick} className="rounded-full bg-black text-sm text-white">
             ← العودة
           </Button>
           <span className="text-sm text-gray-600">
             {folders.find(f => f.id === currentFolderId)?.name}
           </span>
-        </div>
-      )}
+        </div>}
 
       {/* شريط البحث */}
       <div className="flex gap-2 mb-4">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input 
-            placeholder="البحث في المرفقات..." 
-            value={searchTerm} 
-            onChange={e => setSearchTerm(e.target.value)} 
-            className="pr-10 text-right" 
-          />
+          <Input placeholder="البحث في المرفقات..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pr-10 text-right" />
         </div>
       </div>
 
       {/* فلاتر سريعة */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
-        <Button 
-          size="sm" 
-          variant={selectedFilter === 'all' ? 'default' : 'outline'} 
-          onClick={() => setSelectedFilter('all')} 
-          className="rounded-full"
-        >
+        <Button size="sm" variant={selectedFilter === 'all' ? 'default' : 'outline'} onClick={() => setSelectedFilter('all')} className="rounded-full">
           الكل ({currentDocs.length})
         </Button>
-        <Button 
-          size="sm" 
-          variant={selectedFilter === 'document' ? 'default' : 'outline'} 
-          onClick={() => setSelectedFilter('document')} 
-          className="rounded-full"
-        >
+        <Button size="sm" variant={selectedFilter === 'document' ? 'default' : 'outline'} onClick={() => setSelectedFilter('document')} className="rounded-full">
           مستندات ({getTypeCount('document')})
         </Button>
-        <Button 
-          size="sm" 
-          variant={selectedFilter === 'image' ? 'default' : 'outline'} 
-          onClick={() => setSelectedFilter('image')} 
-          className="rounded-full"
-        >
+        <Button size="sm" variant={selectedFilter === 'image' ? 'default' : 'outline'} onClick={() => setSelectedFilter('image')} className="rounded-full">
           صور ({getTypeCount('image')})
         </Button>
-        <Button 
-          size="sm" 
-          variant={selectedFilter === 'video' ? 'default' : 'outline'} 
-          onClick={() => setSelectedFilter('video')} 
-          className="rounded-full"
-        >
+        <Button size="sm" variant={selectedFilter === 'video' ? 'default' : 'outline'} onClick={() => setSelectedFilter('video')} className="rounded-full">
           فيديو ({getTypeCount('video')})
         </Button>
       </div>
@@ -226,18 +160,12 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {/* عرض المجلدات أولاً */}
           {filteredFolders.map(folder => {
-            const FolderIcon = getFolderIcon(folder.icon);
-            return (
-              <div 
-                key={`folder-${folder.id}`} 
-                className="bg-white/40 rounded-3xl p-4 border border-black/10 cursor-pointer hover:bg-white/60 transition-all"
-                onClick={() => handleFolderClick(folder.id)}
-              >
+          const FolderIcon = getFolderIcon(folder.icon);
+          return <div key={`folder-${folder.id}`} className="bg-white/40 rounded-3xl p-4 border border-black/10 cursor-pointer hover:bg-white/60 transition-all" onClick={() => handleFolderClick(folder.id)}>
                 <div className="flex items-center gap-3">
-                  <div 
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                    style={{ backgroundColor: folder.color || '#a4e2f6' }}
-                  >
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{
+                backgroundColor: folder.color || '#a4e2f6'
+              }}>
                     <FolderIcon className="w-6 h-6 text-black" />
                   </div>
                   <div className="flex-1 text-right">
@@ -246,15 +174,13 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
                     <p className="text-xs text-gray-500">{new Date(folder.createdAt).toLocaleDateString('ar-SA')}</p>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              </div>;
+        })}
 
           {/* عرض الملفات */}
           {currentDocs.map(doc => {
-            const FileIcon = getFileIcon(doc.type);
-            return (
-              <div key={doc.id} className="bg-[#F2FFFF] rounded-3xl p-4 border border-black/10">
+          const FileIcon = getFileIcon(doc.type);
+          return <div key={doc.id} className="bg-[#F2FFFF] rounded-3xl p-4 border border-black/10">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -285,16 +211,12 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
                     {/* التاغز */}
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {doc.tags.slice(0, 2).map((tag, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
+                      {doc.tags.slice(0, 2).map((tag, idx) => <Badge key={idx} variant="secondary" className="text-xs">
                           {tag}
-                        </Badge>
-                      ))}
-                      {doc.tags.length > 2 && (
-                        <Badge variant="secondary" className="text-xs">
+                        </Badge>)}
+                      {doc.tags.length > 2 && <Badge variant="secondary" className="text-xs">
                           +{doc.tags.length - 2}
-                        </Badge>
-                      )}
+                        </Badge>}
                     </div>
 
                     {/* أزرار الإجراءات */}
@@ -308,20 +230,14 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
                       <Button size="sm" variant="ghost" className="p-1 h-6 w-6">
                         <Edit3 className="w-3 h-3" />
                       </Button>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="p-1 h-6 w-6 text-red-500"
-                        onClick={() => handleDeleteFile(doc.id)}
-                      >
+                      <Button size="sm" variant="ghost" className="p-1 h-6 w-6 text-red-500" onClick={() => handleDeleteFile(doc.id)}>
                         <Trash2 className="w-3 h-3" />
                       </Button>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              </div>;
+        })}
         </div>
       </ScrollArea>
 
@@ -350,6 +266,5 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
