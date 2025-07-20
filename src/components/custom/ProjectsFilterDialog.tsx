@@ -12,10 +12,10 @@ interface ProjectsFilterDialogProps {
 
 export interface ProjectFilterOptions {
   status?: string;
-  priority?: string;
-  category?: string;
-  tags?: string[];
-  dateRange?: string;
+  projectType?: string;
+  partnership?: string;
+  projectManager?: string;
+  remainingDays?: string;
 }
 
 export const ProjectsFilterDialog: React.FC<ProjectsFilterDialogProps> = ({
@@ -24,60 +24,52 @@ export const ProjectsFilterDialog: React.FC<ProjectsFilterDialogProps> = ({
   onApplyFilter
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
-  const [selectedPriority, setSelectedPriority] = useState<string>('all');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedDateRange, setSelectedDateRange] = useState<string>('all');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedProjectType, setSelectedProjectType] = useState<string>('all');
+  const [selectedPartnership, setSelectedPartnership] = useState<string>('all');
+  const [selectedProjectManager, setSelectedProjectManager] = useState<string>('all');
+  const [selectedRemainingDays, setSelectedRemainingDays] = useState<string>('all');
 
   const projectStatuses = [
-    { value: 'active', label: 'نشط' },
-    { value: 'completed', label: 'مكتمل' },
-    { value: 'pending', label: 'معلق' },
-    { value: 'cancelled', label: 'ملغي' }
+    { value: 'on-track', label: 'وفق الخطة' },
+    { value: 'delayed', label: 'متأخر' },
+    { value: 'in-progress', label: 'تحت المعالجة' },
+    { value: 'paused', label: 'متوقف' },
+    { value: 'not-started', label: 'لم يبدأ' }
   ];
 
-  const priorities = [
-    { value: 'high', label: 'عالي' },
-    { value: 'medium', label: 'متوسط' },
-    { value: 'low', label: 'منخفض' }
+  const projectTypes = [
+    { value: 'internal', label: 'داخلي' },
+    { value: 'external', label: 'خارجي' }
   ];
 
-  const categories = [
-    { value: 'branding', label: 'علامة تجارية' },
-    { value: 'marketing', label: 'تسويق' },
-    { value: 'development', label: 'تطوير' },
-    { value: 'design', label: 'تصميم' },
-    { value: 'consulting', label: 'استشارات' }
+  const partnerships = [
+    { value: 'independent', label: 'ذاتي' },
+    { value: 'collaborative', label: 'تشاركي (يوجد شريك)' }
   ];
 
-  const dateRanges = [
-    { value: 'today', label: 'اليوم' },
-    { value: 'week', label: 'هذا الأسبوع' },
-    { value: 'month', label: 'هذا الشهر' },
-    { value: 'quarter', label: 'هذا الربع' },
-    { value: 'year', label: 'هذا العام' }
+  const projectManagers = [
+    { value: 'ahmed-salem', label: 'أحمد سالم' },
+    { value: 'sara-khalil', label: 'سارة خليل' },
+    { value: 'mohammed-ali', label: 'محمد علي' },
+    { value: 'fatima-hassan', label: 'فاطمة حسن' },
+    { value: 'omar-nasser', label: 'عمر ناصر' }
   ];
 
-  const availableTags = [
-    'عاجل', 'مهم', 'عميل مميز', 'استراتيجي', 'إبداعي', 
-    'تقني', 'تحليلي', 'بحثي', 'تطويري', 'ابتكاري'
+  const remainingDaysOptions = [
+    { value: 'week', label: 'أسبوع' },
+    { value: 'two-weeks', label: 'أسبوعين' },
+    { value: 'month', label: 'شهر' },
+    { value: 'two-months', label: 'شهرين' },
+    { value: 'six-months', label: 'ست أشهر' }
   ];
-
-  const handleTagToggle = (tag: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
-    );
-  };
 
   const handleApply = () => {
     const filters: ProjectFilterOptions = {
       status: selectedStatus && selectedStatus !== 'all' ? selectedStatus : undefined,
-      priority: selectedPriority && selectedPriority !== 'all' ? selectedPriority : undefined,
-      category: selectedCategory && selectedCategory !== 'all' ? selectedCategory : undefined,
-      dateRange: selectedDateRange && selectedDateRange !== 'all' ? selectedDateRange : undefined,
-      tags: selectedTags.length > 0 ? selectedTags : undefined
+      projectType: selectedProjectType && selectedProjectType !== 'all' ? selectedProjectType : undefined,
+      partnership: selectedPartnership && selectedPartnership !== 'all' ? selectedPartnership : undefined,
+      projectManager: selectedProjectManager && selectedProjectManager !== 'all' ? selectedProjectManager : undefined,
+      remainingDays: selectedRemainingDays && selectedRemainingDays !== 'all' ? selectedRemainingDays : undefined
     };
     onApplyFilter(filters);
     onClose();
@@ -85,10 +77,10 @@ export const ProjectsFilterDialog: React.FC<ProjectsFilterDialogProps> = ({
 
   const handleReset = () => {
     setSelectedStatus('all');
-    setSelectedPriority('all');
-    setSelectedCategory('all');
-    setSelectedDateRange('all');
-    setSelectedTags([]);
+    setSelectedProjectType('all');
+    setSelectedPartnership('all');
+    setSelectedProjectManager('all');
+    setSelectedRemainingDays('all');
   };
 
   const handleClose = () => {
@@ -131,7 +123,7 @@ export const ProjectsFilterDialog: React.FC<ProjectsFilterDialogProps> = ({
 
         {/* Content */}
         <div className="p-6 space-y-6">
-          {/* فلترة حسب الحالة */}
+          {/* فلترة حسب حالة المشروع */}
           <div className="space-y-3">
             <label className="block text-sm font-bold text-black">حالة المشروع</label>
             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
@@ -149,82 +141,76 @@ export const ProjectsFilterDialog: React.FC<ProjectsFilterDialogProps> = ({
             </Select>
           </div>
 
-          {/* فلترة حسب الأولوية */}
+          {/* فلترة حسب نوع المشروع */}
           <div className="space-y-3">
-            <label className="block text-sm font-bold text-black">مستوى الأولوية</label>
-            <Select value={selectedPriority} onValueChange={setSelectedPriority}>
+            <label className="block text-sm font-bold text-black">نوع المشروع</label>
+            <Select value={selectedProjectType} onValueChange={setSelectedProjectType}>
               <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
-                <SelectValue placeholder="اختر مستوى الأولوية" />
+                <SelectValue placeholder="اختر نوع المشروع" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">جميع المستويات</SelectItem>
-                {priorities.map((priority) => (
-                  <SelectItem key={priority.value} value={priority.value}>
-                    {priority.label}
+                <SelectItem value="all">جميع الأنواع</SelectItem>
+                {projectTypes.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          {/* فلترة حسب الفئة */}
+          {/* فلترة حسب الشراكة */}
           <div className="space-y-3">
-            <label className="block text-sm font-bold text-black">فئة المشروع</label>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <label className="block text-sm font-bold text-black">الشراكة</label>
+            <Select value={selectedPartnership} onValueChange={setSelectedPartnership}>
               <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
-                <SelectValue placeholder="اختر فئة المشروع" />
+                <SelectValue placeholder="اختر نوع الشراكة" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">جميع الفئات</SelectItem>
-                {categories.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    {category.label}
+                <SelectItem value="all">جميع الأنواع</SelectItem>
+                {partnerships.map((partnership) => (
+                  <SelectItem key={partnership.value} value={partnership.value}>
+                    {partnership.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          {/* فلترة حسب التاريخ */}
+          {/* فلترة حسب مدير المشروع */}
           <div className="space-y-3">
-            <label className="block text-sm font-bold text-black">الفترة الزمنية</label>
-            <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
+            <label className="block text-sm font-bold text-black">مدير المشروع</label>
+            <Select value={selectedProjectManager} onValueChange={setSelectedProjectManager}>
               <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
-                <SelectValue placeholder="اختر الفترة الزمنية" />
+                <SelectValue placeholder="اختر مدير المشروع" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">جميع المديرين</SelectItem>
+                {projectManagers.map((manager) => (
+                  <SelectItem key={manager.value} value={manager.value}>
+                    {manager.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* فلترة حسب عدد الأيام المتبقية */}
+          <div className="space-y-3">
+            <label className="block text-sm font-bold text-black">عدد الأيام المتبقية</label>
+            <Select value={selectedRemainingDays} onValueChange={setSelectedRemainingDays}>
+              <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
+                <SelectValue placeholder="اختر فترة الأيام المتبقية" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">جميع الفترات</SelectItem>
-                {dateRanges.map((range) => (
-                  <SelectItem key={range.value} value={range.value}>
-                    {range.label}
+                {remainingDaysOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </div>
-
-          {/* فلترة حسب التاقز */}
-          <div className="space-y-3">
-            <label className="block text-sm font-bold text-black">التاقز</label>
-            <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-              {availableTags.map((tag) => (
-                <Badge
-                  key={tag}
-                  variant={selectedTags.includes(tag) ? "default" : "outline"}
-                  className={`cursor-pointer rounded-full transition-all ${
-                    selectedTags.includes(tag)
-                      ? 'bg-black text-white border-black'
-                      : 'bg-white/30 text-black border-black/20 hover:bg-white/40'
-                  }`}
-                  onClick={() => handleTagToggle(tag)}
-                >
-                  {tag}
-                  {selectedTags.includes(tag) && (
-                    <X className="w-3 h-3 ml-1" />
-                  )}
-                </Badge>
-              ))}
-            </div>
           </div>
         </div>
 
