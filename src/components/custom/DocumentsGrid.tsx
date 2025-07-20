@@ -19,8 +19,7 @@ import {
   FolderOpen,
   File
 } from 'lucide-react';
-import { ProjectFile } from '@/data/projectFiles';
-import { useProjectFiles } from '@/hooks/useProjectFiles';
+import { projectFiles, ProjectFile, getProjectFiles, getFileCountByType } from '@/data/projectFiles';
 
 interface FolderData {
   id: string;
@@ -40,12 +39,14 @@ interface FolderData {
 }
 
 interface DocumentsGridProps {
+  documents?: ProjectFile[];
   folders?: FolderData[];
   onFolderClick?: (folderId: string) => void;
   projectId?: string;
 }
 
 export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
+  documents,
   folders = [],
   onFolderClick,
   projectId = 'current'
@@ -54,9 +55,9 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
 
-  // Use the new hook to get files
-  const { files: docs, removeFiles } = useProjectFiles(projectId);
-
+  // Use provided documents or get from shared data
+  const docs = documents || getProjectFiles(projectId);
+  
   const getFolderIcon = (iconId?: string) => {
     switch (iconId) {
       case 'folder-open':
@@ -138,7 +139,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   );
 
   const getTypeCount = (type: string) => {
-    return currentDocs.filter(file => file.type === type).length;
+    return getFileCountByType(currentDocs, type);
   };
 
   const handleFolderClick = (folderId: string) => {
@@ -148,12 +149,6 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
   const handleBackClick = () => {
     setCurrentFolderId(null);
-  };
-
-  const handleDeleteFile = (fileId: string) => {
-    if (window.confirm('هل تريد بالتأكيد حذف هذا الملف؟')) {
-      removeFiles([fileId]);
-    }
   };
 
   return (
@@ -311,12 +306,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
                       <Button size="sm" variant="ghost" className="p-1 h-6 w-6">
                         <Edit3 className="w-3 h-3" />
                       </Button>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="p-1 h-6 w-6 text-red-500"
-                        onClick={() => handleDeleteFile(doc.id)}
-                      >
+                      <Button size="sm" variant="ghost" className="p-1 h-6 w-6 text-red-500">
                         <Trash2 className="w-3 h-3" />
                       </Button>
                     </div>
@@ -343,7 +333,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
           </div>
           <div>
             <p className="font-bold text-blue-600">
-              {docs.filter(d => d.uploadDate === new Date().toISOString().split('T')[0]).length}
+              {docs.filter(d => d.uploadDate === '2024-01-15').length}
             </p>
             <p className="text-gray-600">جديدة اليوم</p>
           </div>

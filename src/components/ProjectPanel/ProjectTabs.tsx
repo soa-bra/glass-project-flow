@@ -12,8 +12,10 @@ import { TaskRedistributionModal } from '@/components/custom/TaskRedistributionM
 import { AddTeamMemberModal } from '@/components/custom/AddTeamMemberModal';
 import { ManualTaskDistributionModal } from '@/components/custom/ManualTaskDistributionModal';
 import { PerformanceEvaluationModal } from '@/components/custom/PerformanceEvaluationModal';
-import { ProjectFilesManager } from '@/components/custom/ProjectFilesManager';
-import { useProjectFiles } from '@/hooks/useProjectFiles';
+import { FileUploadModal } from '@/components/custom/FileUploadModal';
+import { FolderOrganizationModal } from '@/components/custom/FolderOrganizationModal';
+import { PermissionsModal } from '@/components/custom/PermissionsModal';
+import { getProjectFiles } from '@/data/projectFiles';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -118,7 +120,7 @@ export const FinancialTab = ({
           <p className="text-2xl font-bold text-black mb-1">{remainingBudget.toLocaleString()} ر.س</p>
           <p className="text-sm font-normal text-black">من إجمالي {financialData.totalBudget.toLocaleString()} ر.س</p>
           <div className="mt-3">
-            <div className="bg-[#bdeeed3] px-3 py-1 rounded-full inline-block">
+            <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
               <span className="text-sm font-medium text-black">{remainingPercentage}% متبقية</span>
             </div>
           </div>
@@ -514,7 +516,7 @@ export const TeamTab = ({
               <span className="text-sm font-bold text-black">85%</span>
             </div>
             <div className="w-full bg-transparent border border-black/10 rounded-full h-3">
-              <div className="bg-[#bdeeed3] h-3 rounded-full" style={{
+              <div className="bg-[#bdeed3] h-3 rounded-full" style={{
               width: '85%'
             }}></div>
             </div>
@@ -586,8 +588,11 @@ export const TeamTab = ({
 export const AttachmentsTab = ({
   documents
 }: any) => {
-  const projectId = 'current';
-  
+  const [isFileUploadModalOpen, setIsFileUploadModalOpen] = useState(false);
+  const [isFolderOrganizationModalOpen, setIsFolderOrganizationModalOpen] = useState(false);
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
+  const [projectFiles, setProjectFiles] = useState<any[]>([]);
+
   // مهام المشروع الوهمية للربط
   const projectTasks = [
     { id: '1', title: 'تصميم واجهة المستخدم' },
@@ -597,11 +602,41 @@ export const AttachmentsTab = ({
     { id: '5', title: 'مراجعة الكود' },
   ];
 
-  // Get real-time file data
-  const { files: projectDocuments } = useProjectFiles(projectId);
+  const handleFileUpload = (data: {
+    files: File[];
+    title: string;
+    linkedTasks: string[];
+    projectId: string;
+  }) => {
+    // معالجة رفع الملفات
+    const newFiles = data.files.map((file, index) => ({
+      id: Date.now() + index,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      title: data.title,
+      linkedTasks: data.linkedTasks,
+      uploadedAt: new Date().toISOString(),
+      status: 'uploaded'
+    }));
+    
+    setProjectFiles(prev => [...prev, ...newFiles]);
+    setIsFileUploadModalOpen(false);
+    
+    console.log('ملفات جديدة تم رفعها:', newFiles);
+  };
 
-  return (
-    <div className="space-y-6">
+  const handleFolderOrganization = (data: {
+    folders: any[];
+    actions: any[];
+  }) => {
+    console.log('تنظيم المجلدات:', data);
+    setIsFolderOrganizationModalOpen(false);
+  };
+
+  // Get project files from shared data
+  const projectDocuments = getProjectFiles('current');
+  return <div className="space-y-6">
       {/* حالة المرفقات */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-3">
@@ -617,39 +652,76 @@ export const AttachmentsTab = ({
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي الملفات</h4>
-          <p className="text-2xl font-bold text-black mb-1">{projectDocuments.length}</p>
-          <div className="bg-[#bdeeed3] px-3 py-1 rounded-full inline-block">
+          <p className="text-2xl font-bold text-black mb-1">23</p>
+          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">ملف مرفوع</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">الحجم الإجمالي</h4>
-          <p className="text-2xl font-bold text-black mb-1">
-            {Math.round(projectDocuments.reduce((total, file) => {
-              const sizeInMB = parseFloat(file.size.replace(/[^0-9.]/g, ''));
-              return total + (isNaN(sizeInMB) ? 0 : sizeInMB);
-            }, 0))} MB
-          </p>
+          <p className="text-2xl font-bold text-black mb-1">156 MB</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">مساحة مستخدمة</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">الملفات المشتركة</h4>
-          <p className="text-2xl font-bold text-black mb-1">
-            {projectDocuments.filter(f => f.tags.includes('مشترك')).length}
-          </p>
+          <p className="text-2xl font-bold text-black mb-1">8</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">ملفات مشتركة</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">المعدلة حديثاً</h4>
-          <p className="text-2xl font-bold text-black mb-1">
-            {projectDocuments.filter(f => f.uploadDate === new Date().toISOString().split('T')[0]).length}
-          </p>
+          <p className="text-2xl font-bold text-black mb-1">5</p>
           <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">خلال اليوم</span>
+          </div>
+        </div>
+      </div>
+
+      {/* أدوات إدارة المرفقات */}
+      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+        <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة مرفقات المشروع</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">رفع ملف جديد</h4>
+            <p className="text-xs text-black/70 mb-3">إضافة مستندات وملفات جديدة للمشروع</p>
+            <button 
+              onClick={() => setIsFileUploadModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
+              رفع ملف
+            </button>
+          </div>
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">تنظيم المجلدات</h4>
+            <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم مجلدات المشروع</p>
+            <button 
+              onClick={() => setIsFolderOrganizationModalOpen(true)}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
+              تنظيم المجلدات
+            </button>
+          </div>
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
+            <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للملفات</p>
+            <button 
+              onClick={() => {
+                // التحقق من صلاحيات المستخدم (مدير المشروع فأعلى)
+                const userRole = 'project_manager'; // هذا يجب أن يأتي من سياق المستخدم
+                const hasPermission = ['project_manager', 'department_manager', 'admin', 'owner'].includes(userRole);
+                if (hasPermission) {
+                  setIsPermissionsModalOpen(true);
+                } else {
+                  alert('غير مصرح لك بالوصول إلى إدارة الصلاحيات. هذه الميزة متاحة فقط لمدير المشروع فأعلى.');
+                }
+              }}
+              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            >
+              إدارة الصلاحيات
+            </button>
           </div>
         </div>
       </div>
@@ -657,7 +729,7 @@ export const AttachmentsTab = ({
       {/* فئات الملفات */}
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
         <h3 className="text-lg font-semibold text-black mb-6">توزيع الملفات حسب النوع والتصنيف</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
             <p className="text-2xl font-bold text-black mb-1">7</p>
             <h4 className="text-sm font-bold text-black mb-2">مستندات PDF</h4>
@@ -689,12 +761,30 @@ export const AttachmentsTab = ({
         </div>
       </div>
 
-      <ProjectFilesManager 
-        projectId={projectId}
+      <DocumentsGrid documents={projectDocuments} />
+
+      {/* نافذة رفع الملفات */}
+      <FileUploadModal
+        isOpen={isFileUploadModalOpen}
+        onClose={() => setIsFileUploadModalOpen(false)}
+        onSave={handleFileUpload}
         projectTasks={projectTasks}
+        projectId="current-project-id"
       />
-    </div>
-  );
+
+      {/* نافذة تنظيم المجلدات */}
+      <FolderOrganizationModal
+        isOpen={isFolderOrganizationModalOpen}
+        onClose={() => setIsFolderOrganizationModalOpen(false)}
+        onSave={handleFolderOrganization}
+      />
+
+      {/* نافذة إدارة الصلاحيات */}
+      <PermissionsModal
+        isOpen={isPermissionsModalOpen}
+        onClose={() => setIsPermissionsModalOpen(false)}
+      />
+    </div>;
 };
 
 // تبويب القوالب
@@ -755,7 +845,7 @@ export const TemplatesTab = ({
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي القوالب</h4>
           <p className="text-2xl font-bold text-black mb-1">12</p>
-          <div className="bg-[#bdeeed3] px-3 py-1 rounded-full inline-block">
+          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">قالب متاح</span>
           </div>
         </div>
