@@ -96,7 +96,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
 }) => {
   return <>
       {/* منطقة اللوحات الأولى - First Panels Area */}
-      <div className="fixed top-20 bottom-6 right-6 w-80 z-30 pointer-events-auto flex flex-col">
+      <div className="fixed top-0 bottom-6 right-6 w-60 z-30 pointer-events-auto flex flex-col">
         {/* Collaboration Panel - 30% */}
         <div className="h-[30%] mb-2.5" style={{ backdropFilter: 'blur(8px)' }}>
           <CollaborationPanel />
@@ -114,7 +114,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
       </div>
 
       {/* منطقة اللوحات الثانية - Second Panels Area */}
-      <div className="fixed top-20 bottom-6 left-6 w-80 z-30 pointer-events-auto flex flex-col">
+      <div className="fixed top-0 bottom-6 left-6 w-60 z-30 pointer-events-auto flex flex-col">
         {/* Element Style Panel - 30% */}
         <div className="h-[30%] mb-2.5" style={{ backdropFilter: 'blur(8px)' }}>
           <ElementStylePanel selectedElement={selectedElementId ? elements.find(el => el.id === selectedElementId) : null} onUpdateElement={onUpdateElement} />
