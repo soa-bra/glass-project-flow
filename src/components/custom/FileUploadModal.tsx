@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { Upload, X, FileText, Image, Video, Archive } from 'lucide-react';
+import { Upload, X, FileText, Image, Video, Archive, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ProjectFile } from '@/data/projectFiles';
 import { useProjectFiles } from '@/hooks/useProjectFiles';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface FileUploadModalProps {
   isOpen: boolean;
@@ -33,6 +35,9 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [fileTitle, setFileTitle] = useState('');
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [newTag, setNewTag] = useState('');
+  const [importance, setImportance] = useState<'Low' | 'Medium' | 'High'>('Medium');
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -122,6 +127,24 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     );
   };
 
+  const handleAddTag = () => {
+    if (newTag.trim() && !tags.includes(newTag.trim())) {
+      setTags([...tags, newTag.trim()]);
+      setNewTag('');
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddTag();
+    }
+  };
+
   const handleSave = () => {
     if (uploadedFiles.length === 0) {
       toast({
@@ -147,10 +170,10 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
       type: getFileType(uploadedFile.file.type),
       size: formatFileSize(uploadedFile.file.size),
       uploadDate: new Date().toISOString().split('T')[0],
-      classification: 'Medium' as const,
+      classification: importance,
       version: 'v1.0',
       uploadedBy: 'المستخدم الحالي', // يجب أن يأتي من السياق
-      tags: [fileTitle, ...selectedTasks.map(taskId => projectTasks.find(t => t.id === taskId)?.title || '').filter(Boolean)],
+      tags: [fileTitle, ...tags, ...selectedTasks.map(taskId => projectTasks.find(t => t.id === taskId)?.title || '').filter(Boolean)],
       projectId
     }));
 
@@ -161,6 +184,9 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     setUploadedFiles([]);
     setFileTitle('');
     setSelectedTasks([]);
+    setTags([]);
+    setNewTag('');
+    setImportance('Medium');
     
     toast({
       title: "تم رفع الملفات بنجاح",
@@ -182,6 +208,9 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     setUploadedFiles([]);
     setFileTitle('');
     setSelectedTasks([]);
+    setTags([]);
+    setNewTag('');
+    setImportance('Medium');
     onClose();
   };
 
@@ -296,6 +325,72 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
                 placeholder="أدخل عنواناً وصفياً للملف..."
                 className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black placeholder-black/50 focus:outline-none focus:border-black transition-colors"
               />
+            </div>
+
+            {/* التاقات */}
+            <div className="space-y-3">
+              <label className="block text-sm font-bold text-black">
+                التاقات (اختياري)
+              </label>
+              <p className="text-xs text-black/70">
+                أضف تاقات لتسهيل البحث والتصنيف
+              </p>
+              
+              {/* عرض التاقات المضافة */}
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {tags.map((tag, index) => (
+                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                      {tag}
+                      <X 
+                        className="w-3 h-3 cursor-pointer" 
+                        onClick={() => handleRemoveTag(tag)}
+                      />
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* إضافة تاق جديد */}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="أضف تاق جديد..."
+                  className="flex-1 px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black placeholder-black/50 focus:outline-none focus:border-black transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddTag}
+                  disabled={!newTag.trim()}
+                  className="px-4 py-3 bg-black/10 hover:bg-black/20 disabled:bg-black/5 disabled:cursor-not-allowed rounded-2xl flex items-center gap-2 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  إضافة
+                </button>
+              </div>
+            </div>
+
+            {/* أهمية الملف */}
+            <div className="space-y-3">
+              <label className="block text-sm font-bold text-black">
+                أهمية الملف
+              </label>
+              <p className="text-xs text-black/70">
+                حدد مستوى أهمية الملف في المشروع
+              </p>
+              <Select value={importance} onValueChange={(value: 'Low' | 'Medium' | 'High') => setImportance(value)}>
+                <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="High">عالي - ملف مهم جداً</SelectItem>
+                  <SelectItem value="Medium">متوسط - ملف مهم</SelectItem>
+                  <SelectItem value="Low">منخفض - ملف عادي</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* ربط المهام */}
