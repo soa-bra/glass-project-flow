@@ -276,7 +276,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
                       >
                         <MessageCircle className="w-3 h-3" />
                         {doc.comments && doc.comments.length > 0 && (
-                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                          <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                             {doc.comments.length}
                           </span>
                         )}
