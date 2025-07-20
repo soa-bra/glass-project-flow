@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FolderEditModal } from './FolderEditModal';
+import { getProjectFiles } from '@/data/projectFiles';
 
 interface FolderOrganizationModalProps {
   isOpen: boolean;
@@ -99,19 +100,19 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     }
   ]);
 
-  // جميع ملفات المشروع المتاحة
-  const [projectFiles] = useState([
-    { id: 'file1', name: 'مواصفات المشروع.pdf', type: 'application/pdf', size: 2048000, uploadedAt: '2024-01-15T10:00:00Z' },
-    { id: 'file2', name: 'خطة العمل.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: 1024000, uploadedAt: '2024-01-16T14:30:00Z' },
-    { id: 'file3', name: 'تصميم الواجهة.png', type: 'image/png', size: 5120000, uploadedAt: '2024-01-18T09:15:00Z' },
-    { id: 'file4', name: 'الشعار.svg', type: 'image/svg+xml', size: 256000, uploadedAt: '2024-01-19T11:45:00Z' },
-    { id: 'file5', name: 'تقرير الأداء.xlsx', type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size: 3072000, uploadedAt: '2024-01-20T16:20:00Z' },
-    { id: 'file6', name: 'دليل المستخدم.pdf', type: 'application/pdf', size: 1536000, uploadedAt: '2024-01-22T08:45:00Z' },
-    { id: 'file7', name: 'صورة الغلاف.jpg', type: 'image/jpeg', size: 2048000, uploadedAt: '2024-01-23T12:15:00Z' },
-    { id: 'file8', name: 'فيديو توضيحي.mp4', type: 'video/mp4', size: 15728640, uploadedAt: '2024-01-24T16:30:00Z' },
-    { id: 'file9', name: 'ملف البيانات.json', type: 'application/json', size: 512000, uploadedAt: '2024-01-25T10:20:00Z' },
-    { id: 'file10', name: 'العرض التقديمي.pptx', type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', size: 4096000, uploadedAt: '2024-01-26T14:10:00Z' }
-  ]);
+  // جميع ملفات المشروع المتاحة من المصدر المشترك
+  const projectFiles = getProjectFiles('current').map(file => ({
+    id: file.id,
+    name: file.name,
+    type: file.type === 'document' ? 'application/pdf' : 
+          file.type === 'image' ? 'image/png' : 
+          file.type === 'video' ? 'video/mp4' : 
+          file.type === 'audio' ? 'audio/mp3' : 
+          file.type === 'archive' ? 'application/zip' : 
+          'application/octet-stream',
+    size: parseInt(file.size.replace(/[^\d]/g, '')) * 1024 * 1024, // تحويل من MB إلى bytes
+    uploadedAt: file.uploadDate
+  }));
 
   const [actions, setActions] = useState<FolderAction[]>([]);
   const [newFolderName, setNewFolderName] = useState('');
