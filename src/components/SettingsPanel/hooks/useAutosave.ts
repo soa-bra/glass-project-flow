@@ -38,7 +38,7 @@ export const useAutosave = ({ interval, userId, section, data, onSave }: Autosav
             onSave(data);
           }
           
-          console.log(`Securely autosaved settings for ${section} at ${new Date().toLocaleTimeString()}`);
+          
         } catch (error) {
           console.error('Failed to autosave settings securely:', error);
           // Fallback to regular localStorage for non-sensitive data

@@ -15,7 +15,6 @@ interface OverviewLayoutProps {
 export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
   data
 }) => {
-  console.log('OverviewLayout received data:', data);
   
   // تحويل البيانات إلى تنسيق KPIStatsSection
   const statsData = data?.stats ? [

@@ -6,11 +6,8 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
   const [elements, setElements] = useState<CanvasElement[]>([]);
 
   const addElement = useCallback((x: number, y: number, elementType: string, selectedSmartElement: string, width?: number, height?: number) => {
-    console.log('🏗️ Adding element:', { x, y, elementType, selectedSmartElement, width, height });
-    
     // Skip non-creatable tools
     if (['select', 'hand', 'zoom', 'grid', 'layers'].includes(elementType)) {
-      console.log('❌ Skipping non-creatable tool:', elementType);
       return;
     }
 
@@ -22,19 +19,16 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
       actualType = (selectedSmartElement && selectedSmartElement !== 'smart-element') 
         ? selectedSmartElement 
         : 'timeline';
-      console.log('🧠 Smart element type resolved to:', actualType);
     }
     
     // Handle text-box -> text conversion
     if (elementType === 'text-box') {
       actualType = 'text';
-      console.log('📝 Text-box converted to text');
     }
     
     // Validate element type
     const validTypes = ['text', 'shape', 'sticky', 'comment', 'upload', 'timeline', 'mindmap', 'brainstorm', 'root', 'moodboard', 'line'];
     if (!validTypes.includes(actualType)) {
-      console.log('❌ Invalid element type:', actualType);
       toast.error(`نوع عنصر غير صحيح: ${actualType}`);
       return;
     }
@@ -52,18 +46,15 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
       style: getDefaultStyle(actualType)
     };
 
-    console.log('🎯 Element created successfully:', newElement);
-    
     setElements(prev => {
       const newElements = [...prev, newElement];
-      console.log('📊 Total elements after add:', newElements.length);
       saveToHistory(newElements);
       return newElements;
     });
 
     // Provide user feedback
     const elementName = getElementDisplayName(actualType);
-    console.log(`✅ Element added: ${elementName} at (${x}, ${y})`);
+    
     toast.success(`تم إضافة ${elementName}`);
   }, [saveToHistory]);
 

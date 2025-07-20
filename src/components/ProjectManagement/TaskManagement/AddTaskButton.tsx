@@ -11,7 +11,6 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({ column, projectId 
   const [showModal, setShowModal] = useState(false);
 
   const handleTaskAdded = (task: TaskData) => {
-    console.log(`Adding task "${task.title}" to column "${column}" in project "${projectId}"`);
     setShowModal(false);
   };
 

@@ -9,26 +9,22 @@ export const useCanvasManipulation = (
   // Enhanced selection handlers
   const handleCopy = useCallback(() => {
     if (selectedElements.length > 0) {
-      console.log('نسخ العناصر:', selectedElements);
       // TODO: Implement copy functionality
     }
   }, [selectedElements]);
 
   const handleCut = useCallback(() => {
     if (selectedElements.length > 0) {
-      console.log('قص العناصر:', selectedElements);
       // TODO: Implement cut functionality
     }
   }, [selectedElements]);
 
   const handlePaste = useCallback(() => {
-    console.log('لصق العناصر');
     // TODO: Implement paste functionality
   }, []);
 
   const handleDuplicate = useCallback(() => {
     if (selectedElements.length > 0) {
-      console.log('تكرار العناصر:', selectedElements);
       // TODO: Implement duplicate functionality
     }
   }, [selectedElements]);

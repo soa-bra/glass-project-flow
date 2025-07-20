@@ -45,7 +45,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
     e.preventDefault();
     if (draggedTask && draggedFromStatus !== toStatus) {
       updateTaskStatus(draggedTask.id, toStatus);
-      console.log(`Moving task ${draggedTask.id} from ${draggedFromStatus} to ${toStatus}`);
     }
     setDraggedTask(null);
     setDraggedFromStatus("");

@@ -9,13 +9,6 @@ interface ElementRendererProps {
 export const ElementRenderer: React.FC<ElementRendererProps> = ({ element }) => {
   const baseStyle = element.style || {};
   
-  console.log('🎨 Rendering element:', {
-    id: element.id,
-    type: element.type,
-    position: element.position,
-    size: element.size,
-    content: element.content
-  });
   
   switch (element.type) {
     case 'text':

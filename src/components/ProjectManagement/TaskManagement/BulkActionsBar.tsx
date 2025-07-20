@@ -10,7 +10,6 @@ export const BulkActionsBar: React.FC<BulkActionsBarProps> = ({
   onClearSelection 
 }) => {
   const handleBulkAction = (action: string) => {
-    console.log(`Performing bulk action: ${action} on ${selectedCount} tasks`);
     // Here you would implement the actual bulk action logic
   };
 

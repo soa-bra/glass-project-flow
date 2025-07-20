@@ -154,7 +154,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
     link.href = '#'; // يجب أن يكون رابط الملف الفعلي
     link.download = file.name;
     link.click();
-    console.log('تنزيل الملف:', file.name);
+    
   };
 
   const handleAddComment = (fileId: string, commentText: string) => {

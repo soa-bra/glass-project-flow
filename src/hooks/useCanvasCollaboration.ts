@@ -70,7 +70,6 @@ export function useCanvasCollaboration({
     setLocks(prev => ({ ...prev, [elementId]: userId }));
     
     // محاكاة إرسال إلى الخادم
-    console.log(`🔒 Element ${elementId} locked by ${userId}`);
   }, [userId, enable]);
 
   const unlockElement = useCallback((elementId: string) => {
@@ -83,7 +82,6 @@ export function useCanvasCollaboration({
     });
     
     // محاكاة إرسال إلى الخادم
-    console.log(`🔓 Element ${elementId} unlocked by ${userId}`);
   }, [userId, enable]);
 
   const isElementLockedByOther = useCallback((elementId: string) => {
@@ -98,14 +96,12 @@ export function useCanvasCollaboration({
     if (!enable) return;
     
     // محاكاة بث موقع المؤشر
-    console.log(`📍 Cursor broadcast: ${x}, ${y} by ${userId}`);
   }, [userId, enable]);
 
   const sendMessage = useCallback((message: string) => {
     if (!enable) return;
     
     // محاكاة إرسال رسالة
-    console.log(`💬 Message sent: ${message} by ${userId}`);
     return {
       id: Date.now().toString(),
       userId,

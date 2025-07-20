@@ -83,7 +83,6 @@ export const ReportsTab: React.FC = () => {
   ];
 
   const generateReport = (reportType: string) => {
-    console.log(`Generating ${reportType} report...`);
     // هنا يمكن إضافة منطق توليد التقرير
   };
 

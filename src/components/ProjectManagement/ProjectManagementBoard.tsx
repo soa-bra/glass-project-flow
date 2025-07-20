@@ -33,7 +33,6 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   if (!isVisible) return null;
 
   const handleDeleteProject = () => {
-    console.log('حذف المشروع:', project.id);
     // تنفيذ عملية حذف المشروع
     setShowDeleteDialog(false);
     onProjectUpdated?.(editingProjectData);
@@ -41,7 +40,6 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   };
 
   const handleArchiveProject = () => {
-    console.log('أرشفة المشروع:', project.id);
     // تنفيذ عملية أرشفة المشروع
     setShowArchiveDialog(false);
     onProjectUpdated?.(editingProjectData);
