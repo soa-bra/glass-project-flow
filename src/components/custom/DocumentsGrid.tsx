@@ -19,7 +19,7 @@ import {
   FolderOpen,
   File
 } from 'lucide-react';
-import { projectFiles, ProjectFile, getProjectFiles, getFileCountByType } from '@/data/projectFiles';
+import { projectFiles, ProjectFile, getProjectFiles, getFileCountByType, getFilesByFolder } from '@/data/projectFiles';
 
 interface FolderData {
   id: string;

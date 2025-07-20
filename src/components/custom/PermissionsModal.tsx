@@ -16,7 +16,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { projectFiles, ProjectFile, getProjectFiles } from '@/data/projectFiles';
+import { projectFiles, ProjectFile, getProjectFiles, getFilesWithPermissions } from '@/data/projectFiles';
 
 interface PermissionsModalProps {
   isOpen: boolean;

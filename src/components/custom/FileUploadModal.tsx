@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Upload, X, FileText, Image, Video, Archive } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { ProjectFile } from '@/data/projectFiles';
+import { ProjectFile, projectFiles } from '@/data/projectFiles';
 
 interface FileUploadModalProps {
   isOpen: boolean;
@@ -13,6 +13,7 @@ interface FileUploadModalProps {
     linkedTasks: string[];
     projectId: string;
   }) => void;
+  onFilesAdded?: (newFiles: ProjectFile[]) => void;
   projectTasks?: Array<{
     id: string;
     title: string;
@@ -30,6 +31,7 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
   isOpen,
   onClose,
   onSave,
+  onFilesAdded,
   projectTasks = [],
   projectId
 }) => {
@@ -126,6 +128,14 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     );
   };
 
+  const getFileType = (file: File): ProjectFile['type'] => {
+    if (file.type.startsWith('image/')) return 'image';
+    if (file.type.startsWith('video/')) return 'video';
+    if (file.type.startsWith('audio/')) return 'audio';
+    if (file.type.includes('zip') || file.type.includes('rar') || file.type.includes('7z')) return 'archive';
+    return 'document';
+  };
+
   const handleSave = () => {
     if (uploadedFiles.length === 0) {
       toast({
@@ -145,6 +155,32 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
       return;
     }
 
+    // إنشاء ملفات مشروع جديدة وإضافتها للبيانات المشتركة
+    const newProjectFiles: ProjectFile[] = uploadedFiles.map((uploadedFile, index) => {
+      const newFile: ProjectFile = {
+        id: `file_${Date.now()}_${index}`,
+        name: uploadedFile.file.name,
+        type: getFileType(uploadedFile.file),
+        size: `${(uploadedFile.file.size / (1024 * 1024)).toFixed(1)} MB`,
+        uploadDate: new Date().toISOString().split('T')[0],
+        classification: 'Medium',
+        version: '1.0',
+        uploadedBy: 'المستخدم الحالي',
+        tags: selectedTasks.length > 0 ? ['مرتبط بالمهام'] : ['عام'],
+        projectId: projectId,
+        folderId: undefined
+      };
+      return newFile;
+    });
+
+    // إضافة الملفات الجديدة للبيانات المشتركة
+    projectFiles.push(...newProjectFiles);
+
+    // استدعاء callback لإشعار المكونات الأخرى
+    if (onFilesAdded) {
+      onFilesAdded(newProjectFiles);
+    }
+
     onSave({
       files: uploadedFiles.map(f => f.file),
       title: fileTitle,
@@ -159,7 +195,7 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     
     toast({
       title: "تم رفع الملفات بنجاح",
-      description: `تم رفع ${uploadedFiles.length} ملف(ات) للمشروع`,
+      description: `تم رفع ${uploadedFiles.length} ملف(ات) للمشروع وإضافتها لقائمة ملفات المشروع`,
     });
   };
 

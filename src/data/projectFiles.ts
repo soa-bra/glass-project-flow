@@ -249,3 +249,39 @@ export const getProjectFiles = (projectId?: string) => {
 export const getFileCountByType = (files: ProjectFile[], type: string) => {
   return files.filter(file => file.type === type).length;
 };
+
+// دوال مساعدة لإدارة التكامل بين النوافذ
+export function addProjectFile(file: ProjectFile): void {
+  projectFiles.push(file);
+}
+
+export function updateFileFolder(fileId: string, folderId?: string): boolean {
+  const fileIndex = projectFiles.findIndex(f => f.id === fileId);
+  if (fileIndex !== -1) {
+    projectFiles[fileIndex] = { ...projectFiles[fileIndex], folderId };
+    return true;
+  }
+  return false;
+}
+
+export function getFilesByFolder(projectId?: string, folderId?: string): ProjectFile[] {
+  return projectFiles.filter(file => 
+    (projectId ? file.projectId === projectId : true) &&
+    file.folderId === folderId
+  );
+}
+
+export function getFilesWithPermissions(projectId?: string, userId?: string): ProjectFile[] {
+  // هنا يمكن إضافة منطق فلترة الملفات حسب صلاحيات المستخدم
+  // حالياً سنعيد جميع الملفات، لكن يمكن تطوير هذا لاحقاً
+  return getProjectFiles(projectId);
+}
+
+export function removeProjectFile(fileId: string): boolean {
+  const fileIndex = projectFiles.findIndex(f => f.id === fileId);
+  if (fileIndex !== -1) {
+    projectFiles.splice(fileIndex, 1);
+    return true;
+  }
+  return false;
+}

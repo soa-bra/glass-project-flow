@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FolderEditModal } from './FolderEditModal';
-import { getProjectFiles } from '@/data/projectFiles';
+import { getProjectFiles, updateFileFolder, getFilesByFolder } from '@/data/projectFiles';
 
 interface FolderOrganizationModalProps {
   isOpen: boolean;
@@ -213,22 +213,33 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     const file = folder?.files?.find(f => f.id === fileId);
     
     if (file && window.confirm(`هل تريد بالتأكيد إزالة "${file.name}" من المجلد؟`)) {
-      setFolders(prev => 
-        prev.map(folder => 
-          folder.id === folderId 
-            ? { 
-                ...folder, 
-                files: folder.files?.filter(f => f.id !== fileId) || [],
-                filesCount: Math.max(0, folder.filesCount - 1)
-              }
-            : folder
-        )
-      );
+      // تحديث البيانات المشتركة - إزالة الملف من المجلد
+      const success = updateFileFolder(fileId, undefined);
       
-      toast({
-        title: "تم إزالة الملف",
-        description: `تم إزالة "${file.name}" من المجلد`,
-      });
+      if (success) {
+        setFolders(prev => 
+          prev.map(folder => 
+            folder.id === folderId 
+              ? { 
+                  ...folder, 
+                  files: folder.files?.filter(f => f.id !== fileId) || [],
+                  filesCount: Math.max(0, folder.filesCount - 1)
+                }
+              : folder
+          )
+        );
+        
+        toast({
+          title: "تم إزالة الملف",
+          description: `تم إزالة "${file.name}" من المجلد وإعادته للملفات العامة`,
+        });
+      } else {
+        toast({
+          title: "خطأ في إزالة الملف",
+          description: "لم يتم العثور على الملف في البيانات المشتركة",
+          variant: "destructive",
+        });
+      }
     }
   };
 
