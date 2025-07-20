@@ -594,14 +594,22 @@ export const AttachmentsTab = ({
   const [projectFiles, setProjectFiles] = useState<any[]>([]);
 
   // مهام المشروع الوهمية للربط
-  const projectTasks = [
-    { id: '1', title: 'تصميم واجهة المستخدم' },
-    { id: '2', title: 'تطوير قاعدة البيانات' },
-    { id: '3', title: 'اختبار النظام' },
-    { id: '4', title: 'كتابة الوثائق' },
-    { id: '5', title: 'مراجعة الكود' },
-  ];
-
+  const projectTasks = [{
+    id: '1',
+    title: 'تصميم واجهة المستخدم'
+  }, {
+    id: '2',
+    title: 'تطوير قاعدة البيانات'
+  }, {
+    id: '3',
+    title: 'اختبار النظام'
+  }, {
+    id: '4',
+    title: 'كتابة الوثائق'
+  }, {
+    id: '5',
+    title: 'مراجعة الكود'
+  }];
   const handleFileUpload = (data: {
     files: File[];
     title: string;
@@ -619,13 +627,10 @@ export const AttachmentsTab = ({
       uploadedAt: new Date().toISOString(),
       status: 'uploaded'
     }));
-    
     setProjectFiles(prev => [...prev, ...newFiles]);
     setIsFileUploadModalOpen(false);
-    
     console.log('ملفات جديدة تم رفعها:', newFiles);
   };
-
   const handleFolderOrganization = (data: {
     folders: any[];
     actions: any[];
@@ -687,39 +692,30 @@ export const AttachmentsTab = ({
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">رفع ملف جديد</h4>
             <p className="text-xs text-black/70 mb-3">إضافة مستندات وملفات جديدة للمشروع</p>
-            <button 
-              onClick={() => setIsFileUploadModalOpen(true)}
-              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
-            >
+            <button onClick={() => setIsFileUploadModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               رفع ملف
             </button>
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تنظيم المجلدات</h4>
             <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم مجلدات المشروع</p>
-            <button 
-              onClick={() => setIsFolderOrganizationModalOpen(true)}
-              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
-            >
+            <button onClick={() => setIsFolderOrganizationModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تنظيم المجلدات
             </button>
           </div>
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
             <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للملفات</p>
-            <button 
-              onClick={() => {
-                // التحقق من صلاحيات المستخدم (مدير المشروع فأعلى)
-                const userRole = 'project_manager'; // هذا يجب أن يأتي من سياق المستخدم
-                const hasPermission = ['project_manager', 'department_manager', 'admin', 'owner'].includes(userRole);
-                if (hasPermission) {
-                  setIsPermissionsModalOpen(true);
-                } else {
-                  alert('غير مصرح لك بالوصول إلى إدارة الصلاحيات. هذه الميزة متاحة فقط لمدير المشروع فأعلى.');
-                }
-              }}
-              className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
-            >
+            <button onClick={() => {
+            // التحقق من صلاحيات المستخدم (مدير المشروع فأعلى)
+            const userRole = 'project_manager'; // هذا يجب أن يأتي من سياق المستخدم
+            const hasPermission = ['project_manager', 'department_manager', 'admin', 'owner'].includes(userRole);
+            if (hasPermission) {
+              setIsPermissionsModalOpen(true);
+            } else {
+              alert('غير مصرح لك بالوصول إلى إدارة الصلاحيات. هذه الميزة متاحة فقط لمدير المشروع فأعلى.');
+            }
+          }} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إدارة الصلاحيات
             </button>
           </div>
@@ -730,25 +726,13 @@ export const AttachmentsTab = ({
       <DocumentsGrid projectId="current" />
 
       {/* نافذة رفع الملفات */}
-      <FileUploadModal
-        isOpen={isFileUploadModalOpen}
-        onClose={() => setIsFileUploadModalOpen(false)}
-        projectTasks={projectTasks}
-        projectId="current"
-      />
+      <FileUploadModal isOpen={isFileUploadModalOpen} onClose={() => setIsFileUploadModalOpen(false)} projectTasks={projectTasks} projectId="current" />
 
       {/* نافذة تنظيم المجلدات */}
-      <FolderOrganizationModal
-        isOpen={isFolderOrganizationModalOpen}
-        onClose={() => setIsFolderOrganizationModalOpen(false)}
-        projectId="current"
-      />
+      <FolderOrganizationModal isOpen={isFolderOrganizationModalOpen} onClose={() => setIsFolderOrganizationModalOpen(false)} projectId="current" />
 
       {/* نافذة إدارة الصلاحيات */}
-      <PermissionsModal
-        isOpen={isPermissionsModalOpen}
-        onClose={() => setIsPermissionsModalOpen(false)}
-      />
+      <PermissionsModal isOpen={isPermissionsModalOpen} onClose={() => setIsPermissionsModalOpen(false)} />
     </div>;
 };
 
@@ -845,35 +829,35 @@ export const TemplatesTab = ({
             <p className="text-2xl font-bold text-black mb-1">4</p>
             <h4 className="text-sm font-bold text-black mb-2">قوالب التقارير</h4>
             <div className="bg-[#f1b5b9] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">تقارير دورية</span>
+              <span className="text-xs font-normal text-black">تقارير دورية</span>
             </div>
           </div>
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
             <p className="text-2xl font-bold text-black mb-1">3</p>
             <h4 className="text-sm font-bold text-black mb-2">نماذج إدارية</h4>
             <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">إجراءات داخلية</span>
+              <span className="text-xs font-normal text-black">إجراءات داخلية</span>
             </div>
           </div>
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
             <p className="text-2xl font-bold text-black mb-1">2</p>
             <h4 className="text-sm font-bold text-black mb-2">وثائق قانونية</h4>
             <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">عقود واتفاقيات</span>
+              <span className="text-xs font-normal text-black">عقود واتفاقيات</span>
             </div>
           </div>
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
             <p className="text-2xl font-bold text-black mb-1">2</p>
             <h4 className="text-sm font-bold text-black mb-2">خطط التخطيط</h4>
             <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">جدولة المشاريع</span>
+              <span className="text-xs font-normal text-black">جدولة المشاريع</span>
             </div>
           </div>
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
             <p className="text-2xl font-bold text-black mb-1">1</p>
             <h4 className="text-sm font-bold text-black mb-2">موارد بشرية</h4>
             <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">تقييم الأداء</span>
+              <span className="text-xs font-normal text-black">تقييم الأداء</span>
             </div>
           </div>
         </div>
