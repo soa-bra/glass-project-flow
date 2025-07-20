@@ -3,9 +3,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { FileText, Image, Video, Music, Archive, Download, Eye, Edit3, Trash2, Search, Filter, Folder, FolderOpen, File } from 'lucide-react';
-import { ProjectFile } from '@/data/projectFiles';
+import { FileText, Image, Video, Music, Archive, Download, Edit3, Trash2, Search, Filter, Folder, FolderOpen, File, MessageCircle } from 'lucide-react';
+import { ProjectFile, Comment } from '@/data/projectFiles';
 import { useProjectFiles } from '@/hooks/useProjectFiles';
+import { CommentDialog } from './CommentDialog';
+import { EditFileDialog } from './EditFileDialog';
 
 // تم نقل FolderData إلى projectFilesService
 
@@ -22,6 +24,9 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
+  const [commentDialogOpen, setCommentDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(null);
 
   // استخدام hook البيانات المشتركة
   const {
@@ -32,7 +37,8 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
     getFilteredFiles,
     isLoading,
     deleteFile,
-    moveFileToFolder
+    moveFileToFolder,
+    updateFile
   } = useProjectFiles(projectId);
 
   // الحصول على الملفات المفلترة حسب الصلاحيات
@@ -120,6 +126,47 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   const handleBackClick = () => {
     setCurrentFolderId(null);
   };
+
+  const handleCommentClick = (file: ProjectFile) => {
+    setSelectedFile(file);
+    setCommentDialogOpen(true);
+  };
+
+  const handleEditClick = (file: ProjectFile) => {
+    setSelectedFile(file);
+    setEditDialogOpen(true);
+  };
+
+  const handleDownload = (file: ProjectFile) => {
+    // تنزيل الملف - يمكن تحسينه لاحقاً للتنزيل الفعلي
+    const link = document.createElement('a');
+    link.href = '#'; // يجب أن يكون رابط الملف الفعلي
+    link.download = file.name;
+    link.click();
+    console.log('تنزيل الملف:', file.name);
+  };
+
+  const handleAddComment = (fileId: string, commentText: string) => {
+    const newComment: Comment = {
+      id: Date.now().toString(),
+      text: commentText,
+      author: 'المستخدم الحالي',
+      timestamp: new Date().toLocaleString('ar-SA')
+    };
+
+    const file = files.find(f => f.id === fileId);
+    if (file) {
+      const updatedFile = {
+        ...file,
+        comments: [...(file.comments || []), newComment]
+      };
+      updateFile(fileId, updatedFile);
+    }
+  };
+
+  const handleEditFile = (fileId: string, updates: Partial<ProjectFile>) => {
+    updateFile(fileId, updates);
+  };
   return <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
       {/* شريط التنقل */}
       {currentFolderId && <div className="flex items-center gap-2 mb-4">
@@ -157,7 +204,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
       {/* شبكة المجلدات والمستندات */}
       <ScrollArea className="h-[400px]">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {/* عرض المجلدات أولاً */}
           {filteredFolders.map(folder => {
           const FolderIcon = getFolderIcon(folder.icon);
@@ -221,16 +268,41 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
                     {/* أزرار الإجراءات */}
                     <div className="flex gap-1 mt-3">
-                      <Button size="sm" variant="ghost" className="p-1 h-6 w-6">
-                        <Eye className="w-3 h-3" />
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="p-1 h-6 w-6 relative"
+                        onClick={() => handleCommentClick(doc)}
+                      >
+                        <MessageCircle className="w-3 h-3" />
+                        {doc.comments && doc.comments.length > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                            {doc.comments.length}
+                          </span>
+                        )}
                       </Button>
-                      <Button size="sm" variant="ghost" className="p-1 h-6 w-6">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="p-1 h-6 w-6"
+                        onClick={() => handleDownload(doc)}
+                      >
                         <Download className="w-3 h-3" />
                       </Button>
-                      <Button size="sm" variant="ghost" className="p-1 h-6 w-6">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="p-1 h-6 w-6"
+                        onClick={() => handleEditClick(doc)}
+                      >
                         <Edit3 className="w-3 h-3" />
                       </Button>
-                      <Button size="sm" variant="ghost" className="p-1 h-6 w-6 text-red-500" onClick={() => handleDeleteFile(doc.id)}>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="p-1 h-6 w-6 text-red-500" 
+                        onClick={() => handleDeleteFile(doc.id)}
+                      >
                         <Trash2 className="w-3 h-3" />
                       </Button>
                     </div>
@@ -266,5 +338,28 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
           </div>
         </div>
       </div>
+
+      {/* نوافذ الحوار */}
+      <CommentDialog
+        isOpen={commentDialogOpen}
+        onClose={() => {
+          setCommentDialogOpen(false);
+          setSelectedFile(null);
+        }}
+        fileId={selectedFile?.id || ''}
+        fileName={selectedFile?.name || ''}
+        comments={selectedFile?.comments || []}
+        onAddComment={handleAddComment}
+      />
+
+      <EditFileDialog
+        isOpen={editDialogOpen}
+        onClose={() => {
+          setEditDialogOpen(false);
+          setSelectedFile(null);
+        }}
+        file={selectedFile}
+        onSave={handleEditFile}
+      />
     </div>;
 };

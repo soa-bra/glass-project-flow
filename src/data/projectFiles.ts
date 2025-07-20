@@ -1,4 +1,11 @@
 
+export interface Comment {
+  id: string;
+  text: string;
+  author: string;
+  timestamp: string;
+}
+
 export interface ProjectFile {
   id: string;
   name: string;
@@ -11,6 +18,8 @@ export interface ProjectFile {
   tags: string[];
   folderId?: string;
   projectId?: string;
+  linkedTask?: string;
+  comments?: Comment[];
 }
 
 export const projectFiles: ProjectFile[] = [
