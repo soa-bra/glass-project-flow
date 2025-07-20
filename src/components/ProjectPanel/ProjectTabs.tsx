@@ -15,6 +15,7 @@ import { PerformanceEvaluationModal } from '@/components/custom/PerformanceEvalu
 import { FileUploadModal } from '@/components/custom/FileUploadModal';
 import { FolderOrganizationModal } from '@/components/custom/FolderOrganizationModal';
 import { PermissionsModal } from '@/components/custom/PermissionsModal';
+import { getProjectFiles } from '@/data/projectFiles';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -632,47 +633,9 @@ export const AttachmentsTab = ({
     console.log('تنظيم المجلدات:', data);
     setIsFolderOrganizationModalOpen(false);
   };
-  const mockDocuments = [{
-    id: '1',
-    name: 'مواصفات المشروع.pdf',
-    type: 'document' as const,
-    size: '2.5 MB',
-    uploadDate: '2024-01-15',
-    classification: 'Medium' as const,
-    version: '1.0',
-    uploadedBy: 'أحمد محمد',
-    tags: ['مواصفات', 'متطلبات']
-  }, {
-    id: '2',
-    name: 'التصاميم الأولية.figma',
-    type: 'image' as const,
-    size: '15.8 MB',
-    uploadDate: '2024-01-20',
-    classification: 'High' as const,
-    version: '2.1',
-    uploadedBy: 'فاطمة علي',
-    tags: ['تصميم', 'واجهات']
-  }, {
-    id: '3',
-    name: 'خطة المشروع.xlsx',
-    type: 'document' as const,
-    size: '1.2 MB',
-    uploadDate: '2024-01-18',
-    classification: 'High' as const,
-    version: '1.5',
-    uploadedBy: 'محمد خالد',
-    tags: ['تخطيط', 'جدولة']
-  }, {
-    id: '4',
-    name: 'تقرير الاختبار.docx',
-    type: 'document' as const,
-    size: '3.7 MB',
-    uploadDate: '2024-01-22',
-    classification: 'Low' as const,
-    version: '1.0',
-    uploadedBy: 'نورا سعد',
-    tags: ['اختبار', 'جودة']
-  }];
+
+  // Get project files from shared data
+  const projectDocuments = getProjectFiles('current');
   return <div className="space-y-6">
       {/* حالة المرفقات */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
@@ -798,7 +761,7 @@ export const AttachmentsTab = ({
         </div>
       </div>
 
-      <DocumentsGrid documents={mockDocuments} />
+      <DocumentsGrid documents={projectDocuments} />
 
       {/* نافذة رفع الملفات */}
       <FileUploadModal
