@@ -2,7 +2,8 @@ import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Upload, X, FileText, Image, Video, Archive } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { ProjectFile, projectFiles } from '@/data/projectFiles';
+import { ProjectFile } from '@/data/projectFiles';
+import { useProjectFiles } from '@/hooks/useProjectFiles';
 
 interface FileUploadModalProps {
   isOpen: boolean;
@@ -13,7 +14,6 @@ interface FileUploadModalProps {
     linkedTasks: string[];
     projectId: string;
   }) => void;
-  onFilesAdded?: (newFiles: ProjectFile[]) => void;
   projectTasks?: Array<{
     id: string;
     title: string;
@@ -31,11 +31,11 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  onFilesAdded,
   projectTasks = [],
   projectId
 }) => {
   const { toast } = useToast();
+  const { addFiles } = useProjectFiles(projectId);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [fileTitle, setFileTitle] = useState('');
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
@@ -155,7 +155,7 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
       return;
     }
 
-    // إنشاء ملفات مشروع جديدة وإضافتها للبيانات المشتركة
+    // إنشاء ملفات مشروع جديدة
     const newProjectFiles: ProjectFile[] = uploadedFiles.map((uploadedFile, index) => {
       const newFile: ProjectFile = {
         id: `file_${Date.now()}_${index}`,
@@ -173,14 +173,10 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
       return newFile;
     });
 
-    // إضافة الملفات الجديدة للبيانات المشتركة
-    projectFiles.push(...newProjectFiles);
+    // إضافة الملفات باستخدام الخدمة
+    addFiles(newProjectFiles);
 
-    // استدعاء callback لإشعار المكونات الأخرى
-    if (onFilesAdded) {
-      onFilesAdded(newProjectFiles);
-    }
-
+    // استدعاء callback الأصلي
     onSave({
       files: uploadedFiles.map(f => f.file),
       title: fileTitle,

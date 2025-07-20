@@ -1,11 +1,12 @@
-import React, { useState, useCallback } from 'react';
+
+import React, { useState } from 'react';
 import { DocumentsGrid } from './DocumentsGrid';
 import { FileUploadModal } from './FileUploadModal';
 import { FolderOrganizationModal } from './FolderOrganizationModal';
 import { PermissionsModal } from './PermissionsModal';
 import { Button } from '@/components/ui/button';
 import { Upload, FolderOpen, Shield } from 'lucide-react';
-import { ProjectFile, getProjectFiles } from '@/data/projectFiles';
+import { useProjectFiles } from '@/hooks/useProjectFiles';
 
 interface ProjectFilesManagerProps {
   projectId?: string;
@@ -22,31 +23,26 @@ export const ProjectFilesManager: React.FC<ProjectFilesManagerProps> = ({
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // دالة لتحديث الشبكة عند إضافة ملفات جديدة
-  const handleFilesAdded = useCallback((newFiles: ProjectFile[]) => {
-    setRefreshTrigger(prev => prev + 1);
-    setShowUploadModal(false);
-  }, []);
+  // Use the hook to get real-time file updates
+  const { refreshTrigger } = useProjectFiles(projectId);
 
   // دالة لحفظ الملفات المرفوعة
-  const handleSaveUpload = useCallback((data: {
+  const handleSaveUpload = (data: {
     files: File[];
     title: string;
     linkedTasks: string[];
     projectId: string;
   }) => {
     console.log('تم رفع الملفات:', data);
-    // هنا يمكن إضافة منطق إضافي للحفظ في النظام الخلفي
-  }, []);
+    setShowUploadModal(false);
+  };
 
   // دالة لحفظ تنظيم المجلدات
-  const handleSaveFolders = useCallback(() => {
+  const handleSaveFolders = () => {
     console.log('تم حفظ تنظيم المجلدات');
-    setRefreshTrigger(prev => prev + 1);
     setShowFolderModal(false);
-  }, []);
+  };
 
   return (
     <div className="space-y-6">
@@ -77,10 +73,9 @@ export const ProjectFilesManager: React.FC<ProjectFilesManagerProps> = ({
         </Button>
       </div>
 
-      {/* شبكة الملفات الرئيسية */}
+      {/* شبكة الملفات الرئيسية - الآن تتحدث تلقائياً */}
       <DocumentsGrid 
         projectId={projectId}
-        key={refreshTrigger} // لإجبار إعادة الرسم عند تحديث الملفات
       />
 
       {/* نافذة رفع الملفات */}
@@ -88,7 +83,6 @@ export const ProjectFilesManager: React.FC<ProjectFilesManagerProps> = ({
         isOpen={showUploadModal}
         onClose={() => setShowUploadModal(false)}
         onSave={handleSaveUpload}
-        onFilesAdded={handleFilesAdded}
         projectTasks={projectTasks}
         projectId={projectId}
       />
