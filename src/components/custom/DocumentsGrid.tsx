@@ -8,6 +8,7 @@ import { ProjectFile, Comment } from '@/data/projectFiles';
 import { useProjectFiles } from '@/hooks/useProjectFiles';
 import { CommentDialog } from './CommentDialog';
 import { EditFileDialog } from './EditFileDialog';
+import { FilterDialog, FilterOptions } from './FilterDialog';
 
 // تم نقل FolderData إلى projectFilesService
 
@@ -26,7 +27,9 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(null);
+  const [activeFilters, setActiveFilters] = useState<FilterOptions>({});
 
   // استخدام hook البيانات المشتركة
   const {
@@ -108,7 +111,15 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
     const inCurrentFolder = !currentFolderId ? !doc.folderId : doc.folderId === currentFolderId;
     const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase()) || doc.tags.some(tag => tag.includes(searchTerm));
     const matchesFilter = selectedFilter === 'all' || doc.type === selectedFilter;
-    return inCurrentFolder && matchesSearch && matchesFilter;
+    
+    // تطبيق الفلاتر الجديدة
+    const matchesActiveFilters = (
+      (!activeFilters.type || doc.type === activeFilters.type) &&
+      (!activeFilters.importance || doc.classification === activeFilters.importance) &&
+      (!activeFilters.tags || activeFilters.tags.some(tag => doc.tags.includes(tag)))
+    );
+    
+    return inCurrentFolder && matchesSearch && matchesFilter && matchesActiveFilters;
   });
   const filteredFolders = currentFolders.filter(folder => folder.name.toLowerCase().includes(searchTerm.toLowerCase()));
   const getTypeCount = (type: string) => {
@@ -174,10 +185,15 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   };
 
   const handleFilterFile = () => {
-    // فتح نافذة الفلترة
-    console.log('فتح نافذة الفلترة');
-    // يمكن إضافة منطق فتح نافذة الفلترة هنا
+    setFilterDialogOpen(true);
   };
+
+  const handleApplyFilter = (filters: FilterOptions) => {
+    setActiveFilters(filters);
+  };
+
+  // استخراج التاقز المتاحة من جميع الملفات
+  const availableTags = Array.from(new Set(docs.flatMap(doc => doc.tags)));
   return <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
       {/* شريط التنقل */}
       {currentFolderId && <div className="flex items-center gap-2 mb-4">
@@ -364,6 +380,20 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
           { id: '4', title: 'كتابة الوثائق' },
           { id: '5', title: 'مراجعة الكود' }
         ]}
+      />
+
+      <FilterDialog
+        isOpen={filterDialogOpen}
+        onClose={() => setFilterDialogOpen(false)}
+        onApplyFilter={handleApplyFilter}
+        projectTasks={[
+          { id: '1', title: 'تصميم واجهة المستخدم' },
+          { id: '2', title: 'تطوير قاعدة البيانات' },
+          { id: '3', title: 'اختبار النظام' },
+          { id: '4', title: 'كتابة الوثائق' },
+          { id: '5', title: 'مراجعة الكود' }
+        ]}
+        availableTags={availableTags}
       />
     </div>;
 };
