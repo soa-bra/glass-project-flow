@@ -74,99 +74,156 @@ export const EditFileDialog: React.FC<EditFileDialogProps> = ({
   if (!file) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-right">
-            <Edit3 className="w-5 h-5" />
-            تعديل الملف
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          {/* اسم الملف */}
-          <div className="space-y-2">
-            <Label htmlFor="fileName">اسم الملف</Label>
-            <Input
-              id="fileName"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="أدخل اسم الملف"
-            />
-          </div>
-
-          {/* المهمة المرتبطة */}
-          <div className="space-y-2">
-            <Label htmlFor="linkedTask">المهمة المرتبطة</Label>
-            <Input
-              id="linkedTask"
-              value={linkedTask}
-              onChange={(e) => setLinkedTask(e.target.value)}
-              placeholder="أدخل اسم المهمة (اختياري)"
-            />
-          </div>
-
-          {/* التاجات */}
-          <div className="space-y-2">
-            <Label>التاجات</Label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {tags.map((tag, index) => (
-                <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                  {tag}
-                  <X 
-                    className="w-3 h-3 cursor-pointer" 
-                    onClick={() => handleRemoveTag(tag)}
-                  />
-                </Badge>
-              ))}
+    <Dialog open={isOpen} onOpenChange={() => {}}>
+      <DialogContent 
+        className="max-w-3xl max-h-[90vh] p-0 overflow-hidden font-arabic"
+        style={{
+          background: 'rgba(255,255,255,0.4)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '24px',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+          zIndex: 9999,
+        }}
+      >
+        <DialogTitle className="sr-only">تعديل الملف</DialogTitle>
+        
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-black/10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
+              <Edit3 className="w-5 h-5 text-white" />
             </div>
-            <div className="flex gap-2">
-              <Input
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="إضافة تاج جديد"
-                className="flex-1"
+            <div>
+              <h2 className="text-xl font-bold text-black">تعديل الملف</h2>
+              <p className="text-sm text-black/70">تعديل معلومات وإعدادات الملف</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 bg-transparent hover:bg-black/5 rounded-full flex items-center justify-center transition-colors"
+          >
+            <X className="w-5 h-5 text-black" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <div className="space-y-6">
+            {/* اسم الملف */}
+            <div className="space-y-2">
+              <label className="block text-sm font-bold text-black">
+                اسم الملف <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="أدخل اسم الملف"
+                className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black placeholder-black/50 focus:outline-none focus:border-black transition-colors"
               />
-              <Button 
-                type="button" 
-                variant="outline" 
-                size="sm"
-                onClick={handleAddTag}
-                disabled={!newTag.trim()}
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
+            </div>
+
+            {/* المهمة المرتبطة */}
+            <div className="space-y-2">
+              <label className="block text-sm font-bold text-black">
+                المهمة المرتبطة (اختياري)
+              </label>
+              <p className="text-xs text-black/70">
+                ربط الملف بمهمة محددة في المشروع
+              </p>
+              <input
+                type="text"
+                value={linkedTask}
+                onChange={(e) => setLinkedTask(e.target.value)}
+                placeholder="أدخل اسم المهمة (اختياري)"
+                className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black placeholder-black/50 focus:outline-none focus:border-black transition-colors"
+              />
+            </div>
+
+            {/* التاجات */}
+            <div className="space-y-3">
+              <label className="block text-sm font-bold text-black">
+                التاجات
+              </label>
+              <p className="text-xs text-black/70">
+                إدارة تاجات الملف لتسهيل البحث والتصنيف
+              </p>
+              
+              {/* عرض التاجات المضافة */}
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {tags.map((tag, index) => (
+                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                      {tag}
+                      <X 
+                        className="w-3 h-3 cursor-pointer" 
+                        onClick={() => handleRemoveTag(tag)}
+                      />
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* إضافة تاج جديد */}
+              <div className="flex gap-2">
+                <input
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="إضافة تاج جديد"
+                  className="flex-1 px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black placeholder-black/50 focus:outline-none focus:border-black transition-colors"
+                />
+                <button 
+                  type="button" 
+                  onClick={handleAddTag}
+                  disabled={!newTag.trim()}
+                  className="px-4 py-3 bg-black/10 hover:bg-black/20 disabled:bg-black/5 disabled:cursor-not-allowed rounded-2xl flex items-center gap-2 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  إضافة
+                </button>
+              </div>
+            </div>
+
+            {/* أهمية الملف */}
+            <div className="space-y-3">
+              <label className="block text-sm font-bold text-black">
+                أهمية الملف
+              </label>
+              <p className="text-xs text-black/70">
+                تحديد مستوى أهمية الملف في المشروع
+              </p>
+              <Select value={importance} onValueChange={setImportance}>
+                <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
+                  <SelectValue placeholder="اختر مستوى الأهمية" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border border-black/20 rounded-2xl shadow-xl z-[10000]">
+                  <SelectItem value="High">عالي - ملف مهم جداً</SelectItem>
+                  <SelectItem value="Medium">متوسط - ملف مهم</SelectItem>
+                  <SelectItem value="Low">منخفض - ملف عادي</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
+        </div>
 
-          {/* أهمية الملف */}
-          <div className="space-y-2">
-            <Label>أهمية الملف</Label>
-            <Select value={importance} onValueChange={setImportance}>
-              <SelectTrigger>
-                <SelectValue placeholder="اختر مستوى الأهمية" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="High">عالي</SelectItem>
-                <SelectItem value="Medium">متوسط</SelectItem>
-                <SelectItem value="Low">منخفض</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* أزرار الحفظ والإلغاء */}
-          <div className="flex gap-2 justify-end pt-4">
-            <Button variant="outline" onClick={onClose}>
-              إلغاء
-            </Button>
-            <Button 
-              onClick={handleSave}
-              disabled={!name.trim()}
-            >
-              حفظ التغييرات
-            </Button>
-          </div>
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-black/10">
+          <button
+            onClick={onClose}
+            className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium transition-colors"
+          >
+            إلغاء
+          </button>
+          <button 
+            onClick={handleSave}
+            disabled={!name.trim()}
+            className="px-6 py-3 bg-black hover:bg-black/90 disabled:bg-black/50 disabled:cursor-not-allowed rounded-full text-white font-medium transition-colors"
+          >
+            حفظ التغييرات
+          </button>
         </div>
       </DialogContent>
     </Dialog>
