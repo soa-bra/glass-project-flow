@@ -15,6 +15,7 @@ interface FileUploadModalProps {
     title: string;
   }>;
   projectId?: string;
+  onFilesUploaded?: (files: any[]) => void;
 }
 
 interface UploadedFile {
@@ -27,7 +28,8 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
   isOpen,
   onClose,
   projectTasks = [],
-  projectId = 'current'
+  projectId = 'current',
+  onFilesUploaded
 }) => {
   // استخدام hook البيانات المشتركة
   const { addFiles } = useProjectFiles(projectId);
@@ -180,6 +182,11 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     // إضافة الملفات للنظام المشترك
     addFiles(newFiles);
 
+    // إشعار مكون الوالد بالملفات المرفوعة
+    if (onFilesUploaded) {
+      onFilesUploaded(newFiles);
+    }
+
     // إعادة تعيين النموذج
     setUploadedFiles([]);
     setFileTitle('');
@@ -190,7 +197,7 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     
     toast({
       title: "تم رفع الملفات بنجاح",
-      description: `تم رفع ${uploadedFiles.length} ملف(ات) للمشروع وستظهر في DocumentsGrid`,
+      description: `تم رفع ${uploadedFiles.length} ملف(ات) وستظهر في القوالب`,
     });
 
     onClose();

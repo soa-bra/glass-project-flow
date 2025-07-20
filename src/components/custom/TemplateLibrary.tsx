@@ -14,11 +14,13 @@ interface Template {
 
 interface TemplateLibraryProps {
   templates: Template[];
+  onTemplateAdded?: (template: Template) => void;
 }
 
-export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ templates = [] }) => {
+export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ templates = [], onTemplateAdded }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadedTemplates, setUploadedTemplates] = useState<Template[]>([]);
 
   const defaultTemplates = [
     { id: '1', name: 'قالب تقرير المشروع', category: 'تقارير', downloads: 45 },
@@ -26,12 +28,27 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ templates = []
     { id: '3', name: 'قالب خطة المشروع', category: 'تخطيط', downloads: 67 }
   ];
 
-  const items = templates.length > 0 ? templates : defaultTemplates;
+  const allTemplates = [...(templates.length > 0 ? templates : defaultTemplates), ...uploadedTemplates];
   
-  const filteredItems = items.filter(template =>
+  const filteredItems = allTemplates.filter(template =>
     template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     template.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleTemplateUploaded = (files: any[]) => {
+    const newTemplates = files.map((file, index) => ({
+      id: `uploaded-${Date.now()}-${index}`,
+      name: file.name || 'ملف مرفوع',
+      category: 'مرفوع',
+      downloads: 0
+    }));
+    
+    setUploadedTemplates(prev => [...prev, ...newTemplates]);
+    
+    if (onTemplateAdded) {
+      newTemplates.forEach(template => onTemplateAdded(template));
+    }
+  };
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-black/10">
@@ -106,6 +123,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ templates = []
         onClose={() => setShowUploadModal(false)}
         projectTasks={[]}
         projectId="templates"
+        onFilesUploaded={handleTemplateUploaded}
       />
     </div>
   );
