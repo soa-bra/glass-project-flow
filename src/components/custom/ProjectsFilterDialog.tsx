@@ -23,6 +23,7 @@ export const ProjectsFilterDialog: React.FC<ProjectsFilterDialogProps> = ({
   onClose,
   onApplyFilter
 }) => {
+  console.log('ProjectsFilterDialog loaded - no selectedPriority here');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedProjectType, setSelectedProjectType] = useState<string>('all');
   const [selectedPartnership, setSelectedPartnership] = useState<string>('all');
