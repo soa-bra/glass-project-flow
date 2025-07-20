@@ -97,7 +97,7 @@ export const CollaborationPanel: React.FC = () => {
         return 'غير محدد';
     }
   };
-  return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
+  return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 overflow-hidden my-0 rounded-3xl">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2 text-black">
           
@@ -108,7 +108,7 @@ export const CollaborationPanel: React.FC = () => {
       <CardContent className="h-[calc(100%-4rem)] p-0">
         <Tabs defaultValue="participants" className="h-full flex flex-col">
           <TabsList className="grid w-full grid-cols-3 bg-transparent p-1 mx-0 py-0 px-[35px]">
-            <TabsTrigger value="participants" className="rounded-[12px] text-xs font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:text-black">
+            <TabsTrigger value="participants" className="rounded-[12px] text-xs font-arabic data-[state=active] flex-1 bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none">
               المشاركين
             </TabsTrigger>
             <TabsTrigger value="chat" className="rounded-[12px] text-xs font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:text-black">
@@ -119,18 +119,12 @@ export const CollaborationPanel: React.FC = () => {
             </TabsTrigger>
           </TabsList>
 
-          <div className="flex-1 px-4 pb-4">
-            <TabsContent value="participants" className="h-full space-y-3 mt-0">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-arabic text-black">المشاركين ({participants.length})</span>
-                <Button size="sm" className="rounded-[12px] bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none">
-                  <UserPlus className="w-4 h-4 mr-1" />
-                  دعوة
-                </Button>
-              </div>
+          <div className="flex-1 px-4 pb-4 my-[2px] py-0">
+            <TabsContent value="participants" className="h-full space-y-3 mt-0 my-[5px]">
+              
               
               <div className="space-y-2 max-h-[calc(100%-3rem)] overflow-y-auto">
-                {participants.map(participant => <div key={participant.id} className="flex items-center gap-3 p-2 rounded-[12px] bg-white border border-[#d1e1ea]">
+                {participants.map(participant => <div key={participant.id} className="flex items-center gap-3 p-2 rounded-[12px] bg-white border border-[#d1e1ea] py-[5px]">
                     <div className="relative">
                       <Avatar className="w-8 h-8">
                         <AvatarImage src={participant.avatar} />
