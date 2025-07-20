@@ -194,7 +194,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
       <div className="flex gap-2 mb-4">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input placeholder="البحث في المرفقات..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pr-10 text-right" />
+          <Input placeholder="البحث في المرفقات..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pr-10 text-right h-8 border-black" />
         </div>
         <button onClick={handleUpdateFile} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
           <RefreshCw size={16} />
