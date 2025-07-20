@@ -57,9 +57,9 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
 
   const handleApply = () => {
     const filters: FilterOptions = {
-      task: selectedTask || undefined,
-      type: selectedType || undefined,
-      importance: selectedImportance || undefined,
+      task: selectedTask && selectedTask !== 'all' ? selectedTask : undefined,
+      type: selectedType && selectedType !== 'all' ? selectedType : undefined,
+      importance: selectedImportance && selectedImportance !== 'all' ? selectedImportance : undefined,
       tags: selectedTags.length > 0 ? selectedTags : undefined
     };
     onApplyFilter(filters);
@@ -91,7 +91,7 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                 <SelectValue placeholder="اختر المهمة" />
               </SelectTrigger>
               <SelectContent className="bg-white/90 backdrop-blur-md border border-black/10 rounded-xl">
-                <SelectItem value="">جميع المهام</SelectItem>
+                <SelectItem value="all">جميع المهام</SelectItem>
                 {projectTasks.map((task) => (
                   <SelectItem key={task.id} value={task.id}>
                     {task.title}
@@ -109,7 +109,7 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                 <SelectValue placeholder="اختر نوع الملف" />
               </SelectTrigger>
               <SelectContent className="bg-white/90 backdrop-blur-md border border-black/10 rounded-xl">
-                <SelectItem value="">جميع الأنواع</SelectItem>
+                <SelectItem value="all">جميع الأنواع</SelectItem>
                 {fileTypes.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
@@ -127,7 +127,7 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                 <SelectValue placeholder="اختر مستوى الأهمية" />
               </SelectTrigger>
               <SelectContent className="bg-white/90 backdrop-blur-md border border-black/10 rounded-xl">
-                <SelectItem value="">جميع المستويات</SelectItem>
+                <SelectItem value="all">جميع المستويات</SelectItem>
                 {importanceLevels.map((level) => (
                   <SelectItem key={level.value} value={level.value}>
                     {level.label}
