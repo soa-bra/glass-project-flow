@@ -360,6 +360,13 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
         }}
         file={selectedFile}
         onSave={handleEditFile}
+        projectTasks={[
+          { id: '1', title: 'تصميم واجهة المستخدم' },
+          { id: '2', title: 'تطوير قاعدة البيانات' },
+          { id: '3', title: 'اختبار النظام' },
+          { id: '4', title: 'كتابة الوثائق' },
+          { id: '5', title: 'مراجعة الكود' }
+        ]}
       />
     </div>;
 };

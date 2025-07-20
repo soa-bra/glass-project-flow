@@ -18,19 +18,25 @@ interface EditFileDialogProps {
   onClose: () => void;
   file: ProjectFile | null;
   onSave: (fileId: string, updates: Partial<ProjectFile>) => void;
+  projectTasks?: Array<{
+    id: string;
+    title: string;
+  }>;
 }
 
 export const EditFileDialog: React.FC<EditFileDialogProps> = ({
   isOpen,
   onClose,
   file,
-  onSave
+  onSave,
+  projectTasks = []
 }) => {
   const [name, setName] = useState('');
   const [linkedTask, setLinkedTask] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
   const [importance, setImportance] = useState('');
+  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
 
   useEffect(() => {
     if (file) {
@@ -38,8 +44,16 @@ export const EditFileDialog: React.FC<EditFileDialogProps> = ({
       setLinkedTask(file.linkedTask || '');
       setTags(file.tags || []);
       setImportance(file.classification || '');
+      // استخراج المهام المربوطة من التاجات
+      const linkedTaskTitles = file.tags?.filter(tag => 
+        projectTasks.some(task => task.title === tag)
+      ) || [];
+      const linkedTaskIds = linkedTaskTitles.map(title => 
+        projectTasks.find(task => task.title === title)?.id
+      ).filter(Boolean) as string[];
+      setSelectedTasks(linkedTaskIds);
     }
-  }, [file]);
+  }, [file, projectTasks]);
 
   const handleAddTag = () => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
@@ -52,12 +66,27 @@ export const EditFileDialog: React.FC<EditFileDialogProps> = ({
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
+  const handleTaskToggle = (taskId: string) => {
+    setSelectedTasks(prev => 
+      prev.includes(taskId)
+        ? prev.filter(id => id !== taskId)
+        : [...prev, taskId]
+    );
+  };
+
   const handleSave = () => {
     if (file && name.trim()) {
+      // دمج التاجات العادية مع المهام المختارة
+      const taskTags = selectedTasks.map(taskId => 
+        projectTasks.find(task => task.id === taskId)?.title || ''
+      ).filter(Boolean);
+      
+      const allTags = [...tags, ...taskTags];
+      
       onSave(file.id, {
         name: name.trim(),
         linkedTask,
-        tags,
+        tags: allTags,
         classification: importance as any
       });
       onClose();
@@ -206,6 +235,36 @@ export const EditFileDialog: React.FC<EditFileDialogProps> = ({
                 </SelectContent>
               </Select>
             </div>
+
+            {/* ربط المهام */}
+            {projectTasks.length > 0 && (
+              <div className="space-y-3">
+                <label className="block text-sm font-bold text-black">
+                  ربط بالمهام (اختياري)
+                </label>
+                <p className="text-xs text-black/70 mb-3">
+                  يمكنك ربط هذا الملف بمهام محددة في المشروع
+                </p>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {projectTasks.map((task) => (
+                    <label key={task.id} className="flex items-center gap-3 p-3 bg-white/20 hover:bg-white/30 rounded-2xl cursor-pointer transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={selectedTasks.includes(task.id)}
+                        onChange={() => handleTaskToggle(task.id)}
+                        className="w-4 h-4 text-black border-black/30 rounded focus:ring-black"
+                      />
+                      <span className="text-sm text-black font-medium">{task.title}</span>
+                    </label>
+                  ))}
+                </div>
+                {selectedTasks.length > 0 && (
+                  <p className="text-xs text-black/70">
+                    تم تحديد {selectedTasks.length} مهمة
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
