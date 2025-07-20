@@ -204,7 +204,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
       {/* شبكة المجلدات والمستندات */}
       <ScrollArea className="h-[400px]">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
           {/* عرض المجلدات أولاً */}
           {filteredFolders.map(folder => {
           const FolderIcon = getFolderIcon(folder.icon);
