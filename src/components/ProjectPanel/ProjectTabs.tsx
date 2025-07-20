@@ -821,44 +821,30 @@ export const TemplatesTab = ({
         </div>
       </div>
 
-      {/* فئات القوالب */}
+      {/* أدوات إدارة القوالب */}
       <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
-        <h3 className="text-lg font-semibold text-black mb-6">توزيع القوالب حسب الفئة والاستخدام</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <p className="text-2xl font-bold text-black mb-1">4</p>
-            <h4 className="text-sm font-bold text-black mb-2">قوالب التقارير</h4>
-            <div className="bg-[#f1b5b9] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-black">تقارير دورية</span>
-            </div>
+        <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة قوالب المشروع</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">رفع قالب جديد</h4>
+            <p className="text-xs text-black/70 mb-3">إضافة قوالب ونماذج جديدة للمشروع</p>
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+              رفع قالب
+            </button>
           </div>
-          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <p className="text-2xl font-bold text-black mb-1">3</p>
-            <h4 className="text-sm font-bold text-black mb-2">نماذج إدارية</h4>
-            <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-black">إجراءات داخلية</span>
-            </div>
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">تنظيم الفئات</h4>
+            <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم فئات القوالب</p>
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+              تنظيم الفئات
+            </button>
           </div>
-          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <p className="text-2xl font-bold text-black mb-1">2</p>
-            <h4 className="text-sm font-bold text-black mb-2">وثائق قانونية</h4>
-            <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-black">عقود واتفاقيات</span>
-            </div>
-          </div>
-          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <p className="text-2xl font-bold text-black mb-1">2</p>
-            <h4 className="text-sm font-bold text-black mb-2">خطط التخطيط</h4>
-            <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-black">جدولة المشاريع</span>
-            </div>
-          </div>
-          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <p className="text-2xl font-bold text-black mb-1">1</p>
-            <h4 className="text-sm font-bold text-black mb-2">موارد بشرية</h4>
-            <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-black">تقييم الأداء</span>
-            </div>
+          <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
+            <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للقوالب</p>
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+              إدارة الصلاحيات
+            </button>
           </div>
         </div>
       </div>
