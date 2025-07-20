@@ -169,8 +169,8 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   };
 
   const handleUpdateFile = () => {
-    // تحديث المكون DocumentsGrid عن طريق إعادة تحميل البيانات
-    window.location.reload(); // إعادة تحميل الصفحة لتحديث البيانات
+    // تحديث البيانات دون إعادة تحميل الصفحة
+    getProjectFiles(projectId);
   };
 
   const handleFilterFile = () => {
