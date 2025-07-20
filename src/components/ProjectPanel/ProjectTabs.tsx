@@ -726,40 +726,6 @@ export const AttachmentsTab = ({
         </div>
       </div>
 
-      {/* فئات الملفات */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
-        <h3 className="text-lg font-semibold text-black mb-6">توزيع الملفات حسب النوع والتصنيف</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <p className="text-2xl font-bold text-black mb-1">7</p>
-            <h4 className="text-sm font-bold text-black mb-2">مستندات PDF</h4>
-            <div className="bg-[#f1b5b9] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-black">تقارير رسمية</span>
-            </div>
-          </div>
-          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <p className="text-2xl font-bold text-black mb-1">5</p>
-            <h4 className="text-sm font-bold text-black mb-2">مستندات Word</h4>
-            <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-black">وثائق تحريرية</span>
-            </div>
-          </div>
-          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <p className="text-2xl font-bold text-black mb-1">4</p>
-            <h4 className="text-sm font-bold text-black mb-2">جداول Excel</h4>
-            <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-black">بيانات تحليلية</span>
-            </div>
-          </div>
-          <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <p className="text-2xl font-bold text-black mb-1">7</p>
-            <h4 className="text-sm font-bold text-black mb-2">ملفات أخرى</h4>
-            <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-black">صور وتصاميم</span>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <DocumentsGrid projectId="current" />
 

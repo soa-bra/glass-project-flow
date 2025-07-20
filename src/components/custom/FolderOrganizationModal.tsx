@@ -555,7 +555,16 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
             setShowFolderEditModal(false);
             setFolderToEdit(null);
           }}
-          folder={folderToEdit}
+          folder={{
+            ...folderToEdit,
+            files: folderToEdit.files?.map(file => ({
+              id: file.id,
+              name: file.name,
+              type: file.type,
+              size: parseInt(file.size.replace(/[^\d]/g, '')) || 0,
+              uploadedAt: file.uploadDate
+            }))
+          }}
           onSave={handleFolderEditSave}
         />
       )}
