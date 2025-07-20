@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Download, Eye } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { FileText, Download, Eye, Plus, Search } from 'lucide-react';
+import { FileUploadModal } from './FileUploadModal';
 
 interface Template {
   id: string;
@@ -15,6 +17,9 @@ interface TemplateLibraryProps {
 }
 
 export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ templates = [] }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showUploadModal, setShowUploadModal] = useState(false);
+
   const defaultTemplates = [
     { id: '1', name: 'قالب تقرير المشروع', category: 'تقارير', downloads: 45 },
     { id: '2', name: 'نموذج اتفاقية العمل', category: 'قانوني', downloads: 32 },
@@ -22,50 +27,86 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ templates = []
   ];
 
   const items = templates.length > 0 ? templates : defaultTemplates;
+  
+  const filteredItems = items.filter(template =>
+    template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    template.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-      {items.map((template) => (
-        <div key={template.id} className="bg-[#F2FFFF] rounded-3xl p-4 border border-black/10">
-          <div className="flex items-start gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between mb-2">
-                <Badge variant="secondary" className="text-xs">
-                  {template.category}
-                </Badge>
-                <h4 className="font-medium text-sm text-right mr-2 line-clamp-2">
-                  {template.name}
-                </h4>
-              </div>
-              
-              <div className="space-y-2 text-xs text-gray-600">
-                <div className="flex justify-between">
-                  <span>التحميلات: {template.downloads}</span>
-                  <span>قالب احترافي</span>
-                </div>
-              </div>
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-black/10">
+      {/* شريط البحث وأيقونة الرفع */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Input
+            type="text"
+            placeholder="البحث عن القوالب..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pr-10"
+          />
+        </div>
+        <button 
+          onClick={() => setShowUploadModal(true)} 
+          className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95"
+        >
+          <Plus size={16} />
+        </button>
+      </div>
 
-              {/* أزرار الإجراءات */}
-              <div className="flex gap-1 mt-3">
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  className="p-1 h-6 w-6"
-                >
-                  <Eye className="w-3 h-3" />
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  className="p-1 h-6 w-6"
-                >
-                  <Download className="w-3 h-3" />
-                </Button>
+      {/* القوالب */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+        {filteredItems.map((template) => (
+          <div key={template.id} className="bg-[#F2FFFF] rounded-3xl p-4 border border-black/10">
+            <div className="flex items-start gap-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between mb-2">
+                  <Badge variant="secondary" className="text-xs">
+                    {template.category}
+                  </Badge>
+                  <h4 className="font-medium text-sm text-right mr-2 line-clamp-2">
+                    {template.name}
+                  </h4>
+                </div>
+                
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex justify-between">
+                    <span>التحميلات: {template.downloads}</span>
+                    <span>قالب احترافي</span>
+                  </div>
+                </div>
+
+                {/* أزرار الإجراءات */}
+                <div className="flex gap-1 mt-3">
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="p-1 h-6 w-6"
+                  >
+                    <Eye className="w-3 h-3" />
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="p-1 h-6 w-6"
+                  >
+                    <Download className="w-3 h-3" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      {/* نافذة رفع القوالب */}
+      <FileUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        projectTasks={[]}
+        projectId="templates"
+      />
     </div>
   );
 };
