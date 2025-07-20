@@ -16,7 +16,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { projectFiles, ProjectFile, getProjectFiles, getFilesWithPermissions } from '@/data/projectFiles';
+import { useProjectFiles } from '@/hooks/useProjectFiles';
 
 interface PermissionsModalProps {
   isOpen: boolean;
@@ -45,9 +45,7 @@ export const PermissionsModal: React.FC<PermissionsModalProps> = ({
   projectId = 'current'
 }) => {
   const { toast } = useToast();
-
-  // Get project files from shared data
-  const projectFilesList = getProjectFiles(projectId);
+  const { files: projectFilesList } = useProjectFiles(projectId);
 
   // صلاحيات الملفات المتاحة
   const [filePermissions] = useState<Permission[]>([

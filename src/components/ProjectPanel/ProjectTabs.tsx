@@ -693,7 +693,8 @@ export const AttachmentsTab = ({
         projectId={projectId}
         projectTasks={projectTasks}
       />
-    </div>;
+    </div>
+  );
 };
 
 // تبويب القوالب

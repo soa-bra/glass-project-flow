@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FolderEditModal } from './FolderEditModal';
-import { getProjectFiles, updateFileFolder, getFilesByFolder } from '@/data/projectFiles';
+import { useProjectFiles } from '@/hooks/useProjectFiles';
 
 interface FolderOrganizationModalProps {
   isOpen: boolean;
@@ -60,6 +60,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
   onSave
 }) => {
   const { toast } = useToast();
+  const { files: projectFiles, updateFileFolder } = useProjectFiles('current');
   
   // المجلدات الموجودة حالياً
   const [folders, setFolders] = useState<FolderData[]>([
@@ -100,8 +101,8 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     }
   ]);
 
-  // جميع ملفات المشروع المتاحة من المصدر المشترك
-  const projectFiles = getProjectFiles('current').map(file => ({
+  // تحويل ملفات المشروع لتنسيق مناسب للنافذة
+  const convertedProjectFiles = projectFiles.map(file => ({
     id: file.id,
     name: file.name,
     type: file.type === 'document' ? 'application/pdf' : 
@@ -185,7 +186,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
       return;
     }
 
-    const fileToAdd = projectFiles.find(f => f.id === fileId);
+    const fileToAdd = convertedProjectFiles.find(f => f.id === fileId);
     if (!fileToAdd) return;
 
     setFolders(prev => 
@@ -263,7 +264,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
   const getAvailableFiles = (folderId: string) => {
     const folder = folders.find(f => f.id === folderId);
     const folderFileIds = folder?.files?.map(f => f.id) || [];
-    return projectFiles.filter(file => !folderFileIds.includes(file.id));
+    return convertedProjectFiles.filter(file => !folderFileIds.includes(file.id));
   };
 
   const handleCreateFolder = () => {
