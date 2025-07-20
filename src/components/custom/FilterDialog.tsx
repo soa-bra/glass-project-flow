@@ -75,22 +75,46 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-white/90 backdrop-blur-md border border-black/10 rounded-3xl">
-        <DialogHeader className="text-right">
-          <DialogTitle className="text-black text-lg font-semibold">
-            فلترة المرفقات
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent 
+        className="sm:max-w-md p-0 overflow-hidden"
+        style={{
+          background: 'rgba(255,255,255,0.4)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '24px',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-black/10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
+              <X className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-black">فلترة المرفقات</h2>
+              <p className="text-sm text-black/70">تصفية وبحث المرفقات</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 bg-transparent hover:bg-black/5 rounded-full flex items-center justify-center transition-colors"
+          >
+            <X className="w-5 h-5 text-black" />
+          </button>
+        </div>
 
-        <div className="space-y-6 mt-6">
+        {/* Content */}
+        <div className="p-6 space-y-6">
           {/* فلترة حسب المهمة */}
-          <div className="space-y-2">
-            <Label className="text-black font-medium">المهمة</Label>
+          <div className="space-y-3">
+            <label className="block text-sm font-bold text-black">المهمة</label>
             <Select value={selectedTask} onValueChange={setSelectedTask}>
-              <SelectTrigger className="rounded-full border-black/20 bg-white/50 text-right">
+              <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
                 <SelectValue placeholder="اختر المهمة" />
               </SelectTrigger>
-              <SelectContent className="bg-white/90 backdrop-blur-md border border-black/10 rounded-xl">
+              <SelectContent>
                 <SelectItem value="all">جميع المهام</SelectItem>
                 {projectTasks.map((task) => (
                   <SelectItem key={task.id} value={task.id}>
@@ -102,13 +126,13 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
           </div>
 
           {/* فلترة حسب النوع */}
-          <div className="space-y-2">
-            <Label className="text-black font-medium">نوع الملف</Label>
+          <div className="space-y-3">
+            <label className="block text-sm font-bold text-black">نوع الملف</label>
             <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="rounded-full border-black/20 bg-white/50 text-right">
+              <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
                 <SelectValue placeholder="اختر نوع الملف" />
               </SelectTrigger>
-              <SelectContent className="bg-white/90 backdrop-blur-md border border-black/10 rounded-xl">
+              <SelectContent>
                 <SelectItem value="all">جميع الأنواع</SelectItem>
                 {fileTypes.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
@@ -120,13 +144,13 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
           </div>
 
           {/* فلترة حسب الأهمية */}
-          <div className="space-y-2">
-            <Label className="text-black font-medium">مستوى الأهمية</Label>
+          <div className="space-y-3">
+            <label className="block text-sm font-bold text-black">مستوى الأهمية</label>
             <Select value={selectedImportance} onValueChange={setSelectedImportance}>
-              <SelectTrigger className="rounded-full border-black/20 bg-white/50 text-right">
+              <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
                 <SelectValue placeholder="اختر مستوى الأهمية" />
               </SelectTrigger>
-              <SelectContent className="bg-white/90 backdrop-blur-md border border-black/10 rounded-xl">
+              <SelectContent>
                 <SelectItem value="all">جميع المستويات</SelectItem>
                 {importanceLevels.map((level) => (
                   <SelectItem key={level.value} value={level.value}>
@@ -138,8 +162,8 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
           </div>
 
           {/* فلترة حسب التاقز */}
-          <div className="space-y-2">
-            <Label className="text-black font-medium">التاقز</Label>
+          <div className="space-y-3">
+            <label className="block text-sm font-bold text-black">التاقز</label>
             <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
               {availableTags.map((tag) => (
                 <Badge
@@ -148,7 +172,7 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                   className={`cursor-pointer rounded-full transition-all ${
                     selectedTags.includes(tag)
                       ? 'bg-black text-white border-black'
-                      : 'bg-white/50 text-black border-black/20 hover:bg-black/5'
+                      : 'bg-white/30 text-black border-black/20 hover:bg-white/40'
                   }`}
                   onClick={() => handleTagToggle(tag)}
                 >
@@ -162,27 +186,26 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
           </div>
         </div>
 
-        <div className="flex gap-3 mt-8 justify-end">
-          <Button
-            variant="outline"
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-black/10">
+          <button
             onClick={handleReset}
-            className="rounded-full bg-white/50 border-black/20 text-black hover:bg-black/5"
+            className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium transition-colors"
           >
             إعادة تعيين
-          </Button>
-          <Button
-            variant="outline"
+          </button>
+          <button
             onClick={onClose}
-            className="rounded-full bg-white/50 border-black/20 text-black hover:bg-black/5"
+            className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium transition-colors"
           >
             إلغاء
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={handleApply}
-            className="rounded-full bg-black text-white hover:bg-black/80"
+            className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium transition-colors"
           >
             تطبيق الفلترة
-          </Button>
+          </button>
         </div>
       </DialogContent>
     </Dialog>
