@@ -19,44 +19,40 @@ import {
   FolderOpen,
   File
 } from 'lucide-react';
-import { projectFiles, ProjectFile, getProjectFiles, getFileCountByType } from '@/data/projectFiles';
+import { ProjectFile } from '@/data/projectFiles';
+import { useProjectFiles } from '@/hooks/useProjectFiles';
 
-interface FolderData {
-  id: string;
-  name: string;
-  parentId?: string;
-  filesCount: number;
-  createdAt: string;
-  color?: string;
-  icon?: string;
-  files?: Array<{
-    id: string;
-    name: string;
-    type: string;
-    size: number;
-    uploadedAt: string;
-  }>;
-}
+// تم نقل FolderData إلى projectFilesService
 
 interface DocumentsGridProps {
-  documents?: ProjectFile[];
-  folders?: FolderData[];
   onFolderClick?: (folderId: string) => void;
   projectId?: string;
+  currentUserId?: string;
 }
 
 export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
-  documents,
-  folders = [],
   onFolderClick,
-  projectId = 'current'
+  projectId = 'current',
+  currentUserId = 'current_user'
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
 
-  // Use provided documents or get from shared data
-  const docs = documents || getProjectFiles(projectId);
+  // استخدام hook البيانات المشتركة
+  const { 
+    files, 
+    folders, 
+    getProjectFiles, 
+    getFolderFiles,
+    getFilteredFiles,
+    isLoading,
+    deleteFile,
+    moveFileToFolder
+  } = useProjectFiles(projectId);
+
+  // الحصول على الملفات المفلترة حسب الصلاحيات
+  const docs = getFilteredFiles(currentUserId, projectId);
   
   const getFolderIcon = (iconId?: string) => {
     switch (iconId) {
@@ -139,7 +135,13 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   );
 
   const getTypeCount = (type: string) => {
-    return getFileCountByType(currentDocs, type);
+    return currentDocs.filter(doc => doc.type === type).length;
+  };
+
+  const handleDeleteFile = (fileId: string) => {
+    if (window.confirm('هل تريد بالتأكيد حذف هذا الملف؟')) {
+      deleteFile(fileId);
+    }
   };
 
   const handleFolderClick = (folderId: string) => {
@@ -306,7 +308,12 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
                       <Button size="sm" variant="ghost" className="p-1 h-6 w-6">
                         <Edit3 className="w-3 h-3" />
                       </Button>
-                      <Button size="sm" variant="ghost" className="p-1 h-6 w-6 text-red-500">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="p-1 h-6 w-6 text-red-500"
+                        onClick={() => handleDeleteFile(doc.id)}
+                      >
                         <Trash2 className="w-3 h-3" />
                       </Button>
                     </div>

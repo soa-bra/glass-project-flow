@@ -3,21 +3,16 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Upload, X, FileText, Image, Video, Archive } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ProjectFile } from '@/data/projectFiles';
+import { useProjectFiles } from '@/hooks/useProjectFiles';
 
 interface FileUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: {
-    files: File[];
-    title: string;
-    linkedTasks: string[];
-    projectId: string;
-  }) => void;
   projectTasks?: Array<{
     id: string;
     title: string;
   }>;
-  projectId: string;
+  projectId?: string;
 }
 
 interface UploadedFile {
@@ -29,10 +24,11 @@ interface UploadedFile {
 export const FileUploadModal: React.FC<FileUploadModalProps> = ({
   isOpen,
   onClose,
-  onSave,
   projectTasks = [],
-  projectId
+  projectId = 'current'
 }) => {
+  // استخدام hook البيانات المشتركة
+  const { addFiles } = useProjectFiles(projectId);
   const { toast } = useToast();
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [fileTitle, setFileTitle] = useState('');
@@ -145,12 +141,21 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
       return;
     }
 
-    onSave({
-      files: uploadedFiles.map(f => f.file),
-      title: fileTitle,
-      linkedTasks: selectedTasks,
+    // إنشاء ملفات جديدة باستخدام النظام المشترك
+    const newFiles = uploadedFiles.map(uploadedFile => ({
+      name: uploadedFile.file.name,
+      type: getFileType(uploadedFile.file.type),
+      size: formatFileSize(uploadedFile.file.size),
+      uploadDate: new Date().toISOString().split('T')[0],
+      classification: 'Medium' as const,
+      version: 'v1.0',
+      uploadedBy: 'المستخدم الحالي', // يجب أن يأتي من السياق
+      tags: [fileTitle, ...selectedTasks.map(taskId => projectTasks.find(t => t.id === taskId)?.title || '').filter(Boolean)],
       projectId
-    });
+    }));
+
+    // إضافة الملفات للنظام المشترك
+    addFiles(newFiles);
 
     // إعادة تعيين النموذج
     setUploadedFiles([]);
@@ -159,8 +164,18 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     
     toast({
       title: "تم رفع الملفات بنجاح",
-      description: `تم رفع ${uploadedFiles.length} ملف(ات) للمشروع`,
+      description: `تم رفع ${uploadedFiles.length} ملف(ات) للمشروع وستظهر في DocumentsGrid`,
     });
+
+    onClose();
+  };
+
+  const getFileType = (mimeType: string): ProjectFile['type'] => {
+    if (mimeType.startsWith('image/')) return 'image';
+    if (mimeType.startsWith('video/')) return 'video';
+    if (mimeType.startsWith('audio/')) return 'audio';
+    if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('tar')) return 'archive';
+    return 'document';
   };
 
   const handleClose = () => {

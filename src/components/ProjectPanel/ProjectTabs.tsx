@@ -761,22 +761,21 @@ export const AttachmentsTab = ({
         </div>
       </div>
 
-      <DocumentsGrid documents={projectDocuments} />
+      <DocumentsGrid projectId="current" />
 
       {/* نافذة رفع الملفات */}
       <FileUploadModal
         isOpen={isFileUploadModalOpen}
         onClose={() => setIsFileUploadModalOpen(false)}
-        onSave={handleFileUpload}
         projectTasks={projectTasks}
-        projectId="current-project-id"
+        projectId="current"
       />
 
       {/* نافذة تنظيم المجلدات */}
       <FolderOrganizationModal
         isOpen={isFolderOrganizationModalOpen}
         onClose={() => setIsFolderOrganizationModalOpen(false)}
-        onSave={handleFolderOrganization}
+        projectId="current"
       />
 
       {/* نافذة إدارة الصلاحيات */}

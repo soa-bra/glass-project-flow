@@ -19,33 +19,16 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FolderEditModal } from './FolderEditModal';
-import { getProjectFiles } from '@/data/projectFiles';
+import { useProjectFiles } from '@/hooks/useProjectFiles';
 
 interface FolderOrganizationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: {
-    folders: FolderData[];
-    actions: FolderAction[];
-  }) => void;
+  projectId?: string;
 }
 
-interface FolderData {
-  id: string;
-  name: string;
-  parentId?: string;
-  filesCount: number;
-  createdAt: string;
-  color?: string;
-  icon?: string;
-  files?: Array<{
-    id: string;
-    name: string;
-    type: string;
-    size: number;
-    uploadedAt: string;
-  }>;
-}
+// استخدام FolderData من النظام المشترك
+import { FolderData } from '@/services/projectFilesService';
 
 interface FolderAction {
   type: 'create' | 'rename' | 'delete' | 'move';
@@ -57,64 +40,24 @@ interface FolderAction {
 export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = ({
   isOpen,
   onClose,
-  onSave
+  projectId = 'current'
 }) => {
+  // استخدام hook البيانات المشتركة
+  const { 
+    folders, 
+    files,
+    addFolder, 
+    updateFolder, 
+    deleteFolder, 
+    moveFileToFolder,
+    getUnorganizedFiles
+  } = useProjectFiles(projectId);
   const { toast } = useToast();
   
-  // المجلدات الموجودة حالياً
-  const [folders, setFolders] = useState<FolderData[]>([
-    {
-      id: '1',
-      name: 'مستندات المشروع',
-      filesCount: 2,
-      createdAt: '2024-01-15',
-      color: '#a4e2f6',
-      icon: 'folder',
-      files: [
-        { id: 'file1', name: 'مواصفات المشروع.pdf', type: 'application/pdf', size: 2048000, uploadedAt: '2024-01-15T10:00:00Z' },
-        { id: 'file2', name: 'خطة العمل.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: 1024000, uploadedAt: '2024-01-16T14:30:00Z' }
-      ]
-    },
-    {
-      id: '2', 
-      name: 'التصاميم',
-      filesCount: 2,
-      createdAt: '2024-01-18',
-      color: '#d9d2fd',
-      icon: 'image',
-      files: [
-        { id: 'file3', name: 'تصميم الواجهة.png', type: 'image/png', size: 5120000, uploadedAt: '2024-01-18T09:15:00Z' },
-        { id: 'file4', name: 'الشعار.svg', type: 'image/svg+xml', size: 256000, uploadedAt: '2024-01-19T11:45:00Z' }
-      ]
-    },
-    {
-      id: '3',
-      name: 'تقارير',
-      filesCount: 1,
-      createdAt: '2024-01-20',
-      color: '#bdeed3',
-      icon: 'file-text',
-      files: [
-        { id: 'file5', name: 'تقرير الأداء.xlsx', type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size: 3072000, uploadedAt: '2024-01-20T16:20:00Z' }
-      ]
-    }
-  ]);
+  // الملفات غير المنظمة (بدون مجلد)
+  const unorganizedFiles = getUnorganizedFiles(projectId);
 
-  // جميع ملفات المشروع المتاحة من المصدر المشترك
-  const projectFiles = getProjectFiles('current').map(file => ({
-    id: file.id,
-    name: file.name,
-    type: file.type === 'document' ? 'application/pdf' : 
-          file.type === 'image' ? 'image/png' : 
-          file.type === 'video' ? 'video/mp4' : 
-          file.type === 'audio' ? 'audio/mp3' : 
-          file.type === 'archive' ? 'application/zip' : 
-          'application/octet-stream',
-    size: parseInt(file.size.replace(/[^\d]/g, '')) * 1024 * 1024, // تحويل من MB إلى bytes
-    uploadedAt: file.uploadDate
-  }));
-
-  const [actions, setActions] = useState<FolderAction[]>([]);
+  // إزالة actions state لأننا نستخدم النظام المشترك مباشرة
   const [newFolderName, setNewFolderName] = useState('');
   const [editingFolder, setEditingFolder] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
@@ -145,27 +88,20 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     setShowFolderEditModal(true);
   };
 
-  const handleFolderEditSave = (updatedFolder: FolderData) => {
-    setFolders(prev => 
-      prev.map(f => f.id === updatedFolder.id ? updatedFolder : f)
-    );
-    setActions(prev => [...prev, { 
-      type: 'rename', 
-      folderId: updatedFolder.id, 
-      newName: updatedFolder.name 
-    }]);
+  const handleFolderEditSave = (updatedFolder: any) => {
+    const { files, ...folderUpdates } = updatedFolder;
+    updateFolder(updatedFolder.id, folderUpdates);
     setShowFolderEditModal(false);
     setFolderToEdit(null);
+    
+    toast({
+      title: "تم تحديث المجلد",
+      description: `تم تحديث مجلد "${updatedFolder.name}" بنجاح`,
+    });
   };
 
   const handleUpdateFolderIcon = (folderId: string, iconId: string) => {
-    setFolders(prev => 
-      prev.map(folder => 
-        folder.id === folderId 
-          ? { ...folder, icon: iconId }
-          : folder
-      )
-    );
+    updateFolder(folderId, { icon: iconId });
     
     toast({
       title: "تم تحديث أيقونة المجلد",
@@ -174,56 +110,33 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
   };
 
   const handleAddFileToFolder = (folderId: string, fileId: string) => {
-    // التحقق من أن الملف غير موجود في المجلد
-    const folder = folders.find(f => f.id === folderId);
-    if (folder?.files?.some(f => f.id === fileId)) {
+    const file = files.find(f => f.id === fileId);
+    if (!file) return;
+
+    // التحقق من أن الملف ليس في مجلد آخر بالفعل
+    if (file.folderId && file.folderId !== folderId) {
       toast({
-        title: "الملف موجود بالفعل",
-        description: "هذا الملف موجود بالفعل في المجلد",
+        title: "الملف موجود في مجلد آخر",
+        description: "يجب نقل الملف من المجلد الحالي أولاً",
         variant: "destructive",
       });
       return;
     }
 
-    const fileToAdd = projectFiles.find(f => f.id === fileId);
-    if (!fileToAdd) return;
-
-    setFolders(prev => 
-      prev.map(folder => 
-        folder.id === folderId 
-          ? { 
-              ...folder, 
-              files: [...(folder.files || []), fileToAdd],
-              filesCount: (folder.files?.length || 0) + 1
-            }
-          : folder
-      )
-    );
-    
+    moveFileToFolder(fileId, folderId);
     setShowFileSelection(null);
     
     toast({
       title: "تم إضافة الملف",
-      description: `تم إضافة "${fileToAdd.name}" للمجلد بنجاح`,
+      description: `تم إضافة "${file.name}" للمجلد بنجاح`,
     });
   };
 
   const handleRemoveFileFromFolder = (folderId: string, fileId: string) => {
-    const folder = folders.find(f => f.id === folderId);
-    const file = folder?.files?.find(f => f.id === fileId);
+    const file = files.find(f => f.id === fileId);
     
     if (file && window.confirm(`هل تريد بالتأكيد إزالة "${file.name}" من المجلد؟`)) {
-      setFolders(prev => 
-        prev.map(folder => 
-          folder.id === folderId 
-            ? { 
-                ...folder, 
-                files: folder.files?.filter(f => f.id !== fileId) || [],
-                filesCount: Math.max(0, folder.filesCount - 1)
-              }
-            : folder
-        )
-      );
+      moveFileToFolder(fileId, undefined); // إزالة من المجلد
       
       toast({
         title: "تم إزالة الملف",
@@ -248,11 +161,9 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     return <File className="w-4 h-4" />;
   };
 
-  // الحصول على الملفات المتاحة للإضافة (غير موجودة في المجلد حالياً)
+  // الحصول على الملفات المتاحة للإضافة (غير موجودة في أي مجلد)
   const getAvailableFiles = (folderId: string) => {
-    const folder = folders.find(f => f.id === folderId);
-    const folderFileIds = folder?.files?.map(f => f.id) || [];
-    return projectFiles.filter(file => !folderFileIds.includes(file.id));
+    return unorganizedFiles;
   };
 
   const handleCreateFolder = () => {
@@ -265,17 +176,14 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
       return;
     }
 
-    const newFolder: FolderData = {
-      id: Date.now().toString(),
+    const folderId = addFolder({
       name: newFolderName,
       filesCount: 0,
       createdAt: new Date().toISOString().split('T')[0],
       color: selectedColor,
       icon: selectedIcon
-    };
+    });
 
-    setFolders(prev => [...prev, newFolder]);
-    setActions(prev => [...prev, { type: 'create', folderId: newFolder.id }]);
     setNewFolderName('');
     
     toast({
@@ -299,19 +207,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
       return;
     }
 
-    setFolders(prev => 
-      prev.map(folder => 
-        folder.id === editingFolder 
-          ? { ...folder, name: editingName }
-          : folder
-      )
-    );
-
-    setActions(prev => [...prev, { 
-      type: 'rename', 
-      folderId: editingFolder!, 
-      newName: editingName 
-    }]);
+    updateFolder(editingFolder!, { name: editingName });
 
     setEditingFolder(null);
     setEditingName('');
@@ -341,8 +237,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     }
 
     if (window.confirm(`هل تريد بالتأكيد حذف مجلد "${folder.name}"؟`)) {
-      setFolders(prev => prev.filter(f => f.id !== folderId));
-      setActions(prev => [...prev, { type: 'delete', folderId }]);
+      deleteFolder(folderId);
       
       toast({
         title: "تم حذف المجلد",
@@ -351,16 +246,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
     }
   };
 
-  const handleSave = () => {
-    onSave({
-      folders,
-      actions
-    });
-    onClose();
-  };
-
   const handleClose = () => {
-    setActions([]);
     setNewFolderName('');
     setEditingFolder(null);
     setEditingName('');
@@ -582,10 +468,10 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
                                             <div className="w-6 h-6 bg-black/10 rounded-lg flex items-center justify-center">
                                               {getFileIcon(file.type)}
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                              <p className="text-xs font-medium text-black truncate">{file.name}</p>
-                                              <p className="text-xs text-black/60">{formatFileSize(file.size)}</p>
-                                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-black truncate">{file.name}</p>
+                              <p className="text-xs text-black/60">{file.size}</p>
+                            </div>
                                           </button>
                                         ))}
                                       </div>
@@ -610,7 +496,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
                                   
                                   <div className="flex-1 min-w-0">
                                     <p className="text-xs font-medium text-black truncate">{file.name}</p>
-                                    <p className="text-xs text-black/60">{formatFileSize(file.size)}</p>
+                                    <p className="text-xs text-black/60">{file.size}</p>
                                   </div>
                                   
                                   <button
@@ -646,15 +532,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
               </div>
             </div>
 
-            {/* معلومات إضافية */}
-            {actions.length > 0 && (
-              <div className="bg-white/20 rounded-2xl p-4 border border-black/10">
-                <h4 className="text-sm font-bold text-black mb-2">التغييرات المعلقة:</h4>
-                <p className="text-xs text-black/70">
-                  {actions.length} تغيير(ات) سيتم تطبيقها عند الحفظ
-                </p>
-              </div>
-            )}
+            {/* معلومات إضافية - إزالة actions */}
           </div>
         </div>
 
@@ -664,13 +542,7 @@ export const FolderOrganizationModal: React.FC<FolderOrganizationModalProps> = (
             onClick={handleClose}
             className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium transition-colors"
           >
-            إلغاء
-          </button>
-          <button
-            onClick={handleSave}
-            className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium transition-colors"
-          >
-            حفظ التغييرات
+            إغلاق
           </button>
         </div>
       </DialogContent>
