@@ -24,7 +24,7 @@ export const AIAssistantPanel: React.FC = () => {
   const handleSmartCleanup = () => {
     toast.info('تم تشغيل أداة التنظيف الذكية');
   };
-  return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden py-0">
+  return <Card className="w-full h-full backdrop-blur-md shadow-sm border border-gray-300 rounded-[20px] h-full bg-[#f3ffff] bg-[soabra-new-project-cards]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2 text-black">
           

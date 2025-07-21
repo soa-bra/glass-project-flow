@@ -97,7 +97,7 @@ export const CollaborationPanel: React.FC = () => {
         return 'غير محدد';
     }
   };
-  return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 overflow-hidden my-0 rounded-3xl">
+  return <Card className="backdrop-blur-md shadow-sm border border-gray-300 rounded-[20px] h-full bg-[#f3ffff] bg-[soabra-new-project-cards]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-arabic flex items-center gap-2 text-black">
           

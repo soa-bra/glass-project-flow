@@ -79,7 +79,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
   };
   if (!selectedElement) {
     return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
-        <CardContent className="flex items-center justify-center h-full my-0">
+        <CardContent className="backdrop-blur-md shadow-sm border border-gray-300 rounded-[20px] h-full bg-[#f3ffff] bg-[soabra-new-project-cards]">
           <div className="text-center">
             <Palette className="w-12 h-12 text-[#96d8d0] mx-auto mb-3" />
             <p className="text-sm font-arabic text-black/70">
