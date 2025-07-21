@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CanvasElement } from '../types';
 import { SelectionPanel } from './Selection/SelectionPanel';
-import { SelectionKeyboardShortcuts } from './Selection/SelectionKeyboardShortcuts';
 import { 
   useSelectionKeyboardShortcuts
 } from './Selection/hooks/useSelectionKeyboardShortcuts';
@@ -133,8 +132,6 @@ export const SelectionTool: React.FC<SelectionToolProps> = ({
         onAlign={handleAlign}
         onUpdateElement={onUpdateElement}
       />
-
-      <SelectionKeyboardShortcuts />
     </div>
   );
 };

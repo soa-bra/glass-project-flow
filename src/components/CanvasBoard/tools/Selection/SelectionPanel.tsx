@@ -2,7 +2,6 @@ import React from 'react';
 import { Separator } from '@/components/ui/separator';
 import { CanvasElement } from '../../types';
 import {
-  SelectionPanelInfo,
   SelectionPanelBasicActions,
   SelectionPanelGroupActions,
   SelectionPanelLockActions,
@@ -63,9 +62,6 @@ export const SelectionPanel: React.FC<SelectionPanelProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* معلومات التحديد */}
-      <SelectionPanelInfo selectedElementsCount={selectedElements.length} />
-
       {/* الإجراءات الأساسية */}
       <SelectionPanelBasicActions
         hasSelection={hasSelection}

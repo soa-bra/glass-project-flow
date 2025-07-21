@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { CanvasElement } from '../../types';
 import { SelectionPanel } from './SelectionPanel';
-import { SelectionKeyboardShortcuts } from './components';
 import { useSelectionKeyboardShortcuts } from './hooks/useSelectionKeyboardShortcuts';
 
 interface EnhancedSelectionToolProps {
@@ -148,9 +147,6 @@ export const EnhancedSelectionTool: React.FC<EnhancedSelectionToolProps> = ({
         onAlign={handleAlign}
         onUpdateElement={onUpdateElement}
       />
-      
-      {/* Keyboard Shortcuts Reference */}
-      <SelectionKeyboardShortcuts />
     </div>
   );
 };
