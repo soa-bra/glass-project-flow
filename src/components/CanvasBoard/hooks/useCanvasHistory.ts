@@ -1,39 +1,51 @@
+
 import { useState, useCallback } from 'react';
 import { CanvasElement } from '../types';
-import { toast } from 'sonner';
 
 export const useCanvasHistory = () => {
-  const [history, setHistory] = useState<CanvasElement[][]>([[]]);
-  const [historyIndex, setHistoryIndex] = useState<number>(0);
+  const [history, setHistory] = useState<CanvasElement[][]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
-  const saveToHistory = useCallback((newElements: CanvasElement[]) => {
-    const newHistory = history.slice(0, historyIndex + 1);
-    newHistory.push([...newElements]);
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
+  const saveToHistory = useCallback((elements: CanvasElement[]) => {
+    setHistory(prev => {
+      const newHistory = prev.slice(0, historyIndex + 1);
+      newHistory.push([...elements]);
+      
+      // Limit history to 50 entries
+      if (newHistory.length > 50) {
+        newHistory.shift();
+        return newHistory;
+      }
+      
+      return newHistory;
+    });
+    setHistoryIndex(prev => Math.min(prev + 1, 49));
+  }, [historyIndex]);
+
+  const undo = useCallback(() => {
+    if (historyIndex > 0) {
+      setHistoryIndex(prev => prev - 1);
+      return history[historyIndex - 1];
+    }
+    return null;
   }, [history, historyIndex]);
 
-  const undo = useCallback((elements: CanvasElement[], setElements: (elements: CanvasElement[]) => void) => {
-    if (historyIndex > 0) {
-      setHistoryIndex(historyIndex - 1);
-      setElements(history[historyIndex - 1]);
-      toast.success('تم التراجع');
-    }
-  }, [historyIndex, history]);
-
-  const redo = useCallback((elements: CanvasElement[], setElements: (elements: CanvasElement[]) => void) => {
+  const redo = useCallback(() => {
     if (historyIndex < history.length - 1) {
-      setHistoryIndex(historyIndex + 1);
-      setElements(history[historyIndex + 1]);
-      toast.success('تم الإعادة');
+      setHistoryIndex(prev => prev + 1);
+      return history[historyIndex + 1];
     }
-  }, [historyIndex, history]);
+    return null;
+  }, [history, historyIndex]);
+
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
 
   return {
-    history,
-    historyIndex,
     saveToHistory,
     undo,
-    redo
+    redo,
+    canUndo,
+    canRedo
   };
 };

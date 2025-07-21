@@ -1,3 +1,4 @@
+
 /**
  * @fileoverview Main Canvas Board Application - Complete collaborative editor
  * @author AI Assistant
@@ -11,7 +12,9 @@ import EnhancedLayersPanel from './panels/EnhancedLayersPanel';
 import AppearancePanel from './panels/AppearancePanel';
 import EnhancedCollaborationPanel from './panels/EnhancedCollaborationPanel';
 import TopToolbar from './toolbars/TopToolbar';
-import { ChatMessage, Participant } from '@/types/canvas';
+import { Canvas } from './components/Canvas/Canvas';
+import { ToolPanel } from './components/ToolPanel';
+import { ChatMessage, Participant, CanvasElement } from '@/types/canvas';
 
 /**
  * Main Canvas Board Component
@@ -47,15 +50,21 @@ const CanvasBoard: React.FC = () => {
     participants,
     chatMessages,
     addChatMessage,
-    addParticipant
+    addParticipant,
+    activeTool
   } = useCanvasState();
 
   const [showPanels, setShowPanels] = useState({
     smartAssistant: true,
     layers: true,
     appearance: true,
-    collaboration: true
+    collaboration: true,
+    tools: true
   });
+
+  const [selectedTool, setSelectedTool] = useState('select');
+  const [selectedSmartElement, setSelectedSmartElement] = useState('');
+  const [canvasPosition, setCanvasPosition] = useState({ x: 0, y: 0 });
 
   // Mock data for collaboration
   const mockParticipants: Participant[] = [
@@ -176,9 +185,62 @@ const CanvasBoard: React.FC = () => {
             </div>
           )}
           
+          {/* Tool Panel */}
+          {showPanels.tools && (
+            <div className="h-1/3">
+              <ToolPanel
+                selectedTool={selectedTool}
+                selectedElements={elements.filter(el => selectedElementIds.includes(el.id))}
+                elements={elements}
+                selectedElementId={selectedElementIds[0] || null}
+                zoom={zoom}
+                canvasPosition={canvasPosition}
+                panSpeed={1}
+                lineWidth={2}
+                lineStyle="solid"
+                selectedPenMode="pen"
+                showGrid={gridVisible}
+                snapEnabled={snapToGrid}
+                gridSize={20}
+                gridShape="dots"
+                layers={layers}
+                selectedLayerId={selectedLayerId}
+                onUpdateElement={updateElement}
+                onCopy={() => console.log('Copy')}
+                onCut={() => console.log('Cut')}
+                onPaste={() => console.log('Paste')}
+                onDelete={() => selectedElementIds.forEach(deleteElement)}
+                onGroup={() => console.log('Group')}
+                onUngroup={() => console.log('Ungroup')}
+                onLock={() => console.log('Lock')}
+                onUnlock={() => console.log('Unlock')}
+                onRotate={() => console.log('Rotate')}
+                onFlipHorizontal={() => console.log('Flip Horizontal')}
+                onFlipVertical={() => console.log('Flip Vertical')}
+                onAlign={() => console.log('Align')}
+                onZoomChange={setZoom}
+                onPositionChange={setCanvasPosition}
+                onFitToScreen={() => console.log('Fit to screen')}
+                onResetView={() => setCanvasPosition({ x: 0, y: 0 })}
+                onPanSpeedChange={() => console.log('Pan speed change')}
+                onLineWidthChange={() => console.log('Line width change')}
+                onLineStyleChange={() => console.log('Line style change')}
+                onPenModeSelect={() => console.log('Pen mode select')}
+                onFileUpload={() => console.log('File upload')}
+                onLayerReorder={() => console.log('Layer reorder')}
+                onLayerSelect={selectLayer}
+                onGridToggle={toggleGrid}
+                onSnapToggle={toggleSnap}
+                onGridSizeChange={() => console.log('Grid size change')}
+                onGridShapeChange={() => console.log('Grid shape change')}
+                onAlignToGrid={() => console.log('Align to grid')}
+              />
+            </div>
+          )}
+          
           {/* Collaboration Panel */}
           {showPanels.collaboration && (
-            <div className="h-2/3">
+            <div className="h-1/3">
               <EnhancedCollaborationPanel
                 participants={mockParticipants}
                 chatMessages={mockChatMessages}
@@ -191,19 +253,30 @@ const CanvasBoard: React.FC = () => {
 
         {/* Main Canvas Area */}
         <div className="flex-1 bg-white relative">
-          <div className="w-full h-full bg-gray-100 relative">
-            {/* Canvas would go here */}
-            <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold mb-4">لوحة الكانفاس</h2>
-                <p>هنا سيتم عرض الكانفاس التفاعلي</p>
-                <div className="mt-4 text-sm">
-                  <p>العناصر: {elements.length}</p>
-                  <p>الطبقات: {layers.length}</p>
-                  <p>التكبير: {Math.round(zoom * 100)}%</p>
-                </div>
-              </div>
-            </div>
+          <Canvas
+            selectedTool={selectedTool}
+            selectedSmartElement={selectedSmartElement}
+            zoom={zoom}
+            canvasPosition={canvasPosition}
+            showGrid={gridVisible}
+            snapEnabled={snapToGrid}
+            onElementsChange={(newElements) => {
+              // Handle elements change if needed
+            }}
+            onSelectionChange={selectElements}
+          />
+
+          {/* Tool Selection */}
+          <div className="absolute top-4 left-4 flex gap-2 bg-white rounded-lg shadow-md p-2">
+            {['select', 'text', 'shape', 'sticky', 'smart-element', 'hand', 'zoom'].map(tool => (
+              <button
+                key={tool}
+                onClick={() => setSelectedTool(tool)}
+                className={`px-3 py-2 rounded ${selectedTool === tool ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+              >
+                {tool}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -216,7 +289,6 @@ const CanvasBoard: React.FC = () => {
                 layers={layers}
                 selectedLayerId={selectedLayerId}
                 onLayerUpdate={(newLayers) => {
-                  // Handle bulk layer updates
                   console.log('Updating layers:', newLayers);
                 }}
                 onLayerSelect={selectLayer}
@@ -245,6 +317,13 @@ const CanvasBoard: React.FC = () => {
           title="تبديل المساعد الذكي"
         >
           🤖
+        </button>
+        <button
+          onClick={() => setShowPanels(prev => ({ ...prev, tools: !prev.tools }))}
+          className="p-2 bg-primary text-white rounded shadow"
+          title="تبديل الأدوات"
+        >
+          🔧
         </button>
         <button
           onClick={() => setShowPanels(prev => ({ ...prev, collaboration: !prev.collaboration }))}

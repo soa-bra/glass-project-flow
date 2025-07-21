@@ -1,3 +1,4 @@
+
 /**
  * @fileoverview Canvas Board exports - main module exports
  * @author AI Assistant
@@ -7,8 +8,20 @@
 // Main Canvas Board Component
 export { default as CanvasBoard } from './CanvasBoard';
 
+// Canvas Components
+export * from './components/Canvas';
+
 // Panels
 export * from './panels';
 
 // Toolbars
 export { default as TopToolbar } from './toolbars/TopToolbar';
+
+// Tools
+export * from './tools';
+
+// Hooks
+export * from './hooks';
+
+// Types
+export * from './types';
