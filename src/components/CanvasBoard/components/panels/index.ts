@@ -5,6 +5,12 @@ export { ElementStylePanel } from './ElementStylePanel';
 export { CollaborationPanel } from './CollaborationPanel';
 export { ToolCustomizationPanel } from './ToolCustomizationPanel';
 
+// Enhanced Panel Components
+export { default as SmartAssistantPanel } from './SmartAssistantPanel';
+export { default as EnhancedLayersPanel } from './EnhancedLayersPanel';
+export { default as EnhancedCollaborationPanel } from './EnhancedCollaborationPanel';
+export { default as AppearancePanel } from './AppearancePanel';
+
 // Tool-specific Panel Components
 export { SelectionToolPanel } from './tools/SelectionToolPanel';
 export { SmartPenToolPanel } from './tools/SmartPenToolPanel';
