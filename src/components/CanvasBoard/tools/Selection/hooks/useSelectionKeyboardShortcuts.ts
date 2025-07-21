@@ -1,145 +1,171 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 
-export interface SelectionShortcutActions {
-  onCopy: () => void;
-  onCut: () => void;
-  onPaste: () => void;
-  onDelete: () => void;
-  onSelectAll: () => void;
-  onDeselectAll: () => void;
-  onGroup: () => void;
-  onUngroup: () => void;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
-  onMoveLeft: () => void;
-  onMoveRight: () => void;
-  onMoveUpFast: () => void;
-  onMoveDownFast: () => void;
-  onMoveLeftFast: () => void;
-  onMoveRightFast: () => void;
+interface SelectionKeyboardActions {
+  copy: () => void;
+  cut: () => void;
+  paste: () => void;
+  delete: () => void;
+  undo: () => void;
+  redo: () => void;
+  selectAll: () => void;
+  group: () => void;
+  ungroup: () => void;
+  deselect: () => void;
+  moveUp: () => void;
+  moveDown: () => void;
+  moveLeft: () => void;
+  moveRight: () => void;
+  fastMoveUp: () => void;
+  fastMoveDown: () => void;
+  fastMoveLeft: () => void;
+  fastMoveRight: () => void;
 }
 
 interface UseSelectionKeyboardShortcutsProps {
-  enabled: boolean;
+  isActive: boolean;
   hasSelection: boolean;
-  actions: SelectionShortcutActions;
+  actions: SelectionKeyboardActions;
 }
 
 export const useSelectionKeyboardShortcuts = ({
-  enabled,
+  isActive,
   hasSelection,
   actions
 }: UseSelectionKeyboardShortcutsProps) => {
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (!enabled) return;
-
-    const isCtrlCmd = e.ctrlKey || e.metaKey;
-    const isShift = e.shiftKey;
-
-    // منع التداخل مع حقول الإدخال
-    if (e.target instanceof HTMLInputElement || 
-        e.target instanceof HTMLTextAreaElement ||
-        e.target instanceof HTMLSelectElement) {
-      return;
-    }
-
-    switch (e.key.toLowerCase()) {
-      // العمليات الأساسية
-      case 'c':
-        if (isCtrlCmd && hasSelection) {
-          e.preventDefault();
-          actions.onCopy();
-        }
-        break;
-      case 'x':
-        if (isCtrlCmd && hasSelection) {
-          e.preventDefault();
-          actions.onCut();
-        }
-        break;
-      case 'v':
-        if (isCtrlCmd) {
-          e.preventDefault();
-          actions.onPaste();
-        }
-        break;
-      case 'a':
-        if (isCtrlCmd) {
-          e.preventDefault();
-          actions.onSelectAll();
-        }
-        break;
-      case 'delete':
-      case 'backspace':
-        if (hasSelection) {
-          e.preventDefault();
-          actions.onDelete();
-        }
-        break;
-      case 'escape':
-        e.preventDefault();
-        actions.onDeselectAll();
-        break;
-
-      // التجميع
-      case 'g':
-        if (isCtrlCmd && !isShift && hasSelection) {
-          e.preventDefault();
-          actions.onGroup();
-        } else if (isCtrlCmd && isShift && hasSelection) {
-          e.preventDefault();
-          actions.onUngroup();
-        }
-        break;
-
-      // الحركة
-      case 'arrowup':
-        if (hasSelection) {
-          e.preventDefault();
-          if (isShift) {
-            actions.onMoveUpFast();
-          } else {
-            actions.onMoveUp();
-          }
-        }
-        break;
-      case 'arrowdown':
-        if (hasSelection) {
-          e.preventDefault();
-          if (isShift) {
-            actions.onMoveDownFast();
-          } else {
-            actions.onMoveDown();
-          }
-        }
-        break;
-      case 'arrowleft':
-        if (hasSelection) {
-          e.preventDefault();
-          if (isShift) {
-            actions.onMoveLeftFast();
-          } else {
-            actions.onMoveLeft();
-          }
-        }
-        break;
-      case 'arrowright':
-        if (hasSelection) {
-          e.preventDefault();
-          if (isShift) {
-            actions.onMoveRightFast();
-          } else {
-            actions.onMoveRight();
-          }
-        }
-        break;
-    }
-  }, [enabled, hasSelection, actions]);
-
   useEffect(() => {
-    if (!enabled) return;
+    if (!isActive) return;
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const { ctrlKey, metaKey, shiftKey, key, code } = event;
+      const cmdCtrl = ctrlKey || metaKey;
+
+      // Prevent default for our handled shortcuts
+      const preventDefault = () => {
+        event.preventDefault();
+        event.stopPropagation();
+      };
+
+      // Copy: Ctrl/Cmd + C
+      if (cmdCtrl && key === 'c' && hasSelection) {
+        preventDefault();
+        actions.copy();
+        return;
+      }
+
+      // Cut: Ctrl/Cmd + X
+      if (cmdCtrl && key === 'x' && hasSelection) {
+        preventDefault();
+        actions.cut();
+        return;
+      }
+
+      // Paste: Ctrl/Cmd + V
+      if (cmdCtrl && key === 'v') {
+        preventDefault();
+        actions.paste();
+        return;
+      }
+
+      // Delete: Delete or Backspace
+      if ((key === 'Delete' || key === 'Backspace') && hasSelection) {
+        preventDefault();
+        actions.delete();
+        return;
+      }
+
+      // Undo: Ctrl/Cmd + Z
+      if (cmdCtrl && !shiftKey && key === 'z') {
+        preventDefault();
+        actions.undo();
+        return;
+      }
+
+      // Redo: Ctrl/Cmd + Y or Ctrl/Cmd + Shift + Z
+      if ((cmdCtrl && key === 'y') || (cmdCtrl && shiftKey && key === 'z')) {
+        preventDefault();
+        actions.redo();
+        return;
+      }
+
+      // Select All: Ctrl/Cmd + A
+      if (cmdCtrl && key === 'a') {
+        preventDefault();
+        actions.selectAll();
+        return;
+      }
+
+      // Group: Ctrl + G
+      if (ctrlKey && key === 'g' && hasSelection) {
+        preventDefault();
+        actions.group();
+        return;
+      }
+
+      // Ungroup: Shift + G
+      if (shiftKey && key === 'g' && hasSelection) {
+        preventDefault();
+        actions.ungroup();
+        return;
+      }
+
+      // Deselect: Escape
+      if (key === 'Escape' && hasSelection) {
+        preventDefault();
+        actions.deselect();
+        return;
+      }
+
+      // Arrow key movements (only when elements are selected)
+      if (hasSelection) {
+        const isShiftHeld = shiftKey;
+        const moveDistance = isShiftHeld ? 10 : 1; // 10px for fast move, 1px for precise
+
+        switch (code) {
+          case 'ArrowUp':
+            preventDefault();
+            if (isShiftHeld) {
+              actions.fastMoveUp();
+            } else {
+              actions.moveUp();
+            }
+            break;
+
+          case 'ArrowDown':
+            preventDefault();
+            if (isShiftHeld) {
+              actions.fastMoveDown();
+            } else {
+              actions.moveDown();
+            }
+            break;
+
+          case 'ArrowLeft':
+            preventDefault();
+            if (isShiftHeld) {
+              actions.fastMoveLeft();
+            } else {
+              actions.moveLeft();
+            }
+            break;
+
+          case 'ArrowRight':
+            preventDefault();
+            if (isShiftHeld) {
+              actions.fastMoveRight();
+            } else {
+              actions.moveRight();
+            }
+            break;
+        }
+      }
+    };
+
+    // Attach keyboard event listener
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [enabled, handleKeyDown]);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isActive, hasSelection, actions]);
 };

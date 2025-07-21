@@ -128,6 +128,9 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
         onGridSizeChange={handleGridSizeChange}
         onGridShapeChange={handleGridShapeChange}
         onAlignToGrid={handleAlignToGrid}
+        onUngroup={handleUngroup}
+        onLock={handleLock}
+        onUnlock={handleUnlock}
       />
       
       {/* Bottom Toolbar Section */}

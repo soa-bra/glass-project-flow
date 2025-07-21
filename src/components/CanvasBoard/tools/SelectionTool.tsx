@@ -3,8 +3,7 @@ import { CanvasElement } from '../types';
 import { SelectionPanel } from './Selection/SelectionPanel';
 import { SelectionKeyboardShortcuts } from './Selection/SelectionKeyboardShortcuts';
 import { 
-  useSelectionKeyboardShortcuts, 
-  SelectionShortcutActions 
+  useSelectionKeyboardShortcuts
 } from './Selection/hooks/useSelectionKeyboardShortcuts';
 
 interface SelectionToolProps {
@@ -51,44 +50,46 @@ export const SelectionTool: React.FC<SelectionToolProps> = ({
   const selectedElementIds = selectedElements.map(el => el.id);
 
   // إعداد اختصارات الكيبورد
-  const keyboardActions: SelectionShortcutActions = {
-    onCopy,
-    onCut,
-    onPaste,
-    onDelete,
-    onSelectAll,
-    onDeselectAll,
-    onGroup,
-    onUngroup,
-    onMoveUp: () => {
+  const keyboardActions = {
+    copy: onCopy,
+    cut: onCut,
+    paste: onPaste,
+    delete: onDelete,
+    undo: () => {}, // سيتم ربطها لاحقاً
+    redo: () => {}, // سيتم ربطها لاحقاً
+    selectAll: onSelectAll,
+    group: onGroup,
+    ungroup: onUngroup,
+    deselect: onDeselectAll,
+    moveUp: () => {
       selectedElementIds.forEach(id => onMoveElement(id, 'up', 1));
     },
-    onMoveDown: () => {
+    moveDown: () => {
       selectedElementIds.forEach(id => onMoveElement(id, 'down', 1));
     },
-    onMoveLeft: () => {
+    moveLeft: () => {
       selectedElementIds.forEach(id => onMoveElement(id, 'left', 1));
     },
-    onMoveRight: () => {
+    moveRight: () => {
       selectedElementIds.forEach(id => onMoveElement(id, 'right', 1));
     },
-    onMoveUpFast: () => {
+    fastMoveUp: () => {
       selectedElementIds.forEach(id => onMoveElement(id, 'up', 10));
     },
-    onMoveDownFast: () => {
+    fastMoveDown: () => {
       selectedElementIds.forEach(id => onMoveElement(id, 'down', 10));
     },
-    onMoveLeftFast: () => {
+    fastMoveLeft: () => {
       selectedElementIds.forEach(id => onMoveElement(id, 'left', 10));
     },
-    onMoveRightFast: () => {
+    fastMoveRight: () => {
       selectedElementIds.forEach(id => onMoveElement(id, 'right', 10));
     }
   };
 
   // تفعيل اختصارات الكيبورد
   useSelectionKeyboardShortcuts({
-    enabled: isActive,
+    isActive,
     hasSelection,
     actions: keyboardActions
   });

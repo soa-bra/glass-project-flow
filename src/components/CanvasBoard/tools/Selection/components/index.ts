@@ -4,3 +4,4 @@ export { SelectionPanelLockActions } from './SelectionPanelLockActions';
 export { SelectionPanelTransformActions } from './SelectionPanelTransformActions';
 export { SelectionPanelAlignmentActions } from './SelectionPanelAlignmentActions';
 export { SelectionPanelInfo } from './SelectionPanelInfo';
+export { SelectionKeyboardShortcuts } from './SelectionKeyboardShortcuts';

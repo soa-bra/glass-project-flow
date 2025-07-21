@@ -6,6 +6,7 @@ import { LayersPanel } from './panels/LayersPanel';
 import { ElementStylePanel } from './panels/ElementStylePanel';
 import { CollaborationPanel } from './panels/CollaborationPanel';
 import { ToolCustomizationPanel } from './panels/ToolCustomizationPanel';
+import { ToolPanel } from './ToolPanel';
 interface FloatingPanelLayoutProps {
   selectedTool: string;
   selectedElements: CanvasElement[];
@@ -53,6 +54,14 @@ interface FloatingPanelLayoutProps {
   onGridSizeChange: (size: number) => void;
   onGridShapeChange: (shape: string) => void;
   onAlignToGrid: () => void;
+  // Additional handlers for ToolPanel
+  onUngroup?: () => void;
+  onLock?: () => void;
+  onUnlock?: () => void;
+  onRotate?: () => void;
+  onFlipHorizontal?: () => void;
+  onFlipVertical?: () => void;
+  onAlign?: (direction: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
 }
 export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
   selectedTool,
@@ -92,7 +101,14 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
   onSnapToggle,
   onGridSizeChange,
   onGridShapeChange,
-  onAlignToGrid
+  onAlignToGrid,
+  onUngroup,
+  onLock,
+  onUnlock,
+  onRotate,
+  onFlipHorizontal,
+  onFlipVertical,
+  onAlign
 }) => {
   return <>
       {/* منطقة اللوحات الأولى - First Panels Area */}
@@ -120,9 +136,55 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
           <ElementStylePanel selectedElement={selectedElementId ? elements.find(el => el.id === selectedElementId) : null} onUpdateElement={onUpdateElement} />
         </div>
         
-        {/* Tool Customization Panel - 70% */}
+        {/* Tool Panel - 70% of remaining space (70% total) */}
         <div className="h-[70%]" style={{ backdropFilter: 'blur(8px)' }}>
-          <ToolCustomizationPanel selectedTool={selectedTool} selectedElements={selectedElements} zoom={zoom} canvasPosition={canvasPosition} panSpeed={panSpeed} lineWidth={lineWidth} lineStyle={lineStyle} selectedPenMode={selectedPenMode} showGrid={showGrid} snapEnabled={snapEnabled} gridSize={gridSize} gridShape={gridShape} layers={layers} selectedLayerId={selectedLayerId} onUpdateElement={onUpdateElement} onCopy={onCopy} onCut={onCut} onPaste={onPaste} onDelete={onDelete} onGroup={onGroup} onZoomChange={onZoomChange} onPositionChange={onPositionChange} onFitToScreen={onFitToScreen} onResetView={onResetView} onPanSpeedChange={onPanSpeedChange} onLineWidthChange={onLineWidthChange} onLineStyleChange={onLineStyleChange} onPenModeSelect={onPenModeSelect} onFileUpload={onFileUpload} onLayerReorder={onLayerReorder} onLayerSelect={onLayerSelect} onGridToggle={onGridToggle} onSnapToggle={onSnapToggle} onGridSizeChange={onGridSizeChange} onGridShapeChange={onGridShapeChange} onAlignToGrid={onAlignToGrid} />
+          <ToolPanel
+            selectedTool={selectedTool}
+            selectedElements={selectedElements}
+            elements={elements}
+            selectedElementId={selectedElementId}
+            zoom={zoom}
+            canvasPosition={canvasPosition}
+            panSpeed={panSpeed}
+            lineWidth={lineWidth}
+            lineStyle={lineStyle}
+            selectedPenMode={selectedPenMode}
+            showGrid={showGrid}
+            snapEnabled={snapEnabled}
+            gridSize={gridSize}
+            gridShape={gridShape}
+            layers={layers}
+            selectedLayerId={selectedLayerId}
+            onUpdateElement={onUpdateElement}
+            onCopy={onCopy}
+            onCut={onCut}
+            onPaste={onPaste}
+            onDelete={onDelete}
+            onGroup={onGroup}
+            onUngroup={onUngroup || (() => {})}
+            onLock={onLock || (() => {})}
+            onUnlock={onUnlock || (() => {})}
+            onRotate={onRotate || (() => {})}
+            onFlipHorizontal={onFlipHorizontal || (() => {})}
+            onFlipVertical={onFlipVertical || (() => {})}
+            onAlign={onAlign || (() => {})}
+            onZoomChange={onZoomChange}
+            onPositionChange={onPositionChange}
+            onFitToScreen={onFitToScreen}
+            onResetView={onResetView}
+            onPanSpeedChange={onPanSpeedChange}
+            onLineWidthChange={onLineWidthChange}
+            onLineStyleChange={onLineStyleChange}
+            onPenModeSelect={onPenModeSelect}
+            onFileUpload={onFileUpload}
+            onLayerReorder={onLayerReorder}
+            onLayerSelect={onLayerSelect}
+            onGridToggle={onGridToggle}
+            onSnapToggle={onSnapToggle}
+            onGridSizeChange={onGridSizeChange}
+            onGridShapeChange={onGridShapeChange}
+            onAlignToGrid={onAlignToGrid}
+          />
         </div>
       </div>
     </>;
