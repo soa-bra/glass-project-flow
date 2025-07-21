@@ -29,6 +29,10 @@ export const useCanvasElementManagement = (saveToHistory: (elements: CanvasEleme
       type: type as any,
       position: { x: x || 50, y: y || 50 },
       size: { width: width || 100, height: height || 100 },
+      x: x || 50,
+      y: y || 50,
+      width: width || 100,
+      height: height || 100,
       content: text || 'نص تجريبي'
     };
     setElements(prevElements => {

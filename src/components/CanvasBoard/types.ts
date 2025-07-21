@@ -1,11 +1,26 @@
 export interface CanvasElement {
   id: string;
-  type: 'text' | 'shape' | 'sticky' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'smart' | 'brainstorm' | 'root' | 'moodboard' | 'line';
+  type: 'text' | 'shape' | 'sticky' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'smart' | 'brainstorm' | 'root' | 'moodboard' | 'line' | 'rectangle' | 'circle';
   position: { x: number; y: number };
   size: { width: number; height: number };
+  x: number;
+  y: number;
+  width: number;
+  height: number;
   content?: string;
   style?: Record<string, any>;
   locked?: boolean;
+  fontSize?: number;
+  fontFamily?: string;
+  color?: string;
+  fillColor?: string;
+  strokeColor?: string;
+  strokeWidth?: number;
+  opacity?: number;
+  rotation?: number;
+  blur?: number;
+  visible?: boolean;
+  zIndex?: number;
 }
 
 export interface CanvasBoardContentsProps {

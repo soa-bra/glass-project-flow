@@ -1,4 +1,10 @@
 
+// Core canvas components
+export { default as Canvas } from './Canvas';
+export { default as DefaultView } from './DefaultView';
+export { default as Inspector } from './Inspector';
+export { default as CollabBar } from './CollabBar';
+
 // Main layout components
 export { FloatingPanelLayout } from './FloatingPanelLayout';
 export { CleanCanvasPanelLayout } from './CleanCanvasPanelLayout';

@@ -42,6 +42,10 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
         width: width || getDefaultWidth(actualType), 
         height: height || getDefaultHeight(actualType)
       },
+      x: Math.round(x),
+      y: Math.round(y),
+      width: width || getDefaultWidth(actualType),
+      height: height || getDefaultHeight(actualType),
       content: getDefaultContent(actualType),
       style: getDefaultStyle(actualType)
     };
