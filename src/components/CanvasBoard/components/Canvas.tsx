@@ -116,7 +116,7 @@ const Canvas: React.FC<CanvasProps> = ({
     }} onMouseUp={() => {
       onCanvasMouseUp();
       onElementMouseUp();
-    }} className="absolute inset-0 bg-slate-50">
+    }} className="absolute inset-1000 bg-slate-50 ">
         {/* عرض العناصر */}
         {elements.map(element => <CanvasElementComponent key={element.id} element={element} selectedElementId={selectedElementId} selectedTool={selectedTool} onElementSelect={onElementSelect} onElementMouseDown={onElementMouseDown} onElementMouseMove={onElementMouseMove} onElementMouseUp={onElementMouseUp} onResizeMouseDown={onResizeMouseDown} />)}
 
@@ -125,15 +125,7 @@ const Canvas: React.FC<CanvasProps> = ({
       </div>
 
       {/* مربع التحديد والتعديل للعناصر المحددة */}
-      {selectedElementIds.length > 0 && onUpdateElement && (
-        <SelectionBoundingBox
-          selectedElements={elements.filter(el => selectedElementIds.includes(el.id))}
-          zoom={zoom}
-          canvasPosition={canvasPosition}
-          onUpdateElement={onUpdateElement}
-          snapEnabled={snapEnabled}
-        />
-      )}
+      {selectedElementIds.length > 0 && onUpdateElement && <SelectionBoundingBox selectedElements={elements.filter(el => selectedElementIds.includes(el.id))} zoom={zoom} canvasPosition={canvasPosition} onUpdateElement={onUpdateElement} snapEnabled={snapEnabled} />}
 
       {/* شريط الحالة السفلي */}
       <CanvasStatusBar elements={elements} selectedElementId={selectedElementId} zoom={zoom} selectedTool={selectedTool} showGrid={showGrid} snapEnabled={snapEnabled} onToggleGrid={onToggleGrid} onToggleSnap={onToggleSnap} />
