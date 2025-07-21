@@ -1,29 +1,30 @@
-
-// Core canvas components
-export { default as Canvas } from './Canvas';
 export { default as DefaultView } from './DefaultView';
-export { default as Inspector } from './Inspector';
+export { default as MainToolbar } from './MainToolbar';
 export { default as CollabBar } from './CollabBar';
 
-// Main layout components
-export { FloatingPanelLayout } from './FloatingPanelLayout';
-export { CleanCanvasPanelLayout } from './CleanCanvasPanelLayout';
+export { default as Inspector } from './Inspector';
+export { default as Canvas } from './Canvas';
+export { CanvasWrapper } from './CanvasWrapper';
 export { CanvasPanelLayout } from './CanvasPanelLayout';
+export { CleanCanvasPanelLayout } from './CleanCanvasPanelLayout';
+export { useCanvasEventHandlers } from './CanvasEventHandlers';
 
-// Section components
+// Refactored Canvas components
+export { CanvasGrid } from './CanvasGrid';
+export { ElementRenderer } from './ElementRenderer';
+export { ElementResizeHandles } from './ElementResizeHandles';
+export { CanvasDrawingPreview } from './CanvasDrawingPreview';
+export { CanvasElement } from './CanvasElement';
+export { CanvasStatusBar } from './CanvasStatusBar';
+
+// Refactored Panel Layout components
 export { CanvasTopSection } from './CanvasTopSection';
+export { CanvasCollaborationSection } from './CanvasCollaborationSection';
+export { CanvasInspectorSection } from './CanvasInspectorSection';
+export { CanvasAISection } from './CanvasAISection';
+// Removed unused CanvasToolsSection
 export { CanvasBottomSection } from './CanvasBottomSection';
+export { FloatingPanelLayout } from './FloatingPanelLayout';
 
-// Toolbar components
-export { default as MainToolbar } from './MainToolbar';
-export { default as NewTopToolbar } from './NewTopToolbar';
-export { default as ToolPanelManager } from './ToolPanelManager';
-
-// Tool management
-export { CanvasToolManager } from './CanvasToolManager';
-
-// UI components
-export { ShortcutIndicator } from './ShortcutIndicator';
-
-// Panel components
-export * from './panels';
+// Types
+export type { CanvasPanelLayoutProps, Layer } from './CanvasPanelTypes';
