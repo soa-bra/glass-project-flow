@@ -54,6 +54,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
           canvasPosition={canvasState.canvasPosition}
           elements={canvasState.elements}
           selectedElementId={canvasState.selectedElementId}
+          selectedElementIds={canvasState.selectedElementIds}
           selectedTool={canvasState.selectedTool}
           canvasRef={canvasState.canvasRef}
           isDrawing={canvasState.isDrawing}
@@ -75,6 +76,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
           handleElementMouseUp={canvasState.handleElementMouseUp}
           handleResizeMouseDown={canvasState.handleResizeMouseDown}
           handleResizeMouseMove={canvasState.handleResizeMouseMove}
+          onUpdateElement={canvasState.updateElement}
         />
       </div>
       

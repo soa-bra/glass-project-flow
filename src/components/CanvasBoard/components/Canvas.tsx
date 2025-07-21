@@ -3,6 +3,7 @@ import { CanvasElement } from '../types';
 import { CanvasGrid } from './CanvasGrid';
 import { CanvasElement as CanvasElementComponent } from './CanvasElement';
 import { CanvasDrawingPreview } from './CanvasDrawingPreview';
+import { SelectionBoundingBox } from './SelectionBoundingBox';
 import { CanvasStatusBar } from './CanvasStatusBar';
 interface CanvasProps {
   showGrid: boolean;
@@ -14,6 +15,7 @@ interface CanvasProps {
   };
   elements: CanvasElement[];
   selectedElementId: string | null;
+  selectedElementIds?: string[];
   selectedTool: string;
   canvasRef: React.RefObject<HTMLDivElement>;
   isDrawing: boolean;
@@ -50,6 +52,7 @@ interface CanvasProps {
   onResizeMouseMove: (e: React.MouseEvent) => void;
   onToggleGrid: () => void;
   onToggleSnap: () => void;
+  onUpdateElement?: (elementId: string, updates: any) => void;
 }
 const Canvas: React.FC<CanvasProps> = ({
   showGrid,
@@ -58,6 +61,7 @@ const Canvas: React.FC<CanvasProps> = ({
   canvasPosition,
   elements,
   selectedElementId,
+  selectedElementIds = [],
   selectedTool,
   canvasRef,
   isDrawing,
@@ -78,7 +82,8 @@ const Canvas: React.FC<CanvasProps> = ({
   onResizeMouseDown,
   onResizeMouseMove,
   onToggleGrid,
-  onToggleSnap
+  onToggleSnap,
+  onUpdateElement
 }) => {
   const getCursorStyle = () => {
     if (selectedTool === 'smart-element') return 'crosshair';
@@ -118,6 +123,17 @@ const Canvas: React.FC<CanvasProps> = ({
         {/* معاينات الرسم */}
         <CanvasDrawingPreview isDrawing={isDrawing} drawStart={drawStart} drawEnd={drawEnd} selectedTool={selectedTool} isSelecting={isSelecting} selectionBox={selectionBox} />
       </div>
+
+      {/* مربع التحديد والتعديل للعناصر المحددة */}
+      {selectedElementIds.length > 0 && onUpdateElement && (
+        <SelectionBoundingBox
+          selectedElements={elements.filter(el => selectedElementIds.includes(el.id))}
+          zoom={zoom}
+          canvasPosition={canvasPosition}
+          onUpdateElement={onUpdateElement}
+          snapEnabled={snapEnabled}
+        />
+      )}
 
       {/* شريط الحالة السفلي */}
       <CanvasStatusBar elements={elements} selectedElementId={selectedElementId} zoom={zoom} selectedTool={selectedTool} showGrid={showGrid} snapEnabled={snapEnabled} onToggleGrid={onToggleGrid} onToggleSnap={onToggleSnap} />

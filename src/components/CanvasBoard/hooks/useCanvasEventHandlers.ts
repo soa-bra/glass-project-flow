@@ -20,7 +20,11 @@ export const useCanvasEventHandlers = (
   }, [setSelectedElementId, setSelectedElementIds]);
 
   const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
-    if (selectedTool === 'select') return;
+    if (selectedTool === 'select') {
+      // Start multi-selection if clicking on empty canvas
+      interaction.handleSelectionStart(e, zoom, canvasPosition, snapEnabled);
+      return;
+    }
 
     if (selectedTool === 'text') {
       interaction.handleTextClick(e, zoom, canvasPosition, addElement, snapEnabled);

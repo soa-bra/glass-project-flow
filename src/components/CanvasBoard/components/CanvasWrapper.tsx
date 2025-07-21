@@ -9,6 +9,7 @@ interface CanvasWrapperProps {
   canvasPosition: { x: number; y: number };
   elements: CanvasElement[];
   selectedElementId: string | null;
+  selectedElementIds?: string[];
   selectedTool: string;
   canvasRef: React.RefObject<HTMLDivElement>;
   isDrawing: boolean;
@@ -30,6 +31,7 @@ interface CanvasWrapperProps {
   handleElementMouseUp: () => void;
   handleResizeMouseDown: (e: React.MouseEvent, handle: string) => void;
   handleResizeMouseMove: (e: React.MouseEvent) => void;
+  onUpdateElement?: (elementId: string, updates: any) => void;
 }
 
 export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
@@ -39,6 +41,7 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
   canvasPosition,
   elements,
   selectedElementId,
+  selectedElementIds = [],
   selectedTool,
   canvasRef,
   isDrawing,
@@ -59,7 +62,8 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
   handleElementMouseMove,
   handleElementMouseUp,
   handleResizeMouseDown,
-  handleResizeMouseMove
+  handleResizeMouseMove,
+  onUpdateElement
 }) => {
   return (
     <Canvas
@@ -68,7 +72,8 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
       zoom={zoom}
       canvasPosition={canvasPosition}
       elements={elements}
-      selectedElementId={selectedElementId}
+        selectedElementId={selectedElementId}
+        selectedElementIds={selectedElementIds}
       selectedTool={selectedTool}
       canvasRef={canvasRef}
       isDrawing={isDrawing}
@@ -90,6 +95,7 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
       onResizeMouseMove={handleResizeMouseMove}
       onToggleGrid={() => setShowGrid(!showGrid)}
       onToggleSnap={() => setSnapEnabled(!snapEnabled)}
+      onUpdateElement={onUpdateElement}
     />
   );
 };
