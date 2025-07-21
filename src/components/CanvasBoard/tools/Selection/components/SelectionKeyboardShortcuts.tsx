@@ -45,5 +45,24 @@ export const SelectionKeyboardShortcuts: React.FC = () => {
     key: 'Esc',
     action: 'إلغاء التحديد'
   }];
-  return;
+  return (
+    <Card className="bg-background border-border">
+      <CardContent className="p-3">
+        <div className="flex items-center gap-2 mb-3">
+          <Keyboard className="w-4 h-4" />
+          <h4 className="text-sm font-medium font-arabic">اختصارات لوحة المفاتيح</h4>
+        </div>
+        <div className="space-y-2">
+          {shortcuts.map((shortcut, index) => (
+            <div key={index} className="flex justify-between items-center text-xs">
+              <span className="font-arabic">{shortcut.action}</span>
+              <code className="bg-muted px-2 py-1 rounded text-xs">
+                {shortcut.key}
+              </code>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
 };
