@@ -5,10 +5,11 @@ import { cn } from '@/lib/utils';
 
 // استخدام الكومبوننتس الموجودة
 import { TopFloatingPanel } from './TopFloatingPanel';
-import { MainToolbar } from './';
+import { AdvancedToolbar } from './AdvancedToolbar';
 import { CanvasGrid } from './CanvasGrid';
 import { CanvasStatusBar } from './CanvasStatusBar';
 import { MiniMap } from './MiniMap';
+import { SmartAssistantChat } from './SmartAssistantChat';
 
 // استخدام الأنواع الموجودة
 import type { CanvasElement } from '../types';
@@ -36,6 +37,7 @@ export const SimpleCollaborativeWhiteboard: React.FC<SimpleCollaborativeWhiteboa
   const [showGrid, setShowGrid] = useState(true);
   const [snapEnabled, setSnapEnabled] = useState(true);
   const [showMiniMap, setShowMiniMap] = useState(true);
+  const [showAIChat, setShowAIChat] = useState(false);
   const [participants, setParticipants] = useState<Participant[]>([
     {
       id: 'user-1',
@@ -78,6 +80,18 @@ export const SimpleCollaborativeWhiteboard: React.FC<SimpleCollaborativeWhiteboa
     }
   }, [selectedTool]);
 
+  const handleCreateElement = useCallback((type: string, x: number, y: number) => {
+    const newElement: CanvasElement = {
+      id: `element_${Date.now()}`,
+      type: type as any,
+      position: { x, y },
+      size: { width: 100, height: 100 },
+      content: type === 'text' ? 'نص جديد' : ''
+    };
+    
+    setElements(prev => [...prev, newElement]);
+  }, []);
+
   return (
     <div className={cn("relative w-full h-screen overflow-hidden bg-gray-50", className)}>
       {/* الشريط العلوي */}
@@ -116,15 +130,26 @@ export const SimpleCollaborativeWhiteboard: React.FC<SimpleCollaborativeWhiteboa
             {elements.map((element) => (
               <div
                 key={element.id}
-                className="absolute border-2 border-gray-300 bg-white rounded shadow-sm"
+                className={cn(
+                  "absolute border-2 rounded shadow-sm cursor-pointer transition-all",
+                  selectedElementIds.includes(element.id) 
+                    ? "border-blue-500 bg-blue-50" 
+                    : "border-gray-300 bg-white hover:border-blue-300"
+                )}
                 style={{
                   left: element.position.x,
                   top: element.position.y,
                   width: element.size.width,
                   height: element.size.height
                 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedElementIds([element.id]);
+                }}
               >
-                {element.content}
+                <div className="p-2 h-full flex items-center justify-center text-sm">
+                  {element.content || element.type}
+                </div>
               </div>
             ))}
           </div>
@@ -162,33 +187,64 @@ export const SimpleCollaborativeWhiteboard: React.FC<SimpleCollaborativeWhiteboa
         </div>
       </div>
 
-      {/* شريط الأدوات السفلي */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40">
-        <MainToolbar
-          selectedTool={selectedTool}
-          onToolSelect={handleToolSelect}
-        />
-      </div>
+      {/* شريط الأدوات السفلي المحسن */}
+      <AdvancedToolbar
+        selectedTool={selectedTool}
+        onToolSelect={handleToolSelect}
+        onCreateElement={handleCreateElement}
+      />
 
       {/* معلومات التطوير */}
-      <div className="fixed top-2 right-2 z-20 text-xs text-gray-500 bg-white/90 px-3 py-2 rounded-lg shadow">
-        🚀 لوحة التخطيط التشاركي - الإصدار التجريبي
-        <br />
+      <div className="fixed top-2 right-2 z-20 text-xs text-gray-500 bg-white/90 px-3 py-2 rounded-lg shadow border">
+        <div className="flex items-center gap-2">
+          <span className="text-green-600">●</span>
+          <span className="font-semibold">لوحة التخطيط التشاركي</span>
+        </div>
         العناصر: {elements.length} • المشاركين: {participants.length} • الزوم: {zoom}%
       </div>
 
-      {/* رسالة ترحيب */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <Card className="p-8 max-w-md text-center bg-white/95 backdrop-blur-sm">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">مرحباً بك!</h2>
-          <p className="text-gray-600 mb-4">
-            هذه لوحة التخطيط التشاركي الذكية. ابدأ بإنشاء عناصر جديدة باستخدام الأدوات في الأسفل.
-          </p>
-          <div className="text-sm text-gray-500">
-            الأساسيات جاهزة ✓<br />
-            الأدوات المتقدمة قيد التطوير 🔄
-          </div>
-        </Card>
+      {/* رسالة ترحيب - تظهر فقط عند عدم وجود عناصر */}
+      {elements.length === 0 && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <Card className="p-8 max-w-md text-center bg-white/95 backdrop-blur-sm shadow-lg">
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">مرحباً بك!</h2>
+            <p className="text-gray-600 mb-4">
+              ابدأ بإنشاء عناصر جديدة باستخدام الأدوات في الأسفل، أو اسحب الماوس لتحريك اللوحة.
+            </p>
+            <div className="text-sm text-gray-500">
+              <div className="flex items-center justify-center gap-4 mb-2">
+                <span>✓ الأساسيات جاهزة</span>
+                <span>🔄 قيد التطوير</span>
+              </div>
+              <p className="text-xs">جرب الأدوات: النص، المستطيل، الدائرة</p>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* AI Assistant Chat */}
+      {showAIChat && (
+        <div className="fixed left-4 top-20 z-50">
+          <SmartAssistantChat
+            elements={elements}
+            onCreateElement={handleCreateElement}
+            onClose={() => setShowAIChat(false)}
+          />
+        </div>
+      )}
+
+      {/* Quick AI Toggle */}
+      <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-40">
+        <Button
+          onClick={() => setShowAIChat(!showAIChat)}
+          className={cn(
+            "w-12 h-12 rounded-full shadow-lg transition-all",
+            showAIChat ? "bg-blue-500 text-white" : "bg-white text-blue-500 hover:bg-blue-50"
+          )}
+          title="المساعد الذكي"
+        >
+          🤖
+        </Button>
       </div>
     </div>
   );
