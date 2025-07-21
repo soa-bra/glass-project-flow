@@ -77,9 +77,12 @@ export const useCanvasInteractionHandlers = (
     
     // Handle different tool behaviors
     if (selectedTool === 'select') {
-      // Clear selection on empty canvas click
-      setSelectedElements([]);
-      setSelectedElementId(null);
+      // Clear selection on empty canvas click (only if not clicking on an element)
+      const target = e.target as HTMLElement;
+      if (target === canvasRef.current || target.closest('[data-canvas-element]') === null) {
+        setSelectedElements([]);
+        setSelectedElementId(null);
+      }
       return;
     }
     

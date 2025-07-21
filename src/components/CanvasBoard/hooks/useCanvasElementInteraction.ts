@@ -28,13 +28,18 @@ export const useCanvasElementInteraction = (canvasRef: React.RefObject<HTMLDivEl
     if (selectedTool !== 'select') return;
     
     e.stopPropagation();
+    e.preventDefault();
     
     // Handle multi-selection with Ctrl
     if (e.ctrlKey || e.metaKey) {
       if (selectedElementIds.includes(elementId)) {
-        setSelectedElementIds(selectedElementIds.filter(id => id !== elementId));
+        const newSelection = selectedElementIds.filter(id => id !== elementId);
+        setSelectedElementIds(newSelection);
+        setSelectedElementId(newSelection.length > 0 ? newSelection[0] : null);
       } else {
-        setSelectedElementIds([...selectedElementIds, elementId]);
+        const newSelection = [...selectedElementIds, elementId];
+        setSelectedElementIds(newSelection);
+        setSelectedElementId(elementId);
       }
     } else {
       setSelectedElementId(elementId);

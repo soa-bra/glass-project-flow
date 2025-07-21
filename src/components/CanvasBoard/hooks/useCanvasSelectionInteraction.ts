@@ -64,8 +64,12 @@ export const useCanvasSelectionInteraction = (canvasRef: React.RefObject<HTMLDiv
     const maxY = Math.max(start.y, end.y);
     
     // Only proceed if selection box is large enough (avoid accidental selection)
-    const selectionArea = (maxX - minX) * (maxY - minY);
-    if (selectionArea < 100) {
+    const selectionWidth = Math.abs(maxX - minX);
+    const selectionHeight = Math.abs(maxY - minY);
+    const selectionArea = selectionWidth * selectionHeight;
+    
+    // Allow smaller selection areas to make selection more responsive
+    if (selectionArea < 25) {
       setIsSelecting(false);
       setSelectionBox(null);
       return;

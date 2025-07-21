@@ -34,7 +34,7 @@ export const SelectionPanelBasicActions: React.FC<SelectionPanelBasicActionsProp
                 <Copy className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center" sideOffset={4}>
+            <TooltipContent side="bottom" align="center" sideOffset={8} className="bg-black text-white text-xs">
               <p>نسخ</p>
             </TooltipContent>
           </Tooltip>
@@ -50,7 +50,7 @@ export const SelectionPanelBasicActions: React.FC<SelectionPanelBasicActionsProp
                 <Scissors className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center" sideOffset={4}>
+            <TooltipContent side="bottom" align="center" sideOffset={8} className="bg-black text-white text-xs">
               <p>قص</p>
             </TooltipContent>
           </Tooltip>
@@ -65,7 +65,7 @@ export const SelectionPanelBasicActions: React.FC<SelectionPanelBasicActionsProp
                 <Clipboard className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center" sideOffset={4}>
+            <TooltipContent side="bottom" align="center" sideOffset={8} className="bg-black text-white text-xs">
               <p>لصق</p>
             </TooltipContent>
           </Tooltip>
@@ -81,7 +81,7 @@ export const SelectionPanelBasicActions: React.FC<SelectionPanelBasicActionsProp
                 <Trash2 className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center" sideOffset={4}>
+            <TooltipContent side="bottom" align="center" sideOffset={8} className="bg-black text-white text-xs">
               <p>حذف</p>
             </TooltipContent>
           </Tooltip>
