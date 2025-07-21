@@ -4,40 +4,23 @@ import { CanvasGrid } from './CanvasGrid';
 import { CanvasElement as CanvasElementComponent } from './CanvasElement';
 import { CanvasDrawingPreview } from './CanvasDrawingPreview';
 import { CanvasStatusBar } from './CanvasStatusBar';
+
 interface CanvasProps {
   showGrid: boolean;
   snapEnabled: boolean;
   zoom: number;
-  canvasPosition: {
-    x: number;
-    y: number;
-  };
+  canvasPosition: { x: number; y: number };
   elements: CanvasElement[];
   selectedElementId: string | null;
   selectedTool: string;
   canvasRef: React.RefObject<HTMLDivElement>;
   isDrawing: boolean;
-  drawStart: {
-    x: number;
-    y: number;
-  } | null;
-  drawEnd: {
-    x: number;
-    y: number;
-  } | null;
+  drawStart: { x: number; y: number } | null;
+  drawEnd: { x: number; y: number } | null;
   isDragging: boolean;
   isResizing: boolean;
   isSelecting?: boolean;
-  selectionBox?: {
-    start: {
-      x: number;
-      y: number;
-    };
-    end: {
-      x: number;
-      y: number;
-    };
-  } | null;
+  selectionBox?: { start: { x: number; y: number }; end: { x: number; y: number } } | null;
   onCanvasClick: (e: React.MouseEvent) => void;
   onCanvasMouseDown: (e: React.MouseEvent) => void;
   onCanvasMouseMove: (e: React.MouseEvent) => void;
@@ -51,6 +34,7 @@ interface CanvasProps {
   onToggleGrid: () => void;
   onToggleSnap: () => void;
 }
+
 const Canvas: React.FC<CanvasProps> = ({
   showGrid,
   snapEnabled,
@@ -90,37 +74,77 @@ const Canvas: React.FC<CanvasProps> = ({
     if (['shape', 'text', 'sticky'].includes(selectedTool)) return 'crosshair';
     return 'default';
   };
-  return <div className="relative w-full h-full bg-white overflow-hidden">
+
+  return (
+    <div className="relative w-full h-full bg-white overflow-hidden">
       {/* الشبكة النقطية الشفافة */}
       <CanvasGrid showGrid={showGrid} />
 
       {/* منطقة الرسم */}
-      <div ref={canvasRef} style={{
-      transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,
-      cursor: getCursorStyle()
-    }} onClick={onCanvasClick} onMouseDown={onCanvasMouseDown} onMouseMove={e => {
-      onCanvasMouseMove(e);
-      if (isDragging || isResizing) {
-        if (isDragging) {
-          onElementMouseMove(e);
-        }
-        if (isResizing) {
-          onResizeMouseMove(e);
-        }
-      }
-    }} onMouseUp={() => {
-      onCanvasMouseUp();
-      onElementMouseUp();
-    }} className="absolute inset-0 bg-slate-50">
+      <div
+        ref={canvasRef}
+        className="absolute inset-0"
+        style={{
+          transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,
+          cursor: getCursorStyle()
+        }}
+        onClick={onCanvasClick}
+        onMouseDown={onCanvasMouseDown}
+        onMouseMove={(e) => {
+          onCanvasMouseMove(e);
+          if (isDragging || isResizing) {
+            if (isDragging) {
+              onElementMouseMove(e);
+            }
+            if (isResizing) {
+              onResizeMouseMove(e);
+            }
+          }
+        }}
+        onMouseUp={() => {
+          onCanvasMouseUp();
+          onElementMouseUp();
+        }}
+      >
         {/* عرض العناصر */}
-        {elements.map(element => <CanvasElementComponent key={element.id} element={element} selectedElementId={selectedElementId} selectedTool={selectedTool} onElementSelect={onElementSelect} onElementMouseDown={onElementMouseDown} onElementMouseMove={onElementMouseMove} onElementMouseUp={onElementMouseUp} onResizeMouseDown={onResizeMouseDown} />)}
+        {elements.map((element) => (
+          <CanvasElementComponent
+            key={element.id}
+            element={element}
+            selectedElementId={selectedElementId}
+            selectedTool={selectedTool}
+            onElementSelect={onElementSelect}
+            onElementMouseDown={onElementMouseDown}
+            onElementMouseMove={onElementMouseMove}
+            onElementMouseUp={onElementMouseUp}
+            onResizeMouseDown={onResizeMouseDown}
+          />
+        ))}
 
         {/* معاينات الرسم */}
-        <CanvasDrawingPreview isDrawing={isDrawing} drawStart={drawStart} drawEnd={drawEnd} selectedTool={selectedTool} isSelecting={isSelecting} selectionBox={selectionBox} />
+        <CanvasDrawingPreview
+          isDrawing={isDrawing}
+          drawStart={drawStart}
+          drawEnd={drawEnd}
+          selectedTool={selectedTool}
+          isSelecting={isSelecting}
+          selectionBox={selectionBox}
+        />
       </div>
 
       {/* شريط الحالة السفلي */}
-      <CanvasStatusBar elements={elements} selectedElementId={selectedElementId} zoom={zoom} selectedTool={selectedTool} showGrid={showGrid} snapEnabled={snapEnabled} onToggleGrid={onToggleGrid} onToggleSnap={onToggleSnap} />
-    </div>;
+      <CanvasStatusBar
+        elements={elements}
+        selectedElementId={selectedElementId}
+        zoom={zoom}
+        selectedTool={selectedTool}
+        showGrid={showGrid}
+        snapEnabled={snapEnabled}
+        onToggleGrid={onToggleGrid}
+        onToggleSnap={onToggleSnap}
+      />
+    </div>
+  );
 };
+
 export default Canvas;

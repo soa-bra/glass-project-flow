@@ -7,7 +7,7 @@ interface DefaultViewProps {
 const DefaultView: React.FC<DefaultViewProps> = ({
   onStartCanvas
 }) => {
-  return <div className="flex items-center justify-center h-full bg-slate-50">
+  return <div className="flex items-center justify-center h-full bg-sky-950 ">
       <div className="text-center space-y-8 max-w-4xl">
         <div className="space-y-4">
           <h1 className="text-4xl font-bold text-gray-800 font-arabic">لوحة التخطيط التشاركي</h1>
