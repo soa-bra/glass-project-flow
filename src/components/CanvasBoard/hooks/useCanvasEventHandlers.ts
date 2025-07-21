@@ -1,5 +1,6 @@
 
 import { useCallback } from 'react';
+import { CanvasElement } from '../types';
 
 export const useCanvasEventHandlers = (
   selectedTool: string,
@@ -8,20 +9,28 @@ export const useCanvasEventHandlers = (
   snapEnabled: boolean,
   interaction: any,
   addElement: (type: string, x: number, y: number, width?: number, height?: number) => void,
-  elements: any[],
+  elements: CanvasElement[],
   selectedElementIds: string[],
   setSelectedElementId: (id: string | null) => void,
   setSelectedElementIds: (ids: string[]) => void,
   updateElement: (elementId: string, updates: any) => void
 ) => {
   const handleCanvasClick = useCallback((e: React.MouseEvent) => {
-    setSelectedElementId(null);
-    setSelectedElementIds([]);
+    // Clear selection only if not holding Ctrl/Cmd
+    if (!(e.ctrlKey || e.metaKey)) {
+      setSelectedElementId(null);
+      setSelectedElementIds([]);
+    }
   }, [setSelectedElementId, setSelectedElementIds]);
 
   const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
     if (selectedTool === 'select') {
       // Start multi-selection if clicking on empty canvas
+      if (!(e.ctrlKey || e.metaKey)) {
+        // Clear existing selection unless holding modifier
+        setSelectedElementIds([]);
+        setSelectedElementId(null);
+      }
       interaction.handleSelectionStart(e, zoom, canvasPosition, snapEnabled);
       return;
     }
@@ -40,7 +49,7 @@ export const useCanvasEventHandlers = (
       interaction.handleSmartPenStart(e, zoom, canvasPosition, snapEnabled);
       return;
     }
-  }, [selectedTool, zoom, canvasPosition, addElement, snapEnabled, interaction]);
+  }, [selectedTool, zoom, canvasPosition, addElement, snapEnabled, interaction, setSelectedElementId, setSelectedElementIds]);
 
   const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
     if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && interaction.isDrawing) {

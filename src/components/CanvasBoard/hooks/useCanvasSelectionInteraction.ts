@@ -12,7 +12,6 @@ export const useCanvasSelectionInteraction = (canvasRef: React.RefObject<HTMLDiv
     return snapEnabled ? Math.round(value / GRID_SIZE) * GRID_SIZE : value;
   };
 
-  // Selection box handling
   const handleSelectionStart = useCallback((
     e: React.MouseEvent,
     zoom: number,
@@ -52,7 +51,7 @@ export const useCanvasSelectionInteraction = (canvasRef: React.RefObject<HTMLDiv
 
   const handleSelectionEnd = useCallback((
     elements: CanvasElement[],
-    onMultiSelect: (elementIds: string[]) => void,
+    setSelectedElementIds: (ids: string[]) => void,
     addToSelection: boolean = false
   ) => {
     if (!isSelecting || !selectionBox) return;
@@ -63,7 +62,7 @@ export const useCanvasSelectionInteraction = (canvasRef: React.RefObject<HTMLDiv
     const minY = Math.min(start.y, end.y);
     const maxY = Math.max(start.y, end.y);
     
-    // Only proceed if selection box is large enough (avoid accidental selection)
+    // Only proceed if selection box is large enough
     const selectionArea = (maxX - minX) * (maxY - minY);
     if (selectionArea < 100) {
       setIsSelecting(false);
@@ -71,26 +70,19 @@ export const useCanvasSelectionInteraction = (canvasRef: React.RefObject<HTMLDiv
       return;
     }
     
-    // Find elements within selection box (partial overlap allowed)
+    // Find elements within selection box
     const selectedElements = elements.filter(element => {
       const elemX = element.position.x;
       const elemY = element.position.y;
       const elemMaxX = elemX + element.size.width;
       const elemMaxY = elemY + element.size.height;
       
-      // Check for intersection (not just complete containment)
+      // Check for intersection
       return !(elemMaxX < minX || elemX > maxX || elemMaxY < minY || elemY > maxY);
     });
     
     const selectedIds = selectedElements.map(el => el.id);
-    
-    if (addToSelection) {
-      // Add to existing selection (Ctrl+Click behavior)
-      onMultiSelect(selectedIds);
-    } else {
-      // Replace selection
-      onMultiSelect(selectedIds);
-    }
+    setSelectedElementIds(selectedIds);
     
     setIsSelecting(false);
     setSelectionBox(null);

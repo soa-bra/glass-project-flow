@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+
+import React, { useState, useCallback, useEffect } from 'react';
 import { CanvasElement } from '../types';
 
 interface SelectionBoundingBoxProps {
@@ -19,8 +20,8 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
   const [isResizing, setIsResizing] = useState(false);
   const [resizeHandle, setResizeHandle] = useState<string | null>(null);
   const [initialBounds, setInitialBounds] = useState<any>(null);
+  const [elementInitialStates, setElementInitialStates] = useState<Map<string, any>>(new Map());
 
-  // Calculate bounding box for all selected elements
   const calculateBoundingBox = useCallback(() => {
     if (selectedElements.length === 0) return null;
 
@@ -52,56 +53,78 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
 
   const handleResizeStart = useCallback((handle: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    if (!boundingBox) return;
+    
     setIsResizing(true);
     setResizeHandle(handle);
     setInitialBounds(boundingBox);
-  }, [boundingBox]);
+    
+    // Store initial states of all elements
+    const states = new Map();
+    selectedElements.forEach(element => {
+      states.set(element.id, {
+        position: { ...element.position },
+        size: { ...element.size }
+      });
+    });
+    setElementInitialStates(states);
+  }, [boundingBox, selectedElements]);
 
-  const handleResizeMove = useCallback((e: MouseEvent) => {
-    if (!isResizing || !resizeHandle || !initialBounds) return;
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isResizing || !resizeHandle || !initialBounds || !boundingBox) return;
 
-    const deltaX = e.movementX / (zoom / 100);
-    const deltaY = e.movementY / (zoom / 100);
+    const rect = document.querySelector('[data-canvas-container]')?.getBoundingClientRect();
+    if (!rect) return;
 
-    // Calculate new bounds based on resize handle
+    const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
+    const mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+
     let newBounds = { ...initialBounds };
-
+    
+    // Calculate new bounds based on handle
     switch (resizeHandle) {
-      case 'nw': // Top-left
-        newBounds.width = Math.max(20, newBounds.width - deltaX);
-        newBounds.height = Math.max(20, newBounds.height - deltaY);
-        newBounds.x = snapToGrid(newBounds.x + deltaX);
-        newBounds.y = snapToGrid(newBounds.y + deltaY);
+      case 'nw':
+        newBounds.width = Math.max(20, initialBounds.width + (initialBounds.x - mouseX));
+        newBounds.height = Math.max(20, initialBounds.height + (initialBounds.y - mouseY));
+        newBounds.x = mouseX;
+        newBounds.y = mouseY;
         break;
-      case 'ne': // Top-right
-        newBounds.width = Math.max(20, newBounds.width + deltaX);
-        newBounds.height = Math.max(20, newBounds.height - deltaY);
-        newBounds.y = snapToGrid(newBounds.y + deltaY);
+      case 'ne':
+        newBounds.width = Math.max(20, mouseX - initialBounds.x);
+        newBounds.height = Math.max(20, initialBounds.height + (initialBounds.y - mouseY));
+        newBounds.y = mouseY;
         break;
-      case 'sw': // Bottom-left
-        newBounds.width = Math.max(20, newBounds.width - deltaX);
-        newBounds.height = Math.max(20, newBounds.height + deltaY);
-        newBounds.x = snapToGrid(newBounds.x + deltaX);
+      case 'sw':
+        newBounds.width = Math.max(20, initialBounds.width + (initialBounds.x - mouseX));
+        newBounds.height = Math.max(20, mouseY - initialBounds.y);
+        newBounds.x = mouseX;
         break;
-      case 'se': // Bottom-right
-        newBounds.width = Math.max(20, newBounds.width + deltaX);
-        newBounds.height = Math.max(20, newBounds.height + deltaY);
+      case 'se':
+        newBounds.width = Math.max(20, mouseX - initialBounds.x);
+        newBounds.height = Math.max(20, mouseY - initialBounds.y);
         break;
-      case 'n': // Top
-        newBounds.height = Math.max(20, newBounds.height - deltaY);
-        newBounds.y = snapToGrid(newBounds.y + deltaY);
+      case 'n':
+        newBounds.height = Math.max(20, initialBounds.height + (initialBounds.y - mouseY));
+        newBounds.y = mouseY;
         break;
-      case 's': // Bottom
-        newBounds.height = Math.max(20, newBounds.height + deltaY);
+      case 's':
+        newBounds.height = Math.max(20, mouseY - initialBounds.y);
         break;
-      case 'w': // Left
-        newBounds.width = Math.max(20, newBounds.width - deltaX);
-        newBounds.x = snapToGrid(newBounds.x + deltaX);
+      case 'w':
+        newBounds.width = Math.max(20, initialBounds.width + (initialBounds.x - mouseX));
+        newBounds.x = mouseX;
         break;
-      case 'e': // Right
-        newBounds.width = Math.max(20, newBounds.width + deltaX);
+      case 'e':
+        newBounds.width = Math.max(20, mouseX - initialBounds.x);
         break;
     }
+
+    // Apply snap to grid
+    newBounds.x = snapToGrid(newBounds.x);
+    newBounds.y = snapToGrid(newBounds.y);
+    newBounds.width = snapToGrid(newBounds.width);
+    newBounds.height = snapToGrid(newBounds.height);
 
     // Calculate scale factors
     const scaleX = newBounds.width / initialBounds.width;
@@ -109,39 +132,41 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
 
     // Update each selected element
     selectedElements.forEach(element => {
-      const relativeX = element.position.x - initialBounds.x;
-      const relativeY = element.position.y - initialBounds.y;
+      const initialState = elementInitialStates.get(element.id);
+      if (!initialState) return;
+
+      const relativeX = initialState.position.x - initialBounds.x;
+      const relativeY = initialState.position.y - initialBounds.y;
 
       const newX = newBounds.x + (relativeX * scaleX);
       const newY = newBounds.y + (relativeY * scaleY);
-      const newWidth = element.size.width * scaleX;
-      const newHeight = element.size.height * scaleY;
+      const newWidth = initialState.size.width * scaleX;
+      const newHeight = initialState.size.height * scaleY;
 
       onUpdateElement(element.id, {
         position: { x: newX, y: newY },
         size: { width: newWidth, height: newHeight }
       });
     });
+  }, [isResizing, resizeHandle, initialBounds, zoom, canvasPosition, selectedElements, elementInitialStates, onUpdateElement, snapEnabled]);
 
-    setInitialBounds(newBounds);
-  }, [isResizing, resizeHandle, initialBounds, zoom, selectedElements, onUpdateElement, snapEnabled]);
-
-  const handleResizeEnd = useCallback(() => {
+  const handleMouseUp = useCallback(() => {
     setIsResizing(false);
     setResizeHandle(null);
     setInitialBounds(null);
+    setElementInitialStates(new Map());
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isResizing) {
-      document.addEventListener('mousemove', handleResizeMove);
-      document.addEventListener('mouseup', handleResizeEnd);
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
       return () => {
-        document.removeEventListener('mousemove', handleResizeMove);
-        document.removeEventListener('mouseup', handleResizeEnd);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isResizing, handleResizeMove, handleResizeEnd]);
+  }, [isResizing, handleMouseMove, handleMouseUp]);
 
   if (!boundingBox || selectedElements.length === 0) return null;
 
@@ -160,7 +185,8 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
 
   return (
     <div
-      className="absolute pointer-events-none"
+      data-canvas-container
+      className="absolute pointer-events-none inset-0"
       style={{
         transform,
         transformOrigin: '0 0'
