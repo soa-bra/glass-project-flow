@@ -26,5 +26,11 @@ export { CanvasAISection } from './CanvasAISection';
 export { CanvasBottomSection } from './CanvasBottomSection';
 export { FloatingPanelLayout } from './FloatingPanelLayout';
 
+// Enhanced Components
+export { TopFloatingPanel } from './TopFloatingPanel';
+export { EnhancedCanvas } from './EnhancedCanvas';
+export { MiniMap } from './MiniMap';
+export { SimpleCollaborativeWhiteboard } from './SimpleCollaborativeWhiteboard';
+
 // Types
 export type { CanvasPanelLayoutProps, Layer } from './CanvasPanelTypes';

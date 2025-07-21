@@ -2,17 +2,19 @@ import React, { useState, useCallback } from 'react';
 import { CanvasElement } from '../types';
 
 interface SelectionBoundingBoxProps {
-  selectedElements: CanvasElement[];
+  selectedElements?: CanvasElement[];
+  box?: { start: { x: number; y: number }; end: { x: number; y: number } };
   zoom: number;
-  canvasPosition: { x: number; y: number };
-  onUpdateElement: (elementId: string, updates: any) => void;
+  canvasPosition?: { x: number; y: number };
+  onUpdateElement?: (elementId: string, updates: any) => void;
   snapEnabled?: boolean;
 }
 
 export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
-  selectedElements,
+  selectedElements = [],
+  box,
   zoom,
-  canvasPosition,
+  canvasPosition = { x: 0, y: 0 },
   onUpdateElement,
   snapEnabled = false
 }) => {
@@ -142,6 +144,27 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
       };
     }
   }, [isResizing, handleResizeMove, handleResizeEnd]);
+
+  // Handle selection box case
+  if (box) {
+    const { start, end } = box;
+    const minX = Math.min(start.x, end.x);
+    const minY = Math.min(start.y, end.y);
+    const width = Math.abs(end.x - start.x);
+    const height = Math.abs(end.y - start.y);
+
+    return (
+      <div
+        className="absolute border-2 border-blue-500 border-dashed bg-blue-500/10 pointer-events-none"
+        style={{
+          left: minX,
+          top: minY,
+          width,
+          height
+        }}
+      />
+    );
+  }
 
   if (!boundingBox || selectedElements.length === 0) return null;
 
