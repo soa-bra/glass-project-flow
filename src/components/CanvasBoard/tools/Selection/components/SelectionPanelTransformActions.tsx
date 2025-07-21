@@ -32,9 +32,9 @@ export const SelectionPanelTransformActions: React.FC<SelectionPanelTransformAct
                 <RotateCcw className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-              <p>تدوير</p>
-            </TooltipContent>
+              <TooltipContent side="top" align="center" sideOffset={4}>
+                <p>تدوير</p>
+              </TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -48,9 +48,9 @@ export const SelectionPanelTransformActions: React.FC<SelectionPanelTransformAct
                 <FlipHorizontal className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-              <p>عكس أفقي</p>
-            </TooltipContent>
+              <TooltipContent side="top" align="center" sideOffset={4}>
+                <p>عكس أفقي</p>
+              </TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -64,9 +64,9 @@ export const SelectionPanelTransformActions: React.FC<SelectionPanelTransformAct
                 <FlipVertical className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-              <p>عكس عمودي</p>
-            </TooltipContent>
+              <TooltipContent side="top" align="center" sideOffset={4}>
+                <p>عكس عمودي</p>
+              </TooltipContent>
           </Tooltip>
         </div>
       </div>

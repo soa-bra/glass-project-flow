@@ -51,7 +51,9 @@ export const Canvas: React.FC<CanvasProps> = ({
     handleCanvasMouseUp,
     handleElementMouseDown,
     handleElementMouseMove,
-    handleElementMouseUp
+    handleElementMouseUp,
+    isSelecting,
+    selectionBox
   } = useCanvasInteractionHandlers(
     selectedTool,
     zoom,
@@ -82,16 +84,21 @@ export const Canvas: React.FC<CanvasProps> = ({
   };
 
   return (
-    <div className="relative w-full h-full bg-white overflow-hidden">
+    <div className="relative w-full h-full bg-white overflow-auto">
       {/* Grid */}
       {showGrid && <CanvasGrid />}
 
-      {/* Main Canvas Area */}
+      {/* Main Canvas Area - Infinite Space */}
       <div
         ref={canvasRef}
-        className="absolute inset-0 bg-slate-50"
+        className="absolute bg-slate-50"
         style={{
+          left: 0,
+          top: 0,
+          width: '10000px', // Large canvas for infinite space
+          height: '10000px',
           transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,
+          transformOrigin: '0 0',
           cursor: getCursorStyle()
         }}
         onClick={handleCanvasClick}
@@ -110,6 +117,20 @@ export const Canvas: React.FC<CanvasProps> = ({
             onMouseUp={handleElementMouseUp}
           />
         ))}
+
+        {/* Selection Box - Multi-select with drag */}
+        {isSelecting && selectionBox && (
+          <div
+            className="absolute border-2 border-blue-500 border-dashed bg-blue-100/20 pointer-events-none"
+            style={{
+              left: Math.min(selectionBox.start.x, selectionBox.end.x),
+              top: Math.min(selectionBox.start.y, selectionBox.end.y),
+              width: Math.abs(selectionBox.end.x - selectionBox.start.x),
+              height: Math.abs(selectionBox.end.y - selectionBox.start.y),
+              zIndex: 1002
+            }}
+          />
+        )}
       </div>
 
       {/* Selection Bounding Box */}

@@ -142,5 +142,8 @@ export const useCanvasInteractionHandlers = (
     handleElementMouseUp: interaction.handleElementMouseUp,
     handleResizeMouseDown,
     handleResizeMouseMove,
+    // Selection state
+    isSelecting: interaction.isSelecting,
+    selectionBox: interaction.selectionBox,
   };
 };

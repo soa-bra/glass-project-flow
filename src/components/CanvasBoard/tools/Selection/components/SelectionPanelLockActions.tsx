@@ -30,7 +30,7 @@ export const SelectionPanelLockActions: React.FC<SelectionPanelLockActionsProps>
                 <Lock className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent side="top" align="center" sideOffset={4}>
               <p>قفل</p>
             </TooltipContent>
           </Tooltip>
@@ -46,7 +46,7 @@ export const SelectionPanelLockActions: React.FC<SelectionPanelLockActionsProps>
                 <Unlock className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent side="top" align="center" sideOffset={4}>
               <p>إلغاء القفل</p>
             </TooltipContent>
           </Tooltip>
