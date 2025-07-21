@@ -44,7 +44,7 @@ export const MiroFloatingToolbar: React.FC<MiroFloatingToolbarProps> = ({
     <div className="fixed left-4 top-1/2 -translate-y-1/2 z-40 bg-white rounded-lg shadow-lg border border-border p-2 w-12">
       <div className="flex flex-col gap-1">
         {tools.map((tool, index) => (
-          <React.Fragment key={tool.id}>
+          <div key={tool.id}>
             <Button
               variant={selectedTool === tool.id ? "default" : "ghost"}
               size="sm"
@@ -64,7 +64,7 @@ export const MiroFloatingToolbar: React.FC<MiroFloatingToolbarProps> = ({
             {(index === 1 || index === 4 || index === 7) && (
               <Separator className="my-1" />
             )}
-          </React.Fragment>
+          </div>
         ))}
       </div>
     </div>

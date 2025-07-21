@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { MiroGridBackground } from './MiroGridBackground';
+import { useCanvasBasicState, useRefactoredCanvasInteraction, useCanvasElementManagement, useCanvasHistory } from '@/components/CanvasBoard/hooks';
 
 interface MiroCanvasProps {
   selectedTool: string;
@@ -34,70 +35,135 @@ export const MiroCanvas: React.FC<MiroCanvasProps> = ({
   onPropertiesPanelToggle
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  
+  // Use canvas history for undo/redo
+  const { saveToHistory } = useCanvasHistory();
+  
+  // Use element management
+  const { elements, addElement, updateElement, deleteElement } = useCanvasElementManagement(saveToHistory);
+  
+  // Use basic state for selection
+  const { selectedElements, setSelectedElements } = useCanvasBasicState();
+  
+  // Use refactored interaction handling
+  const {
+    isSelecting,
+    selectionBox,
+    isDragging,
+    isResizing,
+    handleSelectionStart,
+    handleSelectionMove,
+    handleSelectionEnd,
+    handleElementMouseDown,
+    handleElementMouseMove,
+    handleElementMouseUp,
+    handleTextClick
+  } = useRefactoredCanvasInteraction(canvasRef);
+
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [elements, setElements] = useState<CanvasElement[]>([
-    {
-      id: '1',
-      type: 'sticky',
-      x: 200,
-      y: 150,
-      width: 200,
-      height: 200,
-      content: 'مرحباً بكم في لوحة التخطيط التشاركي',
-      color: '#ffd966'
-    },
-    {
-      id: '2',
-      type: 'sticky',
-      x: 450,
-      y: 150,
-      width: 200,
-      height: 200,
-      content: 'ابدأوا بإضافة أفكاركم هنا',
-      color: '#9fc5e8'
-    },
-    {
-      id: '3',
-      type: 'sticky',
-      x: 325,
-      y: 400,
-      width: 200,
-      height: 200,
-      content: 'يمكنكم التعاون معاً في الوقت الفعلي',
-      color: '#b6d7a8'
+  
+  // Initialize with sample elements
+  useEffect(() => {
+    const sampleElements = [
+      {
+        id: '1',
+        type: 'sticky',
+        position: { x: 200, y: 150 },
+        size: { width: 200, height: 200 },
+        properties: {
+          content: 'مرحباً بكم في لوحة التخطيط التشاركي',
+          color: '#ffd966'
+        }
+      },
+      {
+        id: '2',
+        type: 'sticky',
+        position: { x: 450, y: 150 },
+        size: { width: 200, height: 200 },
+        properties: {
+          content: 'ابدأوا بإضافة أفكاركم هنا',
+          color: '#9fc5e8'
+        }
+      },
+      {
+        id: '3',
+        type: 'sticky',
+        position: { x: 325, y: 400 },
+        size: { width: 200, height: 200 },
+        properties: {
+          content: 'يمكنكم التعاون معاً في الوقت الفعلي',
+          color: '#b6d7a8'
+        }
+      }
+    ];
+    
+    // Add sample elements if none exist
+    if (elements.length === 0) {
+      sampleElements.forEach(element => {
+        addElement(element.type, element.position.x, element.position.y, element.size.width, element.size.height, element.properties.content);
+      });
     }
-  ]);
+  }, [elements.length, addElement]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (selectedTool === 'hand' || e.button === 1) { // Middle mouse button or hand tool
-      setIsDragging(true);
+    if (selectedTool === 'select') {
+      handleSelectionStart(e, zoom, canvasPosition);
+    } else if (selectedTool === 'hand' || e.button === 1) {
       setDragStart({ x: e.clientX - canvasPosition.x, y: e.clientY - canvasPosition.y });
       e.preventDefault();
     }
-  }, [selectedTool, canvasPosition]);
+  }, [selectedTool, canvasPosition, zoom, handleSelectionStart]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (isDragging) {
+    if (isSelecting) {
+      handleSelectionMove(e, zoom, canvasPosition);
+    } else if (selectedTool === 'hand' && dragStart) {
       const newX = e.clientX - dragStart.x;
       const newY = e.clientY - dragStart.y;
       onCanvasPositionChange({ x: newX, y: newY });
     }
-  }, [isDragging, dragStart, onCanvasPositionChange]);
+    
+    handleElementMouseMove(e, selectedElements, zoom, canvasPosition, updateElement);
+  }, [isSelecting, selectedTool, dragStart, zoom, canvasPosition, handleSelectionMove, handleElementMouseMove, selectedElements, updateElement, onCanvasPositionChange]);
 
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+    if (isSelecting) {
+      handleSelectionEnd(elements, (ids: string[]) => {
+        setSelectedElements(ids);
+        if (ids.length > 0) {
+          onElementSelect(ids[0]);
+        }
+      });
+    }
+    handleElementMouseUp();
+    setDragStart({ x: 0, y: 0 });
+  }, [isSelecting, elements, handleSelectionEnd, handleElementMouseUp, setSelectedElements, onElementSelect]);
 
   const handleElementClick = useCallback((elementId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    onElementSelect(elementId);
-    onPropertiesPanelToggle();
-  }, [onElementSelect, onPropertiesPanelToggle]);
+    
+    if (e.ctrlKey || e.metaKey) {
+      // Multi-select
+      setSelectedElements(prev => 
+        prev.includes(elementId) 
+          ? prev.filter(id => id !== elementId)
+          : [...prev, elementId]
+      );
+    } else {
+      setSelectedElements([elementId]);
+      onElementSelect(elementId);
+      onPropertiesPanelToggle();
+    }
+    
+    handleElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, onElementSelect, selectedElements, setSelectedElements);
+  }, [selectedTool, elements, zoom, canvasPosition, selectedElements, setSelectedElements, onElementSelect, onPropertiesPanelToggle, handleElementMouseDown]);
 
   const handleCanvasClick = useCallback(() => {
-    onElementSelect(null);
-  }, [onElementSelect]);
+    if (!isSelecting) {
+      onElementSelect(null);
+      setSelectedElements([]);
+    }
+  }, [isSelecting, onElementSelect, setSelectedElements]);
 
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     if (selectedTool === 'sticky') {
@@ -106,21 +172,17 @@ export const MiroCanvas: React.FC<MiroCanvasProps> = ({
         const x = (e.clientX - rect.left - canvasPosition.x) / zoom;
         const y = (e.clientY - rect.top - canvasPosition.y) / zoom;
         
-        const newElement: CanvasElement = {
-          id: Date.now().toString(),
-          type: 'sticky',
-          x: x - 100,
-          y: y - 100,
-          width: 200,
-          height: 200,
-          content: 'ملاحظة جديدة',
-          color: '#ffd966'
-        };
-        
-        setElements(prev => [...prev, newElement]);
+        addElement('sticky', x - 100, y - 100, 200, 200, 'ملاحظة جديدة');
+      }
+    } else if (selectedTool === 'text') {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = (e.clientX - rect.left - canvasPosition.x) / zoom;
+        const y = (e.clientY - rect.top - canvasPosition.y) / zoom;
+        addElement('text', x, y, 200, 50, 'نص جديد');
       }
     }
-  }, [selectedTool, canvasPosition, zoom]);
+  }, [selectedTool, canvasPosition, zoom, addElement, handleTextClick]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -173,15 +235,15 @@ export const MiroCanvas: React.FC<MiroCanvasProps> = ({
           <div
             key={element.id}
             className={`absolute cursor-pointer transition-all duration-200 ${
-              selectedElement === element.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''
+              selectedElements.includes(element.id) ? 'ring-2 ring-blue-500 ring-offset-2' : ''
             }`}
             style={{
-              left: element.x,
-              top: element.y,
-              width: element.width,
-              height: element.height,
-              backgroundColor: element.color,
-              transform: selectedElement === element.id ? 'scale(1.02)' : 'scale(1)'
+              left: element.position.x,
+              top: element.position.y,
+              width: element.size.width,
+              height: element.size.height,
+              backgroundColor: element.type === 'sticky' ? '#ffd966' : '#ffffff',
+              transform: selectedElements.includes(element.id) ? 'scale(1.02)' : 'scale(1)'
             }}
             onClick={(e) => handleElementClick(element.id, e)}
           >
@@ -197,6 +259,19 @@ export const MiroCanvas: React.FC<MiroCanvasProps> = ({
             )}
           </div>
         ))}
+
+        {/* Selection Box */}
+        {isSelecting && selectionBox && (
+          <div
+            className="absolute border-2 border-blue-500 bg-blue-500/10 pointer-events-none"
+            style={{
+              left: Math.min(selectionBox.start.x, selectionBox.end.x),
+              top: Math.min(selectionBox.start.y, selectionBox.end.y),
+              width: Math.abs(selectionBox.end.x - selectionBox.start.x),
+              height: Math.abs(selectionBox.end.y - selectionBox.start.y)
+            }}
+          />
+        )}
       </div>
 
       {/* Cursor Helper */}
