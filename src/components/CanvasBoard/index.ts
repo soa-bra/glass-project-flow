@@ -1,8 +1,14 @@
-export { default as CanvasBoardContents } from './CanvasBoardContents';
-export { default as ToolsPanel } from './ToolsPanel';
-export { default as AIAssistantPanel } from './AIAssistantPanel';
-export { default as CanvasItemComponent } from './CanvasItemComponent';
-export { default as CanvasToolbar } from './CanvasToolbar';
-export { CanvasBoardLauncher } from './core/CanvasBoardLauncher';
-export * from './types';
-export * from './constants';
+/**
+ * @fileoverview Canvas Board exports - main module exports
+ * @author AI Assistant
+ * @version 1.0.0
+ */
+
+// Main Canvas Board Component
+export { default as CanvasBoard } from './CanvasBoard';
+
+// Panels
+export * from './panels';
+
+// Toolbars
+export { default as TopToolbar } from './toolbars/TopToolbar';
