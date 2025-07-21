@@ -119,7 +119,7 @@ export const CollaborationPanel: React.FC = () => {
             </TabsTrigger>
           </TabsList>
 
-          <div className="flex-1 px-4 pb-4 my-[2px] py-0">
+          <div className="h-8 flex-1 pb-4 py-0 px-[25px] my-[15px]">
             <TabsContent value="participants" className="h-full space-y-3 mt-0 my-[5px]">
               
               
@@ -148,37 +148,11 @@ export const CollaborationPanel: React.FC = () => {
               </div>
             </TabsContent>
 
-            <TabsContent value="chat" className="h-full flex flex-col mt-0 space-y-3">
-              <div className="flex-1 bg-white rounded-[16px] border border-[#d1e1ea] p-3 overflow-y-auto space-y-2">
-                {messages.map(message => <div key={message.id} className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-arabic font-medium text-black">{message.userName}</span>
-                      <span className="text-xs text-black/50">
-                        {message.timestamp.toLocaleTimeString('ar-SA', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                      </span>
-                    </div>
-                    <p className="text-sm font-arabic text-black bg-[#e9eff4] p-2 rounded-[8px]">
-                      {message.message}
-                    </p>
-                  </div>)}
-              </div>
-              
-              <div className="flex gap-2">
-                <Input value={newMessage} onChange={e => setNewMessage(e.target.value)} placeholder="اكتب رسالتك..." className="flex-1 font-arabic text-sm rounded-[12px] border-[#d1e1ea] text-black placeholder:text-black/50" onKeyPress={e => e.key === 'Enter' && handleSendMessage()} />
-                <Button onClick={handleSendMessage} size="sm" className="rounded-[12px] bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none">
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
-            </TabsContent>
+            
 
-            <TabsContent value="voice" className="h-full space-y-4 mt-0">
+            <TabsContent value="voice" className="h-full space-y-4 mt-0 my-[10px]">
               <div className="text-center">
-                <div className="w-16 h-16 bg-[#96d8d0] rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Mic className="w-8 h-8 text-black" />
-                </div>
+                
                 <p className="text-sm font-arabic text-black">المحادثة الصوتية نشطة</p>
                 <p className="text-xs text-black/70">3 أشخاص متصلين</p>
               </div>
