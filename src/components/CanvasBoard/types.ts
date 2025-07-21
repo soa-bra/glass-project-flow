@@ -1,11 +1,15 @@
 export interface CanvasElement {
   id: string;
-  type: 'text' | 'shape' | 'sticky' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'smart' | 'brainstorm' | 'root' | 'moodboard' | 'line';
+  type: 'text' | 'shape' | 'sticky' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'smart' | 'brainstorm' | 'root' | 'moodboard' | 'line' | 'smart-element' | 'image';
   position: { x: number; y: number };
   size: { width: number; height: number };
   content?: string;
   style?: Record<string, any>;
   locked?: boolean;
+  rotation?: number;
+  layerId?: string;
+  visible?: boolean;
+  data?: any;
 }
 
 export interface CanvasBoardContentsProps {

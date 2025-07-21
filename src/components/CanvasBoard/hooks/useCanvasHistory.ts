@@ -22,7 +22,7 @@ export const useCanvasHistory = () => {
     setHistoryIndex(prev => Math.min(prev + 1, 49));
   }, [historyIndex]);
 
-  const undo = useCallback(() => {
+  const undo = useCallback((): CanvasElement[] | null => {
     if (historyIndex > 0) {
       setHistoryIndex(prev => prev - 1);
       return history[historyIndex - 1];
@@ -30,7 +30,7 @@ export const useCanvasHistory = () => {
     return null;
   }, [history, historyIndex]);
 
-  const redo = useCallback(() => {
+  const redo = useCallback((): CanvasElement[] | null => {
     if (historyIndex < history.length - 1) {
       setHistoryIndex(prev => prev + 1);
       return history[historyIndex + 1];
@@ -46,6 +46,8 @@ export const useCanvasHistory = () => {
     undo,
     redo,
     canUndo,
-    canRedo
+    canRedo,
+    history,
+    historyIndex
   };
 };

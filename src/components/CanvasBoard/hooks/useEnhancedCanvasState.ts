@@ -57,12 +57,18 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
 
   // Wrapper functions for undo/redo with correct signatures
   const wrappedUndo = useCallback(() => {
-    undo(elements, setElements);
-  }, [undo, elements]);
+    const undoResult = undo();
+    if (undoResult) {
+      setElements(undoResult);
+    }
+  }, [undo, setElements]);
 
   const wrappedRedo = useCallback(() => {
-    redo(elements, setElements);
-  }, [redo, elements]);
+    const redoResult = redo();
+    if (redoResult) {
+      setElements(redoResult);
+    }
+  }, [redo, setElements]);
 
   return {
     // Canvas ref and basic state
