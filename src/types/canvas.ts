@@ -26,7 +26,7 @@ export interface LayerFolder {
 
 export interface CanvasElement {
   id: string;
-  type: 'text' | 'shape' | 'image' | 'smart-element' | 'sticky' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'smart' | 'brainstorm' | 'root' | 'moodboard' | 'line';
+  type: 'text' | 'shape' | 'image' | 'smart-element' | 'sticky' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'brainstorm' | 'root' | 'moodboard' | 'line';
   position: { x: number; y: number };
   size: { width: number; height: number };
   rotation?: number;
@@ -121,6 +121,8 @@ export interface CanvasState {
   participants: Participant[];
   comments: Comment[];
   chatMessages: ChatMessage[];
+  history?: CanvasElement[][];
+  historyIndex?: number;
 }
 
 export interface AIAnalysisResult {

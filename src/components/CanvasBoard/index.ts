@@ -9,7 +9,7 @@
 export { default as CanvasBoard } from './CanvasBoard';
 
 // Canvas Components
-export * from './components/Canvas';
+export { Canvas } from './components/Canvas/Canvas';
 
 // Panels
 export * from './panels';

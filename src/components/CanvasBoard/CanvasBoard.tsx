@@ -123,7 +123,7 @@ const CanvasBoard: React.FC = () => {
   };
 
   const handleInviteParticipant = () => {
-    console.log('Inviting participant...');
+    // Implement participant invitation logic
   };
 
   const handleAddSmartElement = (type: string, config: any) => {
@@ -162,10 +162,10 @@ const CanvasBoard: React.FC = () => {
         onSave={saveCanvas}
         onOpen={() => loadCanvas({})}
         onNew={() => loadCanvas({ elements: [], layers: [] })}
-        onDuplicate={() => console.log('Duplicate')}
+        onDuplicate={() => {}}
         onToggleGrid={toggleGrid}
         onToggleSnap={toggleSnap}
-        onGenerateProject={() => console.log('Generate project')}
+        onGenerateProject={() => {}}
         canUndo={true}
         canRedo={true}
         gridVisible={gridVisible}
@@ -206,34 +206,34 @@ const CanvasBoard: React.FC = () => {
                 layers={layers}
                 selectedLayerId={selectedLayerId}
                 onUpdateElement={updateElement}
-                onCopy={() => console.log('Copy')}
-                onCut={() => console.log('Cut')}
-                onPaste={() => console.log('Paste')}
+                onCopy={() => {}}
+                onCut={() => {}}
+                onPaste={() => {}}
                 onDelete={() => selectedElementIds.forEach(deleteElement)}
-                onGroup={() => console.log('Group')}
-                onUngroup={() => console.log('Ungroup')}
-                onLock={() => console.log('Lock')}
-                onUnlock={() => console.log('Unlock')}
-                onRotate={() => console.log('Rotate')}
-                onFlipHorizontal={() => console.log('Flip Horizontal')}
-                onFlipVertical={() => console.log('Flip Vertical')}
-                onAlign={() => console.log('Align')}
+                onGroup={() => {}}
+                onUngroup={() => {}}
+                onLock={() => {}}
+                onUnlock={() => {}}
+                onRotate={() => {}}
+                onFlipHorizontal={() => {}}
+                onFlipVertical={() => {}}
+                onAlign={() => {}}
                 onZoomChange={setZoom}
                 onPositionChange={setCanvasPosition}
-                onFitToScreen={() => console.log('Fit to screen')}
+                onFitToScreen={() => {}}
                 onResetView={() => setCanvasPosition({ x: 0, y: 0 })}
-                onPanSpeedChange={() => console.log('Pan speed change')}
-                onLineWidthChange={() => console.log('Line width change')}
-                onLineStyleChange={() => console.log('Line style change')}
-                onPenModeSelect={() => console.log('Pen mode select')}
-                onFileUpload={() => console.log('File upload')}
-                onLayerReorder={() => console.log('Layer reorder')}
+                onPanSpeedChange={() => {}}
+                onLineWidthChange={() => {}}
+                onLineStyleChange={() => {}}
+                onPenModeSelect={() => {}}
+                onFileUpload={() => {}}
+                onLayerReorder={() => {}}
                 onLayerSelect={selectLayer}
                 onGridToggle={toggleGrid}
                 onSnapToggle={toggleSnap}
-                onGridSizeChange={() => console.log('Grid size change')}
-                onGridShapeChange={() => console.log('Grid shape change')}
-                onAlignToGrid={() => console.log('Align to grid')}
+                onGridSizeChange={() => {}}
+                onGridShapeChange={() => {}}
+                onAlignToGrid={() => {}}
               />
             </div>
           )}
@@ -288,9 +288,7 @@ const CanvasBoard: React.FC = () => {
               <EnhancedLayersPanel
                 layers={layers}
                 selectedLayerId={selectedLayerId}
-                onLayerUpdate={(newLayers) => {
-                  console.log('Updating layers:', newLayers);
-                }}
+                onLayerUpdate={() => {}}
                 onLayerSelect={selectLayer}
                 elements={elements}
               />

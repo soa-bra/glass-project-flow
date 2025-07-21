@@ -9,6 +9,8 @@ import { devtools } from 'zustand/middleware';
 import { CanvasState, CanvasElement, Layer, Participant, ChatMessage, Comment } from '@/types/canvas';
 
 interface CanvasStore extends CanvasState {
+  history: CanvasElement[][];
+  historyIndex: number;
   // Element actions
   addElement: (element: CanvasElement) => void;
   updateElement: (id: string, updates: Partial<CanvasElement>) => void;
@@ -80,6 +82,8 @@ const useCanvasState = create<CanvasStore>()(
       participants: [],
       comments: [],
       chatMessages: [],
+      history: [[]],
+      historyIndex: 0,
 
       // Element actions
       addElement: (element) => {
@@ -236,13 +240,31 @@ const useCanvasState = create<CanvasStore>()(
 
       // History actions (simplified - would need proper implementation)
       undo: () => {
-        // TODO: Implement undo functionality
-        console.log('Undo action');
+        const state = get();
+        if (state.historyIndex > 0) {
+          const newIndex = state.historyIndex - 1;
+          const prevState = state.history[newIndex];
+          if (prevState) {
+            set({ 
+              elements: prevState,
+              historyIndex: newIndex 
+            });
+          }
+        }
       },
 
       redo: () => {
-        // TODO: Implement redo functionality  
-        console.log('Redo action');
+        const state = get();
+        if (state.historyIndex < state.history.length - 1) {
+          const newIndex = state.historyIndex + 1;
+          const nextState = state.history[newIndex];
+          if (nextState) {
+            set({ 
+              elements: nextState,
+              historyIndex: newIndex 
+            });
+          }
+        }
       },
 
       // File actions
@@ -271,9 +293,24 @@ const useCanvasState = create<CanvasStore>()(
         });
       },
 
-      exportCanvas: (format) => {
-        // TODO: Implement export functionality
-        console.log(`Exporting canvas as ${format}`);
+      exportCanvas: (format = 'json') => {
+        const state = get();
+        const canvasData = {
+          elements: state.elements,
+          layers: state.layers,
+          zoom: state.zoom,
+          timestamp: new Date().toISOString()
+        };
+        
+        if (format === 'json') {
+          const blob = new Blob([JSON.stringify(canvasData, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `canvas-${Date.now()}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }
       }
     }),
     {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Canvas } from './';
+import { Canvas } from './Canvas/Canvas';
 import { CanvasElement } from '../types';
 
 interface CanvasWrapperProps {
@@ -67,35 +67,13 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
 }) => {
   return (
     <Canvas
-      showGrid={showGrid}
-      snapEnabled={snapEnabled}
+      selectedTool={selectedTool}
       zoom={zoom}
       canvasPosition={canvasPosition}
-      elements={elements}
-        selectedElementId={selectedElementId}
-        selectedElementIds={selectedElementIds}
-      selectedTool={selectedTool}
-      canvasRef={canvasRef}
-      isDrawing={isDrawing}
-      drawStart={drawStart}
-      drawEnd={drawEnd}
-      isDragging={isDragging}
-      isResizing={isResizing}
-      isSelecting={isSelecting}
-      selectionBox={selectionBox}
-      onCanvasClick={handleCanvasClick}
-      onCanvasMouseDown={handleCanvasMouseDown}
-      onCanvasMouseMove={handleCanvasMouseMove}
-      onCanvasMouseUp={handleCanvasMouseUp}
-      onElementSelect={setSelectedElementId}
-      onElementMouseDown={handleElementMouseDown}
-      onElementMouseMove={handleElementMouseMove}
-      onElementMouseUp={handleElementMouseUp}
-      onResizeMouseDown={handleResizeMouseDown}
-      onResizeMouseMove={handleResizeMouseMove}
-      onToggleGrid={() => setShowGrid(!showGrid)}
-      onToggleSnap={() => setSnapEnabled(!snapEnabled)}
-      onUpdateElement={onUpdateElement}
+      showGrid={showGrid}
+      snapEnabled={snapEnabled}
+      onElementsChange={() => {}}
+      onSelectionChange={() => {}}
     />
   );
 };

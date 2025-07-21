@@ -3,7 +3,7 @@ export { default as MainToolbar } from './MainToolbar';
 export { default as CollabBar } from './CollabBar';
 
 export { default as Inspector } from './Inspector';
-export { default as Canvas } from './Canvas';
+export { Canvas } from './Canvas/Canvas';
 export { CanvasWrapper } from './CanvasWrapper';
 export { CanvasPanelLayout } from './CanvasPanelLayout';
 export { CleanCanvasPanelLayout } from './CleanCanvasPanelLayout';
@@ -13,8 +13,8 @@ export { useCanvasEventHandlers } from './CanvasEventHandlers';
 export { CanvasGrid } from './CanvasGrid';
 export { ElementRenderer } from './ElementRenderer';
 export { ElementResizeHandles } from './ElementResizeHandles';
-export { CanvasDrawingPreview } from './CanvasDrawingPreview';
-export { CanvasElement } from './CanvasElement';
+export { CanvasDrawingPreview } from './Canvas/CanvasDrawingPreview';
+export { CanvasElement } from './Canvas/CanvasElement';
 export { CanvasStatusBar } from './CanvasStatusBar';
 
 // Refactored Panel Layout components

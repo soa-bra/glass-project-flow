@@ -4,30 +4,64 @@ import { CanvasElement } from '../types';
 export const useCanvasManipulation = (
   selectedElements: string[],
   elements: CanvasElement[],
-  updateElement: (elementId: string, updates: any) => void
+  updateElement: (elementId: string, updates: any) => void,
+  deleteElement: (elementId: string) => void,
+  addElement: (element: CanvasElement) => void
 ) => {
   // Enhanced selection handlers
   const handleCopy = useCallback(() => {
     if (selectedElements.length > 0) {
-      // TODO: Implement copy functionality
+      const selectedElementObjects = selectedElements
+        .map(id => elements.find(el => el.id === id))
+        .filter(Boolean);
+      navigator.clipboard.writeText(JSON.stringify(selectedElementObjects));
     }
-  }, [selectedElements]);
+  }, [selectedElements, elements]);
 
   const handleCut = useCallback(() => {
     if (selectedElements.length > 0) {
-      // TODO: Implement cut functionality
+      const selectedElementObjects = selectedElements
+        .map(id => elements.find(el => el.id === id))
+        .filter(Boolean);
+      navigator.clipboard.writeText(JSON.stringify(selectedElementObjects));
+      selectedElements.forEach(elementId => deleteElement(elementId));
     }
-  }, [selectedElements]);
+  }, [selectedElements, elements, deleteElement]);
 
-  const handlePaste = useCallback(() => {
-    // TODO: Implement paste functionality
-  }, []);
+  const handlePaste = useCallback(async () => {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      const elements = JSON.parse(clipboardText);
+      if (Array.isArray(elements)) {
+        elements.forEach(element => {
+          const newElement = {
+            ...element,
+            id: crypto.randomUUID(),
+            position: { x: element.position.x + 20, y: element.position.y + 20 }
+          };
+          addElement(newElement);
+        });
+      }
+    } catch (error) {
+      console.warn('Paste failed:', error);
+    }
+  }, [addElement]);
 
   const handleDuplicate = useCallback(() => {
     if (selectedElements.length > 0) {
-      // TODO: Implement duplicate functionality
+      selectedElements.forEach(elementId => {
+        const element = elements.find(el => el.id === elementId);
+        if (element) {
+          const newElement = {
+            ...element,
+            id: crypto.randomUUID(),
+            position: { x: element.position.x + 20, y: element.position.y + 20 }
+          };
+          addElement(newElement);
+        }
+      });
     }
-  }, [selectedElements]);
+  }, [selectedElements, elements, addElement]);
 
   const handleFlipHorizontal = useCallback(() => {
     selectedElements.forEach(elementId => {
