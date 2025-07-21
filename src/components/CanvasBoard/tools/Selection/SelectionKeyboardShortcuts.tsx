@@ -1,42 +1,56 @@
-
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Keyboard } from 'lucide-react';
+
+interface ShortcutItem {
+  label: string;
+  shortcut: string;
+  category: string;
+}
 
 export const SelectionKeyboardShortcuts: React.FC = () => {
-  const shortcuts = [
-    { key: 'Ctrl + A', action: 'تحديد الكل' },
-    { key: 'Ctrl + C', action: 'نسخ' },
-    { key: 'Ctrl + X', action: 'قص' },
-    { key: 'Ctrl + V', action: 'لصق' },
-    { key: 'Delete', action: 'حذف' },
-    { key: 'Ctrl + G', action: 'تجميع' },
-    { key: 'Ctrl + Shift + G', action: 'إلغاء التجميع' },
-    { key: 'Arrow Keys', action: 'تحريك بكسل واحد' },
-    { key: 'Shift + Arrow', action: 'تحريك 10 بكسل' },
-    { key: 'Escape', action: 'إلغاء التحديد' }
+  const shortcuts: ShortcutItem[] = [
+    // العمليات الأساسية
+    { label: 'نسخ', shortcut: 'Ctrl+C', category: 'أساسي' },
+    { label: 'قص', shortcut: 'Ctrl+X', category: 'أساسي' },
+    { label: 'لصق', shortcut: 'Ctrl+V', category: 'أساسي' },
+    { label: 'حذف', shortcut: 'Delete', category: 'أساسي' },
+    { label: 'تحديد الكل', shortcut: 'Ctrl+A', category: 'أساسي' },
+    { label: 'إلغاء التحديد', shortcut: 'Esc', category: 'أساسي' },
+    
+    // التجميع
+    { label: 'تجميع', shortcut: 'Ctrl+G', category: 'تجميع' },
+    { label: 'فك التجميع', shortcut: 'Shift+G', category: 'تجميع' },
+    
+    // الحركة
+    { label: 'تحريك دقيق', shortcut: '← ↑ → ↓', category: 'حركة' },
+    { label: 'تحريك سريع', shortcut: 'Shift + ←↑→↓', category: 'حركة' },
+    { label: 'تكرار العنصر', shortcut: 'Cmd + السحب', category: 'حركة' },
+    { label: 'تحريك محوري', shortcut: 'Shift + السحب', category: 'حركة' }
   ];
 
+  const categories = [...new Set(shortcuts.map(s => s.category))];
+
   return (
-    <Card className="w-full bg-blue-50 border-blue-200">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-arabic flex items-center gap-2">
-          <Keyboard className="w-4 h-4" />
-          اختصارات الكيبورد
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-1">
-          {shortcuts.map((shortcut, index) => (
-            <div key={index} className="flex justify-between items-center text-xs">
-              <span className="font-mono bg-white px-2 py-1 rounded border text-blue-800">
-                {shortcut.key}
-              </span>
-              <span className="font-arabic text-blue-700">{shortcut.action}</span>
+    <div className="bg-[#e9eff4] border border-[#d1e1ea] rounded-[16px] p-3">
+      <h4 className="text-sm font-medium font-arabic mb-3 text-black">⌨️ اختصارات لوحة المفاتيح</h4>
+      <div className="space-y-3">
+        {categories.map(category => (
+          <div key={category}>
+            <h5 className="text-xs font-medium font-arabic mb-2 text-black/80">{category}</h5>
+            <div className="text-xs font-arabic space-y-1">
+              {shortcuts
+                .filter(s => s.category === category)
+                .map(shortcut => (
+                  <div key={shortcut.label} className="flex justify-between items-center">
+                    <span className="text-black/70">{shortcut.label}</span>
+                    <code className="bg-white px-2 py-1 rounded-[6px] text-xs text-black border border-[#d1e1ea]">
+                      {shortcut.shortcut}
+                    </code>
+                  </div>
+                ))}
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };

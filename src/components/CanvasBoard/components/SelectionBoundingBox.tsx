@@ -1,5 +1,4 @@
-
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { CanvasElement } from '../types';
 
 interface SelectionBoundingBoxProps {
@@ -20,8 +19,8 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
   const [isResizing, setIsResizing] = useState(false);
   const [resizeHandle, setResizeHandle] = useState<string | null>(null);
   const [initialBounds, setInitialBounds] = useState<any>(null);
-  const [elementInitialStates, setElementInitialStates] = useState<Map<string, any>>(new Map());
 
+  // Calculate bounding box for all selected elements
   const calculateBoundingBox = useCallback(() => {
     if (selectedElements.length === 0) return null;
 
@@ -53,82 +52,56 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
 
   const handleResizeStart = useCallback((handle: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    if (!boundingBox) return;
-    
     setIsResizing(true);
     setResizeHandle(handle);
     setInitialBounds(boundingBox);
-    
-    // Store initial states of all elements
-    const states = new Map();
-    selectedElements.forEach(element => {
-      states.set(element.id, {
-        position: { ...element.position },
-        size: { ...element.size }
-      });
-    });
-    setElementInitialStates(states);
-  }, [boundingBox, selectedElements]);
+  }, [boundingBox]);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isResizing || !resizeHandle || !initialBounds || !boundingBox) return;
+  const handleResizeMove = useCallback((e: MouseEvent) => {
+    if (!isResizing || !resizeHandle || !initialBounds) return;
 
-    // Find the canvas element properly
-    const canvasElement = document.querySelector('.absolute.inset-0.bg-slate-50') as HTMLElement;
-    if (!canvasElement) return;
-    
-    const rect = canvasElement.getBoundingClientRect();
-    
-    // Calculate mouse position relative to canvas, accounting for zoom and pan
-    const mouseX = ((e.clientX - rect.left) / (zoom / 100)) - canvasPosition.x;
-    const mouseY = ((e.clientY - rect.top) / (zoom / 100)) - canvasPosition.y;
+    const deltaX = e.movementX / (zoom / 100);
+    const deltaY = e.movementY / (zoom / 100);
 
+    // Calculate new bounds based on resize handle
     let newBounds = { ...initialBounds };
-    
-    // Calculate new bounds based on handle
+
     switch (resizeHandle) {
-      case 'nw':
-        newBounds.width = Math.max(20, initialBounds.width + (initialBounds.x - mouseX));
-        newBounds.height = Math.max(20, initialBounds.height + (initialBounds.y - mouseY));
-        newBounds.x = mouseX;
-        newBounds.y = mouseY;
+      case 'nw': // Top-left
+        newBounds.width = Math.max(20, newBounds.width - deltaX);
+        newBounds.height = Math.max(20, newBounds.height - deltaY);
+        newBounds.x = snapToGrid(newBounds.x + deltaX);
+        newBounds.y = snapToGrid(newBounds.y + deltaY);
         break;
-      case 'ne':
-        newBounds.width = Math.max(20, mouseX - initialBounds.x);
-        newBounds.height = Math.max(20, initialBounds.height + (initialBounds.y - mouseY));
-        newBounds.y = mouseY;
+      case 'ne': // Top-right
+        newBounds.width = Math.max(20, newBounds.width + deltaX);
+        newBounds.height = Math.max(20, newBounds.height - deltaY);
+        newBounds.y = snapToGrid(newBounds.y + deltaY);
         break;
-      case 'sw':
-        newBounds.width = Math.max(20, initialBounds.width + (initialBounds.x - mouseX));
-        newBounds.height = Math.max(20, mouseY - initialBounds.y);
-        newBounds.x = mouseX;
+      case 'sw': // Bottom-left
+        newBounds.width = Math.max(20, newBounds.width - deltaX);
+        newBounds.height = Math.max(20, newBounds.height + deltaY);
+        newBounds.x = snapToGrid(newBounds.x + deltaX);
         break;
-      case 'se':
-        newBounds.width = Math.max(20, mouseX - initialBounds.x);
-        newBounds.height = Math.max(20, mouseY - initialBounds.y);
+      case 'se': // Bottom-right
+        newBounds.width = Math.max(20, newBounds.width + deltaX);
+        newBounds.height = Math.max(20, newBounds.height + deltaY);
         break;
-      case 'n':
-        newBounds.height = Math.max(20, initialBounds.height + (initialBounds.y - mouseY));
-        newBounds.y = mouseY;
+      case 'n': // Top
+        newBounds.height = Math.max(20, newBounds.height - deltaY);
+        newBounds.y = snapToGrid(newBounds.y + deltaY);
         break;
-      case 's':
-        newBounds.height = Math.max(20, mouseY - initialBounds.y);
+      case 's': // Bottom
+        newBounds.height = Math.max(20, newBounds.height + deltaY);
         break;
-      case 'w':
-        newBounds.width = Math.max(20, initialBounds.width + (initialBounds.x - mouseX));
-        newBounds.x = mouseX;
+      case 'w': // Left
+        newBounds.width = Math.max(20, newBounds.width - deltaX);
+        newBounds.x = snapToGrid(newBounds.x + deltaX);
         break;
-      case 'e':
-        newBounds.width = Math.max(20, mouseX - initialBounds.x);
+      case 'e': // Right
+        newBounds.width = Math.max(20, newBounds.width + deltaX);
         break;
     }
-
-    // Apply snap to grid
-    newBounds.x = snapToGrid(newBounds.x);
-    newBounds.y = snapToGrid(newBounds.y);
-    newBounds.width = snapToGrid(newBounds.width);
-    newBounds.height = snapToGrid(newBounds.height);
 
     // Calculate scale factors
     const scaleX = newBounds.width / initialBounds.width;
@@ -136,41 +109,39 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
 
     // Update each selected element
     selectedElements.forEach(element => {
-      const initialState = elementInitialStates.get(element.id);
-      if (!initialState) return;
-
-      const relativeX = initialState.position.x - initialBounds.x;
-      const relativeY = initialState.position.y - initialBounds.y;
+      const relativeX = element.position.x - initialBounds.x;
+      const relativeY = element.position.y - initialBounds.y;
 
       const newX = newBounds.x + (relativeX * scaleX);
       const newY = newBounds.y + (relativeY * scaleY);
-      const newWidth = initialState.size.width * scaleX;
-      const newHeight = initialState.size.height * scaleY;
+      const newWidth = element.size.width * scaleX;
+      const newHeight = element.size.height * scaleY;
 
       onUpdateElement(element.id, {
         position: { x: newX, y: newY },
         size: { width: newWidth, height: newHeight }
       });
     });
-  }, [isResizing, resizeHandle, initialBounds, zoom, canvasPosition, selectedElements, elementInitialStates, onUpdateElement, snapEnabled]);
 
-  const handleMouseUp = useCallback(() => {
+    setInitialBounds(newBounds);
+  }, [isResizing, resizeHandle, initialBounds, zoom, selectedElements, onUpdateElement, snapEnabled]);
+
+  const handleResizeEnd = useCallback(() => {
     setIsResizing(false);
     setResizeHandle(null);
     setInitialBounds(null);
-    setElementInitialStates(new Map());
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('mousemove', handleResizeMove);
+      document.addEventListener('mouseup', handleResizeEnd);
       return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('mousemove', handleResizeMove);
+        document.removeEventListener('mouseup', handleResizeEnd);
       };
     }
-  }, [isResizing, handleMouseMove, handleMouseUp]);
+  }, [isResizing, handleResizeMove, handleResizeEnd]);
 
   if (!boundingBox || selectedElements.length === 0) return null;
 
@@ -191,12 +162,8 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
     <div
       className="absolute pointer-events-none"
       style={{
-        left: 0,
-        top: 0,
         transform,
-        transformOrigin: '0 0',
-        width: '100%',
-        height: '100%'
+        transformOrigin: '0 0'
       }}
     >
       {/* Bounding box outline */}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Copy, Scissors, Clipboard, Trash2 } from 'lucide-react';
 
 interface SelectionPanelBasicActionsProps {
@@ -19,9 +19,10 @@ export const SelectionPanelBasicActions: React.FC<SelectionPanelBasicActionsProp
   onDelete
 }) => {
   return (
-    <div>
-      <h4 className="text-sm font-medium font-arabic mb-3 text-black">الإجراءات الأساسية</h4>
-      <div className="grid grid-cols-4 gap-2">
+    <TooltipProvider>
+      <div>
+        <h4 className="text-sm font-medium font-arabic mb-3 text-black">الإجراءات الأساسية</h4>
+        <div className="grid grid-cols-4 gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -33,7 +34,7 @@ export const SelectionPanelBasicActions: React.FC<SelectionPanelBasicActionsProp
                 <Copy className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center">
+            <TooltipContent>
               <p>نسخ</p>
             </TooltipContent>
           </Tooltip>
@@ -49,7 +50,7 @@ export const SelectionPanelBasicActions: React.FC<SelectionPanelBasicActionsProp
                 <Scissors className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center">
+            <TooltipContent>
               <p>قص</p>
             </TooltipContent>
           </Tooltip>
@@ -64,7 +65,7 @@ export const SelectionPanelBasicActions: React.FC<SelectionPanelBasicActionsProp
                 <Clipboard className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center">
+            <TooltipContent>
               <p>لصق</p>
             </TooltipContent>
           </Tooltip>
@@ -80,11 +81,12 @@ export const SelectionPanelBasicActions: React.FC<SelectionPanelBasicActionsProp
                 <Trash2 className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center">
+            <TooltipContent>
               <p>حذف</p>
             </TooltipContent>
           </Tooltip>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 };
