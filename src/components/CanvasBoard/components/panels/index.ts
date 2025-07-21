@@ -6,7 +6,7 @@ export { CollaborationPanel } from './CollaborationPanel';
 export { ToolCustomizationPanel } from './ToolCustomizationPanel';
 
 // Enhanced Panel Components
-export { default as SmartAssistantPanel } from './SmartAssistantPanel';
+// SmartAssistantPanel is in the main panels directory
 export { default as EnhancedLayersPanel } from './EnhancedLayersPanel';
 export { default as EnhancedCollaborationPanel } from './EnhancedCollaborationPanel';
 export { default as AppearancePanel } from './AppearancePanel';
