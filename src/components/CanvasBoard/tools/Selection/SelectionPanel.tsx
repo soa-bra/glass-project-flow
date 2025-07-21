@@ -1,6 +1,9 @@
 import React from 'react';
 import { Separator } from '@/components/ui/separator';
 import { CanvasElement } from '../../types';
+
+console.log('Loading SelectionPanel...');
+
 import {
   SelectionPanelBasicActions,
   SelectionPanelGroupActions,
@@ -8,6 +11,8 @@ import {
   SelectionPanelTransformActions,
   SelectionPanelAlignmentActions
 } from './components';
+
+console.log('SelectionPanel imports loaded successfully');
 
 interface SelectionPanelProps {
   selectedElements: CanvasElement[];
