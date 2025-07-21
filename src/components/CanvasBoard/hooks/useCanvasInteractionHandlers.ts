@@ -56,7 +56,7 @@ export const useCanvasInteractionHandlers = (
   const wrappedHandleCanvasMouseUp = useCallback(() => {
     // Handle completion based on current tool and state
     if (selectedTool === 'select' && interaction.isSelecting) {
-      interaction.handleSelectionEnd(elements, (elementIds) => setSelectedElements(elementIds));
+      interaction.handleSelectionEnd(elements, (elementIds) => setSelectedElements(elementIds), (elementId) => setSelectedElementId(elementId));
     } else if (selectedTool === 'smart-pen' && interaction.isDrawing) {
       interaction.handleSmartPenEnd((type, startX, startY, endX, endY) => {
         const width = Math.abs(endX - startX);

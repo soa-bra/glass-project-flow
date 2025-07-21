@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { MousePointer } from 'lucide-react';
 import { CanvasElement } from '../../types';
 import { SelectionPanel } from './SelectionPanel';
@@ -35,31 +36,33 @@ export const EnhancedSelectionTool: React.FC<EnhancedSelectionToolProps> = (prop
   if (props.selectedTool !== 'select') return null;
 
   return (
-    <Card className="w-80 bg-white/95 backdrop-blur-xl shadow-lg border border-white/20 rounded-[24px]">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-arabic flex items-center gap-2">
-          <MousePointer className="w-5 h-5 text-blue-500" />
-          أداة التحديد
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <SelectionPanel
-          selectedElements={props.selectedElements}
-          onCopy={props.onCopy}
-          onCut={props.onCut}
-          onPaste={props.onPaste}
-          onDelete={props.onDelete}
-          onGroup={props.onGroup}
-          onUngroup={props.onUngroup}
-          onLock={props.onLock}
-          onUnlock={props.onUnlock}
-          onRotate={props.onRotate}
-          onFlipHorizontal={props.onFlipHorizontal}
-          onFlipVertical={props.onFlipVertical}
-          onAlign={props.onAlign}
-          onUpdateElement={props.onUpdateElement}
-        />
-      </CardContent>
-    </Card>
+    <TooltipProvider>
+      <Card className="w-80 bg-white/95 backdrop-blur-xl shadow-lg border border-white/20 rounded-[24px]">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg font-arabic flex items-center gap-2">
+            <MousePointer className="w-5 h-5 text-blue-500" />
+            أداة التحديد
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SelectionPanel
+            selectedElements={props.selectedElements}
+            onCopy={props.onCopy}
+            onCut={props.onCut}
+            onPaste={props.onPaste}
+            onDelete={props.onDelete}
+            onGroup={props.onGroup}
+            onUngroup={props.onUngroup}
+            onLock={props.onLock}
+            onUnlock={props.onUnlock}
+            onRotate={props.onRotate}
+            onFlipHorizontal={props.onFlipHorizontal}
+            onFlipVertical={props.onFlipVertical}
+            onAlign={props.onAlign}
+            onUpdateElement={props.onUpdateElement}
+          />
+        </CardContent>
+      </Card>
+    </TooltipProvider>
   );
 };

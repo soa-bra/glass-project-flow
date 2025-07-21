@@ -44,6 +44,7 @@ export const useCanvasElementInteraction = (canvasRef: React.RefObject<HTMLDivEl
         setSelectedElementIds(newSelection);
         setSelectedElementId(elementId);
       }
+      return; // Don't start dragging on multi-select
     } else {
       // Single selection or start dragging if already selected
       if (!selectedElementIds.includes(elementId)) {
@@ -58,7 +59,7 @@ export const useCanvasElementInteraction = (canvasRef: React.RefObject<HTMLDivEl
     const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
     const mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
     
-    // Store initial positions for all selected elements
+    // Store initial positions for all currently selected elements
     const elementsToMove = selectedElementIds.includes(elementId) ? selectedElementIds : [elementId];
     const positions = new Map<string, { x: number; y: number }>();
     
@@ -75,7 +76,7 @@ export const useCanvasElementInteraction = (canvasRef: React.RefObject<HTMLDivEl
       x: mouseX - element.position.x,
       y: mouseY - element.position.y
     });
-  }, []);
+  }, [canvasRef]);
 
   const handleElementMouseMove = useCallback((
     e: React.MouseEvent,

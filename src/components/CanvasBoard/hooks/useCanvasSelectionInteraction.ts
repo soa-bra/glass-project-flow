@@ -52,6 +52,7 @@ export const useCanvasSelectionInteraction = (canvasRef: React.RefObject<HTMLDiv
   const handleSelectionEnd = useCallback((
     elements: CanvasElement[],
     setSelectedElementIds: (ids: string[]) => void,
+    setSelectedElementId: (id: string | null) => void,
     addToSelection: boolean = false
   ) => {
     if (!isSelecting || !selectionBox) return;
@@ -83,6 +84,7 @@ export const useCanvasSelectionInteraction = (canvasRef: React.RefObject<HTMLDiv
     
     const selectedIds = selectedElements.map(el => el.id);
     setSelectedElementIds(selectedIds);
+    setSelectedElementId(selectedIds.length > 0 ? selectedIds[0] : null);
     
     setIsSelecting(false);
     setSelectionBox(null);

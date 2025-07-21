@@ -74,11 +74,15 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizing || !resizeHandle || !initialBounds || !boundingBox) return;
 
-    const rect = document.querySelector('[data-canvas-container]')?.getBoundingClientRect();
-    if (!rect) return;
-
-    const mouseX = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-    const mouseY = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
+    // Find the canvas element properly
+    const canvasElement = document.querySelector('.absolute.inset-0.bg-slate-50') as HTMLElement;
+    if (!canvasElement) return;
+    
+    const rect = canvasElement.getBoundingClientRect();
+    
+    // Calculate mouse position relative to canvas, accounting for zoom and pan
+    const mouseX = ((e.clientX - rect.left) / (zoom / 100)) - canvasPosition.x;
+    const mouseY = ((e.clientY - rect.top) / (zoom / 100)) - canvasPosition.y;
 
     let newBounds = { ...initialBounds };
     
@@ -185,11 +189,14 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
 
   return (
     <div
-      data-canvas-container
-      className="absolute pointer-events-none inset-0"
+      className="absolute pointer-events-none"
       style={{
+        left: 0,
+        top: 0,
         transform,
-        transformOrigin: '0 0'
+        transformOrigin: '0 0',
+        width: '100%',
+        height: '100%'
       }}
     >
       {/* Bounding box outline */}
