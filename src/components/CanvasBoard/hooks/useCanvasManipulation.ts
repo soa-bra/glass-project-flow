@@ -55,7 +55,7 @@ export const useCanvasManipulation = (
     selectedElements.forEach(elementId => {
       const element = elements.find(el => el.id === elementId);
       if (element) {
-        const currentRotation = parseFloat(element.style?.rotation || '0');
+        const currentRotation = typeof element.style?.rotation === 'number' ? element.style.rotation : parseFloat(element.style?.rotation || '0');
         updateElement(elementId, {
           style: { ...element.style, rotation: `${currentRotation + angle}deg` }
         });

@@ -26,27 +26,37 @@ export interface LayerFolder {
 
 export interface CanvasElement {
   id: string;
-  type: 'text' | 'shape' | 'image' | 'smart-element';
+  type: 'text' | 'shape' | 'image' | 'smart-element' | 'sticky' | 'comment' | 'upload' | 'timeline' | 'mindmap' | 'smart' | 'brainstorm' | 'root' | 'moodboard' | 'line';
   position: { x: number; y: number };
   size: { width: number; height: number };
-  rotation: number;
-  layerId: string;
-  style: ElementStyle;
-  locked: boolean;
-  visible: boolean;
+  rotation?: number;
+  layerId?: string;
+  style?: ElementStyle;
+  locked?: boolean;
+  visible?: boolean;
+  content?: string;
   data?: any;
 }
 
 export interface ElementStyle {
-  fillColor: string;
-  borderColor: string;
-  borderWidth: number;
-  borderStyle: 'solid' | 'dashed' | 'dotted';
-  opacity: number;
+  fillColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  borderStyle?: 'solid' | 'dashed' | 'dotted';
+  opacity?: number;
   fontSize?: number;
   fontFamily?: string;
   fontWeight?: 'normal' | 'bold';
   textAlign?: 'left' | 'center' | 'right';
+  color?: string;
+  backgroundColor?: string;
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  borderRadius?: string;
+  padding?: string;
+  rotation?: number;
+  [key: string]: any;
 }
 
 export interface Participant {
