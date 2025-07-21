@@ -34,27 +34,25 @@ export const AIAssistantPanel: React.FC = () => {
       
       <CardContent className="space-y-4 h-[calc(100%-4rem)] flex flex-col">
         {/* Smart Commands Row */}
-        <div className="flex gap-2 justify-between">
-          <Button onClick={handleFinishWorkIntelligently} size="sm" className="flex-1 rounded-[16px] bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none" title="إنهاء العمل بذكاء">
+        <div className="flex gap-2 justify-between my-[3px]">
+          <Button onClick={handleFinishWorkIntelligently} size="sm" title="إنهاء العمل بذكاء" className="h-6 flex-1 rounded-[16px] bg-[#a4e2f6] hover:bg-[#a4e2f6]/80 text-black border-none ">
             <Play className="w-4 h-4" />
           </Button>
-          <Button onClick={handleSmartReview} size="sm" className="flex-1 rounded-[16px] bg-[#a4e2f6] hover:bg-[#a4e2f6]/80 text-black border-none" title="المراجعة الذكية">
+          <Button onClick={handleSmartReview} size="sm" title="المراجعة الذكية" className="h-6 flex-1 rounded-[16px] bg-[#a4e2f6] hover:bg-[#a4e2f6]/80 text-black border-none ">
             <Search className="w-4 h-4" />
           </Button>
-          <Button onClick={handleSmartCleanup} size="sm" className="flex-1 rounded-[16px] bg-[#bdeed3] hover:bg-[#bdeed3]/80 text-black border-none" title="التنظيف الذكية">
+          <Button onClick={handleSmartCleanup} size="sm" title="التنظيف الذكية" className="h-6 flex-1 rounded-[16px] bg-[#a4e2f6] hover:bg-[#a4e2f6]/80 text-black border-none ">
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
 
-        <Separator className="bg-[#d1e1ea]" />
+        
 
         {/* Interactive Chat Box */}
         <div className="flex-1 flex flex-col space-y-3">
           <div className="bg-[#e9eff4] p-3 rounded-[16px] flex-1 min-h-0 py-[40px]">
-            <div className="text-sm text-black font-arabic py-0">
-              صندوق الحوار التفاعلي
-            </div>
-            <div className="text-xs text-black/70 mt-1">
+            
+            <div className="text-xs text-black/70 mt-1 my-0">
               اسأل المساعد الذكي عن أي شيء تحتاجه
             </div>
           </div>

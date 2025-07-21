@@ -168,7 +168,7 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
         <div className="space-y-2">
           <div className="flex gap-2">
             <Input value={newLayerName} onChange={e => setNewLayerName(e.target.value)} placeholder="اسم الطبقة الجديدة" className="flex-1 font-arabic text-sm rounded-[16px] border-[#d1e1ea] text-black placeholder:text-black/50" onKeyPress={e => e.key === 'Enter' && addNewLayer()} />
-            <Button onClick={addNewLayer} size="sm" className="rounded-[16px] bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none">
+            <Button onClick={addNewLayer} size="sm" className="rounded-[16px] border-none text-slate-50 bg-black">
               <Plus className="w-4 h-4" />
             </Button>
           </div>

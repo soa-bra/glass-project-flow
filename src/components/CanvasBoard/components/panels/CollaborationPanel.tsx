@@ -107,8 +107,8 @@ export const CollaborationPanel: React.FC = () => {
       
       <CardContent className="h-[calc(100%-4rem)] p-0">
         <Tabs defaultValue="participants" className="h-full flex flex-col">
-          <TabsList className="grid w-full grid-cols-3 bg-transparent p-1 mx-0 py-0 px-[35px]">
-            <TabsTrigger value="participants" className="rounded-[12px] text-xs font-arabic data-[state=active] flex-1 bg-[#96d8d0] hover:bg-[#96d8d0]/80 text-black border-none">
+          <TabsList className="grid w-full grid-cols-3 bg-transparent p-1 mx-0 py-0 px-[15px]">
+            <TabsTrigger value="participants" className="rounded-[12px] text-xs font-arabic data-[state=active] flex-1 bg-[#96d8d0] hover:bg-[#96d8d0]/80 border-none text-black">
               المشاركين
             </TabsTrigger>
             <TabsTrigger value="chat" className="rounded-[12px] text-xs font-arabic data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:text-black">
