@@ -1,10 +1,82 @@
+
 import React from 'react';
-import { CanvasPanelLayoutProps } from './CanvasPanelTypes';
 import { CanvasTopSection } from './CanvasTopSection';
 import { CanvasBottomSection } from './CanvasBottomSection';
 import { FloatingPanelLayout } from './FloatingPanelLayout';
+import { CanvasElement } from '../types';
 
-export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
+interface Layer {
+  id: string;
+  name: string;
+  visible: boolean;
+  locked: boolean;
+  elements: string[];
+}
+
+interface CleanCanvasPanelLayoutProps {
+  // History props
+  historyIndex: number;
+  history: any[];
+  onUndo: () => void;
+  onRedo: () => void;
+  onSave: () => void;
+  onExport: () => void;
+  onSettings: () => void;
+  
+  // Tool props
+  selectedTool: string;
+  selectedElementId: string | null;
+  selectedElements: string[];
+  zoom: number;
+  selectedSmartElement: string;
+  showGrid: boolean;
+  snapEnabled: boolean;
+  gridSize: number;
+  gridShape: string;
+  layers: Layer[];
+  selectedLayerId: string | null;
+  elements: CanvasElement[];
+  canvasPosition: { x: number; y: number };
+  panSpeed: number;
+  lineWidth: number;
+  lineStyle: string;
+  selectedPenMode: string;
+  
+  // Handlers
+  setSelectedTool: (tool: string) => void;
+  setZoom: (zoom: number) => void;
+  setShowGrid: (show: boolean) => void;
+  setSnapEnabled: (enabled: boolean) => void;
+  handleSmartElementSelect: (elementId: string) => void;
+  handleGridSizeChange: (size: number) => void;
+  handleGridShapeChange: (shape: string) => void;
+  handleAlignToGrid: () => void;
+  handleLayerUpdate: (layers: Layer[]) => void;
+  handleLayerSelect: (layerId: string) => void;
+  handleCopy: () => void;
+  handleCut: () => void;
+  handlePaste: () => void;
+  handleDeleteSelected: () => void;
+  handleGroup: () => void;
+  handleUngroup: () => void;
+  handleLock: () => void;
+  handleUnlock: () => void;
+  updateElement: (elementId: string, updates: any) => void;
+  deleteElement: (elementId: string) => void;
+  onPositionChange: (position: { x: number; y: number }) => void;
+  onFitToScreen: () => void;
+  onResetView: () => void;
+  onPanSpeedChange: (speed: number) => void;
+  onLineWidthChange: (width: number) => void;
+  onLineStyleChange: (style: string) => void;
+  onPenModeSelect: (mode: string) => void;
+  onFileUpload: (files: File[]) => void;
+  onNew: () => void;
+  onOpen: () => void;
+  onSmartProjectGenerate: () => void;
+}
+
+export const CleanCanvasPanelLayout: React.FC<CleanCanvasPanelLayoutProps> = ({
   historyIndex,
   history,
   onUndo,
@@ -61,13 +133,11 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
   onOpen,
   onSmartProjectGenerate
 }) => {
-  const selectedElementsAsElements = selectedElements
-    .map(id => elements.find(el => el.id === id))
-    .filter(Boolean);
+  const selectedCanvasElements = elements.filter(el => selectedElements.includes(el.id));
 
   return (
     <>
-      {/* Top Section */}
+      {/* Top Toolbar */}
       <CanvasTopSection
         historyIndex={historyIndex}
         history={history}
@@ -87,11 +157,17 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
         onGridShapeChange={handleGridShapeChange}
         onSmartProjectGenerate={onSmartProjectGenerate}
       />
-      
-      {/* Floating Panels Layout */}
+
+      {/* Bottom Toolbar */}
+      <CanvasBottomSection
+        selectedTool={selectedTool}
+        onToolSelect={setSelectedTool}
+      />
+
+      {/* Floating Panels */}
       <FloatingPanelLayout
         selectedTool={selectedTool}
-        selectedElements={selectedElementsAsElements}
+        selectedElements={selectedCanvasElements}
         elements={elements}
         selectedElementId={selectedElementId}
         zoom={zoom}
@@ -128,12 +204,6 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
         onGridSizeChange={handleGridSizeChange}
         onGridShapeChange={handleGridShapeChange}
         onAlignToGrid={handleAlignToGrid}
-      />
-      
-      {/* Bottom Toolbar Section */}
-      <CanvasBottomSection
-        selectedTool={selectedTool}
-        onToolSelect={setSelectedTool}
       />
     </>
   );

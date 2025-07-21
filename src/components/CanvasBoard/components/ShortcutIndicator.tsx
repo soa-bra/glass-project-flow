@@ -1,4 +1,6 @@
+
 import React from 'react';
+import { Badge } from '@/components/ui/badge';
 
 interface ShortcutIndicatorProps {
   shortcut: string;
@@ -7,20 +9,14 @@ interface ShortcutIndicatorProps {
 
 export const ShortcutIndicator: React.FC<ShortcutIndicatorProps> = ({ 
   shortcut, 
-  className = "" 
+  className = '' 
 }) => {
   return (
-    <span 
-      className={`
-        inline-flex items-center justify-center
-        min-w-[1.5rem] h-6 px-2
-        text-xs font-medium
-        bg-muted/80 text-muted-foreground
-        border border-border/50 rounded-md
-        ${className}
-      `}
+    <Badge 
+      variant="outline" 
+      className={`text-xs px-2 py-1 rounded-md font-mono ${className}`}
     >
       {shortcut}
-    </span>
+    </Badge>
   );
 };
