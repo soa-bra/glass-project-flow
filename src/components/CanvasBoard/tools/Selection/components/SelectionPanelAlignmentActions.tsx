@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -15,7 +16,7 @@ export const SelectionPanelAlignmentActions: React.FC<SelectionPanelAlignmentAct
   onAlign
 }) => {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={300}>
       <div>
         <h4 className="text-sm font-medium font-arabic mb-3 text-black">المحاذاة</h4>
         <div className="space-y-2">
@@ -32,7 +33,7 @@ export const SelectionPanelAlignmentActions: React.FC<SelectionPanelAlignmentAct
                   <AlignLeft className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="top" align="center" sideOffset={4}>
+              <TooltipContent side="right" align="center" sideOffset={8}>
                 <p>محاذاة يسار</p>
               </TooltipContent>
             </Tooltip>
@@ -48,7 +49,7 @@ export const SelectionPanelAlignmentActions: React.FC<SelectionPanelAlignmentAct
                   <AlignCenter className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="top" align="center" sideOffset={4}>
+              <TooltipContent side="right" align="center" sideOffset={8}>
                 <p>محاذاة وسط</p>
               </TooltipContent>
             </Tooltip>
@@ -64,7 +65,7 @@ export const SelectionPanelAlignmentActions: React.FC<SelectionPanelAlignmentAct
                   <AlignRight className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="top" align="center" sideOffset={4}>
+              <TooltipContent side="right" align="center" sideOffset={8}>
                 <p>محاذاة يمين</p>
               </TooltipContent>
             </Tooltip>
@@ -83,7 +84,7 @@ export const SelectionPanelAlignmentActions: React.FC<SelectionPanelAlignmentAct
                   <AlignHorizontalJustifyCenter className="w-4 h-4 rotate-90" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="top" align="center" sideOffset={4}>
+              <TooltipContent side="right" align="center" sideOffset={8}>
                 <p>محاذاة أعلى</p>
               </TooltipContent>
             </Tooltip>
@@ -99,7 +100,7 @@ export const SelectionPanelAlignmentActions: React.FC<SelectionPanelAlignmentAct
                   <AlignVerticalJustifyCenter className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="top" align="center" sideOffset={4}>
+              <TooltipContent side="right" align="center" sideOffset={8}>
                 <p>محاذاة منتصف</p>
               </TooltipContent>
             </Tooltip>
@@ -115,7 +116,7 @@ export const SelectionPanelAlignmentActions: React.FC<SelectionPanelAlignmentAct
                   <AlignHorizontalJustifyEnd className="w-4 h-4 rotate-90" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="top" align="center" sideOffset={4}>
+              <TooltipContent side="right" align="center" sideOffset={8}>
                 <p>محاذاة أسفل</p>
               </TooltipContent>
             </Tooltip>

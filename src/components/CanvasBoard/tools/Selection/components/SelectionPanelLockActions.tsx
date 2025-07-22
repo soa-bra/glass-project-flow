@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -15,7 +16,7 @@ export const SelectionPanelLockActions: React.FC<SelectionPanelLockActionsProps>
   onUnlock
 }) => {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={300}>
       <div>
         <h4 className="text-sm font-medium font-arabic mb-3 text-black">القفل والحماية</h4>
         <div className="grid grid-cols-2 gap-2">
@@ -30,7 +31,7 @@ export const SelectionPanelLockActions: React.FC<SelectionPanelLockActionsProps>
                 <Lock className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center" sideOffset={4}>
+            <TooltipContent side="right" align="center" sideOffset={8}>
               <p>قفل</p>
             </TooltipContent>
           </Tooltip>
@@ -46,7 +47,7 @@ export const SelectionPanelLockActions: React.FC<SelectionPanelLockActionsProps>
                 <Unlock className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center" sideOffset={4}>
+            <TooltipContent side="right" align="center" sideOffset={8}>
               <p>إلغاء القفل</p>
             </TooltipContent>
           </Tooltip>

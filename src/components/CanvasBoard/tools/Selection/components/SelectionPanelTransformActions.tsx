@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -17,7 +18,7 @@ export const SelectionPanelTransformActions: React.FC<SelectionPanelTransformAct
   onFlipVertical
 }) => {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={300}>
       <div>
         <h4 className="text-sm font-medium font-arabic mb-3 text-black">التحويل</h4>
         <div className="grid grid-cols-3 gap-2">
@@ -32,9 +33,9 @@ export const SelectionPanelTransformActions: React.FC<SelectionPanelTransformAct
                 <RotateCcw className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-              <TooltipContent side="top" align="center" sideOffset={4}>
-                <p>تدوير</p>
-              </TooltipContent>
+            <TooltipContent side="right" align="center" sideOffset={8}>
+              <p>تدوير</p>
+            </TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -48,9 +49,9 @@ export const SelectionPanelTransformActions: React.FC<SelectionPanelTransformAct
                 <FlipHorizontal className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-              <TooltipContent side="top" align="center" sideOffset={4}>
-                <p>عكس أفقي</p>
-              </TooltipContent>
+            <TooltipContent side="right" align="center" sideOffset={8}>
+              <p>عكس أفقي</p>
+            </TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -64,9 +65,9 @@ export const SelectionPanelTransformActions: React.FC<SelectionPanelTransformAct
                 <FlipVertical className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-              <TooltipContent side="top" align="center" sideOffset={4}>
-                <p>عكس عمودي</p>
-              </TooltipContent>
+            <TooltipContent side="right" align="center" sideOffset={8}>
+              <p>عكس عمودي</p>
+            </TooltipContent>
           </Tooltip>
         </div>
       </div>

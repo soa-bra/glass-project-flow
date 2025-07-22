@@ -15,6 +15,8 @@ export const useRefactoredCanvasInteraction = (canvasRef: React.RefObject<HTMLDi
     handleSelectionStart: selectionInteraction.handleSelectionStart,
     handleSelectionMove: selectionInteraction.handleSelectionMove,
     handleSelectionEnd: selectionInteraction.handleSelectionEnd,
+    handleElementClick: selectionInteraction.handleElementClick,
+    handleCanvasClick: selectionInteraction.handleCanvasClick,
     
     // Drawing methods
     isDrawing: drawingInteraction.isDrawing,

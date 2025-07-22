@@ -8,12 +8,10 @@ export const useCanvasInteractionHandlers = (
   canvasPosition: { x: number; y: number },
   snapEnabled: boolean,
   selectedSmartElement: string,
-  isSelecting: boolean,
-  isDrawing: boolean,
   addElement: (x: number, y: number, type: string, smartElement: string, width?: number, height?: number) => void,
-  setSelectedElements: (elements: string[]) => void,
   elements: any[],
   selectedElements: string[],
+  setSelectedElements: (elements: string[]) => void,
   updateElement: (elementId: string, updates: any) => void,
   setSelectedElementId: (id: string | null) => void,
   canvasRef: React.RefObject<HTMLDivElement>
@@ -38,7 +36,6 @@ export const useCanvasInteractionHandlers = (
         interaction.handleDragCreate(e, selectedTool, zoom, canvasPosition, snapEnabled);
         break;
       default:
-        // Do nothing for other tools like hand, zoom, etc.
         break;
     }
   }, [selectedTool, zoom, canvasPosition, snapEnabled, interaction]);
@@ -56,7 +53,7 @@ export const useCanvasInteractionHandlers = (
   const wrappedHandleCanvasMouseUp = useCallback(() => {
     // Handle completion based on current tool and state
     if (selectedTool === 'select' && interaction.isSelecting) {
-      interaction.handleSelectionEnd(elements, (elementIds) => setSelectedElements(elementIds));
+      interaction.handleSelectionEnd(elements, setSelectedElements);
     } else if (selectedTool === 'smart-pen' && interaction.isDrawing) {
       interaction.handleSmartPenEnd((type, startX, startY, endX, endY) => {
         const width = Math.abs(endX - startX);
@@ -78,7 +75,7 @@ export const useCanvasInteractionHandlers = (
     // Handle different tool behaviors
     if (selectedTool === 'select') {
       // Clear selection on empty canvas click
-      setSelectedElements([]);
+      interaction.handleCanvasClick(setSelectedElements);
       setSelectedElementId(null);
       return;
     }
@@ -115,7 +112,10 @@ export const useCanvasInteractionHandlers = (
 
   // Element interaction handlers
   const wrappedHandleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
-    interaction.handleElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId, selectedElements, setSelectedElements);
+    if (selectedTool === 'select') {
+      interaction.handleElementClick(e, elementId, selectedElements, setSelectedElements);
+      interaction.handleElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId, selectedElements, setSelectedElements);
+    }
   }, [interaction, selectedTool, elements, zoom, canvasPosition, selectedElements, setSelectedElementId, setSelectedElements]);
 
   const wrappedHandleElementMouseMove = useCallback((e: React.MouseEvent) => {
