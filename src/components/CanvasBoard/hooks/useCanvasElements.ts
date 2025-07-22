@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { CanvasElement } from '../types';
 import { toast } from 'sonner';
+import { validatePosition, validateSize, sanitizeElementContent } from '../utils/validation';
 
 export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => void) => {
   const [elements, setElements] = useState<CanvasElement[]>([]);
@@ -33,16 +34,20 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
       return;
     }
     
-    // Create element with optimized defaults
+    // Create element with optimized defaults and validation
+    const position = validatePosition({ x: Math.round(x), y: Math.round(y) });
+    const size = validateSize({ 
+      width: width || getDefaultWidth(actualType), 
+      height: height || getDefaultHeight(actualType)
+    });
+    const content = sanitizeElementContent(getDefaultContent(actualType));
+
     const newElement: CanvasElement = {
       id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type: actualType as any,
-      position: { x: Math.round(x), y: Math.round(y) },
-      size: { 
-        width: width || getDefaultWidth(actualType), 
-        height: height || getDefaultHeight(actualType)
-      },
-      content: getDefaultContent(actualType),
+      position,
+      size,
+      content,
       style: getDefaultStyle(actualType)
     };
 
@@ -60,9 +65,29 @@ export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => 
 
   const updateElement = useCallback((elementId: string, updates: Partial<CanvasElement>) => {
     setElements(prev => {
-      const newElements = prev.map(el => 
-        el.id === elementId ? { ...el, ...updates } : el
-      );
+      const newElements = prev.map(el => {
+        if (el.id === elementId) {
+          const updatedElement = { ...el, ...updates };
+          
+          // Validate position if being updated
+          if (updates.position) {
+            updatedElement.position = validatePosition(updates.position);
+          }
+          
+          // Validate size if being updated
+          if (updates.size) {
+            updatedElement.size = validateSize(updates.size);
+          }
+          
+          // Sanitize content if being updated
+          if (updates.content) {
+            updatedElement.content = sanitizeElementContent(updates.content);
+          }
+          
+          return updatedElement;
+        }
+        return el;
+      });
       saveToHistory(newElements);
       return newElements;
     });

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { CanvasElement as CanvasElementType } from '../../types';
 
 interface CanvasElementProps {
@@ -10,7 +10,7 @@ interface CanvasElementProps {
   onMouseUp: () => void;
 }
 
-export const CanvasElement: React.FC<CanvasElementProps> = ({
+export const CanvasElement = memo<CanvasElementProps>(({
   element,
   isSelected,
   onMouseDown,
@@ -96,4 +96,4 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       {renderElementContent()}
     </div>
   );
-};
+});
