@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CanvasElement } from '../types';
-import { Layer } from './CanvasPanelTypes';
+import { CanvasElement, Layer } from '../types';
 import { SelectionToolPanel, SmartPenToolPanel, ZoomToolPanel, HandToolPanel, UploadToolPanel, InteractiveCommentsToolPanel, TextToolPanel, ShapesToolPanel, SmartElementsToolPanel } from './panels';
 interface ToolPanelProps {
   selectedTool: string;
