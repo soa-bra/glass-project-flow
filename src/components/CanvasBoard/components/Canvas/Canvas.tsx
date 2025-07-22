@@ -60,12 +60,10 @@ export const Canvas: React.FC<CanvasProps> = ({
     canvasPosition,
     snapEnabled,
     selectedSmartElement,
-    false, // isSelecting
-    false, // isDrawing
     addElement,
-    setSelectedElementIds,
     elements,
     selectedElementIds,
+    setSelectedElementIds,
     updateElement,
     (id: string | null) => setSelectedElementIds(id ? [id] : []),
     canvasRef
