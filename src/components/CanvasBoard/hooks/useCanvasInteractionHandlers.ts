@@ -56,7 +56,10 @@ export const useCanvasInteractionHandlers = (
   const wrappedHandleCanvasMouseUp = useCallback(() => {
     // Handle completion based on current tool and state
     if (selectedTool === 'select' && interaction.isSelecting) {
-      interaction.handleSelectionEnd(elements, (elementIds) => setSelectedElements(elementIds));
+      interaction.handleSelectionEnd(elements, (elementIds) => {
+        setSelectedElements(elementIds);
+        setSelectedElementId(elementIds.length > 0 ? elementIds[0] : null);
+      });
     } else if (selectedTool === 'smart-pen' && interaction.isDrawing) {
       interaction.handleSmartPenEnd((type, startX, startY, endX, endY) => {
         const width = Math.abs(endX - startX);
@@ -70,7 +73,7 @@ export const useCanvasInteractionHandlers = (
         addElement(x, y, type, selectedSmartElement, Math.max(width, 30), Math.max(height, 30));
       });
     }
-  }, [selectedTool, elements, selectedSmartElement, addElement, interaction, setSelectedElements]);
+  }, [selectedTool, elements, selectedSmartElement, addElement, interaction, setSelectedElements, setSelectedElementId]);
   
   const wrappedHandleCanvasClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();

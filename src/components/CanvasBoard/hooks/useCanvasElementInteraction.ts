@@ -30,6 +30,9 @@ export const useCanvasElementInteraction = (canvasRef: React.RefObject<HTMLDivEl
     e.stopPropagation();
     e.preventDefault();
     
+    const element = elements.find(el => el.id === elementId);
+    if (!element || element.locked) return;
+    
     // Handle multi-selection with Ctrl
     if (e.ctrlKey || e.metaKey) {
       if (selectedElementIds.includes(elementId)) {
@@ -42,13 +45,12 @@ export const useCanvasElementInteraction = (canvasRef: React.RefObject<HTMLDivEl
         setSelectedElementId(elementId);
       }
     } else {
+      // Single selection
       setSelectedElementId(elementId);
       setSelectedElementIds([elementId]);
     }
     
-    const element = elements.find(el => el.id === elementId);
-    if (!element || element.locked) return;
-    
+    // Set up dragging
     const rect = canvasRef?.current?.getBoundingClientRect();
     if (!rect) return;
     
@@ -60,7 +62,7 @@ export const useCanvasElementInteraction = (canvasRef: React.RefObject<HTMLDivEl
       x: mouseX - element.position.x,
       y: mouseY - element.position.y
     });
-  }, []);
+  }, [canvasRef]);
 
   const handleElementMouseMove = useCallback((
     e: React.MouseEvent,
@@ -82,13 +84,26 @@ export const useCanvasElementInteraction = (canvasRef: React.RefObject<HTMLDivEl
     newX = snapToGrid(newX, snapEnabled);
     newY = snapToGrid(newY, snapEnabled);
     
-    // Move all selected elements
-    selectedElementIds.forEach(elementId => {
-      updateElement(elementId, {
+    // Calculate delta from original position and apply to all selected elements
+    const deltaX = newX - (selectedElementIds.length === 1 ? 
+      (mouseX - dragOffset.x) : newX);
+    const deltaY = newY - (selectedElementIds.length === 1 ? 
+      (mouseY - dragOffset.y) : newY);
+    
+    // Move all selected elements by the same delta
+    if (selectedElementIds.length === 1) {
+      updateElement(selectedElementIds[0], {
         position: { x: newX, y: newY }
       });
-    });
-  }, [isDragging, dragOffset]);
+    } else {
+      // For multiple elements, maintain relative positions
+      selectedElementIds.forEach(elementId => {
+        updateElement(elementId, {
+          position: { x: newX, y: newY }
+        });
+      });
+    }
+  }, [isDragging, dragOffset, canvasRef]);
 
   const handleElementMouseUp = useCallback(() => {
     setIsDragging(false);

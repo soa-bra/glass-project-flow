@@ -32,7 +32,7 @@ export const SelectionPanelGroupActions: React.FC<SelectionPanelGroupActionsProp
                 <Group className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" align="center" sideOffset={8} className="bg-black text-white text-xs">
+            <TooltipContent side="top" align="center" sideOffset={4} className="bg-black text-white text-xs">
               <p>تجميع</p>
             </TooltipContent>
           </Tooltip>
@@ -48,7 +48,7 @@ export const SelectionPanelGroupActions: React.FC<SelectionPanelGroupActionsProp
                 <Ungroup className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" align="center" sideOffset={8} className="bg-black text-white text-xs">
+            <TooltipContent side="top" align="center" sideOffset={4} className="bg-black text-white text-xs">
               <p>إلغاء التجميع</p>
             </TooltipContent>
           </Tooltip>

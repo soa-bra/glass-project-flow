@@ -178,12 +178,12 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
     <div
       className="absolute border-2 border-blue-500 pointer-events-none"
       style={{
-        left: boundingBox.x,
-        top: boundingBox.y,
+        left: boundingBox.x + canvasPosition.x,
+        top: boundingBox.y + canvasPosition.y,
         width: boundingBox.width,
         height: boundingBox.height,
         zIndex: 1001,
-        transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,
+        transform: `scale(${zoom / 100})`,
         transformOrigin: '0 0'
       }}
     >
