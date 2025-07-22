@@ -172,19 +172,17 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
   }, [isResizing, handleResizeMove, handleResizeEnd]);
 
   const boundingBox = calculateBoundingBox();
-  if (!boundingBox || selectedElements.length === 0) return null;
+  if (!boundingBox) return null;
 
   return (
     <div
       className="absolute border-2 border-blue-500 pointer-events-none"
       style={{
-        left: boundingBox.x + canvasPosition.x,
-        top: boundingBox.y + canvasPosition.y,
+        left: boundingBox.x,
+        top: boundingBox.y,
         width: boundingBox.width,
         height: boundingBox.height,
-        zIndex: 1001,
-        transform: `scale(${zoom / 100})`,
-        transformOrigin: '0 0'
+        zIndex: 1001
       }}
     >
       {/* Corner handles */}

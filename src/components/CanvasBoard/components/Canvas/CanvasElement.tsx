@@ -81,7 +81,6 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
 
   return (
     <div
-      data-canvas-element="true"
       className={`absolute cursor-move ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
       style={{
         left: element.position.x,

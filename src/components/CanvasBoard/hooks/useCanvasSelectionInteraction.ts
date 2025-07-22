@@ -64,32 +64,33 @@ export const useCanvasSelectionInteraction = (canvasRef: React.RefObject<HTMLDiv
     const maxY = Math.max(start.y, end.y);
     
     // Only proceed if selection box is large enough (avoid accidental selection)
-    const selectionWidth = Math.abs(maxX - minX);
-    const selectionHeight = Math.abs(maxY - minY);
-    const selectionArea = selectionWidth * selectionHeight;
-    
-    // Allow smaller selection areas to make selection more responsive
-    if (selectionArea < 10) {
+    const selectionArea = (maxX - minX) * (maxY - minY);
+    if (selectionArea < 100) {
       setIsSelecting(false);
       setSelectionBox(null);
       return;
     }
     
-    // Find elements within selection box (intersection detection)
+    // Find elements within selection box (partial overlap allowed)
     const selectedElements = elements.filter(element => {
       const elemX = element.position.x;
       const elemY = element.position.y;
       const elemMaxX = elemX + element.size.width;
       const elemMaxY = elemY + element.size.height;
       
-      // Check for intersection - element overlaps with selection box
-      return !(elemMaxX <= minX || elemX >= maxX || elemMaxY <= minY || elemY >= maxY);
+      // Check for intersection (not just complete containment)
+      return !(elemMaxX < minX || elemX > maxX || elemMaxY < minY || elemY > maxY);
     });
     
     const selectedIds = selectedElements.map(el => el.id);
     
-    // Always replace selection for box selection
-    onMultiSelect(selectedIds);
+    if (addToSelection) {
+      // Add to existing selection (Ctrl+Click behavior)
+      onMultiSelect(selectedIds);
+    } else {
+      // Replace selection
+      onMultiSelect(selectedIds);
+    }
     
     setIsSelecting(false);
     setSelectionBox(null);
