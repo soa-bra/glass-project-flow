@@ -14,4 +14,3 @@ export { default as RootConnectorTool } from './RootConnectorTool';
 export { default as TimelineTool } from './TimelineTool';
 export { default as SmartMoodboardTool } from './SmartMoodboardTool';
 export { SelectionTool } from './SelectionTool';
-export { EnhancedSelectionTool } from './Selection/EnhancedSelectionTool';

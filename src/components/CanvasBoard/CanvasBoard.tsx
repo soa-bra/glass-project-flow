@@ -8,8 +8,7 @@
 import React, { useState } from 'react';
 import useCanvasState from '@/hooks/useCanvasState';
 import SmartAssistantPanel from './panels/SmartAssistantPanel';
-import EnhancedLayersPanel from './panels/EnhancedLayersPanel';
-import AppearancePanel from './panels/AppearancePanel';
+import { EnhancedLayersPanel, AppearancePanel } from './components/panels';
 import EnhancedCollaborationPanel from './panels/EnhancedCollaborationPanel';
 import TopToolbar from './toolbars/TopToolbar';
 import { Canvas } from './components/Canvas/Canvas';
@@ -286,7 +285,7 @@ const CanvasBoard: React.FC = () => {
           {showPanels.layers && (
             <div className="h-1/2">
               <EnhancedLayersPanel
-                layers={layers}
+                layers={layers.map(layer => ({ ...layer, type: 'layer' as const, parentId: null, children: [], isOpen: true, color: '#3b82f6', depth: 0 }))}
                 selectedLayerId={selectedLayerId}
                 onLayerUpdate={() => {}}
                 onLayerSelect={selectLayer}

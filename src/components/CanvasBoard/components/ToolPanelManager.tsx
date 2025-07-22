@@ -5,13 +5,13 @@ import {
   HandPanel,
   UploadPanel,
   GridPanel,
-  LayersPanel,
   SelectionPanel,
   SmartPenPanel,
   SmartElementPanel,
   ZoomPanel,
   CommentPanel
 } from '../panels';
+import { LayersPanel } from './panels';
 // Enhanced panels have been removed - using basic panels instead
 import { CanvasElement } from '../types';
 
@@ -218,6 +218,7 @@ const ToolPanelManager: React.FC<ToolPanelManagerProps> = ({
             selectedLayerId={selectedLayerId}
             onLayerUpdate={onLayerReorder}
             onLayerSelect={onLayerSelect}
+            elements={[]}
           />
         );
 
