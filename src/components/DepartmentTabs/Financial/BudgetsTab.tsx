@@ -11,6 +11,7 @@ import { CreateBudgetModal } from './CreateBudgetModal';
 
 export const BudgetsTab: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [budgetTree, setBudgetTree] = useState(mockBudgetTree);
   
   const getBudgetStatusColor = (status: string) => {
     switch (status) {
@@ -24,7 +25,23 @@ export const BudgetsTab: React.FC = () => {
 
   const handleBudgetCreated = (budgetData: any) => {
     console.log('Budget created:', budgetData);
-    // Here you would typically update the budget tree with the new budget
+    
+    // تحويل البيانات الجديدة لتنسيق شجرة الميزانيات
+    const newBudgetTreeItem = {
+      id: budgetData.id,
+      name: budgetData.name,
+      amount: parseFloat(budgetData.totalAmount),
+      status: budgetData.status,
+      children: budgetData.items.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        amount: parseFloat(item.amount),
+        status: 'approved'
+      }))
+    };
+    
+    // إضافة الميزانية الجديدة إلى شجرة الميزانيات
+    setBudgetTree(prev => [...prev, newBudgetTreeItem]);
   };
 
   return (
@@ -45,7 +62,7 @@ export const BudgetsTab: React.FC = () => {
           <h3 className="text-large font-semibold text-black font-arabic">شجرة الميزانيات</h3>
         </div>
         <div className="px-0">
-          {mockBudgetTree.map(budget => (
+          {budgetTree.map(budget => (
             <div key={budget.id} className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-3xl bg-transparent border border-black/10">
                 <div className="flex items-center gap-3">
