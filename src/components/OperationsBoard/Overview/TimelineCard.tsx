@@ -86,7 +86,7 @@ export const TimelineCard: React.FC = () => {
         
         <div className="relative min-w-[1200px] h-[240px]">
           {/* خط التايم لاين */}
-          <div className="absolute top-[180px] left-0 w-full h-[1px] bg-black"></div>
+          <div className="absolute top-[180px] left-0 w-[200%] h-[1px] bg-black"></div>
 
           <div className="flex items-start w-full absolute top-0 left-0 px-12 space-x-40" style={{ top: '60px' }}>
             {events.map((event, idx) => (
