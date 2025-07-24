@@ -1,146 +1,90 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 interface TimelineEvent {
-  date: {
-    day: number;
-    month: string;
-    position: number;
-  };
+  day: string;
+  month: string;
   title: string;
-  location: {
-    type: 'internal' | 'external';
-    label: string;
-  };
+  location: string;
 }
 
 const timelineEvents: TimelineEvent[] = [
   {
-    date: {
-      day: 12,
-      month: "May",
-      position: 1
-    },
-    title: "الاجتماع النصف سنوي للمراجعة المالية",
-    location: {
-      type: "internal",
-      label: "داخلي"
-    }
-  },
-  {
-    date: {
-      day: 16,
-      month: "May",
-      position: 2
-    },
-    title: "محاضرة العلامة من منظور الجماعة",
-    location: {
-      type: "external",
-      label: "مسك الخيرية"
-    }
-  },
-  {
-    date: {
-      day: 20,
-      month: "May",
-      position: 3
-    },
+    day: "20",
+    month: "May",
     title: "تسليم النماذج الأولية",
-    location: {
-      type: "external",
-      label: "الخليج للتدريب"
-    }
+    location: "الخليج للتدريب"
   },
   {
-    date: {
-      day: 25,
-      month: "May",
-      position: 4
-    },
-    title: "اجتماع لمناقشة الشراكة العرفية",
-    location: {
-      type: "external",
-      label: "جامعة الملك سعود"
-    }
+    day: "25",
+    month: "May",
+    title: "إجتماع لمناقشة الشراكة القروية",
+    location: "جامعة الملك سعود"
   },
   {
-    date: {
-      day: 2,
-      month: "Jun",
-      position: 5
-    },
-    title: "القابلية الوظيفية",
-    location: {
-      type: "internal",
-      label: "داخلي"
-    }
+    day: "02",
+    month: "Jun",
+    title: "المقابلات التوظيفية",
+    location: "داخلي"
   },
   {
-    date: {
-      day: 7,
-      month: "Jun",
-      position: 6
-    },
+    day: "07",
+    month: "Jun",
     title: "حفل الترحيب بالموظفين الجدد",
-    location: {
-      type: "internal",
-      label: "داخلي"
-    }
+    location: "داخلي"
   }
 ];
 
 export const TimelineCard: React.FC = () => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (scrollContainerRef.current) {
+      e.preventDefault();
+      scrollContainerRef.current.scrollLeft += e.deltaY;
+    }
+  };
+
   return (
     <BaseCard 
       variant="glass" 
       size="sm" 
       className="col-span-3 h-[320px] overflow-hidden" 
-      style={{ backgroundColor: '#f2ffff' }} 
-      header={
-        <h2 className="text-xl font-medium text-black font-arabic mb-6">الأحداث القادمة</h2>
-      }
+      style={{ backgroundColor: '#EAF1F4' }}
     >
-      <div className="relative">
-        <Carousel className="w-full">
-          <CarouselContent className="-ml-2 md:-ml-4">
-            {timelineEvents.map((event, index) => (
-              <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/3">
-                <div className="flex flex-col items-center text-center space-y-3">
-                  {/* التاريخ */}
-                  <div className="flex flex-col items-center">
-                    <div className="text-2xl font-bold text-black font-arabic">
-                      {event.date.day}
-                    </div>
-                    <div className="text-sm text-gray-600 font-arabic">
-                      {event.date.month}
-                    </div>
-                  </div>
-                  
-                  {/* خط الربط */}
-                  <div className="w-px h-8 bg-gray-300"></div>
-                  
-                  {/* العنوان */}
-                  <div className="text-sm font-arabic text-black leading-tight max-w-[120px]">
-                    {event.title}
-                  </div>
-                  
-                  {/* الموقع */}
-                  <div className={`text-xs px-2 py-1 rounded-full font-arabic ${
-                    event.location.type === 'internal' 
-                      ? 'bg-blue-100 text-blue-800' 
-                      : 'bg-green-100 text-green-800'
-                  }`}>
-                    {event.location.label}
-                  </div>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="absolute right-4 top-1/2 -translate-y-1/2" />
-          <CarouselNext className="absolute left-4 top-1/2 -translate-y-1/2" />
-        </Carousel>
+      <div className="relative bg-[#EAF1F4] rounded-lg w-full h-[220px]">
+        <h2 className="text-[28px] font-bold text-right text-[#000000] absolute top-5 right-10">
+          الأحداث القادمة
+        </h2>
+
+        {/* خط التايم لاين */}
+        <div className="absolute top-[180px] left-0 w-full h-[1px] bg-black"></div>
+
+        <div 
+          ref={scrollContainerRef}
+          onWheel={handleWheel}
+          className="flex justify-between items-start w-full absolute top-0 left-0 px-12 overflow-x-auto scrollbar-hide" 
+          style={{ top: '60px' }}
+        >
+          {timelineEvents.map((event, idx) => (
+            <div key={idx} className="flex flex-row items-center text-right min-w-[200px] relative">
+              {/* البيانات النصية */}
+              <div className="flex flex-col items-end space-y-[1px] mr-[2px]">
+                <div className="text-[10px] text-black">{event.month}</div>
+                <div className="text-[24px] text-black font-bold">{event.day}</div>
+                <div className="text-[12px] text-black whitespace-nowrap">{event.title}</div>
+                <div className="text-[14px] text-black font-bold">{event.location}</div>
+              </div>
+
+              {/* الخط العمودي والدائرة */}
+              <div className="flex flex-col items-center relative" style={{ top: '55px' }}>
+                <div className="w-[1px] h-[60px] bg-black"></div>
+                <div className="w-[40px] h-[40px] bg-[#EAF1F4] border border-black rounded-full -mt-[20px]"></div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </BaseCard>
   );
