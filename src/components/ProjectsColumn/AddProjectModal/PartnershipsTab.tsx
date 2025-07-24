@@ -1,13 +1,10 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
-
 export const PartnershipsTab: React.FC = () => {
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <Button className="bg-black text-white hover:bg-gray-800 font-arabic">
+          <Button className="text-white font-arabic rounded-ful\u0645 bg-zinc-950 hover:bg-zinc-800">
             إضافة شريك +
           </Button>
           <h3 className="text-lg font-bold font-arabic">الشراكات</h3>
@@ -17,6 +14,5 @@ export const PartnershipsTab: React.FC = () => {
           لا توجد شراكات مضافة بعد
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };

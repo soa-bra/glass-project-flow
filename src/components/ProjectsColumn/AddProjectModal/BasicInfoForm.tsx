@@ -44,7 +44,7 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black placeholder-black/50 focus:outline-none focus:border-black transition-colors">
               <SelectValue placeholder="اختر مدير المشروع" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black placeholder-black/50 focus:outline-none focus:border-black transition-colors">
               {teamMembers.map(member => <SelectItem key={member} value={member}>
                   {member}
                 </SelectItem>)}
