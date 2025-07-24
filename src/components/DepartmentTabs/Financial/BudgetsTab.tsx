@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,8 +7,11 @@ import { FileText, BookOpen } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { mockBudgetTree } from './data';
 import { formatCurrency, getStatusColor, getStatusText } from './utils';
+import { CreateBudgetModal } from './CreateBudgetModal';
 
 export const BudgetsTab: React.FC = () => {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  
   const getBudgetStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-[#bdeed3] text-black';
@@ -19,11 +22,19 @@ export const BudgetsTab: React.FC = () => {
     }
   };
 
+  const handleBudgetCreated = (budgetData: any) => {
+    console.log('Budget created:', budgetData);
+    // Here you would typically update the budget tree with the new budget
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-large font-semibold text-black font-arabic mx-[30px]">إدارة الميزانيات</h3>
-        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2">
+        <button 
+          onClick={() => setIsCreateModalOpen(true)}
+          className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2 hover:bg-black/90 transition-colors"
+        >
           <FileText className="w-4 h-4" />
           إنشاء ميزانية جديدة
         </button>
@@ -69,6 +80,12 @@ export const BudgetsTab: React.FC = () => {
           ))}
         </div>
       </div>
+
+      <CreateBudgetModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onBudgetCreated={handleBudgetCreated}
+      />
     </div>
   );
 };
