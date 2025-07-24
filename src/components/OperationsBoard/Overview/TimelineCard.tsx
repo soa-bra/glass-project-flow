@@ -88,23 +88,21 @@ export const TimelineCard: React.FC = () => {
           {/* خط التايم لاين */}
           <div className="absolute top-[180px] left-0 w-full h-[1px] bg-black"></div>
 
-          <div className="flex items-start w-full absolute top-0 left-0 px-12" style={{ top: '60px', gap: '180px' }}>
+          <div className="flex justify-between items-start w-full absolute top-0 left-0 px-12" style={{ top: '60px' }}>
             {events.map((event, idx) => (
-              <div key={idx} className="flex flex-row items-center text-left relative">
+              <div key={idx} className="flex flex-row items-center text-right w-1/6 relative">
+                {/* البيانات النصية */}
+                <div className="flex flex-col items-end space-y-[1px] mr-[2px]">
+                  <div className="text-[10px] text-black font-arabic">{event.month}</div>
+                  <div className="text-[24px] text-black font-bold font-arabic">{event.day}</div>
+                  <div className="text-[12px] text-black whitespace-nowrap font-arabic">{event.title}</div>
+                  <div className="text-[14px] text-black font-bold font-arabic">{event.location}</div>
+                </div>
+
                 {/* الخط العمودي والدائرة */}
                 <div className="flex flex-col items-center relative" style={{ top: '55px' }}>
                   <div className="w-[1px] h-[60px] bg-black"></div>
-                  <div className="w-[40px] h-[40px] bg-[#f3ffff] border border-black rounded-full -mt-[20px]"></div>
-                </div>
-
-                {/* البيانات النصية */}
-                <div className="flex flex-col items-start space-y-[1px] ml-[2px]" style={{ top: '140px', position: 'absolute' }}>
-                  <div className="flex items-center gap-1">
-                    <div className="text-[24px] text-black font-bold font-arabic">{event.day}</div>
-                    <div className="text-[10px] text-black font-arabic">{event.month}</div>
-                  </div>
-                  <div className="text-[12px] text-black whitespace-nowrap font-arabic">{event.title}</div>
-                  <div className="text-[14px] text-black font-bold font-arabic">{event.location}</div>
+                  <div className="w-[40px] h-[40px] bg-[#EAF1F4] border border-black rounded-full -mt-[20px]"></div>
                 </div>
               </div>
             ))}
