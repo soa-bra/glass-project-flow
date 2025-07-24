@@ -138,7 +138,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
         <div className="space-y-6">
       {/* Header */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
         <div className="flex items-center gap-4 mb-3">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
             <Database className="w-6 h-6 text-black" />
@@ -155,27 +155,27 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       </div>
 
       {/* مراقبة الامتثال بالذكاء الاصطناعي */}
-      <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           🤖 مراقب الامتثال الذكي
           <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">AI Compliance Monitor</span>
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-lg p-4">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4">
             <h4 className="text-sm font-bold text-black mb-2">تقييم المخاطر التلقائي</h4>
             <p className="text-xs text-gray-600">فحص دوري للبيانات الحساسة</p>
             <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
               <div className="bg-green-500 h-2 rounded-full" style={{ width: '94%' }}></div>
             </div>
           </div>
-          <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-lg p-4">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4">
             <h4 className="text-sm font-bold text-black mb-2">كشف التسريبات</h4>
             <p className="text-xs text-gray-600">مراقبة 24/7 للوصول غير المصرح</p>
             <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
               <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '78%' }}></div>
             </div>
           </div>
-          <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-lg p-4">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4">
             <h4 className="text-sm font-bold text-black mb-2">تحديث السياسات</h4>
             <p className="text-xs text-gray-600">مراجعة تلقائية للوائح الجديدة</p>
             <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
@@ -278,12 +278,12 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       </div>
 
       {/* تصنيف البيانات */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
         <h3 className="text-md font-bold text-black mb-4">تصنيف البيانات</h3>
         
         <div className="space-y-3">
           {dataCategories.map((category, index) => (
-            <div key={index} style={{ backgroundColor: '#d9d2fd' }} className="rounded-lg p-4 flex items-center justify-between">
+            <div key={index} style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   {category.encrypted ? <Lock className="w-4 h-4 text-green-600" /> : <Key className="w-4 h-4 text-gray-400" />}

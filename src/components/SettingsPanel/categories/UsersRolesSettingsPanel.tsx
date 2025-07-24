@@ -197,7 +197,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
         <div className="flex items-center gap-4 mb-3">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
             <Users className="w-6 h-6 text-black" />
@@ -214,14 +214,14 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
       </div>
 
       {/* نظام تعيين الأدوار الذكي */}
-      <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           🤖 نظام تعيين الأدوار الذكي
           <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">AI Role Assignment</span>
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-lg p-4">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4">
             <label className="flex items-center gap-2 mb-2">
               <input 
                 type="checkbox" 
@@ -236,7 +236,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
             <p className="text-xs text-gray-600">اقتراح أدوار مناسبة للمستخدمين الجدد</p>
           </div>
 
-          <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-lg p-4">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4">
             <label className="flex items-center gap-2 mb-2">
               <input 
                 type="checkbox" 
@@ -251,7 +251,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
             <p className="text-xs text-gray-600">تحليل مخاطر الصلاحيات الممنوحة</p>
           </div>
 
-          <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-lg p-4">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4">
             <label className="flex items-center gap-2 mb-2">
               <input 
                 type="checkbox" 
@@ -269,7 +269,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
       </div>
 
       {/* إدارة المستخدمين */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-md font-bold text-black">المستخدمين</h3>
           <button
@@ -282,7 +282,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
         </div>
 
         {showAddUser && (
-          <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-black/10 mb-4">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 mb-4">
             <h4 className="text-sm font-bold text-black mb-3">إضافة مستخدم جديد</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <input
@@ -336,7 +336,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
         
         <div className="space-y-3">
           {users.map(user => (
-            <div key={user.id} style={{ backgroundColor: '#d9d2fd' }} className="rounded-lg p-4">
+            <div key={user.id} style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
@@ -387,7 +387,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
       </div>
 
       {/* إدارة الأدوار */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-md font-bold text-black">الأدوار والصلاحيات</h3>
           <button
@@ -400,7 +400,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {roles.map(role => (
-            <div key={role.id} style={{ backgroundColor: '#96d8d0' }} className="rounded-2xl p-4 border border-black/10">
+            <div key={role.id} style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   {getRoleIcon(role.level)}
@@ -434,19 +434,19 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
 
       {/* إحصائيات المستخدمين */}
       <div className="grid grid-cols-4 gap-4">
-        <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-black/10 text-center">
+        <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
           <div className="text-2xl font-bold text-black mb-1">{users.length}</div>
           <p className="text-xs font-normal text-gray-400">إجمالي المستخدمين</p>
         </div>
-        <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-2xl p-4 border border-black/10 text-center">
+        <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
           <div className="text-2xl font-bold text-black mb-1">{users.filter(u => u.status === 'active').length}</div>
           <p className="text-xs font-normal text-gray-400">نشط</p>
         </div>
-        <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-black/10 text-center">
+        <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
           <div className="text-2xl font-bold text-black mb-1">{roles.length}</div>
           <p className="text-xs font-normal text-gray-400">الأدوار المعرفة</p>
         </div>
-        <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-black/10 text-center">
+        <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
           <div className="text-2xl font-bold text-black mb-1">24h</div>
           <p className="text-xs font-normal text-gray-400">متوسط وقت الجلسة</p>
         </div>

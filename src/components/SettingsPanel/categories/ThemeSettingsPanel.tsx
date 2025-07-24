@@ -126,7 +126,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
         <div className="space-y-6">
       {/* Header */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
         <div className="flex items-center gap-4 mb-3">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
             <Palette className="w-6 h-6 text-black" />
@@ -143,7 +143,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       </div>
 
       {/* مولد الثيمات بالذكاء الاصطناعي */}
-      <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           🎨 مولد الثيمات الذكي
           <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">AI Theme Generator</span>
@@ -229,7 +229,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       </div>
 
       {/* الثيمات المحددة مسبقاً */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
         <h3 className="text-md font-bold text-black mb-4">الثيمات المحددة مسبقاً</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -240,7 +240,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
               className={`p-4 rounded-2xl border border-black/10 transition-all text-left ${
                 formData.appearance.colorScheme === preset.id ? 'ring-2 ring-black' : ''
               }`}
-              style={{ backgroundColor: '#bdeed3' }}
+              style={{ backgroundColor: '#f2ffff' }}
             >
               <div className="flex items-center gap-3">
                 <div className="flex gap-1">

@@ -143,7 +143,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           className="mb-4"
         />
           {/* Header */}
-          <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
                 <User className="w-6 h-6 text-black" />
@@ -160,12 +160,12 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           </div>
 
           {/* البيانات الشخصية */}
-          <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
             <h3 className="text-md font-bold text-black mb-4">البيانات الشخصية</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* صورة المستخدم */}
-              <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-black/10">
+              <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
                     <User className="w-8 h-8 text-gray-500" />
@@ -181,7 +181,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
               </div>
 
               {/* معلومات الاتصال */}
-              <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-black/10">
+              <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
                 <h4 className="text-sm font-bold text-black mb-3">معلومات الاتصال</h4>
                 <div className="space-y-3">
                   <input 
@@ -241,11 +241,11 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           </div>
 
           {/* إدارة كلمات المرور */}
-          <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
             <h3 className="text-md font-bold text-black mb-4">إدارة كلمات المرور</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-black/10">
+              <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
                 <h4 className="text-sm font-bold text-black mb-3">تغيير كلمة المرور</h4>
                 <div className="space-y-3">
                   <input 
@@ -294,7 +294,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
               </div>
 
               {/* مولد كلمات المرور بالذكاء الاصطناعي */}
-              <div style={{ backgroundColor: '#96d8d0' }} className="rounded-2xl p-4 border border-black/10">
+              <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
                 <h4 className="text-sm font-bold text-black mb-3">🤖 مولد كلمات المرور الذكي</h4>
                 <p className="text-xs text-black mb-3">اقتراح كلمة مرور قوية باستخدام GPT-Pass-Suggest</p>
                 <button
@@ -315,10 +315,10 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           </div>
 
           {/* إعدادات اللغة */}
-          <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
             <h3 className="text-md font-bold text-black mb-4">تفضيلات اللغة</h3>
             
-            <div style={{ backgroundColor: '#fbe2aa' }} className="rounded-2xl p-4 border border-black/10">
+            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
               <div className="flex items-center gap-4">
                 <Globe className="w-6 h-6 text-black" />
                 <div className="flex-1">
@@ -341,15 +341,15 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
 
           {/* إحصائيات الحساب */}
           <div className="grid grid-cols-3 gap-4">
-            <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-black/10 text-center">
+            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
               <div className="text-2xl font-bold text-black mb-1">127</div>
               <p className="text-xs font-normal text-gray-400">يوم في النظام</p>
             </div>
-            <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-2xl p-4 border border-black/10 text-center">
+            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
               <div className="text-2xl font-bold text-black mb-1">89%</div>
               <p className="text-xs font-normal text-gray-400">معدل النشاط</p>
             </div>
-            <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-black/10 text-center">
+            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
               <div className="text-2xl font-bold text-black mb-1">24</div>
               <p className="text-xs font-normal text-gray-400">مشروع مكتمل</p>
             </div>
@@ -368,10 +368,10 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                     password: { current: '', new: '', confirm: '' },
                     lastModified: new Date().toISOString()
                   });
-                  clearDraft();
-                }}
-                style={{ backgroundColor: '#F2FFFF', color: '#000000' }}
-                className="px-6 py-2 rounded-full text-sm font-medium border border-black/20 hover:bg-gray-50 transition-colors"
+              clearDraft();
+            }}
+            style={{ backgroundColor: '#f2ffff', color: '#000000' }}
+            className="px-6 py-2 rounded-full text-sm font-medium border border-black/20 hover:bg-gray-50 transition-colors"
               >
                 إعادة تعيين
               </button>
