@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 export const PartnershipsTab: React.FC = () => {
-  return <div className="space-y-6">
+  return <div className="space-y-6 rounded-full">
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <Button className="text-white font-arabic rounded-ful\u0645 bg-zinc-950 hover:bg-zinc-800">
