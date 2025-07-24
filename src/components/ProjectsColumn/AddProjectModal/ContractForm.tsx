@@ -76,8 +76,17 @@ export const ContractForm: React.FC<ContractFormProps> = ({
             </div>
 
             <div className="space-y-3">
-              {projectData.contractPayments.map((payment: ContractPayment) => <div key={payment.id} className="grid grid-cols-3 gap-4 p-3 bg-white/10 rounded-lg">
-                  <Button type="button" variant="destructive" size="sm" onClick={() => onRemovePayment(payment.id)} className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 border border-red-600 bg-transparent hover:bg-transparent hover:scale-105 active:scale-95\" text-red-600 my-[18px]">x</Button>
+              {projectData.contractPayments.map((payment: ContractPayment) => (
+                <div key={payment.id} className="grid grid-cols-3 gap-4 p-3 bg-white/10 rounded-lg">
+                  <Button 
+                    type="button" 
+                    variant="destructive" 
+                    size="sm" 
+                    onClick={() => onRemovePayment(payment.id)} 
+                    className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 border border-red-600 bg-transparent hover:bg-transparent hover:scale-105 active:scale-95 text-red-600 my-[18px]"
+                  >
+                    x
+                  </Button>
                   
                   <div className="space-y-1">
                     <Label className="text-xs font-arabic">تاريخ الدفع</Label>
@@ -99,7 +108,8 @@ export const ContractForm: React.FC<ContractFormProps> = ({
               }} className={`text-right font-arabic text-sm ${validationErrors[`paymentAmount_${payment.id}`] ? 'border-red-500' : ''}`} placeholder="0" />
                     {validationErrors[`paymentAmount_${payment.id}`] && <p className="text-red-500 text-xs mt-1 text-right">{validationErrors[`paymentAmount_${payment.id}`]}</p>}
                   </div>
-                </div>)}
+                </div>
+              ))}
             </div>
           </div>
         </div>}
