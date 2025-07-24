@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
@@ -114,15 +115,15 @@ export const TimelineCard: React.FC = () => {
     setShowAddEventModal(false);
   };
 
-  const eventContainerWidth = Math.max(1200, sortedEvents.length * 200 + 400);
+  const eventContainerWidth = Math.max(1200, sortedEvents.length * 200 + 320);
 
   return (
     <>
       <BaseCard 
         variant="glass" 
         size="sm" 
-        className="col-span-3 h-[128px] overflow-hidden" 
-        style={{ backgroundColor: '#f2ffff' }} 
+        className="col-span-3 h-[256px] overflow-hidden" 
+        style={{ backgroundColor: '#f2ffff' }}
         header={
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-medium text-black font-arabic">الأحداث القادمة</h2>
@@ -140,11 +141,11 @@ export const TimelineCard: React.FC = () => {
           className="relative overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden" 
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          <div className="relative h-[96px]" style={{ width: `${eventContainerWidth}px` }}>
+          <div className="relative h-[192px]" style={{ width: `${eventContainerWidth}px` }}>
             {/* خط التايم لاين */}
-            <div className="absolute top-[72px] left-0 right-12 h-[1px] bg-black"></div>
+            <div className="absolute top-[144px] left-0 right-12 h-[1px] bg-black"></div>
 
-            <div className="flex items-start absolute top-0 left-0 px-12 space-x-40" style={{ top: '24px' }}>
+            <div className="flex items-start absolute top-0 left-0 px-12 space-x-40" style={{ top: '48px' }}>
               {sortedEvents.map((event, idx) => (
                 <div key={idx} className="flex flex-row items-center text-right relative">
                   {/* البيانات النصية */}
@@ -158,8 +159,8 @@ export const TimelineCard: React.FC = () => {
                   </div>
 
                   {/* الخط العمودي والدائرة */}
-                  <div className="flex flex-col items-center relative" style={{ top: '22px' }}>
-                    <div className="w-[1px] h-[24px] bg-black"></div>
+                  <div className="flex flex-col items-center relative" style={{ top: '44px' }}>
+                    <div className="w-[1px] h-[48px] bg-black"></div>
                     <div className="w-[16px] h-[16px] bg-[#f3ffff] border border-black rounded-full -mt-[8px]"></div>
                   </div>
                 </div>
@@ -170,7 +171,7 @@ export const TimelineCard: React.FC = () => {
       </BaseCard>
 
       <Dialog open={showAddEventModal} onOpenChange={setShowAddEventModal}>
-        <DialogContent className="glass-modal w-full max-w-md mx-auto rounded-xl border border-black/20">
+        <DialogContent className="glass-modal w-full max-w-md mx-auto rounded-3xl border border-black/20">
           <DialogHeader>
             <DialogTitle className="text-xl font-medium text-black font-arabic text-right">إضافة حدث جديد</DialogTitle>
           </DialogHeader>
@@ -179,23 +180,26 @@ export const TimelineCard: React.FC = () => {
             {/* Date Picker */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-black font-arabic block text-right">التاريخ</label>
-              <div className="relative">
-                <button
-                  onClick={() => {}}
-                  className="w-full h-10 px-3 py-2 bg-transparent border border-black rounded-lg text-right text-black focus:outline-none focus:ring-2 focus:ring-black/20 flex items-center justify-between"
-                >
-                  <CalendarIcon className="h-4 w-4 text-black" />
-                  <span className="font-arabic">
-                    {selectedDate ? format(selectedDate, 'yyyy/MM/dd') : 'اختر التاريخ'}
-                  </span>
-                </button>
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  className="absolute top-12 left-0 z-50 bg-white border border-black rounded-lg p-3 pointer-events-auto shadow-lg"
-                />
-              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    className="w-full h-10 px-3 py-2 bg-transparent border border-black rounded-lg text-right text-black focus:outline-none focus:ring-2 focus:ring-black/20 flex items-center justify-between"
+                  >
+                    <CalendarIcon className="h-4 w-4 text-black" />
+                    <span className="font-arabic">
+                      {selectedDate ? format(selectedDate, 'yyyy/MM/dd') : 'اختر التاريخ'}
+                    </span>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    className="p-3 pointer-events-auto border border-black rounded-lg"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Event Title */}
