@@ -113,8 +113,8 @@ export const TimelineCard: React.FC = () => {
       <BaseCard 
         variant="glass" 
         size="sm" 
-        className="col-span-3 h-[260px] overflow-hidden" 
-        style={{ backgroundColor: '#f2ffff' }}
+        className="col-span-3 h-[320px] overflow-hidden" 
+        style={{ backgroundColor: '#f2ffff' }} 
         header={
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-medium text-black font-arabic">الأحداث القادمة</h2>
@@ -133,30 +133,28 @@ export const TimelineCard: React.FC = () => {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           
-          <div className="relative min-w-[1200px] h-[180px]">
+          <div className="relative min-w-[2400px] h-[240px]">
             {/* خط التايم لاين */}
-            <div className="absolute top-[120px] left-0 w-[200%] h-[1px] bg-black"></div>
+            <div className="absolute top-[180px] left-0 w-[200%] h-[1px] bg-black"></div>
 
-            {/* حاوية نصوص الأحداث */}
-            <div className="flex items-start justify-between w-full absolute top-0 left-0 px-12 bg-white/10 backdrop-blur-sm rounded-2xl p-4 mx-4" style={{ top: '20px' }}>
+            <div className="flex items-start justify-between w-full absolute top-0 left-0 px-12" style={{ top: '60px' }}>
               {eventsList.map((event, idx) => (
-                <div key={idx} className="flex flex-col items-end space-y-[1px] text-right">
-                  <div className="flex items-baseline space-x-1 font-arabic">
-                    <div className="text-[24px] text-black font-bold">{event.day}</div>
-                    <div className="text-[10px] text-black">{event.month}</div>
+                <div key={idx} className="flex flex-row items-center text-right relative">
+                  {/* البيانات النصية */}
+                  <div className="flex flex-col items-end space-y-[1px] mr-[2px]">
+                    <div className="flex items-baseline space-x-1 font-arabic">
+                      <div className="text-[24px] text-black font-bold">{event.day}</div>
+                      <div className="text-[10px] text-black">{event.month}</div>
+                    </div>
+                    <div className="text-[12px] text-black whitespace-nowrap font-arabic">{event.title}</div>
+                    <div className="text-[14px] text-black font-bold font-arabic">{event.location}</div>
                   </div>
-                  <div className="text-[12px] text-black whitespace-nowrap font-arabic">{event.title}</div>
-                  <div className="text-[14px] text-black font-bold font-arabic">{event.location}</div>
-                </div>
-              ))}
-            </div>
 
-            {/* حاوية الخطوط والدوائر */}
-            <div className="flex items-center justify-between w-full absolute px-16" style={{ top: '105px' }}>
-              {eventsList.map((event, idx) => (
-                <div key={idx} className="flex flex-col items-center">
-                  <div className="w-[1px] h-[60px] bg-black"></div>
-                  <div className="w-[40px] h-[40px] bg-[#f3ffff] border border-black rounded-full -mt-[20px]"></div>
+                  {/* الخط العمودي والدائرة */}
+                  <div className="flex flex-col items-center relative" style={{ top: '55px' }}>
+                    <div className="w-[1px] h-[60px] bg-black"></div>
+                    <div className="w-[40px] h-[40px] bg-[#f3ffff] border border-black rounded-full -mt-[20px]"></div>
+                  </div>
                 </div>
               ))}
             </div>
