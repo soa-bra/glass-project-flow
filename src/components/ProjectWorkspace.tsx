@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
@@ -9,15 +8,14 @@ import { useProjectPanelAnimation } from '@/hooks/useProjectPanelAnimation';
 import { ProjectTasksProvider } from '@/contexts/ProjectTasksContext';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
-
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
 }
-
-const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
+const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({
+  isSidebarCollapsed
+}) => {
   // إدارة حالة المشاريع على مستوى ProjectWorkspace
   const [projects, setProjects] = useState<Project[]>(mockProjects);
-
   const {
     panelStage,
     selectedProjectId,
@@ -25,7 +23,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     operationsBoardClass,
     projectsColumnClass,
     handleProjectSelect,
-    closePanel,
+    closePanel
   } = useProjectPanelAnimation();
 
   // دالة لإضافة مشروع جديد
@@ -42,29 +40,29 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       date: new Date().toLocaleDateString('ar-SA'),
       isOverBudget: false,
       hasOverdueTasks: false,
-      team: newProject.team.map(name => ({ name })),
-      progress: 0,
+      team: newProject.team.map(name => ({
+        name
+      })),
+      progress: 0
     };
     setProjects(prev => [projectToAdd, ...prev]);
   };
 
   // دالة لتحديث مشروع موجود
   const handleProjectUpdated = (updatedProject: ProjectData) => {
-    setProjects(prev => prev.map(project => 
-      project.id === updatedProject.id.toString() 
-        ? {
-            ...project,
-            title: updatedProject.name,
-            description: updatedProject.description,
-            owner: updatedProject.owner,
-            value: updatedProject.budget.toString(),
-            daysLeft: Math.ceil((new Date(updatedProject.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
-            tasksCount: updatedProject.tasksCount,
-            status: updatedProject.status,
-            team: updatedProject.team.map(name => ({ name })),
-          }
-        : project
-    ));
+    setProjects(prev => prev.map(project => project.id === updatedProject.id.toString() ? {
+      ...project,
+      title: updatedProject.name,
+      description: updatedProject.description,
+      owner: updatedProject.owner,
+      value: updatedProject.budget.toString(),
+      daysLeft: Math.ceil((new Date(updatedProject.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
+      tasksCount: updatedProject.tasksCount,
+      status: updatedProject.status,
+      team: updatedProject.team.map(name => ({
+        name
+      }))
+    } : project));
   };
 
   // Dynamically set right offsets depending on collapsed state
@@ -76,63 +74,31 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   const projectPanelWidth = operationsBoardWidth;
 
   // panel content switches: always mount ProjectPanel but swap inner content with fade
-  const shownProject = displayedProjectId
-    ? projects.find((p) => p.id === displayedProjectId)
-    : null;
-
-  return (
-    <ProjectTasksProvider>
+  const shownProject = displayedProjectId ? projects.find(p => p.id === displayedProjectId) : null;
+  return <ProjectTasksProvider>
       {/* Projects Column: shifts left when panel slides in */}
-      <div
-        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`}
-        style={{
-          top: 'var(--sidebar-top-offset)',
-          right: projectsColumnRight,
-          width: projectsColumnWidth,
-          transition: 'all var(--animation-duration-main) var(--animation-easing)',
-          zIndex: 110,
-        }}
-      >
-        <div
-          style={{
-            transition: 'all var(--animation-duration-main) var(--animation-easing)'
-          }}
-          className="w-full h-full p-2 py-0 mx-0 px-[5px]"
-        >
-          <ProjectsColumn
-            projects={projects}
-            selectedProjectId={selectedProjectId}
-            onProjectSelect={handleProjectSelect}
-            onProjectAdded={handleProjectAdded}
-          />
-        </div>
+      <div className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`} style={{
+      top: 'var(--sidebar-top-offset)',
+      right: projectsColumnRight,
+      width: projectsColumnWidth,
+      transition: 'all var(--animation-duration-main) var(--animation-easing)',
+      zIndex: 110
+    }}>
+        
       </div>
 
       {/* Operations Board: slides out when panel slides in */}
-      <div
-        style={{
-          right: operationsBoardRight,
-          width: operationsBoardWidth,
-          transition: 'all var(--animation-duration-main) var(--animation-easing)'
-        }}
-        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0 ${operationsBoardClass}`}
-      >
+      <div style={{
+      right: operationsBoardRight,
+      width: operationsBoardWidth,
+      transition: 'all var(--animation-duration-main) var(--animation-easing)'
+    }} className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0 ${operationsBoardClass}`}>
         <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
       </div>
 
       {/* Project Management Board: slides in/out and crossfades content */}
-      {shownProject && (
-        <ProjectManagementBoard
-          key={shownProject.id} // إضافة key لإعادة التحديث عند تغيير المشروع
-          project={shownProject}
-          isVisible={panelStage === "open" || panelStage === "changing-content"}
-          onClose={closePanel}
-          isSidebarCollapsed={isSidebarCollapsed}
-          onProjectUpdated={handleProjectUpdated}
-        />
-      )}
-    </ProjectTasksProvider>
-  );
+      {shownProject && <ProjectManagementBoard key={shownProject.id} // إضافة key لإعادة التحديث عند تغيير المشروع
+    project={shownProject} isVisible={panelStage === "open" || panelStage === "changing-content"} onClose={closePanel} isSidebarCollapsed={isSidebarCollapsed} onProjectUpdated={handleProjectUpdated} />}
+    </ProjectTasksProvider>;
 };
-
 export default ProjectWorkspace;
