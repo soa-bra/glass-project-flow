@@ -16,6 +16,15 @@ interface AccountingEntry {
   date: string;
   notes: string;
   attachments?: File[];
+  // للمصروفات فقط
+  linkedBudgetId?: string;
+  // للإيرادات المتكررة
+  frequency?: 'monthly' | 'quarterly' | 'yearly';
+  startDate?: string;
+  endDate?: string;
+  // للإيرادات المنفردة
+  clientName?: string;
+  projectName?: string;
 }
 
 interface AccountingEntryModalProps {
@@ -61,6 +70,25 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
     'الاستشارات',
     'أخرى'
   ];
+
+  // بيانات وهمية للميزانيات المعتمدة
+  const approvedBudgets = [
+    { id: '1', name: 'ميزانية التشغيل السنوية', amount: 500000, remaining: 350000 },
+    { id: '2', name: 'ميزانية التسويق الربعية', amount: 100000, remaining: 75000 },
+    { id: '3', name: 'ميزانية الموارد البشرية', amount: 200000, remaining: 180000 },
+    { id: '4', name: 'ميزانية البحث والتطوير', amount: 150000, remaining: 120000 },
+    { id: '5', name: 'ميزانية الصيانة والدعم', amount: 80000, remaining: 60000 }
+  ];
+
+  const frequencies = [
+    { value: 'monthly', label: 'شهرياً' },
+    { value: 'quarterly', label: 'ربع سنوي' },
+    { value: 'yearly', label: 'سنوياً' }
+  ];
+
+  const isExpenseType = formData.type.includes('expense');
+  const isRevenueType = formData.type.includes('revenue');
+  const isRecurringType = formData.type.includes('recurring') || formData.type.includes('periodic');
 
   const handleInputChange = (field: keyof AccountingEntry, value: any) => {
     setFormData(prev => ({
@@ -246,6 +274,102 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                 className="bg-white/30 border-black/20 rounded-3xl focus:border-black text-black placeholder:text-black/50 font-arabic px-4 py-3"
               />
             </div>
+
+            {/* ربط الميزانية - للمصروفات فقط */}
+            {isExpenseType && (
+              <div>
+                <Label className="text-sm font-bold text-black font-arabic mb-3 block">
+                  ربط بميزانية معتمدة *
+                </Label>
+                <select
+                  value={formData.linkedBudgetId || ''}
+                  onChange={(e) => handleInputChange('linkedBudgetId', e.target.value)}
+                  className="w-full bg-white/30 border border-black/20 rounded-3xl focus:border-black text-black px-4 py-3 font-arabic"
+                >
+                  <option value="">اختر الميزانية المرتبطة</option>
+                  {approvedBudgets.map((budget) => (
+                    <option key={budget.id} value={budget.id}>
+                      {budget.name} - متبقي: {budget.remaining.toLocaleString()} ريال
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* حقول خاصة بالإيرادات المتكررة */}
+            {isRevenueType && isRecurringType && (
+              <>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label className="text-sm font-bold text-black font-arabic mb-3 block">
+                      التكرار *
+                    </Label>
+                    <select
+                      value={formData.frequency || ''}
+                      onChange={(e) => handleInputChange('frequency', e.target.value)}
+                      className="w-full bg-white/30 border border-black/20 rounded-3xl focus:border-black text-black px-4 py-3 font-arabic"
+                    >
+                      <option value="">اختر التكرار</option>
+                      {frequencies.map((freq) => (
+                        <option key={freq.value} value={freq.value}>
+                          {freq.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-bold text-black font-arabic mb-3 block">
+                      تاريخ البداية *
+                    </Label>
+                    <Input
+                      type="date"
+                      value={formData.startDate || formData.date}
+                      onChange={(e) => handleInputChange('startDate', e.target.value)}
+                      className="bg-white/30 border-black/20 rounded-3xl focus:border-black text-black font-arabic px-4 py-3"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-bold text-black font-arabic mb-3 block">
+                      تاريخ النهاية
+                    </Label>
+                    <Input
+                      type="date"
+                      value={formData.endDate || ''}
+                      onChange={(e) => handleInputChange('endDate', e.target.value)}
+                      className="bg-white/30 border-black/20 rounded-3xl focus:border-black text-black font-arabic px-4 py-3"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* حقول خاصة بالإيرادات المنفردة */}
+            {isRevenueType && !isRecurringType && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-bold text-black font-arabic mb-3 block">
+                    اسم العميل
+                  </Label>
+                  <Input
+                    placeholder="اسم العميل أو الشركة"
+                    value={formData.clientName || ''}
+                    onChange={(e) => handleInputChange('clientName', e.target.value)}
+                    className="bg-white/30 border-black/20 rounded-3xl focus:border-black text-black placeholder:text-black/50 font-arabic px-4 py-3"
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-bold text-black font-arabic mb-3 block">
+                    اسم المشروع
+                  </Label>
+                  <Input
+                    placeholder="اسم المشروع المرتبط"
+                    value={formData.projectName || ''}
+                    onChange={(e) => handleInputChange('projectName', e.target.value)}
+                    className="bg-white/30 border-black/20 rounded-3xl focus:border-black text-black placeholder:text-black/50 font-arabic px-4 py-3"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Reference and Date */}
             <div className="grid grid-cols-2 gap-4">
