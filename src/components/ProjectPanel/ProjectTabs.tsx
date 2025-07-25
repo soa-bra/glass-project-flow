@@ -658,14 +658,14 @@ export const AttachmentsTab = ({
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="font-semibold text-black mb-2 text-sm">إجمالي الملفات</h4>
           <p className="text-lg font-semibold text-black font-arabic">23</p>
-          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
             <span className="text-black font-normal text-xs">ملف مرفوع</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="font-semibold text-black mb-2 text-xs">الحجم الإجمالي</h4>
-          <p className="text-black text-base font-extrabold">156 MB</p>
-          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+          <p className="font-semibold text-black font-arabic text-base py-[3px]">156 MB</p>
+          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
             <span className="text-black font-normal text-xs">مساحة مستخدمة</span>
           </div>
         </div>
@@ -679,7 +679,7 @@ export const AttachmentsTab = ({
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="font-semibold text-black mb-2 text-sm">المعدلة حديثاً</h4>
           <p className="text-lg font-semibold text-black font-arabic">5</p>
-          <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
+          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
             <span className="text-black font-normal text-xs">خلال اليوم</span>
           </div>
         </div>
