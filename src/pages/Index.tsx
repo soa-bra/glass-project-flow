@@ -1,6 +1,7 @@
 
 import HeaderBar from '@/components/HeaderBar';
 import MainContent from '@/components/MainContent';
+import NavigationMenu from '@/components/Navigation/NavigationMenu';
 
 const Index = () => {
   return (
@@ -15,6 +16,13 @@ const Index = () => {
       >
         <HeaderBar />
       </div>
+      
+      {/* Navigation Menu Section */}
+      <div className="pt-[120px] px-6">
+        <NavigationMenu />
+      </div>
+      
+      {/* Original Main Content */}
       <MainContent />
     </div>
   );
