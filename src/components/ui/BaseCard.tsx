@@ -1,11 +1,9 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-
 type Size = 'sm' | 'md' | 'lg';
 type Variant = 'glass' | 'flat' | 'operations';
 type Color = 'info' | 'success' | 'warning' | 'error' | 'crimson';
 type NeonRing = 'info' | 'success' | 'warning' | 'error';
-
 interface BaseCardProps {
   children: React.ReactNode;
   className?: string;
@@ -16,7 +14,6 @@ interface BaseCardProps {
   header?: React.ReactNode;
   style?: React.CSSProperties;
 }
-
 export const BaseCard: React.FC<BaseCardProps> = ({
   children,
   className = '',
@@ -32,13 +29,11 @@ export const BaseCard: React.FC<BaseCardProps> = ({
     md: 'p-6',
     lg: 'p-8'
   };
-
   const variantClasses = {
     glass: 'bg-white/40 backdrop-blur-[20px] border border-white/20',
     flat: 'bg-opacity-100',
     operations: 'bg-[#f3ffff] border border-gray-200/50 shadow-sm'
   };
-
   const colorClasses = {
     info: 'bg-blue-500',
     success: 'bg-green-500',
@@ -46,35 +41,18 @@ export const BaseCard: React.FC<BaseCardProps> = ({
     error: 'bg-red-500',
     crimson: 'bg-red-600'
   };
-
   const neonRingClasses = {
     info: 'ring-2 ring-blue-400/30 ring-offset-2',
     success: 'ring-2 ring-green-400/30 ring-offset-2',
     warning: 'ring-2 ring-yellow-400/30 ring-offset-2',
     error: 'ring-2 ring-red-400/30 ring-offset-2'
   };
-
-  return (
-    <div 
-      className={cn(
-        'rounded-3xl transition-all duration-300 overflow-hidden',
-        variant !== 'operations' && sizeClasses[size],
-        variantClasses[variant],
-        color && colorClasses[color],
-        neonRing && neonRingClasses[neonRing],
-        variant === 'operations' && sizeClasses[size],
-        className
-      )}
-      style={style}
-    >
-      {header && (
-        <div className="mb-6">
+  return <div className={cn('rounded-3xl transition-all duration-300 overflow-hidden', variant !== 'operations' && sizeClasses[size], variantClasses[variant], color && colorClasses[color], neonRing && neonRingClasses[neonRing], variant === 'operations' && sizeClasses[size], className)} style={style}>
+      {header && <div className="mb-6">
           {header}
-        </div>
-      )}
-      <div className="h-full overflow-hidden">
+        </div>}
+      <div className="h-full overflow-hidden my-0">
         {children}
       </div>
-    </div>
-  );
+    </div>;
 };
