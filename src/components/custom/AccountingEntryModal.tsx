@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { FileText, X, Plus } from 'lucide-react';
+import { FileText, X, Plus, Sparkles, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface AccountingEntry {
@@ -50,6 +50,7 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
   });
 
   const [dragActive, setDragActive] = useState(false);
+  const [isProcessingAI, setIsProcessingAI] = useState(false);
 
   const entryTypes = [
     { value: 'periodic_expense', label: 'نفقات دورية' },
@@ -153,6 +154,42 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
     });
     
     onClose();
+  };
+
+  const handleAIProcessFiles = async () => {
+    if (!formData.attachments || formData.attachments.length === 0) {
+      alert('يرجى رفع ملف فاتورة أولاً لمعالجته');
+      return;
+    }
+
+    setIsProcessingAI(true);
+    try {
+      // محاكاة معالجة الذكاء الاصطناعي للملفات
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // بيانات وهمية مستخرجة من الفاتورة
+      const extractedData = {
+        amount: 2500,
+        description: 'خدمات استشارية مالية',
+        category: 'الاستشارات',
+        reference: 'INV-2024-0156',
+        date: '2024-01-15',
+        notes: 'فاتورة مستخرجة تلقائياً بواسطة الذكاء الاصطناعي',
+        frequency: formData.type === 'periodic_expense' ? 'monthly' as const : undefined
+      };
+
+      // تحديث البيانات المستخرجة
+      setFormData(prev => ({
+        ...prev,
+        ...extractedData
+      }));
+
+      alert('تم استخراج البيانات بنجاح من الفاتورة المرفقة!');
+    } catch (error) {
+      alert('حدث خطأ أثناء معالجة الملفات');
+    } finally {
+      setIsProcessingAI(false);
+    }
   };
 
   const formatFileSize = (bytes: number) => {
@@ -290,6 +327,27 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                   {approvedBudgets.map((budget) => (
                     <option key={budget.id} value={budget.id}>
                       {budget.name} - متبقي: {budget.remaining.toLocaleString()} ريال
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* خانة التكرار للنفقات الدورية */}
+            {isExpenseType && formData.type === 'periodic_expense' && (
+              <div>
+                <Label className="text-sm font-bold text-black font-arabic mb-3 block">
+                  تكرار النفقة *
+                </Label>
+                <select
+                  value={formData.frequency || ''}
+                  onChange={(e) => handleInputChange('frequency', e.target.value)}
+                  className="w-full bg-white/30 border border-black/20 rounded-3xl focus:border-black text-black px-4 py-3 font-arabic"
+                >
+                  <option value="">اختر تكرار النفقة</option>
+                  {frequencies.map((freq) => (
+                    <option key={freq.value} value={freq.value}>
+                      {freq.label}
                     </option>
                   ))}
                 </select>
@@ -456,6 +514,30 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                   </label>
                 </div>
               </div>
+
+              {/* AI Processing Button */}
+              {formData.attachments && formData.attachments.length > 0 && (
+                <div className="mt-4">
+                  <Button
+                    type="button"
+                    onClick={handleAIProcessFiles}
+                    disabled={isProcessingAI}
+                    className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-3xl text-white font-medium font-arabic"
+                  >
+                    {isProcessingAI ? (
+                      <>
+                        <Loader2 className="w-5 h-5 ml-2 animate-spin" />
+                        معالجة البيانات...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5 ml-2" />
+                        استخراج البيانات بالذكاء الاصطناعي
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
 
               {/* File List */}
               {formData.attachments && formData.attachments.length > 0 && (
