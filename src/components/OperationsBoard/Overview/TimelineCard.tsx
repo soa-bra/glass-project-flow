@@ -105,28 +105,28 @@ export const TimelineCard: React.FC = () => {
         msOverflowStyle: 'none'
       }}>
           
-          <div className=" relative min-w-[2400px]  h-[400px]">
+          <div className=" relative min-w-[2400px]  h-[120px]">
             {/* خط التايم لاين */}
             <div className="absolute top-[110px] left-0 w-[200%] h-[1px] bg-black my-0"></div>
 
             <div style={{
             top: '60px'
-          }} className="flex items-start justify-between w-full absolute top-0 left-0 px-[115px] my-0">
-              {eventsList.map((event, idx) => <div key={idx} className="flex flex-row items-center text-right relative">
+          }} className="bottom-25 flex items-start justify-between w-full absolute top-0 left-0 mx-0 my-[20px] px-[150px]">
+              {eventsList.map((event, idx) => <div key={idx} className="bottom-1 flex flex-row items-center text-right relative">
                   {/* البيانات النصية */}
-                  <div className="flex flex-col items-end space-y-[-70px] mr-[20px]">
+                  <div className="flex flex-col items-end space-y-[-80px] mr-[5px]">
                     <div className="flex items-baseline space-x-1 font-arabic">
                       <div className="text-[24px] text-black font-bold mx-[10px]">{event.day}</div>
                       <div className="text-[10px] text-black">{event.month}</div>
                     </div>
-                    <div className="text-[12px] text-black whitespace-nowrap font-arabic">{event.title}</div>
-                    <div className="text-[14px] text-black font-bold font-arabic">{event.location}</div>
+                    <div className="text-[12px] text-black whitespace-nowrap font-arabic my-0">{event.title}</div>
+                    <div className="text-[14px] text-black font-bold font-arabic my-0">{event.location}</div>
                   </div>
 
                   {/* الخط العمودي والدائرة */}
                   <div style={{
                 top: '55px'
-              }} className="flex flex-col items-center relative ">
+              }} className="flex flex-col items-center relative mx-0 my-[25px] px-0">
                     <div className="w-[1px] h-[60px] bg-black"></div>
                     <div className="w-[40px] h-[40px] bg-[#f3ffff] border border-black rounded-full -mt-[20px]"></div>
                   </div>
