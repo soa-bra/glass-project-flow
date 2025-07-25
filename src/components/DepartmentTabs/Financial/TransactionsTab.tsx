@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, FileText, TrendingUp, TrendingDown } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
+import { AccountingEntryModal } from '@/components/custom/AccountingEntryModal';
 import { mockTransactions } from './data';
 import { formatCurrency, getStatusColor, getStatusText } from './utils';
 export const TransactionsTab: React.FC = () => {
+  const [isAccountingEntryModalOpen, setIsAccountingEntryModalOpen] = useState(false);
+  
   const getTransactionStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
@@ -21,6 +24,18 @@ export const TransactionsTab: React.FC = () => {
         return 'bg-[#d9d2fd] text-black';
     }
   };
+
+  const handleSaveAccountingEntry = (entry: any) => {
+    console.log('حفظ القيد المحاسبي:', entry);
+    
+    // هنا يتم تحديث البيانات المالية في النظام
+    // - حساب الموجودات بعد إضافة الإيراد وحسم المصروفات
+    // - تحديث لوحة التشغيل والإدارة
+    // - إضافة القيد وتفاصيله إلى دفتر القيود
+    
+    // سيتم التكامل مع API النظام لاحقاً
+    alert(`تم حفظ القيد المحاسبي بنجاح: ${entry.description}`);
+  };
   return <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-large font-semibold text-black font-arabic">النفقات والإيرادات</h3>
@@ -29,7 +44,10 @@ export const TransactionsTab: React.FC = () => {
             <Upload className="w-4 h-4" />
             رفع مستند
           </button>
-          <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+          <button 
+            onClick={() => setIsAccountingEntryModalOpen(true)}
+            className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2"
+          >
             <FileText className="w-4 h-4" />
             إضافة قيد
           </button>
@@ -64,5 +82,12 @@ export const TransactionsTab: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal إضافة القيد المحاسبي */}
+      <AccountingEntryModal
+        isOpen={isAccountingEntryModalOpen}
+        onClose={() => setIsAccountingEntryModalOpen(false)}
+        onSave={handleSaveAccountingEntry}
+      />
     </div>;
 };
