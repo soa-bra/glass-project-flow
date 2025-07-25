@@ -275,24 +275,24 @@ export const ClientTab = ({
       {/* إحصائيات العميل */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <h4 className="text-lg font-semibold text-black mb-2">تقييم العميل</h4>
-          <p className="text-2xl font-bold text-black mb-1">4.8/5</p>
+          <h4 className="text-xs text-gray-600">تقييم العميل</h4>
+          <p className="font-bold text-xl">4.8/5</p>
           <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">تقييم ممتاز</span>
+            <span className="text-xs text-black">تقييم ممتاز</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <h4 className="text-lg font-semibold text-black mb-2">المشاريع السابقة</h4>
-          <p className="text-2xl font-bold text-black mb-1">5</p>
+          <h4 className="text-xs text-gray-600">المشاريع السابقة</h4>
+          <p className="font-bold text-xl">5</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">عميل دائم</span>
+            <span className="text-xs text-gray-600">عميل دائم</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <h4 className="text-lg font-semibold text-black mb-2">معدل الاستجابة</h4>
-          <p className="text-2xl font-bold text-black mb-1">2.1 ساعة</p>
+          <h4 className="text-xs text-gray-600">معدل الاستجابة</h4>
+          <p className="font-bold text-base">2.1 ساعة</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">سريع الاستجابة</span>
+            <span className="text-xs text-black">سريع الاستجابة</span>
           </div>
         </div>
       </div>
@@ -656,31 +656,31 @@ export const AttachmentsTab = ({
       {/* إحصائيات المرفقات */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <h4 className="font-semibold text-black mb-2 text-sm">إجمالي الملفات</h4>
-          <p className="text-lg font-semibold text-black font-arabic">23</p>
-          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-            <span className="text-black font-normal text-xs">ملف مرفوع</span>
+          <h4 className="text-lg font-semibold text-black mb-2">إجمالي الملفات</h4>
+          <p className="text-2xl font-bold text-black mb-1">23</p>
+          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">ملف مرفوع</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <h4 className="font-semibold text-black mb-2 text-xs">الحجم الإجمالي</h4>
-          <p className="font-semibold text-black font-arabic text-base py-[3px]">156 MB</p>
-          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-            <span className="text-black font-normal text-xs">مساحة مستخدمة</span>
+          <h4 className="text-lg font-semibold text-black mb-2">الحجم الإجمالي</h4>
+          <p className="text-2xl font-bold text-black mb-1">156 MB</p>
+          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">مساحة مستخدمة</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <h4 className="font-semibold text-black mb-2 text-sm">الملفات المشتركة</h4>
-          <p className="text-lg font-semibold text-black font-arabic">8</p>
+          <h4 className="text-lg font-semibold text-black mb-2">الملفات المشتركة</h4>
+          <p className="text-2xl font-bold text-black mb-1">8</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-            <span className="text-black font-normal text-xs">ملفات مشتركة</span>
+            <span className="text-sm font-medium text-black">ملفات مشتركة</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <h4 className="font-semibold text-black mb-2 text-sm">المعدلة حديثاً</h4>
-          <p className="text-lg font-semibold text-black font-arabic">5</p>
-          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-            <span className="text-black font-normal text-xs">خلال اليوم</span>
+          <h4 className="text-lg font-semibold text-black mb-2">المعدلة حديثاً</h4>
+          <p className="text-2xl font-bold text-black mb-1">5</p>
+          <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">خلال اليوم</span>
           </div>
         </div>
       </div>
@@ -794,29 +794,29 @@ export const TemplatesTab = ({
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي القوالب</h4>
           <p className="text-2xl font-bold text-black mb-1">12</p>
-          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-            <span className="text-black font-normal text-xs">قالب متاح</span>
+          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">قالب متاح</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">الأكثر استخداماً</h4>
           <p className="text-2xl font-bold text-black mb-1">6</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-            <span className="text-black text-xs font-normal">قوالب شائعة</span>
+            <span className="text-sm font-medium text-black">قوالب شائعة</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">تم التحديث</h4>
           <p className="text-2xl font-bold text-black mb-1">3</p>
-          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-            <span className="text-black font-normal text-xs">هذا الأسبوع</span>
+          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">هذا الأسبوع</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي التحميلات</h4>
           <p className="text-2xl font-bold text-black mb-1">261</p>
-          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-            <span className="text-black font-normal text-xs">هذا الشهر</span>
+          <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">هذا الشهر</span>
           </div>
         </div>
       </div>
