@@ -794,29 +794,29 @@ export const TemplatesTab = ({
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي القوالب</h4>
           <p className="text-2xl font-bold text-black mb-1">12</p>
-          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">قالب متاح</span>
+          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+            <span className="text-black font-normal text-xs">قالب متاح</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">الأكثر استخداماً</h4>
           <p className="text-2xl font-bold text-black mb-1">6</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">قوالب شائعة</span>
+            <span className="text-black text-xs font-normal">قوالب شائعة</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">تم التحديث</h4>
           <p className="text-2xl font-bold text-black mb-1">3</p>
-          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">هذا الأسبوع</span>
+          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+            <span className="text-black font-normal text-xs">هذا الأسبوع</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي التحميلات</h4>
           <p className="text-2xl font-bold text-black mb-1">261</p>
-          <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">هذا الشهر</span>
+          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+            <span className="text-black font-normal text-xs">هذا الشهر</span>
           </div>
         </div>
       </div>
