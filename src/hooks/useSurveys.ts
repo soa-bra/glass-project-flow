@@ -1,36 +1,27 @@
-// Surveys Framework Hooks - Cultural impact measurement
 import { useState, useEffect } from 'react';
-import {
-  createSurvey,
-  activateSurvey,
-  closeSurvey,
+import { 
+  createSurvey, 
   getSurveys,
-  getSurvey,
-  submitSurveyResponse,
-  getSurveyResponses,
-  calculateScaleScore,
-  getSurveyAnalytics,
-  measureBrandAlignment,
-  getCommunityFeedback,
-  CreateSurveyInput,
-  SubmitResponseInput,
-  SurveyAnalytics
+  getSurvey
 } from '@/modules/surveys/surveys.service';
-import type { Survey, SurveyResponse } from '@/lib/prisma';
+import { 
+  CreateSurveyInput
+} from '@/modules/surveys/surveys.service';
+import type { 
+  Survey, 
+  SurveyQuestion,
+  SurveyResponse
+} from '@/lib/prisma';
 
 export function useSurveys() {
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchSurveys();
-  }, []);
-
-  const fetchSurveys = async (status?: string) => {
+  const fetchSurveys = async () => {
     try {
       setLoading(true);
-      const data = await getSurveys(status);
+      const data = await getSurveys();
       setSurveys(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'فشل في تحميل الاستطلاعات');
@@ -53,31 +44,43 @@ export function useSurveys() {
     }
   };
 
-  const handleActivateSurvey = async (id: string) => {
+  const handleUpdateSurvey = async (
+    surveyId: string, 
+    input: UpdateSurveyInput
+  ) => {
     try {
       setLoading(true);
-      const survey = await activateSurvey(id);
-      setSurveys(prev => prev.map(s => s.id === id ? survey : s));
+      const survey = await updateSurvey(surveyId, input);
+      setSurveys(prev => prev.map(s => s.id === surveyId ? survey : s));
       return survey;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'فشل في تفعيل الاستطلاع');
+      setError(err instanceof Error ? err.message : 'فشل في تحديث الاستطلاع');
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCloseSurvey = async (id: string) => {
+  const handleDeleteSurvey = async (surveyId: string) => {
     try {
       setLoading(true);
-      const survey = await closeSurvey(id);
-      setSurveys(prev => prev.map(s => s.id === id ? survey : s));
-      return survey;
+      await deleteSurvey(surveyId);
+      setSurveys(prev => prev.filter(s => s.id !== surveyId));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'فشل في إغلاق الاستطلاع');
+      setError(err instanceof Error ? err.message : 'فشل في حذف الاستطلاع');
       throw err;
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubmitResponse = async (input: SubmitResponseInput) => {
+    try {
+      const response = await submitResponse(input);
+      return response;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'فشل في إرسال الرد');
+      throw err;
     }
   };
 
@@ -88,8 +91,9 @@ export function useSurveys() {
     actions: {
       fetchSurveys,
       createSurvey: handleCreateSurvey,
-      activateSurvey: handleActivateSurvey,
-      closeSurvey: handleCloseSurvey
+      updateSurvey: handleUpdateSurvey,
+      deleteSurvey: handleDeleteSurvey,
+      submitResponse: handleSubmitResponse
     }
   };
 }
@@ -97,7 +101,6 @@ export function useSurveys() {
 export function useSurvey(surveyId: string) {
   const [survey, setSurvey] = useState<Survey | null>(null);
   const [responses, setResponses] = useState<SurveyResponse[]>([]);
-  const [analytics, setAnalytics] = useState<SurveyAnalytics | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -105,7 +108,6 @@ export function useSurvey(surveyId: string) {
     if (surveyId) {
       fetchSurvey();
       fetchResponses();
-      fetchAnalytics();
     }
   }, [surveyId]);
 
@@ -130,81 +132,14 @@ export function useSurvey(surveyId: string) {
     }
   };
 
-  const fetchAnalytics = async () => {
-    try {
-      const data = await getSurveyAnalytics(surveyId);
-      setAnalytics(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'فشل في تحميل التحليلات');
-    }
-  };
-
-  const handleSubmitResponse = async (input: SubmitResponseInput) => {
-    try {
-      setLoading(true);
-      const response = await submitSurveyResponse(input);
-      setResponses(prev => [...prev, response]);
-      await fetchAnalytics(); // Refresh analytics
-      return response;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'فشل في إرسال الرد');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return {
     survey,
     responses,
-    analytics,
     loading,
     error,
     actions: {
       fetchSurvey,
-      fetchResponses,
-      fetchAnalytics,
-      submitResponse: handleSubmitResponse
-    }
-  };
-}
-
-export function useBrandImpact() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const measureAlignment = async (resourceId: string) => {
-    try {
-      setLoading(true);
-      const result = await measureBrandAlignment(resourceId);
-      return result;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'فشل في قياس التوافق');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getCommunityInsights = async (communityId: string) => {
-    try {
-      setLoading(true);
-      const result = await getCommunityFeedback(communityId);
-      return result;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'فشل في تحميل آراء المجتمع');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return {
-    loading,
-    error,
-    actions: {
-      measureAlignment,
-      getCommunityInsights
+      fetchResponses
     }
   };
 }
