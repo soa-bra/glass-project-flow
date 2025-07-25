@@ -656,31 +656,31 @@ export const AttachmentsTab = ({
       {/* إحصائيات المرفقات */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <h4 className="text-lg font-semibold text-black mb-2">إجمالي الملفات</h4>
+          <h4 className="font-semibold text-black mb-2 text-sm">إجمالي الملفات</h4>
           <p className="text-2xl font-bold text-black mb-1">23</p>
           <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">ملف مرفوع</span>
+            <span className="text-black font-normal text-xs">ملف مرفوع</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <h4 className="text-lg font-semibold text-black mb-2">الحجم الإجمالي</h4>
-          <p className="text-2xl font-bold text-black mb-1">156 MB</p>
+          <h4 className="font-semibold text-black mb-2 text-xs">الحجم الإجمالي</h4>
+          <p className="text-black text-base font-extrabold">156 MB</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">مساحة مستخدمة</span>
+            <span className="text-black font-normal text-xs">مساحة مستخدمة</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <h4 className="text-lg font-semibold text-black mb-2">الملفات المشتركة</h4>
-          <p className="text-2xl font-bold text-black mb-1">8</p>
+          <h4 className="font-semibold text-black mb-2 text-sm">الملفات المشتركة</h4>
+          <p className="text-black font-normal text-base">8</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">ملفات مشتركة</span>
+            <span className="text-black font-normal text-xs">ملفات مشتركة</span>
           </div>
         </div>
         <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <h4 className="text-lg font-semibold text-black mb-2">المعدلة حديثاً</h4>
-          <p className="text-2xl font-bold text-black mb-1">5</p>
+          <h4 className="font-semibold text-black mb-2 text-sm">المعدلة حديثاً</h4>
+          <p className="text-black font-normal text-base">5</p>
           <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">خلال اليوم</span>
+            <span className="text-black font-normal text-xs">خلال اليوم</span>
           </div>
         </div>
       </div>

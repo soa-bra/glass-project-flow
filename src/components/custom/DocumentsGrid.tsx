@@ -111,14 +111,9 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
     const inCurrentFolder = !currentFolderId ? !doc.folderId : doc.folderId === currentFolderId;
     const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase()) || doc.tags.some(tag => tag.includes(searchTerm));
     const matchesFilter = selectedFilter === 'all' || doc.type === selectedFilter;
-    
+
     // تطبيق الفلاتر الجديدة
-    const matchesActiveFilters = (
-      (!activeFilters.type || doc.type === activeFilters.type) &&
-      (!activeFilters.importance || doc.classification === activeFilters.importance) &&
-      (!activeFilters.tags || activeFilters.tags.some(tag => doc.tags.includes(tag)))
-    );
-    
+    const matchesActiveFilters = (!activeFilters.type || doc.type === activeFilters.type) && (!activeFilters.importance || doc.classification === activeFilters.importance) && (!activeFilters.tags || activeFilters.tags.some(tag => doc.tags.includes(tag)));
     return inCurrentFolder && matchesSearch && matchesFilter && matchesActiveFilters;
   });
   const filteredFolders = currentFolders.filter(folder => folder.name.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -137,26 +132,21 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
   const handleBackClick = () => {
     setCurrentFolderId(null);
   };
-
   const handleCommentClick = (file: ProjectFile) => {
     setSelectedFile(file);
     setCommentDialogOpen(true);
   };
-
   const handleEditClick = (file: ProjectFile) => {
     setSelectedFile(file);
     setEditDialogOpen(true);
   };
-
   const handleDownload = (file: ProjectFile) => {
     // تنزيل الملف - يمكن تحسينه لاحقاً للتنزيل الفعلي
     const link = document.createElement('a');
     link.href = '#'; // يجب أن يكون رابط الملف الفعلي
     link.download = file.name;
     link.click();
-    
   };
-
   const handleAddComment = (fileId: string, commentText: string) => {
     const newComment: Comment = {
       id: Date.now().toString(),
@@ -164,7 +154,6 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
       author: 'المستخدم الحالي',
       timestamp: new Date().toLocaleString('ar-SA')
     };
-
     const file = files.find(f => f.id === fileId);
     if (file) {
       const updatedFile = {
@@ -174,20 +163,16 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
       updateFile(fileId, updatedFile);
     }
   };
-
   const handleEditFile = (fileId: string, updates: Partial<ProjectFile>) => {
     updateFile(fileId, updates);
   };
-
   const handleUpdateFile = () => {
     // تحديث البيانات دون إعادة تحميل الصفحة
     getProjectFiles(projectId);
   };
-
   const handleFilterFile = () => {
     setFilterDialogOpen(true);
   };
-
   const handleApplyFilter = (filters: FilterOptions) => {
     setActiveFilters(filters);
   };
@@ -209,7 +194,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
       <div className="flex gap-2 mb-4">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input placeholder="البحث في المرفقات..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pr-10 text-right h-8 border-black" />
+          <Input placeholder="البحث في المرفقات..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="h-8 bg-[#F2FFFF] border border-black/80 rounded-full" />
         </div>
         <button onClick={handleUpdateFile} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
           <RefreshCw size={16} />
@@ -281,41 +266,19 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
                     {/* أزرار الإجراءات */}
                     <div className="flex gap-1 mt-3">
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="p-1 h-6 w-6 relative"
-                        onClick={() => handleCommentClick(doc)}
-                      >
+                      <Button size="sm" variant="ghost" className="p-1 h-6 w-6 relative" onClick={() => handleCommentClick(doc)}>
                         <MessageCircle className="w-3 h-3" />
-                        {doc.comments && doc.comments.length > 0 && (
-                          <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        {doc.comments && doc.comments.length > 0 && <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                             {doc.comments.length}
-                          </span>
-                        )}
+                          </span>}
                       </Button>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="p-1 h-6 w-6"
-                        onClick={() => handleDownload(doc)}
-                      >
+                      <Button size="sm" variant="ghost" className="p-1 h-6 w-6" onClick={() => handleDownload(doc)}>
                         <Download className="w-3 h-3" />
                       </Button>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="p-1 h-6 w-6"
-                        onClick={() => handleEditClick(doc)}
-                      >
+                      <Button size="sm" variant="ghost" className="p-1 h-6 w-6" onClick={() => handleEditClick(doc)}>
                         <Edit3 className="w-3 h-3" />
                       </Button>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="p-1 h-6 w-6 text-red-500" 
-                        onClick={() => handleDeleteFile(doc.id)}
-                      >
+                      <Button size="sm" variant="ghost" className="p-1 h-6 w-6 text-red-500" onClick={() => handleDeleteFile(doc.id)}>
                         <Trash2 className="w-3 h-3" />
                       </Button>
                     </div>
@@ -353,47 +316,46 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
       </div>
 
       {/* نوافذ الحوار */}
-      <CommentDialog
-        isOpen={commentDialogOpen}
-        onClose={() => {
-          setCommentDialogOpen(false);
-          setSelectedFile(null);
-        }}
-        fileId={selectedFile?.id || ''}
-        fileName={selectedFile?.name || ''}
-        comments={selectedFile?.comments || []}
-        onAddComment={handleAddComment}
-      />
+      <CommentDialog isOpen={commentDialogOpen} onClose={() => {
+      setCommentDialogOpen(false);
+      setSelectedFile(null);
+    }} fileId={selectedFile?.id || ''} fileName={selectedFile?.name || ''} comments={selectedFile?.comments || []} onAddComment={handleAddComment} />
 
-      <EditFileDialog
-        isOpen={editDialogOpen}
-        onClose={() => {
-          setEditDialogOpen(false);
-          setSelectedFile(null);
-        }}
-        file={selectedFile}
-        onSave={handleEditFile}
-        projectTasks={[
-          { id: '1', title: 'تصميم واجهة المستخدم' },
-          { id: '2', title: 'تطوير قاعدة البيانات' },
-          { id: '3', title: 'اختبار النظام' },
-          { id: '4', title: 'كتابة الوثائق' },
-          { id: '5', title: 'مراجعة الكود' }
-        ]}
-      />
+      <EditFileDialog isOpen={editDialogOpen} onClose={() => {
+      setEditDialogOpen(false);
+      setSelectedFile(null);
+    }} file={selectedFile} onSave={handleEditFile} projectTasks={[{
+      id: '1',
+      title: 'تصميم واجهة المستخدم'
+    }, {
+      id: '2',
+      title: 'تطوير قاعدة البيانات'
+    }, {
+      id: '3',
+      title: 'اختبار النظام'
+    }, {
+      id: '4',
+      title: 'كتابة الوثائق'
+    }, {
+      id: '5',
+      title: 'مراجعة الكود'
+    }]} />
 
-      <FilterDialog
-        isOpen={filterDialogOpen}
-        onClose={() => setFilterDialogOpen(false)}
-        onApplyFilter={handleApplyFilter}
-        projectTasks={[
-          { id: '1', title: 'تصميم واجهة المستخدم' },
-          { id: '2', title: 'تطوير قاعدة البيانات' },
-          { id: '3', title: 'اختبار النظام' },
-          { id: '4', title: 'كتابة الوثائق' },
-          { id: '5', title: 'مراجعة الكود' }
-        ]}
-        availableTags={availableTags}
-      />
+      <FilterDialog isOpen={filterDialogOpen} onClose={() => setFilterDialogOpen(false)} onApplyFilter={handleApplyFilter} projectTasks={[{
+      id: '1',
+      title: 'تصميم واجهة المستخدم'
+    }, {
+      id: '2',
+      title: 'تطوير قاعدة البيانات'
+    }, {
+      id: '3',
+      title: 'اختبار النظام'
+    }, {
+      id: '4',
+      title: 'كتابة الوثائق'
+    }, {
+      id: '5',
+      title: 'مراجعة الكود'
+    }]} availableTags={availableTags} />
     </div>;
 };
