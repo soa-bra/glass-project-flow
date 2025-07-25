@@ -1,47 +1,33 @@
+
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
+
 interface StatisticsCardProps {
   title: string;
   value: string;
   unit: string;
   description: string;
   chartType?: 'line' | 'bar' | 'simple';
-  chartData?: Array<{
-    name: string;
-    value: number;
-  }>;
+  chartData?: Array<{ name: string; value: number }>;
 }
-const sampleLineData = [{
-  name: 'Jan',
-  value: 30
-}, {
-  name: 'Feb',
-  value: 45
-}, {
-  name: 'Mar',
-  value: 35
-}, {
-  name: 'Apr',
-  value: 50
-}, {
-  name: 'May',
-  value: 40
-}];
-const sampleBarData = [{
-  name: 'A',
-  value: 20
-}, {
-  name: 'B',
-  value: 35
-}, {
-  name: 'C',
-  value: 25
-}, {
-  name: 'D',
-  value: 15
-}];
+
+const sampleLineData = [
+  { name: 'Jan', value: 30 },
+  { name: 'Feb', value: 45 },
+  { name: 'Mar', value: 35 },
+  { name: 'Apr', value: 50 },
+  { name: 'May', value: 40 }
+];
+
+const sampleBarData = [
+  { name: 'A', value: 20 },
+  { name: 'B', value: 35 },
+  { name: 'C', value: 25 },
+  { name: 'D', value: 15 }
+];
+
 export const StatisticsCard: React.FC<StatisticsCardProps> = ({
   title,
   value,
@@ -52,75 +38,90 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
 }) => {
   const renderChart = () => {
     if (chartType === 'line') {
-      return <div className="w-full h-full">
-          <ChartContainer config={{
-          value: {
-            label: "القيمة",
-            color: "#d9d2fd"
-          }
-        }} className="w-full h-full">
+      return (
+        <div className="w-full h-full">
+          <ChartContainer
+            config={{
+              value: {
+                label: "القيمة",
+                color: "#d9d2fd"
+              }
+            }}
+            className="w-full h-full"
+          >
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData || sampleLineData} margin={{
-              top: 5,
-              right: 5,
-              left: 5,
-              bottom: 5
-            }}>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{
-                fontSize: 10,
-                fill: '#000000'
-              }} />
-                <YAxis axisLine={false} tickLine={false} tick={{
-                fontSize: 10,
-                fill: '#000000'
-              }} />
-                <Line type="monotone" dataKey="value" stroke="#d9d2fd" strokeWidth={2} dot={{
-                fill: '#000000',
-                r: 2
-              }} />
+              <LineChart data={chartData || sampleLineData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: '#000000' }}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: '#000000' }}
+                />
+                <Line type="monotone" dataKey="value" stroke="#d9d2fd" strokeWidth={2} dot={{ fill: '#000000', r: 2 }} />
                 <ChartTooltip content={<ChartTooltipContent />} />
               </LineChart>
             </ResponsiveContainer>
           </ChartContainer>
-        </div>;
+        </div>
+      );
     }
+
     if (chartType === 'bar') {
-      return <div className="w-full h-full">
-          <ChartContainer config={{
-          value: {
-            label: "القيمة",
-            color: "#bdeed3"
-          }
-        }} className="w-full h-full">
+      return (
+        <div className="w-full h-full">
+          <ChartContainer
+            config={{
+              value: {
+                label: "القيمة",
+                color: "#bdeed3"
+              }
+            }}
+            className="w-full h-full"
+          >
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData || sampleBarData} margin={{
-              top: 5,
-              right: 5,
-              left: 5,
-              bottom: 5
-            }}>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{
-                fontSize: 10,
-                fill: '#000000'
-              }} />
-                <YAxis axisLine={false} tickLine={false} tick={{
-                fontSize: 10,
-                fill: '#000000'
-              }} />
+              <BarChart data={chartData || sampleBarData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: '#000000' }}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: '#000000' }}
+                />
                 <Bar dataKey="value" fill="#bdeed3" radius={[2, 2, 0, 0]} />
                 <ChartTooltip content={<ChartTooltipContent />} />
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>
-        </div>;
+        </div>
+      );
     }
+
     return null;
   };
+
   if (chartType === 'simple') {
-    return <BaseCard variant="glass" size="md" className="h-[180px]" style={{
-      backgroundColor: '#f3ffff'
-    }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
-        <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden my-0">
+    return (
+      <BaseCard 
+        variant="glass" 
+        size="md" 
+        className="h-[180px]" 
+        style={{
+          backgroundColor: '#f3ffff'
+        }} 
+        header={
+          <h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>
+        }
+      >
+        <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden">
           <div className="flex items-baseline gap-2 mb-2">
             <div className="text-2xl font-bold text-black font-arabic">
               {value}
@@ -134,14 +135,25 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
             {description}
           </div>
         </div>
-      </BaseCard>;
+      </BaseCard>
+    );
   }
-  return <BaseCard variant="glass" size="md" className="h-[180px]" style={{
-    backgroundColor: '#f3ffff'
-  }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
-      <div className="flex gap-10 h-full overflow-hidden px-0 mx-0 my-px py-[22px]">
+
+  return (
+    <BaseCard 
+      variant="glass" 
+      size="md" 
+      className="h-[180px]" 
+      style={{
+        backgroundColor: '#f3ffff'
+      }} 
+      header={
+        <h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>
+      }
+    >
+      <div className="flex gap-4 h-full overflow-hidden">
         {/* النصوص والأرقام - 2/5 من المساحة */}
-        <div className="w-2/5 flex flex-col justify-center overflow-hidden my-[2px] mx-0 py-[2px]">
+        <div className="w-2/5 flex flex-col justify-center overflow-hidden">
           <div className="flex items-baseline gap-2 mb-2">
             <div className="text-2xl font-bold text-black font-arabic">
               {value}
@@ -163,5 +175,6 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
           </div>
         </div>
       </div>
-    </BaseCard>;
+    </BaseCard>
+  );
 };
