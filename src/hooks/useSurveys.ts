@@ -2,10 +2,16 @@ import { useState, useEffect } from 'react';
 import { 
   createSurvey, 
   getSurveys,
-  getSurvey
+  getSurvey,
+  updateSurvey,
+  deleteSurvey,
+  submitResponse,
+  getSurveyResponses
 } from '@/modules/surveys/surveys.service';
 import { 
-  CreateSurveyInput
+  CreateSurveyInput,
+  UpdateSurveyInput,
+  SubmitResponseInput
 } from '@/modules/surveys/surveys.service';
 import type { 
   Survey, 

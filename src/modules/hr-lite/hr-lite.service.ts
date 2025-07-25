@@ -30,6 +30,8 @@ export interface CreateTimeEntryInput {
 export async function createEmployee(input: CreateEmployeeInput): Promise<Employee> {
   return await (prisma as any).createEmployee({
     ...input,
+    userId: input.email || `user_${Date.now()}`,
+    role: input.position || 'employee',
     status: input.status || 'active'
   });
 }
@@ -89,8 +91,8 @@ export async function getHRStats(): Promise<{
 
   return {
     totalEmployees: employees.length,
-    activeEmployees: employees.filter(e => (e as any).status === 'active').length,
-    onLeaveEmployees: employees.filter(e => (e as any).status === 'on_leave').length,
+    activeEmployees: employees.filter(e => e.status === 'active').length,
+    onLeaveEmployees: employees.filter(e => e.status === 'on_leave').length,
     attendanceToday
   };
 }

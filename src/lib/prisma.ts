@@ -211,12 +211,14 @@ export interface KbComment {
 }
 
 // Surveys Framework Types
-export type SurveyStatus = 'DRAFT' | 'ACTIVE' | 'CLOSED';
+export type SurveyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED' | 'ARCHIVED';
 export type QuestionType = 'SCALE' | 'SINGLE' | 'MULTI' | 'TEXT';
 
 export interface Survey {
   id: string;
   title: string;
+  description?: string;
+  deadline?: Date;
   resource?: string;
   resourceId?: string;
   status: SurveyStatus;
@@ -260,8 +262,13 @@ export interface SurveyAnswer {
 export interface Employee {
   id: string;
   userId: string;
+  name: string;
+  email?: string;
+  position?: string;
+  department?: string;
   role: string;
   tribe?: string;
+  status: 'active' | 'inactive' | 'on_leave';
   costRate?: number;
   timeOffRequests?: TimeOffRequest[];
   appraisalSubmissions?: AppraisalSubmission[];
@@ -357,6 +364,7 @@ class MockDatabase {
   private appraisalQuestions: AppraisalQuestion[] = [];
   private appraisalSubmissions: AppraisalSubmission[] = [];
   private appraisalAnswers: AppraisalAnswer[] = [];
+  private timeEntries: any[] = [];
 
   constructor() {
     this.initializeMockData();
@@ -730,6 +738,12 @@ class MockDatabase {
     return this.employees.find(e => e.id === id) || null;
   }
 
+  async deleteEmployee(id: string): Promise<void> {
+    const index = this.employees.findIndex(e => e.id === id);
+    if (index === -1) throw new Error('Employee not found');
+    this.employees.splice(index, 1);
+  }
+
   async findEmployeeByUserId(userId: string): Promise<Employee | null> {
     return this.employees.find(e => e.userId === userId) || null;
   }
@@ -819,6 +833,49 @@ class MockDatabase {
 
   async deleteAppraisalAnswers(submissionId: string): Promise<void> {
     this.appraisalAnswers = this.appraisalAnswers.filter(a => a.submissionId !== submissionId);
+  }
+
+  async createTimeEntry(data: any): Promise<any> {
+    const timeEntry = {
+      ...data,
+      id: Math.random().toString(36),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.timeEntries.push(timeEntry);
+    return timeEntry;
+  }
+
+  async findManyTimeEntries(): Promise<any[]> {
+    return [...this.timeEntries];
+  }
+
+  async updateTimeEntry(id: string, data: any): Promise<any> {
+    const index = this.timeEntries.findIndex(e => e.id === id);
+    if (index === -1) throw new Error('Time entry not found');
+    
+    this.timeEntries[index] = {
+      ...this.timeEntries[index],
+      ...data,
+      updatedAt: new Date()
+    };
+    return this.timeEntries[index];
+  }
+
+  async deleteTimeEntry(id: string): Promise<void> {
+    const index = this.timeEntries.findIndex(e => e.id === id);
+    if (index === -1) throw new Error('Time entry not found');
+    this.timeEntries.splice(index, 1);
+  }
+
+  async deleteSurvey(id: string): Promise<void> {
+    const index = this.surveys.findIndex(s => s.id === id);
+    if (index === -1) throw new Error('Survey not found');
+    this.surveys.splice(index, 1);
+  }
+
+  async findManySurveyResponses(surveyId: string): Promise<SurveyResponse[]> {
+    return this.surveyResponses.filter(r => r.surveyId === surveyId);
   }
 
   // Transaction simulation
