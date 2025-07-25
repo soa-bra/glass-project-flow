@@ -274,24 +274,24 @@ export const ClientTab = ({
       
       {/* إحصائيات العميل */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10 py-[35px]">
           <h4 className="text-xs text-gray-600">تقييم العميل</h4>
-          <p className="font-bold text-xl">4.8/5</p>
-          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+          <p className="font-bold text-base my-[10px]">4.8/5</p>
+          <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
             <span className="text-xs text-black">تقييم ممتاز</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10 py-[35px] px-0">
           <h4 className="text-xs text-gray-600">المشاريع السابقة</h4>
-          <p className="font-bold text-xl">5</p>
-          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-            <span className="text-xs text-gray-600">عميل دائم</span>
+          <p className="font-bold text-base my-[10px]">5</p>
+          <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
+            <span className="text-xs text-black">عميل دائم</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10 my-0 px-0 py-[35px]">
           <h4 className="text-xs text-gray-600">معدل الاستجابة</h4>
-          <p className="font-bold text-base">2.1 ساعة</p>
-          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+          <p className="font-bold text-base my-[10px]">2.1 ساعة</p>
+          <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
             <span className="text-xs text-black">سريع الاستجابة</span>
           </div>
         </div>
