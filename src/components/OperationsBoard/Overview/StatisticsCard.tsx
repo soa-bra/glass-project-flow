@@ -139,10 +139,10 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
   return <BaseCard variant="glass" size="md" className="h-[180px]" style={{
     backgroundColor: '#f3ffff'
   }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
-      <div className="flex gap-14 h- w-full overflow-hidden my-[0px] py-[0px] px-0 mx-[0px]">
+      <div className="gap-15 h-14.5 w-full overflow-hidden mx-[150px] px-px py-0 my-0">
         {/* النصوص والأرقام - 2/5 من المساحة */}
-        <div className="w-20 bottom-12 flex flex-col justify-center overflow-hidden">
-          <div className="flex items-baseline gap-2 mb-2">
+        <div className="w-15 flex flex-col justify-center overflow-hidden">
+          <div className="flex items-baseline gap-2 mb-2 my-0">
             <div className="text-2xl font-bold text-black font-arabic">
               {value}
             </div>
