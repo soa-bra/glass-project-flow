@@ -105,13 +105,13 @@ export const TimelineCard: React.FC = () => {
         msOverflowStyle: 'none'
       }}>
           
-          <div className=" relative min-w-[2400px]  h-[120px]">
+          <div className=" relative min-w-[2400px]  h-[150px]">
             {/* خط التايم لاين */}
             <div className="absolute top-[110px] left-0 w-[200%] h-[1px] bg-black my-0"></div>
 
             <div style={{
             top: '60px'
-          }} className="bottom-25 flex items-start justify-between w-full absolute top-0 left-0 mx-0 my-[20px] px-[150px]">
+          }} className="bottom-25 flex items-start justify-between w-full absolute top-5 left-0 mx-0 px-[150px] my-[5px]">
               {eventsList.map((event, idx) => <div key={idx} className="bottom-1 flex flex-row items-center text-right relative">
                   {/* البيانات النصية */}
                   <div className="flex flex-col items-end space-y-[-80px] mr-[5px]">
