@@ -48,7 +48,7 @@ export const AlertsCard: React.FC = () => {
   return <BaseCard variant="glass" size="md" className="h-[180px]" style={{
     backgroundColor: '#f3ffff'
   }} header={<h3 className="text-lg font-semibold text-black font-arabic">التنبيهات</h3>}>
-      <div className="space-y-1 overflow-y-auto max-h-[170px] bg-transparent">
+      <div className="space-y-2 overflow-y-auto max-h-[120px]">
         {alerts.slice(0, 3).map(alert => <div key={alert.id} style={{
         backgroundColor: getAlertColor(alert.type)
       }} className="flex items-center justify-between p-1 rounded-none bg-transparent py-0 px-0 my-[7px]">
