@@ -1,108 +1,33 @@
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { Resource } from '@opentelemetry/resources';
-import { SEMRESATTRS_SERVICE_NAME, SEMRESATTRS_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-otlp-http';
-import { OTLPMetricExporter } from '@opentelemetry/exporter-otlp-http';
+// Simplified tracing implementation without external dependencies
 import { trace, context, SpanKind, SpanStatusCode } from '@opentelemetry/api';
 
 // Configuration
 const serviceName = process.env.SERVICE_NAME || 'supra-system';
 const serviceVersion = process.env.SERVICE_VERSION || '1.0.0';
 const environment = process.env.NODE_ENV || 'development';
-const traceEndpoint = process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT || 'http://localhost:4318/v1/traces';
-const metricsEndpoint = process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT || 'http://localhost:4318/v1/metrics';
 
 let isInitialized = false;
-let sdk: NodeSDK | null = null;
 
 export function initTracing(): void {
   if (isInitialized) {
-    console.warn('OpenTelemetry already initialized');
+    console.warn('Tracing already initialized');
     return;
   }
 
   try {
-    // Create trace exporter
-    const traceExporter = new OTLPTraceExporter({
-      url: traceEndpoint,
-      headers: {
-        'Authorization': process.env.OTEL_AUTH_HEADER || '',
-      },
-    });
-
-    // Create metrics exporter
-    const metricExporter = new OTLPMetricExporter({
-      url: metricsEndpoint,
-      headers: {
-        'Authorization': process.env.OTEL_AUTH_HEADER || '',
-      },
-    });
-
-    // Create resource
-    const resource = new Resource({
-      [SEMRESATTRS_SERVICE_NAME]: serviceName,
-      [SEMRESATTRS_SERVICE_VERSION]: serviceVersion,
-      'service.environment': environment,
-      'service.instance.id': process.env.HOSTNAME || 'unknown',
-    });
-
-    // Create SDK
-    sdk = new NodeSDK({
-      resource,
-      traceExporter,
-      metricReader: new PeriodicExportingMetricReader({
-        exporter: metricExporter,
-        exportIntervalMillis: 30000, // Export every 30 seconds
-      }),
-      instrumentations: [
-        getNodeAutoInstrumentations({
-          // Disable some noisy instrumentations
-          '@opentelemetry/instrumentation-redis': {
-            enabled: true,
-          },
-          '@opentelemetry/instrumentation-http': {
-            enabled: true,
-            requestHook: (span, request) => {
-              // Add custom attributes
-              span.setAttributes({
-                'http.user_agent': request.headers['user-agent'] || '',
-                'http.client_ip': request.headers['x-forwarded-for'] || request.socket.remoteAddress || '',
-              });
-            },
-          },
-          '@opentelemetry/instrumentation-express': {
-            enabled: true,
-          },
-          '@opentelemetry/instrumentation-fs': {
-            enabled: false, // Usually too noisy
-          },
-        }),
-      ],
-    });
-
-    // Start SDK
-    sdk.start();
-    isInitialized = true;
-
-    console.log('OpenTelemetry started successfully', {
+    console.log('Tracing initialized (simplified)', {
       serviceName,
       serviceVersion,
       environment,
-      traceEndpoint,
-      metricsEndpoint,
     });
 
+    isInitialized = true;
   } catch (error) {
-    console.error('Failed to initialize OpenTelemetry:', error);
+    console.error('Failed to initialize tracing:', error);
   }
 }
 
 export function shutdownTracing(): Promise<void> {
-  if (sdk) {
-    return sdk.shutdown();
-  }
   return Promise.resolve();
 }
 

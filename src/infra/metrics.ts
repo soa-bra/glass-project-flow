@@ -162,28 +162,28 @@ export const metrics = {
   }),
 
   // Convenience methods
-  counter: (name: string, labels?: Record<string, string>) => {
-    const metric = Object.values(metrics).find(m => m.name === `supra_${name}`) as Counter<string> | undefined;
+  getCounter: (metricName: keyof typeof metrics, labels?: Record<string, string>) => {
+    const metric = metrics[metricName];
     if (metric && 'inc' in metric) {
       return labels ? metric.labels(labels) : metric;
     }
-    throw new Error(`Counter ${name} not found`);
+    throw new Error(`Counter ${String(metricName)} not found or not a counter`);
   },
 
-  histogram: (name: string, labels?: Record<string, string>) => {
-    const metric = Object.values(metrics).find(m => m.name === `supra_${name}`) as Histogram<string> | undefined;
+  getHistogram: (metricName: keyof typeof metrics, labels?: Record<string, string>) => {
+    const metric = metrics[metricName];
     if (metric && 'observe' in metric) {
       return labels ? metric.labels(labels) : metric;
     }
-    throw new Error(`Histogram ${name} not found`);
+    throw new Error(`Histogram ${String(metricName)} not found or not a histogram`);
   },
 
-  gauge: (name: string, labels?: Record<string, string>) => {
-    const metric = Object.values(metrics).find(m => m.name === `supra_${name}`) as Gauge<string> | undefined;
+  getGauge: (metricName: keyof typeof metrics, labels?: Record<string, string>) => {
+    const metric = metrics[metricName];
     if (metric && 'set' in metric) {
       return labels ? metric.labels(labels) : metric;
     }
-    throw new Error(`Gauge ${name} not found`);
+    throw new Error(`Gauge ${String(metricName)} not found or not a gauge`);
   },
 };
 
