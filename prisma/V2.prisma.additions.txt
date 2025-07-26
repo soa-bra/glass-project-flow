@@ -1,0 +1,59 @@
+// Event Bus Models
+model EventOutbox {
+  id          String   @id @default(cuid())
+  eventName   String
+  eventVersion Int
+  payload     Json
+  dedupKey    String?  @unique
+  status      String   @default("pending") // pending, sent, failed
+  retryCount  Int      @default(0)
+  maxRetries  Int      @default(3)
+  nextRetryAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sentAt      DateTime?
+  
+  @@map("event_outbox")
+}
+
+model EventDLQ {
+  id          String   @id @default(cuid())
+  eventName   String
+  eventVersion Int
+  payload     Json
+  dedupKey    String?
+  reason      String
+  retryCount  Int
+  createdAt   DateTime @default(now())
+  
+  @@map("event_dlq")
+}
+
+// Feature Store Models
+model FeatureNamespace {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  features    FeatureRow[]
+  
+  @@map("feature_namespaces")
+}
+
+model FeatureRow {
+  id          String   @id @default(cuid())
+  namespaceId String
+  entity      String   // 'brand', 'user', 'project'
+  entityId    String
+  features    Json     // key-value pairs of features
+  ts          DateTime
+  ttlDays     Int?
+  createdAt   DateTime @default(now())
+  
+  namespace   FeatureNamespace @relation(fields: [namespaceId], references: [id], onDelete: Cascade)
+  
+  @@unique([namespaceId, entity, entityId, ts])
+  @@map("feature_rows")
+}
