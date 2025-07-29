@@ -1,9 +1,9 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { CanvasElement } from '../../types';
-import { CanvasGrid } from './CanvasGrid';
 import { CanvasElement as CanvasElementComponent } from './CanvasElement';
 import { SimplifiedSelectionBoundingBox } from '../SimplifiedSelectionBoundingBox';
+import { InfiniteCanvas, InfiniteCanvasRef } from './InfiniteCanvas';
 import { useUnifiedSelection } from '../../hooks/useUnifiedSelection';
 import { useSimplifiedCanvasInteraction } from '../../hooks/useSimplifiedCanvasInteraction';
 import { useCanvasElements } from '../../hooks/useCanvasElements';
@@ -18,6 +18,8 @@ interface CanvasProps {
   snapEnabled: boolean;
   onElementsChange?: (elements: CanvasElement[]) => void;
   onSelectionChange?: (selectedIds: string[]) => void;
+  onZoomChange?: (zoom: number) => void;
+  onPositionChange?: (position: { x: number; y: number }) => void;
 }
 
 export const Canvas: React.FC<CanvasProps> = ({
@@ -28,13 +30,16 @@ export const Canvas: React.FC<CanvasProps> = ({
   showGrid,
   snapEnabled,
   onElementsChange,
-  onSelectionChange
+  onSelectionChange,
+  onZoomChange,
+  onPositionChange
 }) => {
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
+  const dummyRef = useRef<HTMLDivElement>(null); // For compatibility with existing hooks
   const { saveToHistory } = useCanvasHistory();
   const { elements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
   const selection = useUnifiedSelection();
-  const interaction = useSimplifiedCanvasInteraction(canvasRef);
+  const interaction = useSimplifiedCanvasInteraction(dummyRef);
 
   // Notify parent of changes
   useEffect(() => {
@@ -62,16 +67,13 @@ export const Canvas: React.FC<CanvasProps> = ({
       return;
     }
 
-    // Handle other tools (text, shape, etc.)
-    if (selectedTool === 'text' || selectedTool === 'sticky') {
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (!rect) return;
-
-      const x = (e.clientX - rect.left) / (zoom / 100) - canvasPosition.x;
-      const y = (e.clientY - rect.top) / (zoom / 100) - canvasPosition.y;
-      
-      addElement(x, y, selectedTool, selectedSmartElement);
-    }
+  // Handle other tools (text, shape, etc.)
+  if (selectedTool === 'text' || selectedTool === 'sticky') {
+    const coordinates = infiniteCanvasRef.current?.getCanvasCoordinates(e.clientX, e.clientY);
+    if (!coordinates) return;
+    
+    addElement(coordinates.x, coordinates.y, selectedTool, selectedSmartElement);
+  }
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent) => {
@@ -126,27 +128,23 @@ export const Canvas: React.FC<CanvasProps> = ({
   };
 
   return (
-    <div className="relative w-full h-full bg-white overflow-auto">
-      {/* Grid */}
-      {showGrid && <CanvasGrid />}
-
-      {/* Main Canvas Area */}
-      <div
-        ref={canvasRef}
-        className="absolute bg-slate-50"
-        style={{
-          left: 0,
-          top: 0,
-          width: '10000px',
-          height: '10000px',
-          transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,
-          transformOrigin: '0 0',
-          cursor: getCursorStyle()
-        }}
-        onClick={handleCanvasClick}
-        onMouseDown={handleCanvasMouseDown}
-        onMouseMove={handleCanvasMouseMove}
-        onMouseUp={handleCanvasMouseUp}
+    <div className="relative w-full h-full">
+      <InfiniteCanvas
+        ref={infiniteCanvasRef}
+        zoom={zoom}
+        canvasPosition={canvasPosition}
+        showGrid={showGrid}
+        snapEnabled={snapEnabled}
+        gridSize={24}
+        gridType="dots"
+        onZoomChange={onZoomChange}
+        onPositionChange={onPositionChange}
+        onCanvasClick={handleCanvasClick}
+        onCanvasMouseDown={handleCanvasMouseDown}
+        onCanvasMouseMove={handleCanvasMouseMove}
+        onCanvasMouseUp={handleCanvasMouseUp}
+        style={{ cursor: getCursorStyle() }}
+        className="bg-background"
       >
         {/* Render Elements */}
         {elements.map(element => (
@@ -163,7 +161,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         {/* Selection Box */}
         {interaction.isSelecting && interaction.selectionBoxBounds && (
           <div
-            className="absolute border-2 border-blue-500 border-dashed bg-blue-100/20 pointer-events-none"
+            className="absolute border-2 border-primary border-dashed bg-primary/10 pointer-events-none"
             style={{
               left: Math.min(interaction.selectionBoxBounds.start.x, interaction.selectionBoxBounds.end.x),
               top: Math.min(interaction.selectionBoxBounds.start.y, interaction.selectionBoxBounds.end.y),
@@ -173,7 +171,7 @@ export const Canvas: React.FC<CanvasProps> = ({
             }}
           />
         )}
-      </div>
+      </InfiniteCanvas>
 
       {/* Selection Bounding Box */}
       {selectedElements.length > 0 && (
