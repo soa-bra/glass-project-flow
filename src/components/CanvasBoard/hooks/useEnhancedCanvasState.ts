@@ -28,11 +28,24 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
   const [lineStyle, setLineStyle] = useState<string>('solid');
   const [selectedPenMode, setSelectedPenMode] = useState<string>('smart-draw');
 
-  // Specialized hooks
+  // Specialized hooks - ترتيب الاستدعاء مهم
   const { history, historyIndex, saveToHistory, undo, redo } = useCanvasHistory();
   const { layers, setLayers, selectedLayerId, setSelectedLayerId, handleLayerUpdate, handleLayerSelect, updateSingleLayer } = useCanvasLayerState();
   const interaction = useRefactoredCanvasInteraction(canvasRef);
+  
+  // إدارة العناصر أولاً
   const { elements, setElements, addElement, updateElement, deleteElement } = useCanvasElementManagement(saveToHistory);
+  
+  // ثم إجراءات العناصر (تحتاج elements و selectedElementIds)
+  const elementActions = useCanvasElementActions({
+    selectedElementIds,
+    elements,
+    updateElement,
+    deleteElement,
+    addElement
+  });
+  
+  // إجراءات clipboard (تحتاج نفس البيانات)
   const clipboardActions = useCanvasClipboardActions({
     selectedElementIds,
     elements,
@@ -41,14 +54,11 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     setElements,
     saveToHistory
   });
-  const elementActions = useCanvasElementActions({
-    selectedElementIds,
-    elements,
-    updateElement,
-    deleteElement,
-    addElement
-  });
+  
+  // File actions
   const fileActions = useCanvasFileActions(projectId, userId, elements);
+  
+  // Event handlers
   const eventHandlers = useCanvasEventHandlers(
     selectedTool,
     zoom,
