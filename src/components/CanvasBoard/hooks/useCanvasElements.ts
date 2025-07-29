@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { CanvasElement } from '../types';
+import { CanvasElement } from '@/types/canvas';
 import { toast } from 'sonner';
 
 export const useCanvasElements = (saveToHistory: (elements: CanvasElement[]) => void) => {

@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { CanvasElement } from '../types';
+import { CanvasElement } from '@/types/canvas';
 
 export interface UnifiedSelectionState {
   selectedElementIds: string[];

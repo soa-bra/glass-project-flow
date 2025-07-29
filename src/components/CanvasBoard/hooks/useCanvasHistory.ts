@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { CanvasElement } from '../types';
+import { CanvasElement } from '@/types/canvas';
 
 export const useCanvasHistory = () => {
   const [history, setHistory] = useState<CanvasElement[][]>([]);

@@ -2,12 +2,13 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import { CanvasElement } from '@/types/canvas';
 import { CanvasElement as CanvasElementComponent } from './CanvasElement';
 import { SimplifiedSelectionBoundingBox } from '../SimplifiedSelectionBoundingBox';
+import { CanvasDiagnostics } from '../CanvasDiagnostics';
 import { InfiniteCanvas, InfiniteCanvasRef } from './InfiniteCanvas';
 import { useUnifiedSelection } from '../../hooks/useUnifiedSelection';
 import { useSimplifiedCanvasInteraction } from '../../hooks/useSimplifiedCanvasInteraction';
 import { useCanvasElements } from '../../hooks/useCanvasElements';
 import { useCanvasHistory } from '../../hooks/useCanvasHistory';
-import { useCanvasEventHandlers, useToolCursor } from '../../hooks';
+import { useRefactoredCanvasEventHandlers } from '../../hooks/useRefactoredCanvasEventHandlers';
 
 interface CanvasProps {
   selectedTool: string;
@@ -20,6 +21,7 @@ interface CanvasProps {
   onSelectionChange?: (selectedIds: string[]) => void;
   onZoomChange?: (zoom: number) => void;
   onPositionChange?: (position: { x: number; y: number }) => void;
+  showDiagnostics?: boolean;
 }
 
 export const Canvas: React.FC<CanvasProps> = ({
@@ -32,7 +34,8 @@ export const Canvas: React.FC<CanvasProps> = ({
   onElementsChange,
   onSelectionChange,
   onZoomChange,
-  onPositionChange
+  onPositionChange,
+  showDiagnostics = false
 }) => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
   const dummyRef = useRef<HTMLDivElement>(null);
@@ -41,15 +44,19 @@ export const Canvas: React.FC<CanvasProps> = ({
   const selection = useUnifiedSelection();
   const interaction = useSimplifiedCanvasInteraction(dummyRef);
   
-  // Tool cursor and event handlers
-  const toolCursor = useToolCursor();
-  
   // Create wrapper function to match expected signature
   const addElementWrapper = useCallback((element: any) => {
-    addElement(element.x, element.y, element.type, selectedSmartElement, element.width, element.height);
+    // Handle both old and new element formats
+    if (element.position && element.size) {
+      // New format with position and size
+      addElement(element.position.x, element.position.y, element.type, selectedSmartElement, element.size.width, element.size.height);
+    } else {
+      // Old format with x, y, width, height
+      addElement(element.x || 0, element.y || 0, element.type, selectedSmartElement, element.width || 100, element.height || 100);
+    }
   }, [addElement, selectedSmartElement]);
 
-  const eventHandlers = useCanvasEventHandlers(
+  const eventHandlers = useRefactoredCanvasEventHandlers(
     selectedTool,
     zoom,
     canvasPosition,
@@ -63,7 +70,8 @@ export const Canvas: React.FC<CanvasProps> = ({
     selection.selectElement,
     updateElement,
     onPositionChange || (() => {}),
-    onZoomChange || (() => {})
+    onZoomChange || (() => {}),
+    selectedSmartElement
   );
 
   // Notify parent of changes
@@ -80,7 +88,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   return (
     <div 
       className="w-full h-full relative"
-      style={{ cursor: toolCursor.getCursorStyle(selectedTool) }}
+      style={{ cursor: eventHandlers.toolCursor.getCursorStyle(selectedTool) }}
     >
       <InfiniteCanvas
         ref={infiniteCanvasRef}
@@ -120,6 +128,18 @@ export const Canvas: React.FC<CanvasProps> = ({
           snapEnabled={snapEnabled}
         />
       )}
+
+      {/* Diagnostics Panel */}
+      <CanvasDiagnostics
+        selectedTool={selectedTool}
+        elements={elements}
+        selectedElementIds={selection.selectedElementIds}
+        zoom={zoom}
+        canvasPosition={canvasPosition}
+        showGrid={showGrid}
+        snapEnabled={snapEnabled}
+        isVisible={showDiagnostics}
+      />
     </div>
   );
 };

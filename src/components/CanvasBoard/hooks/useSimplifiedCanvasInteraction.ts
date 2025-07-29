@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { CanvasElement } from '../types';
+import { CanvasElement } from '@/types/canvas';
 
 const GRID_SIZE = 24;
 
@@ -71,8 +71,8 @@ export const useSimplifiedCanvasInteraction = (canvasRef: React.RefObject<HTMLDi
     e: React.MouseEvent,
     zoom: number,
     canvasPosition: { x: number; y: number },
-    snapEnabled: boolean,
-    onUpdateElement: (elementId: string, updates: Partial<CanvasElement>) => void
+    onUpdateElement: (elementId: string, updates: Partial<CanvasElement>) => void,
+    snapEnabled: boolean
   ) => {
     if (!dragState.isDragging || !dragState.draggedElementId) return;
 
