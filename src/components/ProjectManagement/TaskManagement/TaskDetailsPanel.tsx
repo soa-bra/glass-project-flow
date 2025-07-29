@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { AddTaskModal } from '@/components/ProjectsColumn/AddTaskModal';
-
 import type { TaskData } from '@/types';
 interface TaskDetailsPanelProps {
   task: UnifiedTask;
@@ -54,7 +53,6 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
   const [showEditModal, setShowEditModal] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
   const handleEdit = () => {
     console.log('Edit task:', task.id);
     setShowEditModal(true);
@@ -67,17 +65,14 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
     console.log('Delete task:', task.id);
     setShowDeleteDialog(true);
   };
-
   const confirmArchive = () => {
     console.log('تم أرشفة المهمة:', task.id);
     setShowArchiveDialog(false);
   };
-
   const confirmDelete = () => {
     console.log('تم حذف المهمة:', task.id);
     setShowDeleteDialog(false);
   };
-
   const handleTaskUpdated = (updatedTask: any) => {
     console.log('تم تحديث المهمة:', updatedTask);
     setShowEditModal(false);
@@ -105,15 +100,15 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
           </div>
           
           <div className="flex items-center gap-2 ml-4">
-            <Button variant="outline" size="sm" onClick={handleEdit} className="text-black border-black/20 hover:bg-black hover:text-white rounded-full">
+            <Button variant="outline" size="sm" onClick={handleEdit} className="border-black/20 hover:bg-black rounded-full text-white">
               <Edit className="w-4 h-4 mr-1" />
               تعديل
             </Button>
-            <Button variant="outline" size="sm" onClick={handleArchive} className="text-black border-black/20 hover:bg-black hover:text-white rounded-full">
-              <Archive className="w-4 h-4 mr-1" />
+            <Button variant="outline" size="sm" onClick={handleArchive} className="border-black/20 hover:bg-black rounded-full text-white">
+              <Archive className="w-4 h-4 mr-1 bg-transparent" />
               أرشفة
             </Button>
-            <Button variant="outline" size="sm" onClick={handleDelete} className="text-red-600 border-red-200 hover:bg-red-600 hover:text-white rounded-full">
+            <Button variant="outline" size="sm" onClick={handleDelete} className="bg-[#f1b5b9] text-black px-4 py-2 rounded-full text-sm font-medium hover:bg-[#f1b5b9]/80 transition-colors">
               <Trash2 className="w-4 h-4 mr-1" />
               حذف
             </Button>
@@ -208,7 +203,9 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
       
       {/* حوارات التأكيد والنوافذ */}
       <AlertDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
-        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+        <AlertDialogContent className="font-arabic" style={{
+        direction: 'rtl'
+      }}>
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الأرشفة</AlertDialogTitle>
             <AlertDialogDescription>
@@ -223,7 +220,9 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
       </AlertDialog>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+        <AlertDialogContent className="font-arabic" style={{
+        direction: 'rtl'
+      }}>
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
             <AlertDialogDescription>
@@ -239,14 +238,7 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
         </AlertDialogContent>
       </AlertDialog>
 
-      <AddTaskModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        onTaskAdded={() => {}}
-        onTaskUpdated={handleTaskUpdated}
-        editingTask={convertToTaskData(task)}
-        isEditMode={true}
-      />
+      <AddTaskModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onTaskAdded={() => {}} onTaskUpdated={handleTaskUpdated} editingTask={convertToTaskData(task)} isEditMode={true} />
     </div>;
 };
 
@@ -353,12 +345,11 @@ const TaskAttachmentsTab: React.FC<{
     uploadedAt: '2024-01-15'
   })));
   const [showDeleteDialog, setShowDeleteDialog] = useState<number | null>(null);
-
   const handleAddAttachment = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.multiple = true;
-    input.onchange = (e) => {
+    input.onchange = e => {
       const files = (e.target as HTMLInputElement).files;
       if (files) {
         const newAttachments = Array.from(files).map((file, index) => ({
@@ -372,12 +363,10 @@ const TaskAttachmentsTab: React.FC<{
     };
     input.click();
   };
-
   const handleDeleteAttachment = (id: number) => {
     setAttachments(attachments.filter(att => att.id !== id));
     setShowDeleteDialog(null);
   };
-
   return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold text-black">المرفقات ({attachments.length})</h4>
@@ -400,12 +389,7 @@ const TaskAttachmentsTab: React.FC<{
                 <Button variant="outline" size="sm">
                   تحميل
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setShowDeleteDialog(attachment.id)}
-                  className="text-red-600 border-red-200 hover:bg-red-50"
-                >
+                <Button variant="outline" size="sm" onClick={() => setShowDeleteDialog(attachment.id)} className="text-red-600 border-red-200 hover:bg-red-50">
                   <X className="w-4 h-4" />
                 </Button>
               </div>
@@ -417,7 +401,9 @@ const TaskAttachmentsTab: React.FC<{
 
       {/* Delete confirmation dialog */}
       <AlertDialog open={showDeleteDialog !== null} onOpenChange={() => setShowDeleteDialog(null)}>
-        <AlertDialogContent className="font-arabic" style={{ direction: 'rtl' }}>
+        <AlertDialogContent className="font-arabic" style={{
+        direction: 'rtl'
+      }}>
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
             <AlertDialogDescription>
@@ -426,10 +412,7 @@ const TaskAttachmentsTab: React.FC<{
           </AlertDialogHeader>
           <AlertDialogFooter className="flex gap-2">
             <AlertDialogCancel>إلغاء</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => showDeleteDialog && handleDeleteAttachment(showDeleteDialog)}
-              className="bg-red-600 hover:bg-red-700"
-            >
+            <AlertDialogAction onClick={() => showDeleteDialog && handleDeleteAttachment(showDeleteDialog)} className="bg-red-600 hover:bg-red-700">
               حذف المرفق
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -451,7 +434,6 @@ const TaskCommentsTab: React.FC<{
     time: `منذ ${i + 1} ساعات`
   })));
   const [newComment, setNewComment] = useState('');
-
   const handleAddComment = () => {
     if (newComment.trim()) {
       const comment = {
@@ -464,7 +446,6 @@ const TaskCommentsTab: React.FC<{
       setNewComment('');
     }
   };
-
   return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold text-black">التعليقات ({comments.length})</h4>
@@ -472,20 +453,9 @@ const TaskCommentsTab: React.FC<{
       
       {/* Add comment form */}
       <div className="bg-white/50 rounded-lg p-4">
-        <textarea 
-          placeholder="أضف تعليقاً جديداً..." 
-          className="w-full bg-transparent border border-black/10 rounded-lg p-3 text-sm text-black resize-none" 
-          rows={3}
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-        />
+        <textarea placeholder="أضف تعليقاً جديداً..." className="w-full bg-transparent border border-black/10 rounded-lg p-3 text-sm text-black resize-none" rows={3} value={newComment} onChange={e => setNewComment(e.target.value)} />
         <div className="flex justify-end mt-2">
-          <Button 
-            size="sm" 
-            className="bg-black text-white hover:bg-black/80"
-            onClick={handleAddComment}
-            disabled={!newComment.trim()}
-          >
+          <Button size="sm" className="bg-black text-white hover:bg-black/80" onClick={handleAddComment} disabled={!newComment.trim()}>
             <MessageSquare className="w-4 h-4 mr-1" />
             إضافة تعليق
           </Button>
