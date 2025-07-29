@@ -1,5 +1,10 @@
 
 import { useCallback } from 'react';
+import { useToolCursor } from './useToolCursor';
+import { useHandTool } from './useHandTool';
+import { useZoomTool } from './useZoomTool';
+import { useSmartPenTool } from './useSmartPenTool';
+import { useFileUploadTool } from './useFileUploadTool';
 
 export const useCanvasEventHandlers = (
   selectedTool: string,
@@ -12,8 +17,22 @@ export const useCanvasEventHandlers = (
   selectedElementIds: string[],
   setSelectedElementId: (id: string | null) => void,
   setSelectedElementIds: (ids: string[]) => void,
-  updateElement: (elementId: string, updates: any) => void
+  updateElement: (elementId: string, updates: any) => void,
+  onPositionChange: (position: { x: number; y: number }) => void,
+  onZoomChange: (zoom: number) => void
 ) => {
+  // Initialize tool-specific hooks
+  const toolCursor = useToolCursor();
+  const handTool = useHandTool(onPositionChange, canvasPosition);
+  const zoomTool = useZoomTool(zoom, onZoomChange, onPositionChange);
+  const smartPenTool = useSmartPenTool(zoom, canvasPosition, (path) => {
+    // Convert path to canvas element
+    addElement('smart-pen', path[0].x, path[0].y);
+  });
+  const fileUploadTool = useFileUploadTool((element) => {
+    // Add file element to canvas
+    addElement(element.type, element.position.x, element.position.y, element.size.width, element.size.height);
+  });
   const handleCanvasClick = useCallback((e: React.MouseEvent) => {
     setSelectedElementId(null);
     setSelectedElementIds([]);
@@ -23,6 +42,16 @@ export const useCanvasEventHandlers = (
     if (selectedTool === 'select') {
       // Start multi-selection if clicking on empty canvas
       interaction.handleSelectionStart(e, zoom, canvasPosition, snapEnabled);
+      return;
+    }
+
+    if (selectedTool === 'hand') {
+      handTool.startPan(e);
+      return;
+    }
+
+    if (selectedTool === 'zoom') {
+      zoomTool.handleZoomClick(e, !e.shiftKey); // Shift+click to zoom out
       return;
     }
 
@@ -37,19 +66,24 @@ export const useCanvasEventHandlers = (
     }
 
     if (selectedTool === 'smart-pen') {
-      interaction.handleSmartPenStart(e, zoom, canvasPosition, snapEnabled);
+      smartPenTool.startDrawing(e);
       return;
     }
-  }, [selectedTool, zoom, canvasPosition, addElement, snapEnabled, interaction]);
+  }, [selectedTool, zoom, canvasPosition, addElement, snapEnabled, interaction, handTool, zoomTool, smartPenTool]);
 
   const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
+    if (selectedTool === 'hand' && handTool.isDragging) {
+      handTool.updatePan(e);
+      return;
+    }
+
     if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && interaction.isDrawing) {
       interaction.handleDragCreateMove(e, zoom, canvasPosition, snapEnabled);
       return;
     }
 
-    if (selectedTool === 'smart-pen' && interaction.isDrawing) {
-      interaction.handleSmartPenMove(e, zoom, canvasPosition, snapEnabled);
+    if (selectedTool === 'smart-pen' && smartPenTool.isDrawing) {
+      smartPenTool.continueDrawing(e);
       return;
     }
 
@@ -57,16 +91,21 @@ export const useCanvasEventHandlers = (
       interaction.handleSelectionMove(e, zoom, canvasPosition, snapEnabled);
       return;
     }
-  }, [selectedTool, zoom, canvasPosition, snapEnabled, interaction]);
+  }, [selectedTool, zoom, canvasPosition, snapEnabled, interaction, handTool, smartPenTool]);
 
   const handleCanvasMouseUp = useCallback(() => {
+    if (selectedTool === 'hand' && handTool.isDragging) {
+      handTool.endPan();
+      return;
+    }
+
     if (['shape', 'smart-element', 'text-box'].includes(selectedTool) && interaction.isDrawing) {
       interaction.handleDragCreateEnd(selectedTool, addElement);
       return;
     }
 
-    if (selectedTool === 'smart-pen' && interaction.isDrawing) {
-      interaction.handleSmartPenEnd(addElement);
+    if (selectedTool === 'smart-pen' && smartPenTool.isDrawing) {
+      smartPenTool.endDrawing();
       return;
     }
 
@@ -74,7 +113,7 @@ export const useCanvasEventHandlers = (
       interaction.handleSelectionEnd(elements, setSelectedElementIds);
       return;
     }
-  }, [selectedTool, elements, addElement, setSelectedElementIds, interaction]);
+  }, [selectedTool, elements, addElement, setSelectedElementIds, interaction, handTool, smartPenTool]);
 
   const handleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
     interaction.handleElementMouseDown(e, elementId, selectedTool, elements, zoom, canvasPosition, setSelectedElementId, selectedElementIds, setSelectedElementIds);
@@ -105,6 +144,12 @@ export const useCanvasEventHandlers = (
     handleElementMouseMove,
     handleElementMouseUp,
     handleResizeMouseDown,
-    handleResizeMouseMove
+    handleResizeMouseMove,
+    // Tool-specific functionality
+    toolCursor,
+    handTool,
+    zoomTool,
+    smartPenTool,
+    fileUploadTool
   };
 };

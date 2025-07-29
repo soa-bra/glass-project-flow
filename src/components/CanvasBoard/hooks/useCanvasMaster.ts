@@ -49,7 +49,9 @@ export const useCanvasMaster = (projectId?: string, userId?: string) => {
     canvasState.selectedElementIds,
     canvasState.selectElement,
     canvasState.selectElements,
-    canvasState.updateElement
+    canvasState.updateElement,
+    setCanvasPosition,
+    setZoom
   );
 
   // وظائف إضافية للشبكة والتكبير

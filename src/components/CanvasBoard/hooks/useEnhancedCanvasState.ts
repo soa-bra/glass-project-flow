@@ -70,7 +70,9 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     selectedElementIds,
     setSelectedElementId,
     setSelectedElementIds,
-    updateElement
+    updateElement,
+    setCanvasPosition,
+    setZoom
   );
 
   // Grid helper function

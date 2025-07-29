@@ -7,6 +7,8 @@ export type CursorType =
   | 'grabbing'
   | 'move'
   | 'crosshair'
+  | 'text'
+  | 'zoom-in'
   | 'nw-resize'
   | 'ne-resize'
   | 'sw-resize'
@@ -39,6 +41,8 @@ export const useSelectionCursor = (): SelectionCursorController => {
       'grabbing': 'grabbing',
       'move': 'move',
       'crosshair': 'crosshair',
+      'text': 'text',
+      'zoom-in': 'zoom-in',
       'nw-resize': 'nw-resize',
       'ne-resize': 'ne-resize',
       'sw-resize': 'sw-resize',

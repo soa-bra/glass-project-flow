@@ -22,3 +22,10 @@ export { useCanvasElementActions } from './useCanvasElementActions';
 export { useCanvasFileActions } from './useCanvasFileActions';
 export { useCanvasEventHandlers } from './useCanvasEventHandlers';
 export { useCanvasLayerState } from './useCanvasLayerState';
+
+// Tool-specific hooks
+export { useToolCursor } from './useToolCursor';
+export { useHandTool } from './useHandTool';
+export { useZoomTool } from './useZoomTool';
+export { useSmartPenTool } from './useSmartPenTool';
+export { useFileUploadTool } from './useFileUploadTool';

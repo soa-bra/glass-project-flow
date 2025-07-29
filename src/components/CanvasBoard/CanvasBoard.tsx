@@ -61,7 +61,6 @@ const CanvasBoard: React.FC = () => {
     tools: true
   });
 
-  const [selectedTool, setSelectedTool] = useState('select');
   const [selectedSmartElement, setSelectedSmartElement] = useState('');
   const [canvasPosition, setCanvasPosition] = useState({ x: 0, y: 0 });
 
@@ -188,7 +187,7 @@ const CanvasBoard: React.FC = () => {
           {showPanels.tools && (
             <div className="h-1/3">
               <ToolPanel
-                selectedTool={selectedTool}
+                selectedTool={activeTool}
                 selectedElements={elements.filter(el => selectedElementIds.includes(el.id))}
                 elements={elements}
                 selectedElementId={selectedElementIds[0] || null}
@@ -253,7 +252,7 @@ const CanvasBoard: React.FC = () => {
         {/* Main Canvas Area */}
         <div className="flex-1 bg-white relative">
           <Canvas
-            selectedTool={selectedTool}
+            selectedTool={activeTool}
             selectedSmartElement={selectedSmartElement}
             zoom={zoom}
             canvasPosition={canvasPosition}
@@ -267,11 +266,11 @@ const CanvasBoard: React.FC = () => {
 
           {/* Tool Selection */}
           <div className="absolute top-4 left-4 flex gap-2 bg-white rounded-lg shadow-md p-2">
-            {['select', 'text', 'shape', 'sticky', 'smart-element', 'hand', 'zoom'].map(tool => (
+            {['select', 'text', 'shape', 'sticky', 'smart-element', 'hand', 'zoom', 'smart-pen', 'upload'].map(tool => (
               <button
                 key={tool}
-                onClick={() => setSelectedTool(tool)}
-                className={`px-3 py-2 rounded ${selectedTool === tool ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                onClick={() => setActiveTool(tool)}
+                className={`px-3 py-2 rounded ${activeTool === tool ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
               >
                 {tool}
               </button>
