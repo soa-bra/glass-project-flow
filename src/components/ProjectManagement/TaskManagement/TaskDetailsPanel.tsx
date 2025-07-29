@@ -100,11 +100,11 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
           </div>
           
           <div className="flex items-center gap-2 ml-4">
-            <Button variant="outline" size="sm" onClick={handleEdit} className="border-black/20 hover:bg-black rounded-full text-white">
+            <Button variant="outline" size="sm" onClick={handleEdit} className="flex h-8 items-center rounded-full px-3 py-2 text-sm font-medium text-white whitespace-nowrap">
               <Edit className="w-4 h-4 mr-1" />
               تعديل
             </Button>
-            <Button variant="outline" size="sm" onClick={handleArchive} className="border-black/20 hover:bg-black rounded-full text-white">
+            <Button variant="outline" size="sm" onClick={handleArchive} className="flex h-8 items-center rounded-full px-3 py-2 text-sm font-medium text-white whitespace-nowrap">
               <Archive className="w-4 h-4 mr-1 bg-transparent" />
               أرشفة
             </Button>
