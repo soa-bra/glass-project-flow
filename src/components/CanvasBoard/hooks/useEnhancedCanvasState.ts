@@ -33,8 +33,21 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
   const { layers, setLayers, selectedLayerId, setSelectedLayerId, handleLayerUpdate, handleLayerSelect, updateSingleLayer } = useCanvasLayerState();
   const interaction = useRefactoredCanvasInteraction(canvasRef);
   const { elements, setElements, addElement, updateElement, deleteElement } = useCanvasElementManagement(saveToHistory);
-  const clipboardActions = useCanvasClipboardActions(selectedElementId, elements, addElement, deleteElement);
-  const elementActions = useCanvasElementActions(selectedElementId, updateElement);
+  const clipboardActions = useCanvasClipboardActions({
+    selectedElementIds,
+    elements,
+    addElement,
+    deleteElement,
+    setElements,
+    saveToHistory
+  });
+  const elementActions = useCanvasElementActions({
+    selectedElementIds,
+    elements,
+    updateElement,
+    deleteElement,
+    addElement
+  });
   const fileActions = useCanvasFileActions(projectId, userId, elements);
   const eventHandlers = useCanvasEventHandlers(
     selectedTool,
