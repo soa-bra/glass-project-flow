@@ -58,6 +58,22 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
   // File actions
   const fileActions = useCanvasFileActions(projectId, userId, elements);
   
+  // Selection functions
+  const clearSelection = useCallback(() => {
+    setSelectedElementIds([]);
+    setSelectedElementId(null);
+  }, []);
+
+  const selectElement = useCallback((elementId: string) => {
+    setSelectedElementId(elementId);
+    setSelectedElementIds([elementId]);
+  }, []);
+
+  // Create wrapper for addElement
+  const addElementWrapper = useCallback((element: any) => {
+    addElement(element.type, element.x, element.y, element.width, element.height, element.content);
+  }, [addElement]);
+
   // Event handlers
   const eventHandlers = useCanvasEventHandlers(
     selectedTool,
@@ -65,11 +81,12 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     canvasPosition,
     snapEnabled,
     interaction,
-    addElement,
+    addElementWrapper,
     elements,
     selectedElementIds,
-    setSelectedElementId,
+    clearSelection,
     setSelectedElementIds,
+    selectElement,
     updateElement,
     setCanvasPosition,
     setZoom
@@ -169,7 +186,15 @@ export const useEnhancedCanvasState = (projectId: string, userId: string) => {
     isSelecting: interaction.isSelecting,
     selectionBox: interaction.selectionBox,
     
-    // Event handlers
-    ...eventHandlers
+    // Event handlers (wrapped to match expected signatures)
+    handleCanvasClick: eventHandlers.handleCanvasClick,
+    handleCanvasMouseDown: eventHandlers.handleCanvasMouseDown,
+    handleCanvasMouseMove: eventHandlers.handleCanvasMouseMove,
+    handleCanvasMouseUp: () => eventHandlers.handleCanvasMouseUp({} as React.MouseEvent),
+    handleElementMouseDown: eventHandlers.handleElementMouseDown,
+    handleElementMouseMove: eventHandlers.handleElementMouseMove,
+    handleElementMouseUp: eventHandlers.handleElementMouseUp,
+    handleResizeMouseDown: eventHandlers.handleResizeMouseDown,
+    handleResizeMouseMove: eventHandlers.handleResizeMouseMove
   };
 };

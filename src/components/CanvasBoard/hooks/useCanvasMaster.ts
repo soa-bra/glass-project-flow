@@ -37,6 +37,11 @@ export const useCanvasMaster = (projectId?: string, userId?: string) => {
   // التفاعل مع الكانفس
   const interaction = useRefactoredCanvasInteraction(canvasRef);
 
+  // Create wrapper for addElement
+  const addElementWrapper = useCallback((element: any) => {
+    canvasState.addElement(element.type, element.x, element.y, element.width, element.height, element.content);
+  }, [canvasState.addElement]);
+
   // معالجات الأحداث
   const eventHandlers = useCanvasEventHandlers(
     canvasState.activeTool,
@@ -44,11 +49,12 @@ export const useCanvasMaster = (projectId?: string, userId?: string) => {
     canvasPosition,
     snapEnabled,
     interaction,
-    canvasState.addElement,
+    addElementWrapper,
     canvasState.elements,
     canvasState.selectedElementIds,
-    canvasState.selectElement,
+    canvasState.clearSelection,
     canvasState.selectElements,
+    canvasState.selectElement,
     canvasState.updateElement,
     setCanvasPosition,
     setZoom

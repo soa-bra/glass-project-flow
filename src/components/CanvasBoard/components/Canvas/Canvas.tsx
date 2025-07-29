@@ -45,8 +45,8 @@ export const Canvas: React.FC<CanvasProps> = ({
   const toolCursor = useToolCursor();
   
   // Create wrapper function to match expected signature
-  const addElementWrapper = useCallback((type: string, x: number, y: number, width?: number, height?: number) => {
-    addElement(x, y, type, selectedSmartElement, width, height);
+  const addElementWrapper = useCallback((element: any) => {
+    addElement(element.x, element.y, element.type, selectedSmartElement, element.width, element.height);
   }, [addElement, selectedSmartElement]);
 
   const eventHandlers = useCanvasEventHandlers(
@@ -58,8 +58,9 @@ export const Canvas: React.FC<CanvasProps> = ({
     addElementWrapper,
     elements,
     selection.selectedElementIds,
-    (id) => id ? selection.selectElement(id) : selection.clearSelection(),
+    selection.clearSelection,
     selection.selectMultiple,
+    selection.selectElement,
     updateElement,
     onPositionChange || (() => {}),
     onZoomChange || (() => {})

@@ -4,14 +4,15 @@ import { Hand, Move, RotateCcw } from 'lucide-react';
 
 interface HandToolProps {
   selectedTool: string;
-  onPan: () => void;
-  onResetView: () => void;
+  handTool: {
+    resetView: () => void;
+    isDragging: boolean;
+  };
 }
 
 export const HandTool: React.FC<HandToolProps> = ({ 
   selectedTool, 
-  onPan, 
-  onResetView 
+  handTool
 }) => {
   if (selectedTool !== 'hand') return null;
 
@@ -30,17 +31,11 @@ export const HandTool: React.FC<HandToolProps> = ({
       <div className="space-y-2">
         <label className="text-sm font-medium font-arabic">إجراءات</label>
         <div className="grid grid-cols-1 gap-2">
+          <div className="text-xs text-gray-600 font-arabic mb-2">
+            حالة الأداة: {handTool.isDragging ? 'نشطة - جاري التحريك' : 'غير نشطة'}
+          </div>
           <Button
-            onClick={onPan}
-            variant="outline"
-            size="sm"
-            className="text-xs font-arabic"
-          >
-            <Move className="w-3 h-3 mr-1" />
-            تفعيل التحريك
-          </Button>
-          <Button
-            onClick={onResetView}
+            onClick={handTool.resetView}
             variant="outline"
             size="sm"
             className="text-xs font-arabic"
