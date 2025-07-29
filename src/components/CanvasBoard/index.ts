@@ -5,8 +5,8 @@
  * @version 1.0.0
  */
 
-// Main Canvas Board Component
-export { default as CanvasBoard } from './CanvasBoard';
+// Main Canvas Board Component (Active Implementation)
+export { default as CanvasBoard } from './CanvasBoardContents';
 
 // Canvas Components
 export { Canvas } from './components/Canvas/Canvas';
