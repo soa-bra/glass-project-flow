@@ -1,15 +1,14 @@
-// Main Panel Components
-export { AIAssistantPanel } from './AIAssistantPanel';
-export { LayersPanel } from './LayersPanel';
-export { ElementStylePanel } from './ElementStylePanel';
-export { CollaborationPanel } from './CollaborationPanel';
-export { ToolCustomizationPanel } from './ToolCustomizationPanel';
-
-// Enhanced Panel Components
-// SmartAssistantPanel is in the main panels directory
+// Enhanced Panel Components (Primary)
 export { default as EnhancedLayersPanel } from './EnhancedLayersPanel';
 export { default as EnhancedCollaborationPanel } from './EnhancedCollaborationPanel';
 export { default as AppearancePanel } from './AppearancePanel';
+export { ElementStylePanel } from './ElementStylePanel';
+export { ToolCustomizationPanel } from './ToolCustomizationPanel';
+
+// Legacy Panel Components (Deprecated - use enhanced versions)
+export { AIAssistantPanel } from './AIAssistantPanel';
+export { LayersPanel } from './LayersPanel';
+export { CollaborationPanel } from './CollaborationPanel';
 
 // Tool-specific Panel Components
 export { SelectionToolPanel } from './tools/SelectionToolPanel';
