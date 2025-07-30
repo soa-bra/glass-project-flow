@@ -1,6 +1,7 @@
-export { SelectionPanel } from './SelectionPanel';
+// Re-export SelectionPanel from its actual location
+export { SelectionPanel } from '../tools/Selection/SelectionPanel';
 
-// Tool panels exports - to be implemented
+// Tool panels exports - production ready
 export { SmartPenPanel } from './SmartPenPanel';
 export { ZoomPanel } from './ZoomPanel'; 
 export { HandPanel } from './HandPanel';

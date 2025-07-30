@@ -2,162 +2,153 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Toggle } from '@/components/ui/toggle';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import { 
   Type, 
   Bold, 
   Italic, 
   Underline, 
-  AlignLeft, 
-  AlignCenter, 
-  AlignRight, 
+  Strikethrough,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
   AlignJustify,
   Palette,
-  Plus,
-  Heading1,
-  Heading2,
-  Heading3,
+  Highlighter,
   Quote,
-  List
+  List,
+  ListOrdered,
+  Link,
+  Subscript,
+  Superscript,
+  RotateCcw
 } from 'lucide-react';
 
+interface TextStyle {
+  fontFamily: string;
+  fontSize: number;
+  fontWeight: 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
+  fontStyle: 'normal' | 'italic';
+  textDecoration: 'none' | 'underline' | 'line-through' | 'underline line-through';
+  textAlign: 'left' | 'center' | 'right' | 'justify';
+  color: string;
+  backgroundColor: string;
+  lineHeight: number;
+  letterSpacing: number;
+  textTransform: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
+}
+
 interface TextPanelProps {
-  onAddText: (config: any) => void;
-  selectedText?: any;
-  onUpdateText?: (updates: any) => void;
+  selectedText?: string;
+  currentStyle: Partial<TextStyle>;
+  onStyleChange: (style: Partial<TextStyle>) => void;
+  onAddText: (text: string, style: Partial<TextStyle>) => void;
+  presets?: { name: string; style: Partial<TextStyle> }[];
 }
 
 export const TextPanel: React.FC<TextPanelProps> = ({
+  selectedText = '',
+  currentStyle = {},
+  onStyleChange,
   onAddText,
-  selectedText,
-  onUpdateText
+  presets = []
 }) => {
-  const [fontSize, setFontSize] = useState(16);
-  const [fontFamily, setFontFamily] = useState('Arial');
-  const [textColor, setTextColor] = useState('#000000');
-  const [isBold, setIsBold] = useState(false);
-  const [isItalic, setIsItalic] = useState(false);
-  const [isUnderline, setIsUnderline] = useState(false);
-  const [alignment, setAlignment] = useState('left');
+  const [newText, setNewText] = useState('');
+  const [activeTab, setActiveTab] = useState<'add' | 'format'>('add');
 
   const fontFamilies = [
+    { value: 'Cairo', label: 'Cairo (عربي)' },
+    { value: 'Amiri', label: 'Amiri (عربي)' },
+    { value: 'Tajawal', label: 'Tajawal (عربي)' },
+    { value: 'Inter', label: 'Inter' },
+    { value: 'Roboto', label: 'Roboto' },
     { value: 'Arial', label: 'Arial' },
-    { value: 'Helvetica', label: 'Helvetica' },
-    { value: 'Times New Roman', label: 'Times New Roman' },
-    { value: 'Courier New', label: 'Courier New' },
     { value: 'Georgia', label: 'Georgia' },
-    { value: 'Verdana', label: 'Verdana' },
-    { value: 'Tahoma', label: 'Tahoma' },
-    { value: 'Impact', label: 'Impact' },
-    { value: 'Comic Sans MS', label: 'Comic Sans MS' },
-    { value: 'Trebuchet MS', label: 'Trebuchet MS' },
+    { value: 'Times New Roman', label: 'Times New Roman' },
+    { value: 'Courier New', label: 'Courier New' }
   ];
 
-  const textPresets = [
+  const fontSizePresets = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 64, 72];
+
+  const colorPresets = [
+    '#000000', '#333333', '#666666', '#999999', '#CCCCCC', '#FFFFFF',
+    '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
+    '#FFA500', '#800080', '#008000', '#000080', '#800000', '#808000'
+  ];
+
+  const defaultPresets = [
     {
       name: 'عنوان رئيسي',
-      icon: Heading1,
-      config: {
+      style: {
         fontSize: 32,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        type: 'heading'
+        fontWeight: 'bold' as const,
+        fontFamily: 'Cairo',
+        color: '#1a1a1a'
       }
     },
     {
       name: 'عنوان فرعي',
-      icon: Heading2,
-      config: {
+      style: {
         fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'right',
-        type: 'subheading'
+        fontWeight: '600' as const,
+        fontFamily: 'Cairo',
+        color: '#333333'
       }
     },
     {
       name: 'نص عادي',
-      icon: Type,
-      config: {
+      style: {
         fontSize: 16,
-        fontWeight: 'normal',
-        textAlign: 'right',
-        type: 'paragraph'
+        fontWeight: 'normal' as const,
+        fontFamily: 'Cairo',
+        color: '#666666'
       }
     },
     {
-      name: 'اقتباس',
-      icon: Quote,
-      config: {
-        fontSize: 18,
-        fontStyle: 'italic',
-        textAlign: 'center',
-        type: 'quote'
-      }
-    },
-    {
-      name: 'قائمة',
-      icon: List,
-      config: {
-        fontSize: 16,
-        listStyle: 'bullet',
-        textAlign: 'right',
-        type: 'list'
+      name: 'تسمية توضيحية',
+      style: {
+        fontSize: 12,
+        fontWeight: 'normal' as const,
+        fontFamily: 'Cairo',
+        fontStyle: 'italic' as const,
+        color: '#999999'
       }
     }
   ];
 
-  const handleAddTextPreset = (preset: any) => {
-    onAddText({
-      type: 'text',
-      content: 'نص جديد',
-      style: {
-        ...preset.config,
-        fontFamily,
-        color: textColor,
-        bold: isBold,
-        italic: isItalic,
-        underline: isUnderline,
-        alignment
-      }
+  const allPresets = [...defaultPresets, ...presets];
+
+  const updateStyle = (updates: Partial<TextStyle>) => {
+    const newStyle = { ...currentStyle, ...updates };
+    onStyleChange(newStyle);
+  };
+
+  const handleAddText = () => {
+    if (newText.trim()) {
+      onAddText(newText, currentStyle);
+      setNewText('');
+    }
+  };
+
+  const resetStyle = () => {
+    onStyleChange({
+      fontFamily: 'Cairo',
+      fontSize: 16,
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+      textDecoration: 'none',
+      textAlign: 'left',
+      color: '#000000',
+      backgroundColor: 'transparent',
+      lineHeight: 1.4,
+      letterSpacing: 0,
+      textTransform: 'none'
     });
-  };
-
-  const handleFontSizeChange = (value: number[]) => {
-    setFontSize(value[0]);
-    if (selectedText && onUpdateText) {
-      onUpdateText({ fontSize: value[0] });
-    }
-  };
-
-  const toggleFormatting = (format: string) => {
-    switch (format) {
-      case 'bold':
-        setIsBold(!isBold);
-        if (selectedText && onUpdateText) {
-          onUpdateText({ bold: !isBold });
-        }
-        break;
-      case 'italic':
-        setIsItalic(!isItalic);
-        if (selectedText && onUpdateText) {
-          onUpdateText({ italic: !isItalic });
-        }
-        break;
-      case 'underline':
-        setIsUnderline(!isUnderline);
-        if (selectedText && onUpdateText) {
-          onUpdateText({ underline: !isUnderline });
-        }
-        break;
-    }
-  };
-
-  const handleAlignmentChange = (newAlignment: string) => {
-    setAlignment(newAlignment);
-    if (selectedText && onUpdateText) {
-      onUpdateText({ alignment: newAlignment });
-    }
   };
 
   return (
@@ -165,183 +156,356 @@ export const TextPanel: React.FC<TextPanelProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Type className="w-5 h-5" />
-          النصوص
+          أداة النص
         </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Text Presets */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">قوالب النصوص</label>
-          <div className="grid grid-cols-2 gap-2">
-            {textPresets.map((preset) => {
-              const Icon = preset.icon;
-              return (
-                <Button
-                  key={preset.name}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleAddTextPreset(preset)}
-                  className="h-auto p-2 flex-col gap-1"
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="text-xs">{preset.name}</span>
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Font Settings */}
-        <div className="space-y-3">
-          <label className="text-sm font-medium">إعدادات الخط</label>
-          
-          {/* Font Family */}
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">نوع الخط</label>
-            <Select value={fontFamily} onValueChange={setFontFamily}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {fontFamilies.map((font) => (
-                  <SelectItem key={font.value} value={font.value}>
-                    {font.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Font Size */}
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">
-              حجم الخط: {fontSize}px
-            </label>
-            <Slider
-              value={[fontSize]}
-              onValueChange={handleFontSizeChange}
-              max={72}
-              min={8}
-              step={1}
-              className="w-full"
-            />
-          </div>
-
-          {/* Color */}
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">لون النص</label>
-            <div className="flex items-center gap-2">
-              <Input
-                type="color"
-                value={textColor}
-                onChange={(e) => setTextColor(e.target.value)}
-                className="w-12 h-8 p-1 border rounded"
-              />
-              <Input
-                type="text"
-                value={textColor}
-                onChange={(e) => setTextColor(e.target.value)}
-                className="flex-1 text-xs"
-                placeholder="#000000"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Formatting Controls */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">التنسيق</label>
-          <div className="grid grid-cols-3 gap-2">
-            <Button
-              variant={isBold ? "default" : "outline"}
-              size="sm"
-              onClick={() => toggleFormatting('bold')}
-            >
-              <Bold className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={isItalic ? "default" : "outline"}
-              size="sm"
-              onClick={() => toggleFormatting('italic')}
-            >
-              <Italic className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={isUnderline ? "default" : "outline"}
-              size="sm"
-              onClick={() => toggleFormatting('underline')}
-            >
-              <Underline className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Text Alignment */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">محاذاة النص</label>
-          <div className="grid grid-cols-4 gap-2">
-            <Button
-              variant={alignment === 'left' ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleAlignmentChange('left')}
-            >
-              <AlignLeft className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={alignment === 'center' ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleAlignmentChange('center')}
-            >
-              <AlignCenter className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={alignment === 'right' ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleAlignmentChange('right')}
-            >
-              <AlignRight className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={alignment === 'justify' ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleAlignmentChange('justify')}
-            >
-              <AlignJustify className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">إجراءات سريعة</label>
+        
+        {/* Tab Buttons */}
+        <div className="flex gap-1 p-1 bg-muted rounded-lg">
           <Button
-            variant="outline"
+            variant={activeTab === 'add' ? 'default' : 'ghost'}
             size="sm"
-            className="w-full"
-            onClick={() => onAddText({
-              type: 'text',
-              content: 'نص جديد',
-              style: {
-                fontSize,
-                fontFamily,
-                color: textColor,
-                bold: isBold,
-                italic: isItalic,
-                underline: isUnderline,
-                alignment
-              }
-            })}
+            onClick={() => setActiveTab('add')}
+            className="flex-1"
           >
-            <Plus className="w-4 h-4 mr-1" />
-            إضافة نص مخصص
+            إضافة نص
+          </Button>
+          <Button
+            variant={activeTab === 'format' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveTab('format')}
+            className="flex-1"
+          >
+            تنسيق
           </Button>
         </div>
+      </CardHeader>
+      
+      <CardContent className="space-y-4">
+        {activeTab === 'add' && (
+          <>
+            {/* Text Input */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">النص الجديد</label>
+              <Textarea
+                placeholder="اكتب النص هنا..."
+                value={newText}
+                onChange={(e) => setNewText(e.target.value)}
+                className="min-h-[100px]"
+              />
+              <Button onClick={handleAddText} className="w-full">
+                إضافة إلى اللوحة
+              </Button>
+            </div>
 
-        {/* Tips */}
+            <Separator />
+
+            {/* Style Presets */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">الأنماط المعدة مسبقاً</label>
+              <div className="grid grid-cols-1 gap-2">
+                {allPresets.map((preset, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    onClick={() => updateStyle(preset.style)}
+                    className="h-auto p-3 text-left justify-start"
+                  >
+                    <div>
+                      <div className="font-medium text-sm">{preset.name}</div>
+                      <div 
+                        className="text-xs text-muted-foreground"
+                        style={{
+                          fontFamily: preset.style.fontFamily,
+                          fontSize: `${Math.min(preset.style.fontSize || 16, 12)}px`,
+                          fontWeight: preset.style.fontWeight,
+                          fontStyle: preset.style.fontStyle,
+                        }}
+                      >
+                        مثال على النص
+                      </div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {activeTab === 'format' && (
+          <>
+            {/* Font Settings */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">الخط والحجم</label>
+                <Button variant="ghost" size="sm" onClick={resetStyle}>
+                  <RotateCcw className="w-3 h-3 mr-1" />
+                  إعادة تعيين
+                </Button>
+              </div>
+              
+              <Select
+                value={currentStyle.fontFamily || 'Cairo'}
+                onValueChange={(value) => updateStyle({ fontFamily: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {fontFamilies.map((font) => (
+                    <SelectItem key={font.value} value={font.value}>
+                      {font.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="flex items-center gap-2">
+                <Slider
+                  value={[currentStyle.fontSize || 16]}
+                  onValueChange={([value]) => updateStyle({ fontSize: value })}
+                  max={72}
+                  min={8}
+                  step={1}
+                  className="flex-1"
+                />
+                <span className="text-sm w-12 text-center">{currentStyle.fontSize || 16}px</span>
+              </div>
+
+              <div className="grid grid-cols-4 gap-1">
+                {fontSizePresets.map((size) => (
+                  <Button
+                    key={size}
+                    variant={currentStyle.fontSize === size ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => updateStyle({ fontSize: size })}
+                    className="text-xs"
+                  >
+                    {size}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Text Style Toggles */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium">نمط النص</label>
+              
+              <div className="flex flex-wrap gap-1">
+                <Toggle
+                  pressed={currentStyle.fontWeight === 'bold'}
+                  onPressedChange={(pressed) => 
+                    updateStyle({ fontWeight: pressed ? 'bold' : 'normal' })
+                  }
+                >
+                  <Bold className="w-4 h-4" />
+                </Toggle>
+                
+                <Toggle
+                  pressed={currentStyle.fontStyle === 'italic'}
+                  onPressedChange={(pressed) => 
+                    updateStyle({ fontStyle: pressed ? 'italic' : 'normal' })
+                  }
+                >
+                  <Italic className="w-4 h-4" />
+                </Toggle>
+                
+                <Toggle
+                  pressed={currentStyle.textDecoration?.includes('underline')}
+                  onPressedChange={(pressed) => {
+                    const hasStrike = currentStyle.textDecoration?.includes('line-through');
+                    let newDecoration = 'none';
+                    if (pressed && hasStrike) newDecoration = 'underline line-through';
+                    else if (pressed) newDecoration = 'underline';
+                    else if (hasStrike) newDecoration = 'line-through';
+                    updateStyle({ textDecoration: newDecoration as any });
+                  }}
+                >
+                  <Underline className="w-4 h-4" />
+                </Toggle>
+                
+                <Toggle
+                  pressed={currentStyle.textDecoration?.includes('line-through')}
+                  onPressedChange={(pressed) => {
+                    const hasUnderline = currentStyle.textDecoration?.includes('underline');
+                    let newDecoration = 'none';
+                    if (pressed && hasUnderline) newDecoration = 'underline line-through';
+                    else if (pressed) newDecoration = 'line-through';
+                    else if (hasUnderline) newDecoration = 'underline';
+                    updateStyle({ textDecoration: newDecoration as any });
+                  }}
+                >
+                  <Strikethrough className="w-4 h-4" />
+                </Toggle>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Text Alignment */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium">المحاذاة</label>
+              <div className="flex gap-1">
+                <Toggle
+                  pressed={currentStyle.textAlign === 'left'}
+                  onPressedChange={() => updateStyle({ textAlign: 'left' })}
+                >
+                  <AlignLeft className="w-4 h-4" />
+                </Toggle>
+                <Toggle
+                  pressed={currentStyle.textAlign === 'center'}
+                  onPressedChange={() => updateStyle({ textAlign: 'center' })}
+                >
+                  <AlignCenter className="w-4 h-4" />
+                </Toggle>
+                <Toggle
+                  pressed={currentStyle.textAlign === 'right'}
+                  onPressedChange={() => updateStyle({ textAlign: 'right' })}
+                >
+                  <AlignRight className="w-4 h-4" />
+                </Toggle>
+                <Toggle
+                  pressed={currentStyle.textAlign === 'justify'}
+                  onPressedChange={() => updateStyle({ textAlign: 'justify' })}
+                >
+                  <AlignJustify className="w-4 h-4" />
+                </Toggle>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Colors */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium">الألوان</label>
+              
+              <div className="space-y-2">
+                <div className="text-xs text-muted-foreground">لون النص</div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="color"
+                    value={currentStyle.color || '#000000'}
+                    onChange={(e) => updateStyle({ color: e.target.value })}
+                    className="w-12 h-8 p-1"
+                  />
+                  <Input
+                    value={currentStyle.color || '#000000'}
+                    onChange={(e) => updateStyle({ color: e.target.value })}
+                    className="flex-1 text-xs"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-6 gap-1">
+                  {colorPresets.map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => updateStyle({ color })}
+                      className="w-6 h-6 rounded border border-muted"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="text-xs text-muted-foreground">لون الخلفية</div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="color"
+                    value={currentStyle.backgroundColor || '#ffffff'}
+                    onChange={(e) => updateStyle({ backgroundColor: e.target.value })}
+                    className="w-12 h-8 p-1"
+                  />
+                  <Input
+                    value={currentStyle.backgroundColor || 'transparent'}
+                    onChange={(e) => updateStyle({ backgroundColor: e.target.value })}
+                    className="flex-1 text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Advanced Typography */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium">تايبوجرافي متقدم</label>
+              
+              <div className="space-y-2">
+                <div className="text-xs text-muted-foreground">المسافة بين الأسطر</div>
+                <Slider
+                  value={[currentStyle.lineHeight || 1.4]}
+                  onValueChange={([value]) => updateStyle({ lineHeight: value })}
+                  max={3}
+                  min={0.5}
+                  step={0.1}
+                />
+                <div className="text-xs text-center">{currentStyle.lineHeight || 1.4}</div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="text-xs text-muted-foreground">المسافة بين الحروف</div>
+                <Slider
+                  value={[currentStyle.letterSpacing || 0]}
+                  onValueChange={([value]) => updateStyle({ letterSpacing: value })}
+                  max={10}
+                  min={-2}
+                  step={0.1}
+                />
+                <div className="text-xs text-center">{currentStyle.letterSpacing || 0}px</div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="text-xs text-muted-foreground">تحويل النص</div>
+                <Select
+                  value={currentStyle.textTransform || 'none'}
+                  onValueChange={(value: any) => updateStyle({ textTransform: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">عادي</SelectItem>
+                    <SelectItem value="uppercase">أحرف كبيرة</SelectItem>
+                    <SelectItem value="lowercase">أحرف صغيرة</SelectItem>
+                    <SelectItem value="capitalize">أول حرف كبير</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Preview */}
+        <div className="bg-muted/50 rounded-lg p-3 border">
+          <div className="text-xs text-muted-foreground mb-2">معاينة</div>
+          <div
+            style={{
+              fontFamily: currentStyle.fontFamily || 'Cairo',
+              fontSize: `${currentStyle.fontSize || 16}px`,
+              fontWeight: currentStyle.fontWeight || 'normal',
+              fontStyle: currentStyle.fontStyle || 'normal',
+              textDecoration: currentStyle.textDecoration || 'none',
+              textAlign: currentStyle.textAlign || 'left',
+              color: currentStyle.color || '#000000',
+              backgroundColor: currentStyle.backgroundColor || 'transparent',
+              lineHeight: currentStyle.lineHeight || 1.4,
+              letterSpacing: `${currentStyle.letterSpacing || 0}px`,
+              textTransform: currentStyle.textTransform || 'none',
+              padding: '8px',
+              borderRadius: '4px'
+            }}
+          >
+            {selectedText || newText || 'مثال على النص العربي ABC 123'}
+          </div>
+        </div>
+
+        {/* Usage Tips */}
         <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t">
-          <div>💡 انقر مرتين لتحرير النص</div>
-          <div>🎨 استخدم أدوات التنسيق للتخصيص</div>
-          <div>⚡ Ctrl+B/I/U للتنسيق السريع</div>
+          <div>✏️ اكتب النص ثم اختر النمط</div>
+          <div>🎨 استخدم الألوان لتمييز المحتوى</div>
+          <div>📏 اضبط المسافات للوضوح</div>
         </div>
       </CardContent>
     </Card>
