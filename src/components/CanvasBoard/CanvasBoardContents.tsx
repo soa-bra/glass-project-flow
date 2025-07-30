@@ -28,6 +28,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   const collaboration = useCanvasCollaboration({
     projectId,
     userId,
+    userName: 'مستخدم', // Default user name - should come from auth context
     enable: true
   });
   
