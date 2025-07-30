@@ -121,6 +121,44 @@ export const ToolPanel: React.FC<ToolPanelProps> = props => {
           onAlign={props.onAlign} 
           onUpdateElement={props.onUpdateElement} 
           onSnapToGrid={props.onAlignToGrid}
+          // Enhanced integrations
+          onMoveElement={(elementId, direction, distance) => {
+            const element = props.elements.find(el => el.id === elementId);
+            if (element) {
+              const newPosition = { ...element.position };
+              switch (direction) {
+                case 'up': newPosition.y -= distance; break;
+                case 'down': newPosition.y += distance; break;
+                case 'left': newPosition.x -= distance; break;
+                case 'right': newPosition.x += distance; break;
+              }
+              props.onUpdateElement(elementId, { position: newPosition });
+            }
+          }}
+          onRotateElement={(elementId, angle) => {
+            const element = props.elements.find(el => el.id === elementId);
+            if (element) {
+              props.onUpdateElement(elementId, { 
+                rotation: (element.rotation || 0) + angle 
+              });
+            }
+          }}
+          onArrange={(arrangement) => {
+            // Handle layer arrangement
+            props.selectedElements.forEach(element => {
+              const currentZ = element.style?.zIndex || 0;
+              let newZ = currentZ;
+              switch (arrangement) {
+                case 'front': newZ = 1000; break;
+                case 'back': newZ = -1000; break;
+                case 'forward': newZ = currentZ + 1; break;
+                case 'backward': newZ = Math.max(-1000, currentZ - 1); break;
+              }
+              props.onUpdateElement(element.id, {
+                style: { ...element.style, zIndex: newZ }
+              });
+            });
+          }}
         />;
       case 'smart-pen':
         return <SmartPenToolPanel 
@@ -158,13 +196,85 @@ export const ToolPanel: React.FC<ToolPanelProps> = props => {
         />;
       case 'text':
         return <EnhancedTextPanel 
-          selectedText=""
+          selectedText={props.selectedElements.find(el => el.type === 'text')?.content || ""}
+          textStyle={props.selectedElements.find(el => el.type === 'text')?.style}
+          onTextUpdate={(text) => {
+            // Update selected text elements
+            props.selectedElements
+              .filter(el => el.type === 'text')
+              .forEach(element => {
+                props.onUpdateElement(element.id, { content: text });
+              });
+          }}
+          onStyleUpdate={(style) => {
+            // Update selected text elements style
+            props.selectedElements
+              .filter(el => el.type === 'text')
+              .forEach(element => {
+                props.onUpdateElement(element.id, {
+                  style: { ...element.style, ...style }
+                });
+              });
+          }}
+          onAddText={(text, style) => {
+            // Add text element to canvas
+            const newElement = {
+              id: `text-${Date.now()}`,
+              type: 'text' as const,
+              position: { x: 100, y: 100 },
+              size: { width: 200, height: 100 },
+              content: text,
+              style: style
+            };
+            console.log('Adding text element:', newElement);
+          }}
         />;
       case 'shape':
-        return <EnhancedShapesPanel />;
+        return <EnhancedShapesPanel 
+          onAddShape={(shapeType, style) => {
+            // Add shape element to canvas
+            const newElement = {
+              id: `shape-${Date.now()}`,
+              type: 'shape' as const,
+              position: { x: 150, y: 150 },
+              size: { width: 100, height: 100 },
+              style: {
+                fillColor: style.fillColor,
+                borderColor: style.borderColor,
+                borderWidth: style.borderWidth,
+                ...style
+              },
+              data: { shapeType }
+            };
+            console.log('Adding shape element:', newElement);
+          }}
+        />;
       case 'smart-element':
         return <EnhancedSmartElementsPanel 
           selectedElementId={props.selectedElementId}
+          onAddSmartElement={(elementId, config) => {
+            // Add smart element to canvas
+            const newElement = {
+              id: `smart-${elementId}-${Date.now()}`,
+              type: 'smart-element' as const,
+              position: { x: 200, y: 200 },
+              size: config.size,
+              style: {
+                ...config.style,
+                fillColor: `hsl(var(--primary))`,
+                borderColor: `hsl(var(--border))`,
+                borderRadius: `${config.style.borderRadius}px`
+              },
+              content: config.content.title,
+              data: {
+                elementType: elementId,
+                config: config,
+                interactive: config.behavior.interactive,
+                animated: config.behavior.animated
+              }
+            };
+            console.log('Adding smart element:', newElement);
+          }}
         />;
       default:
         return <div className="flex items-center justify-center h-32 text-gray-500 text-sm font-arabic">
