@@ -103,6 +103,25 @@ export const Canvas: React.FC<CanvasProps> = ({
         onCanvasMouseUp={eventHandlers.handleCanvasMouseUp}
         onCanvasClick={eventHandlers.handleCanvasClick}
       >
+        {/* Smart pen path overlay */}
+        {eventHandlers.enhancedSmartPenTool && (
+          <div className="absolute inset-0 pointer-events-none">
+            <svg className="w-full h-full" style={{ zIndex: 998 }}>
+              {eventHandlers.enhancedSmartPenTool.currentPath.length > 0 && (
+                <path
+                  d={eventHandlers.enhancedSmartPenTool.currentPath.reduce((acc, point, index) => {
+                    return index === 0 ? `M ${point.x} ${point.y}` : acc + ` L ${point.x} ${point.y}`;
+                  }, '')}
+                  stroke="#000000"
+                  strokeWidth={2}
+                  fill="none"
+                  strokeLinecap="round"
+                />
+              )}
+            </svg>
+          </div>
+        )}
+
         {elements.map((element) => {
           const isSelected = selection.isSelected(element.id);
           return (

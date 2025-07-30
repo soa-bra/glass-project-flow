@@ -122,6 +122,41 @@ export const SimplifiedSelectionBoundingBox: React.FC<SimplifiedSelectionBoundin
         style={{ top: -6, left: -6 }}
         onMouseDown={(e) => handleResizeStart('nw', e)}
       />
+      
+      {/* Side resize handles */}
+      <div 
+        className="absolute w-3 h-2 bg-blue-500 border border-white cursor-e-resize pointer-events-auto hover:bg-blue-600"
+        style={{ top: '50%', right: -6, transform: 'translateY(-50%)' }}
+        onMouseDown={(e) => handleResizeStart('e', e)}
+      />
+      <div 
+        className="absolute w-3 h-2 bg-blue-500 border border-white cursor-w-resize pointer-events-auto hover:bg-blue-600"
+        style={{ top: '50%', left: -6, transform: 'translateY(-50%)' }}
+        onMouseDown={(e) => handleResizeStart('w', e)}
+      />
+      <div 
+        className="absolute w-2 h-3 bg-blue-500 border border-white cursor-n-resize pointer-events-auto hover:bg-blue-600"
+        style={{ top: -6, left: '50%', transform: 'translateX(-50%)' }}
+        onMouseDown={(e) => handleResizeStart('n', e)}
+      />
+      <div 
+        className="absolute w-2 h-3 bg-blue-500 border border-white cursor-s-resize pointer-events-auto hover:bg-blue-600"
+        style={{ bottom: -6, left: '50%', transform: 'translateX(-50%)' }}
+        onMouseDown={(e) => handleResizeStart('s', e)}
+      />
+      
+      {/* Rotation handle */}
+      <div 
+        className="absolute w-3 h-3 bg-green-500 border border-white cursor-crosshair pointer-events-auto hover:bg-green-600 rounded-full"
+        style={{ top: -20, left: '50%', transform: 'translateX(-50%)' }}
+        onMouseDown={(e) => handleResizeStart('rotate', e)}
+      />
+      
+      {/* Rotation line */}
+      <div 
+        className="absolute w-0.5 h-3 bg-green-500 pointer-events-none"
+        style={{ top: -17, left: '50%', transform: 'translateX(-50%)' }}
+      />
     </div>
   );
 };

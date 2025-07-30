@@ -89,11 +89,36 @@ export const useRefactoredCanvasEventHandlers = (
       case 'smart-element':
         elementCreationTool.createSmartElement(coords.x, coords.y, selectedSmartElement || '', snapEnabled);
         break;
+      case 'comment':
+        // Handle comment creation with prompt
+        setTimeout(() => {
+          const content = prompt('أدخل التعليق:');
+          if (content && content.trim()) {
+            addElement({
+              id: `comment-${Date.now()}`,
+              type: 'comment',
+              position: coords,
+              size: { width: 200, height: 60 },
+              content: content,
+              style: {
+                backgroundColor: '#fff3cd',
+                borderColor: '#ffc107',
+                borderWidth: 1,
+                padding: '8px',
+                borderRadius: '8px'
+              }
+            });
+          }
+        }, 100);
+        break;
+      case 'zoom':
+        zoomTool.handleZoomClick(e, true);
+        break;
       default:
         clearSelection();
         break;
     }
-  }, [selectedTool, elementCreationTool, clearSelection, getCanvasCoordinates, snapEnabled, selectedSmartElement]);
+  }, [selectedTool, elementCreationTool, clearSelection, getCanvasCoordinates, snapEnabled, selectedSmartElement, addElement, zoomTool]);
 
   const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button !== 0) return; // Only left click
@@ -108,7 +133,11 @@ export const useRefactoredCanvasEventHandlers = (
         handTool.startPan(e);
         break;
       case 'zoom':
-        zoomTool.handleZoomClick(e, !e.shiftKey);
+        if (e.shiftKey) {
+          zoomTool.handleZoomClick(e, false); // Zoom out
+        } else {
+          zoomTool.handleZoomClick(e, true); // Zoom in
+        }
         break;
       case 'shape':
         elementCreationTool.createShapeElement(coords.x, coords.y, snapEnabled);
@@ -195,6 +224,64 @@ export const useRefactoredCanvasEventHandlers = (
     // Placeholder for resize functionality
   }, []);
 
+  // File upload handler
+  const handleFileUpload = useCallback((files: FileList, position: { x: number; y: number }) => {
+    Array.from(files).forEach((file, index) => {
+      const offsetPosition = {
+        x: position.x + index * 20,
+        y: position.y + index * 20
+      };
+      
+      if (file.type.startsWith('image/')) {
+        const img = new Image();
+        img.onload = () => {
+          addElement({
+            id: `image-${Date.now()}-${index}`,
+            type: 'image',
+            position: offsetPosition,
+            size: { 
+              width: Math.min(img.naturalWidth, 300), 
+              height: Math.min(img.naturalHeight, 200) 
+            },
+            data: { src: URL.createObjectURL(file) },
+            style: { borderRadius: '4px' }
+          });
+        };
+        img.src = URL.createObjectURL(file);
+      } else {
+        addElement({
+          id: `upload-${Date.now()}-${index}`,
+          type: 'upload',
+          position: offsetPosition,
+          size: { width: 150, height: 100 },
+          content: file.name,
+          data: { 
+            file: URL.createObjectURL(file), 
+            fileName: file.name,
+            fileType: file.type 
+          },
+          style: {
+            backgroundColor: '#f8f9fa',
+            borderColor: '#dee2e6',
+            borderWidth: 2,
+            borderRadius: '8px',
+            padding: '16px'
+          }
+        });
+      }
+    });
+  }, [addElement]);
+
+  // Wheel zoom handler
+  const handleWheelZoom = useCallback((e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      const newZoom = Math.min(Math.max(zoom + delta * 20, 10), 500);
+      onZoomChange(newZoom);
+    }
+  }, [zoom, onZoomChange]);
+
   return {
     // Canvas handlers
     handleCanvasClick,
@@ -210,6 +297,12 @@ export const useRefactoredCanvasEventHandlers = (
     // Resize handlers
     handleResizeMouseDown,
     handleResizeMouseMove,
+    
+    // File upload handler
+    handleFileUpload,
+    
+    // Wheel zoom handler
+    handleWheelZoom,
     
     // Tool controllers for additional functionality
     toolCursor,

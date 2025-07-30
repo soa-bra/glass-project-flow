@@ -248,6 +248,20 @@ const InfiniteCanvas = forwardRef<InfiniteCanvasRef, InfiniteCanvasProps>(({
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onClick={handleClick}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          const files = e.dataTransfer.files;
+          if (files.length > 0) {
+            const rect = canvasRef.current?.getBoundingClientRect();
+            if (rect) {
+              const x = (e.clientX - rect.left) / scale - canvasPosition.x;
+              const y = (e.clientY - rect.top) / scale - canvasPosition.y;
+              // This would need to be connected to file upload handler
+              console.log('Files dropped:', files, 'at position:', { x, y });
+            }
+          }
+        }}
         style={{ 
           cursor: isDragging.current ? 'grabbing' : 'grab'
         }}
