@@ -39,7 +39,7 @@ export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
   ] : [];
   
   return (
-    <div className="font-arabic px-[15px] py-0">
+    <div className="font-arabic px-[15px] py-0 h-full flex flex-col">
       {/* قسم الإحصائيات الرئيسية */}
       <div className="mb-6 py-0 px-0 my-0">
         <KPIStatsSection stats={statsData} />
@@ -50,8 +50,8 @@ export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
         <TimelineCard />
       </div>
 
-      {/* الشبكة التفاعلية 3x3 */}
-      <div className="py-0">
+      {/* الشبكة التفاعلية - محاذاة للأسفل */}
+      <div className="py-0 flex-1 flex items-end">
         <OverviewGrid />
       </div>
     </div>

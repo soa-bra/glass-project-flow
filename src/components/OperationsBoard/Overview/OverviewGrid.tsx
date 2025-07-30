@@ -41,7 +41,7 @@ export const OverviewGrid: React.FC = () => {
   }];
 
   return (
-    <div className="grid grid-cols-3 gap-4 py-0 my-0">
+    <div className="grid grid-cols-3 gap-4 py-0 my-0 h-fit items-end">
       {/* الصف الأول */}
       <FinancialOverviewCard />
       
@@ -118,7 +118,7 @@ export const OverviewGrid: React.FC = () => {
         chartType="simple"
       />
 
-      {/* الصف الخامس الجديد */}
+      {/* الصف الخامس */}
       {fifthRowStats.map((stat, index) => (
         <BaseCard key={index} variant="operations" size="sm" className="text-center">
           <div className="flex items-center justify-between mb-3">
