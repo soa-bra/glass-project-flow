@@ -124,9 +124,28 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                   </div>
 
                   {/* حالة المشروع */}
-                  <div className="px-3 py-1.5 bg-transparent border-2 border-black rounded-full font-arabic text-sm flex items-center gap-2 text-gray-700">
-                    <div className="w-2 h-2 rounded-full bg-current"></div>
-                    قيد التنفيذ
+                  <div className="px-3 py-1.5 bg-transparent border-2 rounded-full font-arabic text-sm flex items-center gap-2"
+                    style={{
+                      borderColor: project.status === 'success' ? 'var(--status-colors-on-plan)' :
+                                   project.status === 'warning' ? 'var(--status-colors-delayed)' :
+                                   project.status === 'error' ? 'var(--status-colors-stopped)' :
+                                   'var(--status-colors-in-preparation)',
+                      color: project.status === 'success' ? 'var(--status-colors-on-plan)' :
+                             project.status === 'warning' ? 'var(--status-colors-delayed)' :
+                             project.status === 'error' ? 'var(--status-colors-stopped)' :
+                             'var(--status-colors-in-preparation)'
+                    }}>
+                    <div className="w-2 h-2 rounded-full"
+                      style={{
+                        backgroundColor: project.status === 'success' ? 'var(--status-colors-on-plan)' :
+                                         project.status === 'warning' ? 'var(--status-colors-delayed)' :
+                                         project.status === 'error' ? 'var(--status-colors-stopped)' :
+                                         'var(--status-colors-in-preparation)'
+                      }}></div>
+                    {project.status === 'success' ? 'مكتمل' :
+                     project.status === 'warning' ? 'متأخر' :
+                     project.status === 'error' ? 'متوقف' :
+                     'قيد التحضير'}
                   </div>
                 </div>
 
