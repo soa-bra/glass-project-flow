@@ -64,9 +64,11 @@ export const Canvas: React.FC<CanvasProps> = ({
       preserveObjectStacking: true,
     });
 
-    // Configure drawing brush
-    canvas.freeDrawingBrush.color = 'hsl(var(--primary))';
-    canvas.freeDrawingBrush.width = 2;
+    // Configure drawing brush - initialize freeDrawingBrush first
+    if (canvas.freeDrawingBrush) {
+      canvas.freeDrawingBrush.color = 'hsl(var(--primary))';
+      canvas.freeDrawingBrush.width = 2;
+    }
 
     // Enable grid if visible
     if (gridVisible) {
