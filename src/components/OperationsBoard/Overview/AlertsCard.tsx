@@ -47,23 +47,32 @@ const getAlertColor = (type: Alert['type']) => {
 export const AlertsCard: React.FC = () => {
   return <BaseCard variant="glass" size="md" className="h-[180px]" style={{
     backgroundColor: '#f3ffff'
-  }} header={<h3 className="text-lg font-semibold text-black font-arabic">التنبيهات</h3>}>
-      <div className="space-y-2 overflow-y-auto max-h-[120px]">
-        {alerts.slice(0, 3).map(alert => <div key={alert.id} style={{
-        backgroundColor: getAlertColor(alert.type)
-      }} className="flex items-center justify-between p-1 rounded-none bg-transparent py-0 px-0 my-[7px]">
+  }}>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-arabic font-semibold text-gray-800">التنبيهات</h3>
+        <span className="text-sm text-gray-500 font-arabic">3 جديدة</span>
+      </div>
+      
+      <div className="space-y-3 overflow-y-auto max-h-[120px]">
+        {alerts.slice(0, 3).map(alert => (
+          <div key={alert.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
             <div className="flex-1">
-              <p className="text-sm font-medium text-black font-arabic truncate">
+              <p className="text-sm font-medium text-gray-800 font-arabic truncate">
                 {alert.message}
               </p>
-              <p className="text-xs font-normal text-gray-400 font-arabic">
+              <p className="text-xs text-gray-500 font-arabic mt-1">
                 {alert.time}
               </p>
             </div>
-            <div className="w-2 h-2 rounded-full bg-black ml-2 flex-shrink-0"></div>
-          </div>)}
+            <div className={`w-2 h-2 rounded-full ml-3 flex-shrink-0 ${
+              alert.type === 'critical' ? 'bg-red-500' : 
+              alert.type === 'warning' ? 'bg-yellow-500' : 
+              'bg-blue-500'
+            }`}></div>
+          </div>
+        ))}
         <div className="text-center pt-2">
-          <button className="text-xs font-normal text-black font-arabic hover:underline">
+          <button className="text-xs text-gray-500 font-arabic hover:text-gray-700 transition-colors">
             عرض جميع التنبيهات ({alerts.length})
           </button>
         </div>
