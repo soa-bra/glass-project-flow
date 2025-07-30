@@ -1,14 +1,13 @@
 import React from 'react';
-import { BudgetVsActualChart } from './Finance/BudgetVsActualChart';
-import { CashFlowForecast } from './Finance/CashFlowForecast';
-import { FinancialKPICards } from './Finance/FinancialKPICards';
-import { ExportButton } from './Finance/ExportButton';
+import { FinanceLayout } from './Finance/FinanceLayout';
+
 interface MonthlyBudget {
   month: string;
   budget: number;
   actual: number;
   variance: number;
 }
+
 interface CashFlowData {
   date: string;
   inflow: number;
@@ -16,6 +15,7 @@ interface CashFlowData {
   netFlow: number;
   cumulativeBalance: number;
 }
+
 interface FinancialKPI {
   id: string;
   title: string;
@@ -24,6 +24,7 @@ interface FinancialKPI {
   trend: 'up' | 'down' | 'stable';
   format: 'currency' | 'percentage' | 'number';
 }
+
 export interface FinanceData {
   monthlyBudget: MonthlyBudget[];
   cashFlow: CashFlowData[];
@@ -32,45 +33,36 @@ export interface FinanceData {
   totalSpent: number;
   forecastAccuracy: number;
 }
+
 interface FinanceTabProps {
   data?: FinanceData;
   loading: boolean;
 }
+
+/**
+ * تبويب الوضع المالي - يعرض البيانات المالية والمؤشرات الرئيسية
+ */
 export const FinanceTab: React.FC<FinanceTabProps> = ({
   data,
   loading
 }) => {
-  if (loading || !data) {
-    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
+
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
+        جارٍ التحميل...
+      </div>
+    );
   }
-  return <div style={{
-    backgroundColor: '#f3ffff'
-  }} className="overflow-auto bg-transparent">
-      {/* العنوان و KPI في نفس السطر */}
-      <div style={{
-      backgroundColor: '#f3ffff'
-    }} className="flex justify-between items-start pt-6 bg-transparent mx-[50px]">
-        <div className="text-right">
-          <h2 className="text-lg font-semibold text-black font-arabic mb-1">الوضع المالي</h2>
-          <p className="text-xs font-normal text-gray-400 font-arabic">مراقبة الأداء المالي الكلي والتنبؤات النقدية</p>
-        </div>
-        <div className="flex-auto max-w-7xl mx-0 px-0">
-          <FinancialKPICards kpis={data.kpis} />
-        </div>
+
+  // التأكد من وجود البيانات
+  if (!data) {
+    return (
+      <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
+        لا توجد بيانات متاحة
       </div>
-      
-      {/* الرسوم البيانية الأساسية */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 px-6">
-        <BudgetVsActualChart monthlyData={data.monthlyBudget} />
-        <CashFlowForecast cashFlowData={data.cashFlow} />
-      </div>
-      
-      {/* أدوات التصدير والتحليل */}
-      <div className="flex justify-between items-center pt-4 px-6">
-        <div className="text-sm font-normal text-black font-arabic">
-          دقة التنبؤات: {data.forecastAccuracy}%
-        </div>
-        <ExportButton />
-      </div>
-    </div>;
+    );
+  }
+
+  return <FinanceLayout data={data} />;
 };
