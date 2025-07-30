@@ -195,6 +195,46 @@
   }
 }
 
+/* Canvas-specific animations */
+@keyframes selection-pulse {
+  0%, 100% {
+    opacity: 0.7;
+    border-color: hsl(var(--primary));
+  }
+  50% {
+    opacity: 1;
+    border-color: hsl(var(--primary) / 0.8);
+  }
+}
+
+@keyframes drawing-fade-in {
+  from {
+    opacity: 0;
+    stroke-width: 0;
+  }
+  to {
+    opacity: 1;
+    stroke-width: inherit;
+  }
+}
+
+@keyframes tool-highlight {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 8px hsl(var(--primary) / 0);
+  }
+}
+
+.canvas-tool-active {
+  animation: tool-highlight 0.6s ease-out;
+}
+
+.drawing-path {
+  animation: drawing-fade-in 0.2s ease-out;
+}
+
 @layer base {
   * {
     @apply border-border;

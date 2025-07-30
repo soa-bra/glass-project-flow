@@ -6,7 +6,7 @@ import {
   useElementDragTool,
   useHandTool,
   useZoomTool,
-  useSmartPenTool,
+  useEnhancedSmartPen,
   useFileUploadTool,
   useToolCursor
 } from './tools';
@@ -33,18 +33,29 @@ export const useRefactoredCanvasEventHandlers = (
   const handTool = useHandTool(onPositionChange, canvasPosition);
   const zoomTool = useZoomTool(zoom, onZoomChange, onPositionChange);
   
-  const smartPenTool = useSmartPenTool(zoom, canvasPosition, (path) => {
-    if (path.length > 0) {
-      addElement({
-        id: `path-${Date.now()}`,
-        type: 'line',
-        position: { x: path[0].x, y: path[0].y },
-        size: { width: 100, height: 100 },
-        data: { path },
-        style: { stroke: '#000000', strokeWidth: 2, fill: 'none' }
-      });
+  const enhancedSmartPenTool = useEnhancedSmartPen(
+    zoom,
+    canvasPosition,
+    2, // lineWidth
+    'solid', // lineStyle
+    'pen', // penMode
+    (path, style) => {
+      if (path.length > 0) {
+        const bounds = enhancedSmartPenTool?.getPathBounds(path);
+        addElement({
+          id: `path-${Date.now()}`,
+          type: 'line',
+          position: { x: bounds?.minX || path[0].x, y: bounds?.minY || path[0].y },
+          size: { 
+            width: bounds ? bounds.maxX - bounds.minX : 100, 
+            height: bounds ? bounds.maxY - bounds.minY : 100 
+          },
+          data: { path, style },
+          style: { stroke: style.stroke, strokeWidth: style.strokeWidth, fill: 'none' }
+        });
+      }
     }
-  });
+  );
   
   const fileUploadTool = useFileUploadTool(addElement);
   
@@ -106,10 +117,10 @@ export const useRefactoredCanvasEventHandlers = (
         elementCreationTool.createStickyElement(coords.x, coords.y, snapEnabled);
         break;
       case 'smart-pen':
-        smartPenTool.startDrawing(e);
+        enhancedSmartPenTool.startDrawing(e);
         break;
     }
-  }, [selectedTool, selectionTool, handTool, zoomTool, elementCreationTool, smartPenTool, zoom, canvasPosition, snapEnabled, getCanvasCoordinates]);
+  }, [selectedTool, selectionTool, handTool, zoomTool, elementCreationTool, enhancedSmartPenTool, zoom, canvasPosition, snapEnabled, getCanvasCoordinates]);
 
   const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
     // Update cursor
@@ -128,12 +139,12 @@ export const useRefactoredCanvasEventHandlers = (
         }
         break;
       case 'smart-pen':
-        if (smartPenTool.isDrawing) {
-          smartPenTool.continueDrawing(e);
+        if (enhancedSmartPenTool.isDrawing) {
+          enhancedSmartPenTool.continueDrawing(e);
         }
         break;
     }
-  }, [selectedTool, selectionTool, handTool, smartPenTool, toolCursor, zoom, canvasPosition, snapEnabled]);
+  }, [selectedTool, selectionTool, handTool, enhancedSmartPenTool, toolCursor, zoom, canvasPosition, snapEnabled]);
 
   const handleCanvasMouseUp = useCallback((e: React.MouseEvent) => {
     switch (selectedTool) {
@@ -144,10 +155,10 @@ export const useRefactoredCanvasEventHandlers = (
         handTool.endPan();
         break;
       case 'smart-pen':
-        smartPenTool.endDrawing();
+        enhancedSmartPenTool.endDrawing();
         break;
     }
-  }, [selectedTool, selectionTool, handTool, smartPenTool, elements, selectMultiple]);
+  }, [selectedTool, selectionTool, handTool, enhancedSmartPenTool, elements, selectMultiple]);
 
   // Element interaction handlers
   const handleElementMouseDown = useCallback((e: React.MouseEvent, elementId: string) => {
@@ -204,7 +215,7 @@ export const useRefactoredCanvasEventHandlers = (
     toolCursor,
     handTool,
     zoomTool,
-    smartPenTool,
+    enhancedSmartPenTool,
     fileUploadTool,
     selectionTool,
     elementCreationTool,

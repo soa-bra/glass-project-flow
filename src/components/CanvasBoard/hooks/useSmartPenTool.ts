@@ -61,16 +61,22 @@ export const useSmartPenTool = (
   }, [isDrawing, getCanvasPoint]);
 
   const endDrawing = useCallback(() => {
-    if (!isDrawing || currentPath.length < 2) {
+    if (!isDrawing) {
       setIsDrawing(false);
       setCurrentPath([]);
       return;
     }
 
-    setIsDrawing(false);
-    onPathComplete([...currentPath]);
-    setCurrentPath([]);
-    lastPointRef.current = null;
+    // Allow single point for dots/marks
+    if (currentPath.length >= 1) {
+      setIsDrawing(false);
+      onPathComplete([...currentPath]);
+      setCurrentPath([]);
+      lastPointRef.current = null;
+    } else {
+      setIsDrawing(false);
+      setCurrentPath([]);
+    }
   }, [isDrawing, currentPath, onPathComplete]);
 
   const clearPath = useCallback(() => {

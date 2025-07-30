@@ -28,4 +28,6 @@ export { useToolCursor } from './useToolCursor';
 export { useHandTool } from './useHandTool';
 export { useZoomTool } from './useZoomTool';
 export { useSmartPenTool } from './useSmartPenTool';
+export { useEnhancedSmartPen } from './useEnhancedSmartPen';
 export { useFileUploadTool } from './useFileUploadTool';
+export { useWebWorkerManager } from './useWebWorkerManager';

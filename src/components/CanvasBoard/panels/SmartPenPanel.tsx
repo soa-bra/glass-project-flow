@@ -54,7 +54,9 @@ const SmartPenPanel: React.FC<SmartPenPanelProps> = ({
                   variant={selectedPenMode === mode.id ? 'default' : 'outline'}
                   onClick={() => onPenModeSelect(mode.id)}
                   size="sm"
-                  className="h-16 flex-col"
+                  className={`h-16 flex-col transition-all ${
+                    selectedPenMode === mode.id ? 'canvas-tool-active' : ''
+                  }`}
                 >
                   <IconComponent size={16} />
                   <span className="text-xs mt-1">{mode.name}</span>
