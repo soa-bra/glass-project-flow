@@ -5,7 +5,7 @@ import ProjectWorkspace from './ProjectWorkspace';
 import DepartmentsWorkspace from './DepartmentsWorkspace';
 import ArchiveWorkspace from './ArchiveWorkspace';
 import SettingsWorkspace from './SettingsWorkspace';
-import PlanningWorkspace from './PlanningWorkspace';
+
 
 const MainContent = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -15,31 +15,26 @@ const MainContent = () => {
   // Handle section changes and sidebar state
   const handleSectionChange = (section: string) => {
     if (section === 'planning' && activeSection !== 'planning') {
-      // Entering planning section - save current state and force collapse
+      // Redirect to canvas page instead of using old planning workspace
+      window.location.href = '/canvas';
+      return;
+    }
+    if (section !== 'planning' && activeSection === 'planning') {
       setPreviousSidebarState(isSidebarCollapsed);
-    } else if (activeSection === 'planning' && section !== 'planning') {
-      // Leaving planning section - restore previous state
-      setIsSidebarCollapsed(previousSidebarState);
     }
     setActiveSection(section);
   };
 
-  // Force collapsed state for planning section
-  const forceCollapsed = activeSection === 'planning';
-  const effectiveCollapsed = forceCollapsed || isSidebarCollapsed;
-
   const renderWorkspace = () => {
     switch (activeSection) {
       case 'departments':
-        return <DepartmentsWorkspace isSidebarCollapsed={effectiveCollapsed} />;
-      case 'planning':
-        return <PlanningWorkspace isSidebarCollapsed={effectiveCollapsed} />;
+        return <DepartmentsWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
       case 'archive':
-        return <ArchiveWorkspace isSidebarCollapsed={effectiveCollapsed} />;
+        return <ArchiveWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
       case 'settings':
-        return <SettingsWorkspace isSidebarCollapsed={effectiveCollapsed} />;
+        return <SettingsWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
       default:
-        return <ProjectWorkspace isSidebarCollapsed={effectiveCollapsed} />;
+        return <ProjectWorkspace isSidebarCollapsed={isSidebarCollapsed} />;
     }
   };
 
@@ -53,7 +48,6 @@ const MainContent = () => {
           onToggle={setIsSidebarCollapsed} 
           activeSection={activeSection}
           onSectionChange={handleSectionChange}
-          forceCollapsed={forceCollapsed}
         />
       </div>
 
