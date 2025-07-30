@@ -9,6 +9,7 @@ import { TaskManagementTab } from './TaskManagementTab';
 import { ReportsTab } from './ReportsTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
+
 interface ProjectManagementBoardProps {
   project: Project;
   isVisible: boolean;
@@ -16,6 +17,7 @@ interface ProjectManagementBoardProps {
   isSidebarCollapsed: boolean;
   onProjectUpdated?: (project: ProjectData) => void;
 }
+
 export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   project,
   isVisible,
@@ -27,22 +29,27 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+
   if (!isVisible) return null;
+
   const handleDeleteProject = () => {
     // تنفيذ عملية حذف المشروع
     setShowDeleteDialog(false);
     onProjectUpdated?.(editingProjectData);
     onClose();
   };
+
   const handleArchiveProject = () => {
     // تنفيذ عملية أرشفة المشروع
     setShowArchiveDialog(false);
     onProjectUpdated?.(editingProjectData);
     onClose();
   };
+
   const handleEditProject = () => {
     setShowEditModal(true);
   };
+
   const handleProjectUpdated = (updatedProject: ProjectData) => {
     onProjectUpdated?.(updatedProject);
     setShowEditModal(false);
@@ -58,33 +65,36 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     team: project.team?.map(t => t.name) || [],
     status: project.status,
     budget: Number(project.value) || 0,
-    tasksCount: project.tasksCount || 0
+    tasksCount: project.tasksCount || 0,
   };
-  const tabs = [{
-    id: 'overview',
-    label: 'نظرة عامة'
-  }, {
-    id: 'tasks',
-    label: 'إدارة المهام'
-  }, {
-    id: 'finance',
-    label: 'الإدارة المالية'
-  }, {
-    id: 'team',
-    label: 'إدارة الفريق'
-  }, {
-    id: 'client',
-    label: 'العميل'
-  }, {
-    id: 'files',
-    label: 'إدارة المرفقات'
-  }, {
-    id: 'templates',
-    label: 'النماذج والقوالب'
-  }, {
-    id: 'reports',
-    label: 'التقارير'
-  }];
+
+  const tabs = [
+    {
+      id: 'overview',
+      label: 'نظرة عامة'
+    }, {
+      id: 'tasks',
+      label: 'إدارة المهام'
+    }, {
+      id: 'finance',
+      label: 'الإدارة المالية'
+    }, {
+      id: 'team',
+      label: 'إدارة الفريق'
+    }, {
+      id: 'client',
+      label: 'العميل'
+    }, {
+      id: 'files',
+      label: 'إدارة المرفقات'
+    }, {
+      id: 'templates',
+      label: 'النماذج والقوالب'
+    }, {
+      id: 'reports',
+      label: 'التقارير'
+    }
+  ];
 
   // بيانات وهمية للإحصائيات
   const mockStats = {
@@ -109,14 +119,23 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                   </h2>
 
                   {/* مدير المشروع */}
-                  <div className="px-3 py-1 bg-transparent border-1 border-black rounded-full font-arabic text-sm text-black">
+                  <div className="px-3 py-1.5 bg-transparent border-2 border-black rounded-full font-arabic text-sm text-gray-700">
                     {project.owner}
                   </div>
 
                   {/* حالة المشروع */}
-                  <div className="px-3 py-1 bg-transparent border-1 border-black rounded-full font-arabic text-sm flex items-center gap-2 text-black">
-                    <div className="w-2 h-2 rounded-full bg-current"></div>
-                    قيد التنفيذ
+                  <div className="px-3 py-1.5 bg-transparent border-2 border-black rounded-full font-arabic text-sm flex items-center gap-2 text-black">
+                    <div className="w-2 h-2 rounded-full"
+                      style={{
+                        backgroundColor: project.status === 'success' ? 'var(--status-colors-on-plan)' :
+                                         project.status === 'warning' ? 'var(--status-colors-delayed)' :
+                                         project.status === 'error' ? 'var(--status-colors-stopped)' :
+                                         'var(--status-colors-in-preparation)'
+                      }}></div>
+                    {project.status === 'success' ? 'مكتمل' :
+                     project.status === 'warning' ? 'متأخر' :
+                     project.status === 'error' ? 'متوقف' :
+                     'قيد التحضير'}
                   </div>
                 </div>
 
@@ -226,21 +245,32 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         return null;
     }
   };
-  return <>
+
+  return (
+    <>
       <div className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
-      top: "var(--sidebar-top-offset)",
-      height: "calc(100vh - var(--sidebar-top-offset))",
-      borderRadius: "24px",
-      background: "#e4f3f7",
-      border: "1px solid rgba(255,255,255,0.2)",
-      transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
-      padding: "24px",
-      display: "flex",
-      flexDirection: "column",
-      overflow: "hidden"
-    }}>
+        top: "var(--sidebar-top-offset)",
+        height: "calc(100vh - var(--sidebar-top-offset))",
+        borderRadius: "24px",
+        background: "#e4f3f7",
+        border: "1px solid rgba(255,255,255,0.2)",
+        transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
+        padding: "24px",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden"
+      }}>
         {/* الرأس */}
-        <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+        <ProjectManagementHeader 
+          project={project} 
+          onClose={onClose} 
+          onDelete={() => setShowDeleteDialog(true)} 
+          onArchive={() => setShowArchiveDialog(true)} 
+          onEdit={handleEditProject} 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab} 
+          tabs={tabs} 
+        />
 
         {/* محتوى التبويبة النشطة */}
         {renderTabContent()}
@@ -286,7 +316,14 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       </div>
 
       {/* نافذة تعديل المشروع */}
-      <AddProjectModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onProjectAdded={() => {}} // لن تستخدم في حالة التعديل
-    onProjectUpdated={handleProjectUpdated} editingProject={editingProjectData} isEditMode={true} />
-    </>;
+      <AddProjectModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onProjectAdded={() => {}} // لن تستخدم في حالة التعديل
+        onProjectUpdated={handleProjectUpdated}
+        editingProject={editingProjectData}
+        isEditMode={true}
+      />
+    </>
+  );
 };
