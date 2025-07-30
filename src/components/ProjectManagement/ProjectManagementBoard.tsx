@@ -124,17 +124,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                   </div>
 
                   {/* حالة المشروع */}
-                  <div className="px-3 py-1.5 bg-transparent border-2 rounded-full font-arabic text-sm flex items-center gap-2"
-                    style={{
-                      borderColor: project.status === 'success' ? 'var(--status-colors-on-plan)' :
-                                   project.status === 'warning' ? 'var(--status-colors-delayed)' :
-                                   project.status === 'error' ? 'var(--status-colors-stopped)' :
-                                   'var(--status-colors-in-preparation)',
-                      color: project.status === 'success' ? 'var(--status-colors-on-plan)' :
-                             project.status === 'warning' ? 'var(--status-colors-delayed)' :
-                             project.status === 'error' ? 'var(--status-colors-stopped)' :
-                             'var(--status-colors-in-preparation)'
-                    }}>
+                  <div className="px-3 py-1.5 bg-transparent border-2 border-black rounded-full font-arabic text-sm flex items-center gap-2 text-black">
                     <div className="w-2 h-2 rounded-full"
                       style={{
                         backgroundColor: project.status === 'success' ? 'var(--status-colors-on-plan)' :
