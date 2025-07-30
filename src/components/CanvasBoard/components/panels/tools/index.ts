@@ -1,6 +1,12 @@
-// Tool Panel Components Index
-// This file exports all the tool-specific panel components for easy import
+// Enhanced Tool Panel Components
+export { EnhancedFileUploadPanel } from './EnhancedFileUploadPanel';
+export { EnhancedSmartElementsPanel } from './EnhancedSmartElementsPanel';
+export { EnhancedSelectionPanel } from './EnhancedSelectionPanel';
+export { EnhancedTextPanel } from './EnhancedTextPanel';
+export { EnhancedShapesPanel } from './EnhancedShapesPanel';
+export { EnhancedCommentPanel } from './EnhancedCommentPanel';
 
+// Legacy Tool Panel Components
 export { SelectionToolPanel } from './SelectionToolPanel';
 export { SmartPenToolPanel } from './SmartPenToolPanel';
 export { ZoomToolPanel } from './ZoomToolPanel';
