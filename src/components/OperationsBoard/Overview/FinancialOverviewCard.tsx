@@ -45,7 +45,7 @@ export const FinancialOverviewCard: React.FC = () => {
     <BaseCard 
       variant="glass" 
       size="sm"
-      className="row-span-2 h-[376px]"
+      className="row-span-2 h-[352px]"
       style={{ backgroundColor: isProfit ? '#96d8d0' : '#f1b5b9' }}
       header={
         <div className="flex items-center justify-between">
@@ -115,7 +115,7 @@ export const FinancialOverviewCard: React.FC = () => {
                 const centerX = 100;
                 const centerY = 100;
                 const barWidth = 3;
-                const barHeight = bar.isFilled ? 24 : 16;
+                const barHeight = bar.isFilled ? 12 : 8;
                 
                 const startRadius = radius - (barHeight / 2);
                 const endRadius = radius + (barHeight / 2);
