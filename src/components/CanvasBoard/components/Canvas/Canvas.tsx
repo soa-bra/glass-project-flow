@@ -89,6 +89,7 @@ export const Canvas: React.FC<CanvasProps> = ({
     <div 
       className="w-full h-full relative"
       style={{ cursor: eventHandlers.toolCursor.getCursorStyle(selectedTool) }}
+      onWheel={eventHandlers.handleWheelZoom}
     >
       <InfiniteCanvas
         ref={infiniteCanvasRef}
@@ -103,9 +104,15 @@ export const Canvas: React.FC<CanvasProps> = ({
         onCanvasMouseUp={eventHandlers.handleCanvasMouseUp}
         onCanvasClick={eventHandlers.handleCanvasClick}
       >
-        {/* Smart pen path overlay */}
+        {/* Smart pen path overlay with correct transform */}
         {eventHandlers.enhancedSmartPenTool && (
-          <div className="absolute inset-0 pointer-events-none">
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,
+              transformOrigin: '0 0'
+            }}
+          >
             <svg className="w-full h-full" style={{ zIndex: 998 }}>
               {eventHandlers.enhancedSmartPenTool.currentPath.length > 0 && (
                 <path
@@ -122,19 +129,28 @@ export const Canvas: React.FC<CanvasProps> = ({
           </div>
         )}
 
-        {elements.map((element) => {
-          const isSelected = selection.isSelected(element.id);
-          return (
-            <CanvasElementComponent
-              key={element.id}
-              element={element}
-              isSelected={isSelected}
-              onMouseDown={(e) => eventHandlers.handleElementMouseDown(e, element.id)}
-              onMouseMove={eventHandlers.handleElementMouseMove}
-              onMouseUp={eventHandlers.handleElementMouseUp}
-            />
-          );
-        })}
+        {/* Transform wrapper for all canvas elements */}
+        <div 
+          className="absolute inset-0 origin-top-left"
+          style={{
+            transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,
+            transformOrigin: '0 0'
+          }}
+        >
+          {elements.map((element) => {
+            const isSelected = selection.isSelected(element.id);
+            return (
+              <CanvasElementComponent
+                key={element.id}
+                element={element}
+                isSelected={isSelected}
+                onMouseDown={(e) => eventHandlers.handleElementMouseDown(e, element.id)}
+                onMouseMove={eventHandlers.handleElementMouseMove}
+                onMouseUp={eventHandlers.handleElementMouseUp}
+              />
+            );
+          })}
+        </div>
       </InfiniteCanvas>
 
       {/* Selection Bounding Box */}

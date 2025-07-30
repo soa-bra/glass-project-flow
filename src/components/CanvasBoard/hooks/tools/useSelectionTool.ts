@@ -17,18 +17,21 @@ export const useSelectionTool = (
 ): SelectionToolController => {
   
   const startSelection = useCallback((e: React.MouseEvent, zoom: number, canvasPosition: { x: number; y: number }, snapEnabled: boolean) => {
+    // Start selection box at canvas coordinates
     if (simplifiedInteraction?.startSelectionBox) {
       simplifiedInteraction.startSelectionBox(e, zoom, canvasPosition, snapEnabled);
     }
   }, [simplifiedInteraction]);
 
   const updateSelection = useCallback((e: React.MouseEvent, zoom: number, canvasPosition: { x: number; y: number }, snapEnabled: boolean) => {
+    // Update selection box
     if (simplifiedInteraction?.updateSelectionBox && simplifiedInteraction.isSelecting) {
       simplifiedInteraction.updateSelectionBox(e, zoom, canvasPosition, snapEnabled);
     }
   }, [simplifiedInteraction]);
 
   const endSelection = useCallback((elements: CanvasElement[], onSelectionChange: (elementIds: string[]) => void) => {
+    // Finalize selection and find intersecting elements
     if (simplifiedInteraction?.endSelectionBox && simplifiedInteraction.isSelecting) {
       simplifiedInteraction.endSelectionBox(elements, onSelectionChange);
     }

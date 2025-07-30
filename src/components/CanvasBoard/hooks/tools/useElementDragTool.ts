@@ -16,8 +16,12 @@ export const useElementDragTool = (
   
   const startElementDrag = useCallback((e: React.MouseEvent, elementId: string, element: CanvasElement, zoom: number, canvasPosition: { x: number; y: number }) => {
     if (simplifiedInteraction?.startElementDrag) {
-      // Element already has the correct format with position and size
-      simplifiedInteraction.startElementDrag(e, elementId, element, zoom, canvasPosition);
+      // Start dragging with correct coordinates
+      const rect = e.currentTarget.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left;
+      const offsetY = e.clientY - rect.top;
+      
+      simplifiedInteraction.startElementDrag(e, elementId, element, zoom, canvasPosition, { offsetX, offsetY });
     }
   }, [simplifiedInteraction]);
 

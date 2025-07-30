@@ -73,8 +73,10 @@ export const useRefactoredCanvasEventHandlers = (
   // Utility function to get canvas coordinates
   const getCanvasCoordinates = useCallback((e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left - canvasPosition.x) / zoom;
-    const y = (e.clientY - rect.top - canvasPosition.y) / zoom;
+    // Convert screen coordinates to canvas coordinates 
+    // considering zoom and canvas position
+    const x = (e.clientX - rect.left - canvasPosition.x) / (zoom / 100);
+    const y = (e.clientY - rect.top - canvasPosition.y) / (zoom / 100);
     return { x, y };
   }, [zoom, canvasPosition]);
 
@@ -272,15 +274,28 @@ export const useRefactoredCanvasEventHandlers = (
     });
   }, [addElement]);
 
-  // Wheel zoom handler
+  // Wheel zoom handler with proper canvas coordinate adjustment
   const handleWheelZoom = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      const newZoom = Math.min(Math.max(zoom + delta * 20, 10), 500);
+      
+      // Get mouse position relative to canvas for zoom center
+      const rect = e.currentTarget.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      const delta = e.deltaY > 0 ? -10 : 10; // Smaller steps for smoother zoom
+      const newZoom = Math.min(Math.max(zoom + delta, 10), 500);
+      
+      // Adjust canvas position to zoom towards mouse cursor
+      const zoomRatio = newZoom / zoom;
+      const newCanvasX = mouseX - (mouseX - canvasPosition.x) * zoomRatio;
+      const newCanvasY = mouseY - (mouseY - canvasPosition.y) * zoomRatio;
+      
       onZoomChange(newZoom);
+      onPositionChange({ x: newCanvasX, y: newCanvasY });
     }
-  }, [zoom, onZoomChange]);
+  }, [zoom, canvasPosition, onZoomChange, onPositionChange]);
 
   return {
     // Canvas handlers

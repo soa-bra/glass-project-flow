@@ -94,8 +94,8 @@ export const SimplifiedSelectionBoundingBox: React.FC<SimplifiedSelectionBoundin
     <div
       className="absolute border-2 border-blue-500 border-dashed bg-blue-500/10 pointer-events-none"
       style={{
-        left: (bounds.x + canvasPosition.x) * zoomFactor,
-        top: (bounds.y + canvasPosition.y) * zoomFactor,
+        left: bounds.x * zoomFactor + canvasPosition.x,
+        top: bounds.y * zoomFactor + canvasPosition.y,
         width: bounds.width * zoomFactor,
         height: bounds.height * zoomFactor,
         zIndex: 1001
