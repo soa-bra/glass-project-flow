@@ -10,7 +10,7 @@ import { Zap, Target, Layers, Cpu } from 'lucide-react';
 
 export const OverviewGrid: React.FC = () => {
   return (
-    <div className="grid grid-cols-3 gap-[10px] py-0 my-0 h-[calc(100vh-280px)] items-end">
+    <div className="grid grid-cols-3 gap-x-[10px] gap-y-[10px] py-0 my-0 h-[calc(100vh-280px)] items-end">
       {/* الصف الأول */}
       <FinancialOverviewCard />
       
