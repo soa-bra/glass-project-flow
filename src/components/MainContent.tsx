@@ -48,6 +48,7 @@ const MainContent = () => {
           onToggle={setIsSidebarCollapsed} 
           activeSection={activeSection}
           onSectionChange={handleSectionChange}
+          forceCollapsed={false}
         />
       </div>
 
