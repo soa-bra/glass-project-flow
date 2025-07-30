@@ -10,7 +10,17 @@ export { AIAssistantPanel } from './AIAssistantPanel';
 export { LayersPanel } from './LayersPanel';
 export { CollaborationPanel } from './CollaborationPanel';
 
-// Tool-specific Panel Components
+// Enhanced Tool Panel Components (Phase 2)
+export { 
+  EnhancedFileUploadPanel,
+  EnhancedSmartElementsPanel,
+  EnhancedSelectionPanel,
+  EnhancedTextPanel,
+  EnhancedShapesPanel,
+  EnhancedCommentPanel
+} from './tools';
+
+// Tool-specific Panel Components (Legacy - kept for compatibility)
 export { SelectionToolPanel } from './tools/SelectionToolPanel';
 export { SmartPenToolPanel } from './tools/SmartPenToolPanel';
 export { ZoomToolPanel } from './tools/ZoomToolPanel';

@@ -33,8 +33,7 @@ import {
   Hash,
   AtSign,
   Sparkles,
-  Languages,
-  Sparkles
+  Languages
 } from 'lucide-react';
 import { toast } from 'sonner';
 

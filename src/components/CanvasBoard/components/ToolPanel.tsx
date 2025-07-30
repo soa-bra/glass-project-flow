@@ -2,7 +2,29 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CanvasElement } from '../types';
 import { Layer } from './CanvasPanelTypes';
-import { SelectionToolPanel, SmartPenToolPanel, ZoomToolPanel, HandToolPanel, UploadToolPanel, InteractiveCommentsToolPanel, TextToolPanel, ShapesToolPanel, SmartElementsToolPanel } from './panels';
+
+// Enhanced Tool Panels (New)
+import { 
+  EnhancedFileUploadPanel,
+  EnhancedSmartElementsPanel,
+  EnhancedSelectionPanel,
+  EnhancedTextPanel,
+  EnhancedShapesPanel,
+  EnhancedCommentPanel
+} from './panels/tools';
+
+// Legacy Tool Panels (Fallback)
+import { 
+  SelectionToolPanel, 
+  SmartPenToolPanel, 
+  ZoomToolPanel, 
+  HandToolPanel, 
+  UploadToolPanel, 
+  InteractiveCommentsToolPanel, 
+  TextToolPanel, 
+  ShapesToolPanel, 
+  SmartElementsToolPanel 
+} from './panels';
 interface ToolPanelProps {
   selectedTool: string;
   selectedElements: CanvasElement[];
@@ -83,23 +105,67 @@ export const ToolPanel: React.FC<ToolPanelProps> = props => {
   const renderPanelContent = () => {
     switch (selectedTool) {
       case 'select':
-        return <SelectionToolPanel selectedElements={props.selectedElements} onCopy={props.onCopy} onCut={props.onCut} onPaste={props.onPaste} onDelete={props.onDelete} onGroup={props.onGroup} onUngroup={props.onUngroup} onLock={props.onLock} onUnlock={props.onUnlock} onRotate={props.onRotate} onFlipHorizontal={props.onFlipHorizontal} onFlipVertical={props.onFlipVertical} onAlign={props.onAlign} onUpdateElement={props.onUpdateElement} />;
+        return <EnhancedSelectionPanel 
+          selectedElements={props.selectedElements} 
+          onCopy={props.onCopy} 
+          onCut={props.onCut} 
+          onPaste={props.onPaste} 
+          onDelete={props.onDelete} 
+          onGroup={props.onGroup} 
+          onUngroup={props.onUngroup} 
+          onLock={props.onLock} 
+          onUnlock={props.onUnlock} 
+          onRotate={props.onRotate} 
+          onFlipHorizontal={props.onFlipHorizontal} 
+          onFlipVertical={props.onFlipVertical} 
+          onAlign={props.onAlign} 
+          onUpdateElement={props.onUpdateElement} 
+          onSnapToGrid={props.onAlignToGrid}
+        />;
       case 'smart-pen':
-        return <SmartPenToolPanel selectedPenMode={props.selectedPenMode} lineWidth={props.lineWidth} lineStyle={props.lineStyle} onPenModeSelect={props.onPenModeSelect} onLineWidthChange={props.onLineWidthChange} onLineStyleChange={props.onLineStyleChange} />;
+        return <SmartPenToolPanel 
+          selectedPenMode={props.selectedPenMode} 
+          lineWidth={props.lineWidth} 
+          lineStyle={props.lineStyle} 
+          onPenModeSelect={props.onPenModeSelect} 
+          onLineWidthChange={props.onLineWidthChange} 
+          onLineStyleChange={props.onLineStyleChange} 
+        />;
       case 'zoom':
-        return <ZoomToolPanel zoom={props.zoom} canvasPosition={props.canvasPosition} onZoomChange={props.onZoomChange} onPositionChange={props.onPositionChange} onFitToScreen={props.onFitToScreen} onResetView={props.onResetView} />;
+        return <ZoomToolPanel 
+          zoom={props.zoom} 
+          canvasPosition={props.canvasPosition} 
+          onZoomChange={props.onZoomChange} 
+          onPositionChange={props.onPositionChange} 
+          onFitToScreen={props.onFitToScreen} 
+          onResetView={props.onResetView} 
+        />;
       case 'hand':
-        return <HandToolPanel panSpeed={props.panSpeed} canvasPosition={props.canvasPosition} onPanSpeedChange={props.onPanSpeedChange} onPositionChange={props.onPositionChange} onResetView={props.onResetView} />;
+        return <HandToolPanel 
+          panSpeed={props.panSpeed} 
+          canvasPosition={props.canvasPosition} 
+          onPanSpeedChange={props.onPanSpeedChange} 
+          onPositionChange={props.onPositionChange} 
+          onResetView={props.onResetView} 
+        />;
       case 'upload':
-        return <UploadToolPanel onFileUpload={props.onFileUpload} />;
+        return <EnhancedFileUploadPanel 
+          onFileUpload={props.onFileUpload} 
+        />;
       case 'comment':
-        return <InteractiveCommentsToolPanel />;
+        return <EnhancedCommentPanel 
+          selectedElementId={props.selectedElementId}
+        />;
       case 'text':
-        return <TextToolPanel />;
+        return <EnhancedTextPanel 
+          selectedText=""
+        />;
       case 'shape':
-        return <ShapesToolPanel />;
+        return <EnhancedShapesPanel />;
       case 'smart-element':
-        return <SmartElementsToolPanel />;
+        return <EnhancedSmartElementsPanel 
+          selectedElementId={props.selectedElementId}
+        />;
       default:
         return <div className="flex items-center justify-center h-32 text-gray-500 text-sm font-arabic">
             اختر أداة لعرض خياراتها
