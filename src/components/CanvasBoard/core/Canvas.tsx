@@ -64,9 +64,10 @@ export const Canvas: React.FC<CanvasProps> = ({
       preserveObjectStacking: true,
     });
 
-    // Configure drawing brush - initialize freeDrawingBrush first
+    // Configure drawing brush - initialize freeDrawingBrush properly for v6
+    canvas.isDrawingMode = false; // Initialize drawing mode
     if (canvas.freeDrawingBrush) {
-      canvas.freeDrawingBrush.color = 'hsl(var(--primary))';
+      canvas.freeDrawingBrush.color = '#000000'; // Use standard color format
       canvas.freeDrawingBrush.width = 2;
     }
 
@@ -140,9 +141,14 @@ export const Canvas: React.FC<CanvasProps> = ({
     fabricCanvas.isDrawingMode = activeTool === 'smart-pen';
     fabricCanvas.selection = activeTool === 'selection';
 
-    if (activeTool === 'smart-pen' && fabricCanvas.freeDrawingBrush) {
-      fabricCanvas.freeDrawingBrush.color = 'hsl(var(--primary))';
-      fabricCanvas.freeDrawingBrush.width = 2;
+    if (activeTool === 'smart-pen') {
+      fabricCanvas.isDrawingMode = true;
+      if (fabricCanvas.freeDrawingBrush) {
+        fabricCanvas.freeDrawingBrush.color = '#000000'; // Use standard color format
+        fabricCanvas.freeDrawingBrush.width = 2;
+      }
+    } else {
+      fabricCanvas.isDrawingMode = false;
     }
   }, [activeTool, fabricCanvas]);
 
