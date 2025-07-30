@@ -119,12 +119,12 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                   </h2>
 
                   {/* مدير المشروع */}
-                  <div className="px-3 py-1.5 bg-transparent border-2 border-black rounded-full font-arabic text-sm text-gray-700">
+                  <div className="px-3 py-1.5 bg-transparent border border-black rounded-full font-arabic text-sm text-black">
                     {project.owner}
                   </div>
 
                   {/* حالة المشروع */}
-                  <div className="px-3 py-1.5 bg-transparent border-2 border-black rounded-full font-arabic text-sm flex items-center gap-2 text-black">
+                  <div className="px-3 py-1.5 bg-transparent border border-black rounded-full font-arabic text-sm flex items-center gap-2 text-black">
                     <div className="w-2 h-2 rounded-full"
                       style={{
                         backgroundColor: project.status === 'success' ? 'var(--status-colors-on-plan)' :
