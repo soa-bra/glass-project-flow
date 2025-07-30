@@ -1,0 +1,1 @@
+export { SmartAssistantPanel } from './SmartAssistantPanel';
