@@ -9,39 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Zap, Target, Layers, Cpu } from 'lucide-react';
 
 export const OverviewGrid: React.FC = () => {
-  // بيانات الصف الخامس الجديد
-  const fifthRowStats = [{
-    title: 'الأداء المحسن',
-    value: '92%',
-    change: 8.4,
-    trend: 'up' as const,
-    icon: Zap,
-    color: 'text-orange-500'
-  }, {
-    title: 'الأهداف المحققة',
-    value: '18',
-    change: 15.2,
-    trend: 'up' as const,
-    icon: Target,
-    color: 'text-green-500'
-  }, {
-    title: 'الطبقات النشطة',
-    value: '6',
-    change: 12.1,
-    trend: 'up' as const,
-    icon: Layers,
-    color: 'text-blue-500'
-  }, {
-    title: 'المعالجات',
-    value: '4',
-    change: 6.7,
-    trend: 'up' as const,
-    icon: Cpu,
-    color: 'text-purple-500'
-  }];
-
   return (
-    <div className="grid grid-cols-3 gap-4 py-0 my-0">
+    <div className="grid grid-cols-3 gap-4 py-0 my-0 h-[calc(100vh-280px)] items-end">
       {/* الصف الأول */}
       <FinancialOverviewCard />
       
@@ -81,7 +50,7 @@ export const OverviewGrid: React.FC = () => {
       <AlertsCard />
 
       {/* الصف الثالث */}
-      <div className="col-span-2">
+      <div className="col-span-2 h-[180px]">
         <ProjectSummaryCard />
       </div>
 
@@ -117,20 +86,6 @@ export const OverviewGrid: React.FC = () => {
         description="هذا النص مثال للشكل البياني" 
         chartType="simple"
       />
-
-      {/* الصف الخامس الجديد */}
-      {fifthRowStats.map((stat, index) => (
-        <BaseCard key={index} variant="operations" size="sm" className="text-center">
-          <div className="flex items-center justify-between mb-3">
-            <stat.icon className={`h-6 w-6 ${stat.color}`} />
-            <Badge variant={stat.trend === 'up' ? 'default' : 'destructive'} className="text-xs">
-              {stat.change > 0 ? '+' : ''}{stat.change}%
-            </Badge>
-          </div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-1 font-arabic">{stat.value}</h3>
-          <p className="text-sm text-gray-600 font-arabic">{stat.title}</p>
-        </BaseCard>
-      ))}
     </div>
   );
 };
