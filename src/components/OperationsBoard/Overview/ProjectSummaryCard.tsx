@@ -22,7 +22,7 @@ const projectData = [{
   value: 15
 }];
 export const ProjectSummaryCard: React.FC = () => {
-  return <BaseCard variant="glass" size="sm" className="h-[180px] w-full" style={{
+  return <BaseCard variant="glass" size="sm" className="h-[155px] w-full" style={{
     backgroundColor: '#f3ffff'
   }} header={<div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-black font-arabic">ملخص للمشاريع</h3>

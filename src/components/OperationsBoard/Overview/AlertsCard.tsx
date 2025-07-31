@@ -45,7 +45,7 @@ const getAlertColor = (type: Alert['type']) => {
   }
 };
 export const AlertsCard: React.FC = () => {
-  return <BaseCard variant="glass" size="md" className="h-[180px]" style={{
+  return <BaseCard variant="glass" size="md" className="h-[155px]" style={{
     backgroundColor: '#f3ffff'
   }}>
       <div className="flex items-center justify-between mb-4">

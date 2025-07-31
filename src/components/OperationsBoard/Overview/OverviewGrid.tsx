@@ -19,7 +19,7 @@ export const OverviewGrid: React.FC = () => {
         value="46" 
         unit="مليار" 
         description="هذا النص مثال للشكل البياني" 
-        chartType="bar" 
+        chartType="bar"
       />
 
       <StatisticsCard 
@@ -50,7 +50,7 @@ export const OverviewGrid: React.FC = () => {
       <AlertsCard />
 
       {/* الصف الثالث */}
-      <div className="col-span-2 h-[180px]">
+      <div className="col-span-2 h-[155px]">
         <ProjectSummaryCard />
       </div>
 
