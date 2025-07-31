@@ -38,7 +38,9 @@ export const InvoicesTab: React.FC = () => {
           <div className="space-y-3">
             {mockInvoices.map(invoice => <div key={invoice.id} className="flex items-center justify-between p-4 bg-transparent border border-black/10 rounded-3xl">
                 <div className="flex items-center gap-4">
-                  
+                  <div className="w-12 h-12 rounded-full bg-[#a4e2f6] flex items-center justify-center">
+                    <Receipt className="h-6 w-6 text-black" />
+                  </div>
                   <div>
                     <h4 className="text-sm font-bold text-black font-arabic">{invoice.id}</h4>
                     <p className="text-sm font-normal text-black font-arabic">{invoice.client}</p>
@@ -46,7 +48,7 @@ export const InvoicesTab: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-left">
-                  <p className="font-bold text-black text-sm text-left">{formatCurrency(invoice.amount)}</p>
+                  <p className="font-bold text-black text-sm my-[6px] py-0">{formatCurrency(invoice.amount)}</p>
                   <div className={`px-3 py-1 rounded-full text-xs font-normal ${getInvoiceStatusColor(invoice.status)}`}>
                     {getStatusText(invoice.status)}
                   </div>
