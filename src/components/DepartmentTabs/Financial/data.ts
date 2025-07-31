@@ -97,10 +97,10 @@ export const mockTransactions: Transaction[] = [
 ];
 
 export const mockInvoices: Invoice[] = [
-  { id: 'INV-001', client: 'شركة الأمل', amount: 150000, status: 'paid', dueDate: '2024-06-15' },
-  { id: 'INV-002', client: 'مؤسسة الرؤية', amount: 75000, status: 'pending', dueDate: '2024-07-01' },
-  { id: 'INV-003', client: 'شركة النجاح', amount: 200000, status: 'overdue', dueDate: '2024-06-20' },
-  { id: 'INV-004', client: 'مجموعة التقدم', amount: 125000, status: 'draft', dueDate: '2024-07-15' }
+  { id: 'INV-001', client: 'شركة الأمل', amount: 150000, status: 'paid', dueDate: '2024-06-15', projectName: 'مشروع الهوية التجارية', projectId: 'PRJ-001', paymentNumber: 'PAY-001' },
+  { id: 'INV-002', client: 'مؤسسة الرؤية', amount: 75000, status: 'pending', dueDate: '2024-07-01', projectName: 'تطوير الموقع الإلكتروني', projectId: 'PRJ-002', paymentNumber: 'PAY-002' },
+  { id: 'INV-003', client: 'شركة النجاح', amount: 200000, status: 'overdue', dueDate: '2024-06-20', projectName: 'حملة إعلانية شاملة', projectId: 'PRJ-003', paymentNumber: 'PAY-003' },
+  { id: 'INV-004', client: 'مجموعة التقدم', amount: 125000, status: 'draft', dueDate: '2024-07-15', projectName: 'استشارات العلامة التجارية', projectId: 'PRJ-004', paymentNumber: 'PAY-004' }
 ];
 
 export const mockExpenseCategories: ExpenseCategory[] = [

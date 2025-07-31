@@ -48,6 +48,9 @@ export interface Invoice {
   amount: number;
   status: string;
   dueDate: string;
+  projectName: string;
+  projectId: string;
+  paymentNumber: string;
 }
 
 export interface ExpenseCategory {
