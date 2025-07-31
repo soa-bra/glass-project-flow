@@ -117,10 +117,10 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
     return null;
   };
   if (chartType === 'simple') {
-    return <BaseCard variant="glass" size="md" className="h-full min-h-0" style={{
+    return <BaseCard variant="glass" size="md" className="h-[180px]" style={{
       backgroundColor: '#f3ffff'
     }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
-        <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden">
+        <div className="flex-1 flex flex-col justify-center h-full overflow-hidden py-[10px] my-0">
           <div className="flex items-baseline gap-2 mb-2">
             <div className="text-2xl font-bold text-black font-arabic">
               {value}
@@ -136,12 +136,12 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
         </div>
       </BaseCard>;
   }
-  return <BaseCard variant="glass" size="md" className="h-full min-h-0" style={{
+  return <BaseCard variant="glass" size="md" className="h-[180px]" style={{
     backgroundColor: '#f3ffff'
   }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
       <div className="flex gap-14 h-140 w-full overflow-hidden my-[0px] py-[0px] px-0 mx-[0px]">
         {/* النصوص والأرقام - 2/5 من المساحة */}
-        <div className="w-2/5 flex flex-col justify-center overflow-hidden">
+        <div className="w-2/5 flex flex-col justify-center overflow-hidden my-0 py-0">
           <div className="flex items-baseline gap-2 mb-2">
             <div className="text-2xl font-bold text-black font-arabic">
               {value}
