@@ -19,8 +19,8 @@ export const ReportsWidget: React.FC<ReportsWidgetProps> = ({
     <div className={`
       ${className}
       rounded-3xl p-5
-      bg-white/80 backdrop-blur-xl border border-white/30
-      shadow-lg hover:shadow-xl transition-all duration-300
+      bg-[#f3ffff] border border-gray-200/50 shadow-sm
+      hover:shadow-md transition-all duration-300
       flex flex-col justify-between
     `}>
       
