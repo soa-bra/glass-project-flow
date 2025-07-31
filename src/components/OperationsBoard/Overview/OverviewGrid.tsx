@@ -50,9 +50,21 @@ export const OverviewGrid: React.FC = () => {
       <AlertsCard />
 
       {/* الصف الثالث */}
-      <div className="col-span-2 h-full min-h-0">
-        <ProjectSummaryCard />
-      </div>
+      <StatisticsCard 
+        title="الأداء" 
+        value="92" 
+        unit="نسبة" 
+        description="هذا النص مثال للشكل البياني" 
+        chartType="bar"
+      />
+
+      <StatisticsCard 
+        title="الجودة" 
+        value="88" 
+        unit="نسبة" 
+        description="هذا النص مثال للشكل البياني" 
+        chartType="line"
+      />
 
       <StatisticsCard 
         title="معدل" 
