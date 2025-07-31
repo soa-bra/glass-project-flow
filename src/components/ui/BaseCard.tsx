@@ -51,7 +51,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
       {header && <div className="mb-6">
           {header}
         </div>}
-      <div className="h-full overflow-hidden my-0">
+      <div className="h-full overflow-hidden my-4">
         {children}
       </div>
     </div>;
