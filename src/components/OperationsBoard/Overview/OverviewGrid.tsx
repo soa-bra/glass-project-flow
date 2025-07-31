@@ -4,13 +4,42 @@ import { StatisticsCard } from './StatisticsCard';
 import { FinancialOverviewCard } from './FinancialOverviewCard';
 import { ProjectSummaryCard } from './ProjectSummaryCard';
 import { AlertsCard } from './AlertsCard';
+import { HRWidget } from './HRWidget';
+import { MarketingWidget } from './MarketingWidget';
+import { ReportsWidget } from './ReportsWidget';
+import { CustomersWidget } from './CustomersWidget';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Badge } from '@/components/ui/badge';
 import { Zap, Target, Layers, Cpu } from 'lucide-react';
 
 export const OverviewGrid: React.FC = () => {
+  // Mock data for the new widgets
+  const mockHRData = {
+    members: 24,
+    vacancies: 3,
+    onLeave: 2
+  };
+
+  const mockMarketingData = {
+    roas: 4.2,
+    activeCampaigns: 8,
+    conversion: 12
+  };
+
+  const mockReportsData = {
+    totalReports: 15,
+    pendingReports: 4,
+    completedReports: 11
+  };
+
+  const mockCustomersData = {
+    totalClients: 45,
+    newClients: 6,
+    satisfaction: 92
+  };
+
   return (
-    <div className="grid grid-cols-4 grid-rows-3 gap-[10px] py-0 my-0 h-[calc(50vh)] min-h-0 overflow-hidden">
+    <div className="grid grid-cols-4 grid-rows-4 gap-[10px] py-0 my-0 h-[calc(60vh)] min-h-0 overflow-hidden">
       {/* الصف الأول */}
       <FinancialOverviewCard />
       
@@ -30,13 +59,7 @@ export const OverviewGrid: React.FC = () => {
         chartType="line" 
       />
 
-      <StatisticsCard 
-        title="بيانات" 
-        value="03" 
-        unit="مليار" 
-        description="هذا النص مثال للشكل البياني" 
-        chartType="line" 
-      />
+      <CustomersWidget customers={mockCustomersData} />
 
       {/* الصف الثاني */}
       <StatisticsCard 
@@ -83,6 +106,21 @@ export const OverviewGrid: React.FC = () => {
         value="96" 
         unit="نسبة" 
         description="هذا النص مثال للشكل البياني" 
+        chartType="simple"
+      />
+
+      {/* الصف الرابع - الكاردات الجديدة */}
+      <HRWidget hr={mockHRData} />
+      
+      <MarketingWidget marketing={mockMarketingData} />
+      
+      <ReportsWidget reports={mockReportsData} />
+
+      <StatisticsCard 
+        title="الابتكار" 
+        value="88" 
+        unit="نقطة" 
+        description="مؤشر الابتكار والتطوير" 
         chartType="simple"
       />
 
