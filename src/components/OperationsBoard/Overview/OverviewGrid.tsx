@@ -116,14 +116,6 @@ export const OverviewGrid: React.FC = () => {
       
       <ReportsWidget reports={mockReportsData} />
 
-      <StatisticsCard 
-        title="الابتكار" 
-        value="88" 
-        unit="نقطة" 
-        description="مؤشر الابتكار والتطوير" 
-        chartType="simple"
-      />
-
     </div>
   );
 };
