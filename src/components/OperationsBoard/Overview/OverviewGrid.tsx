@@ -50,7 +50,7 @@ export const OverviewGrid: React.FC = () => {
       <AlertsCard />
 
       {/* الصف الثالث */}
-      <div className="col-span-2 h-[155px]">
+      <div className="col-span-2 h-[295px]">
         <ProjectSummaryCard />
       </div>
 
