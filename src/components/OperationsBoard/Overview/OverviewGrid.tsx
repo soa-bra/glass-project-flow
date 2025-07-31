@@ -10,7 +10,7 @@ import { Zap, Target, Layers, Cpu } from 'lucide-react';
 
 export const OverviewGrid: React.FC = () => {
   return (
-    <div className="grid grid-cols-3 grid-rows-3 gap-[10px] py-0 my-0 h-[calc(50vh)] min-h-0 overflow-hidden">
+    <div className="grid grid-cols-4 grid-rows-3 gap-[10px] py-0 my-0 h-[calc(50vh)] min-h-0 overflow-hidden">
       {/* الصف الأول */}
       <FinancialOverviewCard />
       
@@ -30,7 +30,6 @@ export const OverviewGrid: React.FC = () => {
         chartType="line" 
       />
 
-      {/* الصف الثاني */}
       <StatisticsCard 
         title="بيانات" 
         value="03" 
@@ -39,6 +38,7 @@ export const OverviewGrid: React.FC = () => {
         chartType="line" 
       />
 
+      {/* الصف الثاني */}
       <StatisticsCard 
         title="نسبة" 
         value="75" 
@@ -49,14 +49,38 @@ export const OverviewGrid: React.FC = () => {
 
       <AlertsCard />
 
+      <StatisticsCard 
+        title="معدل" 
+        value="85" 
+        unit="نسبة" 
+        description="هذا النص مثال للشكل البياني" 
+        chartType="simple"
+      />
+
+      <StatisticsCard 
+        title="تقييم" 
+        value="92" 
+        unit="نقطة" 
+        description="هذا النص مثال للشكل البياني" 
+        chartType="simple"
+      />
+
       {/* الصف الثالث */}
       <div className="col-span-2 h-full min-h-0">
         <ProjectSummaryCard />
       </div>
 
       <StatisticsCard 
-        title="معدل" 
-        value="85" 
+        title="أداء" 
+        value="78" 
+        unit="نسبة" 
+        description="هذا النص مثال للشكل البياني" 
+        chartType="simple"
+      />
+
+      <StatisticsCard 
+        title="جودة" 
+        value="96" 
         unit="نسبة" 
         description="هذا النص مثال للشكل البياني" 
         chartType="simple"
