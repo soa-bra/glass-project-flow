@@ -22,7 +22,7 @@ const projectData = [{
   value: 15
 }];
 export const ProjectSummaryCard: React.FC = () => {
-  return <BaseCard variant="glass" size="sm" className="h-[180px] w-full" style={{
+  return <BaseCard variant="glass" size="sm" className="h-full min-h-0 w-full" style={{
     backgroundColor: '#f3ffff'
   }} header={<div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-black font-arabic">ملخص للمشاريع</h3>
@@ -35,7 +35,7 @@ export const ProjectSummaryCard: React.FC = () => {
             </button>
           </div>
         </div>}>
-      <div className="bottom-1 flex h-[160px] gap-4 overflow-hidden my-0 py-0">
+      <div className="bottom-1 flex h-[160px] gap-4 overflow-hidden">
         {/* النصوص والأرقام - النصف الأول */}
         <div className="bottom-0 flex-col justify-center gap-1 overflow-hidden mx-[15px] px-0 my-0 py-0">
           <div className="text-right">
@@ -47,8 +47,8 @@ export const ProjectSummaryCard: React.FC = () => {
             <div className="text-xs font-normal text-gray-400 font-arabic">هذا النص مثال</div>
           </div>
           <div className="text-right">
-            
-            
+            <div className="text-2xl font-bold text-black font-arabic">02</div>
+            <div className="text-xs font-normal text-gray-400 font-arabic">النص مثال</div>
           </div>
         </div>
 
