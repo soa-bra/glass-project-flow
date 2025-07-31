@@ -10,7 +10,7 @@ import { Zap, Target, Layers, Cpu } from 'lucide-react';
 
 export const OverviewGrid: React.FC = () => {
   return (
-    <div className="grid grid-cols-3 grid-rows-3 gap-[10px] py-0 my-0 h-[calc(100vh-280px)]">
+    <div className="grid grid-cols-3 grid-rows-3 gap-[10px] py-0 my-0 h-[calc(100vh-280px)] min-h-0">
       {/* الصف الأول */}
       <FinancialOverviewCard />
       
@@ -50,7 +50,7 @@ export const OverviewGrid: React.FC = () => {
       <AlertsCard />
 
       {/* الصف الثالث */}
-      <div className="col-span-2 h-[190px]">
+      <div className="col-span-2 h-full min-h-0">
         <ProjectSummaryCard />
       </div>
 

@@ -45,7 +45,7 @@ export const FinancialOverviewCard: React.FC = () => {
     <BaseCard 
       variant="glass" 
       size="sm"
-      className="row-span-2 h-[400px]"
+      className="row-span-2 h-full min-h-0"
       style={{ backgroundColor: isProfit ? '#96d8d0' : '#f1b5b9' }}
       header={
         <div className="flex items-center justify-between">
