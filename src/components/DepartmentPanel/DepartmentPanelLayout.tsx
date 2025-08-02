@@ -10,7 +10,7 @@ export const DepartmentPanelLayout: React.FC<DepartmentPanelLayoutProps> = ({
   }} className="h-full rounded-3xl overflow-hidden">
       <div className="h-full flex flex-col">
         <div className="flex-1 overflow-auto px-0 mx-0 bg-[#d9e7ed]">
-          <div className="h-full px-0 py-[10px] my-[65px] mx-6 rounded-2xl overflow-hidden bg-transparent">
+          <div className="h-full px-0 mx-6 rounded-2xl overflow-hidden bg-transparent my-0 py-[45px]">
             {children}
           </div>
         </div>

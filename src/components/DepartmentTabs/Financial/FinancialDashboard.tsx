@@ -38,7 +38,7 @@ export const FinancialDashboard: React.FC = () => {
   }];
   return <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between px-0 py-[10px] my-[65px]">
+      <div className="flex items-center justify-between px-0 my-0 py-0">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
           إدارة الأوضاع المالية
         </h2>
