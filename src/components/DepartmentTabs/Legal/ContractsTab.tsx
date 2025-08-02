@@ -2,39 +2,35 @@ import React, { useState } from 'react';
 import { FileText, Plus, Search, Filter, Download, Eye } from 'lucide-react';
 import { mockContracts } from './data';
 import { getStatusColor, getStatusText, formatCurrency, formatDate } from './utils';
-
 export const ContractsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
-
   const filteredContracts = mockContracts.filter(contract => {
-    const matchesSearch = contract.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         contract.client.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = contract.title.toLowerCase().includes(searchTerm.toLowerCase()) || contract.client.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || contract.status === statusFilter;
     const matchesType = typeFilter === 'all' || contract.type === typeFilter;
-    
     return matchesSearch && matchesStatus && matchesType;
   });
-
   const getContractStatusColor = (status: string) => {
     switch (status) {
-      case 'signed': return 'bg-[#bdeed3] text-black';
-      case 'pending': return 'bg-[#fbe2aa] text-black';
-      case 'expired': return 'bg-[#f1b5b9] text-black';
-      case 'draft': return 'bg-[#d9d2fd] text-black';
-      default: return 'bg-[#a4e2f6] text-black';
+      case 'signed':
+        return 'bg-[#bdeed3] text-black';
+      case 'pending':
+        return 'bg-[#fbe2aa] text-black';
+      case 'expired':
+        return 'bg-[#f1b5b9] text-black';
+      case 'draft':
+        return 'bg-[#d9d2fd] text-black';
+      default:
+        return 'bg-[#a4e2f6] text-black';
     }
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-black font-arabic">إدارة العقود والاتفاقيات</h3>
-        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-transparent border border-white flex items-center justify-center">
-            <Plus className="w-4 h-4" />
-          </div>
+        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2 hover:bg-black/90 transition-colors">
+          
           عقد جديد
         </button>
       </div>
@@ -48,30 +44,16 @@ export const ContractsTab: React.FC = () => {
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
               <Search className="w-4 h-4 absolute right-3 top-1/2 transform -translate-y-1/2 text-black" />
-              <input
-                type="text"
-                placeholder="البحث في العقود..."
-                className="w-full pl-4 pr-10 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 focus:border-black/20 text-black font-arabic"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+              <input type="text" placeholder="البحث في العقود..." className="w-full pl-4 pr-10 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 focus:border-black/20 text-black font-arabic" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>
-            <select
-              className="px-4 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 text-black font-arabic"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
+            <select className="px-4 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 text-black font-arabic" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
               <option value="all">جميع الحالات</option>
               <option value="signed">موقع</option>
               <option value="pending">في الانتظار</option>
               <option value="expired">منتهي</option>
               <option value="draft">مسودة</option>
             </select>
-            <select
-              className="px-4 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 text-black font-arabic"
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-            >
+            <select className="px-4 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 text-black font-arabic" value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
               <option value="all">جميع الأنواع</option>
               <option value="service">خدمات</option>
               <option value="employment">توظيف</option>
@@ -87,9 +69,7 @@ export const ContractsTab: React.FC = () => {
       <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
-              <FileText className="h-4 w-4 text-black" />
-            </div>
+            
             إحصائيات العقود
           </h3>
         </div>
@@ -143,8 +123,7 @@ export const ContractsTab: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredContracts.map((contract) => (
-                  <tr key={contract.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
+                {filteredContracts.map(contract => <tr key={contract.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
                     <td className="py-4">
                       <div className="font-medium text-black font-arabic">{contract.title}</div>
                       <div className="text-sm text-black/70 font-arabic">{contract.id}</div>
@@ -172,13 +151,11 @@ export const ContractsTab: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                  </tr>
-                ))}
+                  </tr>)}
               </tbody>
             </table>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
