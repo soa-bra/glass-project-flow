@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Users, Calendar, Clock, TrendingUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { BaseCard } from '@/components/ui/BaseCard';
+import { InnerCard } from '@/components/ui/InnerCard';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
 import { useHRLite } from '@/hooks/useHRLite';
 
 export const HRLiteMainPanel: React.FC = () => {
@@ -51,10 +52,10 @@ export const HRLiteMainPanel: React.FC = () => {
 
   const getStatusVariant = (status: string) => {
     switch (status) {
-      case 'active': return 'default';
-      case 'inactive': return 'secondary';
-      case 'on_leave': return 'outline';
-      default: return 'outline';
+      case 'active': return 'success';
+      case 'inactive': return 'error';
+      case 'on_leave': return 'warning';
+      default: return 'default';
     }
   };
 
@@ -83,10 +84,10 @@ export const HRLiteMainPanel: React.FC = () => {
           <h1 className="text-3xl font-arabic font-bold text-foreground">الموارد البشرية المبسطة</h1>
           <p className="text-muted-foreground font-arabic">إدارة الموظفين والحضور والتقارير الأساسية</p>
         </div>
-        <Button onClick={handleAddEmployee} className="font-arabic">
+        <UnifiedButton onClick={handleAddEmployee} className="font-arabic">
           <Plus className="w-4 h-4 ml-2" />
           إضافة موظف
-        </Button>
+        </UnifiedButton>
       </div>
 
       {/* View Options */}
@@ -94,69 +95,61 @@ export const HRLiteMainPanel: React.FC = () => {
         {viewOptions.map((view) => {
           const Icon = view.icon;
           return (
-            <Button
+            <UnifiedButton
               key={view.id}
-              variant={selectedView === view.id ? "default" : "outline"}
+              variant={selectedView === view.id ? "primary" : "outline"}
               size="sm"
               onClick={() => setSelectedView(view.id)}
               className="font-arabic"
             >
               <Icon className="w-4 h-4 ml-1" />
               {view.name}
-            </Button>
+            </UnifiedButton>
           );
         })}
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-arabic text-muted-foreground">إجمالي الموظفين</p>
-                <p className="text-2xl font-bold">{employees.length}</p>
-              </div>
-              <Users className="h-8 w-8 text-primary" />
+        <BaseCard variant="unified" size="sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-arabic text-black/70">إجمالي الموظفين</p>
+              <p className="text-2xl font-bold text-black">{employees.length}</p>
             </div>
-          </CardContent>
-        </Card>
+            <Users className="h-8 w-8 text-black" />
+          </div>
+        </BaseCard>
         
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-arabic text-muted-foreground">الموظفون النشطون</p>
-                <p className="text-2xl font-bold">{employees.filter(e => e.status === 'active').length}</p>
-              </div>
-              <Clock className="h-8 w-8 text-primary" />
+        <BaseCard variant="unified" size="sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-arabic text-black/70">الموظفون النشطون</p>
+              <p className="text-2xl font-bold text-black">{employees.filter(e => e.status === 'active').length}</p>
             </div>
-          </CardContent>
-        </Card>
+            <Clock className="h-8 w-8 text-black" />
+          </div>
+        </BaseCard>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-arabic text-muted-foreground">حضور اليوم</p>
-                <p className="text-2xl font-bold">{getTodayAttendance()}</p>
-              </div>
-              <Calendar className="h-8 w-8 text-primary" />
+        <BaseCard variant="unified" size="sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-arabic text-black/70">حضور اليوم</p>
+              <p className="text-2xl font-bold text-black">{getTodayAttendance()}</p>
             </div>
-          </CardContent>
-        </Card>
+            <Calendar className="h-8 w-8 text-black" />
+          </div>
+        </BaseCard>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-arabic text-muted-foreground">الإجازات النشطة</p>
-                <p className="text-2xl font-bold">{employees.filter(e => e.status === 'on_leave').length}</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-primary" />
+        <BaseCard variant="unified" size="sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-arabic text-black/70">الإجازات النشطة</p>
+              <p className="text-2xl font-bold text-black">{employees.filter(e => e.status === 'on_leave').length}</p>
             </div>
-          </CardContent>
-        </Card>
+            <TrendingUp className="h-8 w-8 text-black" />
+          </div>
+        </BaseCard>
       </div>
 
       {/* Search */}
@@ -177,43 +170,44 @@ export const HRLiteMainPanel: React.FC = () => {
         {selectedView === 'employees' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredEmployees.map((employee) => (
-              <Card key={employee.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardHeader className="pb-3">
+              <BaseCard key={employee.id} variant="unified" className="hover:shadow-md transition-shadow cursor-pointer">
+                <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-lg font-arabic">
+                      <h3 className="text-lg font-arabic font-bold text-black">
                         {employee.name}
-                      </CardTitle>
-                      <p className="text-sm text-muted-foreground font-arabic">
+                      </h3>
+                      <p className="text-sm text-black/70 font-arabic">
                         {employee.position || 'غير محدد'}
                       </p>
                     </div>
-                    <Badge variant={getStatusVariant(employee.status)} className="font-arabic">
+                    <UnifiedBadge variant={getStatusVariant(employee.status)} className="font-arabic">
                       {getStatusLabel(employee.status)}
-                    </Badge>
+                    </UnifiedBadge>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground font-arabic">القسم:</span>
-                      <span className="font-arabic">{employee.department || 'غير محدد'}</span>
+                  
+                  <InnerCard>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-black/70 font-arabic">القسم:</span>
+                        <span className="font-arabic text-black">{employee.department || 'غير محدد'}</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-black/70 font-arabic">البريد الإلكتروني:</span>
+                        <span className="font-arabic text-xs text-black">{employee.email || 'غير محدد'}</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-black/70 font-arabic">تاريخ الانضمام:</span>
+                        <span className="font-arabic text-xs text-black">
+                          {new Date(employee.createdAt).toLocaleDateString('ar-SA')}
+                        </span>
+                      </div>
                     </div>
-                    
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground font-arabic">البريد الإلكتروني:</span>
-                      <span className="font-arabic text-xs">{employee.email || 'غير محدد'}</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground font-arabic">تاريخ الانضمام:</span>
-                      <span className="font-arabic text-xs">
-                        {new Date(employee.createdAt).toLocaleDateString('ar-SA')}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </InnerCard>
+                </div>
+              </BaseCard>
             ))}
           </div>
         )}

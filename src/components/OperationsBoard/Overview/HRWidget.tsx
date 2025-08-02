@@ -20,7 +20,7 @@ export const HRWidget: React.FC<HRWidgetProps> = ({
     <div className={`
       ${className}
       rounded-3xl p-5
-      bg-[#f3ffff] border border-gray-200/50 shadow-sm
+      bg-[#f2ffff] border border-black/10 shadow-sm
       hover:shadow-md transition-all duration-300
       flex flex-col justify-between
     `}>
@@ -31,17 +31,17 @@ export const HRWidget: React.FC<HRWidgetProps> = ({
 
       <div className="space-y-4 flex-1">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-black">الموظفين</span>
+          <span className="text-sm text-black font-arabic">الموظفين</span>
           <span className="text-xl font-bold text-black">{hr.members}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm text-black">الشواغر</span>
+          <span className="text-sm text-black font-arabic">الشواغر</span>
           <span className="text-xl font-bold text-black">{hr.vacancies}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm text-black">في إجازة</span>
+          <span className="text-sm text-black font-arabic">في إجازة</span>
           <span className="text-xl font-bold text-black">{hr.onLeave}</span>
         </div>
       </div>
