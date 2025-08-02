@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
@@ -10,34 +9,41 @@ import { RecruitmentTab } from './RecruitmentTab';
 import { TrainingTab } from './TrainingTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
-
 export const HRDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-
-  const tabItems = [
-    { value: 'overview', label: 'نظرة عامة' },
-    { value: 'employees', label: 'ملفات الموظفين' },
-    { value: 'attendance', label: 'الحضور والإجازات' },
-    { value: 'performance', label: 'الأداء والتقييم' },
-    { value: 'recruitment', label: 'التوظيف والمواهب' },
-    { value: 'training', label: 'التدريب والتطوير' },
-    { value: 'templates', label: 'النماذج والقوالب' },
-    { value: 'reports', label: 'التقارير' }
-  ];
-
-  return (
-    <div className="h-full flex flex-col bg-transparent">
+  const tabItems = [{
+    value: 'overview',
+    label: 'نظرة عامة'
+  }, {
+    value: 'employees',
+    label: 'ملفات الموظفين'
+  }, {
+    value: 'attendance',
+    label: 'الحضور والإجازات'
+  }, {
+    value: 'performance',
+    label: 'الأداء والتقييم'
+  }, {
+    value: 'recruitment',
+    label: 'التوظيف والمواهب'
+  }, {
+    value: 'training',
+    label: 'التدريب والتطوير'
+  }, {
+    value: 'templates',
+    label: 'النماذج والقوالب'
+  }, {
+    value: 'reports',
+    label: 'التقارير'
+  }];
+  return <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between px-0 py-[10px] my-[65px]">
+      <div className="flex items-center justify-between px-0 my-0 py-0">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
           إدارة الطاقات البشرية
         </h2>
         <div className="w-fit">
-          <AnimatedTabs 
-            tabs={tabItems}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
+          <AnimatedTabs tabs={tabItems} activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       </div>
 
@@ -77,6 +83,5 @@ export const HRDashboard: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>;
 };
