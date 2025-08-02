@@ -2,44 +2,48 @@ import React from 'react';
 import { Shield, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { mockComplianceItems } from './data';
 import { getStatusColor, getStatusText, formatDate } from './utils';
-
 export const ComplianceTab: React.FC = () => {
   const complianceStats = {
     compliant: mockComplianceItems.filter(item => item.status === 'compliant').length,
     actionRequired: mockComplianceItems.filter(item => item.status === 'action_required').length,
     pendingReview: mockComplianceItems.filter(item => item.status === 'pending_review').length,
-    nonCompliant: mockComplianceItems.filter(item => item.status === 'non_compliant').length,
+    nonCompliant: mockComplianceItems.filter(item => item.status === 'non_compliant').length
   };
-
   const totalItems = mockComplianceItems.length;
-  const compliancePercentage = Math.round((complianceStats.compliant / totalItems) * 100);
-
+  const compliancePercentage = Math.round(complianceStats.compliant / totalItems * 100);
   const getComplianceStatusColor = (status: string) => {
     switch (status) {
-      case 'compliant': return 'bg-[#bdeed3] text-black';
-      case 'action_required': return 'bg-[#fbe2aa] text-black';
-      case 'pending_review': return 'bg-[#a4e2f6] text-black';
-      case 'non_compliant': return 'bg-[#f1b5b9] text-black';
-      default: return 'bg-[#d9d2fd] text-black';
+      case 'compliant':
+        return 'bg-[#bdeed3] text-black';
+      case 'action_required':
+        return 'bg-[#fbe2aa] text-black';
+      case 'pending_review':
+        return 'bg-[#a4e2f6] text-black';
+      case 'non_compliant':
+        return 'bg-[#f1b5b9] text-black';
+      default:
+        return 'bg-[#d9d2fd] text-black';
     }
   };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'compliant': return <CheckCircle className="h-5 w-5 text-black" />;
-      case 'action_required': return <AlertTriangle className="h-5 w-5 text-black" />;
-      case 'pending_review': return <Clock className="h-5 w-5 text-black" />;
-      case 'non_compliant': return <AlertTriangle className="h-5 w-5 text-black" />;
-      default: return <Shield className="h-5 w-5 text-black" />;
+      case 'compliant':
+        return <CheckCircle className="h-5 w-5 text-black" />;
+      case 'action_required':
+        return <AlertTriangle className="h-5 w-5 text-black" />;
+      case 'pending_review':
+        return <Clock className="h-5 w-5 text-black" />;
+      case 'non_compliant':
+        return <AlertTriangle className="h-5 w-5 text-black" />;
+      default:
+        return <Shield className="h-5 w-5 text-black" />;
     }
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-black font-arabic">إدارة الامتثال القانوني</h3>
         <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-transparent border border-white flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
             <Shield className="w-4 h-4" />
           </div>
           إضافة متطلب جديد
@@ -62,10 +66,9 @@ export const ComplianceTab: React.FC = () => {
               <div className="text-3xl font-bold text-black font-arabic mb-2">{compliancePercentage}%</div>
               <div className="text-sm font-medium text-black font-arabic">نسبة الامتثال</div>
               <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                <div 
-                  className="bg-[#bdeed3] h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${compliancePercentage}%` }}
-                />
+                <div className="bg-[#bdeed3] h-2 rounded-full transition-all duration-300" style={{
+                width: `${compliancePercentage}%`
+              }} />
               </div>
             </div>
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
@@ -120,8 +123,7 @@ export const ComplianceTab: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {mockComplianceItems.map((item) => (
-                  <tr key={item.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
+                {mockComplianceItems.map(item => <tr key={item.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
                     <td className="py-4">
                       <div className="font-medium text-black font-arabic">{item.requirement}</div>
                       <div className="text-sm text-black/70 font-arabic">{item.id}</div>
@@ -144,8 +146,7 @@ export const ComplianceTab: React.FC = () => {
                         {item.documents.length} وثيقة
                       </div>
                     </td>
-                  </tr>
-                ))}
+                  </tr>)}
               </tbody>
             </table>
           </div>
@@ -164,14 +165,7 @@ export const ComplianceTab: React.FC = () => {
         </div>
         <div>
           <div className="space-y-3">
-            {mockComplianceItems
-              .filter(item => item.status === 'action_required' || item.status === 'non_compliant')
-              .slice(0, 5)
-              .map((item) => (
-                <div 
-                  key={item.id} 
-                  className="p-4 bg-transparent border border-black/10 rounded-3xl"
-                >
+            {mockComplianceItems.filter(item => item.status === 'action_required' || item.status === 'non_compliant').slice(0, 5).map(item => <div key={item.id} className="p-4 bg-transparent border border-black/10 rounded-3xl">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
                       <AlertTriangle className="h-4 w-4 text-black" />
@@ -186,11 +180,9 @@ export const ComplianceTab: React.FC = () => {
                       {getStatusText(item.status)}
                     </span>
                   </div>
-                </div>
-              ))}
+                </div>)}
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
