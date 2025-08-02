@@ -1,14 +1,14 @@
 
 import React, { useState } from 'react';
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, CheckCircle, Clock, Bell, BarChart, TrendingUp } from 'lucide-react';
 import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { BaseCard } from '@/components/ui/BaseCard';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
+import { UnifiedCard } from '@/components/shared/UnifiedCard';
+import { UnifiedListItem } from '@/components/shared/UnifiedListItem';
 import { mockBudgetData, mockCashFlowData } from './data';
 import { formatCurrency } from './utils';
 import { Alert } from './types';
+import { SPACING, LAYOUT } from '@/components/shared/design-system/constants';
 
 export const OverviewTab: React.FC = () => {
   const [alerts] = useState<Alert[]>([
@@ -59,117 +59,105 @@ export const OverviewTab: React.FC = () => {
     }
   ];
 
-  const getAlertBadgeColor = (priority: string) => {
+  const getBadgeVariant = (priority: string): 'success' | 'warning' | 'error' | 'info' | 'default' => {
     switch (priority) {
-      case 'high': return 'bg-[#f1b5b9] text-black';
-      case 'medium': return 'bg-[#fbe2aa] text-black';
-      case 'low': return 'bg-[#bdeed3] text-black';
-      default: return 'bg-[#a4e2f6] text-black';
+      case 'high': return 'error';
+      case 'medium': return 'warning';
+      case 'low': return 'success';
+      default: return 'info';
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${SPACING.SECTION_MARGIN}`}>
       {/* مؤشرات الأداء الأساسية */}
       <KPIStatsSection stats={kpiStats} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
         {/* Budget vs Actual Chart */}
-        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-          <div className="px-0 pt-0 mb-6">
-            <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
-              <BarChart className="h-5 w-5 text-black" />
-              الميزانية مقابل الفعلي (شهري)
-            </h3>
-          </div>
-          <div className="px-0">
-            <ResponsiveContainer width="100%" height={300}>
-              <RechartsBarChart data={mockBudgetData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.1} />
-                <XAxis dataKey="month" stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-                <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-                <Tooltip 
-                  formatter={value => formatCurrency(Number(value))} 
-                  contentStyle={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(0, 0, 0, 0.1)',
-                    borderRadius: '12px',
-                    color: '#000000'
-                  }}
-                  labelStyle={{ color: '#000000' }}
-                />
-                <Legend wrapperStyle={{ color: '#000000' }} />
-                <Bar dataKey="budget" fill="#bdeed3" name="الميزانية" />
-                <Bar dataKey="actual" fill="#a4e2f6" name="الفعلي" />
-              </RechartsBarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <UnifiedCard
+          title="الميزانية مقابل الفعلي (شهري)"
+          icon={<BarChart className={LAYOUT.ICON_SIZE} />}
+          className="p-6"
+        >
+          <ResponsiveContainer width="100%" height={300}>
+            <RechartsBarChart data={mockBudgetData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.1} />
+              <XAxis dataKey="month" stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
+              <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
+              <Tooltip 
+                formatter={value => formatCurrency(Number(value))} 
+                contentStyle={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(0, 0, 0, 0.1)',
+                  borderRadius: '12px',
+                  color: '#000000'
+                }}
+                labelStyle={{ color: '#000000' }}
+              />
+              <Legend wrapperStyle={{ color: '#000000' }} />
+              <Bar dataKey="budget" fill="#bdeed3" name="الميزانية" />
+              <Bar dataKey="actual" fill="#a4e2f6" name="الفعلي" />
+            </RechartsBarChart>
+          </ResponsiveContainer>
+        </UnifiedCard>
 
         {/* Cash Flow Forecast */}
-        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-          <div className="px-0 pt-0 mb-6">
-            <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-black" />
-              توقعات التدفق النقدي
-            </h3>
-          </div>
-          <div className="px-0">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={mockCashFlowData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.1} />
-                <XAxis dataKey="month" stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-                <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-                <Tooltip 
-                  formatter={value => formatCurrency(Number(value))} 
-                  contentStyle={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(0, 0, 0, 0.1)',
-                    borderRadius: '12px',
-                    color: '#000000'
-                  }}
-                  labelStyle={{ color: '#000000' }}
-                />
-                <Legend wrapperStyle={{ color: '#000000' }} />
-                <Line type="monotone" dataKey="inflow" stroke="#d9d2fd" strokeWidth={3} name="التدفق الداخل" />
-                <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} name="التدفق الخارج" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <UnifiedCard
+          title="توقعات التدفق النقدي"
+          icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
+          className="p-6"
+        >
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={mockCashFlowData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.1} />
+              <XAxis dataKey="month" stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
+              <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
+              <Tooltip 
+                formatter={value => formatCurrency(Number(value))} 
+                contentStyle={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(0, 0, 0, 0.1)',
+                  borderRadius: '12px',
+                  color: '#000000'
+                }}
+                labelStyle={{ color: '#000000' }}
+              />
+              <Legend wrapperStyle={{ color: '#000000' }} />
+              <Line type="monotone" dataKey="inflow" stroke="#d9d2fd" strokeWidth={3} name="التدفق الداخل" />
+              <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} name="التدفق الخارج" />
+            </LineChart>
+          </ResponsiveContainer>
+        </UnifiedCard>
       </div>
 
       {/* AI Alerts */}
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
-            <Bell className="h-5 w-5 text-black" />
-            تنبيهات الذكاء الاصطناعي
-          </h3>
+      <UnifiedCard
+        title="تنبيهات الذكاء الاصطناعي"
+        icon={<Bell className={LAYOUT.ICON_SIZE} />}
+        className="p-6"
+      >
+        <div className="space-y-3">
+          {alerts.map(alert => (
+            <UnifiedListItem
+              key={alert.id}
+              icon={
+                alert.type === 'warning' ? <AlertTriangle className={LAYOUT.ICON_SIZE} /> :
+                alert.type === 'info' ? <Clock className={LAYOUT.ICON_SIZE} /> :
+                <CheckCircle className={LAYOUT.ICON_SIZE} />
+              }
+              badge={{
+                text: alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض',
+                variant: getBadgeVariant(alert.priority)
+              }}
+            >
+              {alert.message}
+            </UnifiedListItem>
+          ))}
         </div>
-        <div className="px-0">
-          <div className="space-y-3">
-            {alerts.map(alert => (
-              <div 
-                key={alert.id} 
-                className="p-4 rounded-3xl bg-transparent border border-black/10"
-              >
-                <div className="flex items-center gap-3">
-                  {alert.type === 'warning' && <AlertTriangle className="h-5 w-5 text-black" />}
-                  {alert.type === 'info' && <Clock className="h-5 w-5 text-black" />}
-                  {alert.type === 'success' && <CheckCircle className="h-5 w-5 text-black" />}
-                  <span className="text-sm font-medium text-black font-arabic">{alert.message}</span>
-                  <div className={`px-3 py-1 rounded-full text-xs font-normal ${getAlertBadgeColor(alert.priority)}`}>
-                    {alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض'}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      </UnifiedCard>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
+import { DashboardLayout } from '@/components/shared/DashboardLayout';
+import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
 import { OverviewTab } from './OverviewTab';
 import { ContractsTab } from './ContractsTab';
 import { ComplianceTab } from './ComplianceTab';
@@ -8,72 +8,54 @@ import { RisksTab } from './RisksTab';
 import { LicensesTab } from './LicensesTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
+
 export const LegalDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const tabItems = [{
-    value: 'overview',
-    label: 'النظرة العامة'
-  }, {
-    value: 'contracts',
-    label: 'العقود والاتفاقيات'
-  }, {
-    value: 'compliance',
-    label: 'الامتثال'
-  }, {
-    value: 'risks',
-    label: 'المخاطر والنزاعات'
-  }, {
-    value: 'licenses',
-    label: 'التراخيص والملكية الفكرية'
-  }, {
-    value: 'templates',
-    label: 'النماذج والقوالب'
-  }, {
-    value: 'reports',
-    label: 'التقارير'
-  }];
-  return <div className="h-full flex flex-col bg-transparent">
-      {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between my-0 py-0 px-0">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
-          إدارة الأحوال القانونية
-        </h2>
-        <div className="w-fit">
-          <AnimatedTabs tabs={tabItems} activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
-      </div>
+  
+  const tabItems = [
+    { value: 'overview', label: 'النظرة العامة' },
+    { value: 'contracts', label: 'العقود والاتفاقيات' },
+    { value: 'compliance', label: 'الامتثال' },
+    { value: 'risks', label: 'المخاطر والنزاعات' },
+    { value: 'licenses', label: 'التراخيص والملكية الفكرية' },
+    { value: 'templates', label: 'النماذج والقوالب' },
+    { value: 'reports', label: 'التقارير' }
+  ];
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-0 my-[24px]">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
-          <TabsContent value="overview" className="space-y-6">
-            <OverviewTab />
-          </TabsContent>
+  return (
+    <DashboardLayout
+      title="إدارة الأحوال القانونية"
+      tabs={tabItems}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+    >
+      <UnifiedTabContent value="overview">
+        <OverviewTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="contracts" className="space-y-6">
-            <ContractsTab />
-          </TabsContent>
+      <UnifiedTabContent value="contracts">
+        <ContractsTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="compliance" className="space-y-6">
-            <ComplianceTab />
-          </TabsContent>
+      <UnifiedTabContent value="compliance">
+        <ComplianceTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="risks" className="space-y-6">
-            <RisksTab />
-          </TabsContent>
+      <UnifiedTabContent value="risks">
+        <RisksTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="licenses" className="space-y-6">
-            <LicensesTab />
-          </TabsContent>
+      <UnifiedTabContent value="licenses">
+        <LicensesTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="templates" className="space-y-6">
-            <TemplatesTab />
-          </TabsContent>
+      <UnifiedTabContent value="templates">
+        <TemplatesTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="reports" className="space-y-6">
-            <ReportsTab />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>;
+      <UnifiedTabContent value="reports">
+        <ReportsTab />
+      </UnifiedTabContent>
+    </DashboardLayout>
+  );
 };

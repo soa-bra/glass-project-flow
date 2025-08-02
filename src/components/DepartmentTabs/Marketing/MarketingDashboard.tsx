@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
+import { DashboardLayout } from '@/components/shared/DashboardLayout';
+import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
 import { OverviewTab } from './OverviewTab';
 import { CampaignsChannelsTab } from './CampaignsChannelsTab';
 import { ContentAssetsTab } from './ContentAssetsTab';
@@ -32,52 +32,44 @@ export const MarketingDashboard: React.FC = () => {
     value: 'reports',
     label: 'التقارير'
   }];
-  return <div className="h-full flex flex-col bg-transparent">
-      {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between my-0 py-0 px-0">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
-          إدارة الأنشطة التسويقية
-        </h2>
-        <div className="w-fit">
-          <AnimatedTabs tabs={tabItems} activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
-      </div>
+  return (
+    <DashboardLayout
+      title="إدارة الأنشطة التسويقية"
+      tabs={tabItems}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+    >
+      <UnifiedTabContent value="overview">
+        <OverviewTab />
+      </UnifiedTabContent>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto font-arabic py-0 px-0 my-[25px]">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
-          <TabsContent value="overview" className="mb-6 py-0 px-0 my-0">
-            <OverviewTab />
-          </TabsContent>
+      <UnifiedTabContent value="campaigns">
+        <CampaignsChannelsTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="campaigns" className="mb-6 py-0 px-0 my-0">
-            <CampaignsChannelsTab />
-          </TabsContent>
+      <UnifiedTabContent value="content">
+        <ContentAssetsTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="content" className="mb-6 py-0 px-0 my-0">
-            <ContentAssetsTab />
-          </TabsContent>
+      <UnifiedTabContent value="performance">
+        <PerformanceAnalyticsTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="performance" className="mb-6 py-0 px-0 my-0">
-            <PerformanceAnalyticsTab />
-          </TabsContent>
+      <UnifiedTabContent value="budgets">
+        <BudgetsTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="budgets" className="mb-6 py-0 px-0 my-0">
-            <BudgetsTab />
-          </TabsContent>
+      <UnifiedTabContent value="pr">
+        <PublicRelationsTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="pr" className="mb-6 py-0 px-0 my-0">
-            <PublicRelationsTab />
-          </TabsContent>
+      <UnifiedTabContent value="templates">
+        <TemplatesTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="templates" className="mb-6 py-0 px-0 my-0">
-            <TemplatesTab />
-          </TabsContent>
-
-          <TabsContent value="reports" className="mb-6 py-0 px-0 my-0">
-            <ReportsTab />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>;
+      <UnifiedTabContent value="reports">
+        <ReportsTab />
+      </UnifiedTabContent>
+    </DashboardLayout>
+  );
 };

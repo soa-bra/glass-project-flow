@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
+import { DashboardLayout } from '@/components/shared/DashboardLayout';
+import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
 import { OverviewTab } from './OverviewTab';
 import { BudgetsTab } from './BudgetsTab';
 import { TransactionsTab } from './TransactionsTab';
@@ -9,79 +9,59 @@ import { AnalysisTab } from './AnalysisTab';
 import { SettingsTab } from './SettingsTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
+
 export const FinancialDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const tabItems = [{
-    value: 'overview',
-    label: 'نظرة عامة'
-  }, {
-    value: 'budgets',
-    label: 'الميزانيات'
-  }, {
-    value: 'transactions',
-    label: 'النفقات والإيرادات'
-  }, {
-    value: 'invoices',
-    label: 'الفواتير والمدفوعات'
-  }, {
-    value: 'analysis',
-    label: 'التحليل والتقارير'
-  }, {
-    value: 'settings',
-    label: 'الضبط'
-  }, {
-    value: 'templates',
-    label: 'النماذج والقوالب'
-  }, {
-    value: 'reports',
-    label: 'التقارير'
-  }];
-  return <div className="h-full flex flex-col bg-transparent">
-      {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between px-0 my-0 py-0">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
-          إدارة الأوضاع المالية
-        </h2>
-        <div className="w-fit">
-          <AnimatedTabs tabs={tabItems} activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
-      </div>
+  
+  const tabItems = [
+    { value: 'overview', label: 'النظرة العامة' },
+    { value: 'budgets', label: 'الميزانيات' },
+    { value: 'transactions', label: 'النفقات والإيرادات' },
+    { value: 'invoices', label: 'الفواتير والمدفوعات' },
+    { value: 'analysis', label: 'التحليل والتقارير' },
+    { value: 'settings', label: 'الضبط' },
+    { value: 'templates', label: 'النماذج والقوالب' },
+    { value: 'reports', label: 'التقارير' }
+  ];
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
-          <TabsContent value="overview" className="space-y-6">
-            <OverviewTab />
-          </TabsContent>
+  return (
+    <DashboardLayout
+      title="إدارة الأوضاع المالية"
+      tabs={tabItems}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+    >
+      <UnifiedTabContent value="overview">
+        <OverviewTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="budgets" className="space-y-6">
-            <BudgetsTab />
-          </TabsContent>
+      <UnifiedTabContent value="budgets">
+        <BudgetsTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="transactions" className="space-y-6">
-            <TransactionsTab />
-          </TabsContent>
+      <UnifiedTabContent value="transactions">
+        <TransactionsTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="invoices" className="space-y-6">
-            <InvoicesTab />
-          </TabsContent>
+      <UnifiedTabContent value="invoices">
+        <InvoicesTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="analysis" className="space-y-6">
-            <AnalysisTab />
-          </TabsContent>
+      <UnifiedTabContent value="analysis">
+        <AnalysisTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="settings" className="space-y-6">
-            <SettingsTab />
-          </TabsContent>
+      <UnifiedTabContent value="settings">
+        <SettingsTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="templates" className="space-y-6">
-            <TemplatesTab />
-          </TabsContent>
+      <UnifiedTabContent value="templates">
+        <TemplatesTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="reports" className="space-y-6">
-            <ReportsTab />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>;
+      <UnifiedTabContent value="reports">
+        <ReportsTab />
+      </UnifiedTabContent>
+    </DashboardLayout>
+  );
 };
