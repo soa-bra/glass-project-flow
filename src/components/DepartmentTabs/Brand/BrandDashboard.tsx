@@ -36,7 +36,7 @@ export const BrandDashboard: React.FC = () => {
     value: 'reports',
     label: 'التقارير'
   }];
-  return <div className="h-full flex flex-col bg-#d9e7ed mx-0">
+  return <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
       <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
