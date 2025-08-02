@@ -44,7 +44,7 @@ export const MarketingDashboard: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto font-arabic py-0 px-0">
+      <div className="flex-1 overflow-auto font-arabic py-0 px-0 my-[25px]">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
           <TabsContent value="overview" className="mb-6 py-0 px-0 my-0">
             <OverviewTab />
