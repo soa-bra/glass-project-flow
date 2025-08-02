@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { UnifiedCard } from '@/components/shared/UnifiedCard';
+import { TYPOGRAPHY, COLORS } from '@/components/shared/design-system/constants';
 
 interface ProjectDistribution {
   project: string;
@@ -16,13 +17,8 @@ export const ProjectDistribution: React.FC<ProjectDistributionProps> = ({ distri
   const maxMembers = Math.max(...sortedDistribution.map(item => item.members));
 
   return (
-    <BaseCard 
-      size="lg"
-      header={
-        <h3 className="text-lg font-arabic font-bold text-gray-800">
-          توزيع الأعضاء على المشاريع
-        </h3>
-      }
+    <UnifiedCard 
+      title="توزيع الأعضاء على المشاريع"
     >
       <div className="space-y-4">
         {sortedDistribution.map((item, index) => (
@@ -40,6 +36,6 @@ export const ProjectDistribution: React.FC<ProjectDistributionProps> = ({ distri
           </div>
         ))}
       </div>
-    </BaseCard>
+    </UnifiedCard>
   );
 };

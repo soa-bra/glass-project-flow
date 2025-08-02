@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { COLORS, LAYOUT, TYPOGRAPHY } from '@/components/shared/design-system/constants';
 
 interface GenericArchivePanelProps {
   category: string;
@@ -17,12 +18,12 @@ export const GenericArchivePanel: React.FC<GenericArchivePanelProps> = ({ catego
   };
 
   return (
-    <div className="h-full flex items-center justify-center bg-transparent">
+    <div className={`h-full ${LAYOUT.FLEX_CENTER} ${COLORS.TRANSPARENT_BACKGROUND}`}>
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-600 mb-4 font-arabic">
+        <h2 className={`${TYPOGRAPHY.LARGE_TITLE_SIZE} text-gray-600 mb-4 ${TYPOGRAPHY.ARABIC_FONT}`}>
           {getCategoryTitle(category)}
         </h2>
-        <p className="text-gray-500 font-arabic">
+        <p className={`text-gray-500 ${TYPOGRAPHY.ARABIC_FONT}`}>
           هذا القسم قيد التطوير وسيتم إضافة المحتوى قريباً
         </p>
       </div>

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { COLORS, LAYOUT, SPACING } from '@/components/shared/design-system/constants';
 
 interface ArchivePanelLayoutProps {
   children: React.ReactNode;
@@ -9,15 +10,10 @@ export const ArchivePanelLayout: React.FC<ArchivePanelLayoutProps> = ({
   children
 }) => {
   return (
-    <div 
-      style={{
-        background: 'var(--backgrounds-admin-ops-board-bg)'
-      }} 
-      className="h-full rounded-3xl overflow-hidden"
-    >
+    <div className={`h-full ${LAYOUT.CARD_ROUNDED} overflow-hidden ${COLORS.CARD_BACKGROUND}`}>
       <div className="h-full flex flex-col">
-        <div className="flex-1 overflow-auto px-0 mx-0 bg-[#d9e7ed]">
-          <div className="h-full mx-6 my-6 rounded-2xl overflow-hidden bg-transparent">
+        <div className={`flex-1 overflow-auto ${SPACING.CONTENT_PADDING}`}>
+          <div className={`h-full ${SPACING.SECTION_MARGIN} ${LAYOUT.CARD_ROUNDED} overflow-hidden ${COLORS.TRANSPARENT_BACKGROUND}`}>
             {children}
           </div>
         </div>

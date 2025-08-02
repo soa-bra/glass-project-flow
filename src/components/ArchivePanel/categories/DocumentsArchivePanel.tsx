@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { DocumentsArchiveHeader } from './DocumentsArchiveHeader';
 import { DocumentsSearchBar } from './DocumentsSearchBar';
 import { DocumentsList } from './DocumentsList';
+import { COLORS } from '@/components/shared/design-system/constants';
 
 export const DocumentsArchivePanel: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,7 +48,7 @@ export const DocumentsArchivePanel: React.FC = () => {
   ];
 
   return (
-    <div className="h-full flex flex-col bg-transparent">
+    <div className={`h-full flex flex-col ${COLORS.TRANSPARENT_BACKGROUND}`}>
       <DocumentsArchiveHeader />
       <DocumentsSearchBar 
         searchQuery={searchQuery}
