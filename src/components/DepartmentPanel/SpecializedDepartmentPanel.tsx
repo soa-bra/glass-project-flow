@@ -10,12 +10,10 @@ import { TrainingDashboard } from '../DepartmentTabs/Training';
 
 interface SpecializedDepartmentPanelProps {
   selectedDepartment: string;
-  className?: string;
 }
 
 export const SpecializedDepartmentPanel: React.FC<SpecializedDepartmentPanelProps> = ({ 
-  selectedDepartment,
-  className 
+  selectedDepartment 
 }) => {
   const renderDepartmentDashboard = () => {
     switch (selectedDepartment) {
@@ -38,9 +36,5 @@ export const SpecializedDepartmentPanel: React.FC<SpecializedDepartmentPanelProp
     }
   };
 
-  return (
-    <div className={className}>
-      {renderDepartmentDashboard()}
-    </div>
-  );
+  return renderDepartmentDashboard();
 };
