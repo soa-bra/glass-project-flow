@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { InnerCard } from '@/components/ui/InnerCard';
 import { TrendingUp } from 'lucide-react';
 
 interface HRStats {
@@ -18,17 +18,10 @@ export const TeamFillProgress: React.FC<TeamFillProgressProps> = ({ stats }) => 
   const percentageFilled = Math.round((stats.active / totalTeamSize) * 100);
 
   return (
-    <BaseCard 
-      variant="unified"
-      size="md"
-      header={
-        <div className="flex items-center gap-3">
-          <TrendingUp className="w-6 h-6 text-black" />
-          <h3 className="text-lg font-arabic font-bold text-black">
-            نسبة ملء الشواغر
-          </h3>
-        </div>
-      }
+    <InnerCard 
+      title="نسبة ملء الشواغر"
+      icon={<TrendingUp className="w-4 h-4 text-white" />}
+      className="p-6"
     >
       <div className="space-y-4">
         <div className="flex justify-between items-center">
@@ -47,6 +40,6 @@ export const TeamFillProgress: React.FC<TeamFillProgressProps> = ({ stats }) => 
           <span className="text-black font-medium font-arabic">{stats.vacancies} شاغر</span>
         </div>
       </div>
-    </BaseCard>
+    </InnerCard>
   );
 };
