@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { BaseCard } from '@/components/ui/BaseCard';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
 import { Progress } from '@/components/ui/progress';
 import { 
   Heart, 
@@ -50,22 +50,31 @@ export const OverviewTab: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      {/* مؤشرات الأداء الأساسية */}
-      <KPIStatsSection stats={kpiStats} />
+    <div className="font-arabic px-[15px] py-0">
+      {/* قسم المؤشرات الرئيسية */}
+      <div className="mb-6 py-0 px-0 my-0">
+        <KPIStatsSection stats={kpiStats} />
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Cultural Identity Health */}
-        <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 hover:shadow-md transition-shadow">
-          <div className="px-0 pt-0 mb-6">
-            <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
-                <Heart className="h-4 w-4 text-white" />
+      {/* الرسوم البيانية الأساسية */}
+      <div className="mb-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Cultural Identity Health */}
+          <BaseCard
+            variant="operations"
+            size="md"
+            className="w-full"
+            header={
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-black font-arabic flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
+                    <Heart className="h-4 w-4 text-white" />
+                  </div>
+                  صحة الهوية الثقافية
+                </h3>
               </div>
-              صحة الهوية الثقافية
-            </h3>
-          </div>
-          <div className="px-0">
+            }
+          >
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
@@ -96,20 +105,24 @@ export const OverviewTab: React.FC = () => {
                 <Progress value={85} className="h-2" />
               </div>
             </div>
-          </div>
-        </div>
+          </BaseCard>
 
-        {/* Recent Activities */}
-        <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 hover:shadow-md transition-shadow">
-          <div className="px-0 pt-0 mb-6">
-            <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
-                <Zap className="h-4 w-4 text-white" />
+          {/* Recent Activities */}
+          <BaseCard
+            variant="operations"
+            size="md"
+            className="w-full"
+            header={
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-black font-arabic flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
+                    <Zap className="h-4 w-4 text-white" />
+                  </div>
+                  النشاطات الأخيرة
+                </h3>
               </div>
-              النشاطات الأخيرة
-            </h3>
-          </div>
-          <div className="px-0">
+            }
+          >
             <div className="space-y-3">
               <div className="flex items-center gap-3 p-4 rounded-3xl bg-transparent border border-black/10">
                 <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
@@ -119,7 +132,7 @@ export const OverviewTab: React.FC = () => {
                   <span className="text-sm font-medium text-black font-arabic">تم تحديث دليل الهوية البصرية</span>
                   <div className="text-xs text-black">منذ ساعتين</div>
                 </div>
-                <div className="px-3 py-1 rounded-full text-xs font-normal bg-[#bdeed3] text-black">جديد</div>
+                <UnifiedBadge variant="success" size="sm">جديد</UnifiedBadge>
               </div>
               <div className="flex items-center gap-3 p-4 rounded-3xl bg-transparent border border-black/10">
                 <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
@@ -129,7 +142,7 @@ export const OverviewTab: React.FC = () => {
                   <span className="text-sm font-medium text-black font-arabic">مراجعة محتوى حملة "التراث الثقافي"</span>
                   <div className="text-xs text-black">منذ 4 ساعات</div>
                 </div>
-                <div className="px-3 py-1 rounded-full text-xs font-normal bg-[#fbe2aa] text-black">قيد المراجعة</div>
+                <UnifiedBadge variant="warning" size="sm">قيد المراجعة</UnifiedBadge>
               </div>
               <div className="flex items-center gap-3 p-4 rounded-3xl bg-transparent border border-black/10">
                 <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
@@ -139,7 +152,7 @@ export const OverviewTab: React.FC = () => {
                   <span className="text-sm font-medium text-black font-arabic">تم جدولة فعالية "ندوة علم اجتماع العلامة"</span>
                   <div className="text-xs text-black">أمس</div>
                 </div>
-                <div className="px-3 py-1 rounded-full text-xs font-normal bg-[#a4e2f6] text-black">مجدولة</div>
+                <UnifiedBadge variant="info" size="sm">مجدولة</UnifiedBadge>
               </div>
               <div className="flex items-center gap-3 p-4 rounded-3xl bg-transparent border border-black/10">
                 <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
@@ -149,24 +162,30 @@ export const OverviewTab: React.FC = () => {
                   <span className="text-sm font-medium text-black font-arabic">نشر بحث "الهوية الثقافية للعلامات السعودية"</span>
                   <div className="text-xs text-black">منذ يومين</div>
                 </div>
-                <div className="px-3 py-1 rounded-full text-xs font-normal bg-[#d9d2fd] text-black">منشور</div>
+                <UnifiedBadge variant="default" size="sm">منشور</UnifiedBadge>
               </div>
             </div>
-          </div>
+          </BaseCard>
         </div>
       </div>
 
       {/* Brand Performance Insights */}
-      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 hover:shadow-md transition-shadow">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
-              <TrendingUp className="h-4 w-4 text-white" />
+      <div className="mb-6">
+        <BaseCard
+          variant="operations"
+          size="md"
+          className="w-full"
+          header={
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-black font-arabic flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
+                  <TrendingUp className="h-4 w-4 text-white" />
+                </div>
+                رؤى الأداء الثقافي
+              </h3>
             </div>
-            رؤى الأداء الثقافي
-          </h3>
-        </div>
-        <div className="px-0">
+          }
+        >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center space-y-2">
               <div className="text-5xl font-bold text-black font-arabic">15.2K</div>
@@ -192,21 +211,27 @@ export const OverviewTab: React.FC = () => {
                 +8% عن العام الماضي
               </div>
             </div>
-          </div>
-        </div>
+            </div>
+        </BaseCard>
       </div>
 
       {/* AI-Powered Insights */}
-      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 hover:shadow-md transition-shadow">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
-              <Zap className="h-4 w-4 text-white" />
+      <div className="mb-6">
+        <BaseCard
+          variant="operations"
+          size="md"
+          className="w-full"
+          header={
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-black font-arabic flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
+                  <Zap className="h-4 w-4 text-white" />
+                </div>
+                رؤى الذكاء الاصطناعي
+              </h3>
             </div>
-            رؤى الذكاء الاصطناعي
-          </h3>
-        </div>
-        <div className="px-0">
+          }
+        >
           <div className="space-y-4">
             <div className="p-4 rounded-3xl bg-transparent border border-black/10">
               <div className="flex items-start gap-3">
@@ -216,9 +241,9 @@ export const OverviewTab: React.FC = () => {
                   <p className="text-sm text-black mt-1">
                     يُظهر التحليل زيادة في الاهتمام بمواضيع "التراث الرقمي" بنسبة 23%. يُنصح بإنتاج محتوى متخصص في هذا المجال.
                   </p>
-                  <div className="mt-2 px-3 py-1 rounded-full text-xs font-normal bg-[#a4e2f6] text-black">
+                  <UnifiedBadge variant="info" size="sm" className="mt-2">
                     ثقة: 87%
-                  </div>
+                  </UnifiedBadge>
                 </div>
               </div>
             </div>
@@ -230,14 +255,14 @@ export const OverviewTab: React.FC = () => {
                   <p className="text-sm text-black mt-1">
                     مستوى الانسجام الثقافي في المشاريع الأخيرة أعلى بـ 15% من المتوسط السنوي، مما يشير لفعالية الاستراتيجية الحالية.
                   </p>
-                  <div className="mt-2 px-3 py-1 rounded-full text-xs font-normal bg-[#bdeed3] text-black">
+                  <UnifiedBadge variant="success" size="sm" className="mt-2">
                     ثقة: 92%
-                  </div>
+                  </UnifiedBadge>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </BaseCard>
       </div>
     </div>
   );
