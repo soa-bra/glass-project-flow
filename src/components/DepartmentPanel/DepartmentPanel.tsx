@@ -22,7 +22,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   const specializedDepartments = ['financial', 'legal', 'marketing', 'hr', 'crm', 'social', 'training'];
   if (specializedDepartments.includes(selectedDepartment)) {
     return <DepartmentPanelLayout>
-        <SpecializedDepartmentPanel selectedDepartment={selectedDepartment} />
+        <SpecializedDepartmentPanel selectedDepartment={selectedDepartment} className="flex-1 overflow-auto px-0 mx-0 bg-[#d9e7ed]" />
       </DepartmentPanelLayout>;
   }
 
