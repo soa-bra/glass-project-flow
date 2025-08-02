@@ -1,7 +1,5 @@
-
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
-import { Award, AlertTriangle, Calendar, DollarSign } from 'lucide-react';
+import { Award, AlertTriangle, Calendar, DollarSign, Plus } from 'lucide-react';
 import { mockLicenses } from './data';
 import { getStatusColor, getStatusText, formatCurrency, formatDate, getDaysUntil } from './utils';
 
@@ -17,149 +15,103 @@ export const LicensesTab: React.FC = () => {
     .filter(license => license.status === 'pending_renewal')
     .reduce((sum, license) => sum + license.renewalCost, 0);
 
+  const getLicenseStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-[#bdeed3] text-black';
+      case 'pending_renewal': return 'bg-[#fbe2aa] text-black';
+      case 'expired': return 'bg-[#f1b5b9] text-black';
+      case 'suspended': return 'bg-[#d9d2fd] text-black';
+      default: return 'bg-[#a4e2f6] text-black';
+    }
+  };
+
   return (
-    <div className="h-full overflow-auto">
-      {/* License Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <BaseCard className="p-4 text-center">
-          <div className="flex items-center justify-center mb-2">
-            <Award className="w-8 h-8 text-green-600" />
-          </div>
-          <div className="text-2xl font-bold text-green-600">{licenseStats.active}</div>
-          <div className="text-sm text-gray-600">تراخيص نشطة</div>
-        </BaseCard>
-        
-        <BaseCard className="p-4 text-center">
-          <div className="flex items-center justify-center mb-2">
-            <AlertTriangle className="w-8 h-8 text-yellow-600" />
-          </div>
-          <div className="text-2xl font-bold text-yellow-600">{licenseStats.pendingRenewal}</div>
-          <div className="text-sm text-gray-600">تحتاج تجديد</div>
-        </BaseCard>
-        
-        <BaseCard className="p-4 text-center">
-          <div className="flex items-center justify-center mb-2">
-            <Calendar className="w-8 h-8 text-red-600" />
-          </div>
-          <div className="text-2xl font-bold text-red-600">{licenseStats.expired}</div>
-          <div className="text-sm text-gray-600">منتهية</div>
-        </BaseCard>
-        
-        <BaseCard className="p-4 text-center">
-          <div className="flex items-center justify-center mb-2">
-            <DollarSign className="w-8 h-8 text-blue-600" />
-          </div>
-          <div className="text-2xl font-bold text-blue-600">{totalRenewalCost.toLocaleString()}</div>
-          <div className="text-sm text-gray-600">تكلفة التجديد (ر.س)</div>
-        </BaseCard>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-large font-semibold text-black font-arabic mx-[30px]">التراخيص والملكية الفكرية</h3>
+        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2 hover:bg-black/90 transition-colors">
+          <Plus className="w-4 h-4" />
+          إضافة ترخيص جديد
+        </button>
       </div>
 
-      {/* Renewal Alerts */}
-      <BaseCard className="p-6 mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">تنبيهات التجديد</h3>
-        <div className="space-y-3">
-          {mockLicenses
-            .filter(license => {
-              const daysUntilExpiry = getDaysUntil(license.expiryDate);
-              return daysUntilExpiry <= 90 && daysUntilExpiry > 0;
-            })
-            .map(license => {
-              const daysUntilExpiry = getDaysUntil(license.expiryDate);
-              const urgencyLevel = daysUntilExpiry <= 30 ? 'urgent' : daysUntilExpiry <= 60 ? 'high' : 'medium';
-              
-              return (
-                <div key={license.id} className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-800">{license.name}</div>
-                    <div className="text-sm text-gray-600">
-                      ينتهي في {daysUntilExpiry} يوم - {formatDate(license.expiryDate)}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      urgencyLevel === 'urgent' ? 'bg-red-100 text-red-800' :
-                      urgencyLevel === 'high' ? 'bg-orange-100 text-orange-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {urgencyLevel === 'urgent' ? 'عاجل' :
-                       urgencyLevel === 'high' ? 'مهم' : 'تذكير'}
-                    </span>
-                    <button className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
-                      جدد الآن
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+      {/* إحصائيات التراخيص */}
+      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+        <div className="px-0 pt-0 mb-6">
+          <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
+            <Award className="h-5 w-5 text-black" />
+            إحصائيات التراخيص
+          </h3>
         </div>
-      </BaseCard>
+        <div className="px-0">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <Award className="h-6 w-6 text-black mx-auto mb-2" />
+              <div className="text-2xl font-bold text-black">{licenseStats.active}</div>
+              <div className="text-sm text-black font-arabic">تراخيص نشطة</div>
+            </div>
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <AlertTriangle className="h-6 w-6 text-black mx-auto mb-2" />
+              <div className="text-2xl font-bold text-black">{licenseStats.pendingRenewal}</div>
+              <div className="text-sm text-black font-arabic">تحتاج تجديد</div>
+            </div>
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <Calendar className="h-6 w-6 text-black mx-auto mb-2" />
+              <div className="text-2xl font-bold text-black">{licenseStats.expired}</div>
+              <div className="text-sm text-black font-arabic">منتهية</div>
+            </div>
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <DollarSign className="h-6 w-6 text-black mx-auto mb-2" />
+              <div className="text-2xl font-bold text-black">{totalRenewalCost.toLocaleString()}</div>
+              <div className="text-sm text-black font-arabic">تكلفة التجديد (ر.س)</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      {/* Licenses Table */}
-      <BaseCard className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">التراخيص والملكية الفكرية</h3>
-          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-            إضافة ترخيص جديد
-          </button>
+      {/* جدول التراخيص */}
+      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+        <div className="px-0 pt-0 mb-6">
+          <h3 className="text-large font-semibold text-black font-arabic">قائمة التراخيص</h3>
         </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full text-right">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="pb-3 text-sm font-semibold text-gray-700">الترخيص</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">النوع</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">الحالة</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">الجهة المصدرة</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">تاريخ الإصدار</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">تاريخ الانتهاء</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">تكلفة التجديد</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">الوثائق</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mockLicenses.map((license) => {
-                const daysUntilExpiry = getDaysUntil(license.expiryDate);
-                
-                return (
-                  <tr key={license.id} className="border-b border-gray-100 hover:bg-gray-50">
+        <div className="px-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-right">
+              <thead>
+                <tr className="border-b border-black/10">
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">الترخيص</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">النوع</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">الحالة</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">تاريخ الانتهاء</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">تكلفة التجديد</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mockLicenses.map((license) => (
+                  <tr key={license.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
                     <td className="py-4">
-                      <div className="font-medium text-gray-800">{license.name}</div>
-                      <div className="text-sm text-gray-600">{license.id}</div>
+                      <div className="font-medium text-black font-arabic">{license.name}</div>
+                      <div className="text-sm text-black/70 font-arabic">{license.id}</div>
                     </td>
                     <td className="py-4">
-                      <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                      <span className="px-3 py-1 text-xs rounded-full bg-[#a4e2f6] text-black font-arabic">
                         {getStatusText(license.type)}
                       </span>
                     </td>
                     <td className="py-4">
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(license.status)}`}>
+                      <span className={`px-3 py-1 text-xs rounded-full font-arabic ${getLicenseStatusColor(license.status)}`}>
                         {getStatusText(license.status)}
                       </span>
                     </td>
-                    <td className="py-4 text-gray-700">{license.issuer}</td>
-                    <td className="py-4 text-gray-600">{formatDate(license.issueDate)}</td>
-                    <td className="py-4">
-                      <div className="text-gray-600">{formatDate(license.expiryDate)}</div>
-                      {daysUntilExpiry > 0 && daysUntilExpiry <= 90 && (
-                        <div className="text-xs text-orange-600">
-                          {daysUntilExpiry} يوم متبقي
-                        </div>
-                      )}
-                    </td>
-                    <td className="py-4 font-medium">{formatCurrency(license.renewalCost)}</td>
-                    <td className="py-4">
-                      <div className="text-sm text-blue-600">
-                        {license.documents.length} وثيقة
-                      </div>
-                    </td>
+                    <td className="py-4 text-black font-arabic">{formatDate(license.expiryDate)}</td>
+                    <td className="py-4 font-medium text-black font-arabic">{formatCurrency(license.renewalCost)}</td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </BaseCard>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,4 @@
-
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
 import { Shield, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { mockComplianceItems } from './data';
 import { getStatusColor, getStatusText, formatDate } from './utils';
@@ -16,117 +14,167 @@ export const ComplianceTab: React.FC = () => {
   const totalItems = mockComplianceItems.length;
   const compliancePercentage = Math.round((complianceStats.compliant / totalItems) * 100);
 
+  const getComplianceStatusColor = (status: string) => {
+    switch (status) {
+      case 'compliant': return 'bg-[#bdeed3] text-black';
+      case 'action_required': return 'bg-[#fbe2aa] text-black';
+      case 'pending_review': return 'bg-[#a4e2f6] text-black';
+      case 'non_compliant': return 'bg-[#f1b5b9] text-black';
+      default: return 'bg-[#d9d2fd] text-black';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'compliant': return <CheckCircle className="h-5 w-5 text-black" />;
+      case 'action_required': return <AlertTriangle className="h-5 w-5 text-black" />;
+      case 'pending_review': return <Clock className="h-5 w-5 text-black" />;
+      case 'non_compliant': return <AlertTriangle className="h-5 w-5 text-black" />;
+      default: return <Shield className="h-5 w-5 text-black" />;
+    }
+  };
+
   return (
-    <div className="h-full overflow-auto">
-      {/* Compliance Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <BaseCard className="p-4 text-center">
-          <div className="flex items-center justify-center mb-2">
-            <CheckCircle className="w-8 h-8 text-green-600" />
-          </div>
-          <div className="text-2xl font-bold text-green-600">{complianceStats.compliant}</div>
-          <div className="text-sm text-gray-600">متوافق</div>
-        </BaseCard>
-        
-        <BaseCard className="p-4 text-center">
-          <div className="flex items-center justify-center mb-2">
-            <AlertTriangle className="w-8 h-8 text-red-600" />
-          </div>
-          <div className="text-2xl font-bold text-red-600">{complianceStats.actionRequired}</div>
-          <div className="text-sm text-gray-600">يتطلب إجراء</div>
-        </BaseCard>
-        
-        <BaseCard className="p-4 text-center">
-          <div className="flex items-center justify-center mb-2">
-            <Clock className="w-8 h-8 text-yellow-600" />
-          </div>
-          <div className="text-2xl font-bold text-yellow-600">{complianceStats.pendingReview}</div>
-          <div className="text-sm text-gray-600">قيد المراجعة</div>
-        </BaseCard>
-        
-        <BaseCard className="p-4 text-center">
-          <div className="flex items-center justify-center mb-2">
-            <Shield className="w-8 h-8 text-blue-600" />
-          </div>
-          <div className="text-2xl font-bold text-blue-600">{compliancePercentage}%</div>
-          <div className="text-sm text-gray-600">معدل الامتثال</div>
-        </BaseCard>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-large font-semibold text-black font-arabic mx-[30px]">إدارة الامتثال القانوني</h3>
+        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2 hover:bg-black/90 transition-colors">
+          <Shield className="w-4 h-4" />
+          إضافة متطلب جديد
+        </button>
       </div>
 
-      {/* Compliance Score Chart */}
-      <BaseCard className="p-6 mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">درجة الامتثال الإجمالية</h3>
-        <div className="flex items-center gap-4">
-          <div className="flex-1">
-            <div className="w-full bg-gray-200 rounded-full h-4">
-              <div 
-                className="bg-green-600 h-4 rounded-full transition-all duration-300"
-                style={{ width: `${compliancePercentage}%` }}
-              />
+      {/* نظرة عامة على الامتثال */}
+      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+        <div className="px-0 pt-0 mb-6">
+          <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
+            <Shield className="h-5 w-5 text-black" />
+            حالة الامتثال العامة
+          </h3>
+        </div>
+        <div className="px-0">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <div className="text-3xl font-bold text-black mb-2">{compliancePercentage}%</div>
+              <div className="text-sm text-black font-arabic">نسبة الامتثال</div>
+              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div 
+                  className="bg-[#bdeed3] h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${compliancePercentage}%` }}
+                />
+              </div>
             </div>
-            <div className="flex justify-between text-sm text-gray-600 mt-2">
-              <span>0%</span>
-              <span>{compliancePercentage}%</span>
-              <span>100%</span>
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <CheckCircle className="h-6 w-6 text-black mx-auto mb-2" />
+              <div className="text-2xl font-bold text-black">{complianceStats.compliant}</div>
+              <div className="text-sm text-black font-arabic">متوافقة</div>
+            </div>
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <AlertTriangle className="h-6 w-6 text-black mx-auto mb-2" />
+              <div className="text-2xl font-bold text-black">{complianceStats.actionRequired}</div>
+              <div className="text-sm text-black font-arabic">تحتاج إجراء</div>
+            </div>
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <Clock className="h-6 w-6 text-black mx-auto mb-2" />
+              <div className="text-2xl font-bold text-black">{complianceStats.pendingReview}</div>
+              <div className="text-sm text-black font-arabic">قيد المراجعة</div>
+            </div>
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <AlertTriangle className="h-6 w-6 text-black mx-auto mb-2" />
+              <div className="text-2xl font-bold text-black">{complianceStats.nonCompliant}</div>
+              <div className="text-sm text-black font-arabic">غير متوافقة</div>
             </div>
           </div>
-          <div className="text-3xl font-bold text-green-600">{compliancePercentage}%</div>
         </div>
-      </BaseCard>
+      </div>
 
-      {/* Compliance Items */}
-      <BaseCard className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">مصفوفة المتطلبات القانونية</h3>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            إضافة متطلب جديد
-          </button>
+      {/* قائمة عناصر الامتثال */}
+      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+        <div className="px-0 pt-0 mb-6">
+          <h3 className="text-large font-semibold text-black font-arabic">مصفوفة المتطلبات القانونية</h3>
         </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full text-right">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="pb-3 text-sm font-semibold text-gray-700">المتطلب</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">الفئة</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">الحالة</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">المسؤول</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">آخر مراجعة</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">المراجعة القادمة</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">الوثائق</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mockComplianceItems.map((item) => (
-                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-4">
-                    <div className="font-medium text-gray-800">{item.requirement}</div>
-                    <div className="text-sm text-gray-600">{item.id}</div>
-                  </td>
-                  <td className="py-4">
-                    <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                      {getStatusText(item.category)}
-                    </span>
-                  </td>
-                  <td className="py-4">
-                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(item.status)}`}>
+        <div className="px-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-right">
+              <thead>
+                <tr className="border-b border-black/10">
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">المتطلب</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">الفئة</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">الحالة</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">المسؤول</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">آخر مراجعة</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">المراجعة القادمة</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">الوثائق</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mockComplianceItems.map((item) => (
+                  <tr key={item.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
+                    <td className="py-4">
+                      <div className="font-medium text-black font-arabic">{item.requirement}</div>
+                      <div className="text-sm text-black/70 font-arabic">{item.id}</div>
+                    </td>
+                    <td className="py-4">
+                      <span className="px-3 py-1 text-xs rounded-full bg-[#a4e2f6] text-black font-arabic">
+                        {getStatusText(item.category)}
+                      </span>
+                    </td>
+                    <td className="py-4">
+                      <span className={`px-3 py-1 text-xs rounded-full font-arabic ${getComplianceStatusColor(item.status)}`}>
+                        {getStatusText(item.status)}
+                      </span>
+                    </td>
+                    <td className="py-4 text-black font-arabic">{item.responsible}</td>
+                    <td className="py-4 text-black font-arabic">{formatDate(item.lastReview)}</td>
+                    <td className="py-4 text-black font-arabic">{formatDate(item.nextReview)}</td>
+                    <td className="py-4">
+                      <div className="text-sm text-black font-arabic">
+                        {item.documents.length} وثيقة
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* العناصر التي تحتاج إجراء عاجل */}
+      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+        <div className="px-0 pt-0 mb-6">
+          <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-black" />
+            إجراءات عاجلة مطلوبة
+          </h3>
+        </div>
+        <div className="px-0">
+          <div className="space-y-3">
+            {mockComplianceItems
+              .filter(item => item.status === 'action_required' || item.status === 'non_compliant')
+              .slice(0, 5)
+              .map((item) => (
+                <div 
+                  key={item.id} 
+                  className="p-4 bg-transparent border border-black/10 rounded-3xl"
+                >
+                  <div className="flex items-center gap-3">
+                    <AlertTriangle className="h-5 w-5 text-black" />
+                    <div className="flex-1">
+                      <span className="text-sm font-medium text-black font-arabic">{item.requirement}</span>
+                      <div className="text-xs text-black/70 font-arabic mt-1">
+                        الموعد النهائي: {formatDate(item.nextReview)}
+                      </div>
+                    </div>
+                    <span className={`px-3 py-1 text-xs rounded-full font-arabic ${getComplianceStatusColor(item.status)}`}>
                       {getStatusText(item.status)}
                     </span>
-                  </td>
-                  <td className="py-4 text-gray-700">{item.responsible}</td>
-                  <td className="py-4 text-gray-600">{formatDate(item.lastReview)}</td>
-                  <td className="py-4 text-gray-600">{formatDate(item.nextReview)}</td>
-                  <td className="py-4">
-                    <div className="text-sm text-blue-600">
-                      {item.documents.length} وثيقة
-                    </div>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+          </div>
         </div>
-      </BaseCard>
+      </div>
     </div>
   );
 };

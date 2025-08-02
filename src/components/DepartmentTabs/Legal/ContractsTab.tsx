@@ -1,6 +1,4 @@
-
 import React, { useState } from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
 import { FileText, Plus, Search, Filter, Download, Eye } from 'lucide-react';
 import { mockContracts } from './data';
 import { getStatusColor, getStatusText, formatCurrency, formatDate } from './utils';
@@ -19,130 +17,164 @@ export const ContractsTab: React.FC = () => {
     return matchesSearch && matchesStatus && matchesType;
   });
 
+  const getContractStatusColor = (status: string) => {
+    switch (status) {
+      case 'signed': return 'bg-[#bdeed3] text-black';
+      case 'pending': return 'bg-[#fbe2aa] text-black';
+      case 'expired': return 'bg-[#f1b5b9] text-black';
+      case 'draft': return 'bg-[#d9d2fd] text-black';
+      default: return 'bg-[#a4e2f6] text-black';
+    }
+  };
+
   return (
-    <div className="h-full overflow-auto">
-      {/* Header with Actions */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Search className="w-4 h-4 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="البحث في العقود..."
-              className="pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <select
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="all">جميع الحالات</option>
-            <option value="signed">موقع</option>
-            <option value="pending">في الانتظار</option>
-            <option value="expired">منتهي</option>
-            <option value="draft">مسودة</option>
-          </select>
-          <select
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-          >
-            <option value="all">جميع الأنواع</option>
-            <option value="service">خدمات</option>
-            <option value="employment">توظيف</option>
-            <option value="partnership">شراكة</option>
-            <option value="confidentiality">سرية</option>
-            <option value="supplier">مورد</option>
-          </select>
-        </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-large font-semibold text-black font-arabic mx-[30px]">إدارة العقود والاتفاقيات</h3>
+        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2 hover:bg-black/90 transition-colors">
           <Plus className="w-4 h-4" />
           عقد جديد
         </button>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <BaseCard className="p-4 text-center">
-          <div className="text-2xl font-bold text-green-600">
-            {mockContracts.filter(c => c.status === 'signed').length}
+      {/* أدوات البحث والتصفية */}
+      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+        <div className="px-0 pt-0 mb-6">
+          <h3 className="text-large font-semibold text-black font-arabic">البحث والتصفية</h3>
+        </div>
+        <div className="px-0">
+          <div className="flex items-center gap-4">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 absolute right-3 top-1/2 transform -translate-y-1/2 text-black" />
+              <input
+                type="text"
+                placeholder="البحث في العقود..."
+                className="w-full pl-4 pr-10 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 focus:border-black/20 text-black font-arabic"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <select
+              className="px-4 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 text-black font-arabic"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">جميع الحالات</option>
+              <option value="signed">موقع</option>
+              <option value="pending">في الانتظار</option>
+              <option value="expired">منتهي</option>
+              <option value="draft">مسودة</option>
+            </select>
+            <select
+              className="px-4 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 text-black font-arabic"
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+            >
+              <option value="all">جميع الأنواع</option>
+              <option value="service">خدمات</option>
+              <option value="employment">توظيف</option>
+              <option value="partnership">شراكة</option>
+              <option value="confidentiality">سرية</option>
+              <option value="supplier">مورد</option>
+            </select>
           </div>
-          <div className="text-sm text-gray-600">عقود موقعة</div>
-        </BaseCard>
-        <BaseCard className="p-4 text-center">
-          <div className="text-2xl font-bold text-yellow-600">
-            {mockContracts.filter(c => c.status === 'pending').length}
-          </div>
-          <div className="text-sm text-gray-600">في الانتظار</div>
-        </BaseCard>
-        <BaseCard className="p-4 text-center">
-          <div className="text-2xl font-bold text-red-600">
-            {mockContracts.filter(c => c.status === 'expired').length}
-          </div>
-          <div className="text-sm text-gray-600">منتهية</div>
-        </BaseCard>
-        <BaseCard className="p-4 text-center">
-          <div className="text-2xl font-bold text-blue-600">
-            {mockContracts.reduce((sum, c) => sum + c.value, 0).toLocaleString()}
-          </div>
-          <div className="text-sm text-gray-600">القيمة الإجمالية (ر.س)</div>
-        </BaseCard>
+        </div>
       </div>
 
-      {/* Contracts Table */}
-      <BaseCard className="p-6">
-        <div className="overflow-x-auto">
-          <table className="w-full text-right">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="pb-3 text-sm font-semibold text-gray-700">العقد</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">العميل</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">النوع</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">الحالة</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">القيمة</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">تاريخ الانتهاء</th>
-                <th className="pb-3 text-sm font-semibold text-gray-700">الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredContracts.map((contract) => (
-                <tr key={contract.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-4">
-                    <div className="font-medium text-gray-800">{contract.title}</div>
-                    <div className="text-sm text-gray-600">{contract.id}</div>
-                  </td>
-                  <td className="py-4 text-gray-700">{contract.client}</td>
-                  <td className="py-4">
-                    <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                      {getStatusText(contract.type)}
-                    </span>
-                  </td>
-                  <td className="py-4">
-                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(contract.status)}`}>
-                      {getStatusText(contract.status)}
-                    </span>
-                  </td>
-                  <td className="py-4 font-medium">{formatCurrency(contract.value)}</td>
-                  <td className="py-4 text-gray-600">{formatDate(contract.endDate)}</td>
-                  <td className="py-4">
-                    <div className="flex items-center gap-2">
-                      <button className="p-1 text-blue-600 hover:bg-blue-100 rounded">
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button className="p-1 text-green-600 hover:bg-green-100 rounded">
-                        <Download className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* إحصائيات العقود */}
+      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+        <div className="px-0 pt-0 mb-6">
+          <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
+            <FileText className="h-5 w-5 text-black" />
+            إحصائيات العقود
+          </h3>
         </div>
-      </BaseCard>
+        <div className="px-0">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <div className="text-2xl font-bold text-black">
+                {mockContracts.filter(c => c.status === 'signed').length}
+              </div>
+              <div className="text-sm text-black font-arabic">عقود موقعة</div>
+            </div>
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <div className="text-2xl font-bold text-black">
+                {mockContracts.filter(c => c.status === 'pending').length}
+              </div>
+              <div className="text-sm text-black font-arabic">في الانتظار</div>
+            </div>
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <div className="text-2xl font-bold text-black">
+                {mockContracts.filter(c => c.status === 'expired').length}
+              </div>
+              <div className="text-sm text-black font-arabic">منتهية</div>
+            </div>
+            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+              <div className="text-2xl font-bold text-black">
+                {mockContracts.reduce((sum, c) => sum + c.value, 0).toLocaleString()}
+              </div>
+              <div className="text-sm text-black font-arabic">القيمة الإجمالية (ر.س)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* جدول العقود */}
+      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+        <div className="px-0 pt-0 mb-6">
+          <h3 className="text-large font-semibold text-black font-arabic">قائمة العقود</h3>
+        </div>
+        <div className="px-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-right">
+              <thead>
+                <tr className="border-b border-black/10">
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">العقد</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">العميل</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">النوع</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">الحالة</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">القيمة</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">تاريخ الانتهاء</th>
+                  <th className="pb-4 text-sm font-semibold text-black font-arabic">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredContracts.map((contract) => (
+                  <tr key={contract.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
+                    <td className="py-4">
+                      <div className="font-medium text-black font-arabic">{contract.title}</div>
+                      <div className="text-sm text-black/70 font-arabic">{contract.id}</div>
+                    </td>
+                    <td className="py-4 text-black font-arabic">{contract.client}</td>
+                    <td className="py-4">
+                      <span className="px-3 py-1 text-xs rounded-full bg-[#a4e2f6] text-black font-arabic">
+                        {getStatusText(contract.type)}
+                      </span>
+                    </td>
+                    <td className="py-4">
+                      <span className={`px-3 py-1 text-xs rounded-full font-arabic ${getContractStatusColor(contract.status)}`}>
+                        {getStatusText(contract.status)}
+                      </span>
+                    </td>
+                    <td className="py-4 font-medium text-black font-arabic">{formatCurrency(contract.value)}</td>
+                    <td className="py-4 text-black font-arabic">{formatDate(contract.endDate)}</td>
+                    <td className="py-4">
+                      <div className="flex items-center gap-2">
+                        <button className="p-2 text-black hover:bg-white/20 rounded-full transition-colors">
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button className="p-2 text-black hover:bg-white/20 rounded-full transition-colors">
+                          <Download className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
