@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
@@ -12,36 +11,47 @@ import { CorporateTab } from './CorporateTab';
 import { PartnershipsTab } from './PartnershipsTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
-
 export const TrainingDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-
-  const tabItems = [
-    { value: 'overview', label: 'نظرة عامة' },
-    { value: 'courses', label: 'الدورات التدريبية' },
-    { value: 'lms', label: 'نظام إدارة التعلم' },
-    { value: 'scheduling', label: 'الجدولة والتسجيل' },
-    { value: 'certifications', label: 'الشهادات والمهارات' },
-    { value: 'analytics', label: 'التحليلات والأداء' },
-    { value: 'corporate', label: 'البرامج المؤسسية' },
-    { value: 'partnerships', label: 'الشراكات الأكاديمية' },
-    { value: 'templates', label: 'النماذج والقوالب' },
-    { value: 'reports', label: 'التقارير' }
-  ];
-
-  return (
-    <div className="h-full flex flex-col bg-transparent">
+  const tabItems = [{
+    value: 'overview',
+    label: 'نظرة عامة'
+  }, {
+    value: 'courses',
+    label: 'الدورات التدريبية'
+  }, {
+    value: 'lms',
+    label: 'نظام إدارة التعلم'
+  }, {
+    value: 'scheduling',
+    label: 'الجدولة والتسجيل'
+  }, {
+    value: 'certifications',
+    label: 'الشهادات والمهارات'
+  }, {
+    value: 'analytics',
+    label: 'التحليلات والأداء'
+  }, {
+    value: 'corporate',
+    label: 'البرامج المؤسسية'
+  }, {
+    value: 'partnerships',
+    label: 'الشراكات الأكاديمية'
+  }, {
+    value: 'templates',
+    label: 'النماذج والقوالب'
+  }, {
+    value: 'reports',
+    label: 'التقارير'
+  }];
+  return <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between px-0 py-[10px] my-[25px]">
+      <div className="flex items-center justify-between px-0 my-0 py-0">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
           إدارة التدريب
         </h2>
         <div className="w-fit">
-          <AnimatedTabs 
-            tabs={tabItems}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
+          <AnimatedTabs tabs={tabItems} activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       </div>
 
@@ -89,6 +99,5 @@ export const TrainingDashboard: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>;
 };
