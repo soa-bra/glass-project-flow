@@ -209,7 +209,7 @@ export const OverviewTab: React.FC = () => {
                   <th className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black">القناة</th>
                   <th className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black">الظهور</th>
                   <th className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black">النقرات</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black rounded-l-full ">التحويلات</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black rounded-none">التحويلات</th>
                   <th className="px-4 py-3 text-sm font-semibold text-black font-arabic">الإنفاق</th>
                   <th className="px-4 py-3 text-sm font-semibold text-black font-arabic">CTR</th>
                 </tr>
