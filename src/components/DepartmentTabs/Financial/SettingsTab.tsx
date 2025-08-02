@@ -1,35 +1,21 @@
-
 import React from 'react';
 import { Database, Calculator } from 'lucide-react';
 import { UnifiedSystemCard } from '@/components/ui/UnifiedSystemCard';
 import { UnifiedSystemButton } from '@/components/ui/UnifiedSystemButton';
-
 export const SettingsTab: React.FC = () => {
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <h3 className="text-xl font-semibold text-black font-arabic">إعدادات النظام المالي</h3>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <UnifiedSystemCard
-          title="مخطط الحسابات"
-          icon={<Database />}
-        >
+        <UnifiedSystemCard title="مخطط الحسابات" icon={<Database className="px-[4px]" />}>
           <div className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="account-code" className="text-sm font-bold text-black font-arabic">رمز الحساب</label>
-              <input 
-                id="account-code" 
-                placeholder="مثال: 1100" 
-                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
-              />
+              <input id="account-code" placeholder="مثال: 1100" className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black" />
             </div>
             <div className="space-y-2">
               <label htmlFor="account-name" className="text-sm font-bold text-black font-arabic">اسم الحساب</label>
-              <input 
-                id="account-name" 
-                placeholder="مثال: النقدية بالصندوق" 
-                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
-              />
+              <input id="account-name" placeholder="مثال: النقدية بالصندوق" className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black" />
             </div>
             <div className="space-y-2">
               <label htmlFor="account-type" className="text-sm font-bold text-black font-arabic">نوع الحساب</label>
@@ -46,27 +32,15 @@ export const SettingsTab: React.FC = () => {
           </div>
         </UnifiedSystemCard>
 
-        <UnifiedSystemCard
-          title="إعدادات الضرائب"
-          icon={<Calculator />}
-        >
+        <UnifiedSystemCard title="إعدادات الضرائب" icon={<Calculator className="px-[4px]" />}>
           <div className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="vat-rate" className="text-sm font-bold text-black font-arabic">معدل ضريبة القيمة المضافة (%)</label>
-              <input 
-                id="vat-rate" 
-                type="number" 
-                placeholder="15" 
-                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
-              />
+              <input id="vat-rate" type="number" placeholder="15" className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black" />
             </div>
             <div className="space-y-2">
               <label htmlFor="tax-number" className="text-sm font-bold text-black font-arabic">الرقم الضريبي</label>
-              <input 
-                id="tax-number" 
-                placeholder="300000000000003" 
-                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
-              />
+              <input id="tax-number" placeholder="300000000000003" className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black" />
             </div>
             <div className="space-y-2">
               <label htmlFor="currency" className="text-sm font-bold text-black font-arabic">العملة الأساسية</label>
@@ -81,6 +55,5 @@ export const SettingsTab: React.FC = () => {
           </div>
         </UnifiedSystemCard>
       </div>
-    </div>
-  );
+    </div>;
 };
