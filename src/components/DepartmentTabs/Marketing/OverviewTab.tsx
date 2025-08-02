@@ -127,7 +127,9 @@ export const OverviewTab: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    
+                    <div className="p-2 rounded-lg bg-[#bdeed3]">
+                      <kpi.icon className="w-5 h-5 text-black" />
+                    </div>
                     <div>
                       <p className="text-sm text-black font-arabic">{kpi.description}</p>
                       <h3 className="text-lg font-semibold text-black font-arabic">{kpi.title}</h3>
