@@ -1,21 +1,42 @@
+
 import React from 'react';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Database, Calculator } from 'lucide-react';
-import { UnifiedSystemCard } from '@/components/ui/UnifiedSystemCard';
-import { UnifiedSystemButton } from '@/components/ui/UnifiedSystemButton';
+import { BaseCard } from '@/components/ui/BaseCard';
+
 export const SettingsTab: React.FC = () => {
-  return <div className="space-y-6">
-      <h3 className="text-xl font-semibold text-black font-arabic">إعدادات النظام المالي</h3>
+  return (
+    <div className="space-y-6">
+      <h3 className="text-large font-semibold text-black font-arabic mx-[26px]">إعدادات النظام المالي</h3>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <UnifiedSystemCard title="مخطط الحسابات" icon={<Database className="px-[4px]" />}>
-          <div className="space-y-4">
+        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+          <div className="px-0 pt-0 mb-6">
+            <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
+              <Database className="h-5 w-5 text-black" />
+              مخطط الحسابات
+            </h3>
+          </div>
+          <div className="px-0 space-y-4">
             <div className="space-y-2">
               <label htmlFor="account-code" className="text-sm font-bold text-black font-arabic">رمز الحساب</label>
-              <input id="account-code" placeholder="مثال: 1100" className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black" />
+              <input 
+                id="account-code" 
+                placeholder="مثال: 1100" 
+                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+              />
             </div>
             <div className="space-y-2">
               <label htmlFor="account-name" className="text-sm font-bold text-black font-arabic">اسم الحساب</label>
-              <input id="account-name" placeholder="مثال: النقدية بالصندوق" className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black" />
+              <input 
+                id="account-name" 
+                placeholder="مثال: النقدية بالصندوق" 
+                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+              />
             </div>
             <div className="space-y-2">
               <label htmlFor="account-type" className="text-sm font-bold text-black font-arabic">نوع الحساب</label>
@@ -28,19 +49,34 @@ export const SettingsTab: React.FC = () => {
                 <option value="expense">مصروفات</option>
               </select>
             </div>
-            <UnifiedSystemButton variant="primary">إضافة حساب</UnifiedSystemButton>
+            <UnifiedButton variant="primary">إضافة حساب</UnifiedButton>
           </div>
-        </UnifiedSystemCard>
+        </div>
 
-        <UnifiedSystemCard title="إعدادات الضرائب" icon={<Calculator className="px-[4px]" />}>
-          <div className="space-y-4">
+        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+          <div className="px-0 pt-0 mb-6">
+            <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
+              <Calculator className="h-5 w-5 text-black" />
+              إعدادات الضرائب
+            </h3>
+          </div>
+          <div className="px-0 space-y-4">
             <div className="space-y-2">
               <label htmlFor="vat-rate" className="text-sm font-bold text-black font-arabic">معدل ضريبة القيمة المضافة (%)</label>
-              <input id="vat-rate" type="number" placeholder="15" className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black" />
+              <input 
+                id="vat-rate" 
+                type="number" 
+                placeholder="15" 
+                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+              />
             </div>
             <div className="space-y-2">
               <label htmlFor="tax-number" className="text-sm font-bold text-black font-arabic">الرقم الضريبي</label>
-              <input id="tax-number" placeholder="300000000000003" className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black" />
+              <input 
+                id="tax-number" 
+                placeholder="300000000000003" 
+                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+              />
             </div>
             <div className="space-y-2">
               <label htmlFor="currency" className="text-sm font-bold text-black font-arabic">العملة الأساسية</label>
@@ -51,9 +87,10 @@ export const SettingsTab: React.FC = () => {
                 <option value="EUR">يورو (EUR)</option>
               </select>
             </div>
-            <UnifiedSystemButton variant="primary">حفظ الإعدادات</UnifiedSystemButton>
+            <UnifiedButton variant="primary">حفظ الإعدادات</UnifiedButton>
           </div>
-        </UnifiedSystemCard>
+        </div>
       </div>
-    </div>;
+    </div>
+  );
 };

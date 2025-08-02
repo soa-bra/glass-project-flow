@@ -1,5 +1,5 @@
 import React from 'react';
-import { UnifiedSystemStats } from '@/components/ui/UnifiedSystemStats';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 interface FinancialKPI {
   id: string;
   title: string;
@@ -41,20 +41,12 @@ export const FinancialKPICards: React.FC<FinancialKPICardsProps> = ({
     return `${achievementRate}% من الهدف المحدد`;
   };
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {kpis.map(kpi => (
-        <UnifiedSystemStats
-          key={kpi.id}
-          title={kpi.title}
-          value={formatValue(kpi.value, kpi.format)}
-          subtitle={`${getUnit(kpi.format)} - ${getDescription(kpi)}`}
-          trend={kpi.trend !== 'stable' ? {
-            value: Math.round((kpi.value / kpi.target) * 100),
-            isPositive: kpi.trend === 'up'
-          } : undefined}
-        />
-      ))}
-    </div>
-  );
+  const statsData = kpis.map(kpi => ({
+    title: kpi.title,
+    value: formatValue(kpi.value, kpi.format),
+    unit: getUnit(kpi.format),
+    description: getDescription(kpi)
+  }));
+
+  return <KPIStatsSection stats={statsData} />;
 };

@@ -2,9 +2,9 @@
 import React, { useState } from 'react';
 import { AlertTriangle, CheckCircle, Clock, Bell, BarChart, TrendingUp } from 'lucide-react';
 import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { UnifiedSystemStats } from '@/components/ui/UnifiedSystemStats';
-import { UnifiedSystemCard } from '@/components/ui/UnifiedSystemCard';
-import { UnifiedSystemBadge } from '@/components/ui/UnifiedSystemBadge';
+import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
+import { UnifiedCard } from '@/components/shared/UnifiedCard';
+import { UnifiedListItem } from '@/components/shared/UnifiedListItem';
 import { mockBudgetData, mockCashFlowData } from './data';
 import { formatCurrency } from './utils';
 import { Alert } from './types';
@@ -37,33 +37,29 @@ export const OverviewTab: React.FC = () => {
       title: 'الإيرادات الشهرية',
       value: '2.5',
       unit: 'مليون ر.س',
-      description: 'إجمالي الإيرادات لهذا الشهر',
-      trend: { value: 8, isPositive: true }
+      description: 'إجمالي الإيرادات لهذا الشهر'
     },
     {
       title: 'النفقات الشهرية',
       value: '1.8',
       unit: 'مليون ر.س',
-      description: 'إجمالي النفقات لهذا الشهر',
-      trend: { value: 3, isPositive: false }
+      description: 'إجمالي النفقات لهذا الشهر'
     },
     {
       title: 'الربح الصافي',
       value: '700',
       unit: 'ألف ر.س',
-      description: 'الأرباح بعد خصم النفقات',
-      trend: { value: 15, isPositive: true }
+      description: 'الأرباح بعد خصم النفقات'
     },
     {
       title: 'التدفق النقدي',
       value: '+12%',
       unit: 'نمو',
-      description: 'مقارنة بالشهر السابق',
-      trend: { value: 12, isPositive: true }
+      description: 'مقارنة بالشهر السابق'
     }
   ];
 
-  const getBadgeVariant = (priority: string): 'success' | 'warning' | 'error' | 'info' | 'primary' | 'neutral' => {
+  const getBadgeVariant = (priority: string): 'success' | 'warning' | 'error' | 'info' | 'default' => {
     switch (priority) {
       case 'high': return 'error';
       case 'medium': return 'warning';
@@ -73,25 +69,16 @@ export const OverviewTab: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${SPACING.SECTION_MARGIN}`}>
       {/* مؤشرات الأداء الأساسية */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {kpiStats.map((stat, index) => (
-          <UnifiedSystemStats
-            key={index}
-            title={stat.title}
-            value={stat.value}
-            subtitle={`${stat.unit} - ${stat.description}`}
-            trend={stat.trend}
-          />
-        ))}
-      </div>
+      <KPIStatsSection stats={kpiStats} />
       
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
         {/* Budget vs Actual Chart */}
-        <UnifiedSystemCard
+        <UnifiedCard
           title="الميزانية مقابل الفعلي (شهري)"
-          icon={<BarChart />}
+          icon={<BarChart className={LAYOUT.ICON_SIZE} />}
+          className="p-6"
         >
           <ResponsiveContainer width="100%" height={300}>
             <RechartsBarChart data={mockBudgetData}>
@@ -114,12 +101,13 @@ export const OverviewTab: React.FC = () => {
               <Bar dataKey="actual" fill="#a4e2f6" name="الفعلي" />
             </RechartsBarChart>
           </ResponsiveContainer>
-        </UnifiedSystemCard>
+        </UnifiedCard>
 
         {/* Cash Flow Forecast */}
-        <UnifiedSystemCard
+        <UnifiedCard
           title="توقعات التدفق النقدي"
-          icon={<TrendingUp />}
+          icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
+          className="p-6"
         >
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={mockCashFlowData}>
@@ -142,30 +130,34 @@ export const OverviewTab: React.FC = () => {
               <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} name="التدفق الخارج" />
             </LineChart>
           </ResponsiveContainer>
-        </UnifiedSystemCard>
+        </UnifiedCard>
       </div>
 
       {/* AI Alerts */}
-      <UnifiedSystemCard
+      <UnifiedCard
         title="تنبيهات الذكاء الاصطناعي"
-        icon={<Bell />}
+        icon={<Bell className={LAYOUT.ICON_SIZE} />}
+        className="p-6"
       >
         <div className="space-y-3">
           {alerts.map(alert => (
-            <div key={alert.id} className="flex items-center justify-between p-3 border border-black/5 rounded-2xl">
-              <div className="flex items-center gap-3">
-                {alert.type === 'warning' ? <AlertTriangle className="w-5 h-5" /> :
-                 alert.type === 'info' ? <Clock className="w-5 h-5" /> :
-                 <CheckCircle className="w-5 h-5" />}
-                <span className="font-arabic">{alert.message}</span>
-              </div>
-              <UnifiedSystemBadge variant={getBadgeVariant(alert.priority)}>
-                {alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض'}
-              </UnifiedSystemBadge>
-            </div>
+            <UnifiedListItem
+              key={alert.id}
+              icon={
+                alert.type === 'warning' ? <AlertTriangle className={LAYOUT.ICON_SIZE} /> :
+                alert.type === 'info' ? <Clock className={LAYOUT.ICON_SIZE} /> :
+                <CheckCircle className={LAYOUT.ICON_SIZE} />
+              }
+              badge={{
+                text: alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض',
+                variant: getBadgeVariant(alert.priority)
+              }}
+            >
+              {alert.message}
+            </UnifiedListItem>
           ))}
         </div>
-      </UnifiedSystemCard>
+      </UnifiedCard>
     </div>
   );
 };

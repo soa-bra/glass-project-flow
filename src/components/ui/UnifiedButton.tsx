@@ -1,16 +1,14 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { buildButtonClasses, COLORS } from '@/components/shared/design-system/constants';
 
 interface UnifiedButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'success' | 'warning' | 'danger';
+  variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
-  icon?: React.ReactNode;
 }
 
 export const UnifiedButton: React.FC<UnifiedButtonProps> = ({
@@ -20,21 +18,33 @@ export const UnifiedButton: React.FC<UnifiedButtonProps> = ({
   size = 'md',
   className = '',
   disabled = false,
-  type = 'button',
-  icon
+  type = 'button'
 }) => {
+  const variantClasses = {
+    primary: 'bg-black text-white hover:bg-black/90',
+    secondary: 'bg-transparent text-black border border-black/10 hover:bg-black/5',
+    outline: 'bg-transparent text-black border border-black hover:bg-black hover:text-white'
+  };
+
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-4 py-2 text-base',
+    lg: 'px-6 py-3 text-lg'
+  };
+
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        buildButtonClasses(variant, size),
-        'flex items-center gap-2',
+        'rounded-full font-medium transition-all duration-300 font-arabic',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
+        variantClasses[variant],
+        sizeClasses[size],
         className
       )}
     >
-      {icon && icon}
       {children}
     </button>
   );

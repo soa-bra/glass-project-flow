@@ -2,10 +2,12 @@ import React from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { SPACING, TYPOGRAPHY, COLORS, LAYOUT } from './design-system/constants';
+
 interface TabItem {
   value: string;
   label: string;
 }
+
 interface DashboardLayoutProps {
   title: string;
   tabs: TabItem[];
@@ -13,14 +15,16 @@ interface DashboardLayoutProps {
   onTabChange: (tab: string) => void;
   children: React.ReactNode;
 }
+
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   title,
   tabs,
   activeTab,
   onTabChange,
-  children
+  children,
 }) => {
-  return <div className="h-full flex flex-col bg-transparent mx-[24px] py-[45px]">
+  return (
+    <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
       <div className={`${LAYOUT.FLEX_BETWEEN} my-0 py-0 px-0`}>
         <h2 className={`font-medium ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} text-3xl whitespace-nowrap px-[10px]`}>
@@ -37,5 +41,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           {children}
         </Tabs>
       </div>
-    </div>;
+    </div>
+  );
 };
