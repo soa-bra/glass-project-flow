@@ -1,16 +1,13 @@
-
 import React from 'react';
 import { DepartmentPanelLayout } from './DepartmentPanelLayout';
 import { SpecializedDepartmentPanel } from './SpecializedDepartmentPanel';
 import { GenericDepartmentPanel } from './GenericDepartmentPanel';
 import { EmptyDepartmentState } from './EmptyDepartmentState';
-
 interface DepartmentPanelProps {
   selectedDepartment: string | null;
   isMainSidebarCollapsed: boolean;
   isDepartmentsSidebarCollapsed: boolean;
 }
-
 const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   selectedDepartment,
   isMainSidebarCollapsed,
@@ -23,23 +20,17 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
 
   // Departments with specialized dashboards
   const specializedDepartments = ['financial', 'legal', 'marketing', 'hr', 'crm', 'social', 'training'];
-  
   if (specializedDepartments.includes(selectedDepartment)) {
-    return (
-      <DepartmentPanelLayout>
+    return <DepartmentPanelLayout>
         <SpecializedDepartmentPanel selectedDepartment={selectedDepartment} />
-      </DepartmentPanelLayout>
-    );
+      </DepartmentPanelLayout>;
   }
 
   // Generic departments with tabbed interface
-  return (
-    <div style={{
-      background: 'var(--backgrounds-admin-ops-board-bg)'
-    }} className="h-full rounded-3xl overflow-hidden">
+  return <div style={{
+    background: 'var(--backgrounds-admin-ops-board-bg)'
+  }} className="flex-1 overflow-auto px-0 bg-[#d9e7ed] rounded-3xl mx-0">
       <GenericDepartmentPanel selectedDepartment={selectedDepartment} />
-    </div>
-  );
+    </div>;
 };
-
 export default DepartmentPanel;
