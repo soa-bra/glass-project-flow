@@ -32,7 +32,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   const variantClasses = {
     glass: 'bg-white/40 backdrop-blur-[20px] border border-white/20',
     flat: 'bg-opacity-100',
-    operations: 'bg-[#f3ffff] border border-gray-200/50 shadow-sm'
+    operations: 'bg-[#f2ffff] border border-black/10 shadow-sm'
   };
   const colorClasses = {
     info: 'bg-blue-500',

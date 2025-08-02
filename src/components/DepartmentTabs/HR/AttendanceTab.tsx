@@ -5,6 +5,7 @@ import { Clock, Calendar, Users, TrendingUp, CheckCircle, XCircle, AlertTriangle
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { mockAttendanceRecords, mockLeaveRequests, mockEmployees } from './data';
+import { getHRStatusColor, getHRStatusText } from './utils';
 
 export const AttendanceTab: React.FC = () => {
   const [selectedView, setSelectedView] = useState<'attendance' | 'leaves'>('attendance');
@@ -19,31 +20,25 @@ export const AttendanceTab: React.FC = () => {
   };
 
   const getAttendanceStatusBadge = (status: string) => {
-    switch (status) {
-      case 'present':
-        return <Badge variant="default" className="text-xs bg-green-600">حاضر</Badge>;
-      case 'absent':
-        return <Badge variant="destructive" className="text-xs">غائب</Badge>;
-      case 'late':
-        return <Badge variant="secondary" className="text-xs bg-yellow-600">متأخر</Badge>;
-      case 'halfDay':
-        return <Badge variant="outline" className="text-xs">نصف يوم</Badge>;
-      default:
-        return <Badge variant="outline" className="text-xs">غير معروف</Badge>;
-    }
+    const colorClass = getHRStatusColor(status);
+    const text = getHRStatusText(status);
+    
+    return (
+      <Badge className={colorClass}>
+        {text}
+      </Badge>
+    );
   };
 
   const getLeaveStatusBadge = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return <Badge variant="default" className="text-xs bg-green-600">موافق عليها</Badge>;
-      case 'pending':
-        return <Badge variant="secondary" className="text-xs bg-yellow-600">في الانتظار</Badge>;
-      case 'rejected':
-        return <Badge variant="destructive" className="text-xs">مرفوضة</Badge>;
-      default:
-        return <Badge variant="outline" className="text-xs">غير معروف</Badge>;
-    }
+    const colorClass = getHRStatusColor(status);
+    const text = getHRStatusText(status);
+    
+    return (
+      <Badge className={colorClass}>
+        {text}
+      </Badge>
+    );
   };
 
   const getLeaveTypeLabel = (type: string) => {

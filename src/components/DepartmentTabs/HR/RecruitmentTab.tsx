@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { mockJobPostings, mockCandidates } from './data';
 import { JobPosting, Candidate } from './types';
+import { getHRStatusColor, getHRStatusText } from './utils';
 
 export const RecruitmentTab: React.FC = () => {
   const [selectedView, setSelectedView] = useState<'jobs' | 'candidates'>('jobs');
@@ -20,35 +21,25 @@ export const RecruitmentTab: React.FC = () => {
   };
 
   const getJobStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge variant="default" className="text-xs bg-green-600">نشط</Badge>;
-      case 'paused':
-        return <Badge variant="secondary" className="text-xs bg-yellow-600">مؤقت</Badge>;
-      case 'closed':
-        return <Badge variant="outline" className="text-xs">مغلق</Badge>;
-      default:
-        return <Badge variant="outline" className="text-xs">غير معروف</Badge>;
-    }
+    const colorClass = getHRStatusColor(status);
+    const text = getHRStatusText(status);
+    
+    return (
+      <Badge className={colorClass}>
+        {text}
+      </Badge>
+    );
   };
 
   const getCandidateStatusBadge = (status: string) => {
-    switch (status) {
-      case 'applied':
-        return <Badge variant="outline" className="text-xs">تم التقديم</Badge>;
-      case 'screening':
-        return <Badge variant="secondary" className="text-xs bg-blue-600">فحص أولي</Badge>;
-      case 'interview':
-        return <Badge variant="secondary" className="text-xs bg-purple-600">مقابلة</Badge>;
-      case 'offer':
-        return <Badge variant="default" className="text-xs bg-green-600">عرض عمل</Badge>;
-      case 'hired':
-        return <Badge variant="default" className="text-xs bg-green-800">تم التوظيف</Badge>;
-      case 'rejected':
-        return <Badge variant="destructive" className="text-xs">مرفوض</Badge>;
-      default:
-        return <Badge variant="outline" className="text-xs">غير معروف</Badge>;
-    }
+    const colorClass = getHRStatusColor(status);
+    const text = getHRStatusText(status);
+    
+    return (
+      <Badge className={colorClass}>
+        {text}
+      </Badge>
+    );
   };
 
   const getJobTypeLabel = (type: string) => {

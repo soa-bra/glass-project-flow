@@ -5,6 +5,7 @@ import { BookOpen, Users, Calendar, TrendingUp, Award, Clock, Play, CheckCircle 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { mockTrainingPrograms, mockEmployees } from './data';
+import { getHRStatusColor, getHRStatusText } from './utils';
 
 export const TrainingTab: React.FC = () => {
   const [selectedView, setSelectedView] = useState<'programs' | 'enrollments'>('programs');
@@ -19,18 +20,14 @@ export const TrainingTab: React.FC = () => {
   };
 
   const getProgramStatusBadge = (status: string) => {
-    switch (status) {
-      case 'upcoming':
-        return <Badge variant="secondary" className="text-xs bg-blue-600">قادم</Badge>;
-      case 'ongoing':
-        return <Badge variant="default" className="text-xs bg-green-600">جارٍ</Badge>;
-      case 'completed':
-        return <Badge variant="outline" className="text-xs">مكتمل</Badge>;
-      case 'cancelled':
-        return <Badge variant="destructive" className="text-xs">ملغي</Badge>;
-      default:
-        return <Badge variant="outline" className="text-xs">غير معروف</Badge>;
-    }
+    const colorClass = getHRStatusColor(status);
+    const text = getHRStatusText(status);
+    
+    return (
+      <Badge className={colorClass}>
+        {text}
+      </Badge>
+    );
   };
 
   const getFormatLabel = (format: string) => {
@@ -62,18 +59,14 @@ export const TrainingTab: React.FC = () => {
   ];
 
   const getEnrollmentStatusBadge = (status: string) => {
-    switch (status) {
-      case 'enrolled':
-        return <Badge variant="secondary" className="text-xs bg-blue-600">مسجل</Badge>;
-      case 'inProgress':
-        return <Badge variant="secondary" className="text-xs bg-yellow-600">قيد التنفيذ</Badge>;
-      case 'completed':
-        return <Badge variant="default" className="text-xs bg-green-600">مكتمل</Badge>;
-      case 'dropped':
-        return <Badge variant="destructive" className="text-xs">منسحب</Badge>;
-      default:
-        return <Badge variant="outline" className="text-xs">غير معروف</Badge>;
-    }
+    const colorClass = getHRStatusColor(status);
+    const text = getHRStatusText(status);
+    
+    return (
+      <Badge className={colorClass}>
+        {text}
+      </Badge>
+    );
   };
 
   const getEmployeeName = (employeeId: string) => {

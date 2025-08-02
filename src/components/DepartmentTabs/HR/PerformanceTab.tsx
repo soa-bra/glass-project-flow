@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { mockPerformanceReviews, mockEmployees } from './data';
 import { PerformanceReview } from './types';
+import { getHRStatusColor, getHRStatusText } from './utils';
 
 export const PerformanceTab: React.FC = () => {
   const [selectedReview, setSelectedReview] = useState<PerformanceReview | null>(null);
@@ -24,18 +25,14 @@ export const PerformanceTab: React.FC = () => {
   };
 
   const getGoalStatusBadge = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <Badge variant="default" className="text-xs bg-green-600">مكتمل</Badge>;
-      case 'inProgress':
-        return <Badge variant="secondary" className="text-xs bg-blue-600">قيد التنفيذ</Badge>;
-      case 'overdue':
-        return <Badge variant="destructive" className="text-xs">متأخر</Badge>;
-      case 'pending':
-        return <Badge variant="outline" className="text-xs">معلق</Badge>;
-      default:
-        return <Badge variant="outline" className="text-xs">غير معروف</Badge>;
-    }
+    const colorClass = getHRStatusColor(status);
+    const text = getHRStatusText(status);
+    
+    return (
+      <Badge className={colorClass}>
+        {text}
+      </Badge>
+    );
   };
 
   const getRatingStars = (rating: number, maxRating: number = 5) => {
@@ -103,9 +100,9 @@ export const PerformanceTab: React.FC = () => {
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
                           className={`h-2 rounded-full ${
-                            goal.status === 'completed' ? 'bg-green-600' :
-                            goal.status === 'inProgress' ? 'bg-blue-600' :
-                            goal.status === 'overdue' ? 'bg-red-600' : 'bg-gray-400'
+                            goal.status === 'completed' ? 'bg-[#bdeed3]' :
+                            goal.status === 'inProgress' ? 'bg-[#a4e2f6]' :
+                            goal.status === 'overdue' ? 'bg-[#f1b5b9]' : 'bg-gray-400'
                           }`}
                           style={{ width: `${goal.progress}%` }}
                         ></div>

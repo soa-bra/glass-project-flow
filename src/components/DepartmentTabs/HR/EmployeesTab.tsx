@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { mockEmployees } from './data';
 import { Employee } from './types';
+import { getHRStatusColor, getHRStatusText } from './utils';
 
 export const EmployeesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,25 +25,23 @@ export const EmployeesTab: React.FC = () => {
   });
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge variant="default" className="text-xs">نشط</Badge>;
-      case 'inactive':
-        return <Badge variant="secondary" className="text-xs">غير نشط</Badge>;
-      case 'onLeave':
-        return <Badge variant="outline" className="text-xs">في إجازة</Badge>;
-      default:
-        return <Badge variant="outline" className="text-xs">غير معروف</Badge>;
-    }
+    const colorClass = getHRStatusColor(status);
+    const text = getHRStatusText(status);
+    
+    return (
+      <Badge className={colorClass}>
+        {text}
+      </Badge>
+    );
   };
 
   const getSkillLevelColor = (level: string) => {
     switch (level) {
-      case 'expert': return 'text-green-600 bg-green-100';
-      case 'advanced': return 'text-blue-600 bg-blue-100';
-      case 'intermediate': return 'text-yellow-600 bg-yellow-100';
-      case 'beginner': return 'text-gray-600 bg-gray-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'expert': return 'bg-[#bdeed3] text-black border-[#bdeed3]';
+      case 'advanced': return 'bg-[#a4e2f6] text-black border-[#a4e2f6]';
+      case 'intermediate': return 'bg-[#fbe2aa] text-black border-[#fbe2aa]';
+      case 'beginner': return 'bg-[#f1b5b9] text-black border-[#f1b5b9]';
+      default: return 'bg-gray-200 text-gray-800 border-gray-200';
     }
   };
 
