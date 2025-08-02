@@ -34,7 +34,7 @@ export const LegalDashboard: React.FC = () => {
   }];
   return <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between px-6 py-[24px] my-[55px]">
+      <div className="flex items-center justify-between my-0 py-0 px-0">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           إدارة الأحوال القانونية
         </h2>
@@ -44,7 +44,7 @@ export const LegalDashboard: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto px-6 pb-6">
+      <div className="flex-1 overflow-auto pb-6 px-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
           <TabsContent value="overview" className="space-y-6">
             <OverviewTab />
