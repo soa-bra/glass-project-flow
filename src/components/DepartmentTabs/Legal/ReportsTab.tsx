@@ -1,38 +1,31 @@
 import React, { useState } from 'react';
 import { BarChart, Download, Calendar, Filter } from 'lucide-react';
-
-const mockReports = [
-  {
-    id: 'RPT-001',
-    title: 'تقرير العقود الشهري',
-    description: 'تقرير شامل عن حالة العقود والاتفاقيات',
-    type: 'monthly',
-    category: 'contracts',
-    lastGenerated: '2024-06-30',
-    format: 'PDF',
-    status: 'ready'
-  },
-  {
-    id: 'RPT-002',
-    title: 'تقرير الامتثال الربع سنوي',
-    description: 'تحليل مستوى الامتثال للمتطلبات القانونية',
-    type: 'quarterly',
-    category: 'compliance',
-    lastGenerated: '2024-06-30',
-    format: 'Excel',
-    status: 'ready'
-  }
-];
-
+const mockReports = [{
+  id: 'RPT-001',
+  title: 'تقرير العقود الشهري',
+  description: 'تقرير شامل عن حالة العقود والاتفاقيات',
+  type: 'monthly',
+  category: 'contracts',
+  lastGenerated: '2024-06-30',
+  format: 'PDF',
+  status: 'ready'
+}, {
+  id: 'RPT-002',
+  title: 'تقرير الامتثال الربع سنوي',
+  description: 'تحليل مستوى الامتثال للمتطلبات القانونية',
+  type: 'quarterly',
+  category: 'compliance',
+  lastGenerated: '2024-06-30',
+  format: 'Excel',
+  status: 'ready'
+}];
 export const ReportsTab: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('monthly');
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-black font-arabic">التقارير القانونية</h3>
         <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-transparent border border-white flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
             <BarChart className="w-4 h-4" />
           </div>
           إنشاء تقرير مخصص
@@ -85,8 +78,7 @@ export const ReportsTab: React.FC = () => {
         </div>
         <div>
           <div className="space-y-4">
-            {mockReports.map((report) => (
-              <div key={report.id} className="flex items-center justify-between p-4 bg-transparent border border-black/10 rounded-3xl hover:bg-white/10 transition-colors">
+            {mockReports.map(report => <div key={report.id} className="flex items-center justify-between p-4 bg-transparent border border-black/10 rounded-3xl hover:bg-white/10 transition-colors">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-transparent border border-black/10 rounded-full flex items-center justify-center">
                     <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
@@ -104,11 +96,9 @@ export const ReportsTab: React.FC = () => {
                 <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-black/90 transition-colors font-arabic">
                   تحميل
                 </button>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
