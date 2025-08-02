@@ -21,14 +21,14 @@ export const UnifiedButton: React.FC<UnifiedButtonProps> = ({
   type = 'button'
 }) => {
   const variantClasses = {
-    primary: 'bg-black text-white hover:bg-black/90',
+    primary: 'bg-black text-white hover:bg-black/90 transition-colors',
     secondary: 'bg-transparent text-black border border-black/10 hover:bg-black/5',
     outline: 'bg-transparent text-black border border-black hover:bg-black hover:text-white'
   };
 
   const sizeClasses = {
     sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
+    md: 'px-6 py-2 text-sm mx-[25px] flex items-center gap-2',
     lg: 'px-6 py-3 text-lg'
   };
 
