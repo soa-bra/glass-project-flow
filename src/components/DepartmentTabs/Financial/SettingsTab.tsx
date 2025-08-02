@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -49,7 +49,7 @@ export const SettingsTab: React.FC = () => {
                 <option value="expense">مصروفات</option>
               </select>
             </div>
-            <button className="w-full bg-black text-white px-4 py-2 rounded-full text-sm font-medium">إضافة حساب</button>
+            <UnifiedButton variant="primary">إضافة حساب</UnifiedButton>
           </div>
         </div>
 
@@ -87,7 +87,7 @@ export const SettingsTab: React.FC = () => {
                 <option value="EUR">يورو (EUR)</option>
               </select>
             </div>
-            <button className="w-full bg-black text-white px-4 py-2 rounded-full text-sm font-medium">حفظ الإعدادات</button>
+            <UnifiedButton variant="primary">حفظ الإعدادات</UnifiedButton>
           </div>
         </div>
       </div>

@@ -2,9 +2,9 @@
 import React, { useState } from 'react';
 import { FileText, DollarSign, Clock, CheckCircle, AlertCircle, Eye, Edit, Download } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { Badge } from '@/components/ui/badge';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
 import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 
 interface Invoice {
   id: string;
@@ -175,7 +175,7 @@ export const PaymentsInvoicesTab: React.FC = () => {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-large font-semibold text-black font-arabic">قائمة الفواتير</h3>
-            <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium font-arabic">إنشاء فاتورة جديدة</button>
+            <UnifiedButton variant="primary">إنشاء فاتورة جديدة</UnifiedButton>
           </div>
 
           {invoices.map((invoice) => (
@@ -207,18 +207,18 @@ export const PaymentsInvoicesTab: React.FC = () => {
                 </div>
 
                 <div className="flex gap-2">
-                  <button className="bg-transparent border border-black text-black px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
+                  <UnifiedButton variant="outline" size="sm">
                     <Eye className="h-4 w-4" />
                     عرض
-                  </button>
-                  <button className="bg-transparent border border-black text-black px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
+                  </UnifiedButton>
+                  <UnifiedButton variant="outline" size="sm">
                     <Edit className="h-4 w-4" />
                     تحرير
-                  </button>
-                  <button className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
+                  </UnifiedButton>
+                  <UnifiedButton size="sm">
                     <Download className="h-4 w-4" />
                     تحميل
-                  </button>
+                  </UnifiedButton>
                 </div>
               </div>
             </div>
@@ -230,7 +230,7 @@ export const PaymentsInvoicesTab: React.FC = () => {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-large font-semibold text-black font-arabic">سجل المدفوعات</h3>
-            <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium font-arabic">تسجيل دفعة جديدة</button>
+            <UnifiedButton variant="primary">تسجيل دفعة جديدة</UnifiedButton>
           </div>
 
           {payments.map((payment) => {

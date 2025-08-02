@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Users, Search, Filter, Plus, Eye, Edit, Phone, Mail, MapPin } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/input';
 import { mockEmployees } from './data';
 import { Employee } from './types';
@@ -29,9 +29,9 @@ export const EmployeesTab: React.FC = () => {
     const text = getHRStatusText(status);
     
     return (
-      <Badge className={colorClass}>
+      <UnifiedBadge variant={status === 'active' ? 'success' : status === 'inactive' ? 'error' : 'warning'}>
         {text}
-      </Badge>
+      </UnifiedBadge>
     );
   };
 
@@ -50,13 +50,12 @@ export const EmployeesTab: React.FC = () => {
       <div className="space-y-6 bg-transparent">
         {/* عودة إلى قائمة الموظفين */}
         <div className="flex items-center gap-4">
-          <Button 
+          <UnifiedButton 
             variant="outline" 
             onClick={() => setSelectedEmployee(null)}
-            className="flex items-center gap-2"
           >
-            <span>← العودة</span>
-          </Button>
+            ← العودة
+          </UnifiedButton>
           <h3 className="text-2xl font-bold text-gray-800 font-arabic">ملف الموظف</h3>
         </div>
 
@@ -92,10 +91,10 @@ export const EmployeesTab: React.FC = () => {
                 </div>
               </div>
             </div>
-            <Button variant="outline" className="flex items-center gap-2">
+            <UnifiedButton variant="outline">
               <Edit className="h-4 w-4" />
-              <span className="font-arabic">تعديل</span>
-            </Button>
+              تعديل
+            </UnifiedButton>
           </div>
         </BaseCard>
 
@@ -107,11 +106,11 @@ export const EmployeesTab: React.FC = () => {
               <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium font-arabic">{skill.name}</h4>
-                  <Badge className={`text-xs ${getSkillLevelColor(skill.level)}`}>
+                  <UnifiedBadge variant={skill.level === 'expert' ? 'success' : skill.level === 'advanced' ? 'info' : skill.level === 'intermediate' ? 'warning' : 'default'}>
                     {skill.level === 'expert' ? 'خبير' :
                      skill.level === 'advanced' ? 'متقدم' :
                      skill.level === 'intermediate' ? 'متوسط' : 'مبتدئ'}
-                  </Badge>
+                  </UnifiedBadge>
                 </div>
                 <p className="text-sm text-gray-600 font-arabic mb-1">الفئة: {skill.category}</p>
                 <p className="text-xs text-gray-500">آخر تقييم: {skill.lastAssessed}</p>
@@ -149,10 +148,10 @@ export const EmployeesTab: React.FC = () => {
         <BaseCard variant="operations" className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold text-gray-800 font-arabic">الوثائق</h3>
-            <Button variant="outline" size="sm">
+            <UnifiedButton variant="outline" size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              <span className="font-arabic">إضافة وثيقة</span>
-            </Button>
+              إضافة وثيقة
+            </UnifiedButton>
           </div>
           <div className="space-y-3">
             {selectedEmployee.documents.map((doc, index) => (
@@ -166,9 +165,9 @@ export const EmployeesTab: React.FC = () => {
                     تم الرفع في {doc.uploadDate}
                   </p>
                 </div>
-                <Button variant="ghost" size="sm">
+                <UnifiedButton variant="outline" size="sm">
                   <Eye className="h-4 w-4" />
-                </Button>
+                </UnifiedButton>
               </div>
             ))}
           </div>
@@ -208,15 +207,15 @@ export const EmployeesTab: React.FC = () => {
               ))}
             </select>
             
-            <Button variant="outline">
+            <UnifiedButton variant="outline">
               <Filter className="h-4 w-4 mr-2" />
-              <span className="font-arabic">تصفية</span>
-            </Button>
+              تصفية
+            </UnifiedButton>
             
-            <Button>
+            <UnifiedButton>
               <Plus className="h-4 w-4 mr-2" />
-              <span className="font-arabic">إضافة موظف</span>
-            </Button>
+              إضافة موظف
+            </UnifiedButton>
           </div>
         </div>
       </BaseCard>
@@ -255,16 +254,16 @@ export const EmployeesTab: React.FC = () => {
                   <td className="py-3 px-4">{getStatusBadge(employee.status)}</td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
-                      <Button 
-                        variant="ghost" 
+                      <UnifiedButton 
+                        variant="outline" 
                         size="sm"
                         onClick={() => setSelectedEmployee(employee)}
                       >
                         <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
+                      </UnifiedButton>
+                      <UnifiedButton variant="outline" size="sm">
                         <Edit className="h-4 w-4" />
-                      </Button>
+                      </UnifiedButton>
                     </div>
                   </td>
                 </tr>

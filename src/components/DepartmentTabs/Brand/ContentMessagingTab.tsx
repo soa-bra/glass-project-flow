@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { 
@@ -146,10 +146,10 @@ export const ContentMessagingTab: React.FC = () => {
                 <div className="text-sm text-gray-600">محتوى هذا الشهر</div>
               </div>
             </div>
-            <Button className="w-full" variant="outline">
+            <UnifiedButton variant="outline">
               <PenTool className="h-4 w-4 mr-2" />
               إنشاء محتوى جديد
-            </Button>
+            </UnifiedButton>
           </CardContent>
         </Card>
       </div>
@@ -162,11 +162,11 @@ export const ContentMessagingTab: React.FC = () => {
             مكتبة المحتوى
           </CardTitle>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">تصفية</Button>
-            <Button size="sm">
+            <UnifiedButton variant="outline" size="sm">تصفية</UnifiedButton>
+            <UnifiedButton size="sm">
               <PenTool className="h-4 w-4 mr-2" />
               محتوى جديد
-            </Button>
+            </UnifiedButton>
           </div>
         </CardHeader>
         <CardContent>
@@ -183,10 +183,10 @@ export const ContentMessagingTab: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge className={getStatusColor(content.status)}>
+                    <UnifiedBadge variant="info">
                       {getStatusIcon(content.status)}
                       <span className="mr-1">{content.status}</span>
-                    </Badge>
+                    </UnifiedBadge>
                   </div>
                 </div>
                 
@@ -204,15 +204,15 @@ export const ContentMessagingTab: React.FC = () => {
                     <div className="text-xs text-gray-600">نقاط ثقافية</div>
                   </div>
                   <div className="flex items-center justify-center gap-2">
-                    <Button size="sm" variant="outline">
+                    <UnifiedButton size="sm" variant="outline">
                       <Eye className="h-3 w-3" />
-                    </Button>
-                    <Button size="sm" variant="outline">
+                    </UnifiedButton>
+                    <UnifiedButton size="sm" variant="outline">
                       <Edit className="h-3 w-3" />
-                    </Button>
-                    <Button size="sm" variant="outline">
+                    </UnifiedButton>
+                    <UnifiedButton size="sm" variant="outline">
                       <Share2 className="h-3 w-3" />
-                    </Button>
+                    </UnifiedButton>
                   </div>
                 </div>
               </div>
@@ -239,7 +239,7 @@ export const ContentMessagingTab: React.FC = () => {
                 <h4 className="font-medium">ندوة التراث الرقمي</h4>
                 <p className="text-sm text-gray-600">مجدولة لـ 25 يناير 2024</p>
               </div>
-              <Badge variant="outline">فيديو</Badge>
+              <UnifiedBadge variant="info">فيديو</UnifiedBadge>
             </div>
             <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -249,7 +249,7 @@ export const ContentMessagingTab: React.FC = () => {
                 <h4 className="font-medium">دليل الممارسات الثقافية</h4>
                 <p className="text-sm text-gray-600">مجدول لـ 28 يناير 2024</p>
               </div>
-              <Badge variant="outline">دليل</Badge>
+              <UnifiedBadge variant="info">دليل</UnifiedBadge>
             </div>
           </div>
         </CardContent>

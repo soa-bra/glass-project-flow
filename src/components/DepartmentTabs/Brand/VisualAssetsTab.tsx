@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
 import { Input } from '@/components/ui/input';
 import { 
   Palette, 
@@ -78,15 +78,15 @@ export const VisualAssetsTab: React.FC = () => {
               className="pl-10 w-80"
             />
           </div>
-          <Button variant="outline" size="sm">
+          <UnifiedButton variant="outline" size="sm">
             <Filter className="h-4 w-4 mr-2" />
             تصفية
-          </Button>
+          </UnifiedButton>
         </div>
-        <Button>
+        <UnifiedButton>
           <Upload className="h-4 w-4 mr-2" />
           رفع أصل جديد
-        </Button>
+        </UnifiedButton>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -109,9 +109,9 @@ export const VisualAssetsTab: React.FC = () => {
                     }`}
                   >
                     <span className="font-medium">{category.name}</span>
-                    <Badge variant="secondary" className="ml-2">
+                    <UnifiedBadge variant="info">
                       {category.count}
-                    </Badge>
+                    </UnifiedBadge>
                   </button>
                 ))}
               </div>
@@ -139,9 +139,9 @@ export const VisualAssetsTab: React.FC = () => {
                         {asset.type === 'template' && <FileText className="h-4 w-4 text-green-600" />}
                         {asset.type === 'color' && <Palette className="h-4 w-4 text-purple-600" />}
                       </div>
-                      <Badge variant={asset.status === 'approved' ? 'default' : 'secondary'}>
+                      <UnifiedBadge variant={asset.status === 'approved' ? 'success' : 'warning'}>
                         {asset.status === 'approved' ? 'معتمد' : 'قيد المراجعة'}
-                      </Badge>
+                      </UnifiedBadge>
                     </div>
                     
                     <h3 className="font-medium mb-2">{asset.name}</h3>
@@ -162,16 +162,16 @@ export const VisualAssetsTab: React.FC = () => {
                     </div>
                     
                     <div className="flex items-center gap-2">
-                      <Button size="sm" variant="outline" className="flex-1">
+                      <UnifiedButton size="sm" variant="outline">
                         <Eye className="h-3 w-3 mr-1" />
                         عرض
-                      </Button>
-                      <Button size="sm" variant="outline">
+                      </UnifiedButton>
+                      <UnifiedButton size="sm" variant="outline">
                         <Download className="h-3 w-3" />
-                      </Button>
-                      <Button size="sm" variant="outline">
+                      </UnifiedButton>
+                      <UnifiedButton size="sm" variant="outline">
                         <Edit className="h-3 w-3" />
-                      </Button>
+                      </UnifiedButton>
                     </div>
                   </div>
                 ))}
