@@ -15,7 +15,10 @@ export const UnifiedCard: React.FC<UnifiedCardProps> = ({
 }) => {
   return <div className={cn(buildCardClasses(), className)}>
       {title && <div className="mb-6">
-          
+          <h3 className={buildTitleClasses()}>
+            {icon}
+            {title}
+          </h3>
         </div>}
       <div>
         {children}
