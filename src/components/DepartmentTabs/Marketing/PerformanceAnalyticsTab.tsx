@@ -2,7 +2,7 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { TrendingUp, BarChart3, Users, Target, DollarSign, MousePointer } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
 
 export const PerformanceAnalyticsTab: React.FC = () => {
   const kpiData = [
@@ -69,9 +69,9 @@ export const PerformanceAnalyticsTab: React.FC = () => {
               <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200/50">
                 <div className="flex items-center justify-between mb-2">
                   <kpi.icon className="h-5 w-5 text-black" />
-                  <Badge variant={kpi.trend === 'up' ? 'default' : 'secondary'} className="text-xs">
+                  <UnifiedBadge variant={kpi.trend === 'up' ? 'success' : 'default'} size="sm">
                     {kpi.change}
-                  </Badge>
+                  </UnifiedBadge>
                 </div>
                 <h4 className="text-2xl font-bold text-black mb-1">{kpi.value}</h4>
                 <p className="text-sm text-black font-arabic">{kpi.title}</p>
@@ -127,18 +127,18 @@ export const PerformanceAnalyticsTab: React.FC = () => {
           <div className="space-y-4">
             {audienceInsights.map((segment, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="text-sm font-arabic text-black">{segment.segment}</div>
-                  <Badge 
-                    variant={
-                      segment.engagement === 'عالي' ? 'default' :
-                      segment.engagement === 'متوسط' ? 'secondary' : 'outline'
-                    }
-                    className="text-xs"
-                  >
-                    {segment.engagement}
-                  </Badge>
-                </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-sm font-arabic text-black">{segment.segment}</div>
+                    <UnifiedBadge 
+                      variant={
+                        segment.engagement === 'عالي' ? 'success' :
+                        segment.engagement === 'متوسط' ? 'warning' : 'default'
+                      }
+                      size="sm"
+                    >
+                      {segment.engagement}
+                    </UnifiedBadge>
+                  </div>
                 <div className="text-lg font-bold text-black">{segment.percentage}%</div>
               </div>
             ))}

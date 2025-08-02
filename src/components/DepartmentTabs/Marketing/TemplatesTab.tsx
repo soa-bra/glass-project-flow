@@ -2,8 +2,8 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { FileText, Download, Eye, Copy, Plus, Search } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 
 export const TemplatesTab: React.FC = () => {
   const templateCategories = [
@@ -105,13 +105,13 @@ export const TemplatesTab: React.FC = () => {
               className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-arabic"
             />
           </div>
-          <Button variant="outline" size="sm">
+          <UnifiedButton variant="outline" size="sm">
             فلترة
-          </Button>
-          <Button size="sm">
+          </UnifiedButton>
+          <UnifiedButton variant="primary" size="sm">
             <Plus className="h-4 w-4 ml-1" />
             إضافة قالب
-          </Button>
+          </UnifiedButton>
         </div>
       </BaseCard>
 
@@ -127,9 +127,9 @@ export const TemplatesTab: React.FC = () => {
             <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center justify-between mb-3">
                 <category.icon className={`h-6 w-6 ${category.color}`} />
-                <Badge variant="secondary" className="text-xs">
+                <UnifiedBadge variant="default" size="sm">
                   {category.count}
-                </Badge>
+                </UnifiedBadge>
               </div>
               <h4 className="font-medium font-arabic text-sm">{category.name}</h4>
             </div>
@@ -145,9 +145,9 @@ export const TemplatesTab: React.FC = () => {
               <Download className="h-5 w-5 text-green-600" />
               <h3 className="text-xl font-bold text-gray-800 font-arabic">الأكثر استخداماً</h3>
             </div>
-            <Button variant="outline" size="sm">
+            <UnifiedButton variant="outline" size="sm">
               عرض الكل
-            </Button>
+            </UnifiedButton>
           </div>
           
           <div className="space-y-3">
@@ -160,26 +160,26 @@ export const TemplatesTab: React.FC = () => {
                     <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
                       <span className="font-arabic">{template.category}</span>
                       <span>{template.downloads} تحميل</span>
-                      <Badge 
-                        variant={template.status === 'محدث' ? 'default' : 'secondary'} 
-                        className="text-xs"
+                      <UnifiedBadge 
+                        variant={template.status === 'محدث' ? 'success' : 'warning'} 
+                        size="sm"
                       >
                         {template.status}
-                      </Badge>
+                      </UnifiedBadge>
                     </div>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-1">
-                  <Button size="sm" variant="ghost">
+                  <UnifiedButton size="sm" variant="outline">
                     <Eye className="h-4 w-4" />
-                  </Button>
-                  <Button size="sm" variant="ghost">
+                  </UnifiedButton>
+                  <UnifiedButton size="sm" variant="outline">
                     <Download className="h-4 w-4" />
-                  </Button>
-                  <Button size="sm" variant="ghost">
+                  </UnifiedButton>
+                  <UnifiedButton size="sm" variant="outline">
                     <Copy className="h-4 w-4" />
-                  </Button>
+                  </UnifiedButton>
                 </div>
               </div>
             ))}
@@ -193,9 +193,9 @@ export const TemplatesTab: React.FC = () => {
               <Plus className="h-5 w-5 text-blue-600" />
               <h3 className="text-xl font-bold text-gray-800 font-arabic">المضافة حديثاً</h3>
             </div>
-            <Button variant="outline" size="sm">
+            <UnifiedButton variant="outline" size="sm">
               عرض الكل
-            </Button>
+            </UnifiedButton>
           </div>
           
           <div className="space-y-3">
@@ -214,12 +214,12 @@ export const TemplatesTab: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center gap-1">
-                  <Button size="sm" variant="ghost">
+                  <UnifiedButton size="sm" variant="outline">
                     <Eye className="h-4 w-4" />
-                  </Button>
-                  <Button size="sm" variant="ghost">
+                  </UnifiedButton>
+                  <UnifiedButton size="sm" variant="outline">
                     <Download className="h-4 w-4" />
-                  </Button>
+                  </UnifiedButton>
                 </div>
               </div>
             ))}

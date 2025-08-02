@@ -2,8 +2,8 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Megaphone, Users, Calendar, FileText, Award, TrendingUp } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 
 export const PublicRelationsTab: React.FC = () => {
   const prCampaigns = [
@@ -87,17 +87,17 @@ export const PublicRelationsTab: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="default" className="text-xs">نشط</Badge>;
+        return <UnifiedBadge variant="success" size="sm">نشط</UnifiedBadge>;
       case 'planning':
-        return <Badge variant="secondary" className="text-xs">تخطيط</Badge>;
+        return <UnifiedBadge variant="warning" size="sm">تخطيط</UnifiedBadge>;
       case 'completed':
-        return <Badge variant="outline" className="text-xs">مكتمل</Badge>;
+        return <UnifiedBadge variant="default" size="sm">مكتمل</UnifiedBadge>;
       case 'published':
-        return <Badge variant="default" className="text-xs">منشور</Badge>;
+        return <UnifiedBadge variant="success" size="sm">منشور</UnifiedBadge>;
       case 'draft':
-        return <Badge variant="secondary" className="text-xs">مسودة</Badge>;
+        return <UnifiedBadge variant="default" size="sm">مسودة</UnifiedBadge>;
       default:
-        return <Badge variant="outline" className="text-xs">غير معروف</Badge>;
+        return <UnifiedBadge variant="default" size="sm">غير معروف</UnifiedBadge>;
     }
   };
 
@@ -110,9 +110,9 @@ export const PublicRelationsTab: React.FC = () => {
             <Megaphone className="h-6 w-6 text-blue-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">حملات العلاقات العامة</h3>
           </div>
-          <Button variant="outline" size="sm">
+          <UnifiedButton variant="outline" size="sm">
             إضافة حملة جديدة
-          </Button>
+          </UnifiedButton>
         </div>
         
         <div className="space-y-4">
@@ -159,9 +159,9 @@ export const PublicRelationsTab: React.FC = () => {
             <Users className="h-6 w-6 text-green-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">جهات الاتصال الإعلامية</h3>
           </div>
-          <Button variant="outline" size="sm">
+          <UnifiedButton variant="outline" size="sm">
             إضافة جهة اتصال
-          </Button>
+          </UnifiedButton>
         </div>
         
         <div className="overflow-x-auto">
@@ -182,15 +182,15 @@ export const PublicRelationsTab: React.FC = () => {
                   <td className="py-3 px-4 font-arabic">{contact.outlet}</td>
                   <td className="py-3 px-4 font-arabic">{contact.type}</td>
                   <td className="py-3 px-4">
-                    <Badge 
+                    <UnifiedBadge 
                       variant={
-                        contact.relationship === 'قوي' ? 'default' :
-                        contact.relationship === 'متوسط' ? 'secondary' : 'outline'
+                        contact.relationship === 'قوي' ? 'success' :
+                        contact.relationship === 'متوسط' ? 'warning' : 'default'
                       }
-                      className="text-xs"
+                      size="sm"
                     >
                       {contact.relationship}
-                    </Badge>
+                    </UnifiedBadge>
                   </td>
                   <td className="py-3 px-4">{contact.lastContact}</td>
                 </tr>
@@ -207,9 +207,9 @@ export const PublicRelationsTab: React.FC = () => {
             <FileText className="h-6 w-6 text-purple-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">البيانات الصحفية</h3>
           </div>
-          <Button variant="outline" size="sm">
+          <UnifiedButton variant="outline" size="sm">
             إنشاء بيان صحفي
-          </Button>
+          </UnifiedButton>
         </div>
         
         <div className="space-y-3">
@@ -229,9 +229,9 @@ export const PublicRelationsTab: React.FC = () => {
               
               <div className="flex items-center gap-2">
                 {getStatusBadge(release.status)}
-                <Button size="sm" variant="ghost">
+                <UnifiedButton size="sm" variant="outline">
                   عرض
-                </Button>
+                </UnifiedButton>
               </div>
             </div>
           ))}

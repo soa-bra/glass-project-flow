@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
 import { Calendar, Plus, Settings, BarChart3, Target, DollarSign } from 'lucide-react';
 
 export const CampaignsChannelsTab: React.FC = () => {
@@ -106,29 +106,29 @@ export const CampaignsChannelsTab: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      'active': { label: 'نشطة', className: 'bg-green-100 text-green-700' },
-      'scheduled': { label: 'مجدولة', className: 'bg-blue-100 text-blue-700' },
-      'paused': { label: 'متوقفة', className: 'bg-yellow-100 text-yellow-700' },
-      'completed': { label: 'مكتملة', className: 'bg-gray-100 text-gray-700' },
-      'draft': { label: 'مسودة', className: 'bg-gray-100 text-gray-600' }
+      'active': { label: 'نشطة', variant: 'success' },
+      'scheduled': { label: 'مجدولة', variant: 'info' },
+      'paused': { label: 'متوقفة', variant: 'warning' },
+      'completed': { label: 'مكتملة', variant: 'default' },
+      'draft': { label: 'مسودة', variant: 'default' }
     };
     
     const statusInfo = statusMap[status as keyof typeof statusMap] || statusMap.draft;
-    return <Badge className={statusInfo.className}>{statusInfo.label}</Badge>;
+    return <UnifiedBadge variant={statusInfo.variant as any}>{statusInfo.label}</UnifiedBadge>;
   };
 
   const getApprovalBadge = (status: string) => {
     const statusMap = {
-      'approved': { label: 'معتمدة', className: 'bg-green-100 text-green-700' },
-      'creative_review': { label: 'مراجعة إبداعية', className: 'bg-orange-100 text-orange-700' },
-      'legal_review': { label: 'مراجعة قانونية', className: 'bg-purple-100 text-purple-700' },
-      'financial_review': { label: 'مراجعة مالية', className: 'bg-blue-100 text-blue-700' },
-      'rejected': { label: 'مرفوضة', className: 'bg-red-100 text-red-700' },
-      'pending': { label: 'في الانتظار', className: 'bg-gray-100 text-gray-600' }
+      'approved': { label: 'معتمدة', variant: 'success' },
+      'creative_review': { label: 'مراجعة إبداعية', variant: 'warning' },
+      'legal_review': { label: 'مراجعة قانونية', variant: 'default' },
+      'financial_review': { label: 'مراجعة مالية', variant: 'info' },
+      'rejected': { label: 'مرفوضة', variant: 'error' },
+      'pending': { label: 'في الانتظار', variant: 'default' }
     };
     
     const statusInfo = statusMap[status as keyof typeof statusMap] || statusMap.pending;
-    return <Badge className={statusInfo.className}>{statusInfo.label}</Badge>;
+    return <UnifiedBadge variant={statusInfo.variant as any}>{statusInfo.label}</UnifiedBadge>;
   };
 
   return (
@@ -136,48 +136,36 @@ export const CampaignsChannelsTab: React.FC = () => {
       {/* Header Actions */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex gap-2">
-          <button 
+          <UnifiedButton 
             onClick={() => setActiveView('campaigns')}
-            className={`py-2 px-4 rounded-full transition-all font-arabic ${
-              activeView === 'campaigns' 
-                ? 'bg-black text-white' 
-                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
-            }`}
+            variant={activeView === 'campaigns' ? 'primary' : 'outline'}
           >
             الحملات
-          </button>
-          <button 
+          </UnifiedButton>
+          <UnifiedButton 
             onClick={() => setActiveView('channels')}
-            className={`py-2 px-4 rounded-full transition-all font-arabic ${
-              activeView === 'channels' 
-                ? 'bg-black text-white' 
-                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
-            }`}
+            variant={activeView === 'channels' ? 'primary' : 'outline'}
           >
             القنوات
-          </button>
-          <button 
+          </UnifiedButton>
+          <UnifiedButton 
             onClick={() => setActiveView('calendar')}
-            className={`py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2 ${
-              activeView === 'calendar' 
-                ? 'bg-black text-white' 
-                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
-            }`}
+            variant={activeView === 'calendar' ? 'primary' : 'outline'}
           >
             <Calendar className="w-4 h-4" />
             التقويم
-          </button>
+          </UnifiedButton>
         </div>
         
         <div className="flex gap-2">
-          <button className="bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2">
+          <UnifiedButton variant="primary">
             <Plus className="w-4 h-4" />
             إنشاء حملة جديدة
-          </button>
-          <button className="bg-white border border-gray-200 text-black hover:bg-gray-50 py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2">
+          </UnifiedButton>
+          <UnifiedButton variant="outline">
             <Settings className="w-4 h-4" />
             إعدادات القنوات
-          </button>
+          </UnifiedButton>
         </div>
       </div>
 
@@ -230,9 +218,9 @@ export const CampaignsChannelsTab: React.FC = () => {
                   <p className="text-sm font-semibold text-black font-arabic mb-2">القنوات:</p>
                   <div className="flex gap-2 flex-wrap">
                     {campaign.channels.map((channel, index) => (
-                      <Badge key={index} variant="outline" className="font-arabic">
+                      <UnifiedBadge key={index} variant="default">
                         {channel}
-                      </Badge>
+                      </UnifiedBadge>
                     ))}
                   </div>
                 </div>
@@ -320,9 +308,9 @@ export const CampaignsChannelsTab: React.FC = () => {
             <p className="text-black font-arabic mb-6">
               عرض تفاعلي لجدولة الحملات والفعاليات التسويقية
             </p>
-            <button className="bg-black hover:bg-gray-800 text-white py-2 px-6 rounded-full transition-all font-arabic">
+            <UnifiedButton variant="primary" size="lg">
               قريباً - تقويم تفاعلي متقدم
-            </button>
+            </UnifiedButton>
           </div>
         </BaseCard>
       )}

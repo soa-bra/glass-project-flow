@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
 import { Input } from '@/components/ui/input';
 import { 
   Calendar, 
@@ -103,17 +103,17 @@ export const ContentAssetsTab: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      'scheduled': { label: 'مجدول', className: 'bg-blue-100 text-blue-700' },
-      'published': { label: 'منشور', className: 'bg-green-100 text-green-700' },
-      'draft': { label: 'مسودة', className: 'bg-gray-100 text-gray-600' },
-      'cancelled': { label: 'ملغي', className: 'bg-red-100 text-red-700' },
-      'approved': { label: 'معتمد', className: 'bg-green-100 text-green-700' },
-      'review': { label: 'قيد المراجعة', className: 'bg-yellow-100 text-yellow-700' },
-      'rejected': { label: 'مرفوض', className: 'bg-red-100 text-red-700' }
+      'scheduled': { label: 'مجدول', variant: 'info' },
+      'published': { label: 'منشور', variant: 'success' },
+      'draft': { label: 'مسودة', variant: 'default' },
+      'cancelled': { label: 'ملغي', variant: 'error' },
+      'approved': { label: 'معتمد', variant: 'success' },
+      'review': { label: 'قيد المراجعة', variant: 'warning' },
+      'rejected': { label: 'مرفوض', variant: 'error' }
     };
     
     const statusInfo = statusMap[status as keyof typeof statusMap] || statusMap.draft;
-    return <Badge className={statusInfo.className}>{statusInfo.label}</Badge>;
+    return <UnifiedBadge variant={statusInfo.variant as any}>{statusInfo.label}</UnifiedBadge>;
   };
 
   const formatFileSize = (sizeInMB: number) => {
@@ -125,50 +125,38 @@ export const ContentAssetsTab: React.FC = () => {
       {/* Header Actions */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex gap-2">
-          <button 
+          <UnifiedButton 
             onClick={() => setActiveView('calendar')}
-            className={`py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2 ${
-              activeView === 'calendar' 
-                ? 'bg-black text-white' 
-                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
-            }`}
+            variant={activeView === 'calendar' ? 'primary' : 'outline'}
           >
             <Calendar className="w-4 h-4" />
             تقويم المحتوى
-          </button>
-          <button 
+          </UnifiedButton>
+          <UnifiedButton 
             onClick={() => setActiveView('assets')}
-            className={`py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2 ${
-              activeView === 'assets' 
-                ? 'bg-black text-white' 
-                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
-            }`}
+            variant={activeView === 'assets' ? 'primary' : 'outline'}
           >
             <Image className="w-4 h-4" />
             الأصول التسويقية
-          </button>
-          <button 
+          </UnifiedButton>
+          <UnifiedButton 
             onClick={() => setActiveView('dam')}
-            className={`py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2 ${
-              activeView === 'dam' 
-                ? 'bg-black text-white' 
-                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
-            }`}
+            variant={activeView === 'dam' ? 'primary' : 'outline'}
           >
             <FileText className="w-4 h-4" />
             نظام DAM
-          </button>
+          </UnifiedButton>
         </div>
         
         <div className="flex gap-2">
-          <button className="bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2">
+          <UnifiedButton variant="primary">
             <Plus className="w-4 h-4" />
             إضافة محتوى
-          </button>
-          <button className="bg-white border border-gray-200 text-black hover:bg-gray-50 py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2">
+          </UnifiedButton>
+          <UnifiedButton variant="outline">
             <Upload className="w-4 h-4" />
             رفع أصول
-          </button>
+          </UnifiedButton>
         </div>
       </div>
 
@@ -205,20 +193,20 @@ export const ContentAssetsTab: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
                       {content.platform.map((platform, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
+                        <UnifiedBadge key={index} variant="default" size="sm">
                           {platform}
-                        </Badge>
+                        </UnifiedBadge>
                       ))}
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="font-arabic">
+                      <UnifiedButton size="sm" variant="outline">
                         <Eye className="w-4 h-4 ml-1" />
                         معاينة
-                      </Button>
-                      <Button size="sm" variant="outline" className="font-arabic">
+                      </UnifiedButton>
+                      <UnifiedButton size="sm" variant="outline">
                         <Settings className="w-4 h-4 ml-1" />
                         تعديل
-                      </Button>
+                      </UnifiedButton>
                     </div>
                   </div>
                 </div>
@@ -243,10 +231,10 @@ export const ContentAssetsTab: React.FC = () => {
                   className="pr-10 font-arabic"
                 />
               </div>
-              <Button variant="outline" className="font-arabic">
+              <UnifiedButton variant="outline">
                 <Filter className="w-4 h-4 ml-2" />
                 فلترة
-              </Button>
+              </UnifiedButton>
             </div>
           </BaseCard>
 
@@ -298,9 +286,9 @@ export const ContentAssetsTab: React.FC = () => {
                     {/* Tags */}
                     <div className="flex flex-wrap gap-1">
                       {asset.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
+                        <UnifiedBadge key={index} variant="default" size="sm">
                           {tag}
-                        </Badge>
+                        </UnifiedBadge>
                       ))}
                     </div>
 
@@ -309,19 +297,19 @@ export const ContentAssetsTab: React.FC = () => {
                       <div className="flex gap-2">
                         {getStatusBadge(asset.status)}
                         {asset.brandCompliant && (
-                          <Badge className="bg-green-100 text-green-700 text-xs">متوافق مع العلامة</Badge>
+                          <UnifiedBadge variant="success" size="sm">متوافق مع العلامة</UnifiedBadge>
                         )}
                       </div>
                       <div className="flex gap-1">
-                        <Button size="sm" variant="outline">
+                        <UnifiedButton size="sm" variant="outline">
                           <Eye className="w-3 h-3" />
-                        </Button>
-                        <Button size="sm" variant="outline">
+                        </UnifiedButton>
+                        <UnifiedButton size="sm" variant="outline">
                           <Download className="w-3 h-3" />
-                        </Button>
-                        <Button size="sm" variant="outline">
+                        </UnifiedButton>
+                        <UnifiedButton size="sm" variant="outline">
                           <Settings className="w-3 h-3" />
-                        </Button>
+                        </UnifiedButton>
                       </div>
                     </div>
                   </div>
@@ -363,7 +351,7 @@ export const ContentAssetsTab: React.FC = () => {
                 <p className="text-sm text-gray-600 font-arabic">مراجعة وضمان جودة المحتوى</p>
               </div>
             </div>
-            <Button className="font-arabic mt-6">قريباً - واجهة نظام DAM المتكاملة</Button>
+            <UnifiedButton variant="primary" size="lg" className="mt-6">قريباً - واجهة نظام DAM المتكاملة</UnifiedButton>
           </div>
         </BaseCard>
       )}

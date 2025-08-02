@@ -2,6 +2,8 @@ import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { TrendingUp, DollarSign, Users, BarChart3, Target, Zap } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
 
 export const OverviewTab: React.FC = () => {
   const kpiStats = [
@@ -138,13 +140,9 @@ export const OverviewTab: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl font-bold text-black">{kpi.value}</span>
-                    <span className={`text-sm px-2 py-1 rounded-full ${
-                      kpi.changeType === 'positive' 
-                        ? 'bg-[#bdeed3] text-black' 
-                        : 'bg-[#f1b5b9] text-black'
-                    }`}>
+                    <UnifiedBadge variant={kpi.changeType === 'positive' ? 'success' : 'error'}>
                       {kpi.change}
-                    </span>
+                    </UnifiedBadge>
                   </div>
                 </div>
               </div>
@@ -170,13 +168,9 @@ export const OverviewTab: React.FC = () => {
                     <p className="text-sm text-black font-arabic">{campaign.type}</p>
                   </div>
                   <div className="text-left">
-                    <span className={`px-3 py-1 rounded-full text-sm ${
-                      campaign.status === 'نشطة' 
-                        ? 'bg-[#bdeed3] text-black' 
-                        : 'bg-[#a4e2f6] text-black'
-                    }`}>
+                    <UnifiedBadge variant={campaign.status === 'نشطة' ? 'success' : 'info'}>
                       {campaign.status}
-                    </span>
+                    </UnifiedBadge>
                     <p className="text-xs text-black/70 mt-1">{campaign.daysLeft} يوم متبقي</p>
                   </div>
                 </div>
@@ -248,16 +242,14 @@ export const OverviewTab: React.FC = () => {
 
       {/* أدوات التصدير */}
       <div className="flex justify-center mt-6">
-        <button 
-          className="bg-black hover:bg-gray-800 text-white py-2 px-6 rounded-full transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 font-arabic"
-        >
+        <UnifiedButton variant="primary" size="lg">
           <div className="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           </div>
           تصدير تقرير تسويقي
-        </button>
+        </UnifiedButton>
       </div>
     </div>
   );

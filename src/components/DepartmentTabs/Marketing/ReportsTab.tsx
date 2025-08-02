@@ -2,8 +2,8 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { FileText, Download, Calendar, Filter, BarChart3, TrendingUp, PieChart, Target } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 
 export const ReportsTab: React.FC = () => {
   const reportTypes = [
@@ -103,13 +103,13 @@ export const ReportsTab: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'متاح':
-        return <Badge variant="default" className="text-xs">متاح</Badge>;
+        return <UnifiedBadge variant="success" size="sm">متاح</UnifiedBadge>;
       case 'قيد الإعداد':
-        return <Badge variant="secondary" className="text-xs">قيد الإعداد</Badge>;
+        return <UnifiedBadge variant="warning" size="sm">قيد الإعداد</UnifiedBadge>;
       case 'جديد':
-        return <Badge variant="outline" className="text-xs">جديد</Badge>;
+        return <UnifiedBadge variant="info" size="sm">جديد</UnifiedBadge>;
       default:
-        return <Badge variant="outline" className="text-xs">غير معروف</Badge>;
+        return <UnifiedBadge variant="default" size="sm">غير معروف</UnifiedBadge>;
     }
   };
 
@@ -122,10 +122,10 @@ export const ReportsTab: React.FC = () => {
             <FileText className="h-6 w-6 text-blue-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">أنواع التقارير التسويقية</h3>
           </div>
-          <Button variant="outline" size="sm">
+          <UnifiedButton variant="outline" size="sm">
             <Filter className="h-4 w-4 ml-1" />
             فلترة
-          </Button>
+          </UnifiedButton>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -138,9 +138,9 @@ export const ReportsTab: React.FC = () => {
                     <h4 className="font-medium font-arabic text-sm">{report.title}</h4>
                     <p className="text-xs text-gray-600 mt-1 font-arabic">{report.description}</p>
                     <div className="flex items-center gap-2 mt-2">
-                      <Badge variant="outline" className="text-xs font-arabic">
+                      <UnifiedBadge variant="default" size="sm">
                         {report.frequency}
-                      </Badge>
+                      </UnifiedBadge>
                     </div>
                   </div>
                 </div>
@@ -149,14 +149,13 @@ export const ReportsTab: React.FC = () => {
               
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-500 font-arabic">آخر إنشاء: {report.lastGenerated}</span>
-                <Button 
+                <UnifiedButton 
                   size="sm" 
-                  variant={report.status === 'متاح' ? 'default' : 'outline'}
-                  className="text-xs"
+                  variant={report.status === 'متاح' ? 'primary' : 'outline'}
                   disabled={report.status !== 'متاح'}
                 >
                   {report.status === 'متاح' ? 'تحميل' : 'إنشاء'}
-                </Button>
+                </UnifiedButton>
               </div>
             </div>
           ))}
@@ -171,9 +170,9 @@ export const ReportsTab: React.FC = () => {
               <Download className="h-5 w-5 text-green-600" />
               <h3 className="text-xl font-bold text-gray-800 font-arabic">التقارير الحديثة</h3>
             </div>
-            <Button variant="outline" size="sm">
+            <UnifiedButton variant="outline" size="sm">
               عرض الكل
-            </Button>
+            </UnifiedButton>
           </div>
           
           <div className="space-y-3">
@@ -186,15 +185,15 @@ export const ReportsTab: React.FC = () => {
                     <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
                       <span>{report.date}</span>
                       <span>{report.size}</span>
-                      <Badge variant="outline" className="text-xs">{report.type}</Badge>
+                      <UnifiedBadge variant="default" size="sm">{report.type}</UnifiedBadge>
                       <span className="font-arabic">{report.downloads} تحميل</span>
                     </div>
                   </div>
                 </div>
                 
-                <Button size="sm" variant="ghost">
+                <UnifiedButton size="sm" variant="outline">
                   <Download className="h-4 w-4" />
-                </Button>
+                </UnifiedButton>
               </div>
             ))}
           </div>
@@ -207,9 +206,9 @@ export const ReportsTab: React.FC = () => {
               <Calendar className="h-5 w-5 text-orange-600" />
               <h3 className="text-xl font-bold text-gray-800 font-arabic">التقارير المجدولة</h3>
             </div>
-            <Button variant="outline" size="sm">
+            <UnifiedButton variant="outline" size="sm">
               إضافة جدولة
-            </Button>
+            </UnifiedButton>
           </div>
           
           <div className="space-y-3">
@@ -217,12 +216,12 @@ export const ReportsTab: React.FC = () => {
               <div key={index} className="p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium font-arabic text-sm">{report.name}</h4>
-                  <Badge 
-                    variant={report.automated ? 'default' : 'secondary'} 
-                    className="text-xs"
+                  <UnifiedBadge 
+                    variant={report.automated ? 'success' : 'warning'} 
+                    size="sm"
                   >
                     {report.automated ? 'تلقائي' : 'يدوي'}
-                  </Badge>
+                  </UnifiedBadge>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
                   <div>

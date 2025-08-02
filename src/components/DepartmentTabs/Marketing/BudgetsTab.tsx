@@ -2,8 +2,8 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { DollarSign, TrendingUp, AlertTriangle, PieChart } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 
 export const BudgetsTab: React.FC = () => {
   const budgetOverview = {
@@ -65,13 +65,13 @@ export const BudgetsTab: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'on-track':
-        return <Badge variant="default" className="text-xs">ضمن الخطة</Badge>;
+        return <UnifiedBadge variant="success" size="sm">ضمن الخطة</UnifiedBadge>;
       case 'warning':
-        return <Badge variant="destructive" className="text-xs">تحذير</Badge>;
+        return <UnifiedBadge variant="error" size="sm">تحذير</UnifiedBadge>;
       case 'under-utilized':
-        return <Badge variant="secondary" className="text-xs">غير مستغل</Badge>;
+        return <UnifiedBadge variant="warning" size="sm">غير مستغل</UnifiedBadge>;
       default:
-        return <Badge variant="outline" className="text-xs">غير معروف</Badge>;
+        return <UnifiedBadge variant="default" size="sm">غير معروف</UnifiedBadge>;
     }
   };
 
@@ -125,9 +125,9 @@ export const BudgetsTab: React.FC = () => {
               <PieChart className="h-6 w-6 text-black" />
               <h3 className="text-xl font-bold text-black font-arabic">ميزانيات القنوات</h3>
             </div>
-            <button className="bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-full transition-all font-arabic">
+            <UnifiedButton variant="primary">
               إعادة توزيع الميزانية
-            </button>
+            </UnifiedButton>
           </div>
           
           <div className="space-y-4">
@@ -189,16 +189,16 @@ export const BudgetsTab: React.FC = () => {
               }`}>
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-arabic text-black">{alert.message}</p>
-                  <Badge 
+                  <UnifiedBadge 
                     variant={
-                      alert.severity === 'medium' ? 'destructive' :
-                      alert.severity === 'low' ? 'secondary' : 'default'
+                      alert.severity === 'medium' ? 'error' :
+                      alert.severity === 'low' ? 'info' : 'success'
                     }
-                    className="text-xs"
+                    size="sm"
                   >
                     {alert.type === 'warning' ? 'تحذير' : 
                      alert.type === 'info' ? 'معلومة' : 'نجح'}
-                  </Badge>
+                  </UnifiedBadge>
                 </div>
               </div>
             ))}
