@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { InnerCard } from '@/components/ui/InnerCard';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { Award, Target, TrendingUp, Star, Calendar, User } from 'lucide-react';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { mockPerformanceReviews, mockEmployees } from './data';
 import { PerformanceReview } from './types';
 import { getHRStatusColor, getHRStatusText } from './utils';
@@ -25,31 +25,13 @@ export const PerformanceTab: React.FC = () => {
   };
 
   const getGoalStatusBadge = (status: string) => {
+    const colorClass = getHRStatusColor(status);
     const text = getHRStatusText(status);
     
-    let variant: 'success' | 'warning' | 'error' | 'info' | 'default' = 'default';
-    switch (status.toLowerCase()) {
-      case 'completed':
-        variant = 'success';
-        break;
-      case 'inprogress':
-      case 'in_progress':
-        variant = 'info';
-        break;
-      case 'overdue':
-        variant = 'error';
-        break;
-      case 'pending':
-        variant = 'warning';
-        break;
-      default:
-        variant = 'default';
-    }
-    
     return (
-      <UnifiedBadge variant={variant} size="sm">
+      <Badge className={colorClass}>
         {text}
-      </UnifiedBadge>
+      </Badge>
     );
   };
 
@@ -67,18 +49,18 @@ export const PerformanceTab: React.FC = () => {
       <div className="space-y-6 bg-transparent">
         {/* عودة إلى قائمة التقييمات */}
         <div className="flex items-center gap-4">
-          <UnifiedButton 
+          <Button 
             variant="outline" 
             onClick={() => setSelectedReview(null)}
-            size="sm"
+            className="flex items-center gap-2"
           >
-            ← العودة
-          </UnifiedButton>
-          <h3 className="text-2xl font-bold text-black font-arabic">تقييم الأداء التفصيلي</h3>
+            <span>← العودة</span>
+          </Button>
+          <h3 className="text-2xl font-bold text-gray-800 font-arabic">تقييم الأداء التفصيلي</h3>
         </div>
 
         {/* معلومات التقييم الأساسية */}
-        <InnerCard className="p-6">
+        <BaseCard variant="operations" className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-800 font-arabic mb-2">
@@ -115,16 +97,16 @@ export const PerformanceTab: React.FC = () => {
                       <span className="text-sm text-gray-500">الموعد المستهدف: {goal.targetDate}</span>
                     </div>
                     <div className="mt-2">
-                    <div className="w-full bg-black/10 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full ${
-                          goal.status === 'completed' ? 'bg-green-500' :
-                          goal.status === 'inProgress' ? 'bg-blue-500' :
-                          goal.status === 'overdue' ? 'bg-red-500' : 'bg-black/40'
-                        }`}
-                        style={{ width: `${goal.progress}%` }}
-                      ></div>
-                    </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full ${
+                            goal.status === 'completed' ? 'bg-[#bdeed3]' :
+                            goal.status === 'inProgress' ? 'bg-[#a4e2f6]' :
+                            goal.status === 'overdue' ? 'bg-[#f1b5b9]' : 'bg-gray-400'
+                          }`}
+                          style={{ width: `${goal.progress}%` }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -155,34 +137,28 @@ export const PerformanceTab: React.FC = () => {
               </div>
             </div>
           </div>
-        </InnerCard>
+        </BaseCard>
 
         {/* التعليقات وخطة التطوير */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <InnerCard 
-            title="التعليقات"
-            className="p-6"
-          >
-            <div className="p-4 bg-black/5 rounded-xl">
-              <p className="text-black/80 font-arabic leading-relaxed">{selectedReview.feedback}</p>
+          <BaseCard variant="operations" className="p-6">
+            <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">التعليقات</h3>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-gray-700 font-arabic leading-relaxed">{selectedReview.feedback}</p>
             </div>
-          </InnerCard>
+          </BaseCard>
 
-          <InnerCard 
-            title="خطة التطوير"
-            className="p-6"
-          >
+          <BaseCard variant="operations" className="p-6">
+            <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">خطة التطوير</h3>
             <div className="space-y-2">
               {selectedReview.developmentPlan.map((item, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 bg-black/5 rounded-xl">
-                  <div className="w-6 h-6 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
-                    <Target className="h-3 w-3 text-black" />
-                  </div>
-                  <span className="text-black/80 font-arabic">{item}</span>
+                <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <Target className="h-4 w-4 text-blue-600" />
+                  <span className="text-gray-700 font-arabic">{item}</span>
                 </div>
               ))}
             </div>
-          </InnerCard>
+          </BaseCard>
         </div>
       </div>
     );
@@ -192,75 +168,65 @@ export const PerformanceTab: React.FC = () => {
     <div className="space-y-6 bg-transparent">
       {/* إحصائيات الأداء */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <InnerCard>
+        <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-black/70 font-arabic">التقييمات المكتملة</p>
-              <p className="text-2xl font-bold text-black">{performanceStats.completedReviews}</p>
+              <p className="text-sm text-gray-600 font-arabic">التقييمات المكتملة</p>
+              <p className="text-2xl font-bold text-green-600">{performanceStats.completedReviews}</p>
             </div>
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
-              <Award className="h-5 w-5 text-black" />
-            </div>
+            <Award className="h-8 w-8 text-green-600" />
           </div>
-        </InnerCard>
+        </BaseCard>
 
-        <InnerCard>
+        <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-black/70 font-arabic">التقييمات المعلقة</p>
-              <p className="text-2xl font-bold text-black">{performanceStats.pendingReviews}</p>
+              <p className="text-sm text-gray-600 font-arabic">التقييمات المعلقة</p>
+              <p className="text-2xl font-bold text-orange-600">{performanceStats.pendingReviews}</p>
             </div>
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
-              <Calendar className="h-5 w-5 text-black" />
-            </div>
+            <Calendar className="h-8 w-8 text-orange-600" />
           </div>
-        </InnerCard>
+        </BaseCard>
 
-        <InnerCard>
+        <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-black/70 font-arabic">متوسط التقييم</p>
-              <p className="text-2xl font-bold text-black">{performanceStats.averageRating}</p>
+              <p className="text-sm text-gray-600 font-arabic">متوسط التقييم</p>
+              <p className="text-2xl font-bold text-blue-600">{performanceStats.averageRating}</p>
             </div>
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
-              <Star className="h-5 w-5 text-black" />
-            </div>
+            <Star className="h-8 w-8 text-blue-600" />
           </div>
-        </InnerCard>
+        </BaseCard>
 
-        <InnerCard>
+        <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-black/70 font-arabic">الأداء المتميز</p>
-              <p className="text-2xl font-bold text-black">{performanceStats.highPerformers}</p>
+              <p className="text-sm text-gray-600 font-arabic">الأداء المتميز</p>
+              <p className="text-2xl font-bold text-purple-600">{performanceStats.highPerformers}</p>
             </div>
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-black" />
-            </div>
+            <TrendingUp className="h-8 w-8 text-purple-600" />
           </div>
-        </InnerCard>
+        </BaseCard>
 
-        <InnerCard>
+        <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-black/70 font-arabic">يحتاج تحسين</p>
-              <p className="text-2xl font-bold text-black">{performanceStats.improvementNeeded}</p>
+              <p className="text-sm text-gray-600 font-arabic">يحتاج تحسين</p>
+              <p className="text-2xl font-bold text-red-600">{performanceStats.improvementNeeded}</p>
             </div>
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
-              <User className="h-5 w-5 text-black" />
-            </div>
+            <User className="h-8 w-8 text-red-600" />
           </div>
-        </InnerCard>
+        </BaseCard>
       </div>
 
       {/* قائمة التقييمات */}
-      <InnerCard 
-        title="تقييمات الأداء"
-        icon={<Award className="h-4 w-4 text-white" />}
-        className="p-6"
-      >
+      <BaseCard variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <UnifiedButton size="sm">إضافة تقييم جديد</UnifiedButton>
+          <div className="flex items-center gap-2">
+            <Award className="h-6 w-6 text-blue-600" />
+            <h3 className="text-xl font-bold text-gray-800 font-arabic">تقييمات الأداء</h3>
+          </div>
+          <Button className="font-arabic">إضافة تقييم جديد</Button>
         </div>
 
         <div className="overflow-x-auto">
@@ -294,29 +260,30 @@ export const PerformanceTab: React.FC = () => {
                   </td>
                   <td className="py-3 px-4">{review.reviewDate}</td>
                   <td className="py-3 px-4">
-                    <UnifiedBadge 
-                      variant={review.status === 'completed' ? 'success' : 'warning'}
-                      size="sm"
+                    <Badge 
+                      variant={review.status === 'completed' ? 'default' : 'secondary'}
+                      className="text-xs"
                     >
                       {review.status === 'completed' ? 'مكتمل' :
                        review.status === 'draft' ? 'مسودة' : 'معتمد'}
-                    </UnifiedBadge>
+                    </Badge>
                   </td>
                   <td className="py-3 px-4">
-                    <UnifiedButton 
+                    <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => setSelectedReview(review)}
+                      className="font-arabic"
                     >
                       عرض التفاصيل
-                    </UnifiedButton>
+                    </Button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </InnerCard>
+      </BaseCard>
     </div>
   );
 };
