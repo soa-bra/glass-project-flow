@@ -73,8 +73,8 @@ export const ReportsTab: React.FC = () => {
 
       {/* قائمة التقارير */}
       <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold text-black font-arabic">التقارير المتاحة</h3>
+        <div className="mb-1">
+          <h3 className="h-11 w-11 text-xl font-semibold text-black font-arabic">التقارير المتاحة</h3>
         </div>
         <div>
           <div className="space-y-4">
