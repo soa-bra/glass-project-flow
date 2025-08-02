@@ -27,7 +27,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
       </div>;
   }
   return <div className={`grid grid-cols-4 gap-6 mb-6 my-0 px-0 mx-[5px] ${className}`}>
-      {stats.map((stat, index) => <div key={index} className="text-right p-0 py-0 my-[15px] px-0 mx-0">
+      {stats.map((stat, index) => <div key={index} className="text-right p-0 py-0 my-[15px] mx-0 px-[25px]">
           <div className="mb-2">
             <span className="text-sm text-black font-arabic font-medium">{stat.title}</span>
           </div>
