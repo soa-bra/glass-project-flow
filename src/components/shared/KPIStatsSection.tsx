@@ -26,18 +26,18 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
         </div>
       </div>;
   }
-  return <div className={`grid grid-cols-4 gap-6 mb-6 my-0 px-0 mx-[5px] ${className}`}>
-      {stats.map((stat, index) => <div key={index} className="text-right p-0 py-0 my-[15px] mx-0 px-[25px]">
+  return <div className={`grid grid-cols-4 gap-6 mb-6 px-0 mx-0 ${className}`}>
+      {stats.map((stat, index) => <div key={index} className="text-right p-0 py-0 my-0 mx-0 px-6">
           <div className="mb-2">
-            <span className="text-sm text-black font-arabic font-medium">{stat.title}</span>
+            <span className="text-base text-black font-arabic font-medium">{stat.title}</span>
           </div>
           <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
-            <div className="text-5xl font-normal text-gray-900 font-arabic">
+            <div className="text-5xl font-bold text-black font-arabic">
               {typeof stat.value === 'number' ? String(stat.value).padStart(2, '0') : stat.value}
             </div>
-            {stat.unit && <div className="text-xs text-black font-arabic font-bold">{stat.unit}</div>}
+            {stat.unit && <div className="text-sm text-black font-arabic font-bold">{stat.unit}</div>}
           </div>
-          {stat.description && <div className="text-xs font-Regular text-black font-arabic">{stat.description}</div>}
+          {stat.description && <div className="text-sm font-normal text-black font-arabic">{stat.description}</div>}
         </div>)}
     </div>;
 };

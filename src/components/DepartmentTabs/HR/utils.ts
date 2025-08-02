@@ -7,28 +7,31 @@ export const getHRStatusColor = (status: string): string => {
     case 'passed':
     case 'excellent':
     case 'good':
-      return 'bg-[#bdeed3] text-black border-[#bdeed3]';
+      return 'bg-[#bdeed3] text-black';
     case 'pending':
     case 'in_progress':
     case 'late':
     case 'warning':
     case 'average':
-      return 'bg-[#fbe2aa] text-black border-[#fbe2aa]';
+      return 'bg-[#fbe2aa] text-black';
     case 'rejected':
     case 'inactive':
     case 'failed':
     case 'absent':
     case 'poor':
     case 'critical':
-      return 'bg-[#f1b5b9] text-black border-[#f1b5b9]';
+      return 'bg-[#f1b5b9] text-black';
     case 'review':
     case 'scheduled':
     case 'info':
     case 'draft':
     case 'new':
-      return 'bg-[#a4e2f6] text-black border-[#a4e2f6]';
+      return 'bg-[#a4e2f6] text-black';
+    case 'important':
+    case 'priority':
+      return 'bg-[#d9d2fd] text-black';
     default:
-      return 'bg-gray-100 text-gray-800 border-gray-100';
+      return 'bg-[#d9d2fd] text-black';
   }
 };
 

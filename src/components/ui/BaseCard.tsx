@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 type Size = 'sm' | 'md' | 'lg';
-type Variant = 'glass' | 'flat' | 'operations';
+type Variant = 'glass' | 'flat' | 'operations' | 'unified';
 type Color = 'info' | 'success' | 'warning' | 'error' | 'crimson';
 type NeonRing = 'info' | 'success' | 'warning' | 'error';
 interface BaseCardProps {
@@ -27,12 +27,13 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   const sizeClasses = {
     sm: 'p-4',
     md: 'p-6',
-    lg: 'p-8'
+    lg: 'p-9'
   };
   const variantClasses = {
     glass: 'bg-white/40 backdrop-blur-[20px] border border-white/20',
     flat: 'bg-opacity-100',
-    operations: 'bg-[#f2ffff] border border-black/10 shadow-sm'
+    operations: 'bg-[#f2ffff] border border-black/10 shadow-sm',
+    unified: 'bg-[#f2ffff] border border-black/10 hover:shadow-md transition-shadow'
   };
   const colorClasses = {
     info: 'bg-blue-500',
