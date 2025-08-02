@@ -31,8 +31,7 @@ export const MarketingROAS: React.FC<MarketingROASProps> = ({
         return <div className="w-4 h-4 rounded-full bg-gray-400" />;
     }
   };
-  return (
-    <div className="bg-[#bdeed3] rounded-3xl border border-black/10 p-6">
+  return <div className="rounded-[40px] bg-[#f0fafa] border border-black/10 p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-black font-arabic">عائد الاستثمار التسويقي (ROAS)</h3>
       </div>
@@ -40,15 +39,15 @@ export const MarketingROAS: React.FC<MarketingROASProps> = ({
       <ChartContainer config={chartConfig}>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={roasData} margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5
-          }}>
+          top: 5,
+          right: 30,
+          left: 20,
+          bottom: 5
+        }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="channel" tick={{
-              fontSize: 12
-            }} interval={0} angle={-45} textAnchor="end" height={80} />
+            fontSize: 12
+          }} interval={0} angle={-45} textAnchor="end" height={80} />
             <YAxis />
             <Tooltip content={<ChartTooltipContent />} />
             <Bar dataKey="roas" fill="var(--color-roas)" radius={[4, 4, 0, 0]} />
@@ -57,8 +56,7 @@ export const MarketingROAS: React.FC<MarketingROASProps> = ({
       </ChartContainer>
       
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {roasData.map((item, index) => (
-          <div key={index} className="flex items-center justify-between p-3 bg-white/60 rounded-2xl border border-black/5">
+        {roasData.map((item, index) => <div key={index} className="flex items-center justify-between p-3 bg-white/60 rounded-2xl border border-black/5">
             <div className="text-right">
               <p className="font-medium text-sm text-black font-arabic">{item.channel}</p>
               <p className="text-xs text-black/60 font-arabic">
@@ -69,9 +67,7 @@ export const MarketingROAS: React.FC<MarketingROASProps> = ({
               {getTrendIcon(item.trend)}
               <span className="font-bold text-lg text-black font-arabic">{item.roas.toFixed(1)}x</span>
             </div>
-          </div>
-        ))}
+          </div>)}
       </div>
-    </div>
-  );
+    </div>;
 };
