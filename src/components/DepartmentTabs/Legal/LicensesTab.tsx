@@ -2,35 +2,33 @@ import React from 'react';
 import { Award, AlertTriangle, Calendar, DollarSign, Plus } from 'lucide-react';
 import { mockLicenses } from './data';
 import { getStatusColor, getStatusText, formatCurrency, formatDate, getDaysUntil } from './utils';
-
 export const LicensesTab: React.FC = () => {
   const licenseStats = {
     active: mockLicenses.filter(license => license.status === 'active').length,
     expired: mockLicenses.filter(license => license.status === 'expired').length,
     pendingRenewal: mockLicenses.filter(license => license.status === 'pending_renewal').length,
-    suspended: mockLicenses.filter(license => license.status === 'suspended').length,
+    suspended: mockLicenses.filter(license => license.status === 'suspended').length
   };
-
-  const totalRenewalCost = mockLicenses
-    .filter(license => license.status === 'pending_renewal')
-    .reduce((sum, license) => sum + license.renewalCost, 0);
-
+  const totalRenewalCost = mockLicenses.filter(license => license.status === 'pending_renewal').reduce((sum, license) => sum + license.renewalCost, 0);
   const getLicenseStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-[#bdeed3] text-black';
-      case 'pending_renewal': return 'bg-[#fbe2aa] text-black';
-      case 'expired': return 'bg-[#f1b5b9] text-black';
-      case 'suspended': return 'bg-[#d9d2fd] text-black';
-      default: return 'bg-[#a4e2f6] text-black';
+      case 'active':
+        return 'bg-[#bdeed3] text-black';
+      case 'pending_renewal':
+        return 'bg-[#fbe2aa] text-black';
+      case 'expired':
+        return 'bg-[#f1b5b9] text-black';
+      case 'suspended':
+        return 'bg-[#d9d2fd] text-black';
+      default:
+        return 'bg-[#a4e2f6] text-black';
     }
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-black font-arabic">التراخيص والملكية الفكرية</h3>
         <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-transparent border border-white flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
             <Plus className="w-4 h-4" />
           </div>
           إضافة ترخيص جديد
@@ -99,8 +97,7 @@ export const LicensesTab: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {mockLicenses.map((license) => (
-                  <tr key={license.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
+                {mockLicenses.map(license => <tr key={license.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
                     <td className="py-4">
                       <div className="font-medium text-black font-arabic">{license.name}</div>
                       <div className="text-sm text-black/70 font-arabic">{license.id}</div>
@@ -117,13 +114,11 @@ export const LicensesTab: React.FC = () => {
                     </td>
                     <td className="py-4 text-black font-arabic">{formatDate(license.expiryDate)}</td>
                     <td className="py-4 font-medium text-black font-arabic">{formatCurrency(license.renewalCost)}</td>
-                  </tr>
-                ))}
+                  </tr>)}
               </tbody>
             </table>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
