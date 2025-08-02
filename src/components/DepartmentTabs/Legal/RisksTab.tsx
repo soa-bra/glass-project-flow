@@ -2,31 +2,32 @@ import React from 'react';
 import { AlertTriangle, Shield, Activity, TrendingUp } from 'lucide-react';
 import { mockRiskAssessments } from './data';
 import { getStatusColor, getStatusText, getRiskColor, calculateRiskScore, formatDate } from './utils';
-
 export const RisksTab: React.FC = () => {
   const riskStats = {
     critical: mockRiskAssessments.filter(risk => risk.riskLevel === 'critical').length,
     high: mockRiskAssessments.filter(risk => risk.riskLevel === 'high').length,
     medium: mockRiskAssessments.filter(risk => risk.riskLevel === 'medium').length,
-    low: mockRiskAssessments.filter(risk => risk.riskLevel === 'low').length,
+    low: mockRiskAssessments.filter(risk => risk.riskLevel === 'low').length
   };
-
   const getRiskStatusColor = (level: string) => {
     switch (level) {
-      case 'critical': return 'bg-[#f1b5b9] text-black';
-      case 'high': return 'bg-[#fbe2aa] text-black';
-      case 'medium': return 'bg-[#a4e2f6] text-black';
-      case 'low': return 'bg-[#bdeed3] text-black';
-      default: return 'bg-[#d9d2fd] text-black';
+      case 'critical':
+        return 'bg-[#f1b5b9] text-black';
+      case 'high':
+        return 'bg-[#fbe2aa] text-black';
+      case 'medium':
+        return 'bg-[#a4e2f6] text-black';
+      case 'low':
+        return 'bg-[#bdeed3] text-black';
+      default:
+        return 'bg-[#d9d2fd] text-black';
     }
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-black font-arabic">إدارة المخاطر والنزاعات</h3>
         <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-transparent border border-white flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
             <AlertTriangle className="w-4 h-4" />
           </div>
           إضافة تقييم جديد
@@ -90,29 +91,19 @@ export const RisksTab: React.FC = () => {
             <div className="text-center text-sm font-medium text-black font-arabic">عالي (3)</div>
             <div className="text-center text-sm font-medium text-black font-arabic">حرج (4)</div>
             
-            {[5, 4, 3, 2, 1].map(impact => (
-              <React.Fragment key={impact}>
+            {[5, 4, 3, 2, 1].map(impact => <React.Fragment key={impact}>
                 <div className="text-center text-sm font-medium text-black font-arabic py-2">
                   التأثير ({impact})
                 </div>
                 {[1, 2, 3, 4].map(probability => {
-                  const score = probability * impact;
-                  let colorClass = 'bg-[#bdeed3]';
-                  if (score >= 12) colorClass = 'bg-[#f1b5b9]';
-                  else if (score >= 8) colorClass = 'bg-[#fbe2aa]';
-                  else if (score >= 4) colorClass = 'bg-[#a4e2f6]';
-                  
-                  return (
-                    <div 
-                      key={`${impact}-${probability}`}
-                      className={`h-12 flex items-center justify-center rounded-3xl ${colorClass} border border-black/10`}
-                    >
+              const score = probability * impact;
+              let colorClass = 'bg-[#bdeed3]';
+              if (score >= 12) colorClass = 'bg-[#f1b5b9]';else if (score >= 8) colorClass = 'bg-[#fbe2aa]';else if (score >= 4) colorClass = 'bg-[#a4e2f6]';
+              return <div key={`${impact}-${probability}`} className={`h-12 flex items-center justify-center rounded-3xl ${colorClass} border border-black/10`}>
                       <span className="text-sm font-medium text-black">{score}</span>
-                    </div>
-                  );
-                })}
-              </React.Fragment>
-            ))}
+                    </div>;
+            })}
+              </React.Fragment>)}
           </div>
           <div className="text-sm text-black font-arabic">
             <span className="font-medium">الألوان:</span>
@@ -131,8 +122,7 @@ export const RisksTab: React.FC = () => {
         </div>
         <div>
           <div className="space-y-4">
-            {mockRiskAssessments.map((risk) => (
-              <div key={risk.id} className="p-4 bg-transparent border border-black/10 rounded-3xl">
+            {mockRiskAssessments.map(risk => <div key={risk.id} className="p-4 bg-transparent border border-black/10 rounded-3xl">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
@@ -168,11 +158,9 @@ export const RisksTab: React.FC = () => {
                   <span>التأثير: {risk.impact}/5</span>
                   <span>الهدف: {formatDate(risk.targetResolution)}</span>
                 </div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
