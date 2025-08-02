@@ -1,8 +1,8 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { buildButtonClasses, COLORS } from '@/components/shared/design-system/constants';
+import { buildButtonClasses } from '@/components/shared/design-system/constants';
 
-interface UnifiedButtonProps {
+interface UnifiedSystemButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   variant?: 'primary' | 'secondary' | 'outline' | 'success' | 'warning' | 'danger';
@@ -13,7 +13,7 @@ interface UnifiedButtonProps {
   icon?: React.ReactNode;
 }
 
-export const UnifiedButton: React.FC<UnifiedButtonProps> = ({
+export const UnifiedSystemButton: React.FC<UnifiedSystemButtonProps> = ({
   children,
   onClick,
   variant = 'primary',

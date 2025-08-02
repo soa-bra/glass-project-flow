@@ -2,33 +2,24 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { buildBadgeClasses } from '@/components/shared/design-system/constants';
 
-interface UnifiedBadgeProps {
+interface UnifiedSystemBadgeProps {
   children: React.ReactNode;
-  variant?: 'success' | 'warning' | 'error' | 'info' | 'primary' | 'neutral' | 'default';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'success' | 'warning' | 'error' | 'info' | 'primary' | 'neutral';
   className?: string;
   icon?: React.ReactNode;
 }
 
-export const UnifiedBadge: React.FC<UnifiedBadgeProps> = ({
+export const UnifiedSystemBadge: React.FC<UnifiedSystemBadgeProps> = ({
   children,
   variant = 'primary',
-  size = 'md',
   className = '',
   icon
 }) => {
-  const sizeClasses = {
-    sm: 'px-2 py-1 text-xs',
-    md: 'px-3 py-1 text-sm',
-    lg: 'px-4 py-2 text-base'
-  };
-
   return (
     <span
       className={cn(
         buildBadgeClasses(variant),
         'inline-flex items-center gap-1',
-        sizeClasses[size],
         className
       )}
     >
