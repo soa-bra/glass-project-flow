@@ -44,7 +44,7 @@ export const LegalDashboard: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-0">
+      <div className="flex-1 overflow-auto pb-6 px-0 my-[24px]">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
           <TabsContent value="overview" className="space-y-6">
             <OverviewTab />
