@@ -3,49 +3,43 @@ import { AlertTriangle, FileText, Scale, Shield, Calendar, TrendingUp, Bell, Che
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { mockLegalMetrics, mockAlerts } from './data';
 import { getStatusColor, getStatusText, getPriorityColor } from './utils';
-
 export const OverviewTab: React.FC = () => {
   const metrics = mockLegalMetrics;
   const alerts = mockAlerts.filter(alert => alert.status === 'pending').slice(0, 5);
-
-  const kpiStats = [
-    {
-      title: 'العقود الموقعة',
-      value: metrics.contractsCount.signed,
-      unit: 'عقد',
-      description: 'عقود نشطة ومعتمدة'
-    },
-    {
-      title: 'القضايا النشطة',
-      value: metrics.activeCases,
-      unit: 'قضية',
-      description: 'قضايا تحتاج متابعة'
-    },
-    {
-      title: 'درجة الامتثال',
-      value: `${metrics.complianceScore}%`,
-      unit: 'امتثال',
-      description: 'مستوى الامتثال القانوني'
-    },
-    {
-      title: 'المخاطر المحلولة',
-      value: '15',
-      unit: 'خطر',
-      description: 'تم حلها هذا الشهر'
-    }
-  ];
-
+  const kpiStats = [{
+    title: 'العقود الموقعة',
+    value: metrics.contractsCount.signed,
+    unit: 'عقد',
+    description: 'عقود نشطة ومعتمدة'
+  }, {
+    title: 'القضايا النشطة',
+    value: metrics.activeCases,
+    unit: 'قضية',
+    description: 'قضايا تحتاج متابعة'
+  }, {
+    title: 'درجة الامتثال',
+    value: `${metrics.complianceScore}%`,
+    unit: 'امتثال',
+    description: 'مستوى الامتثال القانوني'
+  }, {
+    title: 'المخاطر المحلولة',
+    value: '15',
+    unit: 'خطر',
+    description: 'تم حلها هذا الشهر'
+  }];
   const getAlertBadgeColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-[#f1b5b9] text-black';
-      case 'medium': return 'bg-[#fbe2aa] text-black';
-      case 'low': return 'bg-[#bdeed3] text-black';
-      default: return 'bg-[#a4e2f6] text-black';
+      case 'high':
+        return 'bg-[#f1b5b9] text-black';
+      case 'medium':
+        return 'bg-[#fbe2aa] text-black';
+      case 'low':
+        return 'bg-[#bdeed3] text-black';
+      default:
+        return 'bg-[#a4e2f6] text-black';
     }
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6 my-[25px]">
       {/* مؤشرات الأداء الأساسية */}
       <KPIStatsSection stats={kpiStats} />
       
@@ -98,10 +92,9 @@ export const OverviewTab: React.FC = () => {
                 <div className="text-4xl font-bold text-black font-arabic mb-2">{metrics.complianceScore}%</div>
                 <div className="text-sm font-medium text-black font-arabic">درجة الامتثال</div>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div 
-                    className="bg-[#bdeed3] h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${metrics.complianceScore}%` }}
-                  />
+                  <div className="bg-[#bdeed3] h-2 rounded-full transition-all duration-300" style={{
+                  width: `${metrics.complianceScore}%`
+                }} />
                 </div>
               </div>
               <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
@@ -158,11 +151,7 @@ export const OverviewTab: React.FC = () => {
           </div>
           <div>
             <div className="space-y-3">
-              {alerts.map(alert => (
-                <div 
-                  key={alert.id} 
-                  className="p-4 rounded-3xl bg-transparent border border-black/10"
-                >
+              {alerts.map(alert => <div key={alert.id} className="p-4 rounded-3xl bg-transparent border border-black/10">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
                       {alert.priority === 'high' && <AlertTriangle className="h-4 w-4 text-black" />}
@@ -174,12 +163,10 @@ export const OverviewTab: React.FC = () => {
                       {alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض'}
                     </div>
                   </div>
-                </div>
-              ))}
+                </div>)}
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
