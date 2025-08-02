@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Plus, Settings, BarChart3, Target, DollarSign } from 'lucide-react';
@@ -132,43 +132,52 @@ export const CampaignsChannelsTab: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="mb-6">
       {/* Header Actions */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex gap-2">
-          <Button 
-            variant={activeView === 'campaigns' ? 'default' : 'outline'}
+          <button 
             onClick={() => setActiveView('campaigns')}
-            className="font-arabic"
+            className={`py-2 px-4 rounded-full transition-all font-arabic ${
+              activeView === 'campaigns' 
+                ? 'bg-black text-white' 
+                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
+            }`}
           >
             الحملات
-          </Button>
-          <Button 
-            variant={activeView === 'channels' ? 'default' : 'outline'}
+          </button>
+          <button 
             onClick={() => setActiveView('channels')}
-            className="font-arabic"
+            className={`py-2 px-4 rounded-full transition-all font-arabic ${
+              activeView === 'channels' 
+                ? 'bg-black text-white' 
+                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
+            }`}
           >
             القنوات
-          </Button>
-          <Button 
-            variant={activeView === 'calendar' ? 'default' : 'outline'}
+          </button>
+          <button 
             onClick={() => setActiveView('calendar')}
-            className="font-arabic"
+            className={`py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2 ${
+              activeView === 'calendar' 
+                ? 'bg-black text-white' 
+                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
+            }`}
           >
-            <Calendar className="w-4 h-4 ml-2" />
+            <Calendar className="w-4 h-4" />
             التقويم
-          </Button>
+          </button>
         </div>
         
         <div className="flex gap-2">
-          <Button className="font-arabic">
-            <Plus className="w-4 h-4 ml-2" />
+          <button className="bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2">
+            <Plus className="w-4 h-4" />
             إنشاء حملة جديدة
-          </Button>
-          <Button variant="outline" className="font-arabic">
-            <Settings className="w-4 h-4 ml-2" />
+          </button>
+          <button className="bg-white border border-gray-200 text-black hover:bg-gray-50 py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2">
+            <Settings className="w-4 h-4" />
             إعدادات القنوات
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -176,13 +185,13 @@ export const CampaignsChannelsTab: React.FC = () => {
       {activeView === 'campaigns' && (
         <div className="space-y-4">
           {campaigns.map((campaign) => (
-            <GenericCard key={campaign.id} className="hover:shadow-lg transition-all duration-300">
+            <BaseCard key={campaign.id} variant="operations" className="transition-all duration-300">
               <div className="space-y-4">
                 {/* Campaign Header */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 font-arabic">{campaign.name}</h3>
-                    <p className="text-sm text-gray-600 font-arabic">
+                    <h3 className="text-lg font-semibold text-black font-arabic">{campaign.name}</h3>
+                    <p className="text-sm text-black font-arabic">
                       {campaign.startDate} إلى {campaign.endDate}
                     </p>
                   </div>
@@ -194,31 +203,31 @@ export const CampaignsChannelsTab: React.FC = () => {
 
                 {/* Campaign Metrics */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-3 bg-blue-50 rounded-lg">
-                    <DollarSign className="w-5 h-5 text-blue-600 mx-auto mb-1" />
-                    <p className="text-xs text-gray-600 font-arabic">الميزانية</p>
-                    <p className="font-semibold text-gray-900">{campaign.budget.toLocaleString()} ر.س</p>
+                  <div className="text-center p-3 bg-[#a4e2f6] rounded-lg">
+                    <DollarSign className="w-5 h-5 text-black mx-auto mb-1" />
+                    <p className="text-xs text-black font-arabic">الميزانية</p>
+                    <p className="font-semibold text-black">{campaign.budget.toLocaleString()} ر.س</p>
                   </div>
-                  <div className="text-center p-3 bg-green-50 rounded-lg">
-                    <BarChart3 className="w-5 h-5 text-green-600 mx-auto mb-1" />
-                    <p className="text-xs text-gray-600 font-arabic">المصروف</p>
-                    <p className="font-semibold text-gray-900">{campaign.spent.toLocaleString()} ر.س</p>
+                  <div className="text-center p-3 bg-[#bdeed3] rounded-lg">
+                    <BarChart3 className="w-5 h-5 text-black mx-auto mb-1" />
+                    <p className="text-xs text-black font-arabic">المصروف</p>
+                    <p className="font-semibold text-black">{campaign.spent.toLocaleString()} ر.س</p>
                   </div>
-                  <div className="text-center p-3 bg-purple-50 rounded-lg">
-                    <Target className="w-5 h-5 text-purple-600 mx-auto mb-1" />
-                    <p className="text-xs text-gray-600 font-arabic">ROAS</p>
-                    <p className="font-semibold text-gray-900">{campaign.performance.roas}x</p>
+                  <div className="text-center p-3 bg-[#d9d2fd] rounded-lg">
+                    <Target className="w-5 h-5 text-black mx-auto mb-1" />
+                    <p className="text-xs text-black font-arabic">ROAS</p>
+                    <p className="font-semibold text-black">{campaign.performance.roas}x</p>
                   </div>
-                  <div className="text-center p-3 bg-orange-50 rounded-lg">
-                    <Target className="w-5 h-5 text-orange-600 mx-auto mb-1" />
-                    <p className="text-xs text-gray-600 font-arabic">CPA</p>
-                    <p className="font-semibold text-gray-900">{campaign.performance.cpa} ر.س</p>
+                  <div className="text-center p-3 bg-[#fbe2aa] rounded-lg">
+                    <Target className="w-5 h-5 text-black mx-auto mb-1" />
+                    <p className="text-xs text-black font-arabic">CPA</p>
+                    <p className="font-semibold text-black">{campaign.performance.cpa} ر.س</p>
                   </div>
                 </div>
 
                 {/* Campaign Channels */}
                 <div>
-                  <p className="text-sm font-semibold text-gray-700 font-arabic mb-2">القنوات:</p>
+                  <p className="text-sm font-semibold text-black font-arabic mb-2">القنوات:</p>
                   <div className="flex gap-2 flex-wrap">
                     {campaign.channels.map((channel, index) => (
                       <Badge key={index} variant="outline" className="font-arabic">
@@ -230,19 +239,19 @@ export const CampaignsChannelsTab: React.FC = () => {
 
                 {/* Progress Bar */}
                 <div>
-                  <div className="flex justify-between text-sm text-gray-600 font-arabic mb-1">
+                  <div className="flex justify-between text-sm text-black font-arabic mb-1">
                     <span>تقدم الحملة</span>
                     <span>{Math.round((campaign.spent / campaign.budget) * 100)}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                      className="bg-black h-2 rounded-full transition-all duration-300" 
                       style={{ width: `${(campaign.spent / campaign.budget) * 100}%` }}
                     ></div>
                   </div>
                 </div>
               </div>
-            </GenericCard>
+            </BaseCard>
           ))}
         </div>
       )}
@@ -251,69 +260,71 @@ export const CampaignsChannelsTab: React.FC = () => {
       {activeView === 'channels' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {channels.map((channel) => (
-            <GenericCard key={channel.id} className="hover:shadow-lg transition-all duration-300">
+            <BaseCard key={channel.id} variant="operations" className="transition-all duration-300">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-semibold text-gray-900 font-arabic">{channel.name}</h3>
-                    <p className="text-sm text-gray-600 font-arabic">{channel.platform}</p>
+                    <h3 className="font-semibold text-black font-arabic">{channel.name}</h3>
+                    <p className="text-sm text-black font-arabic">{channel.platform}</p>
                   </div>
                   {getStatusBadge(channel.status)}
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 font-arabic">الظهور</span>
-                    <span className="font-semibold">{channel.performance.impressions.toLocaleString()}</span>
+                    <span className="text-sm text-black font-arabic">الظهور</span>
+                    <span className="font-semibold text-black">{channel.performance.impressions.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 font-arabic">النقرات</span>
-                    <span className="font-semibold">{channel.performance.clicks.toLocaleString()}</span>
+                    <span className="text-sm text-black font-arabic">النقرات</span>
+                    <span className="font-semibold text-black">{channel.performance.clicks.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 font-arabic">التحويلات</span>
-                    <span className="font-semibold">{channel.performance.conversions}</span>
+                    <span className="text-sm text-black font-arabic">التحويلات</span>
+                    <span className="font-semibold text-black">{channel.performance.conversions}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 font-arabic">CTR</span>
-                    <span className="font-semibold">{channel.performance.ctr}%</span>
+                    <span className="text-sm text-black font-arabic">CTR</span>
+                    <span className="font-semibold text-black">{channel.performance.ctr}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 font-arabic">CPC</span>
-                    <span className="font-semibold">{channel.performance.cpc} ر.س</span>
+                    <span className="text-sm text-black font-arabic">CPC</span>
+                    <span className="font-semibold text-black">{channel.performance.cpc} ر.س</span>
                   </div>
                 </div>
 
                 <div className="pt-3 border-t">
-                  <div className="flex justify-between text-sm font-arabic mb-1">
+                  <div className="flex justify-between text-sm font-arabic mb-1 text-black">
                     <span>الميزانية المستخدمة</span>
                     <span>{Math.round((channel.spent / channel.budget) * 100)}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
-                      className="bg-green-600 h-2 rounded-full" 
+                      className="bg-black h-2 rounded-full" 
                       style={{ width: `${(channel.spent / channel.budget) * 100}%` }}
                     ></div>
                   </div>
                 </div>
               </div>
-            </GenericCard>
+            </BaseCard>
           ))}
         </div>
       )}
 
       {/* Calendar View */}
       {activeView === 'calendar' && (
-        <GenericCard>
+        <BaseCard variant="operations">
           <div className="text-center py-12">
-            <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 font-arabic mb-2">تقويم الحملات</h3>
-            <p className="text-gray-600 font-arabic mb-6">
+            <Calendar className="w-16 h-16 text-black/40 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-black font-arabic mb-2">تقويم الحملات</h3>
+            <p className="text-black font-arabic mb-6">
               عرض تفاعلي لجدولة الحملات والفعاليات التسويقية
             </p>
-            <Button className="font-arabic">قريباً - تقويم تفاعلي متقدم</Button>
+            <button className="bg-black hover:bg-gray-800 text-white py-2 px-6 rounded-full transition-all font-arabic">
+              قريباً - تقويم تفاعلي متقدم
+            </button>
           </div>
-        </GenericCard>
+        </BaseCard>
       )}
     </div>
   );

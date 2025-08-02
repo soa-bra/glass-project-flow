@@ -76,129 +76,135 @@ export const BudgetsTab: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 p-6 bg-transparent">
+    <div className="mb-6">
       {/* نظرة عامة على الميزانية */}
-      <BaseCard variant="operations" className="p-6">
-        <div className="flex items-center gap-2 mb-6">
-          <DollarSign className="h-6 w-6 text-green-600" />
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">نظرة عامة على الميزانية</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <h4 className="text-2xl font-bold text-blue-600 mb-1">
-              {budgetOverview.totalBudget.toLocaleString()} ر.س
-            </h4>
-            <p className="text-sm text-gray-600 font-arabic">إجمالي الميزانية</p>
+      <div className="mb-6">
+        <BaseCard variant="operations">
+          <div className="flex items-center gap-2 mb-6">
+            <DollarSign className="h-6 w-6 text-black" />
+            <h3 className="text-xl font-bold text-black font-arabic">نظرة عامة على الميزانية</h3>
           </div>
           
-          <div className="text-center p-4 bg-red-50 rounded-lg">
-            <h4 className="text-2xl font-bold text-red-600 mb-1">
-              {budgetOverview.spent.toLocaleString()} ر.س
-            </h4>
-            <p className="text-sm text-gray-600 font-arabic">المنفق</p>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-[#a4e2f6] rounded-lg">
+              <h4 className="text-2xl font-bold text-black mb-1">
+                {budgetOverview.totalBudget.toLocaleString()} ر.س
+              </h4>
+              <p className="text-sm text-black font-arabic">إجمالي الميزانية</p>
+            </div>
+            
+            <div className="text-center p-4 bg-[#f1b5b9] rounded-lg">
+              <h4 className="text-2xl font-bold text-black mb-1">
+                {budgetOverview.spent.toLocaleString()} ر.س
+              </h4>
+              <p className="text-sm text-black font-arabic">المنفق</p>
+            </div>
+            
+            <div className="text-center p-4 bg-[#bdeed3] rounded-lg">
+              <h4 className="text-2xl font-bold text-black mb-1">
+                {budgetOverview.remaining.toLocaleString()} ر.س
+              </h4>
+              <p className="text-sm text-black font-arabic">المتبقي</p>
+            </div>
+            
+            <div className="text-center p-4 bg-[#d9d2fd] rounded-lg">
+              <h4 className="text-2xl font-bold text-black mb-1">
+                {budgetOverview.utilizationRate}%
+              </h4>
+              <p className="text-sm text-black font-arabic">معدل الاستخدام</p>
+            </div>
           </div>
-          
-          <div className="text-center p-4 bg-green-50 rounded-lg">
-            <h4 className="text-2xl font-bold text-green-600 mb-1">
-              {budgetOverview.remaining.toLocaleString()} ر.س
-            </h4>
-            <p className="text-sm text-gray-600 font-arabic">المتبقي</p>
-          </div>
-          
-          <div className="text-center p-4 bg-purple-50 rounded-lg">
-            <h4 className="text-2xl font-bold text-purple-600 mb-1">
-              {budgetOverview.utilizationRate}%
-            </h4>
-            <p className="text-sm text-gray-600 font-arabic">معدل الاستخدام</p>
-          </div>
-        </div>
-      </BaseCard>
+        </BaseCard>
+      </div>
 
       {/* ميزانيات القنوات */}
-      <BaseCard variant="operations" className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <PieChart className="h-6 w-6 text-blue-600" />
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">ميزانيات القنوات</h3>
-          </div>
-          <Button variant="outline" size="sm">
-            إعادة توزيع الميزانية
-          </Button>
-        </div>
-        
-        <div className="space-y-4">
-          {channelBudgets.map((channel, index) => (
-            <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <h4 className="font-medium font-arabic">{channel.channel}</h4>
-                  {getStatusBadge(channel.status)}
-                </div>
-                <div className="text-sm text-gray-600">
-                  {((channel.spent / channel.allocated) * 100).toFixed(1)}% مستخدم
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-600 font-arabic">المخصص: </span>
-                  <span className="font-bold">{channel.allocated.toLocaleString()} ر.س</span>
-                </div>
-                <div>
-                  <span className="text-gray-600 font-arabic">المنفق: </span>
-                  <span className="font-bold text-red-600">{channel.spent.toLocaleString()} ر.س</span>
-                </div>
-                <div>
-                  <span className="text-gray-600 font-arabic">المتبقي: </span>
-                  <span className="font-bold text-green-600">{channel.remaining.toLocaleString()} ر.س</span>
-                </div>
-              </div>
-              
-              <div className="mt-3">
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full"
-                    style={{ width: `${(channel.spent / channel.allocated) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
+      <div className="mb-6">
+        <BaseCard variant="operations">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <PieChart className="h-6 w-6 text-black" />
+              <h3 className="text-xl font-bold text-black font-arabic">ميزانيات القنوات</h3>
             </div>
-          ))}
-        </div>
-      </BaseCard>
+            <button className="bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-full transition-all font-arabic">
+              إعادة توزيع الميزانية
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            {channelBudgets.map((channel, index) => (
+              <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200/50">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <h4 className="font-medium font-arabic text-black">{channel.channel}</h4>
+                    {getStatusBadge(channel.status)}
+                  </div>
+                  <div className="text-sm text-black">
+                    {((channel.spent / channel.allocated) * 100).toFixed(1)}% مستخدم
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span className="text-black font-arabic">المخصص: </span>
+                    <span className="font-bold text-black">{channel.allocated.toLocaleString()} ر.س</span>
+                  </div>
+                  <div>
+                    <span className="text-black font-arabic">المنفق: </span>
+                    <span className="font-bold text-black">{channel.spent.toLocaleString()} ر.س</span>
+                  </div>
+                  <div>
+                    <span className="text-black font-arabic">المتبقي: </span>
+                    <span className="font-bold text-black">{channel.remaining.toLocaleString()} ر.س</span>
+                  </div>
+                </div>
+                
+                <div className="mt-3">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-black h-2 rounded-full"
+                      style={{ width: `${(channel.spent / channel.allocated) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </BaseCard>
+      </div>
 
       {/* تنبيهات الميزانية */}
-      <BaseCard variant="operations" className="p-6">
-        <div className="flex items-center gap-2 mb-6">
-          <AlertTriangle className="h-6 w-6 text-orange-600" />
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">تنبيهات الميزانية</h3>
-        </div>
-        
-        <div className="space-y-3">
-          {budgetAlerts.map((alert, index) => (
-            <div key={index} className={`p-3 rounded-lg border-l-4 ${
-              alert.severity === 'medium' ? 'bg-orange-50 border-orange-500' :
-              alert.severity === 'low' ? 'bg-blue-50 border-blue-500' :
-              'bg-green-50 border-green-500'
-            }`}>
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-arabic">{alert.message}</p>
-                <Badge 
-                  variant={
-                    alert.severity === 'medium' ? 'destructive' :
-                    alert.severity === 'low' ? 'secondary' : 'default'
-                  }
-                  className="text-xs"
-                >
-                  {alert.type === 'warning' ? 'تحذير' : 
-                   alert.type === 'info' ? 'معلومة' : 'نجح'}
-                </Badge>
+      <div className="mb-6">
+        <BaseCard variant="operations">
+          <div className="flex items-center gap-2 mb-6">
+            <AlertTriangle className="h-6 w-6 text-black" />
+            <h3 className="text-xl font-bold text-black font-arabic">تنبيهات الميزانية</h3>
+          </div>
+          
+          <div className="space-y-3">
+            {budgetAlerts.map((alert, index) => (
+              <div key={index} className={`p-3 rounded-lg border-l-4 ${
+                alert.severity === 'medium' ? 'bg-[#fbe2aa] border-[#fbe2aa]' :
+                alert.severity === 'low' ? 'bg-[#a4e2f6] border-[#a4e2f6]' :
+                'bg-[#bdeed3] border-[#bdeed3]'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-arabic text-black">{alert.message}</p>
+                  <Badge 
+                    variant={
+                      alert.severity === 'medium' ? 'destructive' :
+                      alert.severity === 'low' ? 'secondary' : 'default'
+                    }
+                    className="text-xs"
+                  >
+                    {alert.type === 'warning' ? 'تحذير' : 
+                     alert.type === 'info' ? 'معلومة' : 'نجح'}
+                  </Badge>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </BaseCard>
+            ))}
+          </div>
+        </BaseCard>
+      </div>
     </div>
   );
 };

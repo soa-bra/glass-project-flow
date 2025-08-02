@@ -38,37 +38,37 @@ export const MarketingDashboard: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto px-6 pb-6">
+      <div className="flex-1 overflow-auto font-arabic px-[15px] py-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="overview" className="mb-6 py-0 px-0 my-0">
             <OverviewTab />
           </TabsContent>
 
-          <TabsContent value="campaigns" className="space-y-6">
+          <TabsContent value="campaigns" className="mb-6 py-0 px-0 my-0">
             <CampaignsChannelsTab />
           </TabsContent>
 
-          <TabsContent value="content" className="space-y-6">
+          <TabsContent value="content" className="mb-6 py-0 px-0 my-0">
             <ContentAssetsTab />
           </TabsContent>
 
-          <TabsContent value="performance" className="space-y-6">
+          <TabsContent value="performance" className="mb-6 py-0 px-0 my-0">
             <PerformanceAnalyticsTab />
           </TabsContent>
 
-          <TabsContent value="budgets" className="space-y-6">
+          <TabsContent value="budgets" className="mb-6 py-0 px-0 my-0">
             <BudgetsTab />
           </TabsContent>
 
-          <TabsContent value="pr" className="space-y-6">
+          <TabsContent value="pr" className="mb-6 py-0 px-0 my-0">
             <PublicRelationsTab />
           </TabsContent>
 
-          <TabsContent value="templates" className="space-y-6">
+          <TabsContent value="templates" className="mb-6 py-0 px-0 my-0">
             <TemplatesTab />
           </TabsContent>
 
-          <TabsContent value="reports" className="space-y-6">
+          <TabsContent value="reports" className="mb-6 py-0 px-0 my-0">
             <ReportsTab />
           </TabsContent>
         </Tabs>

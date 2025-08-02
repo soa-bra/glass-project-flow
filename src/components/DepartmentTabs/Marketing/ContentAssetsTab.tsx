@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -121,55 +121,64 @@ export const ContentAssetsTab: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="mb-6">
       {/* Header Actions */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex gap-2">
-          <Button 
-            variant={activeView === 'calendar' ? 'default' : 'outline'}
+          <button 
             onClick={() => setActiveView('calendar')}
-            className="font-arabic"
+            className={`py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2 ${
+              activeView === 'calendar' 
+                ? 'bg-black text-white' 
+                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
+            }`}
           >
-            <Calendar className="w-4 h-4 ml-2" />
+            <Calendar className="w-4 h-4" />
             تقويم المحتوى
-          </Button>
-          <Button 
-            variant={activeView === 'assets' ? 'default' : 'outline'}
+          </button>
+          <button 
             onClick={() => setActiveView('assets')}
-            className="font-arabic"
+            className={`py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2 ${
+              activeView === 'assets' 
+                ? 'bg-black text-white' 
+                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
+            }`}
           >
-            <Image className="w-4 h-4 ml-2" />
+            <Image className="w-4 h-4" />
             الأصول التسويقية
-          </Button>
-          <Button 
-            variant={activeView === 'dam' ? 'default' : 'outline'}
+          </button>
+          <button 
             onClick={() => setActiveView('dam')}
-            className="font-arabic"
+            className={`py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2 ${
+              activeView === 'dam' 
+                ? 'bg-black text-white' 
+                : 'bg-white border border-gray-200 text-black hover:bg-gray-50'
+            }`}
           >
-            <FileText className="w-4 h-4 ml-2" />
+            <FileText className="w-4 h-4" />
             نظام DAM
-          </Button>
+          </button>
         </div>
         
         <div className="flex gap-2">
-          <Button className="font-arabic">
-            <Plus className="w-4 h-4 ml-2" />
+          <button className="bg-black hover:bg-gray-800 text-white py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2">
+            <Plus className="w-4 h-4" />
             إضافة محتوى
-          </Button>
-          <Button variant="outline" className="font-arabic">
-            <Upload className="w-4 h-4 ml-2" />
+          </button>
+          <button className="bg-white border border-gray-200 text-black hover:bg-gray-50 py-2 px-4 rounded-full transition-all font-arabic flex items-center gap-2">
+            <Upload className="w-4 h-4" />
             رفع أصول
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* Content Calendar View */}
       {activeView === 'calendar' && (
         <div className="space-y-4">
-          <GenericCard>
+          <BaseCard variant="operations">
             <div className="mb-6">
-              <h3 className="text-xl font-semibold text-gray-900 font-arabic mb-2">تقويم المحتوى التفاعلي</h3>
-              <p className="text-gray-600 font-arabic">إدارة وجدولة المحتوى عبر جميع المنصات</p>
+              <h3 className="text-xl font-semibold text-black font-arabic mb-2">تقويم المحتوى التفاعلي</h3>
+              <p className="text-black font-arabic">إدارة وجدولة المحتوى عبر جميع المنصات</p>
             </div>
             
             <div className="space-y-4">
@@ -215,7 +224,7 @@ export const ContentAssetsTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </GenericCard>
+          </BaseCard>
         </div>
       )}
 
@@ -223,7 +232,7 @@ export const ContentAssetsTab: React.FC = () => {
       {activeView === 'assets' && (
         <div className="space-y-4">
           {/* Search and Filter */}
-          <GenericCard>
+          <BaseCard variant="operations">
             <div className="flex items-center gap-4 mb-4">
               <div className="flex-1 relative">
                 <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -239,7 +248,7 @@ export const ContentAssetsTab: React.FC = () => {
                 فلترة
               </Button>
             </div>
-          </GenericCard>
+          </BaseCard>
 
           {/* Assets Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -250,7 +259,7 @@ export const ContentAssetsTab: React.FC = () => {
                 asset.tags.some(tag => tag.includes(searchTerm))
               )
               .map((asset) => (
-                <GenericCard key={asset.id} className="hover:shadow-lg transition-all duration-300">
+                <BaseCard key={asset.id} variant="operations" className="transition-all duration-300">
                   <div className="space-y-4">
                     {/* Asset Preview */}
                     <div className="w-full h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
@@ -316,7 +325,7 @@ export const ContentAssetsTab: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </GenericCard>
+                </BaseCard>
               ))}
           </div>
         </div>
@@ -324,7 +333,7 @@ export const ContentAssetsTab: React.FC = () => {
 
       {/* DAM System View */}
       {activeView === 'dam' && (
-        <GenericCard>
+        <BaseCard variant="operations">
           <div className="text-center py-12">
             <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 font-arabic mb-2">نظام إدارة الأصول الرقمية (DAM)</h3>
@@ -356,7 +365,7 @@ export const ContentAssetsTab: React.FC = () => {
             </div>
             <Button className="font-arabic mt-6">قريباً - واجهة نظام DAM المتكاملة</Button>
           </div>
-        </GenericCard>
+        </BaseCard>
       )}
     </div>
   );

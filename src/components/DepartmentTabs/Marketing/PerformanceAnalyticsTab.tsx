@@ -55,90 +55,96 @@ export const PerformanceAnalyticsTab: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 p-6 bg-transparent">
+    <div className="mb-6">
       {/* مؤشرات الأداء الرئيسية */}
-      <BaseCard variant="operations" className="p-6">
-        <div className="flex items-center gap-2 mb-6">
-          <BarChart3 className="h-6 w-6 text-blue-600" />
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">مؤشرات الأداء الرئيسية</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {kpiData.map((kpi, index) => (
-            <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <kpi.icon className={`h-5 w-5 ${kpi.color}`} />
-                <Badge variant={kpi.trend === 'up' ? 'default' : 'secondary'} className="text-xs">
-                  {kpi.change}
-                </Badge>
+      <div className="mb-6">
+        <BaseCard variant="operations">
+          <div className="flex items-center gap-2 mb-6">
+            <BarChart3 className="h-6 w-6 text-black" />
+            <h3 className="text-xl font-bold text-black font-arabic">مؤشرات الأداء الرئيسية</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {kpiData.map((kpi, index) => (
+              <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200/50">
+                <div className="flex items-center justify-between mb-2">
+                  <kpi.icon className="h-5 w-5 text-black" />
+                  <Badge variant={kpi.trend === 'up' ? 'default' : 'secondary'} className="text-xs">
+                    {kpi.change}
+                  </Badge>
+                </div>
+                <h4 className="text-2xl font-bold text-black mb-1">{kpi.value}</h4>
+                <p className="text-sm text-black font-arabic">{kpi.title}</p>
               </div>
-              <h4 className="text-2xl font-bold text-gray-800 mb-1">{kpi.value}</h4>
-              <p className="text-sm text-gray-600 font-arabic">{kpi.title}</p>
-            </div>
-          ))}
-        </div>
-      </BaseCard>
+            ))}
+          </div>
+        </BaseCard>
+      </div>
 
       {/* أداء الحملات */}
-      <BaseCard variant="operations" className="p-6">
-        <div className="flex items-center gap-2 mb-6">
-          <Target className="h-6 w-6 text-green-600" />
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">أداء الحملات</h3>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-right py-3 px-4 font-arabic">اسم الحملة</th>
-                <th className="text-right py-3 px-4 font-arabic">الظهور</th>
-                <th className="text-right py-3 px-4 font-arabic">النقرات</th>
-                <th className="text-right py-3 px-4 font-arabic">التحويلات</th>
-                <th className="text-right py-3 px-4 font-arabic">ROAS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {campaignPerformance.map((campaign, index) => (
-                <tr key={index} className="border-b border-gray-100">
-                  <td className="py-3 px-4 font-arabic">{campaign.name}</td>
-                  <td className="py-3 px-4">{campaign.impressions}</td>
-                  <td className="py-3 px-4">{campaign.clicks}</td>
-                  <td className="py-3 px-4">{campaign.conversions}</td>
-                  <td className="py-3 px-4 font-bold text-green-600">{campaign.roas}</td>
+      <div className="mb-6">
+        <BaseCard variant="operations">
+          <div className="flex items-center gap-2 mb-6">
+            <Target className="h-6 w-6 text-black" />
+            <h3 className="text-xl font-bold text-black font-arabic">أداء الحملات</h3>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-right py-3 px-4 font-arabic text-black">اسم الحملة</th>
+                  <th className="text-right py-3 px-4 font-arabic text-black">الظهور</th>
+                  <th className="text-right py-3 px-4 font-arabic text-black">النقرات</th>
+                  <th className="text-right py-3 px-4 font-arabic text-black">التحويلات</th>
+                  <th className="text-right py-3 px-4 font-arabic text-black">ROAS</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </BaseCard>
+              </thead>
+              <tbody>
+                {campaignPerformance.map((campaign, index) => (
+                  <tr key={index} className="border-b border-gray-100">
+                    <td className="py-3 px-4 font-arabic text-black">{campaign.name}</td>
+                    <td className="py-3 px-4 text-black">{campaign.impressions}</td>
+                    <td className="py-3 px-4 text-black">{campaign.clicks}</td>
+                    <td className="py-3 px-4 text-black">{campaign.conversions}</td>
+                    <td className="py-3 px-4 font-bold text-black">{campaign.roas}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </BaseCard>
+      </div>
 
       {/* رؤى الجمهور */}
-      <BaseCard variant="operations" className="p-6">
-        <div className="flex items-center gap-2 mb-6">
-          <Users className="h-6 w-6 text-purple-600" />
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">رؤى الجمهور</h3>
-        </div>
-        
-        <div className="space-y-4">
-          {audienceInsights.map((segment, index) => (
-            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="text-sm font-arabic">{segment.segment}</div>
-                <Badge 
-                  variant={
-                    segment.engagement === 'عالي' ? 'default' :
-                    segment.engagement === 'متوسط' ? 'secondary' : 'outline'
-                  }
-                  className="text-xs"
-                >
-                  {segment.engagement}
-                </Badge>
+      <div className="mb-6">
+        <BaseCard variant="operations">
+          <div className="flex items-center gap-2 mb-6">
+            <Users className="h-6 w-6 text-black" />
+            <h3 className="text-xl font-bold text-black font-arabic">رؤى الجمهور</h3>
+          </div>
+          
+          <div className="space-y-4">
+            {audienceInsights.map((segment, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="text-sm font-arabic text-black">{segment.segment}</div>
+                  <Badge 
+                    variant={
+                      segment.engagement === 'عالي' ? 'default' :
+                      segment.engagement === 'متوسط' ? 'secondary' : 'outline'
+                    }
+                    className="text-xs"
+                  >
+                    {segment.engagement}
+                  </Badge>
+                </div>
+                <div className="text-lg font-bold text-black">{segment.percentage}%</div>
               </div>
-              <div className="text-lg font-bold text-gray-800">{segment.percentage}%</div>
-            </div>
-          ))}
-        </div>
-      </BaseCard>
+            ))}
+          </div>
+        </BaseCard>
+      </div>
     </div>
   );
 };
