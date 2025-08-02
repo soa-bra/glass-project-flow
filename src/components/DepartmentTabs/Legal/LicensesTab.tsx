@@ -28,53 +28,65 @@ export const LicensesTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-large font-semibold text-black font-arabic mx-[30px]">التراخيص والملكية الفكرية</h3>
-        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2 hover:bg-black/90 transition-colors">
-          <Plus className="w-4 h-4" />
+        <h3 className="text-xl font-semibold text-black font-arabic">التراخيص والملكية الفكرية</h3>
+        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-transparent border border-white flex items-center justify-center">
+            <Plus className="w-4 h-4" />
+          </div>
           إضافة ترخيص جديد
         </button>
       </div>
 
       {/* إحصائيات التراخيص */}
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
-            <Award className="h-5 w-5 text-black" />
+      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
+              <Award className="h-4 w-4 text-black" />
+            </div>
             إحصائيات التراخيص
           </h3>
         </div>
-        <div className="px-0">
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <Award className="h-6 w-6 text-black mx-auto mb-2" />
-              <div className="text-2xl font-bold text-black">{licenseStats.active}</div>
-              <div className="text-sm text-black font-arabic">تراخيص نشطة</div>
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
+                <Award className="h-4 w-4 text-black" />
+              </div>
+              <div className="text-2xl font-bold text-black font-arabic">{licenseStats.active}</div>
+              <div className="text-sm font-medium text-black font-arabic">تراخيص نشطة</div>
             </div>
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <AlertTriangle className="h-6 w-6 text-black mx-auto mb-2" />
-              <div className="text-2xl font-bold text-black">{licenseStats.pendingRenewal}</div>
-              <div className="text-sm text-black font-arabic">تحتاج تجديد</div>
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
+                <AlertTriangle className="h-4 w-4 text-black" />
+              </div>
+              <div className="text-2xl font-bold text-black font-arabic">{licenseStats.pendingRenewal}</div>
+              <div className="text-sm font-medium text-black font-arabic">تحتاج تجديد</div>
             </div>
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <Calendar className="h-6 w-6 text-black mx-auto mb-2" />
-              <div className="text-2xl font-bold text-black">{licenseStats.expired}</div>
-              <div className="text-sm text-black font-arabic">منتهية</div>
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
+                <Calendar className="h-4 w-4 text-black" />
+              </div>
+              <div className="text-2xl font-bold text-black font-arabic">{licenseStats.expired}</div>
+              <div className="text-sm font-medium text-black font-arabic">منتهية</div>
             </div>
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <DollarSign className="h-6 w-6 text-black mx-auto mb-2" />
-              <div className="text-2xl font-bold text-black">{totalRenewalCost.toLocaleString()}</div>
-              <div className="text-sm text-black font-arabic">تكلفة التجديد (ر.س)</div>
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
+                <DollarSign className="h-4 w-4 text-black" />
+              </div>
+              <div className="text-2xl font-bold text-black font-arabic">{totalRenewalCost.toLocaleString()}</div>
+              <div className="text-sm font-medium text-black font-arabic">تكلفة التجديد (ر.س)</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* جدول التراخيص */}
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-large font-semibold text-black font-arabic">قائمة التراخيص</h3>
+      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-black font-arabic">قائمة التراخيص</h3>
         </div>
-        <div className="px-0">
+        <div>
           <div className="overflow-x-auto">
             <table className="w-full text-right">
               <thead>

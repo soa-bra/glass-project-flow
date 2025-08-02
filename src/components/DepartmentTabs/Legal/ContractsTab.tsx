@@ -30,19 +30,21 @@ export const ContractsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-large font-semibold text-black font-arabic mx-[30px]">إدارة العقود والاتفاقيات</h3>
-        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2 hover:bg-black/90 transition-colors">
-          <Plus className="w-4 h-4" />
+        <h3 className="text-xl font-semibold text-black font-arabic">إدارة العقود والاتفاقيات</h3>
+        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-transparent border border-white flex items-center justify-center">
+            <Plus className="w-4 h-4" />
+          </div>
           عقد جديد
         </button>
       </div>
 
       {/* أدوات البحث والتصفية */}
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-large font-semibold text-black font-arabic">البحث والتصفية</h3>
+      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-black font-arabic">البحث والتصفية</h3>
         </div>
-        <div className="px-0">
+        <div>
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
               <Search className="w-4 h-4 absolute right-3 top-1/2 transform -translate-y-1/2 text-black" />
@@ -82,49 +84,51 @@ export const ContractsTab: React.FC = () => {
       </div>
 
       {/* إحصائيات العقود */}
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
-            <FileText className="h-5 w-5 text-black" />
+      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
+              <FileText className="h-4 w-4 text-black" />
+            </div>
             إحصائيات العقود
           </h3>
         </div>
-        <div className="px-0">
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <div className="text-2xl font-bold text-black">
+              <div className="text-2xl font-bold text-black font-arabic">
                 {mockContracts.filter(c => c.status === 'signed').length}
               </div>
-              <div className="text-sm text-black font-arabic">عقود موقعة</div>
+              <div className="text-sm font-medium text-black font-arabic">عقود موقعة</div>
             </div>
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <div className="text-2xl font-bold text-black">
+              <div className="text-2xl font-bold text-black font-arabic">
                 {mockContracts.filter(c => c.status === 'pending').length}
               </div>
-              <div className="text-sm text-black font-arabic">في الانتظار</div>
+              <div className="text-sm font-medium text-black font-arabic">في الانتظار</div>
             </div>
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <div className="text-2xl font-bold text-black">
+              <div className="text-2xl font-bold text-black font-arabic">
                 {mockContracts.filter(c => c.status === 'expired').length}
               </div>
-              <div className="text-sm text-black font-arabic">منتهية</div>
+              <div className="text-sm font-medium text-black font-arabic">منتهية</div>
             </div>
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <div className="text-2xl font-bold text-black">
+              <div className="text-2xl font-bold text-black font-arabic">
                 {mockContracts.reduce((sum, c) => sum + c.value, 0).toLocaleString()}
               </div>
-              <div className="text-sm text-black font-arabic">القيمة الإجمالية (ر.س)</div>
+              <div className="text-sm font-medium text-black font-arabic">القيمة الإجمالية (ر.س)</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* جدول العقود */}
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-large font-semibold text-black font-arabic">قائمة العقود</h3>
+      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-black font-arabic">قائمة العقود</h3>
         </div>
-        <div className="px-0">
+        <div>
           <div className="overflow-x-auto">
             <table className="w-full text-right">
               <thead>
@@ -160,12 +164,12 @@ export const ContractsTab: React.FC = () => {
                     <td className="py-4 text-black font-arabic">{formatDate(contract.endDate)}</td>
                     <td className="py-4">
                       <div className="flex items-center gap-2">
-                        <button className="p-2 text-black hover:bg-white/20 rounded-full transition-colors">
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-black hover:bg-white/20 rounded-full transition-colors">
-                          <Download className="w-4 h-4" />
-                        </button>
+                        <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+                          <Eye className="w-4 h-4 text-black" />
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+                          <Download className="w-4 h-4 text-black" />
+                        </div>
                       </div>
                     </td>
                   </tr>

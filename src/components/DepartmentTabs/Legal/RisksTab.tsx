@@ -24,53 +24,65 @@ export const RisksTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-large font-semibold text-black font-arabic mx-[30px]">إدارة المخاطر والنزاعات</h3>
-        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2 hover:bg-black/90 transition-colors">
-          <AlertTriangle className="w-4 h-4" />
+        <h3 className="text-xl font-semibold text-black font-arabic">إدارة المخاطر والنزاعات</h3>
+        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-transparent border border-white flex items-center justify-center">
+            <AlertTriangle className="w-4 h-4" />
+          </div>
           إضافة تقييم جديد
         </button>
       </div>
 
       {/* نظرة عامة على المخاطر */}
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
-            <Shield className="h-5 w-5 text-black" />
+      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
+              <Shield className="h-4 w-4 text-black" />
+            </div>
             توزيع المخاطر حسب المستوى
           </h3>
         </div>
-        <div className="px-0">
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <AlertTriangle className="h-6 w-6 text-black mx-auto mb-2" />
-              <div className="text-2xl font-bold text-black">{riskStats.critical}</div>
-              <div className="text-sm text-black font-arabic">مخاطر حرجة</div>
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
+                <AlertTriangle className="h-4 w-4 text-black" />
+              </div>
+              <div className="text-2xl font-bold text-black font-arabic">{riskStats.critical}</div>
+              <div className="text-sm font-medium text-black font-arabic">مخاطر حرجة</div>
             </div>
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <AlertTriangle className="h-6 w-6 text-black mx-auto mb-2" />
-              <div className="text-2xl font-bold text-black">{riskStats.high}</div>
-              <div className="text-sm text-black font-arabic">مخاطر عالية</div>
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
+                <AlertTriangle className="h-4 w-4 text-black" />
+              </div>
+              <div className="text-2xl font-bold text-black font-arabic">{riskStats.high}</div>
+              <div className="text-sm font-medium text-black font-arabic">مخاطر عالية</div>
             </div>
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <Activity className="h-6 w-6 text-black mx-auto mb-2" />
-              <div className="text-2xl font-bold text-black">{riskStats.medium}</div>
-              <div className="text-sm text-black font-arabic">مخاطر متوسطة</div>
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
+                <Activity className="h-4 w-4 text-black" />
+              </div>
+              <div className="text-2xl font-bold text-black font-arabic">{riskStats.medium}</div>
+              <div className="text-sm font-medium text-black font-arabic">مخاطر متوسطة</div>
             </div>
             <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-              <Shield className="h-6 w-6 text-black mx-auto mb-2" />
-              <div className="text-2xl font-bold text-black">{riskStats.low}</div>
-              <div className="text-sm text-black font-arabic">مخاطر منخفضة</div>
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
+                <Shield className="h-4 w-4 text-black" />
+              </div>
+              <div className="text-2xl font-bold text-black font-arabic">{riskStats.low}</div>
+              <div className="text-sm font-medium text-black font-arabic">مخاطر منخفضة</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* مصفوفة المخاطر */}
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-large font-semibold text-black font-arabic">مصفوفة المخاطر</h3>
+      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-black font-arabic">مصفوفة المخاطر</h3>
         </div>
-        <div className="px-0">
+        <div>
           <div className="grid grid-cols-5 gap-2 mb-4">
             <div className="text-center text-sm font-medium text-black font-arabic">الاحتمالية</div>
             <div className="text-center text-sm font-medium text-black font-arabic">منخفض (1)</div>
@@ -113,11 +125,11 @@ export const RisksTab: React.FC = () => {
       </div>
 
       {/* تقييمات المخاطر */}
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-large font-semibold text-black font-arabic">تقييمات المخاطر</h3>
+      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-black font-arabic">تقييمات المخاطر</h3>
         </div>
-        <div className="px-0">
+        <div>
           <div className="space-y-4">
             {mockRiskAssessments.map((risk) => (
               <div key={risk.id} className="p-4 bg-transparent border border-black/10 rounded-3xl">
