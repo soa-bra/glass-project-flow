@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { OverviewTab } from './OverviewTab';
@@ -9,42 +8,47 @@ import { CulturalResearchTab } from './CulturalResearchTab';
 import { EventsTab } from './EventsTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
-
 export const BrandDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-
-  const tabItems = [
-    { value: 'overview', label: 'نظرة عامة' },
-    { value: 'identity', label: 'الهوية الثقافية' },
-    { value: 'assets', label: 'الأصول البصرية' },
-    { value: 'content', label: 'المحتوى والرسائل' },
-    { value: 'research', label: 'البحث والتطوير الثقافي' },
-    { value: 'events', label: 'الفعاليات' },
-    { value: 'templates', label: 'النماذج والقوالب' },
-    { value: 'reports', label: 'التقارير' }
-  ];
-
-  return (
-    <div className="h-full flex flex-col bg-transparent">
+  const tabItems = [{
+    value: 'overview',
+    label: 'نظرة عامة'
+  }, {
+    value: 'identity',
+    label: 'الهوية الثقافية'
+  }, {
+    value: 'assets',
+    label: 'الأصول البصرية'
+  }, {
+    value: 'content',
+    label: 'المحتوى والرسائل'
+  }, {
+    value: 'research',
+    label: 'البحث والتطوير الثقافي'
+  }, {
+    value: 'events',
+    label: 'الفعاليات'
+  }, {
+    value: 'templates',
+    label: 'النماذج والقوالب'
+  }, {
+    value: 'reports',
+    label: 'التقارير'
+  }];
+  return <div className="h-full flex flex-col bg-transparent mx-[24px] py-[45px]">
       {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between px-0 py-[10px] my-[65px]">
+      <div className="flex items-center justify-between px-0 my-0 py-0">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
           إدارة العلامة التجارية
         </h2>
         <div className="w-fit">
           <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
             <TabsList className="grid w-full bg-transparent rounded-full p-1" style={{
-              gridTemplateColumns: `repeat(${tabItems.length}, 1fr)`
-            }}>
-              {tabItems.map(tab => (
-                <TabsTrigger 
-                  key={tab.value} 
-                  value={tab.value} 
-                  className="text-sm font-arabic rounded-full py-2 px-4 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black"
-                >
+            gridTemplateColumns: `repeat(${tabItems.length}, 1fr)`
+          }}>
+              {tabItems.map(tab => <TabsTrigger key={tab.value} value={tab.value} className="text-sm font-arabic rounded-full py-2 px-4 transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-black hover:bg-gray-100 hover:text-gray-800 whitespace-nowrap data-[state=active]:bg-black">
                   {tab.label}
-                </TabsTrigger>
-              ))}
+                </TabsTrigger>)}
             </TabsList>
           </Tabs>
         </div>
@@ -86,6 +90,5 @@ export const BrandDashboard: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>;
 };
