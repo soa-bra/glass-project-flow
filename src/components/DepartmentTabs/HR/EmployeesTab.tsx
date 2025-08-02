@@ -48,7 +48,7 @@ export const EmployeesTab: React.FC = () => {
 
   if (selectedEmployee) {
     return (
-      <div className="space-y-6 p-6 bg-transparent">
+      <div className="space-y-6 bg-transparent">
         {/* عودة إلى قائمة الموظفين */}
         <div className="flex items-center gap-4">
           <Button 
@@ -179,7 +179,7 @@ export const EmployeesTab: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-6 bg-transparent">
+    <div className="space-y-6 bg-transparent">
       {/* أدوات البحث والتصفية */}
       <BaseCard variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-4">

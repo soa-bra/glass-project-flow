@@ -63,7 +63,7 @@ export const RecruitmentTab: React.FC = () => {
 
   if (selectedCandidate) {
     return (
-      <div className="space-y-6 p-6 bg-transparent">
+      <div className="space-y-6 bg-transparent">
         {/* عودة إلى قائمة المرشحين */}
         <div className="flex items-center gap-4">
           <Button 
@@ -221,7 +221,7 @@ export const RecruitmentTab: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-6 bg-transparent">
+    <div className="space-y-6 bg-transparent">
       {/* إحصائيات التوظيف */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <BaseCard variant="operations" className="p-4">

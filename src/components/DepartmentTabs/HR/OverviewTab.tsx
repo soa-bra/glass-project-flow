@@ -53,7 +53,7 @@ export const OverviewTab: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 p-6 bg-transparent">
+    <div className="space-y-6 bg-transparent">
       {/* مؤشرات الأداء الأساسية */}
       <KPIStatsSection stats={kpiStats} />
 

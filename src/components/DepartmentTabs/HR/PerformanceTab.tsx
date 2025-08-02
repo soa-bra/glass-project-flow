@@ -49,7 +49,7 @@ export const PerformanceTab: React.FC = () => {
 
   if (selectedReview) {
     return (
-      <div className="space-y-6 p-6 bg-transparent">
+      <div className="space-y-6 bg-transparent">
         {/* عودة إلى قائمة التقييمات */}
         <div className="flex items-center gap-4">
           <Button 
@@ -168,7 +168,7 @@ export const PerformanceTab: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-6 bg-transparent">
+    <div className="space-y-6 bg-transparent">
       {/* إحصائيات الأداء */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <BaseCard variant="operations" className="p-4">
