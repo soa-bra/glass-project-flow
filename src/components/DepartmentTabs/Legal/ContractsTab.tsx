@@ -113,13 +113,13 @@ export const ContractsTab: React.FC = () => {
             <table className="w-full text-right">
               <thead>
                 <tr className="border-b border-black/10">
-                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black rounded-r-3xl py-[5px] mx-px px-[35px]">العقد</th>
-                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black py-[5px]">العميل</th>
-                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black py-[5px]">النوع</th>
-                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black py-[5px]">الحالة</th>
-                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black py-[5px]">القيمة</th>
-                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black my-0 py-[5px]">تاريخ الانتهاء</th>
-                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black rounded-l-3xl py-[5px] mx-0 px-px my-0">الإجراءات</th>
+                  <th className="pb-1 text-sm font-semibold text-black font-arabic  py-[5px] bg-transparent">العقد</th>
+                  <th className="pb-1 text-sm font-semibold text-black font-arabic  py-[5px] bg-transparent">العميل</th>
+                  <th className="pb-1 text-sm font-semibold text-black font-arabic  py-[5px] bg-transparent">النوع</th>
+                  <th className="pb-1 text-sm font-semibold text-black font-arabic  py-[5px] bg-transparent">الحالة</th>
+                  <th className="pb-1 text-sm font-semibold text-black font-arabic  py-[5px] bg-transparent">القيمة</th>
+                  <th className="pb-1 text-sm font-semibold text-black font-arabic  py-[5px] bg-transparent">تاريخ الانتهاء</th>
+                  <th className="pb-1 text-sm font-semibold text-black font-arabic  py-[5px] bg-transparent">الإجراءات</th>
                 </tr>
               </thead>
               <tbody>
