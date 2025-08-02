@@ -28,9 +28,9 @@ export const KMPADashboard: React.FC = () => {
     value: 'reports',
     label: 'التقارير'
   }];
-  return <div className="h-full flex flex-col bg-transparent">
+  return <div className="h-full flex flex-col bg-transparent mx-[24px] py-[45px]">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
+      <div className="flex items-center justify-between px-0 py-0 my-0">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
           إدارة المعرفة والنشر والبحث العلمي
         </h2>
@@ -40,7 +40,7 @@ export const KMPADashboard: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto px-6 pb-6">
+      <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
           <TabsContent value="overview" className="space-y-6">
             <OverviewTab />
