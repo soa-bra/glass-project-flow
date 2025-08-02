@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { InnerCard } from '@/components/ui/InnerCard';
 import { Users, Search, Filter, Plus, Eye, Edit, Phone, Mail, MapPin } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/input';
 import { mockEmployees } from './data';
 import { Employee } from './types';
@@ -25,13 +25,34 @@ export const EmployeesTab: React.FC = () => {
   });
 
   const getStatusBadge = (status: string) => {
-    const colorClass = getHRStatusColor(status);
     const text = getHRStatusText(status);
     
+    let variant: 'success' | 'warning' | 'error' | 'info' | 'default' = 'default';
+    switch (status.toLowerCase()) {
+      case 'active':
+      case 'approved':
+        variant = 'success';
+        break;
+      case 'pending':
+      case 'in_progress':
+        variant = 'warning';
+        break;
+      case 'inactive':
+      case 'rejected':
+        variant = 'error';
+        break;
+      case 'review':
+      case 'draft':
+        variant = 'info';
+        break;
+      default:
+        variant = 'default';
+    }
+    
     return (
-      <Badge className={colorClass}>
+      <UnifiedBadge variant={variant} size="sm">
         {text}
-      </Badge>
+      </UnifiedBadge>
     );
   };
 
@@ -50,18 +71,18 @@ export const EmployeesTab: React.FC = () => {
       <div className="space-y-6 bg-transparent">
         {/* عودة إلى قائمة الموظفين */}
         <div className="flex items-center gap-4">
-          <Button 
+          <UnifiedButton 
             variant="outline" 
             onClick={() => setSelectedEmployee(null)}
-            className="flex items-center gap-2"
+            size="sm"
           >
-            <span>← العودة</span>
-          </Button>
-          <h3 className="text-2xl font-bold text-gray-800 font-arabic">ملف الموظف</h3>
+            ← العودة
+          </UnifiedButton>
+          <h3 className="text-2xl font-bold text-black font-arabic">ملف الموظف</h3>
         </div>
 
         {/* معلومات الموظف الأساسية */}
-        <BaseCard variant="operations" className="p-6">
+        <InnerCard className="p-6">
           <div className="flex items-start gap-6">
             <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
               {selectedEmployee.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -92,87 +113,100 @@ export const EmployeesTab: React.FC = () => {
                 </div>
               </div>
             </div>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Edit className="h-4 w-4" />
-              <span className="font-arabic">تعديل</span>
-            </Button>
+            <UnifiedButton variant="outline" size="sm">
+              <Edit className="h-4 w-4 ml-2" />
+              تعديل
+            </UnifiedButton>
           </div>
-        </BaseCard>
+        </InnerCard>
 
         {/* المهارات */}
-        <BaseCard variant="operations" className="p-6">
-          <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">المهارات والكفاءات</h3>
+        <InnerCard 
+          title="المهارات والكفاءات"
+          className="p-6"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {selectedEmployee.skills.map((skill, index) => (
-              <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div key={index} className="p-4 bg-black/5 rounded-xl border border-black/10">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium font-arabic">{skill.name}</h4>
-                  <Badge className={`text-xs ${getSkillLevelColor(skill.level)}`}>
+                  <UnifiedBadge 
+                    variant={
+                      skill.level === 'expert' ? 'success' :
+                      skill.level === 'advanced' ? 'info' :
+                      skill.level === 'intermediate' ? 'warning' : 'error'
+                    }
+                    size="sm"
+                  >
                     {skill.level === 'expert' ? 'خبير' :
                      skill.level === 'advanced' ? 'متقدم' :
                      skill.level === 'intermediate' ? 'متوسط' : 'مبتدئ'}
-                  </Badge>
+                  </UnifiedBadge>
                 </div>
-                <p className="text-sm text-gray-600 font-arabic mb-1">الفئة: {skill.category}</p>
-                <p className="text-xs text-gray-500">آخر تقييم: {skill.lastAssessed}</p>
+                <p className="text-sm text-black/70 font-arabic mb-1">الفئة: {skill.category}</p>
+                <p className="text-xs text-black/60">آخر تقييم: {skill.lastAssessed}</p>
               </div>
             ))}
           </div>
-        </BaseCard>
+        </InnerCard>
 
         {/* جهة الاتصال في الطوارئ */}
-        <BaseCard variant="operations" className="p-6">
-          <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">جهة الاتصال في الطوارئ</h3>
+        <InnerCard 
+          title="جهة الاتصال في الطوارئ"
+          className="p-6"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm text-gray-600 font-arabic">الاسم</label>
+              <label className="text-sm text-black/70 font-arabic">الاسم</label>
               <p className="text-lg font-medium">{selectedEmployee.emergencyContact.name}</p>
             </div>
             <div>
-              <label className="text-sm text-gray-600 font-arabic">صلة القرابة</label>
+              <label className="text-sm text-black/70 font-arabic">صلة القرابة</label>
               <p className="text-lg font-medium font-arabic">{selectedEmployee.emergencyContact.relationship}</p>
             </div>
             <div>
-              <label className="text-sm text-gray-600 font-arabic">رقم الهاتف</label>
+              <label className="text-sm text-black/70 font-arabic">رقم الهاتف</label>
               <p className="text-lg font-medium">{selectedEmployee.emergencyContact.phone}</p>
             </div>
             {selectedEmployee.emergencyContact.email && (
               <div>
-                <label className="text-sm text-gray-600 font-arabic">البريد الإلكتروني</label>
+                <label className="text-sm text-black/70 font-arabic">البريد الإلكتروني</label>
                 <p className="text-lg font-medium">{selectedEmployee.emergencyContact.email}</p>
               </div>
             )}
           </div>
-        </BaseCard>
+        </InnerCard>
 
         {/* الوثائق */}
-        <BaseCard variant="operations" className="p-6">
+        <InnerCard 
+          title="الوثائق"
+          className="p-6"
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">الوثائق</h3>
-            <Button variant="outline" size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              <span className="font-arabic">إضافة وثيقة</span>
-            </Button>
+            <UnifiedButton variant="outline" size="sm">
+              <Plus className="h-4 w-4 ml-2" />
+              إضافة وثيقة
+            </UnifiedButton>
           </div>
           <div className="space-y-3">
             {selectedEmployee.documents.map((doc, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={index} className="flex items-center justify-between p-3 bg-black/5 rounded-xl">
                 <div>
                   <p className="font-medium font-arabic">{doc.name}</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-black/70">
                     {doc.type === 'contract' ? 'عقد' :
                      doc.type === 'certificate' ? 'شهادة' :
                      doc.type === 'evaluation' ? 'تقييم' : 'أخرى'} • 
                     تم الرفع في {doc.uploadDate}
                   </p>
                 </div>
-                <Button variant="ghost" size="sm">
+                <UnifiedButton variant="secondary" size="sm">
                   <Eye className="h-4 w-4" />
-                </Button>
+                </UnifiedButton>
               </div>
             ))}
           </div>
-        </BaseCard>
+        </InnerCard>
       </div>
     );
   }
@@ -180,12 +214,11 @@ export const EmployeesTab: React.FC = () => {
   return (
     <div className="space-y-6 bg-transparent">
       {/* أدوات البحث والتصفية */}
-      <BaseCard variant="operations" className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Users className="h-6 w-6 text-blue-600" />
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">ملفات الموظفين</h3>
-        </div>
-        
+      <InnerCard 
+        title="ملفات الموظفين"
+        icon={<Users className="h-4 w-4 text-white" />}
+        className="p-6"
+      >
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -208,21 +241,21 @@ export const EmployeesTab: React.FC = () => {
               ))}
             </select>
             
-            <Button variant="outline">
-              <Filter className="h-4 w-4 mr-2" />
-              <span className="font-arabic">تصفية</span>
-            </Button>
+            <UnifiedButton variant="outline" size="sm">
+              <Filter className="h-4 w-4 ml-2" />
+              تصفية
+            </UnifiedButton>
             
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              <span className="font-arabic">إضافة موظف</span>
-            </Button>
+            <UnifiedButton size="sm">
+              <Plus className="h-4 w-4 ml-2" />
+              إضافة موظف
+            </UnifiedButton>
           </div>
         </div>
-      </BaseCard>
+      </InnerCard>
 
       {/* جدول الموظفين */}
-      <BaseCard variant="operations" className="p-6">
+      <InnerCard className="p-6">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -255,16 +288,16 @@ export const EmployeesTab: React.FC = () => {
                   <td className="py-3 px-4">{getStatusBadge(employee.status)}</td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
-                      <Button 
-                        variant="ghost" 
+                      <UnifiedButton 
+                        variant="secondary" 
                         size="sm"
                         onClick={() => setSelectedEmployee(employee)}
                       >
                         <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
+                      </UnifiedButton>
+                      <UnifiedButton variant="secondary" size="sm">
                         <Edit className="h-4 w-4" />
-                      </Button>
+                      </UnifiedButton>
                     </div>
                   </td>
                 </tr>
@@ -272,7 +305,7 @@ export const EmployeesTab: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </BaseCard>
+      </InnerCard>
     </div>
   );
 };

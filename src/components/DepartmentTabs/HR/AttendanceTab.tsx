@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { InnerCard } from '@/components/ui/InnerCard';
 import { Clock, Calendar, Users, TrendingUp, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { mockAttendanceRecords, mockLeaveRequests, mockEmployees } from './data';
 import { getHRStatusColor, getHRStatusText } from './utils';
 
@@ -20,24 +20,67 @@ export const AttendanceTab: React.FC = () => {
   };
 
   const getAttendanceStatusBadge = (status: string) => {
-    const colorClass = getHRStatusColor(status);
     const text = getHRStatusText(status);
     
+    let variant: 'success' | 'warning' | 'error' | 'info' | 'default' = 'default';
+    switch (status.toLowerCase()) {
+      case 'present':
+      case 'approved':
+      case 'completed':
+        variant = 'success';
+        break;
+      case 'late':
+      case 'pending':
+        variant = 'warning';
+        break;
+      case 'absent':
+      case 'rejected':
+        variant = 'error';
+        break;
+      case 'review':
+      case 'scheduled':
+        variant = 'info';
+        break;
+      default:
+        variant = 'default';
+    }
+    
     return (
-      <Badge className={colorClass}>
+      <UnifiedBadge variant={variant} size="sm">
         {text}
-      </Badge>
+      </UnifiedBadge>
     );
   };
 
   const getLeaveStatusBadge = (status: string) => {
-    const colorClass = getHRStatusColor(status);
     const text = getHRStatusText(status);
     
+    let variant: 'success' | 'warning' | 'error' | 'info' | 'default' = 'default';
+    switch (status.toLowerCase()) {
+      case 'approved':
+      case 'completed':
+        variant = 'success';
+        break;
+      case 'pending':
+      case 'in_progress':
+        variant = 'warning';
+        break;
+      case 'rejected':
+      case 'failed':
+        variant = 'error';
+        break;
+      case 'review':
+      case 'scheduled':
+        variant = 'info';
+        break;
+      default:
+        variant = 'default';
+    }
+    
     return (
-      <Badge className={colorClass}>
+      <UnifiedBadge variant={variant} size="sm">
         {text}
-      </Badge>
+      </UnifiedBadge>
     );
   };
 
@@ -61,90 +104,100 @@ export const AttendanceTab: React.FC = () => {
     <div className="space-y-6 bg-transparent">
       {/* إحصائيات الحضور */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <BaseCard variant="operations" className="p-4">
+        <InnerCard>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 font-arabic">الحاضرون اليوم</p>
-              <p className="text-2xl font-bold text-green-600">{attendanceStats.presentToday}</p>
+              <p className="text-sm text-black/70 font-arabic">الحاضرون اليوم</p>
+              <p className="text-2xl font-bold text-black">{attendanceStats.presentToday}</p>
             </div>
-            <CheckCircle className="h-8 w-8 text-green-600" />
+            <div className="w-8 h-8 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
+              <CheckCircle className="h-5 w-5 text-black" />
+            </div>
           </div>
-        </BaseCard>
+        </InnerCard>
 
-        <BaseCard variant="operations" className="p-4">
+        <InnerCard>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 font-arabic">الغائبون اليوم</p>
-              <p className="text-2xl font-bold text-red-600">{attendanceStats.absentToday}</p>
+              <p className="text-sm text-black/70 font-arabic">الغائبون اليوم</p>
+              <p className="text-2xl font-bold text-black">{attendanceStats.absentToday}</p>
             </div>
-            <XCircle className="h-8 w-8 text-red-600" />
+            <div className="w-8 h-8 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
+              <XCircle className="h-5 w-5 text-black" />
+            </div>
           </div>
-        </BaseCard>
+        </InnerCard>
 
-        <BaseCard variant="operations" className="p-4">
+        <InnerCard>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 font-arabic">المتأخرون اليوم</p>
-              <p className="text-2xl font-bold text-yellow-600">{attendanceStats.lateToday}</p>
+              <p className="text-sm text-black/70 font-arabic">المتأخرون اليوم</p>
+              <p className="text-2xl font-bold text-black">{attendanceStats.lateToday}</p>
             </div>
-            <AlertTriangle className="h-8 w-8 text-yellow-600" />
+            <div className="w-8 h-8 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
+              <AlertTriangle className="h-5 w-5 text-black" />
+            </div>
           </div>
-        </BaseCard>
+        </InnerCard>
 
-        <BaseCard variant="operations" className="p-4">
+        <InnerCard>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 font-arabic">متوسط ساعات العمل</p>
-              <p className="text-2xl font-bold text-blue-600">{attendanceStats.averageWorkHours}</p>
+              <p className="text-sm text-black/70 font-arabic">متوسط ساعات العمل</p>
+              <p className="text-2xl font-bold text-black">{attendanceStats.averageWorkHours}</p>
             </div>
-            <Clock className="h-8 w-8 text-blue-600" />
+            <div className="w-8 h-8 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
+              <Clock className="h-5 w-5 text-black" />
+            </div>
           </div>
-        </BaseCard>
+        </InnerCard>
 
-        <BaseCard variant="operations" className="p-4">
+        <InnerCard>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 font-arabic">معدل الحضور</p>
-              <p className="text-2xl font-bold text-purple-600">{attendanceStats.attendanceRate}%</p>
+              <p className="text-sm text-black/70 font-arabic">معدل الحضور</p>
+              <p className="text-2xl font-bold text-black">{attendanceStats.attendanceRate}%</p>
             </div>
-            <TrendingUp className="h-8 w-8 text-purple-600" />
+            <div className="w-8 h-8 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-black" />
+            </div>
           </div>
-        </BaseCard>
+        </InnerCard>
 
-        <BaseCard variant="operations" className="p-4">
+        <InnerCard>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 font-arabic">طلبات الإجازة</p>
-              <p className="text-2xl font-bold text-orange-600">{attendanceStats.pendingLeaveRequests}</p>
+              <p className="text-sm text-black/70 font-arabic">طلبات الإجازة</p>
+              <p className="text-2xl font-bold text-black">{attendanceStats.pendingLeaveRequests}</p>
             </div>
-            <Calendar className="h-8 w-8 text-orange-600" />
+            <div className="w-8 h-8 rounded-full bg-transparent border border-black/10 flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-black" />
+            </div>
           </div>
-        </BaseCard>
+        </InnerCard>
       </div>
 
       {/* التبويبات */}
-      <BaseCard variant="operations" className="p-6">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="flex items-center gap-2">
-            <Clock className="h-6 w-6 text-blue-600" />
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">إدارة الحضور والإجازات</h3>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant={selectedView === 'attendance' ? 'default' : 'outline'}
-              onClick={() => setSelectedView('attendance')}
-              className="font-arabic"
-            >
-              سجلات الحضور
-            </Button>
-            <Button
-              variant={selectedView === 'leaves' ? 'default' : 'outline'}
-              onClick={() => setSelectedView('leaves')}
-              className="font-arabic"
-            >
-              طلبات الإجازة
-            </Button>
-          </div>
+      <InnerCard 
+        title="إدارة الحضور والإجازات"
+        icon={<Clock className="h-4 w-4 text-white" />}
+        className="p-6"
+      >
+        <div className="flex gap-2 mb-6">
+          <UnifiedButton
+            variant={selectedView === 'attendance' ? 'primary' : 'outline'}
+            onClick={() => setSelectedView('attendance')}
+            size="sm"
+          >
+            سجلات الحضور
+          </UnifiedButton>
+          <UnifiedButton
+            variant={selectedView === 'leaves' ? 'primary' : 'outline'}
+            onClick={() => setSelectedView('leaves')}
+            size="sm"
+          >
+            طلبات الإجازة
+          </UnifiedButton>
         </div>
 
         {selectedView === 'attendance' ? (
@@ -179,10 +232,10 @@ export const AttendanceTab: React.FC = () => {
           </div>
         ) : (
           /* طلبات الإجازة */
-          <div className="space-y-4">
+            <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h4 className="text-lg font-medium font-arabic">طلبات الإجازة</h4>
-              <Button className="font-arabic">طلب إجازة جديد</Button>
+              <UnifiedButton size="sm">طلب إجازة جديد</UnifiedButton>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -211,12 +264,12 @@ export const AttendanceTab: React.FC = () => {
                       <td className="py-3 px-4">
                         {request.status === 'pending' && (
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm" className="text-green-600 border-green-600">
+                            <UnifiedButton variant="outline" size="sm">
                               موافقة
-                            </Button>
-                            <Button variant="outline" size="sm" className="text-red-600 border-red-600">
+                            </UnifiedButton>
+                            <UnifiedButton variant="outline" size="sm">
                               رفض
-                            </Button>
+                            </UnifiedButton>
                           </div>
                         )}
                       </td>
@@ -227,18 +280,17 @@ export const AttendanceTab: React.FC = () => {
             </div>
           </div>
         )}
-      </BaseCard>
+      </InnerCard>
 
       {/* رسم بياني للحضور */}
-      <BaseCard variant="operations" className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="h-6 w-6 text-green-600" />
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">تحليل الحضور الشهري</h3>
+      <InnerCard 
+        title="تحليل الحضور الشهري"
+        icon={<TrendingUp className="h-4 w-4 text-white" />}
+      >
+        <div className="h-64 flex items-center justify-center bg-gray-50/50 rounded-lg">
+          <p className="text-black/60 font-arabic">سيتم إضافة الرسم البياني للحضور هنا</p>
         </div>
-        <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-          <p className="text-gray-500 font-arabic">سيتم إضافة الرسم البياني للحضور هنا</p>
-        </div>
-      </BaseCard>
+      </InnerCard>
     </div>
   );
 };
