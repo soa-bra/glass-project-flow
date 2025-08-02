@@ -206,12 +206,12 @@ export const OverviewTab: React.FC = () => {
             <table className="w-full text-right">
               <thead className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black rounded-r-full">
                 <tr className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black">
-                  <th className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black">القناة</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black rounded-r-3xl">القناة</th>
                   <th className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black">الظهور</th>
                   <th className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black">النقرات</th>
                   <th className="px-4 py-3 text-sm font-semibold text-white font-arabic bg-black rounded-none">التحويلات</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-black font-arabic">الإنفاق</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-black font-arabic">CTR</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-white font-arabic">الإنفاق</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-white font-arabic rounded-l-3xl">CTR</th>
                 </tr>
               </thead>
               <tbody>
