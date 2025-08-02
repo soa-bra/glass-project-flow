@@ -38,7 +38,7 @@ export const BrandDashboard: React.FC = () => {
   }];
   return <div className="h-full flex flex-col bg-#d9e7ed ">
       {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
+      <div className="flex items-center justify-between px-0 bg-[#d9e7ed] my-0 py-[45px]">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           إدارة العلامة التجارية
         </h2>
