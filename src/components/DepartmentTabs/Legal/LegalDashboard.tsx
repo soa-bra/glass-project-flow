@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
@@ -9,38 +8,43 @@ import { RisksTab } from './RisksTab';
 import { LicensesTab } from './LicensesTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
-
 export const LegalDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-
-  const tabItems = [
-    { value: 'overview', label: 'النظرة العامة' },
-    { value: 'contracts', label: 'العقود والاتفاقيات' },
-    { value: 'compliance', label: 'الامتثال' },
-    { value: 'risks', label: 'المخاطر والنزاعات' },
-    { value: 'licenses', label: 'التراخيص والملكية الفكرية' },
-    { value: 'templates', label: 'النماذج والقوالب' },
-    { value: 'reports', label: 'التقارير' }
-  ];
-
-  return (
-    <div className="h-full flex flex-col bg-transparent">
+  const tabItems = [{
+    value: 'overview',
+    label: 'النظرة العامة'
+  }, {
+    value: 'contracts',
+    label: 'العقود والاتفاقيات'
+  }, {
+    value: 'compliance',
+    label: 'الامتثال'
+  }, {
+    value: 'risks',
+    label: 'المخاطر والنزاعات'
+  }, {
+    value: 'licenses',
+    label: 'التراخيص والملكية الفكرية'
+  }, {
+    value: 'templates',
+    label: 'النماذج والقوالب'
+  }, {
+    value: 'reports',
+    label: 'التقارير'
+  }];
+  return <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between px-0 py-[10px] my-[25px]">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
+      <div className="flex items-center justify-between px-6 py-[24px] my-[55px]">
+        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           إدارة الأحوال القانونية
         </h2>
         <div className="w-fit">
-          <AnimatedTabs 
-            tabs={tabItems}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
+          <AnimatedTabs tabs={tabItems} activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
+      <div className="flex-1 overflow-auto px-6 pb-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
           <TabsContent value="overview" className="space-y-6">
             <OverviewTab />
@@ -71,6 +75,5 @@ export const LegalDashboard: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>;
 };
