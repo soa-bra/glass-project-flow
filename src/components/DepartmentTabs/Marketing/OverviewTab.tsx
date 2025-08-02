@@ -4,119 +4,117 @@ import { TrendingUp, DollarSign, Users, BarChart3, Target, Zap } from 'lucide-re
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
-
 export const OverviewTab: React.FC = () => {
-  const kpiStats = [
-    {
-      title: 'العائد على الإنفاق',
-      value: '4.2x',
-      unit: 'ROAS',
-      description: 'عائد الاستثمار الإعلاني'
-    },
-    {
-      title: 'تكلفة اكتساب العميل',
-      value: '245',
-      unit: 'ريال',
-      description: 'متوسط تكلفة العميل الجديد'
-    },
-    {
-      title: 'معدل التحويل',
-      value: '2.8%',
-      unit: 'تحويل',
-      description: 'نسبة تحويل الزوار'
-    }
-  ];
-
-  const kpis = [
-    {
-      title: 'العائد على الإنفاق الإعلاني',
-      value: '4.2x',
-      change: '+12%',
-      changeType: 'positive' as const,
-      icon: TrendingUp,
-      description: 'ROAS'
-    },
-    {
-      title: 'تكلفة اكتساب العميل',
-      value: '245 ر.س',
-      change: '-8%',
-      changeType: 'positive' as const,
-      icon: DollarSign,
-      description: 'CPA'
-    },
-    {
-      title: 'معدل النقر إلى الظهور',
-      value: '3.4%',
-      change: '+5%',
-      changeType: 'positive' as const,
-      icon: Target,
-      description: 'CTR'
-    },
-    {
-      title: 'الجمهور النشط',
-      value: '45,678',
-      change: '+22%',
-      changeType: 'positive' as const,
-      icon: Users,
-      description: 'Active Audience'
-    },
-    {
-      title: 'معدل التحويل',
-      value: '2.8%',
-      change: '+15%',
-      changeType: 'positive' as const,
-      icon: BarChart3,
-      description: 'Conversion Rate'
-    },
-    {
-      title: 'الحملات النشطة',
-      value: '12',
-      change: '+3',
-      changeType: 'positive' as const,
-      icon: Zap,
-      description: 'Active Campaigns'
-    }
-  ];
-
-  const activeCampaigns = [
-    {
-      name: 'حملة العودة للمدارس 2024',
-      type: 'إعلانات مدفوعة',
-      budget: 50000,
-      spent: 32500,
-      performance: '+18% ROAS',
-      status: 'نشطة',
-      daysLeft: 12
-    },
-    {
-      name: 'حملة التسويق بالبريد الإلكتروني - Q4',
-      type: 'بريد إلكتروني',
-      budget: 15000,
-      spent: 8200,
-      performance: '+25% Open Rate',
-      status: 'نشطة',
-      daysLeft: 45
-    },
-    {
-      name: 'فعالية المؤتمر السنوي',
-      type: 'فعاليات',
-      budget: 120000,
-      spent: 75000,
-      performance: '850 مشارك',
-      status: 'قيد التنفيذ',
-      daysLeft: 5
-    }
-  ];
-
-  const channelPerformance = [
-    { channel: 'فيسبوك', impressions: 125000, clicks: 4250, conversions: 119, spend: 8500 },
-    { channel: 'إنستقرام', impressions: 89000, clicks: 3100, conversions: 87, spend: 6200 },
-    { channel: 'لينكد إن', impressions: 45000, clicks: 2200, conversions: 156, spend: 12500 },
-    { channel: 'جوجل أدز', impressions: 67000, clicks: 2890, conversions: 98, spend: 9800 }
-  ];
-
-  return (
-    <div className="mb-6">
+  const kpiStats = [{
+    title: 'العائد على الإنفاق',
+    value: '4.2x',
+    unit: 'ROAS',
+    description: 'عائد الاستثمار الإعلاني'
+  }, {
+    title: 'تكلفة اكتساب العميل',
+    value: '245',
+    unit: 'ريال',
+    description: 'متوسط تكلفة العميل الجديد'
+  }, {
+    title: 'معدل التحويل',
+    value: '2.8%',
+    unit: 'تحويل',
+    description: 'نسبة تحويل الزوار'
+  }];
+  const kpis = [{
+    title: 'العائد على الإنفاق الإعلاني',
+    value: '4.2x',
+    change: '+12%',
+    changeType: 'positive' as const,
+    icon: TrendingUp,
+    description: 'ROAS'
+  }, {
+    title: 'تكلفة اكتساب العميل',
+    value: '245 ر.س',
+    change: '-8%',
+    changeType: 'positive' as const,
+    icon: DollarSign,
+    description: 'CPA'
+  }, {
+    title: 'معدل النقر إلى الظهور',
+    value: '3.4%',
+    change: '+5%',
+    changeType: 'positive' as const,
+    icon: Target,
+    description: 'CTR'
+  }, {
+    title: 'الجمهور النشط',
+    value: '45,678',
+    change: '+22%',
+    changeType: 'positive' as const,
+    icon: Users,
+    description: 'Active Audience'
+  }, {
+    title: 'معدل التحويل',
+    value: '2.8%',
+    change: '+15%',
+    changeType: 'positive' as const,
+    icon: BarChart3,
+    description: 'Conversion Rate'
+  }, {
+    title: 'الحملات النشطة',
+    value: '12',
+    change: '+3',
+    changeType: 'positive' as const,
+    icon: Zap,
+    description: 'Active Campaigns'
+  }];
+  const activeCampaigns = [{
+    name: 'حملة العودة للمدارس 2024',
+    type: 'إعلانات مدفوعة',
+    budget: 50000,
+    spent: 32500,
+    performance: '+18% ROAS',
+    status: 'نشطة',
+    daysLeft: 12
+  }, {
+    name: 'حملة التسويق بالبريد الإلكتروني - Q4',
+    type: 'بريد إلكتروني',
+    budget: 15000,
+    spent: 8200,
+    performance: '+25% Open Rate',
+    status: 'نشطة',
+    daysLeft: 45
+  }, {
+    name: 'فعالية المؤتمر السنوي',
+    type: 'فعاليات',
+    budget: 120000,
+    spent: 75000,
+    performance: '850 مشارك',
+    status: 'قيد التنفيذ',
+    daysLeft: 5
+  }];
+  const channelPerformance = [{
+    channel: 'فيسبوك',
+    impressions: 125000,
+    clicks: 4250,
+    conversions: 119,
+    spend: 8500
+  }, {
+    channel: 'إنستقرام',
+    impressions: 89000,
+    clicks: 3100,
+    conversions: 87,
+    spend: 6200
+  }, {
+    channel: 'لينكد إن',
+    impressions: 45000,
+    clicks: 2200,
+    conversions: 156,
+    spend: 12500
+  }, {
+    channel: 'جوجل أدز',
+    impressions: 67000,
+    clicks: 2890,
+    conversions: 98,
+    spend: 9800
+  }];
+  return <div className="mb-6 my-[25px]">
       {/* مؤشرات الأداء الأساسية */}
       <div className="mb-6 py-0 px-0 my-0">
         <KPIStatsSection stats={kpiStats} />
@@ -125,8 +123,7 @@ export const OverviewTab: React.FC = () => {
       {/* KPIs Grid */}
       <div className="mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {kpis.map((kpi, index) => (
-            <BaseCard key={index} variant="operations" className="transition-all duration-300">
+          {kpis.map((kpi, index) => <BaseCard key={index} variant="operations" className="transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
@@ -146,8 +143,7 @@ export const OverviewTab: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </BaseCard>
-          ))}
+            </BaseCard>)}
         </div>
       </div>
 
@@ -160,8 +156,7 @@ export const OverviewTab: React.FC = () => {
           </div>
           
           <div className="space-y-4">
-            {activeCampaigns.map((campaign, index) => (
-              <div key={index} className="border border-gray-200/50 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            {activeCampaigns.map((campaign, index) => <div key={index} className="border border-gray-200/50 rounded-lg p-4 hover:bg-gray-50 transition-colors">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <h4 className="font-semibold text-black font-arabic">{campaign.name}</h4>
@@ -184,10 +179,9 @@ export const OverviewTab: React.FC = () => {
                     <p className="text-sm text-black font-arabic">المصروف</p>
                     <p className="font-semibold text-black">{campaign.spent.toLocaleString()} ر.س</p>
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                      <div 
-                        className="bg-black h-2 rounded-full" 
-                        style={{ width: `${(campaign.spent / campaign.budget) * 100}%` }}
-                      ></div>
+                      <div className="bg-black h-2 rounded-full" style={{
+                    width: `${campaign.spent / campaign.budget * 100}%`
+                  }}></div>
                     </div>
                   </div>
                   <div>
@@ -195,8 +189,7 @@ export const OverviewTab: React.FC = () => {
                     <p className="font-semibold text-black">{campaign.performance}</p>
                   </div>
                 </div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </BaseCard>
       </div>
@@ -222,18 +215,16 @@ export const OverviewTab: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {channelPerformance.map((channel, index) => (
-                  <tr key={index} className="border-t border-gray-200">
+                {channelPerformance.map((channel, index) => <tr key={index} className="border-t border-gray-200">
                     <td className="px-4 py-3 font-semibold text-black font-arabic">{channel.channel}</td>
                     <td className="px-4 py-3 text-black">{channel.impressions.toLocaleString()}</td>
                     <td className="px-4 py-3 text-black">{channel.clicks.toLocaleString()}</td>
                     <td className="px-4 py-3 text-black">{channel.conversions}</td>
                     <td className="px-4 py-3 text-black">{channel.spend.toLocaleString()} ر.س</td>
                     <td className="px-4 py-3 text-black">
-                      {((channel.clicks / channel.impressions) * 100).toFixed(2)}%
+                      {(channel.clicks / channel.impressions * 100).toFixed(2)}%
                     </td>
-                  </tr>
-                ))}
+                  </tr>)}
               </tbody>
             </table>
           </div>
@@ -251,6 +242,5 @@ export const OverviewTab: React.FC = () => {
           تصدير تقرير تسويقي
         </UnifiedButton>
       </div>
-    </div>
-  );
+    </div>;
 };
