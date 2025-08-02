@@ -54,30 +54,53 @@ export const MarketingTab: React.FC<MarketingTabProps> = ({
   data,
   loading
 }) => {
-  if (loading || !data) {
-    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
-  }
-  return <div className="space-y-4 h-full overflow-auto bg-transparent">
-      {/* العنوان و KPI في نفس السطر */}
-      <div className="flex justify-between items-start pt-6 px-[35px]">
-        <div className="text-right">
-          <h2 className="text-lg font-semibold text-black font-arabic mb-1">التسويق</h2>
-          <p className="text-xs font-normal text-gray-400 font-arabic">ربط الاستثمار التسويقي بأداء المشاريع</p>
-        </div>
-        <div className="flex-1 max-w-2xl px-px mx-px">
-          <MarketingKPIs kpis={data.kpis} totalROAS={data.totalROAS} />
-        </div>
+
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center text-black font-arabic">
+        جارٍ التحميل...
       </div>
-      
+    );
+  }
+
+  // التأكد من وجود البيانات
+  if (!data) {
+    return (
+      <div className="h-full flex items-center justify-center text-black font-arabic">
+        لا توجد بيانات متاحة
+      </div>
+    );
+  }
+
+  return (
+    <div className="font-arabic px-[15px] py-0">
+      {/* قسم المؤشرات التسويقية الرئيسية */}
+      <div className="mb-6 py-0 px-0 my-0">
+        <MarketingKPIs kpis={data.kpis} totalROAS={data.totalROAS} />
+      </div>
+
       {/* الرسوم البيانية الأساسية */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 px-6">
-        <MarketingROAS roasData={data.roasData} />
-        <AttributionChart attribution={data.attribution} />
+      <div className="mb-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <MarketingROAS roasData={data.roasData} />
+          <AttributionChart attribution={data.attribution} />
+        </div>
       </div>
       
       {/* الحملات النشطة */}
-      <div className="px-6">
+      <div className="mb-6">
         <ActiveCampaigns campaigns={data.campaigns} />
       </div>
-    </div>;
+      
+      {/* أدوات التصدير والتحليل */}
+      <div className="flex justify-between items-center py-0">
+        <div className="text-sm font-normal text-black font-arabic">
+          إجمالي عائد الاستثمار: {data.totalROAS.toFixed(1)}x
+        </div>
+        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-arabic hover:bg-gray-800 transition-colors">
+          تصدير التقرير
+        </button>
+      </div>
+    </div>
+  );
 };

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 interface Attribution {
@@ -23,40 +22,43 @@ export const AttributionChart: React.FC<AttributionChartProps> = ({
       label: "النسبة المئوية"
     }
   };
-  return <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
-      <CardHeader>
-        <CardTitle className="text-right font-arabic">تحليل نقاط التواصل</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie data={attribution} cx="50%" cy="50%" labelLine={false} label={({
+  return (
+    <div className="bg-[#fbe2aa] rounded-3xl border border-black/10 p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-bold text-black font-arabic">تحليل نقاط التواصل</h3>
+      </div>
+      
+      <ChartContainer config={chartConfig}>
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie data={attribution} cx="50%" cy="50%" labelLine={false} label={({
               percentage
             }) => `${percentage}%`} outerRadius={80} fill="#8884d8" dataKey="percentage">
-                {attribution.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-              </Pie>
-              <Tooltip content={<ChartTooltipContent />} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartContainer>
-        
-        <div className="mt-4 space-y-3">
-          {attribution.map((item, index) => <div key={index} className="flex items-center justify-between p-3 bg-white/20 rounded-2xl">
-              <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded-full" style={{
-              backgroundColor: COLORS[index % COLORS.length]
-            }} />
-                <span className="font-medium text-sm">{item.touchpoint}</span>
-              </div>
-              <div className="text-right">
-                <p className="font-bold">{item.percentage}%</p>
-                <p className="text-xs text-gray-600">{item.conversions} تحويل</p>
-                <p className="text-xs text-gray-600">{item.revenue.toLocaleString()} ر.س</p>
-              </div>
-            </div>)}
-        </div>
-      </CardContent>
-    </Card>;
+              {attribution.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+            </Pie>
+            <Tooltip content={<ChartTooltipContent />} />
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+      
+      <div className="mt-4 space-y-3">
+        {attribution.map((item, index) => (
+          <div key={index} className="flex items-center justify-between p-3 bg-white/60 rounded-2xl border border-black/5">
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 rounded-full" style={{
+                backgroundColor: COLORS[index % COLORS.length]
+              }} />
+              <span className="font-medium text-sm text-black font-arabic">{item.touchpoint}</span>
+            </div>
+            <div className="text-right">
+              <p className="font-bold text-black font-arabic">{item.percentage}%</p>
+              <p className="text-xs text-black/60 font-arabic">{item.conversions} تحويل</p>
+              <p className="text-xs text-black/60 font-arabic">{item.revenue.toLocaleString()} ر.س</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
