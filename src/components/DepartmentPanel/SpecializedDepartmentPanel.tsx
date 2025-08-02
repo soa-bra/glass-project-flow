@@ -31,11 +31,6 @@ export const SpecializedDepartmentPanel: React.FC<SpecializedDepartmentPanelProp
         return <CSRDashboard />;
       case 'training':
         return <TrainingDashboard />;
-      case 'kmpa':
-        return <KMPADashboard />;
-      case 'brand':
-        return <BrandDashboard />;
-      
       default:
         return null;
     }
