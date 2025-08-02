@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
+import { DashboardLayout } from '@/components/shared/DashboardLayout';
+import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
 import { OverviewTab } from './OverviewTab';
 import { CustomersTab } from './CustomersTab';
 import { OpportunitiesTab } from './OpportunitiesTab';
@@ -32,48 +32,40 @@ export const CRMDashboard: React.FC = () => {
     value: 'reports',
     label: 'التقارير'
   }];
-  return <div className="h-full flex flex-col bg-transparent">
-      {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between my-0 py-0 px-0">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
-          إدارة علاقات العملاء
-        </h2>
-        <div className="w-fit">
-          <AnimatedTabs tabs={tabItems} activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
-      </div>
+  return (
+    <DashboardLayout
+      title="إدارة علاقات العملاء"
+      tabs={tabItems}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+    >
+      <UnifiedTabContent value="overview">
+        <OverviewTab />
+      </UnifiedTabContent>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 my-[25px] px-0">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
-          <TabsContent value="overview" className="space-y-6">
-            <OverviewTab />
-          </TabsContent>
+      <UnifiedTabContent value="customers">
+        <CustomersTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="customers" className="space-y-6">
-            <CustomersTab />
-          </TabsContent>
+      <UnifiedTabContent value="opportunities">
+        <OpportunitiesTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="opportunities" className="space-y-6">
-            <OpportunitiesTab />
-          </TabsContent>
+      <UnifiedTabContent value="service">
+        <ServiceTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="service" className="space-y-6">
-            <ServiceTab />
-          </TabsContent>
+      <UnifiedTabContent value="analytics">
+        <AnalyticsTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="analytics" className="space-y-6">
-            <AnalyticsTab />
-          </TabsContent>
+      <UnifiedTabContent value="templates">
+        <TemplatesTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="templates" className="space-y-6">
-            <TemplatesTab />
-          </TabsContent>
-
-          <TabsContent value="reports" className="space-y-6">
-            <ReportsTab />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>;
+      <UnifiedTabContent value="reports">
+        <ReportsTab />
+      </UnifiedTabContent>
+    </DashboardLayout>
+  );
 };

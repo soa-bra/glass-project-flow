@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
+import { DashboardLayout } from '@/components/shared/DashboardLayout';
+import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
 import { OverviewTab } from './OverviewTab';
 import { KnowledgeRepositoryTab } from './KnowledgeRepositoryTab';
 import { AuthoringVersionsTab } from './AuthoringVersionsTab';
@@ -28,44 +28,36 @@ export const KMPADashboard: React.FC = () => {
     value: 'reports',
     label: 'التقارير'
   }];
-  return <div className="h-full flex flex-col bg-transparent mx-[24px] py-[45px]">
-      {/* Header */}
-      <div className="flex items-center justify-between px-0 py-0 my-0">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
-          إدارة المعرفة والنشر والبحث العلمي
-        </h2>
-        <div className="w-fit">
-          <AnimatedTabs tabs={tabItems} activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
-      </div>
+  return (
+    <DashboardLayout
+      title="إدارة المعرفة والنشر والبحث العلمي"
+      tabs={tabItems}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+    >
+      <UnifiedTabContent value="overview">
+        <OverviewTab />
+      </UnifiedTabContent>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
-          <TabsContent value="overview" className="space-y-6">
-            <OverviewTab />
-          </TabsContent>
+      <UnifiedTabContent value="repository">
+        <KnowledgeRepositoryTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="repository" className="space-y-6">
-            <KnowledgeRepositoryTab />
-          </TabsContent>
+      <UnifiedTabContent value="authoring">
+        <AuthoringVersionsTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="authoring" className="space-y-6">
-            <AuthoringVersionsTab />
-          </TabsContent>
+      <UnifiedTabContent value="analytics">
+        <AnalyticsImpactTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="analytics" className="space-y-6">
-            <AnalyticsImpactTab />
-          </TabsContent>
+      <UnifiedTabContent value="templates">
+        <ModelsTemplatesTab />
+      </UnifiedTabContent>
 
-          <TabsContent value="templates" className="space-y-6">
-            <ModelsTemplatesTab />
-          </TabsContent>
-
-          <TabsContent value="reports" className="space-y-6">
-            <ReportsTab />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>;
+      <UnifiedTabContent value="reports">
+        <ReportsTab />
+      </UnifiedTabContent>
+    </DashboardLayout>
+  );
 };
