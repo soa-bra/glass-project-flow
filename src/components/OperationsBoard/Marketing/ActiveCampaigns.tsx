@@ -1,5 +1,6 @@
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
+import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { Progress } from '@/components/ui/progress';
 
 interface Campaign {
@@ -21,17 +22,15 @@ interface ActiveCampaignsProps {
 }
 
 export const ActiveCampaigns: React.FC<ActiveCampaignsProps> = ({ campaigns }) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'paused':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'completed':
-        return 'bg-blue-100 text-blue-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+  const getStatusBadge = (status: string) => {
+    const statusMap = {
+      'active': { label: 'نشطة', variant: 'success' },
+      'paused': { label: 'متوقفة', variant: 'warning' },
+      'completed': { label: 'مكتملة', variant: 'info' }
+    };
+    
+    const statusInfo = statusMap[status as keyof typeof statusMap] || { label: status, variant: 'default' };
+    return <UnifiedBadge variant={statusInfo.variant as any}>{statusInfo.label}</UnifiedBadge>;
   };
 
   const getStatusText = (status: string) => {
@@ -51,9 +50,9 @@ export const ActiveCampaigns: React.FC<ActiveCampaignsProps> = ({ campaigns }) =
     <div className="bg-[#f2ffff] rounded-3xl border border-black/10 p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-black font-arabic">الحملات النشطة</h3>
-        <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-arabic hover:bg-gray-800 transition-colors">
+        <UnifiedButton variant="primary">
           عرض الكل
-        </button>
+        </UnifiedButton>
       </div>
       
       <div className="space-y-4">
@@ -69,9 +68,7 @@ export const ActiveCampaigns: React.FC<ActiveCampaignsProps> = ({ campaigns }) =
                   <h4 className="font-medium text-sm text-black font-arabic">{campaign.name}</h4>
                   <p className="text-xs text-black/60 font-arabic">{campaign.channel}</p>
                 </div>
-                <Badge className={getStatusColor(campaign.status)}>
-                  {getStatusText(campaign.status)}
-                </Badge>
+                {getStatusBadge(campaign.status)}
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">

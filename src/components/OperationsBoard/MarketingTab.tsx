@@ -3,6 +3,7 @@ import { MarketingROAS } from './Marketing/MarketingROAS';
 import { ActiveCampaigns } from './Marketing/ActiveCampaigns';
 import { AttributionChart } from './Marketing/AttributionChart';
 import { MarketingKPIs } from './Marketing/MarketingKPIs';
+import { UnifiedButton } from '@/components/ui/UnifiedButton';
 interface ROASData {
   channel: string;
   investment: number;
@@ -97,9 +98,9 @@ export const MarketingTab: React.FC<MarketingTabProps> = ({
         <div className="text-sm font-normal text-black font-arabic">
           إجمالي عائد الاستثمار: {data.totalROAS.toFixed(1)}x
         </div>
-        <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-arabic hover:bg-gray-800 transition-colors">
+        <UnifiedButton variant="primary">
           تصدير التقرير
-        </button>
+        </UnifiedButton>
       </div>
     </div>
   );

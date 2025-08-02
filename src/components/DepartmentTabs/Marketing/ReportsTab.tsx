@@ -119,8 +119,8 @@ export const ReportsTab: React.FC = () => {
       <BaseCard variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <FileText className="h-6 w-6 text-blue-600" />
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">أنواع التقارير التسويقية</h3>
+            <FileText className="h-6 w-6 text-black" />
+            <h3 className="text-xl font-bold text-black font-arabic">أنواع التقارير التسويقية</h3>
           </div>
           <UnifiedButton variant="outline" size="sm">
             <Filter className="h-4 w-4 ml-1" />
@@ -165,11 +165,11 @@ export const ReportsTab: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* التقارير الحديثة */}
         <BaseCard variant="operations" className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <Download className="h-5 w-5 text-green-600" />
-              <h3 className="text-xl font-bold text-gray-800 font-arabic">التقارير الحديثة</h3>
-            </div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <Download className="h-5 w-5 text-black" />
+                <h3 className="text-xl font-bold text-black font-arabic">التقارير الحديثة</h3>
+              </div>
             <UnifiedButton variant="outline" size="sm">
               عرض الكل
             </UnifiedButton>
@@ -201,11 +201,11 @@ export const ReportsTab: React.FC = () => {
 
         {/* التقارير المجدولة */}
         <BaseCard variant="operations" className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-orange-600" />
-              <h3 className="text-xl font-bold text-gray-800 font-arabic">التقارير المجدولة</h3>
-            </div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-black" />
+                <h3 className="text-xl font-bold text-black font-arabic">التقارير المجدولة</h3>
+              </div>
             <UnifiedButton variant="outline" size="sm">
               إضافة جدولة
             </UnifiedButton>
@@ -246,23 +246,23 @@ export const ReportsTab: React.FC = () => {
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <BaseCard variant="operations" size="sm" className="text-center">
-          <h3 className="text-2xl font-bold text-blue-600 mb-1 font-arabic">28</h3>
-          <p className="text-sm text-gray-600 font-arabic">تقرير هذا الشهر</p>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">28</h3>
+          <p className="text-sm text-black font-arabic">تقرير هذا الشهر</p>
         </BaseCard>
 
         <BaseCard variant="operations" size="sm" className="text-center">
-          <h3 className="text-2xl font-bold text-green-600 mb-1 font-arabic">184</h3>
-          <p className="text-sm text-gray-600 font-arabic">إجمالي التقارير</p>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">184</h3>
+          <p className="text-sm text-black font-arabic">إجمالي التقارير</p>
         </BaseCard>
 
         <BaseCard variant="operations" size="sm" className="text-center">
-          <h3 className="text-2xl font-bold text-purple-600 mb-1 font-arabic">12</h3>
-          <p className="text-sm text-gray-600 font-arabic">تقرير مجدول</p>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">12</h3>
+          <p className="text-sm text-black font-arabic">تقرير مجدول</p>
         </BaseCard>
 
         <BaseCard variant="operations" size="sm" className="text-center">
-          <h3 className="text-2xl font-bold text-orange-600 mb-1 font-arabic">156</h3>
-          <p className="text-sm text-gray-600 font-arabic">إجمالي التحميلات</p>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">156</h3>
+          <p className="text-sm text-black font-arabic">إجمالي التحميلات</p>
         </BaseCard>
       </div>
     </div>

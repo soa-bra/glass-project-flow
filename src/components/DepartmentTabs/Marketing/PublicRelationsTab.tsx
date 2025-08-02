@@ -107,8 +107,8 @@ export const PublicRelationsTab: React.FC = () => {
       <BaseCard variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <Megaphone className="h-6 w-6 text-blue-600" />
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">حملات العلاقات العامة</h3>
+            <Megaphone className="h-6 w-6 text-black" />
+            <h3 className="text-xl font-bold text-black font-arabic">حملات العلاقات العامة</h3>
           </div>
           <UnifiedButton variant="outline" size="sm">
             إضافة حملة جديدة
@@ -156,8 +156,8 @@ export const PublicRelationsTab: React.FC = () => {
       <BaseCard variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <Users className="h-6 w-6 text-green-600" />
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">جهات الاتصال الإعلامية</h3>
+            <Users className="h-6 w-6 text-black" />
+            <h3 className="text-xl font-bold text-black font-arabic">جهات الاتصال الإعلامية</h3>
           </div>
           <UnifiedButton variant="outline" size="sm">
             إضافة جهة اتصال
@@ -204,8 +204,8 @@ export const PublicRelationsTab: React.FC = () => {
       <BaseCard variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <FileText className="h-6 w-6 text-purple-600" />
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">البيانات الصحفية</h3>
+            <FileText className="h-6 w-6 text-black" />
+            <h3 className="text-xl font-bold text-black font-arabic">البيانات الصحفية</h3>
           </div>
           <UnifiedButton variant="outline" size="sm">
             إنشاء بيان صحفي
@@ -241,27 +241,27 @@ export const PublicRelationsTab: React.FC = () => {
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <BaseCard variant="operations" size="sm" className="text-center">
-          <Award className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-          <h3 className="text-2xl font-bold text-blue-600 mb-1 font-arabic">12</h3>
-          <p className="text-sm text-gray-600 font-arabic">حملة نشطة</p>
+          <Award className="h-8 w-8 text-black mx-auto mb-2" />
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">12</h3>
+          <p className="text-sm text-black font-arabic">حملة نشطة</p>
         </BaseCard>
 
         <BaseCard variant="operations" size="sm" className="text-center">
-          <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
-          <h3 className="text-2xl font-bold text-green-600 mb-1 font-arabic">48</h3>
-          <p className="text-sm text-gray-600 font-arabic">جهة اتصال إعلامية</p>
+          <Users className="h-8 w-8 text-black mx-auto mb-2" />
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">48</h3>
+          <p className="text-sm text-black font-arabic">جهة اتصال إعلامية</p>
         </BaseCard>
 
         <BaseCard variant="operations" size="sm" className="text-center">
-          <FileText className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-          <h3 className="text-2xl font-bold text-purple-600 mb-1 font-arabic">24</h3>
-          <p className="text-sm text-gray-600 font-arabic">بيان صحفي</p>
+          <FileText className="h-8 w-8 text-black mx-auto mb-2" />
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">24</h3>
+          <p className="text-sm text-black font-arabic">بيان صحفي</p>
         </BaseCard>
 
         <BaseCard variant="operations" size="sm" className="text-center">
-          <TrendingUp className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-          <h3 className="text-2xl font-bold text-orange-600 mb-1 font-arabic">85%</h3>
-          <p className="text-sm text-gray-600 font-arabic">معدل التفاعل</p>
+          <TrendingUp className="h-8 w-8 text-black mx-auto mb-2" />
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">85%</h3>
+          <p className="text-sm text-black font-arabic">معدل التفاعل</p>
         </BaseCard>
       </div>
     </div>

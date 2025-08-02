@@ -118,8 +118,8 @@ export const TemplatesTab: React.FC = () => {
       {/* فئات النماذج */}
       <BaseCard variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-6">
-          <FileText className="h-6 w-6 text-blue-600" />
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">فئات النماذج والقوالب</h3>
+          <FileText className="h-6 w-6 text-black" />
+          <h3 className="text-xl font-bold text-black font-arabic">فئات النماذج والقوالب</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -140,11 +140,11 @@ export const TemplatesTab: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* النماذج الأكثر استخداماً */}
         <BaseCard variant="operations" className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <Download className="h-5 w-5 text-green-600" />
-              <h3 className="text-xl font-bold text-gray-800 font-arabic">الأكثر استخداماً</h3>
-            </div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <Download className="h-5 w-5 text-black" />
+                <h3 className="text-xl font-bold text-black font-arabic">الأكثر استخداماً</h3>
+              </div>
             <UnifiedButton variant="outline" size="sm">
               عرض الكل
             </UnifiedButton>
@@ -188,11 +188,11 @@ export const TemplatesTab: React.FC = () => {
 
         {/* النماذج الحديثة */}
         <BaseCard variant="operations" className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <Plus className="h-5 w-5 text-blue-600" />
-              <h3 className="text-xl font-bold text-gray-800 font-arabic">المضافة حديثاً</h3>
-            </div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <Plus className="h-5 w-5 text-black" />
+                <h3 className="text-xl font-bold text-black font-arabic">المضافة حديثاً</h3>
+              </div>
             <UnifiedButton variant="outline" size="sm">
               عرض الكل
             </UnifiedButton>
@@ -230,23 +230,23 @@ export const TemplatesTab: React.FC = () => {
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <BaseCard variant="operations" size="sm" className="text-center">
-          <h3 className="text-2xl font-bold text-blue-600 mb-1 font-arabic">41</h3>
-          <p className="text-sm text-gray-600 font-arabic">إجمالي القوالب</p>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">41</h3>
+          <p className="text-sm text-black font-arabic">إجمالي القوالب</p>
         </BaseCard>
 
         <BaseCard variant="operations" size="sm" className="text-center">
-          <h3 className="text-2xl font-bold text-green-600 mb-1 font-arabic">312</h3>
-          <p className="text-sm text-gray-600 font-arabic">إجمالي التحميلات</p>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">312</h3>
+          <p className="text-sm text-black font-arabic">إجمالي التحميلات</p>
         </BaseCard>
 
         <BaseCard variant="operations" size="sm" className="text-center">
-          <h3 className="text-2xl font-bold text-purple-600 mb-1 font-arabic">8</h3>
-          <p className="text-sm text-gray-600 font-arabic">مضاف هذا الشهر</p>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">8</h3>
+          <p className="text-sm text-black font-arabic">مضاف هذا الشهر</p>
         </BaseCard>
 
         <BaseCard variant="operations" size="sm" className="text-center">
-          <h3 className="text-2xl font-bold text-orange-600 mb-1 font-arabic">4.8</h3>
-          <p className="text-sm text-gray-600 font-arabic">متوسط التقييم</p>
+          <h3 className="text-2xl font-bold text-black mb-1 font-arabic">4.8</h3>
+          <p className="text-sm text-black font-arabic">متوسط التقييم</p>
         </BaseCard>
       </div>
     </div>
