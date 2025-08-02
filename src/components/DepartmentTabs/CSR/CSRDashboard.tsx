@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
@@ -9,33 +8,38 @@ import { MonitoringTab } from './MonitoringTab';
 import { StoriesTab } from './StoriesTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
-
 export const CSRDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-
-  const tabItems = [
-    { value: 'overview', label: 'نظرة عامة' },
-    { value: 'initiatives', label: 'المبادرات' },
-    { value: 'partnerships', label: 'الشراكات والموارد' },
-    { value: 'monitoring', label: 'المراقبة والتقييم' },
-    { value: 'stories', label: 'قصص الأثر' },
-    { value: 'templates', label: 'النماذج والقوالب' },
-    { value: 'reports', label: 'التقارير' }
-  ];
-
-  return (
-    <div className="h-full flex flex-col bg-transparent">
+  const tabItems = [{
+    value: 'overview',
+    label: 'نظرة عامة'
+  }, {
+    value: 'initiatives',
+    label: 'المبادرات'
+  }, {
+    value: 'partnerships',
+    label: 'الشراكات والموارد'
+  }, {
+    value: 'monitoring',
+    label: 'المراقبة والتقييم'
+  }, {
+    value: 'stories',
+    label: 'قصص الأثر'
+  }, {
+    value: 'templates',
+    label: 'النماذج والقوالب'
+  }, {
+    value: 'reports',
+    label: 'التقارير'
+  }];
+  return <div className="h-full flex flex-col bg-transparent">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
+        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
           إدارة المسؤولية الاجتماعية
         </h2>
         <div className="w-fit">
-          <AnimatedTabs 
-            tabs={tabItems}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
+          <AnimatedTabs tabs={tabItems} activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       </div>
 
@@ -71,6 +75,5 @@ export const CSRDashboard: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>;
 };
