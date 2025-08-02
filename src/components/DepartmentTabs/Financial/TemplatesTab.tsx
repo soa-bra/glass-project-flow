@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Upload, Download, FileText } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { UnifiedSystemCard } from '@/components/ui/UnifiedSystemCard';
+import { UnifiedSystemButton } from '@/components/ui/UnifiedSystemButton';
 
 export const TemplatesTab: React.FC = () => {
   const templates = [
@@ -17,16 +17,15 @@ export const TemplatesTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-large font-semibold text-black font-arabic">النماذج والقوالب المالية</h3>
-        <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
-          <Upload className="w-4 h-4" />
+        <h3 className="text-xl font-semibold text-black font-arabic">النماذج والقوالب المالية</h3>
+        <UnifiedSystemButton variant="primary" icon={<Upload />}>
           رفع قالب جديد
-        </button>
+        </UnifiedSystemButton>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((template, index) => (
-          <div key={index} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 cursor-pointer hover:shadow-lg transition-shadow">
+          <UnifiedSystemCard key={index} size="md" className="cursor-pointer hover:shadow-lg transition-shadow">
             <div className="flex items-center gap-3 mb-4">
               <FileText className="h-8 w-8 text-black" />
               <div>
@@ -36,12 +35,11 @@ export const TemplatesTab: React.FC = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm font-normal text-gray-400">{template.downloads} تحميل</span>
-              <button className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
-                <Download className="w-4 h-4" />
+              <UnifiedSystemButton variant="primary" size="sm" icon={<Download />}>
                 تحميل
-              </button>
+              </UnifiedSystemButton>
             </div>
-          </div>
+          </UnifiedSystemCard>
         ))}
       </div>
     </div>

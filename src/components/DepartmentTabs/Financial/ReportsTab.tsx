@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { FileText, BarChart, Eye, Download } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { UnifiedSystemCard } from '@/components/ui/UnifiedSystemCard';
+import { UnifiedSystemButton } from '@/components/ui/UnifiedSystemButton';
 
 export const ReportsTab: React.FC = () => {
   const reports = [
@@ -17,16 +17,15 @@ export const ReportsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-large font-semibold text-black font-arabic">التقارير المالية</h3>
-        <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
-          <FileText className="w-4 h-4" />
+        <h3 className="text-xl font-semibold text-black font-arabic">التقارير المالية</h3>
+        <UnifiedSystemButton variant="primary" icon={<FileText />}>
           إنشاء تقرير مخصص
-        </button>
+        </UnifiedSystemButton>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {reports.map((report, index) => (
-          <div key={index} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+          <UnifiedSystemCard key={index} size="md">
             <div className="flex items-center gap-3 mb-4">
               <BarChart className="h-8 w-8 text-black" />
               <div>
@@ -37,17 +36,15 @@ export const ReportsTab: React.FC = () => {
             <div className="space-y-3">
               <p className="text-sm font-normal text-gray-400">آخر تحديث: {report.lastGenerated}</p>
               <div className="flex gap-2">
-                <button className="bg-transparent border border-black text-black px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
-                  <Eye className="w-4 h-4" />
+                <UnifiedSystemButton variant="outline" size="sm" icon={<Eye />}>
                   عرض
-                </button>
-                <button className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
-                  <Download className="w-4 h-4" />
+                </UnifiedSystemButton>
+                <UnifiedSystemButton variant="primary" size="sm" icon={<Download />}>
                   تصدير
-                </button>
+                </UnifiedSystemButton>
               </div>
             </div>
-          </div>
+          </UnifiedSystemCard>
         ))}
       </div>
     </div>

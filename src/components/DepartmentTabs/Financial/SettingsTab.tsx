@@ -1,27 +1,20 @@
 
 import React from 'react';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Database, Calculator } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { UnifiedSystemCard } from '@/components/ui/UnifiedSystemCard';
+import { UnifiedSystemButton } from '@/components/ui/UnifiedSystemButton';
 
 export const SettingsTab: React.FC = () => {
   return (
     <div className="space-y-6">
-      <h3 className="text-large font-semibold text-black font-arabic mx-[26px]">إعدادات النظام المالي</h3>
+      <h3 className="text-xl font-semibold text-black font-arabic">إعدادات النظام المالي</h3>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-          <div className="px-0 pt-0 mb-6">
-            <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
-              <Database className="h-5 w-5 text-black" />
-              مخطط الحسابات
-            </h3>
-          </div>
-          <div className="px-0 space-y-4">
+        <UnifiedSystemCard
+          title="مخطط الحسابات"
+          icon={<Database />}
+        >
+          <div className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="account-code" className="text-sm font-bold text-black font-arabic">رمز الحساب</label>
               <input 
@@ -49,18 +42,15 @@ export const SettingsTab: React.FC = () => {
                 <option value="expense">مصروفات</option>
               </select>
             </div>
-            <UnifiedButton variant="primary">إضافة حساب</UnifiedButton>
+            <UnifiedSystemButton variant="primary">إضافة حساب</UnifiedSystemButton>
           </div>
-        </div>
+        </UnifiedSystemCard>
 
-        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-          <div className="px-0 pt-0 mb-6">
-            <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
-              <Calculator className="h-5 w-5 text-black" />
-              إعدادات الضرائب
-            </h3>
-          </div>
-          <div className="px-0 space-y-4">
+        <UnifiedSystemCard
+          title="إعدادات الضرائب"
+          icon={<Calculator />}
+        >
+          <div className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="vat-rate" className="text-sm font-bold text-black font-arabic">معدل ضريبة القيمة المضافة (%)</label>
               <input 
@@ -87,9 +77,9 @@ export const SettingsTab: React.FC = () => {
                 <option value="EUR">يورو (EUR)</option>
               </select>
             </div>
-            <UnifiedButton variant="primary">حفظ الإعدادات</UnifiedButton>
+            <UnifiedSystemButton variant="primary">حفظ الإعدادات</UnifiedSystemButton>
           </div>
-        </div>
+        </UnifiedSystemCard>
       </div>
     </div>
   );
