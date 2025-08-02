@@ -113,23 +113,23 @@ export const ContractsTab: React.FC = () => {
             <table className="w-full text-right">
               <thead>
                 <tr className="border-b border-black/10">
-                  <th className="pb-4 text-sm font-semibold text-black font-arabic">العقد</th>
-                  <th className="pb-4 text-sm font-semibold text-black font-arabic">العميل</th>
-                  <th className="pb-4 text-sm font-semibold text-black font-arabic">النوع</th>
-                  <th className="pb-4 text-sm font-semibold text-black font-arabic">الحالة</th>
-                  <th className="pb-4 text-sm font-semibold text-black font-arabic">القيمة</th>
-                  <th className="pb-4 text-sm font-semibold text-black font-arabic">تاريخ الانتهاء</th>
-                  <th className="pb-4 text-sm font-semibold text-black font-arabic">الإجراءات</th>
+                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black rounded-r-3xl py-[5px] mx-px px-[35px]">العقد</th>
+                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black py-[5px]">العميل</th>
+                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black py-[5px]">النوع</th>
+                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black py-[5px]">الحالة</th>
+                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black py-[5px]">القيمة</th>
+                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black my-0 py-[5px]">تاريخ الانتهاء</th>
+                  <th className="pb-1 text-sm font-semibold text-white font-arabic bg-black rounded-l-3xl py-[5px] mx-0 px-px my-0">الإجراءات</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredContracts.map(contract => <tr key={contract.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
-                    <td className="py-4">
+                    <td className="py-0 my-0 mx-0">
                       <div className="font-medium text-black font-arabic">{contract.title}</div>
                       <div className="text-sm text-black/70 font-arabic">{contract.id}</div>
                     </td>
                     <td className="py-4 text-black font-arabic">{contract.client}</td>
-                    <td className="py-4">
+                    <td className="py-4 bg-transparent">
                       <span className="px-3 py-1 text-xs rounded-full bg-[#a4e2f6] text-black font-arabic">
                         {getStatusText(contract.type)}
                       </span>
@@ -141,7 +141,7 @@ export const ContractsTab: React.FC = () => {
                     </td>
                     <td className="py-4 font-medium text-black font-arabic">{formatCurrency(contract.value)}</td>
                     <td className="py-4 text-black font-arabic">{formatDate(contract.endDate)}</td>
-                    <td className="py-4">
+                    <td className="mx-0 px-0 py-[25px] my-0 bg-transparent">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
                           <Eye className="w-4 h-4 text-black" />
