@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, FileText, TrendingUp, TrendingDown } from 'lucide-react';
+import { Upload, FileText, ArrowUp, ArrowDown } from 'lucide-react';
 import { UnifiedSystemCard } from '@/components/ui/UnifiedSystemCard';
 import { UnifiedSystemButton } from '@/components/ui/UnifiedSystemButton';
 import { UnifiedSystemBadge } from '@/components/ui/UnifiedSystemBadge';
@@ -58,8 +58,8 @@ export const TransactionsTab: React.FC = () => {
           {mockTransactions.map(transaction => (
             <div key={transaction.id} className="flex items-center justify-between p-4 border border-black/5 rounded-2xl">
               <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${transaction.type === 'revenue' ? 'bg-[#bdeed3]' : 'bg-[#f1b5b9]'}`}>
-                  {transaction.type === 'revenue' ? <TrendingUp className="h-6 w-6 text-black" /> : <TrendingDown className="h-6 w-6 text-black" />}
+                <div className="w-12 h-12 rounded-full bg-transparent border border-black flex items-center justify-center">
+                  {transaction.type === 'revenue' ? <ArrowUp className="h-6 w-6 text-black" /> : <ArrowDown className="h-6 w-6 text-black" />}
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-black font-arabic">{transaction.description}</h4>
