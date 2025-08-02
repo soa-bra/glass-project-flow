@@ -126,14 +126,9 @@ export const OverviewTab: React.FC = () => {
           {kpis.map((kpi, index) => <BaseCard key={index} variant="operations" className="transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 rounded-lg bg-[#bdeed3]">
-                      <kpi.icon className="w-5 h-5 text-black" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-black font-arabic">{kpi.description}</p>
-                      <h3 className="text-lg font-semibold text-black font-arabic">{kpi.title}</h3>
-                    </div>
+                  <div className="mb-2">
+                    <p className="text-sm text-black font-arabic">{kpi.description}</p>
+                    <h3 className="text-lg font-semibold text-black font-arabic">{kpi.title}</h3>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl font-bold text-black">{kpi.value}</span>
@@ -231,16 +226,5 @@ export const OverviewTab: React.FC = () => {
         </BaseCard>
       </div>
 
-      {/* أدوات التصدير */}
-      <div className="flex justify-center mt-6">
-        <UnifiedButton variant="primary" size="lg">
-          <div className="w-8 h-8 border border-black rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </div>
-          تصدير تقرير تسويقي
-        </UnifiedButton>
-      </div>
     </div>;
 };
