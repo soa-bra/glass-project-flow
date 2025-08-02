@@ -156,7 +156,7 @@ export const OverviewTab: React.FC = () => {
           </div>
           
           <div className="space-y-4">
-            {activeCampaigns.map((campaign, index) => <div key={index} className="border border-gray-200/50 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            {activeCampaigns.map((campaign, index) => <div key={index} className="bg-transparent border border-gray-200/50 p-4 rounded-3xl">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <h4 className="font-semibold text-black font-arabic">{campaign.name}</h4>
@@ -170,12 +170,12 @@ export const OverviewTab: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
+                <div className="grid grid-cols-3 gap-5">
+                  <div className="mx-0 px-0">
                     <p className="text-sm text-black font-arabic">الميزانية</p>
                     <p className="font-semibold text-black">{campaign.budget.toLocaleString()} ر.س</p>
                   </div>
-                  <div>
+                  <div className="mx-[50px] px-[3px]">
                     <p className="text-sm text-black font-arabic">المصروف</p>
                     <p className="font-semibold text-black">{campaign.spent.toLocaleString()} ر.س</p>
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
@@ -184,7 +184,7 @@ export const OverviewTab: React.FC = () => {
                   }}></div>
                     </div>
                   </div>
-                  <div>
+                  <div className="mx-[50px]">
                     <p className="text-sm text-black font-arabic">الأداء</p>
                     <p className="font-semibold text-black">{campaign.performance}</p>
                   </div>
