@@ -46,9 +46,9 @@ const MainToolbar: React.FC<MainToolbarProps> = ({
     })}
     </div>;
   return <TooltipProvider>
-      <div className="fixed bottom-6 ltransform h-12 x-1/2 z-50 mx-0 px-0 py-0 my-[25px]">
+      <div className="fixed bottom-2 ltransform h-12 z-20 px-0 py-0 my-[10px] mx-0 border-red-50 ">
         <Card className="bg-white/95 backdrop-blur-lg shadow-sm border border-gray-200/50 rounded-[24px] my-[20px]">
-          <CardContent className="flex items-center gap-3 p-4 py-0 px-0">
+          <CardContent className="flex items-center px-0 mx-0">
             {renderToolGroup(basicTools, 'أساسي')}
             {basicTools.length > 0 && navigationTools.length > 0 && <Separator orientation="vertical" className="h-6" />}
             {renderToolGroup(navigationTools, 'تنقل')}
