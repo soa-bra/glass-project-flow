@@ -24,7 +24,7 @@ const MainToolbar: React.FC<MainToolbarProps> = ({
 
   // المجموعة الرابعة: أدوات المحتوى الذكي
   const contentTools = MAIN_TOOLBAR_TOOLS.filter(tool => ['text', 'shape', 'smart-element'].includes(tool.id));
-  const renderToolGroup = (tools: typeof MAIN_TOOLBAR_TOOLS, groupName: string) => <div className="flex items-center gap-1">
+  const renderToolGroup = (tools: typeof MAIN_TOOLBAR_TOOLS, groupName: string) => <div className="flex items-center gap-1 rounded-none mx-[15px]">
       {tools.map(tool => {
       const Icon = tool.icon;
       const isSelected = selectedTool === tool.id;
@@ -46,9 +46,9 @@ const MainToolbar: React.FC<MainToolbarProps> = ({
     })}
     </div>;
   return <TooltipProvider>
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+      <div className="fixed bottom-6 ltransform h-12 x-1/2 z-50 mx-0 px-0 py-0 my-[25px]">
         <Card className="bg-white/95 backdrop-blur-lg shadow-sm border border-gray-200/50 rounded-[24px] my-[20px]">
-          <CardContent className="flex items-center gap-3 p-4 py-[10px]">
+          <CardContent className="flex items-center gap-3 p-4 py-0 px-0">
             {renderToolGroup(basicTools, 'أساسي')}
             {basicTools.length > 0 && navigationTools.length > 0 && <Separator orientation="vertical" className="h-6" />}
             {renderToolGroup(navigationTools, 'تنقل')}
@@ -61,7 +61,7 @@ const MainToolbar: React.FC<MainToolbarProps> = ({
         
         {/* عرض اسم الأداة المحددة مع تأثير */}
         {selectedTool && <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 animate-fade-in">
-            <div className="bg-black text-white px-4 py-2 rounded-lg text-sm font-arabic whitespace-nowrap shadow-lg">
+            <div className="bg-black text-white rounded-lg text-sm font-arabic whitespace-nowrap shadow-lg py-[3px] px-[12px]">
               {MAIN_TOOLBAR_TOOLS.find(t => t.id === selectedTool)?.label}
               <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black"></div>
             </div>
