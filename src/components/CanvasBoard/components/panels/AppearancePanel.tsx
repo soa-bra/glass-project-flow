@@ -5,10 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
 import { Palette, Save, Copy } from 'lucide-react';
+
 interface AppearancePanelProps {
   selectedElement?: any;
   onUpdateElement?: (elementId: string, updates: any) => void;
 }
+
 export const AppearancePanel: React.FC<AppearancePanelProps> = ({
   selectedElement,
   onUpdateElement
@@ -17,9 +19,16 @@ export const AppearancePanel: React.FC<AppearancePanelProps> = ({
   const [borderColor, setBorderColor] = useState('#000000');
   const [borderWidth, setBorderWidth] = useState([2]);
   const [opacity, setOpacity] = useState([100]);
-  const presetColors = ['#96d8d0', '#f1b5b9', '#a4e2f6', '#d1e1ea', '#e9eff4', '#bdeed3', '#a4e2f6', '#d9d2fd', '#fbe2aa'];
+
+  const presetColors = [
+    '#96d8d0', '#f1b5b9', '#a4e2f6', '#d1e1ea',
+    '#e9eff4', '#bdeed3', '#a4e2f6', '#d9d2fd', '#fbe2aa'
+  ];
+
   const borderStyles = ['متصل', 'متقطع', 'نقطي'];
-  return <Card className="backdrop-blur-md shadow-sm border border-gray-300 rounded-[20px] h-full bg-[#ffffff]/95 py-0">
+
+  return (
+    <Card className="h-full bg-background/95 backdrop-blur border-border/40">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           <Palette className="h-4 w-4 text-primary" />
@@ -27,18 +36,32 @@ export const AppearancePanel: React.FC<AppearancePanelProps> = ({
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-4 p-3 pt-0 overflow-y-auto  my-0 px-[35px]">
+      <CardContent className="space-y-4 p-3 pt-0">
         {/* Color Picker */}
         <div className="space-y-2">
           <label className="text-xs font-medium">لون التعبئة</label>
           <div className="flex gap-2">
-            <Input type="color" value={fillColor} onChange={e => setFillColor(e.target.value)} className="w-12 h-8 p-1" />
-            <Input value={fillColor} onChange={e => setFillColor(e.target.value)} className="flex-1 h-8 text-xs" />
+            <Input
+              type="color"
+              value={fillColor}
+              onChange={(e) => setFillColor(e.target.value)}
+              className="w-12 h-8 p-1"
+            />
+            <Input
+              value={fillColor}
+              onChange={(e) => setFillColor(e.target.value)}
+              className="flex-1 h-8 text-xs"
+            />
           </div>
           <div className="grid grid-cols-5 gap-1">
-            {presetColors.map(color => <button key={color} className="w-6 h-6 rounded border-2 border-border" style={{
-            backgroundColor: color
-          }} onClick={() => setFillColor(color)} />)}
+            {presetColors.map((color) => (
+              <button
+                key={color}
+                className="w-6 h-6 rounded border-2 border-border"
+                style={{ backgroundColor: color }}
+                onClick={() => setFillColor(color)}
+              />
+            ))}
           </div>
         </div>
 
@@ -50,17 +73,35 @@ export const AppearancePanel: React.FC<AppearancePanelProps> = ({
           
           <div className="space-y-2">
             <div className="flex gap-2">
-              <Input type="color" value={borderColor} onChange={e => setBorderColor(e.target.value)} className="w-12 h-8 p-1" />
-              <Input value={borderColor} onChange={e => setBorderColor(e.target.value)} className="flex-1 h-8 text-xs my-0" />
+              <Input
+                type="color"
+                value={borderColor}
+                onChange={(e) => setBorderColor(e.target.value)}
+                className="w-12 h-8 p-1"
+              />
+              <Input
+                value={borderColor}
+                onChange={(e) => setBorderColor(e.target.value)}
+                className="flex-1 h-8 text-xs"
+              />
             </div>
             
             <div>
               <span className="text-xs text-muted-foreground">السمك: {borderWidth[0]}px</span>
-              <Slider value={borderWidth} onValueChange={setBorderWidth} max={10} min={0} step={1} className="mt-1" />
+              <Slider
+                value={borderWidth}
+                onValueChange={setBorderWidth}
+                max={10}
+                min={0}
+                step={1}
+                className="mt-1"
+              />
             </div>
 
             <select className="w-full p-2 text-xs border rounded">
-              {borderStyles.map(style => <option key={style} value={style}>{style}</option>)}
+              {borderStyles.map((style) => (
+                <option key={style} value={style}>{style}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -70,7 +111,13 @@ export const AppearancePanel: React.FC<AppearancePanelProps> = ({
         {/* Opacity */}
         <div className="space-y-2">
           <label className="text-xs font-medium">الشفافية: {opacity[0]}%</label>
-          <Slider value={opacity} onValueChange={setOpacity} max={100} min={0} step={5} />
+          <Slider
+            value={opacity}
+            onValueChange={setOpacity}
+            max={100}
+            min={0}
+            step={5}
+          />
         </div>
 
         {/* Actions */}
@@ -85,6 +132,8 @@ export const AppearancePanel: React.FC<AppearancePanelProps> = ({
           </Button>
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 };
+
 export default AppearancePanel;

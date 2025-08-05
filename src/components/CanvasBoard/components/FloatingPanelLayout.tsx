@@ -73,6 +73,7 @@ const convertToEnhancedLayers = (layers: Layer[]): EnhancedLayer[] => {
     depth: 0
   }));
 };
+
 export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
   selectedTool,
   selectedElements,
@@ -122,7 +123,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
 }) => {
   return <>
       {/* منطقة اللوحات الأولى - First Panels Area */}
-      <div className="fixed top-0 bottom-2 right-5 w-60 z-30 pointer-events-auto flex flex-col my-[45px] ">
+      <div className="fixed top-0 bottom-8 right-5 w-60 z-30 pointer-events-auto flex flex-col my-[45px] ">
         {/* Enhanced Collaboration Panel - 30% */}
         <div className="h-[30%] mb-2.5" style={{
         backdropFilter: 'blur(8px)'
@@ -134,15 +135,16 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
         <div className="h-[35%] mb-2.5" style={{
         backdropFilter: 'blur(8px)'
       }}>
-          <EnhancedLayersPanel layers={convertToEnhancedLayers(layers)} selectedLayerId={selectedLayerId} elements={elements} onLayerUpdate={enhancedLayers => {
-          const basicLayers = enhancedLayers.map(({
-            type,
-            color,
-            depth,
-            ...layer
-          }) => layer);
-          onLayerReorder(basicLayers);
-        }} onLayerSelect={onLayerSelect} />
+          <EnhancedLayersPanel 
+            layers={convertToEnhancedLayers(layers)} 
+            selectedLayerId={selectedLayerId} 
+            elements={elements}
+            onLayerUpdate={(enhancedLayers) => {
+              const basicLayers = enhancedLayers.map(({type, color, depth, ...layer}) => layer);
+              onLayerReorder(basicLayers);
+            }} 
+            onLayerSelect={onLayerSelect}
+          />
         </div>
         
         {/* Smart Assistant Panel - 35% */}
@@ -154,21 +156,25 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
       </div>
 
       {/* منطقة اللوحات الثانية - Second Panels Area */}
-      <div className="fixed top-0 bottom-1 left-5 w-60 z-30 pointer-events-auto flex flex-col my- py-0">
+      <div className="fixed top-0 bottom-12 left-5 w-60 z-30 pointer-events-auto flex flex-col my-8">
         {/* Appearance Panel - 25% */}
-        <div style={{
+        <div className="h-[25%] mb-2.5" style={{
         backdropFilter: 'blur(8px)'
-      }} className="h-[50%] mb-2.5">
+      }}>
           <AppearancePanel />
         </div>
 
         {/* Element Style Panel - 25% */}
-        
+        <div className="h-[25%] mb-2.5" style={{
+        backdropFilter: 'blur(8px)'
+      }}>
+          <ElementStylePanel selectedElement={selectedElementId ? elements.find(el => el.id === selectedElementId) : null} onUpdateElement={onUpdateElement} />
+        </div>
         
         {/* Tool Panel - 50% of remaining space */}
-        <div style={{
+        <div className="h-[50%]" style={{
         backdropFilter: 'blur(8px)'
-      }} className="h-[50%] my-0">
+      }}>
           <ToolPanel selectedTool={selectedTool} selectedElements={selectedElements} elements={elements} selectedElementId={selectedElementId} zoom={zoom} canvasPosition={canvasPosition} panSpeed={panSpeed} lineWidth={lineWidth} lineStyle={lineStyle} selectedPenMode={selectedPenMode} showGrid={showGrid} snapEnabled={snapEnabled} gridSize={gridSize} gridShape={gridShape} layers={layers} selectedLayerId={selectedLayerId} onUpdateElement={onUpdateElement} onCopy={onCopy} onCut={onCut} onPaste={onPaste} onDelete={onDelete} onGroup={onGroup} onUngroup={onUngroup || (() => {})} onLock={onLock || (() => {})} onUnlock={onUnlock || (() => {})} onRotate={onRotate || (() => {})} onFlipHorizontal={onFlipHorizontal || (() => {})} onFlipVertical={onFlipVertical || (() => {})} onAlign={onAlign || (() => {})} onZoomChange={onZoomChange} onPositionChange={onPositionChange} onFitToScreen={onFitToScreen} onResetView={onResetView} onPanSpeedChange={onPanSpeedChange} onLineWidthChange={onLineWidthChange} onLineStyleChange={onLineStyleChange} onPenModeSelect={onPenModeSelect} onFileUpload={onFileUpload} onLayerReorder={onLayerReorder} onLayerSelect={onLayerSelect} onGridToggle={onGridToggle} onSnapToggle={onSnapToggle} onGridSizeChange={onGridSizeChange} onGridShapeChange={onGridShapeChange} onAlignToGrid={onAlignToGrid} />
         </div>
       </div>
