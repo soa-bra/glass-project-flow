@@ -41,7 +41,7 @@ const InfiniteCanvas: React.FC = () => {
   const startPan = useRef({ x: 0, y: 0 });
   const pointerStart = useRef({ x: 0, y: 0 });
   const panRef = useRef(pan);
-  const zoomRef = useRef(zoom);
+  const zoomRef = useRef(zoom), isPanningRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -96,14 +96,14 @@ const InfiniteCanvas: React.FC = () => {
     const handlePointerDown = (e: PointerEvent) => {
       // Save snapshot at the start of panning
       saveSnapshot();
-      setIsPanning(true);
+      setIsPanning(true); isPanningRef.current = true;
       pointerStart.current = { x: e.clientX, y: e.clientY };
       startPan.current = { ...panRef.current };
       canvas.setPointerCapture(e.pointerId);
     };
     
     const handlePointerMove = (e: PointerEvent) => {
-      if (!isPanning) return;
+      if (!isPanningRef.current) return;
       const dx = e.clientX - pointerStart.current.x;
       const dy = e.clientY - pointerStart.current.y;
       setPanImmediate({ 
@@ -113,7 +113,7 @@ const InfiniteCanvas: React.FC = () => {
     };
     
     const handlePointerUp = (e: PointerEvent) => {
-      setIsPanning(false);
+      setIsPanning(false); isPanningRef.current = false;
       canvas.releasePointerCapture(e.pointerId);
     };
     
@@ -146,7 +146,7 @@ const InfiniteCanvas: React.FC = () => {
       canvas.removeEventListener('pointerup', handlePointerUp);
       canvas.removeEventListener('wheel', handleWheel);
     };
-  }, [isPanning]);
+  }, []);
 
   return <canvas ref={canvasRef} className="w-full h-full touch-none cursor-grab" />;
 };
