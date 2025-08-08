@@ -1,5 +1,5 @@
 import React from 'react';
-import { SmartAssistantPanel } from '../SmartAssistant';
+// import { SmartAssistantPanel } from '../SmartAssistant'; // Removed
 
 interface CanvasAISectionProps {
   elements?: any[];
@@ -18,11 +18,9 @@ export const CanvasAISection: React.FC<CanvasAISectionProps> = ({
 }) => {
   return (
     <div className="fixed bottom-4 right-4 z-40 w-96">
-      <SmartAssistantPanel 
-        elements={elements}
-        onAddSmartElement={onAddSmartElement}
-        projectContext={projectContext}
-      />
+      <div className="p-4 bg-white rounded-lg shadow-lg">
+        <p className="text-sm text-gray-600">المساعد الذكي قريباً</p>
+      </div>
     </div>
   );
 };

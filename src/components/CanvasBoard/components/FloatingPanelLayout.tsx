@@ -2,7 +2,7 @@ import React from 'react';
 import { CanvasElement } from '../types';
 import { Layer } from './CanvasPanelTypes';
 import { EnhancedLayer } from './panels/EnhancedLayersPanel';
-import SmartAssistantPanel from '../panels/SmartAssistantPanel';
+// import SmartAssistantPanel from '../panels/SmartAssistantPanel'; // Removed
 import { EnhancedLayersPanel } from './panels/EnhancedLayersPanel';
 import { ElementStylePanel } from './panels/ElementStylePanel';
 import { EnhancedCollaborationPanel } from './panels/EnhancedCollaborationPanel';
@@ -151,7 +151,9 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
         <div className="h-[35%]" style={{
         backdropFilter: 'blur(8px)'
       }}>
-          <SmartAssistantPanel elements={elements} />
+          <div className="p-4 bg-white rounded-lg shadow-lg">
+            <p className="text-sm text-gray-600">المساعد الذكي قريباً</p>
+          </div>
         </div>
       </div>
 

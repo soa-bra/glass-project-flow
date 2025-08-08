@@ -1,1 +1,1 @@
-export { SmartAssistantPanel } from './SmartAssistantPanel';
+// SmartAssistantPanel removed - using new implementation
