@@ -11,11 +11,13 @@ import { ShortcutNotification } from './components/ShortcutNotification';
 import { useCanvasCollaboration } from '@/hooks/useCanvasCollaboration';
 
 const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
-  projectId = 'default', 
-  userId = 'user1' 
+  projectId,
+  userId = 'user1',
+  boardId
 }) => {
+  const effectiveProjectId = boardId ?? projectId ?? 'default';
   // Initialize enhanced canvas state
-  const canvasState = useEnhancedCanvasState(projectId, userId);
+  const canvasState = useEnhancedCanvasState(effectiveProjectId, userId);
   
   // Initialize tool shortcuts
   const toolShortcuts = useToolShortcuts({
@@ -24,9 +26,9 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     disabled: canvasState.showDefaultView
   });
   
-  // Initialize collaboration features
+// Initialize collaboration features
   const collaboration = useCanvasCollaboration({
-    projectId,
+    projectId: effectiveProjectId,
     userId,
     enable: true
   });
