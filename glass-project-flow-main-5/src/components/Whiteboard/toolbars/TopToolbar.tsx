@@ -37,7 +37,7 @@ const TopToolbar: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [undo, redo]);
+  }, []);
   return (
     <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 flex gap-2 bg-white/80 dark:bg-gray-900/80 rounded-full shadow px-4 py-1 backdrop-blur-sm">
       <button
