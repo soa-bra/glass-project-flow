@@ -82,61 +82,46 @@ export const useWhiteboardStore = create<WhiteboardState>()(
     
     // Manual snapshot saving - call this when you want to save to history
     saveSnapshot: () => {
-      set((state) => {
-        const snapshot: HistorySnapshot = {
-          pan: { ...state.pan },
-          zoom: state.zoom,
-          showGrid: state.showGrid,
-        };
-        
-        // Avoid creating duplicate snapshots
-        const currentSnapshot = state.history[state.historyIndex];
-        if (currentSnapshot && 
-            currentSnapshot.pan.x === snapshot.pan.x && 
-            currentSnapshot.pan.y === snapshot.pan.y && 
-            currentSnapshot.zoom === snapshot.zoom && 
-            currentSnapshot.showGrid === snapshot.showGrid) {
-          return {};
-        }
-        
-        const newHistory = state.history.slice(0, state.historyIndex + 1);
-        newHistory.push(snapshot);
-        
-        // Limit history to prevent memory issues
-        if (newHistory.length > 50) {
-          newHistory.shift();
-          return {
-            history: newHistory,
-            historyIndex: newHistory.length - 1,
-          };
-        }
-        
-        return {
-          history: newHistory,
-          historyIndex: newHistory.length - 1,
-        };
-      });
-    },
-    
-    // Grid toggle - saves snapshot manually
-    toggleGrid: () => {
-      const currentState = get();
+      const state = get();
       const snapshot: HistorySnapshot = {
-        pan: { ...currentState.pan },
-        zoom: currentState.zoom,
-        showGrid: currentState.showGrid,
+        pan: { ...state.pan },
+        zoom: state.zoom,
+        showGrid: state.showGrid,
       };
       
-      set((state) => {
-        const newHistory = state.history.slice(0, state.historyIndex + 1);
-        newHistory.push(snapshot);
-        
-        return {
-          showGrid: !state.showGrid,
+      // Avoid creating duplicate snapshots
+      const currentSnapshot = state.history[state.historyIndex];
+      if (currentSnapshot && 
+          currentSnapshot.pan.x === snapshot.pan.x && 
+          currentSnapshot.pan.y === snapshot.pan.y && 
+          currentSnapshot.zoom === snapshot.zoom && 
+          currentSnapshot.showGrid === snapshot.showGrid) {
+        return;
+      }
+      
+      const newHistory = state.history.slice(0, state.historyIndex + 1);
+      newHistory.push(snapshot);
+      
+      // Limit history to prevent memory issues
+      if (newHistory.length > 50) {
+        newHistory.shift();
+        set({
           history: newHistory,
           historyIndex: newHistory.length - 1,
-        };
-      });
+        });
+      } else {
+        set({
+          history: newHistory,
+          historyIndex: newHistory.length - 1,
+        });
+      }
+    },
+    
+    // Simple grid toggle - no automatic snapshot saving
+    toggleGrid: () => {
+      set((state) => ({
+        showGrid: !state.showGrid
+      }));
     },
     
     setTheme: (theme) => set({ theme }),

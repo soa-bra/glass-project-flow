@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useWhiteboardStore } from '../../../store/whiteboard';
 import {
@@ -13,7 +14,7 @@ import {
 } from 'lucide-react';
 
 const TopToolbar: React.FC = () => {
-  const { toggleGrid, setTheme, theme, undo, redo, togglePanel } =
+  const { toggleGrid, setTheme, theme, undo, redo, togglePanel, saveSnapshot } =
     useWhiteboardStore((state) => ({
       toggleGrid: state.toggleGrid,
       setTheme: state.setTheme,
@@ -21,7 +22,14 @@ const TopToolbar: React.FC = () => {
       undo: state.undo,
       redo: state.redo,
       togglePanel: state.togglePanel,
+      saveSnapshot: state.saveSnapshot,
     }));
+  
+  const handleGridToggle = () => {
+    saveSnapshot();
+    toggleGrid();
+  };
+  
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
@@ -37,7 +45,8 @@ const TopToolbar: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [undo, redo]);
+  
   return (
     <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 flex gap-2 bg-white/80 dark:bg-gray-900/80 rounded-full shadow px-4 py-1 backdrop-blur-sm">
       <button
@@ -55,7 +64,7 @@ const TopToolbar: React.FC = () => {
         <Redo2 size={18} />
       </button>
       <button
-        onClick={() => toggleGrid()}
+        onClick={handleGridToggle}
         className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
         title="Toggle grid"
       >
