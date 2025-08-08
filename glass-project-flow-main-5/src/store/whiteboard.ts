@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+
 
 export type Theme = 'light' | 'dark';
 
@@ -42,7 +42,7 @@ export interface WhiteboardState {
 }
 
 export const useWhiteboardStore = create<WhiteboardState>()(
-  devtools((set, get) => ({
+  (set, get) => ({
     pan: { x: 0, y: 0 },
     zoom: 1,
     showGrid: true,
@@ -138,5 +138,5 @@ export const useWhiteboardStore = create<WhiteboardState>()(
         };
       });
     },
-  }))
+  })
 );

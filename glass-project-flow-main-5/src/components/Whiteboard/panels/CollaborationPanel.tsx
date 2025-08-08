@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useWhiteboardStore } from '../../../store/whiteboard';
-import { client } from '../../../lib/liveblocksClient';
+
 
 const CollaborationPanel: React.FC = () => {
   const { occupants, setOccupants } = useWhiteboardStore((state) => ({
