@@ -137,6 +137,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         onNew={() => {}}
         onOpen={() => {}}
         onSmartProjectGenerate={() => {}}
+        collab={{ projectId, currentUserId: userId, participants: collaboration.collaborators.map(c => ({ id: c.id, name: c.name, role: 'internal_user', status: c.isOnline ? 'online' : 'offline', cursor: c.cursor })) }}
       />
       
       {/* إشعارات الاختصارات */}
