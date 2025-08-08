@@ -5,6 +5,7 @@ import type { CanvasElement } from '../../types/canvas';
 export interface CanvasBoardContentsProps {
   projectId?: string;
   userId?: string;
+  boardId?: string;
 }
 
 export interface CanvasState {
