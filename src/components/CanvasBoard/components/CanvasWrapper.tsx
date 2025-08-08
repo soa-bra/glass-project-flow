@@ -34,7 +34,7 @@ interface CanvasWrapperProps {
   onUpdateElement?: (elementId: string, updates: any) => void;
 }
 
-export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
+export const CanvasWrapper: React.FC<any> = ({
   showGrid,
   snapEnabled,
   zoom,
@@ -63,7 +63,8 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
   handleElementMouseUp,
   handleResizeMouseDown,
   handleResizeMouseMove,
-  onUpdateElement
+  onUpdateElement,
+  ...rest
 }) => {
   return (
     <Canvas
@@ -72,8 +73,8 @@ export const CanvasWrapper: React.FC<CanvasWrapperProps> = ({
       canvasPosition={canvasPosition}
       showGrid={showGrid}
       snapEnabled={snapEnabled}
-      onElementsChange={() => {}}
-      onSelectionChange={() => {}}
+      onElementsChange={rest?.onElementsChange || (() => {})}
+      onSelectionChange={rest?.onSelectionChange || (() => {})}
     />
   );
 };

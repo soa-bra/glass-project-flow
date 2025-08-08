@@ -77,6 +77,8 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
           handleResizeMouseDown={canvasState.handleResizeMouseDown}
           handleResizeMouseMove={canvasState.handleResizeMouseMove}
           onUpdateElement={canvasState.updateElement}
+          onElementsChange={canvasState.setElements}
+          onSelectionChange={canvasState.setSelectedElementIds}
         />
       </div>
       
