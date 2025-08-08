@@ -21,6 +21,7 @@ interface CanvasProps {
   onSelectionChange?: (selectedIds: string[]) => void;
   onZoomChange?: (zoom: number) => void;
   onPositionChange?: (position: { x: number; y: number }) => void;
+  elements?: CanvasElement[];
   showDiagnostics?: boolean;
 }
 
@@ -35,12 +36,12 @@ export const Canvas: React.FC<CanvasProps> = ({
   onSelectionChange,
   onZoomChange,
   onPositionChange,
-  showDiagnostics = false
+  showDiagnostics = false, ...rest
 }) => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
   const dummyRef = useRef<HTMLDivElement>(null);
   const { saveToHistory } = useCanvasHistory();
-  const { elements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
+  const { elements, setElements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
   const selection = useUnifiedSelection();
   const interaction = useSimplifiedCanvasInteraction(dummyRef);
   
@@ -74,10 +75,11 @@ export const Canvas: React.FC<CanvasProps> = ({
     selectedSmartElement
   );
 
-  // Notify parent of changes
+  // Notify parent of changes + sync from external state
   useEffect(() => {
+    if ((rest as any)?.elements) setElements((rest as any).elements as CanvasElement[]);
     onElementsChange?.(elements);
-  }, [elements, onElementsChange]);
+  }, [elements, onElementsChange, setElements, (rest as any)?.elements]);
 
   useEffect(() => {
     onSelectionChange?.(selection.selectedElementIds);

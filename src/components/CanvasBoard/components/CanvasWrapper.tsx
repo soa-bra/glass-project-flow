@@ -73,8 +73,11 @@ export const CanvasWrapper: React.FC<any> = ({
       canvasPosition={canvasPosition}
       showGrid={showGrid}
       snapEnabled={snapEnabled}
+      elements={elements}
       onElementsChange={rest?.onElementsChange || (() => {})}
       onSelectionChange={rest?.onSelectionChange || (() => {})}
+      onZoomChange={rest?.onZoomChange || (() => {})}
+      onPositionChange={rest?.onPositionChange || (() => {})}
     />
   );
 };
