@@ -33,6 +33,8 @@ export interface WhiteboardState {
   // actions
   setPan: (pan: { x: number; y: number }) => void;
   setZoom: (zoom: number) => void;
+  setPanImmediate: (pan: { x: number; y: number }) => void;
+  setZoomImmediate: (zoom: number) => void;
   toggleGrid: () => void;
   setTheme: (theme: Theme) => void;
   togglePanel: (panel: keyof WhiteboardState['openPanels']) => void;
@@ -89,6 +91,12 @@ export const useWhiteboardStore = create<WhiteboardState>()(
           historyIndex: newHistory.length - 1,
         };
       });
+    },
+    setPanImmediate: (pan) => {
+      set(() => ({ pan }));
+    },
+    setZoomImmediate: (zoom) => {
+      set(() => ({ zoom }));
     },
     toggleGrid: () => {
       set((state) => {

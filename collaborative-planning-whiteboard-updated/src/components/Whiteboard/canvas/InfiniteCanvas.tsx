@@ -28,20 +28,21 @@ const InfiniteCanvas: React.FC = () => {
     pan,
     zoom,
     showGrid,
-    setPan,
-    setZoom,
+    setPanImmediate,
+    setZoomImmediate,
   } = useWhiteboardStore((state) => ({
     pan: state.pan,
     zoom: state.zoom,
     showGrid: state.showGrid,
-    setPan: state.setPan,
-    setZoom: state.setZoom,
+    setPanImmediate: state.setPanImmediate,
+    setZoomImmediate: state.setZoomImmediate,
   }));
 
   const [isPanning, setIsPanning] = useState(false);
   const startPan = useRef({ x: 0, y: 0 });
   const pointerStart = useRef({ x: 0, y: 0 });
-
+  const panRef = useRef(pan);
+  const zoomRef = useRef(zoom);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -108,20 +109,24 @@ const InfiniteCanvas: React.FC = () => {
     ctx.restore();
   }, [pan, zoom, showGrid]);
 
+  // keep refs in sync
+  useEffect(() => { panRef.current = pan; }, [pan]);
+  useEffect(() => { zoomRef.current = zoom; }, [zoom]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const handlePointerDown = (e: PointerEvent) => {
       setIsPanning(true);
       pointerStart.current = { x: e.clientX, y: e.clientY };
-      startPan.current = { ...pan };
+      startPan.current = { ...panRef.current };
       canvas.setPointerCapture(e.pointerId);
     };
     const handlePointerMove = (e: PointerEvent) => {
       if (!isPanning) return;
       const dx = e.clientX - pointerStart.current.x;
       const dy = e.clientY - pointerStart.current.y;
-      setPan({ x: startPan.current.x + dx, y: startPan.current.y + dy });
+      setPanImmediate({ x: startPan.current.x + dx, y: startPan.current.y + dy });
     };
     const handlePointerUp = (e: PointerEvent) => {
       setIsPanning(false);
@@ -131,14 +136,16 @@ const InfiniteCanvas: React.FC = () => {
       e.preventDefault();
       const { clientX, clientY, deltaY } = e;
       const rect = canvas.getBoundingClientRect();
-      const x = (clientX - rect.left - pan.x) / zoom;
-      const y = (clientY - rect.top - pan.y) / zoom;
-      let newZoom = zoom * (deltaY > 0 ? 0.9 : 1.1);
+      const currentPan = panRef.current;
+      const currentZoom = zoomRef.current;
+      const x = (clientX - rect.left - currentPan.x) / currentZoom;
+      const y = (clientY - rect.top - currentPan.y) / currentZoom;
+      let newZoom = currentZoom * (deltaY > 0 ? 0.9 : 1.1);
       newZoom = Math.min(Math.max(newZoom, 0.1), 5);
-      const newPanX = pan.x - (x * newZoom - x * zoom);
-      const newPanY = pan.y - (y * newZoom - y * zoom);
-      setZoom(newZoom);
-      setPan({ x: newPanX, y: newPanY });
+      const newPanX = currentPan.x - (x * newZoom - x * currentZoom);
+      const newPanY = currentPan.y - (y * newZoom - y * currentZoom);
+      setZoomImmediate(newZoom);
+      setPanImmediate({ x: newPanX, y: newPanY });
     };
     canvas.addEventListener('pointerdown', handlePointerDown);
     canvas.addEventListener('pointermove', handlePointerMove);
@@ -150,7 +157,7 @@ const InfiniteCanvas: React.FC = () => {
       canvas.removeEventListener('pointerup', handlePointerUp);
       canvas.removeEventListener('wheel', handleWheel);
     };
-  }, [pan, zoom, isPanning]);
+  }, [isPanning]);
 
   return <canvas ref={canvasRef} className="w-full h-full touch-none cursor-grab" />;
 };

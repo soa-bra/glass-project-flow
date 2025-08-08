@@ -62,7 +62,7 @@ const TopToolbar: React.FC = () => {
         <Redo2 size={18} />
       </button>
       <button
-        onClick={() => toggleGrid()}
+        onClick={() => { saveSnapshot(); toggleGrid(); }}
         className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
         title="Toggle grid"
       >

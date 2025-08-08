@@ -1,13 +1,14 @@
 import React from 'react';
 import { useWhiteboardStore } from '../../../store/whiteboard';
 import { ZoomIn, ZoomOut } from 'lucide-react';
+import { shallow } from 'zustand/shallow';
 
 const BottomToolbar: React.FC = () => {
   const { zoom, setZoom, occupants } = useWhiteboardStore((state) => ({
     zoom: state.zoom,
     setZoom: state.setZoom,
     occupants: state.occupants,
-  }));
+  }), shallow);
   const handleZoomIn = () => {
     const newZoom = Math.min(zoom * 1.1, 5);
     setZoom(newZoom);
