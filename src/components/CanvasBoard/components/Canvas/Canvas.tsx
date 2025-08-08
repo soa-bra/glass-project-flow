@@ -22,6 +22,7 @@ interface CanvasProps {
   onZoomChange?: (zoom: number) => void;
   onPositionChange?: (position: { x: number; y: number }) => void;
   elements?: CanvasElement[];
+  selectedElementIds?: string[];
   showDiagnostics?: boolean;
 }
 
@@ -36,6 +37,8 @@ export const Canvas: React.FC<CanvasProps> = ({
   onSelectionChange,
   onZoomChange,
   onPositionChange,
+  elements: externalElements,
+  selectedElementIds: externalSelectedIds,
   showDiagnostics = false, ...rest
 }) => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
@@ -75,15 +78,21 @@ export const Canvas: React.FC<CanvasProps> = ({
     selectedSmartElement
   );
 
-  // Notify parent of changes + sync from external state
+  // Sync external elements and notify parent
   useEffect(() => {
-    if ((rest as any)?.elements) setElements((rest as any).elements as CanvasElement[]);
+    if (externalElements) setElements(externalElements);
     onElementsChange?.(elements);
-  }, [elements, onElementsChange, setElements, (rest as any)?.elements]);
+  }, [externalElements, elements, onElementsChange, setElements]);
 
   useEffect(() => {
     onSelectionChange?.(selection.selectedElementIds);
   }, [selection.selectedElementIds, onSelectionChange]);
+
+  useEffect(() => {
+    if (externalSelectedIds) {
+      selection.selectMultiple(externalSelectedIds);
+    }
+  }, [externalSelectedIds, selection.selectMultiple]);
 
   const selectedElements = elements.filter(el => selection.isSelected(el.id));
 

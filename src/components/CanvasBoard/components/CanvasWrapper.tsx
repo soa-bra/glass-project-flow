@@ -74,6 +74,7 @@ export const CanvasWrapper: React.FC<any> = ({
       showGrid={showGrid}
       snapEnabled={snapEnabled}
       elements={elements}
+      selectedElementIds={selectedElementIds}
       onElementsChange={rest?.onElementsChange || (() => {})}
       onSelectionChange={rest?.onSelectionChange || (() => {})}
       onZoomChange={rest?.onZoomChange || (() => {})}
