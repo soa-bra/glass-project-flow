@@ -12,7 +12,6 @@ const tools: { id: ToolId; label: string; icon: string; shortcut: string }[] = [
   { id:"text_tool", label:"نص", icon:"T", shortcut:"T" },
   { id:"shapes_tool", label:"أشكال", icon:"▢", shortcut:"R" },
   { id:"smart_element_tool", label:"عنصر ذكي", icon:"✨", shortcut:"S" },
-  { id:"root_link_tool", label:"ربط جذري", icon:"🔗", shortcut:"L" },
 ];
 
 export default function BottomToolbar() {
