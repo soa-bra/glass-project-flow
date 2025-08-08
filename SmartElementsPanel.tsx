@@ -4,7 +4,7 @@ export default function SmartElementsPanel() {
     <div>
       <div style={{ fontWeight:600, marginBottom:8 }}>العناصر الذكية</div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(6, minmax(120px,1fr))", gap:8, marginBottom:12 }}>
-        {["Think Board","Kanban","Voting","Brainstorm","Timeline","Decision Matrix","Root Connector","Gantt","Spreadsheet","Mindmap","Project Cards","Finance","CSR","CRM","Cultural Fit","Content Planner","Campaigns","CSR Impact"].map((n)=> (
+        {["Think Board","Kanban","Voting","Brainstorm","Timeline","Decision Matrix","Root Linker","Gantt","Spreadsheet","Mindmap","Project Cards","Finance","CSR","CRM","Cultural Fit","Content Planner","Campaigns","CSR Impact"].map((n)=> (
           <button key={n} style={{ height:64 }}>{n}</button>
         ))}
       </div>

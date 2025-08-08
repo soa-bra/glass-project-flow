@@ -86,8 +86,13 @@ export default function TopToolbar(p: Props) {
         </div>
       </details>
 
-      {/* Smart Project Generator */}
-      <button onClick={()=>p.onGenerateProject?.()} title="Smart Project Generator">⚙ توليد مشروع</button>
+      {/* AI */}
+      <details>
+        <summary style={{ cursor:"pointer" }}>🤖 الذكاء الاصطناعي</summary>
+        <div style={{ position:"absolute", background:"#fff", border:"1px solid #e5e7eb", padding:8, borderRadius:8, marginTop:8 }}>
+          <button onClick={()=>p.onGenerateProject?.()}>⚙ توليد مشروع</button>
+        </div>
+      </details>
     </div>
   );
 }
