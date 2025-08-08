@@ -8,7 +8,7 @@ import { useCanvasEventHandlers } from './components/CanvasEventHandlers';
 import { CleanCanvasPanelLayout } from './components/CleanCanvasPanelLayout';
 import { CanvasWrapper } from './components/CanvasWrapper';
 import { ShortcutNotification } from './components/ShortcutNotification';
-import { useCanvasCollaboration } from '@/hooks/useCanvasCollaboration';
+
 
 const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({ 
   projectId,
@@ -26,12 +26,6 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
     disabled: canvasState.showDefaultView
   });
   
-// Initialize collaboration features
-  const collaboration = useCanvasCollaboration({
-    projectId: effectiveProjectId,
-    userId,
-    enable: true
-  });
   
   const eventHandlers = useCanvasEventHandlers({
     selectedElementId: canvasState.selectedElementId,
