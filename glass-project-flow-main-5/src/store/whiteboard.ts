@@ -32,6 +32,9 @@ export interface WhiteboardState {
   historyIndex: number;
   setPan: (pan: { x: number; y: number }) => void;
   setZoom: (zoom: number) => void;
+  setPanImmediate: (pan: { x: number; y: number }) => void;
+  setZoomImmediate: (zoom: number) => void;
+  saveSnapshot: () => void;
   toggleGrid: () => void;
   setTheme: (theme: Theme) => void;
   togglePanel: (panel: keyof WhiteboardState['openPanels']) => void;
@@ -58,22 +61,22 @@ export const useWhiteboardStore = create<WhiteboardState>()(
     history: [],
     historyIndex: -1,
     setPan: (pan) => {
-      set((state) => {
-        const snapshot: HistorySnapshot = {
-          pan: state.pan,
-          zoom: state.zoom,
-          showGrid: state.showGrid,
-        };
-        const newHistory = state.history.slice(0, state.historyIndex + 1);
-        newHistory.push(snapshot);
-        return {
-          pan,
-          history: newHistory,
-          historyIndex: newHistory.length - 1,
-        };
-      });
+      const { saveSnapshot } = get();
+      saveSnapshot();
+      set({ pan });
     },
     setZoom: (zoom) => {
+      const { saveSnapshot } = get();
+      saveSnapshot();
+      set({ zoom });
+    },
+    setPanImmediate: (pan) => {
+      set({ pan });
+    },
+    setZoomImmediate: (zoom) => {
+      set({ zoom });
+    },
+    saveSnapshot: () => {
       set((state) => {
         const snapshot: HistorySnapshot = {
           pan: state.pan,
@@ -83,7 +86,6 @@ export const useWhiteboardStore = create<WhiteboardState>()(
         const newHistory = state.history.slice(0, state.historyIndex + 1);
         newHistory.push(snapshot);
         return {
-          zoom,
           history: newHistory,
           historyIndex: newHistory.length - 1,
         };
