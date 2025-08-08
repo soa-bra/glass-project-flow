@@ -44,7 +44,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   }
 
   return (
-    <div className="relative w-full h-full" onMouseMove={(e) => collaboration.broadcastCursor(e.clientX, e.clientY)}>
+    <div className="relative w-full h-full">
       {/* Canvas Layer - Behind all UI elements */}
       <div className="absolute inset-0 pointer-events-auto">
         <CanvasWrapper
@@ -77,10 +77,6 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
           handleResizeMouseDown={canvasState.handleResizeMouseDown}
           handleResizeMouseMove={canvasState.handleResizeMouseMove}
           onUpdateElement={canvasState.updateElement}
-          onElementsChange={canvasState.setElements}
-          onSelectionChange={canvasState.setSelectedElementIds}
-          onZoomChange={canvasState.setZoom}
-          onPositionChange={canvasState.setCanvasPosition}
         />
       </div>
       
@@ -141,7 +137,6 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
         onNew={() => {}}
         onOpen={() => {}}
         onSmartProjectGenerate={() => {}}
-        collab={{ projectId, currentUserId: userId, participants: collaboration.collaborators.map(c => ({ id: c.id, name: c.name, role: 'internal_user', status: c.isOnline ? 'online' : 'offline', cursor: c.cursor })), lockedElements: collaboration.lockedElements }}
       />
       
       {/* إشعارات الاختصارات */}

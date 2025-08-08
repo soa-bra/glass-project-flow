@@ -1,6 +1,6 @@
 
 import HeaderBar from '@/components/HeaderBar';
-import Whiteboard from '../../glass-project-flow-main-5/src/components/Whiteboard';
+import MainContent from '@/components/MainContent';
 
 const Index = () => {
   return (
@@ -15,7 +15,7 @@ const Index = () => {
       >
         <HeaderBar />
       </div>
-      <Whiteboard />
+      <MainContent />
     </div>
   );
 };

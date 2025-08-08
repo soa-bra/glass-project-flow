@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect, useCallback } from 'react';
 
 interface UseCanvasCollaborationProps {
   projectId: string;
@@ -29,75 +28,61 @@ export function useCanvasCollaboration({
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [locks, setLocks] = useState<Record<string, string>>({});
   const [isConnected, setIsConnected] = useState(false);
-  const [channel, setChannel] = useState<ReturnType<typeof supabase.channel> | null>(null);
 
-  // اتصال Realtime عبر Supabase
+  // محاكاة WebSocket connection
   useEffect(() => {
     if (!enable) return;
 
-    const ch = supabase.channel(`canvas:${projectId}`, { config: { presence: { key: userId } } });
+    // محاكاة الاتصال
+    setIsConnected(true);
+    
+    // محاكاة المتعاونين
+    const mockCollaborators: Collaborator[] = [
+      { id: 'user1', name: 'أحمد محمد', color: '#3b82f6', isOnline: true },
+      { id: 'user2', name: 'فاطمة علي', color: '#10b981', isOnline: true },
+      { id: 'user3', name: 'سارة أحمد', color: '#f59e0b', isOnline: false }
+    ];
 
-    ch.on('presence', { event: 'sync' }, () => {
-      const state = ch.presenceState() as Record<string, Array<any>>;
-      const others: Collaborator[] = [];
-      Object.entries(state).forEach(([key, presences]) => {
-        presences.forEach((p: any) => {
-          if (key === userId) return;
-          others.push({
-            id: p.userId || key,
-            name: p.name || (p.userId || key),
-            color: p.color || '#3b82f6',
-            isOnline: true,
-            cursor: p.cursor
-          });
-        });
-      });
-      setCollaborators(others);
-    });
+    setCollaborators(mockCollaborators.filter(c => c.id !== userId));
 
-    ch.on('broadcast', { event: 'cursor' }, ({ payload }) => {
-      setCollaborators(prev => prev.map(c => c.id === payload.userId ? { ...c, cursor: { x: payload.x, y: payload.y }, isOnline: true } : c));
-    });
-
-    ch.on('broadcast', { event: 'lock' }, ({ payload }) => {
-      setLocks(prev => {
-        const next = { ...prev };
-        if (payload.action === 'lock') next[payload.elementId] = payload.userId;
-        else if (payload.action === 'unlock') delete next[payload.elementId];
-        return next;
-      });
-    });
-
-    ch.subscribe(async (status) => {
-      if (status === 'SUBSCRIBED') {
-        setIsConnected(true);
-        await ch.track({ userId, name: userId, color: '#3b82f6' });
-      }
-    });
-
-    setChannel(ch);
+    // محاकاة تحديثات الحالة
+    const interval = setInterval(() => {
+      // محاكاة تغيير حالة المستخدمين
+      setCollaborators(prev => prev.map(collab => ({
+        ...collab,
+        isOnline: Math.random() > 0.2, // 80% chance to be online
+        cursor: collab.isOnline ? {
+          x: Math.random() * 800,
+          y: Math.random() * 600
+        } : undefined
+      })));
+    }, 5000);
 
     return () => {
-      supabase.removeChannel(ch);
+      clearInterval(interval);
       setIsConnected(false);
     };
   }, [projectId, userId, enable]);
 
   const lockElement = useCallback((elementId: string) => {
     if (!enable) return;
+    
     setLocks(prev => ({ ...prev, [elementId]: userId }));
-    channel?.send({ type: 'broadcast', event: 'lock', payload: { action: 'lock', elementId, userId } });
-  }, [userId, enable, channel]);
+    
+    // محاكاة إرسال إلى الخادم
+  }, [userId, enable]);
 
   const unlockElement = useCallback((elementId: string) => {
     if (!enable) return;
+    
     setLocks(prev => {
       const newLocks = { ...prev };
       delete newLocks[elementId];
       return newLocks;
     });
-    channel?.send({ type: 'broadcast', event: 'lock', payload: { action: 'unlock', elementId, userId } });
-  }, [userId, enable, channel]);
+    
+    // محاكاة إرسال إلى الخادم
+  }, [userId, enable]);
 
   const isElementLockedByOther = useCallback((elementId: string) => {
     return locks[elementId] && locks[elementId] !== userId;
@@ -109,8 +94,9 @@ export function useCanvasCollaboration({
 
   const broadcastCursor = useCallback((x: number, y: number) => {
     if (!enable) return;
-    channel?.send({ type: 'broadcast', event: 'cursor', payload: { userId, x, y } });
-  }, [userId, enable, channel]);
+    
+    // محاكاة بث موقع المؤشر
+  }, [userId, enable]);
 
   const sendMessage = useCallback((message: string) => {
     if (!enable) return;

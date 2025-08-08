@@ -63,7 +63,6 @@ interface FloatingPanelLayoutProps {
   onFlipHorizontal?: () => void;
   onFlipVertical?: () => void;
   onAlign?: (direction: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
-  collab?: any;
 }
 // Utility function to convert Layer to EnhancedLayer
 const convertToEnhancedLayers = (layers: Layer[]): EnhancedLayer[] => {
@@ -120,8 +119,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
   onRotate,
   onFlipHorizontal,
   onFlipVertical,
-  onAlign,
-  collab
+  onAlign
 }) => {
   return <>
       {/* منطقة اللوحات الأولى - First Panels Area */}
@@ -130,7 +128,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
         <div className="h-[30%] mb-2.5" style={{
         backdropFilter: 'blur(8px)'
       }}>
-          <EnhancedCollaborationPanel {...(collab || {})} />
+          <EnhancedCollaborationPanel />
         </div>
         
         {/* Enhanced Layers Panel - 35% */}

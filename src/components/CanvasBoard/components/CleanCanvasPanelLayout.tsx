@@ -59,8 +59,7 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
   onFileUpload,
   onNew,
   onOpen,
-  onSmartProjectGenerate,
-  collab
+  onSmartProjectGenerate
 }) => {
   const selectedElementsAsElements = selectedElements
     .map(id => elements.find(el => el.id === id))
@@ -132,7 +131,6 @@ export const CleanCanvasPanelLayout: React.FC<CanvasPanelLayoutProps> = ({
         onUngroup={handleUngroup}
         onLock={handleLock}
         onUnlock={handleUnlock}
-        collab={collab}
       />
       
       {/* Bottom Toolbar Section */}

@@ -21,8 +21,6 @@ interface CanvasProps {
   onSelectionChange?: (selectedIds: string[]) => void;
   onZoomChange?: (zoom: number) => void;
   onPositionChange?: (position: { x: number; y: number }) => void;
-  elements?: CanvasElement[];
-  selectedElementIds?: string[];
   showDiagnostics?: boolean;
 }
 
@@ -37,14 +35,12 @@ export const Canvas: React.FC<CanvasProps> = ({
   onSelectionChange,
   onZoomChange,
   onPositionChange,
-  elements: externalElements,
-  selectedElementIds: externalSelectedIds,
-  showDiagnostics = false, ...rest
+  showDiagnostics = false
 }) => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
   const dummyRef = useRef<HTMLDivElement>(null);
   const { saveToHistory } = useCanvasHistory();
-  const { elements, setElements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
+  const { elements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
   const selection = useUnifiedSelection();
   const interaction = useSimplifiedCanvasInteraction(dummyRef);
   
@@ -78,21 +74,14 @@ export const Canvas: React.FC<CanvasProps> = ({
     selectedSmartElement
   );
 
-  // Sync external elements and notify parent
+  // Notify parent of changes
   useEffect(() => {
-    if (externalElements) setElements(externalElements);
     onElementsChange?.(elements);
-  }, [externalElements, elements, onElementsChange, setElements]);
+  }, [elements, onElementsChange]);
 
   useEffect(() => {
     onSelectionChange?.(selection.selectedElementIds);
   }, [selection.selectedElementIds, onSelectionChange]);
-
-  useEffect(() => {
-    if (externalSelectedIds) {
-      selection.selectMultiple(externalSelectedIds);
-    }
-  }, [externalSelectedIds, selection.selectMultiple]);
 
   const selectedElements = elements.filter(el => selection.isSelected(el.id));
 

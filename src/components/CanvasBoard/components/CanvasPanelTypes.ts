@@ -69,5 +69,4 @@ export interface CanvasPanelLayoutProps {
   onNew: () => void;
   onOpen: () => void;
   onSmartProjectGenerate: () => void;
-  collab?: any;
 }
