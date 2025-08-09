@@ -90,7 +90,12 @@ describe("Canvas root link rendering", () => {
     snapEnabled: false,
   };
 
-
+  it("renders line between linked elements", () => {
+    rootLinksData = [
+      { id: "1", sourceId: "a", targetId: "b", description: "", createdAt: 0 },
+    ];
+    const { container } = render(<Canvas {...baseProps} />);
+    const line = container.querySelector("line");
     expect(line).toBeInTheDocument();
     expect(line?.getAttribute("x1")).toBe("25");
     expect(line?.getAttribute("y1")).toBe("40");
@@ -98,4 +103,11 @@ describe("Canvas root link rendering", () => {
     expect(line?.getAttribute("y2")).toBe("140");
   });
 
-
+  it("renders nothing when targets are missing", () => {
+    rootLinksData = [
+      { id: "1", sourceId: "a", targetId: "missing", description: "", createdAt: 0 },
+    ];
+    const { container } = render(<Canvas {...baseProps} />);
+    expect(container.querySelectorAll("line").length).toBe(0);
+  });
+});
