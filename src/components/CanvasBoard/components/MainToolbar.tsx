@@ -5,25 +5,37 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { MAIN_TOOLBAR_TOOLS } from '../constants';
 import { ShortcutIndicator } from './ShortcutIndicator';
+import { GitBranch } from 'lucide-react';
 interface MainToolbarProps {
   selectedTool: string;
   onToolSelect: (toolId: string) => void;
 }
+const EXTRA_TOOL = {
+  id: 'root-link',
+  label: 'الربط الجذري',
+  icon: GitBranch,
+  category: 'smart',
+  shortcut: 'L',
+  description: 'ربط العناصر ببعضها'
+};
+
+const TOOL_SET = [...MAIN_TOOLBAR_TOOLS, EXTRA_TOOL];
+
 const MainToolbar: React.FC<MainToolbarProps> = ({
   selectedTool,
   onToolSelect
 }) => {
   // المجموعة الأولى: الأدوات الأساسية
-  const basicTools = MAIN_TOOLBAR_TOOLS.filter(tool => ['select', 'smart-pen'].includes(tool.id));
+  const basicTools = TOOL_SET.filter(tool => ['select', 'smart-pen'].includes(tool.id));
 
   // المجموعة الثانية: أدوات التنقل
-  const navigationTools = MAIN_TOOLBAR_TOOLS.filter(tool => ['zoom', 'hand'].includes(tool.id));
+  const navigationTools = TOOL_SET.filter(tool => ['zoom', 'hand'].includes(tool.id));
 
   // المجموعة الثالثة: أدوات التعاون والملفات
-  const collaborationTools = MAIN_TOOLBAR_TOOLS.filter(tool => ['upload', 'comment'].includes(tool.id));
+  const collaborationTools = TOOL_SET.filter(tool => ['upload', 'comment'].includes(tool.id));
 
   // المجموعة الرابعة: أدوات المحتوى الذكي
-  const contentTools = MAIN_TOOLBAR_TOOLS.filter(tool => ['text', 'shape', 'smart-element'].includes(tool.id));
+  const contentTools = TOOL_SET.filter(tool => ['text', 'shape', 'smart-element', 'root-link'].includes(tool.id));
   const renderToolGroup = (tools: typeof MAIN_TOOLBAR_TOOLS, groupName: string) => <div className="flex items-center gap-1 rounded-none mx-[15px]">
       {tools.map(tool => {
       const Icon = tool.icon;
@@ -62,7 +74,7 @@ const MainToolbar: React.FC<MainToolbarProps> = ({
         {/* عرض اسم الأداة المحددة مع تأثير */}
         {selectedTool && <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 animate-fade-in">
             <div className="bg-black text-white rounded-lg text-sm font-arabic whitespace-nowrap shadow-lg py-[3px] px-[12px]">
-              {MAIN_TOOLBAR_TOOLS.find(t => t.id === selectedTool)?.label}
+              {TOOL_SET.find(t => t.id === selectedTool)?.label}
               <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black"></div>
             </div>
           </div>}
