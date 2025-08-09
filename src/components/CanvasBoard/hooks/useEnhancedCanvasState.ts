@@ -7,7 +7,7 @@ import { useCanvasElementManagement } from './useCanvasElementManagement';
 import { useCanvasClipboardActions } from './useCanvasClipboardActions';
 import { useCanvasElementActions } from './useCanvasElementActions';
 import { useCanvasFileActions } from './useCanvasFileActions';
-import { useCanvasEventHandlers } from './useCanvasEventHandlers';
+import { useRefactoredCanvasEventHandlers as useCanvasEventHandlers } from './useRefactoredCanvasEventHandlers';
 
 export const useEnhancedCanvasState = (projectId: string, userId: string) => {
   const canvasRef = useRef<HTMLDivElement>(null);

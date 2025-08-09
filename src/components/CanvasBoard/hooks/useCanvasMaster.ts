@@ -2,7 +2,7 @@ import { useUnifiedCanvasState } from './useUnifiedCanvasState';
 import { useCanvasElementActions } from './useCanvasElementActions';
 import { useCanvasHistory } from './useCanvasHistory';
 import { useRefactoredCanvasInteraction } from './useRefactoredCanvasInteraction';
-import { useCanvasEventHandlers } from './useCanvasEventHandlers';
+import { useRefactoredCanvasEventHandlers as useCanvasEventHandlers } from './useRefactoredCanvasEventHandlers';
 import { useRef, useState, useCallback } from 'react';
 
 /**
