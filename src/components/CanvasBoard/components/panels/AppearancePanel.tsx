@@ -54,9 +54,9 @@ export const AppearancePanel: React.FC<AppearancePanelProps> = ({
             />
           </div>
           <div className="grid grid-cols-5 gap-1">
-            {presetColors.map((color) => (
+            {presetColors.map((color, index) => (
               <button
-                key={color}
+                key={`${color}-${index}`}
                 className="w-6 h-6 rounded border-2 border-border"
                 style={{ backgroundColor: color }}
                 onClick={() => setFillColor(color)}
