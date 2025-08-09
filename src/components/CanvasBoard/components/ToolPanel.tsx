@@ -76,8 +76,6 @@ const TOOL_PANEL_MAPPING = {
   'comment': 'comment_panel',
   'text': 'text_panel',
   'shape': 'shapes_panel',
-  'smart-element': 'smart_elements_panel',
-  'root_link_tool': 'root_link_panel'
 };
 export const ToolPanel: React.FC<ToolPanelProps> = props => {
   const { activeTool } = useTooling();
@@ -249,8 +247,6 @@ export const ToolPanel: React.FC<ToolPanelProps> = props => {
           };
           console.log('Adding smart element:', newElement);
         }} />;
-      case 'root_link_tool':
-        return <RootLinkPanel />;
       default:
         return <div className="flex items-center justify-center h-32 text-gray-500 text-sm font-arabic">
             اختر أداة لعرض خياراتها

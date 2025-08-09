@@ -44,18 +44,6 @@ export const Canvas: React.FC<CanvasProps> = ({
   const { elements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
   const selection = useUnifiedSelection();
   const interaction = useSimplifiedCanvasInteraction(dummyRef);
-
-  interface RootLink {
-    id: string;
-    sourceId: string;
-    targetId: string;
-    description: string;
-    createdAt: number;
-  }
-
-  const rootLinks = useStorage(
-    (root) => (root as any).rootLinks?.toImmutable?.() ?? []
-  ) as RootLink[];
   
   // Create wrapper function to match expected signature
   const addElementWrapper = useCallback((element: any) => {
@@ -143,7 +131,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         )}
 
         {/* Transform wrapper for all canvas elements */}
-        <div
+        <div 
           className="absolute inset-0 origin-top-left"
           style={{
             transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,

@@ -4,31 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { MAIN_TOOLBAR_TOOLS } from '../constants';
-import { GitBranch } from 'lucide-react';
-import { useTooling } from '../../../../ToolState';
-import { ShortcutIndicator } from './ShortcutIndicator';
-
-const MainToolbar: React.FC = () => {
-  const { activeTool, setActiveTool } = useTooling();
-  const toolbarTools = [
-    ...MAIN_TOOLBAR_TOOLS,
-    {
-      id: 'root_link_tool',
-      label: 'ربط جذري',
-      icon: GitBranch,
-      category: 'smart',
-      shortcut: 'L',
-      description: 'ربط عنصرين أو أكثر على الكانفاس',
-    },
-  ];
-
-  const basicTools = toolbarTools.filter(tool => ['select', 'smart-pen'].includes(tool.id));
-  const navigationTools = toolbarTools.filter(tool => ['zoom', 'hand'].includes(tool.id));
-  const collaborationTools = toolbarTools.filter(tool => ['upload', 'comment'].includes(tool.id));
-  const contentTools = toolbarTools.filter(tool => ['text', 'shape', 'smart-element', 'root_link_tool'].includes(tool.id));
-
-  const renderToolGroup = (tools: typeof toolbarTools) => (
-    <div className="flex items-center gap-1 rounded-none mx-[15px]">
       {tools.map(tool => {
         const Icon = tool.icon;
         const isSelected = activeTool === tool.id;
@@ -89,7 +64,6 @@ const MainToolbar: React.FC = () => {
         {activeTool && (
           <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 animate-fade-in">
             <div className="bg-black text-white rounded-lg text-sm font-arabic whitespace-nowrap shadow-lg py-[3px] px-[12px]">
-              {toolbarTools.find(t => t.id === activeTool)?.label}
               <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black"></div>
             </div>
           </div>
