@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { CanvasElement } from '@/types/canvas';
 import { CanvasElement as CanvasElementComponent } from './CanvasElement';
-import { useStorage } from '@liveblocks/react/suspense';
+
 import { SimplifiedSelectionBoundingBox } from '../SimplifiedSelectionBoundingBox';
 import { CanvasDiagnostics } from '../CanvasDiagnostics';
 import { InfiniteCanvas, InfiniteCanvasRef } from './InfiniteCanvas';
@@ -151,6 +151,7 @@ export const Canvas: React.FC<CanvasProps> = ({
           }}
         >
           <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
+
           </svg>
           {elements.map((element) => {
             const isSelected = selection.isSelected(element.id);

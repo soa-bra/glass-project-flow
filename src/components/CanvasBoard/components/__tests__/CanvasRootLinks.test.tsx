@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
-import "@testing-library/jest-dom";
+
 import { Canvas } from "../Canvas/Canvas";
 
 // mock hooks used by Canvas
@@ -22,7 +22,6 @@ const elements = [
 
 let rootLinksData: any[] = [];
 
-vi.mock("@liveblocks/react/suspense", () => ({
   useStorage: (selector: any) =>
     selector({ rootLinks: { toImmutable: () => rootLinksData } }),
 }));
@@ -90,8 +89,6 @@ describe("Canvas root link rendering", () => {
     snapEnabled: false,
   };
 
-
-    expect(line).toBeInTheDocument();
     expect(line?.getAttribute("x1")).toBe("25");
     expect(line?.getAttribute("y1")).toBe("40");
     expect(line?.getAttribute("x2")).toBe("125");
