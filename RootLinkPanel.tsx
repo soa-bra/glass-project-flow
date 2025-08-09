@@ -41,22 +41,7 @@ export default function RootLinkPanel() {
       alert("حدد عنصرين للرابط");
       return;
     }
-    const [sourceId, targetId] = selection;
 
-    if (sourceId === targetId) {
-      alert("لا يمكن الربط بنفس العنصر");
-      return;
-    }
-
-    if (links.some((l) => l.sourceId === sourceId && l.targetId === targetId)) {
-      alert("الرابط موجود مسبقًا");
-      return;
-    }
-
-    const link: RootLink = {
-      id: Math.random().toString(36).slice(2),
-      sourceId,
-      targetId,
       description: desc.trim(),
       createdAt: Date.now(),
     };

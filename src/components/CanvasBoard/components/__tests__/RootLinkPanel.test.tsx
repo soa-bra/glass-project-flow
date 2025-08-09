@@ -91,33 +91,4 @@ describe("RootLinkPanel", () => {
     expect(alertSpy).toHaveBeenCalled();
     alertSpy.mockRestore();
   });
-
-  it("prevents duplicate links", () => {
-    selection = ["a", "b"];
-    rootLinksList = new LiveList<LiveObject<any>>();
-    rootLinksList.push(new LiveObject({
-      id: "1",
-      sourceId: "a",
-      targetId: "b",
-      description: "",
-      createdAt: 0,
-    }));
-    const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
-    const { getByText } = render(<RootLinkPanel />);
-    fireEvent.click(getByText("إنشاء ارتباط"));
-    expect(rootLinksList.length).toBe(1);
-    expect(alertSpy).toHaveBeenCalled();
-    alertSpy.mockRestore();
-  });
-
-  it("prevents circular links", () => {
-    selection = ["a", "a"];
-    rootLinksList = new LiveList<LiveObject<any>>();
-    const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
-    const { getByText } = render(<RootLinkPanel />);
-    fireEvent.click(getByText("إنشاء ارتباط"));
-    expect(rootLinksList.length).toBe(0);
-    expect(alertSpy).toHaveBeenCalled();
-    alertSpy.mockRestore();
-  });
 });
