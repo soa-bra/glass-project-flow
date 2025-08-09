@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
-// Import hooks from the main package to avoid relying on optional subpaths.
-import { useOthers, useSelf, useStorage, useMutation } from "@liveblocks/react";
+import { useOthers, useSelf, useStorage, useMutation } from "@liveblocks/react/suspense";
 import { LiveList, LiveObject } from "@liveblocks/client";
 import type { ChatMessage } from "../types/panels";
 

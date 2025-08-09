@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, fireEvent } from "@testing-library/react";
-
+import "@testing-library/jest-dom";
 import RootLinkPanel from "../../../../RootLinkPanel";
 import { LiveList, LiveObject } from "@liveblocks/client";
 
@@ -9,6 +9,7 @@ import { LiveList, LiveObject } from "@liveblocks/client";
 let selection: string[] = [];
 let rootLinksList: LiveList<LiveObject<any>> | undefined;
 
+vi.mock("@liveblocks/react/suspense", () => ({
   useStorage: (selector: any) =>
     selector({
       presence: { selection },
@@ -90,4 +91,5 @@ describe("RootLinkPanel", () => {
     expect(alertSpy).toHaveBeenCalled();
     alertSpy.mockRestore();
   });
+
 });
