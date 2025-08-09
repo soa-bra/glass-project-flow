@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
+
 import { Canvas } from "../Canvas/Canvas";
 
 // mock hooks used by Canvas
@@ -21,7 +22,6 @@ const elements = [
 
 let rootLinksData: any[] = [];
 
-vi.mock("@liveblocks/react", () => ({
   useStorage: (selector: any) =>
     selector({ rootLinks: { toImmutable: () => rootLinksData } }),
 }));
@@ -89,51 +89,10 @@ describe("Canvas root link rendering", () => {
     snapEnabled: false,
   };
 
-    it("renders line between linked elements", () => {
-      rootLinksData = [
-        { id: "1", sourceId: "a", targetId: "b", description: "", createdAt: 0 },
-      ];
-      const { container } = render(<Canvas {...baseProps} />);
-      const line = container.querySelector("line");
-    // Basic existence assertion without relying on jest-dom matchers.
-    expect(line).not.toBeNull();
     expect(line?.getAttribute("x1")).toBe("25");
     expect(line?.getAttribute("y1")).toBe("40");
     expect(line?.getAttribute("x2")).toBe("125");
     expect(line?.getAttribute("y2")).toBe("140");
   });
 
-    it("renders nothing when targets are missing", () => {
-      rootLinksData = [
-        { id: "1", sourceId: "a", targetId: "missing", description: "", createdAt: 0 },
-      ];
-      const { container } = render(<Canvas {...baseProps} />);
-      expect(container.querySelectorAll("line").length).toBe(0);
-    });
 
-    it("renders distinct lines for opposite direction links", () => {
-      rootLinksData = [
-        { id: "1", sourceId: "a", targetId: "b", description: "", createdAt: 0 },
-        { id: "2", sourceId: "b", targetId: "a", description: "", createdAt: 0 },
-      ];
-      const { container } = render(<Canvas {...baseProps} />);
-      expect(container.querySelectorAll("line").length).toBe(2);
-    });
-
-    it("deduplicates identical directional links", () => {
-      rootLinksData = [
-        { id: "1", sourceId: "a", targetId: "b", description: "", createdAt: 0 },
-        { id: "2", sourceId: "a", targetId: "b", description: "", createdAt: 0 },
-      ];
-      const { container } = render(<Canvas {...baseProps} />);
-      expect(container.querySelectorAll("line").length).toBe(1);
-    });
-
-    it("skips self links", () => {
-      rootLinksData = [
-        { id: "1", sourceId: "a", targetId: "a", description: "", createdAt: 0 },
-      ];
-      const { container } = render(<Canvas {...baseProps} />);
-      expect(container.querySelectorAll("line").length).toBe(0);
-    });
-  });

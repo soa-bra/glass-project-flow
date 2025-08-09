@@ -1,9 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { CanvasElement } from '@/types/canvas';
 import { CanvasElement as CanvasElementComponent } from './CanvasElement';
-// The suspense-specific subpath is not universally available; use the main
-// package entry to keep bundlers happy.
-import { useStorage } from '@liveblocks/react';
+
 import { SimplifiedSelectionBoundingBox } from '../SimplifiedSelectionBoundingBox';
 import { CanvasDiagnostics } from '../CanvasDiagnostics';
 import { InfiniteCanvas, InfiniteCanvasRef } from './InfiniteCanvas';
@@ -47,13 +45,6 @@ export const Canvas: React.FC<CanvasProps> = ({
   const selection = useUnifiedSelection();
   const interaction = useSimplifiedCanvasInteraction(dummyRef);
 
-  /**
-   * Copy of the `RootLink` shape defined in the panel.
-   *
-   * Links are directional; callers must avoid inserting duplicates or
-   * self‑referential edges.  The canvas only consumes the structure and does
-   * not mutate it.
-   */
   interface RootLink {
     id: string;
     sourceId: string;
@@ -62,8 +53,6 @@ export const Canvas: React.FC<CanvasProps> = ({
     createdAt: number;
   }
 
-  // Live list of all root links. `toImmutable` gives us a plain array snapshot
-  // on each render so we can safely iterate without mutating shared state.
   const rootLinks = useStorage(
     (root) => (root as any).rootLinks?.toImmutable?.() ?? []
   ) as RootLink[];
@@ -162,37 +151,7 @@ export const Canvas: React.FC<CanvasProps> = ({
           }}
         >
           <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
-            {(() => {
-              // `rendered` tracks exact source/target pairs so purely duplicate
-              // links don't draw multiple lines. Self-links are ignored entirely,
-              // but mirrored pairs (A→B and B→A) are treated as distinct.
-              const rendered = new Set<string>();
-              return rootLinks.map(link => {
-                if (link.sourceId === link.targetId) return null; // skip self-link
-                const key = `${link.sourceId}|${link.targetId}`;
-                if (rendered.has(key)) return null; // ignore exact duplicate
-                rendered.add(key);
-                const source = elements.find(el => el.id === link.sourceId);
-                const target = elements.find(el => el.id === link.targetId);
-                if (!source || !target) return null; // element missing
-                // Draw a straight line between element centers.
-                const sx = (source.position?.x || 0) + (source.size?.width || 0) / 2;
-                const sy = (source.position?.y || 0) + (source.size?.height || 0) / 2;
-                const tx = (target.position?.x || 0) + (target.size?.width || 0) / 2;
-                const ty = (target.position?.y || 0) + (target.size?.height || 0) / 2;
-                return (
-                  <line
-                    key={link.id}
-                    x1={sx}
-                    y1={sy}
-                    x2={tx}
-                    y2={ty}
-                    stroke="#2563eb"
-                    strokeWidth={2}
-                  />
-                );
-              });
-            })()}
+
           </svg>
           {elements.map((element) => {
             const isSelected = selection.isSelected(element.id);
