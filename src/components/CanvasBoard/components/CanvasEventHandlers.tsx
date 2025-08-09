@@ -8,7 +8,7 @@ interface CanvasEventHandlersProps {
   deleteElement: (elementId: string) => void;
 }
 
-export const useCanvasEventHandlers = ({
+export const useCanvasUIActions = ({
   selectedElementId,
   setSelectedSmartElement,
   setShowDefaultView,

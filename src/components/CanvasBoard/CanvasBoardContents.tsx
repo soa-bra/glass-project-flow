@@ -4,7 +4,7 @@ import { useEnhancedCanvasState } from './hooks/useEnhancedCanvasState';
 import { useToolShortcuts } from './hooks/useToolShortcuts';
 import { CanvasBoardContentsProps } from './types';
 import { DefaultView } from './components';
-import { useCanvasEventHandlers } from './components/CanvasEventHandlers';
+import { useCanvasUIActions } from './components/CanvasEventHandlers';
 import { CleanCanvasPanelLayout } from './components/CleanCanvasPanelLayout';
 import { CanvasWrapper } from './components/CanvasWrapper';
 import { ShortcutNotification } from './components/ShortcutNotification';
@@ -27,7 +27,7 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
   });
   
   
-  const eventHandlers = useCanvasEventHandlers({
+  const eventHandlers = useCanvasUIActions({
     selectedElementId: canvasState.selectedElementId,
     setSelectedSmartElement: canvasState.setSelectedSmartElement,
     setShowDefaultView: canvasState.setShowDefaultView,

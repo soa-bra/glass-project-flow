@@ -12,7 +12,7 @@ export { default as CanvasBoard } from './CanvasBoardContents';
 export { Canvas } from './components/Canvas/Canvas';
 
 // Panels
-export * from './panels';
+export * from './components/panels';
 
 // Toolbars
 export { default as TopToolbar } from './toolbars/TopToolbar';

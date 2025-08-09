@@ -7,7 +7,7 @@ export { Canvas } from './Canvas/Canvas';
 export { CanvasWrapper } from './CanvasWrapper';
 export { CanvasPanelLayout } from './CanvasPanelLayout';
 export { CleanCanvasPanelLayout } from './CleanCanvasPanelLayout';
-export { useCanvasEventHandlers } from './CanvasEventHandlers';
+export { useCanvasUIActions } from './CanvasEventHandlers';
 
 // Refactored Canvas components
 export { CanvasGrid } from './CanvasGrid';
