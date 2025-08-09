@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useStorage, useMutation } from "@liveblocks/react/suspense";
+import { LiveList, LiveObject } from "@liveblocks/client";
 
+interface RootLink {
+  id: string;
+  sourceId: string;
+  targetId: string;
+  description: string;
   createdAt: number;
 }
 
@@ -34,6 +41,7 @@ export default function RootLinkPanel() {
       alert("حدد عنصرين للرابط");
       return;
     }
+
       description: desc.trim(),
       createdAt: Date.now(),
     };

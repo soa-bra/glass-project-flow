@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
-// Rely on the standard hooks export to prevent resolution issues.
-import { useMutation, useSelf, useStorage } from "@liveblocks/react";
+import { useMutation, useSelf, useStorage } from "@liveblocks/react/suspense";
 import { LiveList, LiveMap, LiveObject } from "@liveblocks/client";
 
 type Layer = any;

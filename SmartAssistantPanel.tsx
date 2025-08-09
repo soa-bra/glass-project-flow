@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-// Stick with the main package export to avoid optional subpath lookups.
-import { useSelf, useStorage, useMutation } from "@liveblocks/react";
+import { useSelf, useStorage, useMutation } from "@liveblocks/react/suspense";
 import type { ChatMessage, AssistCommandPayload } from "../types/panels";
 import { LiveList, LiveObject } from "@liveblocks/client";
 
