@@ -151,26 +151,6 @@ export const Canvas: React.FC<CanvasProps> = ({
           }}
         >
           <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
-            {rootLinks.map(link => {
-              const source = elements.find(el => el.id === link.sourceId);
-              const target = elements.find(el => el.id === link.targetId);
-              if (!source || !target) return null;
-              const sx = (source.position?.x || 0) + (source.size?.width || 0) / 2;
-              const sy = (source.position?.y || 0) + (source.size?.height || 0) / 2;
-              const tx = (target.position?.x || 0) + (target.size?.width || 0) / 2;
-              const ty = (target.position?.y || 0) + (target.size?.height || 0) / 2;
-              return (
-                <line
-                  key={link.id}
-                  x1={sx}
-                  y1={sy}
-                  x2={tx}
-                  y2={ty}
-                  stroke="#2563eb"
-                  strokeWidth={2}
-                />
-              );
-            })}
           </svg>
           {elements.map((element) => {
             const isSelected = selection.isSelected(element.id);

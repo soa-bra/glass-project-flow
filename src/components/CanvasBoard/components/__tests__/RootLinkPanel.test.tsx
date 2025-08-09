@@ -91,4 +91,5 @@ describe("RootLinkPanel", () => {
     expect(alertSpy).toHaveBeenCalled();
     alertSpy.mockRestore();
   });
+
 });
