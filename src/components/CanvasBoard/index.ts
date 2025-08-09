@@ -13,7 +13,6 @@ export { Canvas } from './components/Canvas/Canvas';
 
 // Panels
 export * from './components/panels';
-
 // Toolbars
 export { default as TopToolbar } from './toolbars/TopToolbar';
 
