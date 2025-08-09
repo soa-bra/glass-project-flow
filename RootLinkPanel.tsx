@@ -42,6 +42,10 @@ export default function RootLinkPanel() {
       return;
     }
 
+    const link: RootLink = {
+      id: Math.random().toString(36).slice(2),
+      sourceId: selection[0],
+      targetId: selection[1],
       description: desc.trim(),
       createdAt: Date.now(),
     };
