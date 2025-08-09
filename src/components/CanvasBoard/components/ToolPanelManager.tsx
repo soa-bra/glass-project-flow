@@ -1,17 +1,16 @@
 import React from 'react';
-import { 
-  TextPanel, 
-  ShapePanel, 
-  HandPanel,
-  UploadPanel,
-  GridPanel,
-  SelectionPanel,
-  SmartPenPanel,
-  SmartElementPanel,
-  ZoomPanel,
-  CommentPanel
-} from '../panels';
-import { LayersPanel } from './panels';
+// Direct imports from the actual panel files
+import TextPanel from '../panels/TextPanel';
+import ShapePanel from '../panels/ShapePanel';
+import HandPanel from '../panels/HandPanel';
+import UploadPanel from '../panels/UploadPanel';
+import GridPanel from '../panels/GridPanel';
+import SelectionPanel from '../panels/SelectionPanel';
+import SmartPenPanel from '../panels/SmartPenPanel';
+import SmartElementPanel from '../panels/SmartElementPanel';
+import ZoomPanel from '../panels/ZoomPanel';
+import CommentPanel from '../panels/CommentPanel';
+import { LayersPanel } from './panels/LayersPanel';
 // Enhanced panels have been removed - using basic panels instead
 import { CanvasElement } from '../types';
 

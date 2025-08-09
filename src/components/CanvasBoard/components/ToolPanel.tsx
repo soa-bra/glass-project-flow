@@ -3,11 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CanvasElement } from '../types';
 import { Layer } from './CanvasPanelTypes';
 
-// Enhanced Tool Panels (New)
+// Enhanced Tool Panels (Direct imports)
 import { EnhancedFileUploadPanel, EnhancedSmartElementsPanel, EnhancedSelectionPanel, EnhancedTextPanel, EnhancedShapesPanel, EnhancedCommentPanel } from './panels/tools';
 
-// Legacy Tool Panels (Fallback)
-import { SelectionToolPanel, SmartPenToolPanel, ZoomToolPanel, HandToolPanel, UploadToolPanel, InteractiveCommentsToolPanel, TextToolPanel, ShapesToolPanel, SmartElementsToolPanel } from './panels';
+// Legacy Tool Panels (Direct imports)
+import { SelectionToolPanel } from './panels/tools/SelectionToolPanel';
+import { SmartPenToolPanel } from './panels/tools/SmartPenToolPanel';
+import { ZoomToolPanel } from './panels/tools/ZoomToolPanel';
+import { HandToolPanel } from './panels/tools/HandToolPanel';
+import { UploadToolPanel } from './panels/tools/UploadToolPanel';
+import { InteractiveCommentsToolPanel } from './panels/tools/InteractiveCommentsToolPanel';
+import { TextToolPanel } from './panels/tools/TextToolPanel';
+import { ShapesToolPanel } from './panels/tools/ShapesToolPanel';
+import { SmartElementsToolPanel } from './panels/tools/SmartElementsToolPanel';
 interface ToolPanelProps {
   selectedTool: string;
   selectedElements: CanvasElement[];

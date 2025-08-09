@@ -20,7 +20,7 @@ export { useCanvasElementManagement } from './useCanvasElementManagement';
 export { useCanvasClipboardActions } from './useCanvasClipboardActions';
 export { useCanvasElementActions } from './useCanvasElementActions';
 export { useCanvasFileActions } from './useCanvasFileActions';
-export { useRefactoredCanvasEventHandlers as useCanvasEventHandlers } from './useRefactoredCanvasEventHandlers';
+// Removed indirect re-export - use useRefactoredCanvasEventHandlers directly
 export { useCanvasLayerState } from './useCanvasLayerState';
 
 // Tool-specific hooks
