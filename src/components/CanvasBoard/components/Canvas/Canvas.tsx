@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { CanvasElement } from '@/types/canvas';
 import { CanvasElement as CanvasElementComponent } from './CanvasElement';
+import { useStorage } from '@liveblocks/react/suspense';
 import { SimplifiedSelectionBoundingBox } from '../SimplifiedSelectionBoundingBox';
 import { CanvasDiagnostics } from '../CanvasDiagnostics';
 import { InfiniteCanvas, InfiniteCanvasRef } from './InfiniteCanvas';
@@ -43,6 +44,18 @@ export const Canvas: React.FC<CanvasProps> = ({
   const { elements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
   const selection = useUnifiedSelection();
   const interaction = useSimplifiedCanvasInteraction(dummyRef);
+
+  interface RootLink {
+    id: string;
+    sourceId: string;
+    targetId: string;
+    description: string;
+    createdAt: number;
+  }
+
+  const rootLinks = useStorage(
+    (root) => (root as any).rootLinks?.toImmutable?.() ?? []
+  ) as RootLink[];
   
   // Create wrapper function to match expected signature
   const addElementWrapper = useCallback((element: any) => {
@@ -130,13 +143,35 @@ export const Canvas: React.FC<CanvasProps> = ({
         )}
 
         {/* Transform wrapper for all canvas elements */}
-        <div 
+        <div
           className="absolute inset-0 origin-top-left"
           style={{
             transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,
             transformOrigin: '0 0'
           }}
         >
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
+            {rootLinks.map(link => {
+              const source = elements.find(el => el.id === link.sourceId);
+              const target = elements.find(el => el.id === link.targetId);
+              if (!source || !target) return null;
+              const sx = (source.position?.x || 0) + (source.size?.width || 0) / 2;
+              const sy = (source.position?.y || 0) + (source.size?.height || 0) / 2;
+              const tx = (target.position?.x || 0) + (target.size?.width || 0) / 2;
+              const ty = (target.position?.y || 0) + (target.size?.height || 0) / 2;
+              return (
+                <line
+                  key={link.id}
+                  x1={sx}
+                  y1={sy}
+                  x2={tx}
+                  y2={ty}
+                  stroke="#2563eb"
+                  strokeWidth={2}
+                />
+              );
+            })}
+          </svg>
           {elements.map((element) => {
             const isSelected = selection.isSelected(element.id);
             return (
