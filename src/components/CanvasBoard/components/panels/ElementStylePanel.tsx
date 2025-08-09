@@ -78,16 +78,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
     }
   };
   if (!selectedElement) {
-    return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
-        <CardContent className="p-6">
-          <div className="text-center my-[120px]">
-            <Palette className="w-12 h-12 text-[#96d8d0] mx-auto mb-3" />
-            <p className="text-sm font-arabic text-black/70">
-              اختر عنصرًا لتخصيص مظهره
-            </p>
-          </div>
-        </CardContent>
-      </Card>;
+    return;
   }
   return <Card className="w-full h-full bg-[#f2f9fb]/95 backdrop-blur-xl shadow-sm border border-white/20 rounded-[32px] overflow-hidden">
       <CardHeader className="pb-3">

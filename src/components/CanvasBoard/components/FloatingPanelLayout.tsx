@@ -73,7 +73,6 @@ const convertToEnhancedLayers = (layers: Layer[]): EnhancedLayer[] => {
     depth: 0
   }));
 };
-
 export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
   selectedTool,
   selectedElements,
@@ -135,16 +134,15 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
         <div className="h-[35%] mb-2.5" style={{
         backdropFilter: 'blur(8px)'
       }}>
-          <EnhancedLayersPanel 
-            layers={convertToEnhancedLayers(layers)} 
-            selectedLayerId={selectedLayerId} 
-            elements={elements}
-            onLayerUpdate={(enhancedLayers) => {
-              const basicLayers = enhancedLayers.map(({type, color, depth, ...layer}) => layer);
-              onLayerReorder(basicLayers);
-            }} 
-            onLayerSelect={onLayerSelect}
-          />
+          <EnhancedLayersPanel layers={convertToEnhancedLayers(layers)} selectedLayerId={selectedLayerId} elements={elements} onLayerUpdate={enhancedLayers => {
+          const basicLayers = enhancedLayers.map(({
+            type,
+            color,
+            depth,
+            ...layer
+          }) => layer);
+          onLayerReorder(basicLayers);
+        }} onLayerSelect={onLayerSelect} />
         </div>
         
         {/* Smart Assistant Panel - 35% */}
@@ -167,11 +165,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
         </div>
 
         {/* Element Style Panel - 25% */}
-        <div className="h-[25%] mb-2.5" style={{
-        backdropFilter: 'blur(8px)'
-      }}>
-          <ElementStylePanel selectedElement={selectedElementId ? elements.find(el => el.id === selectedElementId) : null} onUpdateElement={onUpdateElement} />
-        </div>
+        
         
         {/* Tool Panel - 50% of remaining space */}
         <div className="h-[50%]" style={{
