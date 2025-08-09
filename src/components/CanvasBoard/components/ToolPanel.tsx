@@ -5,7 +5,6 @@ import { Layer } from './CanvasPanelTypes';
 
 // Enhanced Tool Panels (New)
 import { EnhancedFileUploadPanel, EnhancedSmartElementsPanel, EnhancedSelectionPanel, EnhancedTextPanel, EnhancedShapesPanel, EnhancedCommentPanel } from './panels/tools';
-import RootLinkPanel from '../../../../RootLinkPanel';
 
 // Legacy Tool Panels (Fallback)
 import { SelectionToolPanel, SmartPenToolPanel, ZoomToolPanel, HandToolPanel, UploadToolPanel, InteractiveCommentsToolPanel, TextToolPanel, ShapesToolPanel, SmartElementsToolPanel } from './panels';
@@ -75,8 +74,7 @@ const TOOL_PANEL_MAPPING = {
   'comment': 'comment_panel',
   'text': 'text_panel',
   'shape': 'shapes_panel',
-  'smart-element': 'smart_elements_panel',
-  'root-link': 'root_link_panel'
+  'smart-element': 'smart_elements_panel'
 };
 export const ToolPanel: React.FC<ToolPanelProps> = props => {
   const {
@@ -249,10 +247,10 @@ export const ToolPanel: React.FC<ToolPanelProps> = props => {
           };
           console.log('Adding smart element:', newElement);
         }} />;
-      case 'root-link':
-        return <RootLinkPanel />;
       default:
-        return <div className="flex items-center justify-center h-32 text-gray-500 text-sm font-arabic">اختر أداة لعرض خياراتها</div>;
+        return <div className="flex items-center justify-center h-32 text-gray-500 text-sm font-arabic">
+            اختر أداة لعرض خياراتها
+          </div>;
     }
   };
 

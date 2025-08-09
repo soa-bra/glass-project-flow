@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useCallback } from 'react';
-import { useStorage } from '@liveblocks/react/suspense';
 import { CanvasElement } from '@/types/canvas';
 import { CanvasElement as CanvasElementComponent } from './CanvasElement';
 import { SimplifiedSelectionBoundingBox } from '../SimplifiedSelectionBoundingBox';
@@ -10,14 +9,6 @@ import { useSimplifiedCanvasInteraction } from '../../hooks/useSimplifiedCanvasI
 import { useCanvasElements } from '../../hooks/useCanvasElements';
 import { useCanvasHistory } from '../../hooks/useCanvasHistory';
 import { useRefactoredCanvasEventHandlers } from '../../hooks/useRefactoredCanvasEventHandlers';
-
-interface RootLink {
-  id: string;
-  sourceId: string;
-  targetId: string;
-  description: string;
-  createdAt: number;
-}
 
 interface CanvasProps {
   selectedTool: string;
@@ -52,9 +43,6 @@ export const Canvas: React.FC<CanvasProps> = ({
   const { elements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
   const selection = useUnifiedSelection();
   const interaction = useSimplifiedCanvasInteraction(dummyRef);
-  const rootLinks = useStorage(
-    root => root.rootLinks?.toImmutable?.() ?? []
-  ) as RootLink[];
   
   // Create wrapper function to match expected signature
   const addElementWrapper = useCallback((element: any) => {
@@ -142,7 +130,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         )}
 
         {/* Transform wrapper for all canvas elements */}
-        <div
+        <div 
           className="absolute inset-0 origin-top-left"
           style={{
             transform: `scale(${zoom / 100}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,
@@ -162,28 +150,6 @@ export const Canvas: React.FC<CanvasProps> = ({
               />
             );
           })}
-          <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 999 }}>
-            {rootLinks.map(link => {
-              const from = elements.find(el => el.id === link.sourceId);
-              const to = elements.find(el => el.id === link.targetId);
-              if (!from || !to) return null;
-              const x1 = from.position.x + (from.size?.width || 0) / 2;
-              const y1 = from.position.y + (from.size?.height || 0) / 2;
-              const x2 = to.position.x + (to.size?.width || 0) / 2;
-              const y2 = to.position.y + (to.size?.height || 0) / 2;
-              return (
-                <line
-                  key={link.id}
-                  x1={x1}
-                  y1={y1}
-                  x2={x2}
-                  y2={y2}
-                  stroke="#4b5563"
-                  strokeWidth={2}
-                />
-              );
-            })}
-          </svg>
         </div>
       </InfiniteCanvas>
 
