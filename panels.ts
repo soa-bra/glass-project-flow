@@ -7,7 +7,8 @@ export type ToolId =
   | "comment_tool"
   | "text_tool"
   | "shapes_tool"
-  | "smart_element_tool";
+  | "smart_element_tool"
+  | "root_link_tool";
 
 export type GridType = "dots" | "grid" | "isometric" | "hex";
 
