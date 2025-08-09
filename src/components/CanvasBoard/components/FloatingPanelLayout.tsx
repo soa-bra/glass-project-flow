@@ -5,7 +5,7 @@ import { EnhancedLayer } from './panels/EnhancedLayersPanel';
 // import SmartAssistantPanel from '../panels/SmartAssistantPanel'; // Removed
 import { EnhancedLayersPanel } from './panels/EnhancedLayersPanel';
 import { ElementStylePanel } from './panels/ElementStylePanel';
-import { EnhancedCollaborationPanel } from './panels/EnhancedCollaborationPanel';
+// import { EnhancedCollaborationPanel } from './panels/EnhancedCollaborationPanel'; // Removed
 import { AppearancePanel } from './panels/AppearancePanel';
 import { ToolPanel } from './ToolPanel';
 interface FloatingPanelLayoutProps {
@@ -128,7 +128,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
         <div className="h-[30%] mb-2.5" style={{
         backdropFilter: 'blur(8px)'
       }}>
-          <EnhancedCollaborationPanel />
+          {/* Enhanced Collaboration Panel - Removed */}
         </div>
         
         {/* Enhanced Layers Panel - 35% */}

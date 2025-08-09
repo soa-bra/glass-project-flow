@@ -1,6 +1,6 @@
 // Enhanced Panel Components (Primary)
 export { default as EnhancedLayersPanel } from './EnhancedLayersPanel';
-export { default as EnhancedCollaborationPanel } from './EnhancedCollaborationPanel';
+// export { default as EnhancedCollaborationPanel } from './EnhancedCollaborationPanel'; // Removed
 export { default as AppearancePanel } from './AppearancePanel';
 export { ElementStylePanel } from './ElementStylePanel';
 export { ToolCustomizationPanel } from './ToolCustomizationPanel';

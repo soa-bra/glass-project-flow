@@ -5,8 +5,7 @@
  */
 
 // Main Panel Components
-// export { default as SmartAssistantPanel } from './SmartAssistantPanel'; // Removed
-export { default as EnhancedCollaborationPanel } from './EnhancedCollaborationPanel';
+// Removed deprecated SmartAssistantPanel - no longer used
 
 // Basic Panel Components for ToolPanelManager
 export { default as TextPanel } from './TextPanel';
