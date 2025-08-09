@@ -2,8 +2,6 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CanvasElement } from '../types';
 import { Layer } from './CanvasPanelTypes';
-import RootLinkPanel from '../../../../RootLinkPanel';
-import { useTooling } from '../../../../ToolState';
 
 // Enhanced Tool Panels (New)
 import { EnhancedFileUploadPanel, EnhancedSmartElementsPanel, EnhancedSelectionPanel, EnhancedTextPanel, EnhancedShapesPanel, EnhancedCommentPanel } from './panels/tools';
@@ -11,7 +9,7 @@ import { EnhancedFileUploadPanel, EnhancedSmartElementsPanel, EnhancedSelectionP
 // Legacy Tool Panels (Fallback)
 import { SelectionToolPanel, SmartPenToolPanel, ZoomToolPanel, HandToolPanel, UploadToolPanel, InteractiveCommentsToolPanel, TextToolPanel, ShapesToolPanel, SmartElementsToolPanel } from './panels';
 interface ToolPanelProps {
-  selectedTool?: string;
+  selectedTool: string;
   selectedElements: CanvasElement[];
   elements: CanvasElement[];
   selectedElementId: string | null;
@@ -76,10 +74,12 @@ const TOOL_PANEL_MAPPING = {
   'comment': 'comment_panel',
   'text': 'text_panel',
   'shape': 'shapes_panel',
+  'smart-element': 'smart_elements_panel'
 };
 export const ToolPanel: React.FC<ToolPanelProps> = props => {
-  const { activeTool } = useTooling();
-  const selectedTool = props.selectedTool || (activeTool as string);
+  const {
+    selectedTool
+  } = props;
 
   // Get panel ID from tool mapping
   const panelId = TOOL_PANEL_MAPPING[selectedTool as keyof typeof TOOL_PANEL_MAPPING];
