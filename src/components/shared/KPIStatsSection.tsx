@@ -1,4 +1,5 @@
 import React from 'react';
+import { Stagger } from './motion';
 interface KPIStat {
   title: string;
   value: string | number;
@@ -26,8 +27,10 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
         </div>
       </div>;
   }
-  return <div className={`grid grid-cols-4 gap-6 mb-6 px-0 mx-0 ${className}`}>
-      {stats.map((stat, index) => <div key={index} className="text-right p-0 py-0 my-0 mx-0 px-6">
+  return (
+    <Stagger delay={0.1} gap={0.08} className={`grid grid-cols-4 gap-6 mb-6 px-0 mx-0 ${className}`}>
+      {stats.map((stat, index) => (
+        <Stagger.Item key={index} className="text-right p-0 py-0 my-0 mx-0 px-6">
           <div className="mb-2">
             <span className="text-base text-black font-arabic font-medium">{stat.title}</span>
           </div>
@@ -38,6 +41,8 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
             {stat.unit && <div className="text-sm text-black font-arabic font-bold">{stat.unit}</div>}
           </div>
           {stat.description && <div className="text-sm font-normal text-black font-arabic">{stat.description}</div>}
-        </div>)}
-    </div>;
+        </Stagger.Item>
+      ))}
+    </Stagger>
+  );
 };

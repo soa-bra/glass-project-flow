@@ -1,6 +1,7 @@
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { SPACING } from './design-system/constants';
+import { Reveal } from './motion';
 
 interface UnifiedTabContentProps {
   value: string;
@@ -18,7 +19,9 @@ export const UnifiedTabContent: React.FC<UnifiedTabContentProps> = ({
       value={value} 
       className={`space-y-6 ${SPACING.SECTION_MARGIN} ${className}`}
     >
-      {children}
+      <Reveal delay={0.1}>
+        {children}
+      </Reveal>
     </TabsContent>
   );
 };

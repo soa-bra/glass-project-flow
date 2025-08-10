@@ -3,6 +3,7 @@ import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { OverviewGrid } from './OverviewGrid';
 import { TimelineCard } from './TimelineCard';
 import { OverviewData } from './OverviewData';
+import { Reveal } from '@/components/shared/motion';
 interface OverviewLayoutProps {
   data: OverviewData;
 }
@@ -30,20 +31,24 @@ export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
     unit: 'مشاريع',
     description: 'تحتاج إلى تدخل ومعالجة'
   }] : [];
-  return <div className="font-arabic px-[15px] py-0">
+  return (
+    <div className="font-arabic px-[15px] py-0">
       {/* قسم الإحصائيات الرئيسية */}
       <div className="mb-6 py-0 px-0 my-0">
         <KPIStatsSection stats={statsData} />
       </div>
 
       {/* بطاقة الأحداث القادمة */}
-      <div className="mb-6">
-        <TimelineCard />
-      </div>
+      <Reveal delay={0.2}>
+        <div className="mb-6">
+          <TimelineCard />
+        </div>
+      </Reveal>
 
       {/* الشبكة التفاعلية 3x3 */}
       <div className="py-0">
         <OverviewGrid />
       </div>
-    </div>;
+    </div>
+  );
 };

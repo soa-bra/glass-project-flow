@@ -1,4 +1,5 @@
 import React from 'react';
+import { Stagger } from '@/components/shared/motion';
 import { StatisticsCard } from './StatisticsCard';
 import { FinancialOverviewCard } from './FinancialOverviewCard';
 import { ProjectSummaryCard } from './ProjectSummaryCard';
@@ -32,40 +33,64 @@ export const OverviewGrid: React.FC = () => {
     newClients: 6,
     satisfaction: 92
   };
-  return <div className="grid grid-cols-4 grid-rows-4 gap-[10px] h-[calc(53vh)] min-h-0 overflow-hidden py-px my-0">
+  return (
+    <Stagger delay={0.15} gap={0.06} className="grid grid-cols-4 grid-rows-4 gap-[10px] h-[calc(53vh)] min-h-0 overflow-hidden py-px my-0">
       {/* الصف الأول */}
-      <div className="row-span-3 h-full min-h-0">
+      <Stagger.Item className="row-span-3 h-full min-h-0">
         <FinancialOverviewCard />
-      </div>
+      </Stagger.Item>
       
-      <StatisticsCard title="بيانات" value="46" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="bar" />
+      <Stagger.Item>
+        <StatisticsCard title="بيانات" value="46" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="bar" />
+      </Stagger.Item>
 
-      <StatisticsCard title="بيانات" value="17" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="line" />
+      <Stagger.Item>
+        <StatisticsCard title="بيانات" value="17" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="line" />
+      </Stagger.Item>
 
-      <CustomersWidget customers={mockCustomersData} />
+      <Stagger.Item>
+        <CustomersWidget customers={mockCustomersData} />
+      </Stagger.Item>
 
       {/* الصف الثاني */}
-      <StatisticsCard title="نسبة" value="75" unit="مئوية" description="هذا النص مثال للشكل البياني" chartType="simple" />
+      <Stagger.Item>
+        <StatisticsCard title="نسبة" value="75" unit="مئوية" description="هذا النص مثال للشكل البياني" chartType="simple" />
+      </Stagger.Item>
 
-      <AlertsCard />
+      <Stagger.Item>
+        <AlertsCard />
+      </Stagger.Item>
 
-      <StatisticsCard title="معدل" value="85" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
+      <Stagger.Item>
+        <StatisticsCard title="معدل" value="85" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
+      </Stagger.Item>
 
       {/* الصف الثالث */}
-      <div className="col-span-2 h-full min-h-0">
+      <Stagger.Item className="col-span-2 h-full min-h-0">
         <ProjectSummaryCard />
-      </div>
+      </Stagger.Item>
 
-      <StatisticsCard title="أداء" value="78" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
+      <Stagger.Item>
+        <StatisticsCard title="أداء" value="78" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
+      </Stagger.Item>
 
       {/* الصف الرابع - الكاردات الجديدة */}
-      <HRWidget hr={mockHRData} />
+      <Stagger.Item>
+        <HRWidget hr={mockHRData} />
+      </Stagger.Item>
       
-      <MarketingWidget marketing={mockMarketingData} />
+      <Stagger.Item>
+        <MarketingWidget marketing={mockMarketingData} />
+      </Stagger.Item>
       
-      <ReportsWidget reports={mockReportsData} />
+      <Stagger.Item>
+        <ReportsWidget reports={mockReportsData} />
+      </Stagger.Item>
 
-      <StatisticsCard title="جودة" value="96" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
+      <Stagger.Item>
+        <StatisticsCard title="جودة" value="96" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
+      </Stagger.Item>
 
-    </div>;
+    </Stagger>
+  );
 };
