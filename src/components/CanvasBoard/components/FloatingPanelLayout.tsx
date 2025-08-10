@@ -170,7 +170,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
         {/* Tool Panel - 50% of remaining space */}
         <div style={{
         backdropFilter: 'blur(8px)'
-      }} className="h-[50%] my-[4px]">
+      }} className="h-[50%] my-[240px]">
           <ToolPanel selectedTool={selectedTool} selectedElements={selectedElements} elements={elements} selectedElementId={selectedElementId} zoom={zoom} canvasPosition={canvasPosition} panSpeed={panSpeed} lineWidth={lineWidth} lineStyle={lineStyle} selectedPenMode={selectedPenMode} showGrid={showGrid} snapEnabled={snapEnabled} gridSize={gridSize} gridShape={gridShape} layers={layers} selectedLayerId={selectedLayerId} onUpdateElement={onUpdateElement} onCopy={onCopy} onCut={onCut} onPaste={onPaste} onDelete={onDelete} onGroup={onGroup} onUngroup={onUngroup || (() => {})} onLock={onLock || (() => {})} onUnlock={onUnlock || (() => {})} onRotate={onRotate || (() => {})} onFlipHorizontal={onFlipHorizontal || (() => {})} onFlipVertical={onFlipVertical || (() => {})} onAlign={onAlign || (() => {})} onZoomChange={onZoomChange} onPositionChange={onPositionChange} onFitToScreen={onFitToScreen} onResetView={onResetView} onPanSpeedChange={onPanSpeedChange} onLineWidthChange={onLineWidthChange} onLineStyleChange={onLineStyleChange} onPenModeSelect={onPenModeSelect} onFileUpload={onFileUpload} onLayerReorder={onLayerReorder} onLayerSelect={onLayerSelect} onGridToggle={onGridToggle} onSnapToggle={onSnapToggle} onGridSizeChange={onGridSizeChange} onGridShapeChange={onGridShapeChange} onAlignToGrid={onAlignToGrid} />
         </div>
       </div>
