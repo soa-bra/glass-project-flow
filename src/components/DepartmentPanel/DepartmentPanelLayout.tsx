@@ -6,7 +6,7 @@ export const DepartmentPanelLayout: React.FC<DepartmentPanelLayoutProps> = ({
   children
 }) => {
   return <div style={{
-    background: 'var(--backgrounds-admin-ops-board-bg)'
+    background: '#d9e7ed'
   }} className="h-full rounded-3xl overflow-hidden">
       <div className="h-full flex flex-col">
         <div className="flex-1 overflow-auto px-0 mx-0 bg-[#d9e7ed]">

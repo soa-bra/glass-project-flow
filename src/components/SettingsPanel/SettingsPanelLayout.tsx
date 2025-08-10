@@ -9,10 +9,10 @@ export const SettingsPanelLayout: React.FC<SettingsPanelLayoutProps> = ({
   children
 }) => {
   return (
-    <div className={`h-full ${LAYOUT.CARD_ROUNDED} overflow-hidden ${COLORS.CARD_BACKGROUND}`}>
+    <div className={`h-full ${LAYOUT.CARD_ROUNDED} overflow-hidden`} style={{ background: '#d9e7ed' }}>
       <div className="h-full flex flex-col">
         <div className={`flex-1 overflow-auto ${SPACING.CONTENT_PADDING}`}>
-          <div className={`h-full ${SPACING.SECTION_MARGIN} ${LAYOUT.CARD_ROUNDED} overflow-hidden ${COLORS.TRANSPARENT_BACKGROUND}`}>
+          <div className={`h-full ${SPACING.SECTION_MARGIN} ${LAYOUT.CARD_ROUNDED} overflow-hidden`} style={{ background: '#d9e7ed' }}>
             {children}
           </div>
         </div>
