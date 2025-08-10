@@ -266,7 +266,7 @@ export const ToolPanel: React.FC<ToolPanelProps> = props => {
   if (!selectedTool || !panelId) {
     return null;
   }
-  return <Card className="backdrop-blur-md shadow-sm border border-gray-300 rounded-[20px] h-full bg-[#ffffff] mx-0 px-0">
+  return <Card className="backdrop-blur-md shadow-sm border border-gray-300 rounded-[20px] h-full bg-[#ffffff] mx-0 px-0 my-[240px]">
       <CardHeader className="pb- my-[5px]">
         <CardTitle className="text-sm font-arabic font-medium">
           لوحة الأدوات
