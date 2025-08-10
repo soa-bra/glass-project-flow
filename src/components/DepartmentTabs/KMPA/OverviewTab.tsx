@@ -30,7 +30,7 @@ export const OverviewTab: React.FC = () => {
   }];
   const recommendations = mockAIRecommendations.slice(0, 3);
   const gaps = mockKnowledgeGaps.slice(0, 2);
-  return <div className="space-y-6 py-0 my-[25px]">
+  return <div className="space-y-6 py-0 px-[20px] my-[46px]">
       {/* مؤشرات الأداء الأساسية */}
       <KPIStatsSection stats={kpiStats} />
 
