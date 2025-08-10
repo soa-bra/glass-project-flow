@@ -9,6 +9,7 @@ import { TaskManagementTab } from './TaskManagementTab';
 import { ReportsTab } from './ReportsTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
+import { Reveal, Stagger } from '@/components/shared/motion';
 
 interface ProjectManagementBoardProps {
   project: Project;
@@ -111,135 +112,143 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             {/* الإحصائيات - منقولة لتكون مع معلومات المشروع */}
             <div className="flex justify-between items-start mb-6 flex-shrink-0 py-0 my-0">
               {/* معلومات المشروع الأساسية */}
-              <div className="flex-1 mx-[15px]">
-                <div className="flex items-center gap-4 mb-4">
-                  {/* اسم المشروع */}
-                  <h2 className="text-xl font-arabic font-semibold text-gray-800">
-                    {project.title}
-                  </h2>
+              <Reveal delay={0}>
+                <div className="flex-1 mx-[15px]">
+                  <div className="flex items-center gap-4 mb-4">
+                    {/* اسم المشروع */}
+                    <h2 className="text-xl font-arabic font-semibold text-gray-800">
+                      {project.title}
+                    </h2>
 
-                  {/* مدير المشروع */}
-                  <div className="px-3 py-1.5 bg-transparent border border-black rounded-full font-arabic text-sm text-black">
-                    {project.owner}
+                    {/* مدير المشروع */}
+                    <div className="px-3 py-1.5 bg-transparent border border-black rounded-full font-arabic text-sm text-black">
+                      {project.owner}
+                    </div>
+
+                    {/* حالة المشروع */}
+                    <div className="px-3 py-1.5 bg-transparent border border-black rounded-full font-arabic text-sm flex items-center gap-2 text-black">
+                      <div className="w-2 h-2 rounded-full"
+                        style={{
+                          backgroundColor: project.status === 'success' ? 'var(--status-colors-on-plan)' :
+                                           project.status === 'warning' ? 'var(--status-colors-delayed)' :
+                                           project.status === 'error' ? 'var(--status-colors-stopped)' :
+                                           'var(--status-colors-in-preparation)'
+                        }}></div>
+                      {project.status === 'success' ? 'مكتمل' :
+                       project.status === 'warning' ? 'متأخر' :
+                       project.status === 'error' ? 'متوقف' :
+                       'قيد التحضير'}
+                    </div>
                   </div>
 
-                  {/* حالة المشروع */}
-                  <div className="px-3 py-1.5 bg-transparent border border-black rounded-full font-arabic text-sm flex items-center gap-2 text-black">
-                    <div className="w-2 h-2 rounded-full"
-                      style={{
-                        backgroundColor: project.status === 'success' ? 'var(--status-colors-on-plan)' :
-                                         project.status === 'warning' ? 'var(--status-colors-delayed)' :
-                                         project.status === 'error' ? 'var(--status-colors-stopped)' :
-                                         'var(--status-colors-in-preparation)'
-                      }}></div>
-                    {project.status === 'success' ? 'مكتمل' :
-                     project.status === 'warning' ? 'متأخر' :
-                     project.status === 'error' ? 'متوقف' :
-                     'قيد التحضير'}
+                  {/* النبذة التعريفية */}
+                  <div className="text-sm text-gray-600 font-arabic leading-relaxed max-w-2xl">
+                    {project.description || "تطوير موقع إلكتروني متكامل باستخدام أحدث التقنيات وفقاً للمعايير العالمية مع ضمان الأمان والسرعة في الأداء."}
                   </div>
                 </div>
-
-                {/* النبذة التعريفية */}
-                <div className="text-sm text-gray-600 font-arabic leading-relaxed max-w-2xl">
-                  {project.description || "تطوير موقع إلكتروني متكامل باستخدام أحدث التقنيات وفقاً للمعايير العالمية مع ضمان الأمان والسرعة في الأداء."}
-                </div>
-              </div>
+              </Reveal>
 
               {/* الإحصائيات */}
-              <div className="flex-shrink-0">
-                <div className="grid grid-cols-3 gap-6 px-[45px] my-0">
-                  {/* الإيرادات المتوقعة */}
-                  <div className="text-right p-6 py-0 px-[20px]">
-                    <div className="mb-2">
-                      <span className="text-sm text-black font-arabic font-medium">الإيرادات المتوقعة</span>
-                    </div>
-                    <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
-                      <div className="text-3xl font-normal text-gray-900 font-arabic">
-                        {mockStats.expectedRevenue || 0}
+              <Reveal delay={0.08}>
+                <div className="flex-shrink-0">
+                  <Stagger delay={0.1} gap={0.06} className="grid grid-cols-3 gap-6 px-[45px] my-0">
+                    {/* الإيرادات المتوقعة */}
+                    <Stagger.Item className="text-right p-6 py-0 px-[20px]">
+                      <div className="mb-2">
+                        <span className="text-sm text-black font-arabic font-medium">الإيرادات المتوقعة</span>
                       </div>
-                      <div className="text-xs text-black font-arabic font-bold">الف</div>
-                    </div>
-                    <div className="text-xs font-Regular text-black font-arabic">ريال سعودي والمتبقي منها 25 الف</div>
-                  </div>
+                      <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
+                        <div className="text-3xl font-normal text-gray-900 font-arabic">
+                          {mockStats.expectedRevenue || 0}
+                        </div>
+                        <div className="text-xs text-black font-arabic font-bold">الف</div>
+                      </div>
+                      <div className="text-xs font-Regular text-black font-arabic">ريال سعودي والمتبقي منها 25 الف</div>
+                    </Stagger.Item>
 
-                  {/* الشكاوى */}
-                  <div className="text-right p-6 mx-0 py-0 px-[20px]">
-                    <div className="mb-2">
-                      <span className="text-sm text-black font-arabic font-medium">الشكاوى</span>
-                    </div>
-                    <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
-                      <div className="text-3xl font-normal text-gray-900 font-arabic">
-                        {String(mockStats.complaints || 0).padStart(2, '0')}
+                    {/* الشكاوى */}
+                    <Stagger.Item className="text-right p-6 mx-0 py-0 px-[20px]">
+                      <div className="mb-2">
+                        <span className="text-sm text-black font-arabic font-medium">الشكاوى</span>
                       </div>
-                      <div className="text-xs text-black font-arabic font-bold">يوم</div>
-                    </div>
-                    <div className="text-xs font-Regular text-black font-arabic">وعدد المهام المتبقية: 5 مهام</div>
-                  </div>
+                      <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
+                        <div className="text-3xl font-normal text-gray-900 font-arabic">
+                          {String(mockStats.complaints || 0).padStart(2, '0')}
+                        </div>
+                        <div className="text-xs text-black font-arabic font-bold">يوم</div>
+                      </div>
+                      <div className="text-xs font-Regular text-black font-arabic">وعدد المهام المتبقية: 5 مهام</div>
+                    </Stagger.Item>
 
-                  {/* المشاريع المتأخرة */}
-                  <div className="text-right p-6 py-0 px-[20px]">
-                    <div className="mb-2">
-                      <span className="text-sm text-black font-arabic font-medium">عدد اعضاء فريق المشروع</span>
-                    </div>
-                    <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
-                      <div className="text-3xl font-normal text-gray-900 font-arabic">
-                        {String(mockStats.delayedProjects || 0).padStart(2, '0')}
+                    {/* المشاريع المتأخرة */}
+                    <Stagger.Item className="text-right p-6 py-0 px-[20px]">
+                      <div className="mb-2">
+                        <span className="text-sm text-black font-arabic font-medium">عدد اعضاء فريق المشروع</span>
                       </div>
-                      <div className="text-xs text-black font-arabic font-bold">عضو</div>
-                    </div>
-                    <div className="text-xs font-Regular text-black font-arabic">ومعدل الانجاز العام 94٪</div>
-                  </div>
+                      <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
+                        <div className="text-3xl font-normal text-gray-900 font-arabic">
+                          {String(mockStats.delayedProjects || 0).padStart(2, '0')}
+                        </div>
+                        <div className="text-xs text-black font-arabic font-bold">عضو</div>
+                      </div>
+                      <div className="text-xs font-Regular text-black font-arabic">ومعدل الانجاز العام 94٪</div>
+                    </Stagger.Item>
+                  </Stagger>
                 </div>
-              </div>
+              </Reveal>
             </div>
 
             {/* شريط تقدم المراحل */}
-            <div className="flex-shrink-10 my-0 px-0 mx-[15px]">
-              <ProjectProgressBar progress={project.progress || 0} stages={[{
-              label: 'التحضير'
-            }, {
-              label: 'التنفيذ المبدئي'
-            }, {
-              label: 'المراجعة الأولية'
-            }, {
-              label: 'المعالجة الأولية'
-            }, {
-              label: 'المراجعة النهائية'
-            }, {
-              label: 'المعالجة النهائية'
-            }]} />
-            </div>
+            <Reveal delay={0.14}>
+              <div className="flex-shrink-10 my-0 px-0 mx-[15px]">
+                <ProjectProgressBar progress={project.progress || 0} stages={[{
+                label: 'التحضير'
+              }, {
+                label: 'التنفيذ المبدئي'
+              }, {
+                label: 'المراجعة الأولية'
+              }, {
+                label: 'المعالجة الأولية'
+              }, {
+                label: 'المراجعة النهائية'
+              }, {
+                label: 'المعالجة النهائية'
+              }]} />
+              </div>
+            </Reveal>
 
             {/* المحتوى الرئيسي */}
-            <div className="flex-1 min-h-0 my-0 py-[12px]">
-              <ProjectCardGrid project={project} />
-            </div>
+            <Reveal delay={0.2}>
+              <div className="flex-1 min-h-0 my-0 py-[12px]">
+                <ProjectCardGrid project={project} />
+              </div>
+            </Reveal>
           </>;
       case 'tasks':
-        return <TaskManagementTab project={project} />;
+        return <Reveal delay={0.1}><TaskManagementTab project={project} /></Reveal>;
       case 'finance':
         return <div className="flex-1 overflow-auto">
-            <FinancialTab data={project} />
+            <Reveal delay={0.1}><FinancialTab data={project} /></Reveal>
           </div>;
       case 'team':
         return <div className="flex-1 overflow-auto">
-            <TeamTab teamData={project.team} />
+            <Reveal delay={0.1}><TeamTab teamData={project.team} /></Reveal>
           </div>;
       case 'client':
         return <div className="flex-1 overflow-auto">
-            <ClientTab clientData={null} />
+            <Reveal delay={0.1}><ClientTab clientData={null} /></Reveal>
           </div>;
       case 'files':
         return <div className="flex-1 overflow-auto">
-            <AttachmentsTab documents={null} />
+            <Reveal delay={0.1}><AttachmentsTab documents={null} /></Reveal>
           </div>;
       case 'templates':
         return <div className="flex-1 overflow-auto">
-            <TemplatesTab templates={null} />
+            <Reveal delay={0.1}><TemplatesTab templates={null} /></Reveal>
           </div>;
       case 'reports':
         return <div className="flex-1 overflow-auto">
-            <ReportsTab project={project} />
+            <Reveal delay={0.1}><ReportsTab project={project} /></Reveal>
           </div>;
       default:
         return null;
