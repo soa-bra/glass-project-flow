@@ -18,7 +18,7 @@ export const OperationsBoard = ({
     height: 'calc(100vh - 60px)',
     top: 'var(--sidebar-top-offset)',
     borderRadius: '20px',
-    background: '#d9e7ed',
+    background: 'var(--sb-bg-00)',
     overflow: 'hidden',
     zIndex: 30
   }}>

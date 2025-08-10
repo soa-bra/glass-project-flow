@@ -16,14 +16,14 @@
     --sb-ink-40: rgba(11,15,18,0.4);
     --sb-ink-20: rgba(11,15,18,0.2);
     --sb-white: #FFFFFF;
-    --sb-bg-00: #EEF3F8;
-    --sb-bg-01: #E9EFF6;
-    --sb-bg-02: #E3EAF2;
+    --sb-bg-00: #F8F9FA;
+    --sb-bg-01: #F1F3F4;
+    --sb-bg-02: #E8EAED;
     --sb-surface-00: #FFFFFF;
-    --sb-surface-01: #F7F9FC;
-    --sb-border: #E6EAF0;
-    --sb-shadow-strong: 0 10px 24px rgba(15,23,42,0.12);
-    --sb-shadow-soft: 0 6px 18px rgba(15,23,42,0.06);
+    --sb-surface-01: #FFFFFF;
+    --sb-border: #DADCE0;
+    --sb-shadow-strong: 0 4px 16px rgba(0,0,0,0.1);
+    --sb-shadow-soft: 0 2px 8px rgba(0,0,0,0.08);
     
     /* Legacy backgrounds for exceptions (projects, tasks, financial) */
     --backgrounds-project-column-bg: #d1e1ea;
@@ -261,7 +261,7 @@
 
   body {
     font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
-    background: linear-gradient(180deg, var(--sb-bg-00) 0%, var(--sb-bg-01) 40%, var(--sb-bg-02) 100%);
+    background: var(--sb-bg-00);
     min-height: 100vh;
     color: var(--sb-ink);
     overflow-x: hidden;

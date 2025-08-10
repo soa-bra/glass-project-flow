@@ -17,7 +17,7 @@ export const SPACING = {
 
 export const COLORS = {
   // SoaBra Unified Theme Colors
-  APP_BACKGROUND: 'bg-[linear-gradient(180deg,_var(--sb-bg-00)_0%,_var(--sb-bg-01)_40%,_var(--sb-bg-02)_100%)]',
+  APP_BACKGROUND: 'bg-[var(--sb-bg-00)]',
   PANEL_BACKGROUND: 'bg-[var(--sb-surface-01)]',
   CARD_BACKGROUND: 'bg-[var(--sb-surface-00)]',
   TRANSPARENT_BACKGROUND: 'bg-transparent',
