@@ -18,13 +18,13 @@ export const OperationsBoard = ({
     height: 'calc(100vh - 60px)',
     top: 'var(--sidebar-top-offset)',
     borderRadius: '20px',
-    background: 'var(--backgrounds-admin-ops-board-bg)',
+    background: '#d9e7ed',
     overflow: 'hidden',
     zIndex: 30
   }}>
       <div className="mx-0 px-0 py-0 my-0">
         {/* رأس اللوحة مع العنوان والتبويبات */}
-        <div className="flex items-center justify-between px-6 my-[24px] py-[17px]">
+        <div className="flex items-center justify-between px-6 my-0 py-[45px]">
           <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
             لوحة الإدارة والتشغيل
           </h2>
