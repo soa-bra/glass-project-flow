@@ -27,7 +27,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
-      <div className={`${LAYOUT.FLEX_BETWEEN} my-0 py-0 px-0`}>
+      <div className={`${LAYOUT.FLEX_BETWEEN} my-[24px] py-[17px] px-6`}>
         <Reveal delay={0}>
           <h2 className={`font-medium ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} text-3xl whitespace-nowrap px-[10px]`}>
             {title}
