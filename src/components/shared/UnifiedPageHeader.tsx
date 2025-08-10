@@ -34,7 +34,7 @@ export const UnifiedPageHeader: React.FC<UnifiedPageHeaderProps> = ({
             </h1>
           </Reveal>
           {subtitle && (
-            <Reveal delay={0.06}>
+            <Reveal delay={0.15}>
               <p className="text-gray-600 mt-2 font-arabic">
                 {subtitle}
               </p>
@@ -43,7 +43,7 @@ export const UnifiedPageHeader: React.FC<UnifiedPageHeaderProps> = ({
         </div>
         
         {actions && (
-          <Reveal delay={0.12}>
+          <Reveal delay={0.25}>
             <div className={LAYOUT.FLEX_GAP}>
               {actions}
             </div>

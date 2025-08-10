@@ -33,7 +33,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             {title}
           </h2>
         </Reveal>
-        <Reveal delay={0.08}>
+        <Reveal delay={0.15}>
           <div className="w-fit">
             <AnimatedTabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} />
           </div>

@@ -149,9 +149,9 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
               </Reveal>
 
               {/* الإحصائيات */}
-              <Reveal delay={0.08}>
+              <Reveal delay={0.15}>
                 <div className="flex-shrink-0">
-                  <Stagger delay={0.1} gap={0.06} className="grid grid-cols-3 gap-6 px-[45px] my-0">
+                  <Stagger delay={0.25} gap={0.12} className="grid grid-cols-3 gap-6 px-[45px] my-0">
                     {/* الإيرادات المتوقعة */}
                     <Stagger.Item className="text-right p-6 py-0 px-[20px]">
                       <div className="mb-2">
@@ -199,7 +199,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             </div>
 
             {/* شريط تقدم المراحل */}
-            <Reveal delay={0.14}>
+            <Reveal delay={0.3}>
               <div className="flex-shrink-10 my-0 px-0 mx-[15px]">
                 <ProjectProgressBar progress={project.progress || 0} stages={[{
                 label: 'التحضير'
@@ -218,37 +218,37 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             </Reveal>
 
             {/* المحتوى الرئيسي */}
-            <Reveal delay={0.2}>
+            <Reveal delay={0.45}>
               <div className="flex-1 min-h-0 my-0 py-[12px]">
                 <ProjectCardGrid project={project} />
               </div>
             </Reveal>
           </>;
       case 'tasks':
-        return <Reveal delay={0.1}><TaskManagementTab project={project} /></Reveal>;
+        return <Reveal delay={0.2}><TaskManagementTab project={project} /></Reveal>;
       case 'finance':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.1}><FinancialTab data={project} /></Reveal>
+            <Reveal delay={0.2}><FinancialTab data={project} /></Reveal>
           </div>;
       case 'team':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.1}><TeamTab teamData={project.team} /></Reveal>
+            <Reveal delay={0.2}><TeamTab teamData={project.team} /></Reveal>
           </div>;
       case 'client':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.1}><ClientTab clientData={null} /></Reveal>
+            <Reveal delay={0.2}><ClientTab clientData={null} /></Reveal>
           </div>;
       case 'files':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.1}><AttachmentsTab documents={null} /></Reveal>
+            <Reveal delay={0.2}><AttachmentsTab documents={null} /></Reveal>
           </div>;
       case 'templates':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.1}><TemplatesTab templates={null} /></Reveal>
+            <Reveal delay={0.2}><TemplatesTab templates={null} /></Reveal>
           </div>;
       case 'reports':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.1}><ReportsTab project={project} /></Reveal>
+            <Reveal delay={0.2}><ReportsTab project={project} /></Reveal>
           </div>;
       default:
         return null;

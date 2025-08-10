@@ -34,7 +34,7 @@ export const OverviewGrid: React.FC = () => {
     satisfaction: 92
   };
   return (
-    <Stagger delay={0.15} gap={0.06} className="grid grid-cols-4 grid-rows-4 gap-[10px] h-[calc(53vh)] min-h-0 overflow-hidden py-px my-0">
+    <Stagger delay={0.3} gap={0.12} className="grid grid-cols-4 grid-rows-4 gap-[10px] h-[calc(53vh)] min-h-0 overflow-hidden py-px my-0">
       {/* الصف الأول */}
       <Stagger.Item className="row-span-3 h-full min-h-0">
         <FinancialOverviewCard />

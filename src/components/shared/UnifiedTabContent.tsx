@@ -19,7 +19,7 @@ export const UnifiedTabContent: React.FC<UnifiedTabContentProps> = ({
       value={value} 
       className={`space-y-6 ${SPACING.SECTION_MARGIN} ${className}`}
     >
-      <Reveal delay={0.1}>
+      <Reveal delay={0.2}>
         {children}
       </Reveal>
     </TabsContent>

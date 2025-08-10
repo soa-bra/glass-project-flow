@@ -39,7 +39,7 @@ export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
       </div>
 
       {/* بطاقة الأحداث القادمة */}
-      <Reveal delay={0.2}>
+      <Reveal delay={0.4}>
         <div className="mb-6">
           <TimelineCard />
         </div>

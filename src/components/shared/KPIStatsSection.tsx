@@ -28,7 +28,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
       </div>;
   }
   return (
-    <Stagger delay={0.1} gap={0.08} className={`grid grid-cols-4 gap-6 mb-6 px-0 mx-0 ${className}`}>
+    <Stagger delay={0.2} gap={0.15} className={`grid grid-cols-4 gap-6 mb-6 px-0 mx-0 ${className}`}>
       {stats.map((stat, index) => (
         <Stagger.Item key={index} className="text-right p-0 py-0 my-0 mx-0 px-6">
           <div className="mb-2">
