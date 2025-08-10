@@ -15,11 +15,11 @@ interface RevealProps {
 export const Reveal: React.FC<RevealProps> = ({
   children,
   delay = 0,
-  y = 48,
-  duration = 1.2,
-  ease = [0.25, 0.46, 0.45, 0.94],
+  y = 24,
+  duration = 0.7,
+  ease = [0.22, 1, 0.36, 1],
   once = true,
-  amount = 0.15,
+  amount = 0.2,
   className = ''
 }) => {
   return (

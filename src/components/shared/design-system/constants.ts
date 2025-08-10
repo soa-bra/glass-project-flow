@@ -16,22 +16,26 @@ export const SPACING = {
 } as const;
 
 export const COLORS = {
-  // Background colors from CSS variables
-  CARD_BACKGROUND: 'bg-[#f2ffff]',
+  // SoaBra Unified Theme Colors
+  APP_BACKGROUND: 'bg-[linear-gradient(180deg,_var(--sb-bg-00)_0%,_var(--sb-bg-01)_40%,_var(--sb-bg-02)_100%)]',
+  PANEL_BACKGROUND: 'bg-[var(--sb-surface-01)]',
+  CARD_BACKGROUND: 'bg-[var(--sb-surface-00)]',
   TRANSPARENT_BACKGROUND: 'bg-transparent',
   
-  // Border colors
-  BORDER_COLOR: 'border border-black/10',
+  // Border and ring colors
+  BORDER_COLOR: 'ring-1 ring-[var(--sb-border)]',
   
   // Text colors
-  PRIMARY_TEXT: 'text-black',
+  PRIMARY_TEXT: 'text-[var(--sb-ink)]',
+  SECONDARY_TEXT: 'text-[var(--sb-ink-70)]',
+  MUTED_TEXT: 'text-[var(--sb-ink-40)]',
   
-  // Badge colors
-  BADGE_SUCCESS: 'bg-[#bdeed3] text-black',
-  BADGE_WARNING: 'bg-[#fbe2aa] text-black',
-  BADGE_ERROR: 'bg-[#f1b5b9] text-black',
-  BADGE_INFO: 'bg-[#a4e2f6] text-black',
-  BADGE_PRIMARY: 'bg-[#d9d2fd] text-black',
+  // Badge colors (keeping original for brand consistency)
+  BADGE_SUCCESS: 'bg-[#bdeed3] text-[var(--sb-ink)]',
+  BADGE_WARNING: 'bg-[#fbe2aa] text-[var(--sb-ink)]',
+  BADGE_ERROR: 'bg-[#f1b5b9] text-[var(--sb-ink)]',
+  BADGE_INFO: 'bg-[#a4e2f6] text-[var(--sb-ink)]',
+  BADGE_PRIMARY: 'bg-[#d9d2fd] text-[var(--sb-ink)]',
 } as const;
 
 export const TYPOGRAPHY = {
@@ -48,9 +52,10 @@ export const TYPOGRAPHY = {
 } as const;
 
 export const LAYOUT = {
-  // Card styles
-  CARD_ROUNDED: 'rounded-3xl',
-  CARD_SHADOW: 'shadow-sm hover:shadow-md transition-shadow duration-300',
+  // SoaBra Card styles with new radii and shadows
+  CARD_ROUNDED: 'rounded-t-[24px] rounded-b-[6px]',
+  CARD_SHADOW: 'shadow-[var(--sb-shadow-soft)] hover:shadow-[var(--sb-shadow-strong)] transition-shadow duration-300',
+  PANEL_SHADOW: 'shadow-[var(--sb-shadow-strong)]',
   
   // Grid layouts
   TWO_COLUMN_GRID: 'grid grid-cols-1 lg:grid-cols-2',
@@ -61,9 +66,10 @@ export const LAYOUT = {
   FLEX_BETWEEN: 'flex items-center justify-between',
   FLEX_GAP: 'flex items-center gap-2',
   
-  // Icon containers
-  ICON_CONTAINER: 'w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center',
-  ICON_SIZE: 'h-4 w-4 text-black',
+  // Icon containers - SoaBra style
+  ICON_CONTAINER: 'w-8 h-8 rounded-full bg-transparent ring-1 ring-[var(--sb-ink)] flex items-center justify-center',
+  ICON_SIZE: 'h-4 w-4 text-[var(--sb-ink)]',
+  ICON_CONTAINER_LG: 'w-10 h-10 rounded-full bg-transparent ring-1 ring-[var(--sb-ink)] flex items-center justify-center',
 } as const;
 
 export const TRANSITIONS = {
@@ -74,6 +80,9 @@ export const TRANSITIONS = {
 // Unified component class builders
 export const buildCardClasses = (customClasses = '') => 
   `${COLORS.CARD_BACKGROUND} ${SPACING.CARD_PADDING} ${LAYOUT.CARD_ROUNDED} ${COLORS.BORDER_COLOR} ${LAYOUT.CARD_SHADOW} ${customClasses}`.trim();
+
+export const buildPanelClasses = (customClasses = '') => 
+  `${COLORS.PANEL_BACKGROUND} ${SPACING.CARD_PADDING} ${LAYOUT.CARD_ROUNDED} ${COLORS.BORDER_COLOR} ${LAYOUT.PANEL_SHADOW} backdrop-blur-[2px] ${customClasses}`.trim();
 
 export const buildTitleClasses = (customClasses = '') => 
   `${TYPOGRAPHY.TITLE_SIZE} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} ${LAYOUT.FLEX_GAP} ${customClasses}`.trim();

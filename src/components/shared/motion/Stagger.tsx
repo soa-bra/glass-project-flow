@@ -25,9 +25,9 @@ const StaggerContext = React.createContext<{
   amount: number;
 }>({
   delay: 0,
-  gap: 0.15,
+  gap: 0.08,
   once: true,
-  amount: 0.15
+  amount: 0.2
 });
 
 export const Stagger: React.FC<StaggerProps> & {
@@ -35,9 +35,9 @@ export const Stagger: React.FC<StaggerProps> & {
 } = ({
   children,
   delay = 0,
-  gap = 0.15,
+  gap = 0.08,
   once = true,
-  amount = 0.15,
+  amount = 0.2,
   className = ''
 }) => {
   return (
@@ -51,9 +51,9 @@ export const Stagger: React.FC<StaggerProps> & {
 
 const StaggerItem: React.FC<StaggerItemProps> = ({
   children,
-  y = 48,
-  duration = 1.2,
-  ease = [0.25, 0.46, 0.45, 0.94],
+  y = 24,
+  duration = 0.7,
+  ease = [0.22, 1, 0.36, 1],
   className = ''
 }) => {
   const { delay, gap, once, amount } = React.useContext(StaggerContext);

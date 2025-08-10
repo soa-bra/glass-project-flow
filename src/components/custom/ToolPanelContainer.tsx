@@ -8,9 +8,9 @@ interface ToolPanelContainerProps {
 
 export const ToolPanelContainer: React.FC<ToolPanelContainerProps> = ({ title, children }) => {
   return (
-    <Card className="bg-white/95 backdrop-blur-md shadow-sm border border-gray-300 rounded-[20px]">
+    <Card className="bg-[var(--sb-surface-00)] ring-1 ring-[var(--sb-border)] shadow-[var(--sb-shadow-soft)] rounded-t-[24px] rounded-b-[6px] backdrop-blur-[2px]">
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-arabic font-medium">{title}</CardTitle>
+        <CardTitle className="text-sm font-arabic font-medium text-[var(--sb-ink)]">{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {children}
