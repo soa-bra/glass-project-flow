@@ -76,7 +76,15 @@
     --z-tooltip: 10001;
     --z-toast: 10002;
     
-    /* Glassmorphism Variables */
+    /* SoaBra Glass UI Variables */
+    --sb-glass-bg: rgba(255,255,255,0.45);
+    --sb-glass-outline: rgba(255,255,255,0.35);
+    --sb-glass-blur: 14px;
+    --sb-backdrop: rgba(15,23,42,0.32);
+    --sb-elev-modal: 0 20px 60px rgba(15,23,42,0.18);
+    --sb-elev-pop: 0 10px 30px rgba(15,23,42,0.12);
+    
+    /* Legacy Glassmorphism Variables */
     --glass-bg: rgba(255, 255, 255, 0.25);
     --glass-blur: 30px;
     --glass-border: rgba(255, 255, 255, 0.3);
@@ -278,6 +286,58 @@
 
 /* Essential Components */
 @layer components {
+  /* SoaBra Glass UI Components */
+  .sb-modal-shell {
+    @apply rounded-[20px];
+    background: var(--sb-glass-bg);
+    backdrop-filter: blur(var(--sb-glass-blur));
+    -webkit-backdrop-filter: blur(var(--sb-glass-blur));
+    border: 1px solid var(--sb-glass-outline);
+    box-shadow: var(--sb-elev-modal), inset 0 1px rgba(255,255,255,0.6);
+    z-index: var(--z-modal-content);
+  }
+  
+  .sb-popover-shell {
+    @apply rounded-[16px];
+    background: var(--sb-glass-bg);
+    backdrop-filter: blur(var(--sb-glass-blur));
+    -webkit-backdrop-filter: blur(var(--sb-glass-blur));
+    border: 1px solid var(--sb-glass-outline);
+    box-shadow: var(--sb-elev-pop);
+  }
+  
+  .sb-backdrop {
+    background: var(--sb-backdrop);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: var(--z-modal-backdrop);
+  }
+  
+  .sb-field {
+    @apply h-[44px] rounded-full px-4;
+    background: rgba(255,255,255,0.85);
+    color: #0B0F12;
+  }
+  
+  .sb-field::placeholder {
+    color: rgba(11,15,18,0.45);
+  }
+  
+  .sb-primary-btn {
+    @apply h-[44px] rounded-full px-5;
+    background: #0B0F12;
+    color: #FFFFFF;
+  }
+  
+  .sb-close-btn {
+    @apply size-9 grid place-items-center rounded-full;
+    border: 1px solid rgba(0,0,0,0.9);
+    background: transparent;
+    min-width: 40px;
+    min-height: 40px;
+  }
+  
+  /* Legacy glass components for backward compatibility */
   .glass-modal {
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur));
