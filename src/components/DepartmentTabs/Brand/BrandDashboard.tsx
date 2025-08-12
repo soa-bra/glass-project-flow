@@ -36,9 +36,9 @@ export const BrandDashboard: React.FC = () => {
     value: 'reports',
     label: 'التقارير'
   }];
-  return <div className="h-full flex flex-col bg-#d9e7ed ">
+  return <div className="h-full flex flex-col bg-[var(--sb-bg-00)]">
       {/* Header with Title and Tabs */}
-      <div className="flex items-center justify-between px-0 bg-[#d9e7ed] my-0 py-[45px]">
+      <div className="flex items-center justify-between px-0 bg-[var(--sb-bg-00)] my-0 py-[45px]">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           إدارة العلامة التجارية
         </h2>
@@ -48,7 +48,7 @@ export const BrandDashboard: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto px-6 pb-6  bg-[#d9e7ed]">
+      <div className="flex-1 overflow-auto px-6 pb-6 bg-[var(--sb-bg-00)]">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
           <TabsContent value="overview" className="space-y-6">
             <OverviewTab />
