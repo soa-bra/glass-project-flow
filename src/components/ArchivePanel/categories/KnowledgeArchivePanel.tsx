@@ -65,11 +65,11 @@ export const KnowledgeArchivePanel: React.FC = () => {
   };
   return <div className="h-full flex flex-col bg-transparent">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-6">
-        <h2 className="font-medium text-black font-arabic text-3xl">
+      <div className="flex items-center gap-2">
+        <h2 className="font-medium text-white font-arabic text-3xl bg-transparent mx-0">
           قاعدة المعرفة
         </h2>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Button className="bg-black text-white rounded-full">
             <Download className="w-4 h-4 mr-2" />
             تصدير شامل
@@ -96,7 +96,7 @@ export const KnowledgeArchivePanel: React.FC = () => {
       {/* Content List */}
       <div className="flex-1 overflow-auto px-6 pb-6">
         <div className="space-y-4">
-          {mockKnowledgeData.map(item => <div key={item.id} className="p-6 rounded-3xl border border-black/10 bg-transparent">
+          {mockKnowledgeData.map(item => <div key={item.id} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
