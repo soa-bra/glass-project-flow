@@ -78,7 +78,7 @@ export const ProjectsArchivePanel: React.FC = () => {
 
       {/* Search */}
       <div className="px-6 mb-6">
-        <div className="bg-[#f2ffff] p-4 rounded-3xl border border-black/10">
+        <div className="bg-[#FFFFFF] p-4 rounded-[40px] ring-1 ring-[#DADCE0]">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -87,7 +87,7 @@ export const ProjectsArchivePanel: React.FC = () => {
                 placeholder="البحث في المشاريع المكتملة..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pr-12 pl-4 py-3 rounded-full border border-black/10 focus:outline-none focus:ring-2 focus:ring-black/20 font-arabic"
+                className="w-full pr-12 pl-4 py-3 rounded-full ring-1 ring-[#DADCE0] focus:outline-none focus:ring-2 focus:ring-black/20 font-arabic"
               />
             </div>
           </div>
@@ -98,7 +98,7 @@ export const ProjectsArchivePanel: React.FC = () => {
       <div className="flex-1 overflow-auto px-6 pb-6">
         <div className="space-y-4">
           {mockProjects.map((project) => (
-            <div key={project.id} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+            <div key={project.id} className="bg-[#FFFFFF] p-6 rounded-[40px] ring-1 ring-[#DADCE0]">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">

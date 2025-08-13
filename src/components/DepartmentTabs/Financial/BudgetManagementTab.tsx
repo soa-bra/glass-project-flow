@@ -133,7 +133,7 @@ export const BudgetManagementTab: React.FC = () => {
           const percentage = (budget.spent / budget.totalBudget) * 100;
           
           return (
-            <div key={budget.id} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 cursor-pointer hover:shadow-lg transition-shadow">
+            <div key={budget.id} className="bg-[#FFFFFF] p-6 rounded-[40px] ring-1 ring-[#DADCE0] cursor-pointer hover:shadow-lg transition-shadow">
               <div onClick={() => handleBudgetClick(budget.id)}>
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -212,7 +212,7 @@ export const BudgetManagementTab: React.FC = () => {
       </div>
 
       {/* السيناريوهات المالية */}
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+      <div className="bg-[#FFFFFF] p-6 rounded-[40px] ring-1 ring-[#DADCE0]">
         <div className="px-0 pt-0 mb-6">
           <h3 className="text-large font-semibold text-black font-arabic">سيناريوهات التخطيط المالي</h3>
         </div>
