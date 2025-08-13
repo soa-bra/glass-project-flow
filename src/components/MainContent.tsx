@@ -39,11 +39,11 @@ const MainContent = () => {
         return <ProjectWorkspace isSidebarCollapsed={effectiveCollapsed} />;
     }
   };
-  return <div className="flex h-screen pt-[var(--header-height)] overflow-hidden px-0 mx-0">
+  return <div className="flex h-screen pt-[var(--header-height)] overflow-hidden px-0 mx-0 bg-slate-100">
       <div style={{
       transition: 'all var(--animation-duration-main) var(--animation-easing)',
       background: '#dfecf2'
-    }} className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] z-sidebar sidebar-layout">
+    }} className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] z-sidebar sidebar-layout bg-slate-100">
         <Sidebar onToggle={setIsSidebarCollapsed} activeSection={activeSection} onSectionChange={handleSectionChange} forceCollapsed={forceCollapsed} />
       </div>
 
