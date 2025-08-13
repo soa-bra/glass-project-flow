@@ -2,73 +2,68 @@ import React, { useState } from 'react';
 import { BookOpen, Brain, Lightbulb, Download, Eye, Filter, Search, Calendar, User, Badge as BadgeIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-
 export const KnowledgeArchivePanel: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-
-  const mockKnowledgeData = [
-    {
-      id: '1',
-      title: 'دليل أفضل الممارسات في إدارة المشاريع',
-      type: 'PDF',
-      size: '4.2 MB',
-      date: '2024-01-20',
-      author: 'مكتب إدارة المشاريع',
-      department: 'إدارة المشاريع',
-      version: 'v3.1',
-      category: 'أفضل الممارسات',
-      tags: ['مشاريع', 'إدارة', 'ممارسات']
-    },
-    {
-      id: '2',
-      title: 'قاعدة بيانات الحلول التقنية',
-      type: 'Database',
-      size: '156 سجل',
-      date: '2024-01-18',
-      author: 'فريق التكنولوجيا',
-      department: 'تقنية المعلومات',
-      version: 'v2.5',
-      category: 'حلول تقنية',
-      tags: ['تقنية', 'حلول', 'برمجة']
-    },
-    {
-      id: '3',
-      title: 'مكتبة المعرفة الاستراتيجية',
-      type: 'Collection',
-      size: '89 مادة',
-      date: '2024-01-15',
-      author: 'الإدارة الاستراتيجية',
-      department: 'التخطيط الاستراتيجي',
-      version: 'v4.0',
-      category: 'استراتيجية',
-      tags: ['استراتيجية', 'تخطيط', 'رؤية']
-    },
-    {
-      id: '4',
-      title: 'دروس مستفادة من المشاريع السابقة',
-      type: 'DOCX',
-      size: '2.8 MB',
-      date: '2024-01-12',
-      author: 'مراجعة المشاريع',
-      department: 'الجودة والتطوير',
-      version: 'v1.9',
-      category: 'دروس مستفادة',
-      tags: ['دروس', 'تجارب', 'تحسين']
-    }
-  ];
-
+  const mockKnowledgeData = [{
+    id: '1',
+    title: 'دليل أفضل الممارسات في إدارة المشاريع',
+    type: 'PDF',
+    size: '4.2 MB',
+    date: '2024-01-20',
+    author: 'مكتب إدارة المشاريع',
+    department: 'إدارة المشاريع',
+    version: 'v3.1',
+    category: 'أفضل الممارسات',
+    tags: ['مشاريع', 'إدارة', 'ممارسات']
+  }, {
+    id: '2',
+    title: 'قاعدة بيانات الحلول التقنية',
+    type: 'Database',
+    size: '156 سجل',
+    date: '2024-01-18',
+    author: 'فريق التكنولوجيا',
+    department: 'تقنية المعلومات',
+    version: 'v2.5',
+    category: 'حلول تقنية',
+    tags: ['تقنية', 'حلول', 'برمجة']
+  }, {
+    id: '3',
+    title: 'مكتبة المعرفة الاستراتيجية',
+    type: 'Collection',
+    size: '89 مادة',
+    date: '2024-01-15',
+    author: 'الإدارة الاستراتيجية',
+    department: 'التخطيط الاستراتيجي',
+    version: 'v4.0',
+    category: 'استراتيجية',
+    tags: ['استراتيجية', 'تخطيط', 'رؤية']
+  }, {
+    id: '4',
+    title: 'دروس مستفادة من المشاريع السابقة',
+    type: 'DOCX',
+    size: '2.8 MB',
+    date: '2024-01-12',
+    author: 'مراجعة المشاريع',
+    department: 'الجودة والتطوير',
+    version: 'v1.9',
+    category: 'دروس مستفادة',
+    tags: ['دروس', 'تجارب', 'تحسين']
+  }];
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'أفضل الممارسات': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      case 'حلول تقنية': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'استراتيجية': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'دروس مستفادة': return 'bg-orange-100 text-orange-800 border-orange-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'أفضل الممارسات':
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 'حلول تقنية':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'استراتيجية':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'دروس مستفادة':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
-
-  return (
-    <div className="h-full flex flex-col bg-transparent">
+  return <div className="h-full flex flex-col bg-transparent">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-6">
         <h2 className="font-medium text-black font-arabic text-3xl">
@@ -92,13 +87,7 @@ export const KnowledgeArchivePanel: React.FC = () => {
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="البحث في قاعدة المعرفة..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pr-12 pl-4 py-3 rounded-full border border-black/10 focus:outline-none focus:ring-2 focus:ring-black/20 font-arabic"
-              />
+              <input type="text" placeholder="البحث في قاعدة المعرفة..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pr-12 pl-4 py-3 rounded-full border border-black/10 focus:outline-none focus:ring-2 focus:ring-black/20 font-arabic" />
             </div>
           </div>
         </div>
@@ -107,8 +96,7 @@ export const KnowledgeArchivePanel: React.FC = () => {
       {/* Content List */}
       <div className="flex-1 overflow-auto px-6 pb-6">
         <div className="space-y-4">
-          {mockKnowledgeData.map((item) => (
-            <div key={item.id} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+          {mockKnowledgeData.map(item => <div key={item.id} className="p-6 rounded-3xl border border-black/10 bg-transparent">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
@@ -142,11 +130,9 @@ export const KnowledgeArchivePanel: React.FC = () => {
 
                   <div className="flex items-center gap-2">
                     <BadgeIcon className="w-4 h-4 text-gray-400" />
-                    {item.tags.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="font-arabic">
+                    {item.tags.map((tag, index) => <Badge key={index} variant="outline" className="font-arabic">
                         {tag}
-                      </Badge>
-                    ))}
+                      </Badge>)}
                   </div>
                 </div>
 
@@ -161,10 +147,8 @@ export const KnowledgeArchivePanel: React.FC = () => {
                   </Button>
                 </div>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
