@@ -18,12 +18,12 @@ export const SPACING = {
 export const COLORS = {
   // SoaBra Unified Theme Colors
   APP_BACKGROUND: 'bg-[var(--sb-bg-00)]',
-  PANEL_BACKGROUND: 'bg-[var(--sb-surface-01)]',
-  CARD_BACKGROUND: 'bg-[var(--sb-surface-00)]',
+  PANEL_BACKGROUND: 'bg-[var(--sb-bg-00)]',
+  CARD_BACKGROUND: 'bg-[#FFFFFF]',
   TRANSPARENT_BACKGROUND: 'bg-transparent',
   
   // Border and ring colors
-  BORDER_COLOR: 'ring-1 ring-[var(--sb-border)]',
+  BORDER_COLOR: 'ring-1 ring-[#DADCE0]',
   
   // Text colors
   PRIMARY_TEXT: 'text-[var(--sb-ink)]',
