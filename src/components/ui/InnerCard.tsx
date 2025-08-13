@@ -16,14 +16,14 @@ export const InnerCard: React.FC<InnerCardProps> = ({
 }) => {
   return (
     <div className={cn(
-      'p-4 rounded-t-[24px] rounded-b-[6px] bg-[var(--sb-surface-00)] ring-1 ring-[var(--sb-border)]',
+      'p-4 rounded-[40px] bg-[var(--sb-surface-00)] ring-1 ring-[var(--sb-border)]',
       'shadow-[0_1px_1px_rgba(15,23,42,0.02),_0_4px_12px_rgba(15,23,42,0.06)]',
       className
     )}>
       {title && (
         <div className="flex items-center gap-3 mb-4">
           {icon && (
-            <div className="w-6 h-6 rounded-full bg-transparent ring-1 ring-[var(--sb-ink)] flex items-center justify-center">
+            <div className="w-3 h-3 rounded-full bg-transparent ring-1 ring-[var(--sb-ink)] flex items-center justify-center">
               {icon}
             </div>
           )}

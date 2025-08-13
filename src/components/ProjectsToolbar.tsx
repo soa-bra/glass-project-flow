@@ -25,13 +25,13 @@ const ProjectsToolbar: React.FC<ProjectsToolbarProps> = ({
       {/* الأيقونات يساراً */}
       <div className="flex items-center gap-3">
         <button className="w-[50px] h-[50px]  bg-transparent border border-black rounded-full flex items-center justify-center transition-all duration-300 hover:bg-white/20 group">
-          <RefreshCcw className="w-[19px] h-[19px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+          <RefreshCcw className="w-[10px] h-[10px] text-[#3e494c] group-hover:scale-110 transition-transform duration-600" />
         </button>
         <button onClick={handleFilterClick} className="w-[50px] h-[50px] w-[50px] h-[50px]  bg-transparent border border-black rounded-full flex items-center justify-center transition-all duration-300 hover:bg-white/20 group flex items-center justify-center transition-all duration-300 hover:bg-white/20 group">
-          <Filter className="w-[19px] h-[19px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+          <Filter className="w-[10px] h-[10px] text-[#3e494c] group-hover:scale-110 transition-transform duration-600" />
         </button>
         <button onClick={onAddProject} title="إضافة مشروع جديد" className="w-[50px] h-[50px]  bg-transparent border border-black rounded-full flex items-center justify-center transition-all duration-300 hover:bg-white/20 group">
-          <Plus className="w-[19px] h-[19px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+          <Plus className="w-[10px] h-[10px] text-[#3e494c] group-hover:scale-110 transition-transform duration-600" />
         </button>
       </div>
 

@@ -52,9 +52,9 @@ export const TYPOGRAPHY = {
 } as const;
 
 export const LAYOUT = {
-  // SoaBra Card styles with new radii and shadows
-  CARD_ROUNDED: 'rounded-t-[24px] rounded-b-[6px]',
-  CARD_SHADOW: 'shadow-[var(--sb-shadow-soft)] hover:shadow-[var(--sb-shadow-strong)] transition-shadow duration-300',
+  // SoaBra Card styles with project card border radius (40px)
+  CARD_ROUNDED: 'rounded-[40px]',
+  CARD_SHADOW: 'shadow-[var(--sb-shadow-soft)] hover:shadow-[var(--sb-shadow-strong)] transition-shadow duration-600',
   PANEL_SHADOW: 'shadow-[var(--sb-shadow-strong)]',
   
   // Grid layouts
@@ -66,15 +66,15 @@ export const LAYOUT = {
   FLEX_BETWEEN: 'flex items-center justify-between',
   FLEX_GAP: 'flex items-center gap-2',
   
-  // Icon containers - SoaBra style
-  ICON_CONTAINER: 'w-8 h-8 rounded-full bg-transparent ring-1 ring-[var(--sb-ink)] flex items-center justify-center',
-  ICON_SIZE: 'h-4 w-4 text-[var(--sb-ink)]',
-  ICON_CONTAINER_LG: 'w-10 h-10 rounded-full bg-transparent ring-1 ring-[var(--sb-ink)] flex items-center justify-center',
+  // Icon containers - SoaBra style (reduced by 50%)
+  ICON_CONTAINER: 'w-4 h-4 rounded-full bg-transparent ring-1 ring-[var(--sb-ink)] flex items-center justify-center',
+  ICON_SIZE: 'h-2 w-2 text-[var(--sb-ink)]',
+  ICON_CONTAINER_LG: 'w-5 h-5 rounded-full bg-transparent ring-1 ring-[var(--sb-ink)] flex items-center justify-center',
 } as const;
 
 export const TRANSITIONS = {
-  DEFAULT: 'transition-all duration-300',
-  SHADOW: 'transition-shadow duration-300',
+  DEFAULT: 'transition-all duration-600',
+  SHADOW: 'transition-shadow duration-600',
 } as const;
 
 // Unified component class builders

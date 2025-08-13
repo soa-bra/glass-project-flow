@@ -49,7 +49,7 @@ export const OverviewGrid: React.FC = () => {
       </Stagger.Item>
 
       <Stagger.Item>
-        <CustomersWidget customers={mockCustomersData} />
+        <StatisticsCard title="معدل" value="85" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
       </Stagger.Item>
 
       {/* الصف الثاني */}
@@ -58,11 +58,11 @@ export const OverviewGrid: React.FC = () => {
       </Stagger.Item>
 
       <Stagger.Item>
-        <AlertsCard />
+        <CustomersWidget customers={mockCustomersData} />
       </Stagger.Item>
 
       <Stagger.Item>
-        <StatisticsCard title="معدل" value="85" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
+        <AlertsCard />
       </Stagger.Item>
 
       {/* الصف الثالث */}

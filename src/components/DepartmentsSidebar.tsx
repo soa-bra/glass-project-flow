@@ -76,7 +76,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
             
             <button onClick={toggleSidebar} className="group w-[60px] h-[60px] rounded-full flex items-center justify-center border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/20 hover:shadow-lg flex-shrink-0 sync-transition-fast">
               <div className="sync-transition-fast">
-                {isCollapsed ? <ChevronRight className="w-6 h-6 text-[#3e494c] sync-transition-fast group-hover:scale-110" /> : <ChevronLeft className="w-6 h-6 text-[#3e494c] sync-transition-fast group-hover:scale-110" />}
+                {isCollapsed ? <ChevronRight className="w-3 h-3 text-[#3e494c] sync-transition-fast group-hover:scale-110" /> : <ChevronLeft className="w-3 h-3 text-[#3e494c] sync-transition-fast group-hover:scale-110" />}
               </div>
             </button>
           </div>
@@ -99,8 +99,8 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
                     w-[50px] h-[50px] flex items-center justify-center flex-shrink-0 border-2 rounded-full sync-transition-fast
                     ${isActive ? 'bg-white/30 border-[#3e494c]/60 shadow-lg scale-105' : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/60 group-hover:bg-white/20 group-hover:shadow-md group-hover:scale-110 group-active:scale-95'}
                   `}>
-                  <IconComponent className={`
-                      w-5 h-5 sync-transition-fast
+                   <IconComponent className={`
+                      w-2.5 h-2.5 sync-transition-fast
                       ${isActive ? 'text-[#3e494c] scale-110' : 'text-soabra-text-secondary group-hover:text-[#3e494c] group-hover:scale-110'}
                     `} />
                 </div>

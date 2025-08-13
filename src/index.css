@@ -10,7 +10,7 @@
 
 @layer base {
   :root {
-    /* SoaBra Unified Theme Colors */
+    /* SoaBra Unified Theme Colors - Updated */
     --sb-ink: #0B0F12;
     --sb-ink-70: rgba(11,15,18,0.7);
     --sb-ink-40: rgba(11,15,18,0.4);
@@ -99,10 +99,10 @@
     --glass-tab-blur: 15px;
     --glass-tab-border: rgba(255, 255, 255, 0.4);
     
-    /* Animation Timing Variables for Perfect Synchronization */
-    --animation-duration-main: 500ms;
-    --animation-duration-fast: 300ms;
-    --animation-duration-slow: 700ms;
+    /* Animation Timing Variables for Perfect Synchronization - Reduced to Half Speed */
+    --animation-duration-main: 1000ms;
+    --animation-duration-fast: 600ms;
+    --animation-duration-slow: 1400ms;
     --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
     --animation-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --stagger-delay: 50ms;

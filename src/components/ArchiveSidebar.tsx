@@ -101,9 +101,9 @@ const ArchiveSidebar: React.FC<ArchiveSidebarProps> = ({
             >
               <div className="sync-transition-fast">
                 {isCollapsed ? (
-                  <ChevronRight className="w-6 h-6 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
+                  <ChevronRight className="w-3 h-3 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
                 ) : (
-                  <ChevronLeft className="w-6 h-6 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
+                  <ChevronLeft className="w-3 h-3 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
                 )}
               </div>
             </button>
@@ -141,7 +141,7 @@ const ArchiveSidebar: React.FC<ArchiveSidebarProps> = ({
                     }
                   `}>
                   <IconComponent className={`
-                      w-5 h-5 sync-transition-fast
+                      w-2.5 h-2.5 sync-transition-fast
                       ${isActive 
                         ? 'text-[#3e494c] scale-110' 
                         : 'text-soabra-text-secondary group-hover:text-[#3e494c] group-hover:scale-110'
