@@ -26,7 +26,7 @@ export const ReportsTab: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {reports.map((report, index) => (
-          <div key={index} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+          <div key={index} className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6 rounded-[40px]">
             <div className="flex items-center gap-3 mb-4">
               <BarChart className="h-8 w-8 text-black" />
               <div>

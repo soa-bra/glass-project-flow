@@ -18,8 +18,8 @@ export const MarketingWidget: React.FC<MarketingWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      rounded-3xl p-5
-      bg-[#f3ffff] border border-gray-200/50 shadow-sm
+      rounded-[40px] p-5
+      bg-[#FFFFFF] ring-1 ring-[#DADCE0] shadow-sm
       hover:shadow-md transition-all duration-300
       flex flex-col justify-between
     `}>

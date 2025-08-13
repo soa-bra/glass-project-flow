@@ -121,7 +121,7 @@ export const PaymentsInvoicesTab: React.FC = () => {
     <div className="space-y-6">
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 text-center">
+        <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6 rounded-[40px] text-center">
           <div className="flex items-center justify-center mb-2">
             <FileText className="h-6 w-6 text-black" />
           </div>
@@ -129,7 +129,7 @@ export const PaymentsInvoicesTab: React.FC = () => {
           <p className="text-sm font-normal text-black font-arabic">إجمالي الفواتير</p>
         </div>
 
-        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 text-center">
+        <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6 rounded-[40px] text-center">
           <div className="flex items-center justify-center mb-2">
             <CheckCircle className="h-6 w-6 text-black" />
           </div>
@@ -137,7 +137,7 @@ export const PaymentsInvoicesTab: React.FC = () => {
           <p className="text-sm font-normal text-black font-arabic">فواتير مدفوعة</p>
         </div>
 
-        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 text-center">
+        <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6 rounded-[40px] text-center">
           <div className="flex items-center justify-center mb-2">
             <AlertCircle className="h-6 w-6 text-black" />
           </div>
@@ -145,7 +145,7 @@ export const PaymentsInvoicesTab: React.FC = () => {
           <p className="text-sm font-normal text-black font-arabic">فواتير متأخرة</p>
         </div>
 
-        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 text-center">
+        <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6 rounded-[40px] text-center">
           <div className="flex items-center justify-center mb-2">
             <DollarSign className="h-6 w-6 text-black" />
           </div>
@@ -179,7 +179,7 @@ export const PaymentsInvoicesTab: React.FC = () => {
           </div>
 
           {invoices.map((invoice) => (
-            <div key={invoice.id} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+            <div key={invoice.id} className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6 rounded-[40px]">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h4 className="text-sm font-bold text-black font-arabic mb-1">{invoice.number}</h4>
@@ -237,7 +237,7 @@ export const PaymentsInvoicesTab: React.FC = () => {
             const relatedInvoice = invoices.find(inv => inv.id === payment.invoiceId);
             
             return (
-              <div key={payment.id} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+              <div key={payment.id} className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6 rounded-[40px]">
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="text-sm font-bold text-black font-arabic mb-1">
@@ -265,7 +265,7 @@ export const PaymentsInvoicesTab: React.FC = () => {
       )}
 
       {/* تقرير التحصيلات */}
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
+      <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6 rounded-[40px]">
         <div className="px-0 pt-0 mb-6">
           <h3 className="text-large font-semibold text-black font-arabic">تقرير التحصيلات</h3>
         </div>

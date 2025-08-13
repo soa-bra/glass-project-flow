@@ -36,7 +36,7 @@ export const OverviewTab: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Categories */}
-        <Card className="rounded-3xl bg-[#f2ffff]">
+        <Card className="rounded-[40px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
@@ -58,7 +58,7 @@ export const OverviewTab: React.FC = () => {
         </Card>
 
         {/* AI Recommendations */}
-        <Card className="rounded-3xl bg-[#f2ffff]">
+        <Card className="rounded-[40px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Brain className="h-5 w-5" />
@@ -88,7 +88,7 @@ export const OverviewTab: React.FC = () => {
       </div>
 
       {/* Knowledge Gaps */}
-      <Card className="rounded-3xl bg-[#f2ffff]">
+      <Card className="rounded-[40px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
@@ -121,7 +121,7 @@ export const OverviewTab: React.FC = () => {
       </Card>
 
       {/* Recent Activity */}
-      <Card className="rounded-3xl bg-[#f2ffff]">
+      <Card className="rounded-[40px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
         <CardHeader>
           <CardTitle>النشاط الأخير</CardTitle>
         </CardHeader>

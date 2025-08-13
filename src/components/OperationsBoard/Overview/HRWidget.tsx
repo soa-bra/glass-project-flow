@@ -19,8 +19,8 @@ export const HRWidget: React.FC<HRWidgetProps> = ({
   return (
     <div className={`
       ${className}
-      rounded-3xl p-5
-      bg-[#f2ffff] border border-black/10 shadow-sm
+      rounded-[40px] p-5
+      bg-[#FFFFFF] ring-1 ring-[#DADCE0] shadow-sm
       hover:shadow-md transition-all duration-300
       flex flex-col justify-between
     `}>
