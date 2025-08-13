@@ -16,7 +16,7 @@ export const InnerCard: React.FC<InnerCardProps> = ({
 }) => {
   return (
     <div className={cn(
-      'p-4 rounded-[40px] bg-[var(--sb-surface-00)] ring-1 ring-[var(--sb-border)]',
+      'p-4 rounded-[40px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]',
       'shadow-[0_1px_1px_rgba(15,23,42,0.02),_0_4px_12px_rgba(15,23,42,0.06)]',
       className
     )}>

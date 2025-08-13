@@ -13,7 +13,7 @@ export const GenericCard: React.FC<GenericCardProps> = ({
 }) => {
   return (
     <div className={cn(
-      "bg-[var(--sb-surface-00)] ring-1 ring-[var(--sb-border)] rounded-[40px] p-4",
+      "bg-[#FFFFFF] ring-1 ring-[#DADCE0] rounded-[40px] p-4",
       "shadow-[var(--sb-shadow-soft)] hover:shadow-[var(--sb-shadow-strong)] transition-shadow duration-600",
       className
     )}>
