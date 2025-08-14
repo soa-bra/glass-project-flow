@@ -1,19 +1,22 @@
 import React from 'react';
+import { SoaPanel } from '@/components/ui/SoaPanel';
+
 interface DepartmentPanelLayoutProps {
   children: React.ReactNode;
 }
+
 export const DepartmentPanelLayout: React.FC<DepartmentPanelLayoutProps> = ({
   children
 }) => {
-  return <div style={{
-    background: 'var(--sb-bg-00)'
-  }} className="h-full rounded-3xl overflow-hidden">
+  return (
+    <SoaPanel className="h-full overflow-hidden">
       <div className="h-full flex flex-col">
-        <div className="flex-1 overflow-auto px-0 mx-0 bg-[var(--sb-bg-00)]">
+        <div className="flex-1 overflow-auto px-0 mx-0">
           <div className="h-full px-0 mx-6 rounded-2xl overflow-hidden bg-transparent my-0 py-10">
             {children}
           </div>
         </div>
       </div>
-    </div>;
+    </SoaPanel>
+  );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Shield, Bell, Settings, Database, Palette, Globe, Key, Monitor, CreditCard, Users, Building } from 'lucide-react';
 import { useAutosave } from './hooks/useAutosave';
+import { SoaCard, SoaIcon, SoaTypography, SoaBadge, SoaKPICard } from '@/components/ui';
 
 interface GenericSettingsPanelProps {
   category: string;
@@ -13,8 +14,8 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
   isMainSidebarCollapsed,
   isSettingsSidebarCollapsed 
 }) => {
-  const getCategoryInfo = (categoryKey: string): { title: string; icon: React.ComponentType<any>; description: string; hasWizard?: boolean } => {
-    const categories: Record<string, { title: string; icon: React.ComponentType<any>; description: string; hasWizard?: boolean }> = {
+  const getCategoryInfo = (categoryKey: string): { title: string; icon: any; description: string; hasWizard?: boolean } => {
+    const categories: Record<string, { title: string; icon: any; description: string; hasWizard?: boolean }> = {
       account: { 
         title: 'الحساب الشخصي', 
         icon: User, 
@@ -138,44 +139,44 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-soabra-border">
+      <div className="rounded-card-top border border-soabra-border p-6" style={{ backgroundColor: '#F2FFFF' }}>
         <div className="flex items-center gap-4 mb-3">
           <div className="w-12 h-12 bg-soabra-white/20 rounded-full flex items-center justify-center border border-soabra-ink-30">
             <IconComponent className="w-6 h-6 text-soabra-ink" />
           </div>
           <div className="flex-1">
-            <h2 className="text-title text-soabra-ink">{categoryInfo.title}</h2>
-            <p className="text-subtitle text-soabra-ink">{categoryInfo.description}</p>
+            <SoaTypography variant="title" className="text-soabra-ink">{categoryInfo.title}</SoaTypography>
+            <SoaTypography variant="subtitle" className="text-soabra-ink">{categoryInfo.description}</SoaTypography>
           </div>
           <div className="text-center">
             <div className="text-display-m text-soabra-accent-green">●</div>
-            <p className="text-label text-soabra-ink-60">متصل</p>
+            <SoaTypography variant="label" className="text-soabra-ink-60">متصل</SoaTypography>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-soabra-border">
+      <div className="rounded-card-top border border-soabra-border p-6" style={{ backgroundColor: '#F2FFFF' }}>
         <div className="space-y-6">
           {/* Settings Form Content */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-soabra-border">
-              <h4 className="text-subtitle text-soabra-ink mb-2">إعدادات أساسية</h4>
-              <p className="text-label text-soabra-ink-60">الإعدادات الأساسية للـ {categoryInfo.title}</p>
+            <div className="rounded-2xl border border-soabra-border p-4" style={{ backgroundColor: '#bdeed3' }}>
+              <SoaTypography variant="subtitle" className="text-soabra-ink mb-2">إعدادات أساسية</SoaTypography>
+              <SoaTypography variant="label" className="text-soabra-ink-60">الإعدادات الأساسية للـ {categoryInfo.title}</SoaTypography>
             </div>
-            <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-soabra-border">
-              <h4 className="text-subtitle text-soabra-ink mb-2">خيارات متقدمة</h4>
-              <p className="text-label text-soabra-ink-60">إعدادات متقدمة للمستخدمين المتخصصين</p>
+            <div className="rounded-2xl border border-soabra-border p-4" style={{ backgroundColor: '#a4e2f6' }}>
+              <SoaTypography variant="subtitle" className="text-soabra-ink mb-2">خيارات متقدمة</SoaTypography>
+              <SoaTypography variant="label" className="text-soabra-ink-60">إعدادات متقدمة للمستخدمين المتخصصين</SoaTypography>
             </div>
           </div>
 
           {/* AI Training Wizard (only for AI section) */}
           {categoryInfo.hasWizard && (
-            <div style={{ backgroundColor: '#96d8d0' }} className="rounded-2xl p-6 border border-soabra-border">
+            <div className="rounded-2xl border border-soabra-border p-6" style={{ backgroundColor: '#96d8d0' }}>
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-subtitle text-soabra-ink mb-2">معالج التدريب</h4>
-                  <p className="text-body text-soabra-ink">تدريب نموذج جديد من الأرشيف</p>
+                  <SoaTypography variant="subtitle" className="text-soabra-ink mb-2">معالج التدريب</SoaTypography>
+                  <SoaTypography variant="body" className="text-soabra-ink">تدريب نموذج جديد من الأرشيف</SoaTypography>
                 </div>
                 <button
                   onClick={handleAITrainingWizard}
@@ -189,27 +190,33 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
 
           {/* Settings Preview */}
           <div className="grid grid-cols-3 gap-4">
-            <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-soabra-border text-center">
-              <div className="text-display-m text-soabra-ink mb-1">12</div>
-              <p className="text-label text-soabra-ink-60">إعدادات مفعلة</p>
-            </div>
-            <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-2xl p-4 border border-soabra-border text-center">
-              <div className="text-display-m text-soabra-ink mb-1">3</div>
-              <p className="text-label text-soabra-ink-60">تحتاج مراجعة</p>
-            </div>
-            <div style={{ backgroundColor: '#fbe2aa' }} className="rounded-2xl p-4 border border-soabra-border text-center">
-              <div className="text-display-m text-soabra-ink mb-1">5</div>
-              <p className="text-label text-soabra-ink-60">مسودات</p>
-            </div>
+            <SoaKPICard
+              title="إعدادات مفعلة"
+              value="12"
+              icon={Settings}
+              variant="success"
+            />
+            <SoaKPICard
+              title="تحتاج مراجعة"
+              value="3"
+              icon={Settings}
+              variant="warning"
+            />
+            <SoaKPICard
+              title="مسودات"
+              value="5"
+              icon={Settings}
+              variant="default"
+            />
           </div>
         </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex justify-between items-center">
-        <div className="text-label text-soabra-ink-60">
+        <SoaTypography variant="label" className="text-soabra-ink-60">
           {lastAutosave ? `آخر حفظ تلقائي: ${lastAutosave}` : 'لم يتم الحفظ بعد'}
-        </div>
+        </SoaTypography>
         <div className="flex gap-3">
           <button
             onClick={handleReset}
