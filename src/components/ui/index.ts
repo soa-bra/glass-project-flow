@@ -5,6 +5,7 @@ export { SoaIcon } from './SoaIcon';
 export { SoaTooltip } from './SoaTooltip';
 export { SoaNotification } from './SoaNotification';
 export { SoaScrollIndicator } from './SoaScrollIndicator';
+export { SoaTypography } from './SoaTypography';
 
 // Legacy UI Components
 export { SoaBraBadge } from './SoaBraBadge';

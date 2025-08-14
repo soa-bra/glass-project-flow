@@ -66,7 +66,7 @@ export const FinancialArchivePanel: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-transparent">
       <div className="flex items-center justify-between px-6 py-6">
-        <h2 className="font-medium text-black font-arabic text-3xl">
+        <h2 className="text-display-m font-bold text-soabra-ink font-arabic">
           السجلات المالية
         </h2>
         <div className="flex items-center gap-3">
@@ -110,8 +110,8 @@ export const FinancialArchivePanel: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
                       <IconComponent className="w-5 h-5 text-gray-600" />
-                      <h3 className="font-bold text-black font-arabic text-lg">{record.title}</h3>
-                      <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(record.status)}`}>
+                      <h3 className="text-title font-bold text-soabra-ink font-arabic">{record.title}</h3>
+                      <div className={`px-3 py-1 rounded-full text-label font-medium ${getStatusColor(record.status)}`}>
                         {record.status}
                       </div>
                       <Badge variant="secondary" className="font-arabic">
@@ -124,7 +124,7 @@ export const FinancialArchivePanel: React.FC = () => {
                       )}
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-body text-soabra-ink-60 mb-4">
                       {record.type === 'تقرير مالي سنوي' && (
                         <>
                           <span className="flex items-center gap-1">
@@ -176,7 +176,7 @@ export const FinancialArchivePanel: React.FC = () => {
 
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">{record.date}</span>
+                      <span className="text-body text-soabra-ink-60">{record.date}</span>
                     </div>
                   </div>
 

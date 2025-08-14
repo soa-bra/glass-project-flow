@@ -66,7 +66,7 @@ export const TemplatesArchivePanel: React.FC = () => {
   return <div className="h-full flex flex-col bg-transparent">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-6">
-        <h2 className="font-medium text-black font-arabic text-3xl">
+        <h2 className="text-display-m font-bold text-soabra-ink font-arabic">
           النماذج والقوالب
         </h2>
         <div className="flex items-center gap-3">
