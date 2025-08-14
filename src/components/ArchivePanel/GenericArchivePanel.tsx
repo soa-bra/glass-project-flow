@@ -20,10 +20,10 @@ export const GenericArchivePanel: React.FC<GenericArchivePanelProps> = ({ catego
   return (
     <div className={`h-full ${LAYOUT.FLEX_CENTER} ${COLORS.TRANSPARENT_BACKGROUND}`}>
       <div className="text-center">
-        <h2 className={`${TYPOGRAPHY.LARGE_TITLE_SIZE} text-gray-600 mb-4 ${TYPOGRAPHY.ARABIC_FONT}`}>
+        <h2 className={`${TYPOGRAPHY.LARGE_TITLE_SIZE} text-soabra-ink-60 mb-4 ${TYPOGRAPHY.ARABIC_FONT}`}>
           {getCategoryTitle(category)}
         </h2>
-        <p className={`text-gray-500 ${TYPOGRAPHY.ARABIC_FONT}`}>
+        <p className={`text-soabra-ink-30 ${TYPOGRAPHY.ARABIC_FONT}`}>
           هذا القسم قيد التطوير وسيتم إضافة المحتوى قريباً
         </p>
       </div>

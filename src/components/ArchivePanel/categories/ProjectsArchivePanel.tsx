@@ -65,7 +65,7 @@ export const ProjectsArchivePanel: React.FC = () => {
           المشاريع المكتملة
         </h2>
         <div className="flex items-center gap-3">
-          <Button className="bg-black text-white rounded-full">
+          <Button className="bg-soabra-ink text-soabra-white rounded-full">
             <Download className="w-4 h-4 mr-2" />
             تقرير المشاريع
           </Button>
@@ -145,7 +145,7 @@ export const ProjectsArchivePanel: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-2 ml-4">
-                  <Button size="sm" className="bg-black text-white rounded-full">
+                  <Button size="sm" className="bg-soabra-ink text-soabra-white rounded-full">
                     <Eye className="w-4 h-4 mr-1" />
                     عرض التفاصيل
                   </Button>

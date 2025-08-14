@@ -46,11 +46,11 @@ export const FinancialArchivePanel: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'مكتمل': return 'bg-green-100 text-green-800';
-      case 'مدفوع': return 'bg-blue-100 text-blue-800';
-      case 'مغلق': return 'bg-gray-100 text-gray-800';
-      case 'معلق': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'مكتمل': return 'bg-soabra-accent-green text-soabra-ink';
+      case 'مدفوع': return 'bg-soabra-accent-blue text-soabra-ink';
+      case 'مغلق': return 'bg-soabra-ink-30 text-soabra-ink';
+      case 'معلق': return 'bg-soabra-accent-yellow text-soabra-ink';
+      default: return 'bg-soabra-ink-30 text-soabra-ink';
     }
   };
 
@@ -70,7 +70,7 @@ export const FinancialArchivePanel: React.FC = () => {
           السجلات المالية
         </h2>
         <div className="flex items-center gap-3">
-          <Button className="bg-black text-white rounded-full">
+          <Button className="bg-soabra-ink text-soabra-white rounded-full">
             <Download className="w-4 h-4 mr-2" />
             تقرير مالي شامل
           </Button>
@@ -86,7 +86,7 @@ export const FinancialArchivePanel: React.FC = () => {
         <div className="bg-[#FFFFFF] p-4 rounded-[40px] ring-1 ring-[#DADCE0]">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-soabra-ink-30 w-5 h-5" />
               <input
                 type="text"
                 placeholder="البحث في السجلات المالية..."
@@ -109,7 +109,7 @@ export const FinancialArchivePanel: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
-                      <IconComponent className="w-5 h-5 text-gray-600" />
+                      <IconComponent className="w-5 h-5 text-soabra-ink-60" />
                       <h3 className="text-title font-bold text-soabra-ink font-arabic">{record.title}</h3>
                       <div className={`px-3 py-1 rounded-full text-label font-medium ${getStatusColor(record.status)}`}>
                         {record.status}
@@ -175,13 +175,13 @@ export const FinancialArchivePanel: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <Calendar className="w-4 h-4 text-soabra-ink-30" />
                       <span className="text-body text-soabra-ink-60">{record.date}</span>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-2 ml-4">
-                    <Button size="sm" className="bg-black text-white rounded-full">
+                    <Button size="sm" className="bg-soabra-ink text-soabra-white rounded-full">
                       <Eye className="w-4 h-4 mr-1" />
                       عرض
                     </Button>

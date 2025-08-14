@@ -10,7 +10,7 @@ export const DocumentsArchiveHeader: React.FC = () => {
         الوثائق والمستندات
       </h2>
       <div className="flex items-center gap-3">
-        <Button className="bg-black text-white rounded-full">
+        <Button className="bg-soabra-ink text-soabra-white rounded-full">
           <Download className="w-4 h-4 mr-2" />
           تصدير شامل
         </Button>
