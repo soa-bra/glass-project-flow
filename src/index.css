@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,107 +5,130 @@
 /* استيراد خط IBM Plex Sans Arabic */
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 
-/* SoaBra Design System - Updated Color Palette */
+/* SoaBra Design System v1.0.0 - CSS Variables */
 
 @layer base {
   :root {
-    /* SoaBra Unified Theme Colors - Updated */
-    --sb-ink: #0B0F12;
-    --sb-ink-70: rgba(11,15,18,0.7);
-    --sb-ink-40: rgba(11,15,18,0.4);
-    --sb-ink-20: rgba(11,15,18,0.2);
-    --sb-white: #FFFFFF;
-    --sb-bg-00: #F8F9FA;
-    --sb-bg-01: #F1F3F4;
-    --sb-bg-02: #E8EAED;
-    --sb-surface-00: #FFFFFF;
-    --sb-surface-01: #FFFFFF;
-    --sb-border: #DADCE0;
-    --sb-shadow-strong: 0 4px 16px rgba(0,0,0,0.1);
-    --sb-shadow-soft: 0 2px 8px rgba(0,0,0,0.08);
+    /* SoaBra Design Tokens v1.0.0 */
     
-    /* Legacy backgrounds for exceptions (projects, tasks, financial) */
-    --backgrounds-project-column-bg: #d1e1ea;
-    --backgrounds-project-cards-bg: #f2f9fb;
-    --backgrounds-timeline-bg: #f2ffff;
-    --backgrounds-admin-ops-board-bg: var(--sb-surface-01);
-    --backgrounds-financial-card-profit: #96d8d0;
-    --backgrounds-financial-card-loss: #f1b5b9;
-    --backgrounds-project-summary-card: #a4e2f6;
-    --backgrounds-project-mgmt-board-bg: #f9fbfc;
-    --backgrounds-project-mgmt-cards-bg: #ecf2f7;
-    --backgrounds-active-tab-project-mgmt: #000000;
-    --backgrounds-inactive-tab-project-mgmt: transparent;
-
-    --visual-data-primary: #000000;
-    --visual-data-secondary-1: #bdeed3;
-    --visual-data-secondary-2: #f1b5b9;
-    --visual-data-secondary-3: #d9d2fd;
-    --visual-data-secondary-4: #a4e2f6;
-    --visual-data-secondary-5: #fbe2aa;
-
-    --project-card-elements-task-count: #d1e1ea;
-    --project-card-elements-day-count: transparent;
-    --project-card-elements-title-text: #000000;
-    --project-card-elements-secondary-text: #858789;
-    --project-card-elements-info-bubbles: #e9eff4;
-
-    --status-colors-on-plan: #bdeed3;
-    --status-colors-in-preparation: #a4e2f6;
-    --status-colors-in-progress: #d9d2fd;
-    --status-colors-delayed: #fbe2aa;
-    --status-colors-stopped: #f1b5b9;
-
-    --priority-colors-urgent-important: #f1b5b9;
-    --priority-colors-not-urgent-important: #fbe2aa;
-    --priority-colors-urgent-not-important: #a4e2f6;
-    --priority-colors-not-urgent-not-important: #d9d2fd;
+    /* Colors - Ink Palette */
+    --soabra-ink: #0B0F12;
+    --soabra-ink-80: rgba(11,15,18,0.80);
+    --soabra-ink-60: rgba(11,15,18,0.60);
+    --soabra-ink-30: rgba(11,15,18,0.30);
     
-    /* Progress Bar Colors */
-    --progress-segment-active: #4F46E5;
-    --progress-segment-inactive: #E5E7EB;
-    --progress-stage-completed: #10B981;
-    --progress-stage-current: #3B82F6;
-    --progress-stage-pending: #9CA3AF;
+    /* Colors - Surfaces */
+    --soabra-white: #FFFFFF;
+    --soabra-surface: #FFFFFF;
+    --soabra-panel: #d9e7ed;
+    --soabra-border: #DADCE0;
     
-    /* Z-Index Hierarchy */
-    --z-modal-backdrop: 9998;
-    --z-modal-content: 9999;
-    --z-dropdown: 10000;
-    --z-tooltip: 10001;
-    --z-toast: 10002;
+    /* Colors - Accents */
+    --soabra-accent-green: #3DBE8B;
+    --soabra-accent-yellow: #F6C445;
+    --soabra-accent-red: #E5564D;
+    --soabra-accent-blue: #3DA8F5;
     
-    /* SoaBra Glass UI Variables */
-    --sb-glass-bg: rgba(255,255,255,0.45);
-    --sb-glass-outline: rgba(255,255,255,0.35);
-    --sb-glass-blur: 14px;
-    --sb-backdrop: rgba(15,23,42,0.32);
-    --sb-elev-modal: 0 20px 60px rgba(15,23,42,0.18);
-    --sb-elev-pop: 0 10px 30px rgba(15,23,42,0.12);
+    /* Typography Scale (px values) */
+    --soabra-display-l: 40px;
+    --soabra-display-m: 32px;
+    --soabra-title: 20px;
+    --soabra-subtitle: 16px;
+    --soabra-body: 14px;
+    --soabra-label: 12px;
     
-    /* Legacy Glassmorphism Variables */
-    --glass-bg: rgba(255, 255, 255, 0.25);
-    --glass-blur: 30px;
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    /* Line Heights */
+    --soabra-display-l-line: 48px;
+    --soabra-display-m-line: 40px;
+    --soabra-title-line: 28px;
+    --soabra-subtitle-line: 24px;
+    --soabra-body-line: 22px;
+    --soabra-label-line: 18px;
     
-    --glass-light-bg: rgba(255, 255, 255, 0.15);
-    --glass-light-blur: 20px;
-    --glass-light-border: rgba(255, 255, 255, 0.2);
-    --glass-light-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    /* Border Radius */
+    --soabra-radius-card-top: 24px;
+    --soabra-radius-card-bottom: 6px;
+    --soabra-radius-panel: 18px;
+    --soabra-radius-chip: 9999px;
+    --soabra-radius-tooltip: 10px;
     
-    --glass-tab-bg: rgba(255, 255, 255, 0.2);
-    --glass-tab-blur: 15px;
-    --glass-tab-border: rgba(255, 255, 255, 0.4);
+    /* Spacing Scale */
+    --soabra-space-xs: 4px;
+    --soabra-space-sm: 8px;
+    --soabra-space-md: 12px;
+    --soabra-space-lg: 16px;
+    --soabra-space-xl: 24px;
+    --soabra-space-xxl: 32px;
+    --soabra-space-3xl: 40px;
     
-    /* Animation Timing Variables for Perfect Synchronization - Reduced to Half Speed */
-    --animation-duration-main: 1000ms;
-    --animation-duration-fast: 600ms;
-    --animation-duration-slow: 1400ms;
-    --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
-    --animation-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --stagger-delay: 50ms;
-    --base-delay: 100ms;
+    /* Elevation/Shadows */
+    --soabra-shadow-card: 0 1px 1px rgba(0,0,0,0.03), 0 8px 24px rgba(0,0,0,0.06);
+    --soabra-shadow-glass: 0 1px 1px rgba(0,0,0,0.04), 0 12px 28px rgba(0,0,0,0.10);
+    --soabra-shadow-tooltip: 0 8px 24px rgba(0,0,0,0.24);
+    
+    /* Icon System */
+    --soabra-icon-stroke: 2px;
+    --soabra-icon-container-stroke: 1.5px;
+    --soabra-hit-area-min: 40px;
+    
+    /* Motion System */
+    --soabra-motion-duration: 0.7s;
+    --soabra-motion-ease: cubic-bezier(0.22,1,0.36,1);
+    --soabra-motion-stagger: 0.08s;
+    
+    /* Glass System */
+    --soabra-glass-bg: rgba(255,255,255,0.65);
+    --soabra-glass-backdrop: rgba(255,255,255,0.30);
+    --soabra-glass-blur: 18px;
+    --soabra-glass-stroke: rgba(255,255,255,0.6);
+    
+    /* Charts System */
+    --soabra-chart-grid: rgba(11,15,18,0.08);
+    --soabra-chart-axis: rgba(11,15,18,0.30);
+    --soabra-chart-stroke: 2px;
+    --soabra-chart-dot: 6px;
+    --soabra-chart-bar-radius: 8px;
+    --soabra-chart-pointer: rgba(11,15,18,0.45);
+    
+    /* KPI System */
+    --soabra-kpi-number: 44px;
+    --soabra-kpi-unit: 14px;
+    --soabra-kpi-gap: 8px;
+    --soabra-kpi-icon-circle: 36px;
+    
+    /* Progress Tape */
+    --soabra-progress-tick: 6px;
+    --soabra-progress-gap: 6px;
+    --soabra-progress-radius: 3px;
+    --soabra-progress-done: rgba(61,190,139,0.9);
+    --soabra-progress-todo: rgba(11,15,18,0.10);
+    --soabra-milestone-size: 36px;
+    --soabra-milestone-bg: rgba(217,231,237,0.95);
+    
+    /* Financial Overview */
+    --soabra-financial-ticks: 72;
+    --soabra-financial-tick-base: rgba(11,15,18,0.08);
+    --soabra-financial-tick-fill: rgba(11,15,18,0.55);
+    --soabra-financial-bg-green: #BFE7D5;
+    --soabra-financial-bg-yellow: #FFF4CC;
+    --soabra-financial-bg-red: #FFE1E0;
+    
+    /* Scroll Indicator */
+    --soabra-scroll-capsule-w: 6px;
+    --soabra-scroll-capsule-h: 20px;
+    --soabra-scroll-capsule-radius: 3px;
+    --soabra-scroll-dot-size: 6px;
+    --soabra-scroll-dot-gap: 8px;
+    
+    /* Notification System */
+    --soabra-notification-radius: 18px;
+    --soabra-notification-padding: 16px;
+    --soabra-notification-gap: 12px;
+    --soabra-notification-accent-width: 3px;
+    --soabra-notification-accent-radius: 2px;
+    --soabra-notification-title: 14px;
+    --soabra-notification-body: 13px;
+    --soabra-notification-meta: 12px;
     
     /* Layout Constants for Consistent Spacing */
     --sidebar-margin: 15px;
@@ -130,7 +152,7 @@
     --project-details-right-expanded: var(--operations-right-expanded);
     --project-details-right-collapsed: var(--operations-right-collapsed);
     
-    /* Departments Layout Variables - Same Width as Main Sidebar */
+    /* Departments Layout Variables */
     --departments-gap: 10px;
     --departments-sidebar-width-expanded: var(--sidebar-width-expanded);
     --departments-sidebar-width-collapsed: var(--sidebar-width-collapsed);
@@ -261,9 +283,9 @@
 
   body {
     font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
-    background: var(--sb-bg-00);
+    background: var(--soabra-surface);
     min-height: 100vh;
-    color: var(--sb-ink);
+    color: var(--soabra-ink);
     overflow-x: hidden;
     font-feature-settings: "kern" 1, "liga" 1;
     text-rendering: optimizeLegibility;
@@ -286,249 +308,175 @@
 
 /* Essential Components */
 @layer components {
-  /* SoaBra Glass UI Components */
-  .sb-modal-shell {
-    @apply rounded-[20px];
-    background: var(--sb-glass-bg);
-    backdrop-filter: blur(var(--sb-glass-blur));
-    -webkit-backdrop-filter: blur(var(--sb-glass-blur));
-    border: 1px solid var(--sb-glass-outline);
-    box-shadow: var(--sb-elev-modal), inset 0 1px rgba(255,255,255,0.6);
-    z-index: var(--z-modal-content);
+  /* SoaBra Glass UI Components v1.0.0 */
+  .soabra-glass-modal {
+    border-radius: var(--soabra-radius-panel);
+    background: var(--soabra-glass-bg);
+    backdrop-filter: blur(var(--soabra-glass-blur));
+    -webkit-backdrop-filter: blur(var(--soabra-glass-blur));
+    border: 1px solid var(--soabra-glass-stroke);
+    box-shadow: var(--soabra-shadow-glass);
+    padding: var(--soabra-space-xl);
   }
   
-  .sb-popover-shell {
-    @apply rounded-[16px];
-    background: var(--sb-glass-bg);
-    backdrop-filter: blur(var(--sb-glass-blur));
-    -webkit-backdrop-filter: blur(var(--sb-glass-blur));
-    border: 1px solid var(--sb-glass-outline);
-    box-shadow: var(--sb-elev-pop);
-  }
-  
-  .sb-backdrop {
-    background: var(--sb-backdrop);
+  .soabra-glass-backdrop {
+    background: var(--soabra-glass-backdrop);
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
-    z-index: var(--z-modal-backdrop);
   }
   
-  .sb-field {
-    @apply h-[44px] rounded-full px-4;
-    background: rgba(255,255,255,0.85);
-    color: #0B0F12;
+  .soabra-tooltip {
+    background: var(--soabra-ink);
+    color: var(--soabra-white);
+    border-radius: var(--soabra-radius-tooltip);
+    box-shadow: var(--soabra-shadow-tooltip);
+    padding: var(--soabra-space-sm) var(--soabra-space-md);
+    font-size: var(--soabra-label);
+    line-height: var(--soabra-label-line);
   }
   
-  .sb-field::placeholder {
-    color: rgba(11,15,18,0.45);
+  .soabra-notification {
+    background: var(--soabra-surface);
+    border-radius: var(--soabra-notification-radius);
+    border: 1px solid var(--soabra-border);
+    box-shadow: var(--soabra-shadow-card);
+    padding: var(--soabra-notification-padding);
+    gap: var(--soabra-notification-gap);
   }
   
-  .sb-primary-btn {
-    @apply h-[44px] rounded-full px-5;
-    background: #0B0F12;
-    color: #FFFFFF;
+  .soabra-notification-success {
+    border-left: var(--soabra-notification-accent-width) solid var(--soabra-accent-green);
+    border-radius: var(--soabra-notification-accent-radius);
   }
   
-  .sb-close-btn {
-    @apply size-9 grid place-items-center rounded-full;
-    border: 1px solid rgba(0,0,0,0.9);
-    background: transparent;
-    min-width: 40px;
-    min-height: 40px;
+  .soabra-notification-warning {
+    border-left: var(--soabra-notification-accent-width) solid var(--soabra-accent-yellow);
+    border-radius: var(--soabra-notification-accent-radius);
   }
   
-  /* Legacy glass components for backward compatibility */
-  .glass-modal {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    z-index: var(--z-modal-content);
+  .soabra-notification-error {
+    border-left: var(--soabra-notification-accent-width) solid var(--soabra-accent-red);
+    border-radius: var(--soabra-notification-accent-radius);
   }
   
-  .glass-backdrop {
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: var(--z-modal-backdrop);
+  .soabra-notification-info {
+    border-left: var(--soabra-notification-accent-width) solid var(--soabra-accent-blue);
+    border-radius: var(--soabra-notification-accent-radius);
   }
   
-  .glass-section {
-    background: var(--glass-light-bg);
-    backdrop-filter: blur(var(--glass-light-blur));
-    -webkit-backdrop-filter: blur(var(--glass-light-blur));
-    border: 1px solid var(--glass-light-border);
-    box-shadow: var(--glass-light-shadow);
+  .soabra-scroll-indicator {
+    width: var(--soabra-scroll-capsule-w);
+    height: var(--soabra-scroll-capsule-h);
+    border-radius: var(--soabra-scroll-capsule-radius);
+    background: var(--soabra-ink);
+    opacity: 0.4;
   }
   
-  .glass-tab {
-    background: var(--glass-tab-bg);
-    backdrop-filter: blur(var(--glass-tab-blur));
-    -webkit-backdrop-filter: blur(var(--glass-tab-blur));
-    border: 1px solid var(--glass-tab-border);
+  .soabra-scroll-indicator-active {
+    opacity: 1;
   }
   
-  .glass-tab-active {
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+  .soabra-scroll-dot {
+    width: var(--soabra-scroll-dot-size);
+    height: var(--soabra-scroll-dot-size);
+    border-radius: 50%;
+    background: var(--soabra-ink-30);
   }
   
-  .glass-dropdown {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    z-index: var(--z-dropdown);
-  }
-
-  .operations-board-card {
-    background: var(--backgrounds-cards-admin-ops);
-    border-radius: 24px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .project-card-glass {
-    background: var(--backgrounds-project-cards-bg);
-    border-radius: 40px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .project-card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  }
-
-  .project-card-selected {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  }
-
-  .project-card-dimmed {
-    opacity: 0.6;
-    transform: scale(0.98);
-  }
-
-  /* Progress Bar Styles */
-  .progress-segment {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 2px;
-  }
-  
-  .progress-segment-active {
-    background: var(--progress-segment-active);
-    box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
-  }
-  
-  .progress-segment-inactive {
-    background: var(--progress-segment-inactive);
-  }
-
   /* RTL Layout Classes */
   .sidebar-layout {
     right: var(--sidebar-right);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .projects-layout-expanded {
     right: var(--projects-right-expanded);
     width: var(--projects-width);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .projects-layout-collapsed {
     right: var(--projects-right-collapsed);
     width: var(--projects-width);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .operations-board-expanded {
     right: var(--operations-right-expanded);
     width: var(--operations-width-expanded);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .operations-board-collapsed {
     right: var(--operations-right-collapsed);
     width: var(--operations-width-collapsed);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .project-details-expanded {
     right: var(--project-details-right-expanded);
     width: var(--project-details-width-expanded);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .project-details-collapsed {
     right: var(--project-details-right-collapsed);
     width: var(--project-details-width-collapsed);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
-  /* Departments Layout Classes - Same Width as Main Sidebar */
+  /* Departments Layout Classes */
   .departments-sidebar-expanded {
     right: var(--departments-sidebar-right-expanded);
     width: var(--departments-sidebar-width-expanded);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .departments-sidebar-collapsed {
     right: var(--departments-sidebar-right-collapsed);
     width: var(--departments-sidebar-width-collapsed);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .departments-panel-expanded {
     right: var(--departments-panel-right-expanded);
     width: var(--departments-panel-width-expanded);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .departments-panel-collapsed {
     right: var(--departments-panel-right-collapsed);
     width: var(--departments-panel-width-collapsed);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
-  /* New Departments Panel State Combinations */
   .departments-panel-both-expanded {
     right: var(--departments-panel-right-both-expanded);
     width: var(--departments-panel-width-both-expanded);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .departments-panel-main-collapsed {
     right: var(--departments-panel-right-main-collapsed);
     width: var(--departments-panel-width-main-collapsed);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .departments-panel-departments-collapsed {
     right: var(--departments-panel-right-departments-collapsed);
     width: var(--departments-panel-width-departments-collapsed);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   .departments-panel-both-collapsed {
     right: var(--departments-panel-right-both-collapsed);
     width: var(--departments-panel-width-both-collapsed);
-    transition: all var(--animation-duration-main) var(--animation-easing);
+    transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
   }
 
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
+    width: var(--soabra-scroll-capsule-w);
   }
   
   ::-webkit-scrollbar-track {
@@ -536,25 +484,21 @@
   }
   
   ::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
+    background-color: var(--soabra-ink-30);
+    border-radius: var(--soabra-scroll-capsule-radius);
     transition: background-color 0.3s ease;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: var(--soabra-ink-60);
   }
 }
 
-/* Cleaned up unused animation frames */
-
-/* Departments specific animations and transitions */
+/* Essential utility classes for smooth transitions */
 .sync-transition {
-  transition: all var(--animation-duration-main) var(--animation-easing);
+  transition: all var(--soabra-motion-duration) var(--soabra-motion-ease);
 }
 
 .sync-transition-fast {
-  transition: all var(--animation-duration-fast) var(--animation-easing);
+  transition: all calc(var(--soabra-motion-duration) * 0.6) var(--soabra-motion-ease);
 }
-
-/* Essential utility classes for smooth transitions */
