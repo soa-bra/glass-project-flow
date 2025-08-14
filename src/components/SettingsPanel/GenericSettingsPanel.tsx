@@ -138,49 +138,48 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-soabra-border">
         <div className="flex items-center gap-4 mb-3">
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
-            <IconComponent className="w-6 h-6 text-black" />
+          <div className="w-12 h-12 bg-soabra-white/20 rounded-full flex items-center justify-center border border-soabra-ink-30">
+            <IconComponent className="w-6 h-6 text-soabra-ink" />
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-black">{categoryInfo.title}</h2>
-            <p className="text-sm font-normal text-black">{categoryInfo.description}</p>
+            <h2 className="text-title text-soabra-ink">{categoryInfo.title}</h2>
+            <p className="text-subtitle text-soabra-ink">{categoryInfo.description}</p>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-black">●</div>
-            <p className="text-xs font-normal text-gray-400">متصل</p>
+            <div className="text-display-m text-soabra-accent-green">●</div>
+            <p className="text-label text-soabra-ink-60">متصل</p>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-soabra-border">
         <div className="space-y-6">
           {/* Settings Form Content */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-black/10">
-              <h4 className="text-sm font-bold text-black mb-2">إعدادات أساسية</h4>
-              <p className="text-xs font-normal text-gray-400">الإعدادات الأساسية للـ {categoryInfo.title}</p>
+            <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-soabra-border">
+              <h4 className="text-subtitle text-soabra-ink mb-2">إعدادات أساسية</h4>
+              <p className="text-label text-soabra-ink-60">الإعدادات الأساسية للـ {categoryInfo.title}</p>
             </div>
-            <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-black/10">
-              <h4 className="text-sm font-bold text-black mb-2">خيارات متقدمة</h4>
-              <p className="text-xs font-normal text-gray-400">إعدادات متقدمة للمستخدمين المتخصصين</p>
+            <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-soabra-border">
+              <h4 className="text-subtitle text-soabra-ink mb-2">خيارات متقدمة</h4>
+              <p className="text-label text-soabra-ink-60">إعدادات متقدمة للمستخدمين المتخصصين</p>
             </div>
           </div>
 
           {/* AI Training Wizard (only for AI section) */}
           {categoryInfo.hasWizard && (
-            <div style={{ backgroundColor: '#96d8d0' }} className="rounded-2xl p-6 border border-black/10">
+            <div style={{ backgroundColor: '#96d8d0' }} className="rounded-2xl p-6 border border-soabra-border">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-bold text-black mb-2">معالج التدريب</h4>
-                  <p className="text-sm font-normal text-black">تدريب نموذج جديد من الأرشيف</p>
+                  <h4 className="text-subtitle text-soabra-ink mb-2">معالج التدريب</h4>
+                  <p className="text-body text-soabra-ink">تدريب نموذج جديد من الأرشيف</p>
                 </div>
                 <button
                   onClick={handleAITrainingWizard}
-                  style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
-                  className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+                  className="bg-soabra-ink text-soabra-white px-6 py-2 rounded-full text-body font-medium hover:opacity-90 transition-opacity"
                 >
                   تدريب نموذج جديد من الأرشيف
                 </button>
@@ -190,17 +189,17 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
 
           {/* Settings Preview */}
           <div className="grid grid-cols-3 gap-4">
-            <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-black/10 text-center">
-              <div className="text-2xl font-bold text-black mb-1">12</div>
-              <p className="text-xs font-normal text-gray-400">إعدادات مفعلة</p>
+            <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-soabra-border text-center">
+              <div className="text-display-m text-soabra-ink mb-1">12</div>
+              <p className="text-label text-soabra-ink-60">إعدادات مفعلة</p>
             </div>
-            <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-2xl p-4 border border-black/10 text-center">
-              <div className="text-2xl font-bold text-black mb-1">3</div>
-              <p className="text-xs font-normal text-gray-400">تحتاج مراجعة</p>
+            <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-2xl p-4 border border-soabra-border text-center">
+              <div className="text-display-m text-soabra-ink mb-1">3</div>
+              <p className="text-label text-soabra-ink-60">تحتاج مراجعة</p>
             </div>
-            <div style={{ backgroundColor: '#fbe2aa' }} className="rounded-2xl p-4 border border-black/10 text-center">
-              <div className="text-2xl font-bold text-black mb-1">5</div>
-              <p className="text-xs font-normal text-gray-400">مسودات</p>
+            <div style={{ backgroundColor: '#fbe2aa' }} className="rounded-2xl p-4 border border-soabra-border text-center">
+              <div className="text-display-m text-soabra-ink mb-1">5</div>
+              <p className="text-label text-soabra-ink-60">مسودات</p>
             </div>
           </div>
         </div>
@@ -208,21 +207,19 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
 
       {/* Action Buttons */}
       <div className="flex justify-between items-center">
-        <div className="text-xs font-normal text-gray-400">
+        <div className="text-label text-soabra-ink-60">
           {lastAutosave ? `آخر حفظ تلقائي: ${lastAutosave}` : 'لم يتم الحفظ بعد'}
         </div>
         <div className="flex gap-3">
           <button
             onClick={handleReset}
-            style={{ backgroundColor: '#F2FFFF', color: '#000000' }}
-            className="px-6 py-2 rounded-full text-sm font-medium border border-black/20 hover:bg-gray-50 transition-colors"
+            className="bg-soabra-panel text-soabra-ink px-6 py-2 rounded-full text-body font-medium border border-soabra-border hover:bg-soabra-ink-30 transition-colors"
           >
             إعادة تعيين
           </button>
           <button
             onClick={handleSave}
-            style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
-            className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+            className="bg-soabra-ink text-soabra-white px-6 py-2 rounded-full text-body font-medium hover:opacity-90 transition-opacity"
           >
             حفظ التغييرات
           </button>
