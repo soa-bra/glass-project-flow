@@ -126,11 +126,11 @@ export const TemplatesTab: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Categories Sidebar */}
         <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">فئات القوالب</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="bg-[#FFFFFF] rounded-[40px] ring-1 ring-[#DADCE0]">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-black">فئات القوالب</h3>
+            </div>
+            <div className="px-6 pb-6">
               <div className="space-y-2">
                 {templateCategories.map((category) => {
                   const IconComponent = category.icon;
@@ -138,10 +138,10 @@ export const TemplatesTab: React.FC = () => {
                     <button
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg text-right transition-colors ${
+                      className={`w-full flex items-center justify-between p-3 rounded-[40px] text-right transition-colors ${
                         selectedCategory === category.id
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                          : 'hover:bg-gray-50'
+                          ? 'bg-transparent ring-1 ring-[#DADCE0]'
+                          : 'hover:bg-transparent'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -155,15 +155,15 @@ export const TemplatesTab: React.FC = () => {
                   );
                 })}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Template Stats */}
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle className="text-lg">إحصائيات القوالب</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="bg-[#FFFFFF] rounded-[40px] ring-1 ring-[#DADCE0] mt-4">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-black">إحصائيات القوالب</h3>
+            </div>
+            <div className="px-6 pb-6">
               <div className="space-y-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">2,847</div>
@@ -178,19 +178,19 @@ export const TemplatesTab: React.FC = () => {
                   <div className="text-sm text-gray-600">التوافق الثقافي</div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Templates Grid */}
         <div className="lg:col-span-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredTemplates.map((template) => (
-              <Card key={template.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
+              <div key={template.id} className="bg-[#FFFFFF] rounded-[40px] ring-1 ring-[#DADCE0] hover:shadow-lg transition-shadow">
+                <div className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-lg mb-2">{template.name}</CardTitle>
+                      <h3 className="text-lg font-semibold text-black mb-2">{template.name}</h3>
                       <p className="text-sm text-gray-600 mb-3">{template.description}</p>
                       <div className="flex items-center gap-2 mb-2">
                         <Badge variant="outline">{template.type}</Badge>
@@ -201,8 +201,8 @@ export const TemplatesTab: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent>
+                </div>
+                <div className="px-6 pb-6">
                   <div className="space-y-4">
                     {/* Template Preview */}
                     <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
@@ -254,15 +254,15 @@ export const TemplatesTab: React.FC = () => {
                       <span>آخر تحديث: {template.lastUpdated}</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
           {/* Empty State */}
           {filteredTemplates.length === 0 && (
-            <Card>
-              <CardContent className="text-center py-12">
+            <div className="bg-[#FFFFFF] rounded-[40px] ring-1 ring-[#DADCE0]">
+              <div className="text-center py-12 px-6">
                 <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">لا توجد قوالب</h3>
                 <p className="text-gray-600 mb-4">
@@ -272,8 +272,8 @@ export const TemplatesTab: React.FC = () => {
                   <Upload className="h-4 w-4 mr-2" />
                   إضافة قالب جديد
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
       </div>
