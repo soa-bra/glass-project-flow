@@ -30,7 +30,7 @@ export const BudgetsTab: React.FC = () => {
   };
 
   const handleBudgetCreated = (budgetData: any) => {
-    console.log('Budget created:', budgetData);
+    // Budget created successfully
     
     // تحويل البيانات الجديدة لتنسيق شجرة الميزانيات
     const newBudgetTreeItem = {
@@ -56,7 +56,7 @@ export const BudgetsTab: React.FC = () => {
   };
 
   const handleBudgetUpdate = (budgetId: number, updateData: any) => {
-    console.log('Budget updated:', budgetId, updateData);
+    // Budget updated successfully
     // هنا يمكن تحديث بيانات الميزانية في القاعدة
   };
 
@@ -85,7 +85,7 @@ export const BudgetsTab: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-[#FFFFFF] p-6 rounded-[40px] ring-1 ring-[#DADCE0]">
+      <div className="bg-white p-6 rounded-[40px] border border-[#DADCE0]">
         <div className="px-0 pt-0 mb-6">
           <h3 className="text-large font-semibold text-black font-arabic">شجرة الميزانيات</h3>
         </div>

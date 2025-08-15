@@ -76,7 +76,7 @@ export const ClientSentiment: React.FC<ClientSentimentProps> = ({
     if (score >= 60) return 'text-yellow-600';
     return 'text-red-600';
   };
-  return <Card className="glass-enhanced rounded-[40px] rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
+  return <Card className="glass-enhanced rounded-[40px] bg-white border border-[#DADCE0]">
       <CardHeader>
         <CardTitle className="text-right font-arabic flex items-center gap-2">
           <Heart className="w-5 h-5" />

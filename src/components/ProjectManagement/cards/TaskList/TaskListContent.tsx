@@ -46,24 +46,24 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
   useImperativeHandle(ref, () => ({ addTask, addTasks }));
 
   const handleTaskEdit = (taskId: string) => {
-    console.log('تعديل المهمة:', taskId);
+    // Edit task functionality
     // سيتم تنفيذ modal التعديل لاحقاً
   };
 
   const handleTaskUpdated = (updatedTask: TaskData) => {
-    console.log('تحديث المهمة:', updatedTask);
+    // Task updated successfully
     const unifiedTask = mapFromTaskData(updatedTask);
     unifiedTasks.updateTask(updatedTask.id.toString(), unifiedTask);
   };
 
   const handleTaskArchive = (taskId: string) => {
     unifiedTasks.removeTask(taskId);
-    console.log('تم أرشفة المهمة:', taskId);
+    // Task archived successfully
   };
 
   const handleTaskDelete = (taskId: string) => {
     unifiedTasks.removeTask(taskId);
-    console.log('تم حذف المهمة:', taskId);
+    // Task deleted successfully
   };
 
   return (

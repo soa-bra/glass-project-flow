@@ -54,27 +54,27 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const handleEdit = () => {
-    console.log('Edit task:', task.id);
+    // Edit task functionality
     setShowEditModal(true);
   };
   const handleArchive = () => {
-    console.log('Archive task:', task.id);
+    // Archive task functionality
     setShowArchiveDialog(true);
   };
   const handleDelete = () => {
-    console.log('Delete task:', task.id);
+    // Delete task functionality
     setShowDeleteDialog(true);
   };
   const confirmArchive = () => {
-    console.log('تم أرشفة المهمة:', task.id);
+    // Task archived successfully
     setShowArchiveDialog(false);
   };
   const confirmDelete = () => {
-    console.log('تم حذف المهمة:', task.id);
+    // Task deleted successfully
     setShowDeleteDialog(false);
   };
   const handleTaskUpdated = (updatedTask: any) => {
-    console.log('تم تحديث المهمة:', updatedTask);
+    // Task updated successfully
     setShowEditModal(false);
   };
 

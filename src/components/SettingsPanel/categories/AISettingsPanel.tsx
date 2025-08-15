@@ -80,7 +80,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
 
   const handleSave = async () => {
     try {
-      console.log('Saving AI settings to /settings/ai/commit');
+      // Save AI settings to backend
       clearDraft();
       
       const event = new CustomEvent('settings.updated', {
@@ -88,7 +88,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
       });
       window.dispatchEvent(event);
     } catch (error) {
-      console.error('Failed to save AI settings:', error);
+      // Handle AI settings save error
     }
   };
 

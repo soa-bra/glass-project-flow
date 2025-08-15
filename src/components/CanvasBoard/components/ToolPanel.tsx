@@ -200,7 +200,7 @@ export const ToolPanel: React.FC<ToolPanelProps> = props => {
             content: text,
             style: style
           };
-          console.log('Adding text element:', newElement);
+          // Add text element to canvas
         }} />;
       case 'shape':
         return <EnhancedShapesPanel onAddShape={(shapeType, style) => {
@@ -226,7 +226,7 @@ export const ToolPanel: React.FC<ToolPanelProps> = props => {
               shapeType
             }
           };
-          console.log('Adding shape element:', newElement);
+          // Add shape element to canvas
         }} />;
       case 'smart-element':
         return <EnhancedSmartElementsPanel selectedElementId={props.selectedElementId} onAddSmartElement={(elementId, config) => {
@@ -253,7 +253,7 @@ export const ToolPanel: React.FC<ToolPanelProps> = props => {
               animated: config.behavior.animated
             }
           };
-          console.log('Adding smart element:', newElement);
+          // Add smart element to canvas
         }} />;
       default:
         return <div className="flex items-center justify-center h-32 text-gray-500 text-sm font-arabic">
@@ -266,7 +266,7 @@ export const ToolPanel: React.FC<ToolPanelProps> = props => {
   if (!selectedTool || !panelId) {
     return null;
   }
-  return <Card className="backdrop-blur-md shadow-sm border border-gray-300 rounded-[20px] h-full bg-[#ffffff] mx-0 px-0 my-0">
+  return <Card className="backdrop-blur-md shadow-sm border border-gray-300 rounded-[20px] h-full bg-white mx-0 px-0 my-0">
       <CardHeader className="pb- my-[5px]">
         <CardTitle className="text-sm font-arabic font-medium">
           لوحة الأدوات

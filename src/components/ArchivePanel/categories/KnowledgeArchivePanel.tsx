@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BookOpen, Brain, Lightbulb, Download, Eye, Filter, Search, Calendar, User, Badge as BadgeIcon } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 export const KnowledgeArchivePanel: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,7 +83,7 @@ export const KnowledgeArchivePanel: React.FC = () => {
 
       {/* Search Bar */}
       <div className="px-6 mb-6">
-        <div className="bg-[#FFFFFF] p-4 rounded-[40px] ring-1 ring-[#DADCE0]">
+        <div className="bg-white p-4 rounded-[40px] border border-[#DADCE0]">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -105,9 +105,9 @@ export const KnowledgeArchivePanel: React.FC = () => {
                       <Brain className="w-3 h-3 inline mr-1" />
                       {item.category}
                     </div>
-                    <Badge variant="secondary" className="font-arabic">
+                    <BaseBadge variant="secondary" size="sm">
                       {item.version}
-                    </Badge>
+                    </BaseBadge>
                   </div>
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-3">
@@ -130,9 +130,9 @@ export const KnowledgeArchivePanel: React.FC = () => {
 
                   <div className="flex items-center gap-2">
                     <BadgeIcon className="w-4 h-4 text-gray-400" />
-                    {item.tags.map((tag, index) => <Badge key={index} variant="outline" className="font-arabic">
+                    {item.tags.map((tag, index) => <BaseBadge key={index} variant="outline" size="sm">
                         {tag}
-                      </Badge>)}
+                      </BaseBadge>)}
                   </div>
                 </div>
 

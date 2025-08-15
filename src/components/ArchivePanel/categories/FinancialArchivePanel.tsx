@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Search, Filter, Download, Eye, DollarSign, Calendar, TrendingUp, FileText, CreditCard, Receipt } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 
 export const FinancialArchivePanel: React.FC = () => {
@@ -83,7 +83,7 @@ export const FinancialArchivePanel: React.FC = () => {
 
       {/* Search */}
       <div className="px-6 mb-6">
-        <div className="bg-[#FFFFFF] p-4 rounded-[40px] ring-1 ring-[#DADCE0]">
+        <div className="bg-white p-4 rounded-[40px] border border-[#DADCE0]">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -105,7 +105,7 @@ export const FinancialArchivePanel: React.FC = () => {
           {mockFinancialRecords.map((record) => {
             const IconComponent = getTypeIcon(record.type);
             return (
-              <div key={record.id} className="bg-[#FFFFFF] p-6 rounded-[40px] ring-1 ring-[#DADCE0]">
+              <div key={record.id} className="bg-white p-6 rounded-[40px] border border-[#DADCE0]">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
@@ -114,13 +114,13 @@ export const FinancialArchivePanel: React.FC = () => {
                       <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(record.status)}`}>
                         {record.status}
                       </div>
-                      <Badge variant="secondary" className="font-arabic">
+                      <BaseBadge variant="secondary" size="sm">
                         {record.type}
-                      </Badge>
+                      </BaseBadge>
                       {record.type === 'تقرير مالي سنوي' && record.audited && (
-                        <Badge className="bg-purple-100 text-purple-800 font-arabic">
+                        <BaseBadge variant="info" size="sm">
                           مراجع
-                        </Badge>
+                        </BaseBadge>
                       )}
                     </div>
                     

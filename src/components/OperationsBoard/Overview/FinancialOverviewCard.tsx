@@ -45,8 +45,7 @@ export const FinancialOverviewCard: React.FC = () => {
     <BaseCard 
       variant="glass" 
       size="sm"
-      className="row-span-2 h-full min-h-0"
-      style={{ backgroundColor: isProfit ? '#96d8d0' : '#f1b5b9' }}
+      className={`row-span-2 h-full min-h-0 ${isProfit ? 'bg-soabra-new-financial-profit' : 'bg-soabra-new-financial-loss'}`}
       header={
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-black font-arabic">النظرة المالية</h3>

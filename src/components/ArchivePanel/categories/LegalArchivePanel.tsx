@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Search, Filter, Download, Eye, Scale, Calendar, Shield, FileText, AlertTriangle, CheckCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 
 export const LegalArchivePanel: React.FC = () => {
@@ -125,9 +125,9 @@ export const LegalArchivePanel: React.FC = () => {
                         {record.status === 'نشط' && <AlertTriangle className="w-3 h-3 inline mr-1" />}
                         {record.status}
                       </div>
-                      <Badge variant="secondary" className="font-arabic">
+                      <BaseBadge variant="secondary" size="sm">
                         {record.type}
-                      </Badge>
+                      </BaseBadge>
                       <div className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(record.priority)}`}>
                         {record.priority}
                       </div>

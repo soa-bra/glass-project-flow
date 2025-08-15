@@ -102,14 +102,14 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
 
   const handleAITrainingWizard = () => {
     // This would open the AI training wizard with steps: taskType, dataScope, resourcesSchedule
-    console.log('Opening AI Training Wizard with steps: taskType, dataScope, resourcesSchedule');
+    // Open AI Training Wizard
     // In real implementation, this would make a POST request to /ai/train-jobs
   };
 
   const handleSave = async () => {
     try {
       // This would make a POST request to /settings/<section>/commit
-      console.log(`Saving settings to /settings/${category}/commit`);
+      // Save settings to backend
       
       // Clear the draft after successful save
       clearDraft();
@@ -120,9 +120,9 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
       });
       window.dispatchEvent(event);
       
-      console.log('Settings saved successfully');
+      // Settings saved successfully
     } catch (error) {
-      console.error('Failed to save settings:', error);
+      // Handle save error
     }
   };
 
@@ -138,7 +138,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="bg-slate-50 rounded-3xl p-6 border border-black/10">
         <div className="flex items-center gap-4 mb-3">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
             <IconComponent className="w-6 h-6 text-black" />
@@ -155,7 +155,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
       </div>
 
       {/* Main Content */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="bg-slate-50 rounded-3xl p-6 border border-black/10">
         <div className="space-y-6">
           {/* Settings Form Content */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

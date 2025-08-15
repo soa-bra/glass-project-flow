@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Settings, Shield, AlertCircle, Download, Eye, Filter, Search, Calendar, User, Badge as BadgeIcon } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 
 export const PoliciesArchivePanel: React.FC = () => {
@@ -134,9 +134,9 @@ export const PoliciesArchivePanel: React.FC = () => {
                       <AlertCircle className="w-3 h-3 inline mr-1" />
                       {item.status}
                     </div>
-                    <Badge variant="secondary" className="font-arabic">
+                    <BaseBadge variant="secondary" size="sm">
                       {item.version}
-                    </Badge>
+                    </BaseBadge>
                   </div>
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-3">
@@ -160,9 +160,9 @@ export const PoliciesArchivePanel: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <BadgeIcon className="w-4 h-4 text-gray-400" />
                     {item.tags.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="font-arabic">
+                      <BaseBadge key={index} variant="outline" size="sm">
                         {tag}
-                      </Badge>
+                      </BaseBadge>
                     ))}
                   </div>
                 </div>

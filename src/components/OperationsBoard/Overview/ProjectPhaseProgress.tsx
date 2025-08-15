@@ -18,14 +18,12 @@ export const ProjectPhaseProgress: React.FC<ProjectPhaseProgressProps> = ({ phas
         <h3 className="text-lg font-bold text-gray-800 font-arabic">الأحداث القادمة</h3>
         <div className="flex gap-2">
           <button 
-            className="text-white px-3 py-1 rounded-full text-xs font-arabic"
-            style={{ backgroundColor: 'var(--status-colors-on-plan)' }}
+            className="text-white px-3 py-1 rounded-full text-xs font-arabic bg-soabra-new-on-plan"
           >
             وفق الخطة
           </button>
           <button 
-            className="text-black px-3 py-1 rounded-full text-xs font-arabic"
-            style={{ backgroundColor: 'var(--status-colors-in-preparation)' }}
+            className="text-black px-3 py-1 rounded-full text-xs font-arabic bg-soabra-new-in-preparation"
           >
             1 أسابيع
           </button>
@@ -36,8 +34,7 @@ export const ProjectPhaseProgress: React.FC<ProjectPhaseProgressProps> = ({ phas
         {/* الشريط الزمني */}
         <div className="h-1 bg-gray-200 rounded-full mb-6 overflow-hidden">
           <div 
-            className="h-full rounded-full w-3/4"
-            style={{ backgroundColor: 'var(--visual-data-primary)' }}
+            className="h-full rounded-full w-3/4 bg-soabra-new-primary"
           ></div>
         </div>
         

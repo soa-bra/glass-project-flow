@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Database, Copy, FileText, Download, Eye, Filter, Search, Calendar, User, Badge as BadgeIcon } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 export const TemplatesArchivePanel: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -105,9 +105,9 @@ export const TemplatesArchivePanel: React.FC = () => {
                       <FileText className="w-3 h-3 inline mr-1" />
                       {item.category}
                     </div>
-                    <Badge variant="secondary" className="font-arabic">
+                    <BaseBadge variant="secondary" size="sm">
                       {item.version}
-                    </Badge>
+                    </BaseBadge>
                   </div>
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-3">
@@ -130,9 +130,9 @@ export const TemplatesArchivePanel: React.FC = () => {
 
                   <div className="flex items-center gap-2">
                     <BadgeIcon className="w-4 h-4 text-gray-400" />
-                    {item.tags.map((tag, index) => <Badge key={index} variant="outline" className="font-arabic">
+                    {item.tags.map((tag, index) => <BaseBadge key={index} variant="outline" size="sm">
                         {tag}
-                      </Badge>)}
+                      </BaseBadge>)}
                   </div>
                 </div>
 

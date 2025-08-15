@@ -258,7 +258,7 @@ const InfiniteCanvas = forwardRef<InfiniteCanvasRef, InfiniteCanvasProps>(({
               const x = (e.clientX - rect.left) / scale - canvasPosition.x;
               const y = (e.clientY - rect.top) / scale - canvasPosition.y;
               // This would need to be connected to file upload handler
-              console.log('Files dropped:', files, 'at position:', { x, y });
+              // Handle file drop at position
             }
           }
         }}

@@ -30,7 +30,7 @@ export const InvoicesTab: React.FC = () => {
   };
 
   const handleProjectClick = (projectId: string) => {
-    console.log('Navigate to project:', projectId);
+    // Navigate to project view
   };
 
   return (

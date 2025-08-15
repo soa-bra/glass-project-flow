@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Search, Filter, Download, Eye, Users, Calendar, User, Award, BookOpen, FileText } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 
 export const HRArchivePanel: React.FC = () => {
@@ -82,7 +82,7 @@ export const HRArchivePanel: React.FC = () => {
 
       {/* Search */}
       <div className="px-6 mb-6">
-        <div className="bg-[#FFFFFF] p-4 rounded-[40px] ring-1 ring-[#DADCE0]">
+        <div className="bg-white p-4 rounded-[40px] border border-[#DADCE0]">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -104,7 +104,7 @@ export const HRArchivePanel: React.FC = () => {
           {mockHRRecords.map((record) => {
             const IconComponent = getTypeIcon(record.type);
             return (
-              <div key={record.id} className="bg-[#FFFFFF] p-6 rounded-[40px] ring-1 ring-[#DADCE0]">
+              <div key={record.id} className="bg-white p-6 rounded-[40px] border border-[#DADCE0]">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
@@ -117,9 +117,9 @@ export const HRArchivePanel: React.FC = () => {
                       <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(record.status)}`}>
                         {record.status}
                       </div>
-                      <Badge variant="secondary" className="font-arabic">
+                      <BaseBadge variant="secondary" size="sm">
                         {record.type}
-                      </Badge>
+                      </BaseBadge>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-4">

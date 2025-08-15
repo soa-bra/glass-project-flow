@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Search, Filter, Download, Eye, Briefcase, Calendar, User, CheckCircle, Clock, DollarSign } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 
 export const ProjectsArchivePanel: React.FC = () => {
@@ -107,9 +107,9 @@ export const ProjectsArchivePanel: React.FC = () => {
                       <CheckCircle className="w-3 h-3 inline mr-1" />
                       {project.status}
                     </div>
-                    <Badge variant="secondary" className="font-arabic">
+                    <BaseBadge variant="secondary" size="sm">
                       {project.category}
-                    </Badge>
+                    </BaseBadge>
                   </div>
                   
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-4">

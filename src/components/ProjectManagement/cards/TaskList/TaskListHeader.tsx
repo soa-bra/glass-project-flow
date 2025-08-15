@@ -20,11 +20,11 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
     onTasksGenerated(tasks);
   };
   const handleUpdateTasks = () => {
-    console.log('تحديث المهام');
+    // Refresh tasks functionality
     // يمكن إضافة منطق تحديث المهام هنا
   };
   const handleFilterTasks = () => {
-    console.log('فلترة المهام');
+    // Filter tasks functionality
     // يمكن إضافة منطق فلترة المهام هنا
   };
   return <>

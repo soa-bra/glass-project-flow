@@ -25,7 +25,7 @@ export const TransactionsTab: React.FC = () => {
   };
 
   const handleSaveAccountingEntry = (entry: any) => {
-    console.log('حفظ القيد المحاسبي:', entry);
+    // Save accounting entry
     alert(`تم حفظ القيد المحاسبي بنجاح: ${entry.description}`);
   };
 
