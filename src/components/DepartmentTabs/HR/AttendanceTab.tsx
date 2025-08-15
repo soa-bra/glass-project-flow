@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Clock, Calendar, Users, TrendingUp, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { mockAttendanceRecords, mockLeaveRequests, mockEmployees } from './data';
 import { getHRStatusColor, getHRStatusText } from './utils';

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -369,19 +369,19 @@ export const EnhancedSmartElementsPanel: React.FC<EnhancedSmartElementsPanelProp
                             </p>
 
                             <div className="flex items-center gap-2 mb-2">
-                              <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+                              <BaseBadge variant="secondary" className="text-xs px-1.5 py-0.5">
                                 <CategoryIcon className="w-2.5 h-2.5 mr-1" />
                                 {categories.find(cat => cat.id === element.category)?.name}
-                              </Badge>
-                              <Badge className={`text-xs px-1.5 py-0.5 ${getDifficultyColor(element.difficulty)}`}>
+                              </BaseBadge>
+                              <BaseBadge className={`text-xs px-1.5 py-0.5 ${getDifficultyColor(element.difficulty)}`}>
                                 {element.difficulty === 'beginner' ? 'مبتدئ' : element.difficulty === 'intermediate' ? 'متوسط' : 'متقدم'}
-                              </Badge>
+                              </BaseBadge>
                             </div>
 
                             <div className="flex flex-wrap gap-1">
-                              {element.tags.slice(0, 3).map((tag, index) => <Badge key={index} variant="outline" className="text-xs px-1 py-0">
+                              {element.tags.slice(0, 3).map((tag, index) => <BaseBadge key={index} variant="outline" className="text-xs px-1 py-0">
                                   {tag}
-                                </Badge>)}
+                                </BaseBadge>)}
                             </div>
                           </div>
                         </div>

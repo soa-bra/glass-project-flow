@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -203,9 +203,9 @@ export const EnhancedCommentPanel: React.FC<EnhancedCommentPanelProps> = ({
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           <MessageCircle className="w-4 h-4" />
           التعليقات والملاحظات
-          <Badge variant="secondary" className="text-xs">
+          <BaseBadge variant="secondary" className="text-xs">
             {filteredComments.length}
-          </Badge>
+          </BaseBadge>
         </CardTitle>
       </CardHeader>
 
@@ -288,26 +288,26 @@ export const EnhancedCommentPanel: React.FC<EnhancedCommentPanelProps> = ({
 
                           {/* Comment Meta */}
                           <div className="flex items-center gap-2 flex-wrap">
-                            <Badge 
+                            <BaseBadge 
                               variant="secondary" 
                               className={`text-xs ${priorityColors[comment.priority]}`}
                             >
                               {comment.priority === 'high' ? 'عالية' :
                                comment.priority === 'medium' ? 'متوسطة' : 'منخفضة'}
-                            </Badge>
+                            </BaseBadge>
                             
                             {comment.tags.map((tag, index) => (
-                              <Badge key={index} variant="outline" className="text-xs">
+                              <BaseBadge key={index} variant="outline" className="text-xs">
                                 <Tag className="w-2 h-2 mr-1" />
                                 {tag}
-                              </Badge>
+                              </BaseBadge>
                             ))}
 
                             {comment.position && (
-                              <Badge variant="outline" className="text-xs">
+                              <BaseBadge variant="outline" className="text-xs">
                                 <MapPin className="w-2 h-2 mr-1" />
                                 موضع
-                              </Badge>
+                              </BaseBadge>
                             )}
                           </div>
 
@@ -457,9 +457,9 @@ export const EnhancedCommentPanel: React.FC<EnhancedCommentPanelProps> = ({
                 />
                 <div className="flex gap-1 mt-2 flex-wrap">
                   {commentTags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
-                      {tag}
-                    </Badge>
+                     <BaseBadge key={index} variant="secondary" className="text-xs">
+                       {tag}
+                     </BaseBadge>
                   ))}
                 </div>
               </div>

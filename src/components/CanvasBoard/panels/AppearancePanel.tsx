@@ -5,7 +5,7 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { 
   Palette, 
   Grid3X3, 
@@ -206,12 +206,12 @@ const AppearancePanel: React.FC<AppearancePanelProps> = ({
           </Label>
 
           <div className="grid grid-cols-2 gap-2">
-            <Badge variant="secondary" className="text-xs justify-center py-1">
+            <BaseBadge variant="secondary" className="text-xs justify-center py-1">
               شفافية ذكية
-            </Badge>
-            <Badge variant="secondary" className="text-xs justify-center py-1">
+            </BaseBadge>
+            <BaseBadge variant="secondary" className="text-xs justify-center py-1">
               ترتيب تلقائي
-            </Badge>
+            </BaseBadge>
           </div>
 
           <Button size="sm" variant="outline" className="w-full text-xs">

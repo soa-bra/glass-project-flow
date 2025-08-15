@@ -8,7 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { 
   Type, 
   Bold, 
@@ -218,9 +218,9 @@ export const EnhancedTextPanel: React.FC<EnhancedTextPanelProps> = ({
                       style={{ fontFamily: font.name }}
                     >
                       {font.label}
-                      <Badge variant="secondary" className="ml-auto text-xs">
+                      <BaseBadge variant="secondary" className="ml-auto text-xs">
                         {font.category === 'arabic' ? 'عربي' : 'لاتيني'}
-                      </Badge>
+                      </BaseBadge>
                     </Button>
                   ))}
                 </div>

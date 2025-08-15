@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Layout, Image, Palette, Zap, Link2, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -245,9 +245,9 @@ const SmartMoodboardTool: React.FC<SmartMoodboardToolProps> = ({
               {selectedElements.map((element) => (
                 <div key={element.id} className="flex items-center justify-between bg-gray-50 p-2 rounded text-sm">
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
+                    <BaseBadge variant="outline" className="text-xs">
                       {element.type}
-                    </Badge>
+                    </BaseBadge>
                     <span className="font-arabic truncate">{element.content}</span>
                   </div>
                   <Button
@@ -294,9 +294,9 @@ const SmartMoodboardTool: React.FC<SmartMoodboardToolProps> = ({
                   <div className="flex items-center gap-1 font-arabic">
                     <Link2 className="w-3 h-3" />
                     {connection.relationship}
-                    <Badge variant="secondary" className="text-xs">
+                    <BaseBadge variant="secondary" className="text-xs">
                       {connection.strength}/10
-                    </Badge>
+                    </BaseBadge>
                   </div>
                 </div>
               ))}

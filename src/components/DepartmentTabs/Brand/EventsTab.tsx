@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { 
   Calendar, 
@@ -179,12 +179,12 @@ export const EventsTab: React.FC = () => {
                   <div>
                     <CardTitle className="text-lg mb-2">{event.title}</CardTitle>
                     <div className="flex items-center gap-2 mb-3">
-                      <Badge className={getEventTypeColor(event.type)}>
+                      <BaseBadge className={getEventTypeColor(event.type)}>
                         {event.type}
-                      </Badge>
-                      <Badge className={getStatusColor(event.status)}>
+                      </BaseBadge>
+                      <BaseBadge className={getStatusColor(event.status)}>
                         {event.status}
-                      </Badge>
+                      </BaseBadge>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
@@ -279,12 +279,12 @@ export const EventsTab: React.FC = () => {
                   <div>
                     <CardTitle className="text-lg mb-2">{event.title}</CardTitle>
                     <div className="flex items-center gap-2 mb-3">
-                      <Badge className={getEventTypeColor(event.type)}>
+                      <BaseBadge className={getEventTypeColor(event.type)}>
                         {event.type}
-                      </Badge>
-                      <Badge className={getStatusColor(event.status)}>
+                      </BaseBadge>
+                      <BaseBadge className={getStatusColor(event.status)}>
                         {event.status}
-                      </Badge>
+                      </BaseBadge>
                     </div>
                     <div className="text-sm text-gray-600">
                       تاريخ الانعقاد: {event.date}

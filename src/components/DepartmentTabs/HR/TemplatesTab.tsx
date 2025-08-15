@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { FileText, Download, Eye, Edit, Plus, Search, Filter } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { mockHRTemplates } from './data';

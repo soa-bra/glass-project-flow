@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Pen, Palette, Settings, Zap, Target } from 'lucide-react';
 
 interface EnhancedSmartPenToolProps {
@@ -82,10 +82,10 @@ export const EnhancedSmartPenTool: React.FC<EnhancedSmartPenToolProps> = ({
           القلم الذكي المتقدم
         </CardTitle>
         {smartRecognition && (
-          <Badge className="w-fit bg-green-100 text-green-800 font-arabic">
+          <BaseBadge className="w-fit bg-green-100 text-green-800 font-arabic">
             <Zap className="w-3 h-3 mr-1" />
             التعرف الذكي مُفعل
-          </Badge>
+          </BaseBadge>
         )}
       </CardHeader>
       <CardContent className="space-y-4">
@@ -116,9 +116,9 @@ export const EnhancedSmartPenTool: React.FC<EnhancedSmartPenToolProps> = ({
         <div>
           <div className="flex items-center justify-between mb-2">
             <Label className="text-sm font-arabic">سُمك الخط</Label>
-            <Badge variant="outline" className="font-mono">
+            <BaseBadge variant="outline" className="font-mono">
               {lineWidth}px
-            </Badge>
+            </BaseBadge>
           </div>
           <Slider
             value={[lineWidth]}

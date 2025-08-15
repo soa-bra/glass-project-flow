@@ -41,7 +41,7 @@ import {
   Magnet
 } from 'lucide-react';
 import { CanvasElement } from '../../../types';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { toast } from 'sonner';
 
 interface EnhancedSelectionPanelProps {
@@ -126,9 +126,9 @@ export const EnhancedSelectionPanel: React.FC<EnhancedSelectionPanelProps> = ({
           <MousePointer className="w-4 h-4" />
           أدوات التحديد
           {hasSelection && (
-            <Badge variant="secondary" className="text-xs">
+            <BaseBadge variant="secondary" className="text-xs">
               {selectedElements.length}
-            </Badge>
+            </BaseBadge>
           )}
         </CardTitle>
       </CardHeader>

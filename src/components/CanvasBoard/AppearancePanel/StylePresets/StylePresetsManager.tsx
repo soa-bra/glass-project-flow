@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { 
   Palette, 
   Save, 
@@ -367,9 +367,9 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
 
         <div className="flex items-center justify-between">
           {showCategory && (
-            <Badge variant="secondary" className="text-xs">
+            <BaseBadge variant="secondary" className="text-xs">
               {getCategoryIcon(preset.category)} {getCategoryLabel(preset.category)}
-            </Badge>
+            </BaseBadge>
           )}
           
           <div className="flex items-center gap-1 text-xs text-gray-400">

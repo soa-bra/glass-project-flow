@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Separator } from '@/components/ui/separator';
 import { ToolPanelContainer } from '@/components/custom/ToolPanelContainer';
 import { 
@@ -158,8 +158,8 @@ export const LayersListPanel: React.FC<LayersListPanelProps> = ({
                           {layer.name || layer.id}
                         </span>
                         <div className="flex gap-1">
-                          {layer.hidden && <Badge variant="secondary" className="text-xs px-1 py-0">مخفي</Badge>}
-                          {layer.locked && <Badge variant="destructive" className="text-xs px-1 py-0">مقفل</Badge>}
+                          {layer.hidden && <BaseBadge variant="secondary" className="text-xs px-1 py-0">مخفي</BaseBadge>}
+                          {layer.locked && <BaseBadge variant="error" className="text-xs px-1 py-0">مقفل</BaseBadge>}
                         </div>
                       </div>
                       

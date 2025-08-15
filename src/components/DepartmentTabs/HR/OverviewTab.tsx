@@ -1,7 +1,7 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Users, UserPlus, Calendar, TrendingUp, Award, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { mockHRStats, mockWorkforceAnalytics } from './data';

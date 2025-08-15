@@ -2,7 +2,7 @@ import React, { useRef, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Separator } from '@/components/ui/separator';
 import { 
   Upload, 
@@ -270,18 +270,18 @@ export const EnhancedFileUploadPanel: React.FC<EnhancedFileUploadPanelProps> = (
               </p>
               
               <div className="flex gap-2 justify-center mb-4">
-                <Badge variant="secondary" className="text-xs">
+                <BaseBadge variant="secondary" className="text-xs">
                   <Image className="w-3 h-3 mr-1" />
                   صور
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
+                </BaseBadge>
+                <BaseBadge variant="secondary" className="text-xs">
                   <FileText className="w-3 h-3 mr-1" />
                   مستندات
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
+                </BaseBadge>
+                <BaseBadge variant="secondary" className="text-xs">
                   <Film className="w-3 h-3 mr-1" />
                   فيديو
-                </Badge>
+                </BaseBadge>
               </div>
 
               <Button size="sm" variant="outline">

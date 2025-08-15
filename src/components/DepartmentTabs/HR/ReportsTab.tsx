@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { BarChart3, PieChart, TrendingUp, Users, Calendar, Download, Filter, Eye } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { mockWorkforceAnalytics, mockHRStats } from './data';
 

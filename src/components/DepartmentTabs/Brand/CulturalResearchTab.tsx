@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { 
   BookOpen, 
@@ -155,12 +155,12 @@ export const CulturalResearchTab: React.FC = () => {
                   <div>
                     <CardTitle className="text-lg mb-2">{project.title}</CardTitle>
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge className={getTypeColor(project.type)}>
+                      <BaseBadge className={getTypeColor(project.type)}>
                         {project.type}
-                      </Badge>
-                      <Badge className={getStatusColor(project.status)}>
+                      </BaseBadge>
+                      <BaseBadge className={getStatusColor(project.status)}>
                         {project.status}
-                      </Badge>
+                      </BaseBadge>
                     </div>
                     <div className="text-sm text-gray-600">
                       باحث رئيسي: {project.lead}
@@ -244,7 +244,7 @@ export const CulturalResearchTab: React.FC = () => {
                 <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
                   <span>مجلة العلامات التجارية الثقافية</span>
                   <span>2024</span>
-                  <Badge variant="outline">مراجعة الأقران</Badge>
+                  <BaseBadge variant="outline">مراجعة الأقران</BaseBadge>
                 </div>
                 <p className="text-sm text-gray-700">
                   دراسة شاملة تحلل كيفية تأثير العوامل الثقافية على سلوك المستهلكين في المملكة العربية السعودية...
@@ -256,7 +256,7 @@ export const CulturalResearchTab: React.FC = () => {
                 <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
                   <span>المؤتمر الدولي لعلم الاجتماع التطبيقي</span>
                   <span>2023</span>
-                  <Badge variant="outline">مؤتمر</Badge>
+                  <BaseBadge variant="outline">مؤتمر</BaseBadge>
                 </div>
                 <p className="text-sm text-gray-700">
                   تطوير نموذج جديد لقياس مدى تطابق العلامات التجارية مع الهوية الثقافية للمجتمع...

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { 
@@ -97,9 +97,9 @@ export const CulturalIdentityTab: React.FC = () => {
             ) : (
               <div className="flex flex-wrap gap-2">
                 {values.coreValues.split('، ').map((value, index) => (
-                  <Badge key={index} variant="secondary" className="px-3 py-1">
+                  <BaseBadge key={index} variant="secondary" className="px-3 py-1">
                     {value}
-                  </Badge>
+                  </BaseBadge>
                 ))}
               </div>
             )}

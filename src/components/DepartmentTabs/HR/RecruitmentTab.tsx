@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { UserPlus, Briefcase, Users, Calendar, Star, Phone, Mail, Eye, CheckCircle, XCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { mockJobPostings, mockCandidates } from './data';
 import { JobPosting, Candidate } from './types';

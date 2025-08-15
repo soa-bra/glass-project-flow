@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   FolderOpen,
@@ -208,9 +208,9 @@ export const EnhancedProjectPanel: React.FC<EnhancedProjectPanelProps> = ({
           <FolderOpen className="w-4 h-4" />
           إدارة المشروع
           {hasUnsavedChanges && (
-            <Badge variant="destructive" className="text-xs">
+            <BaseBadge variant="error" className="text-xs">
               غير محفوظ
-            </Badge>
+            </BaseBadge>
           )}
         </CardTitle>
       </CardHeader>
@@ -233,15 +233,15 @@ export const EnhancedProjectPanel: React.FC<EnhancedProjectPanelProps> = ({
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">العناصر:</span>
-                        <Badge variant="secondary" className="text-xs">
+                        <BaseBadge variant="secondary" className="text-xs">
                           {projectInfo.elementsCount}
-                        </Badge>
+                        </BaseBadge>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">الإصدار:</span>
-                        <Badge variant="outline" className="text-xs">
+                        <BaseBadge variant="outline" className="text-xs">
                           v{projectInfo.version}
-                        </Badge>
+                        </BaseBadge>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">آخر تعديل:</span>
@@ -250,10 +250,10 @@ export const EnhancedProjectPanel: React.FC<EnhancedProjectPanelProps> = ({
                       {projectInfo.collaborators.length > 0 && (
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-muted-foreground">المتعاونون:</span>
-                          <Badge variant="secondary" className="text-xs">
+                          <BaseBadge variant="secondary" className="text-xs">
                             <Users className="w-2 h-2 mr-1" />
                             {projectInfo.collaborators.length}
-                          </Badge>
+                          </BaseBadge>
                         </div>
                       )}
                     </div>
@@ -401,9 +401,9 @@ export const EnhancedProjectPanel: React.FC<EnhancedProjectPanelProps> = ({
 
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                  <Badge variant="secondary" className="text-xs">
-                                    {template.category}
-                                  </Badge>
+                             <BaseBadge variant="secondary" className="text-xs">
+                               {template.category}
+                             </BaseBadge>
                                   <span className="text-xs text-muted-foreground">
                                     {template.elementsCount} عنصر
                                   </span>
@@ -425,13 +425,13 @@ export const EnhancedProjectPanel: React.FC<EnhancedProjectPanelProps> = ({
 
                               <div className="flex flex-wrap gap-1 mt-2">
                                 {template.tags.slice(0, 3).map((tag, index) => (
-                                  <Badge 
-                                    key={index} 
-                                    variant="outline" 
-                                    className="text-xs px-1 py-0"
-                                  >
-                                    {tag}
-                                  </Badge>
+                                 <BaseBadge 
+                                   key={index} 
+                                   variant="outline" 
+                                   className="text-xs px-1 py-0"
+                                 >
+                                   {tag}
+                                 </BaseBadge>
                                 ))}
                               </div>
                             </div>

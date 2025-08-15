@@ -12,7 +12,7 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { 
   Grid3X3,
   ZoomIn,
@@ -167,9 +167,9 @@ export const EnhancedCanvasControlPanel: React.FC<EnhancedCanvasControlPanelProp
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           <Settings className="w-4 h-4" />
           إعدادات الكانفاس
-          <Badge variant="outline" className="text-xs">
+          <BaseBadge variant="outline" className="text-xs">
             {currentSettings.zoom.level}%
-          </Badge>
+          </BaseBadge>
         </CardTitle>
       </CardHeader>
 
@@ -211,9 +211,9 @@ export const EnhancedCanvasControlPanel: React.FC<EnhancedCanvasControlPanelProp
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <Label className="text-xs font-medium">حجم الشبكة</Label>
-                  <Badge variant="secondary" className="text-xs">
+                  <BaseBadge variant="secondary" className="text-xs">
                     {currentSettings.grid.size}px
-                  </Badge>
+                  </BaseBadge>
                 </div>
                 <Slider
                   value={[currentSettings.grid.size]}
