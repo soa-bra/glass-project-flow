@@ -117,8 +117,8 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
     return null;
   };
   if (chartType === 'simple') {
-    return <BaseCard variant="glass" size="md" className="h-full min-h-0" style={{
-      backgroundColor: '#ffffff' 'border-[#DADCE0]'
+    return <BaseCard variant="glass" size="md" className="h-full min-h-0 border-[#DADCE0]" style={{
+      backgroundColor: '#ffffff'
     }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
         <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden">
           <div className="flex items-baseline gap-2 mb-2">

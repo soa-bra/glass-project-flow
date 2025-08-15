@@ -92,8 +92,8 @@ export const TimelineCard: React.FC = () => {
     setCustomLocation('');
   };
   return <>
-      <BaseCard variant="glass" size="sm" className="col-span-3 h-[320px] overflow-hidden" style={{
-      backgroundColor: '#ffffff' 'border-[#DADCE0]'
+      <BaseCard variant="glass" size="sm" className="col-span-3 h-[320px] overflow-hidden border-[#DADCE0]" style={{
+      backgroundColor: '#ffffff'
   }} header={<div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-medium text-black font-arabic">الأحداث القادمة</h2>
             <button onClick={() => setShowAddEventModal(true)} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-transparent hover:scale-105 active:scale-95">
