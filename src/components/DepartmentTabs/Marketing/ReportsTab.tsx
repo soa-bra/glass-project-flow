@@ -2,7 +2,8 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { FileText, Download, Calendar, Filter, BarChart3, TrendingUp, PieChart, Target } from 'lucide-react';
-import { UnifiedBadge, UnifiedButton } from '@/components/shared/components';
+import { BaseBadge } from '@/components/ui/BaseBadge';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 export const ReportsTab: React.FC = () => {
   const reportTypes = [
@@ -102,13 +103,13 @@ export const ReportsTab: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'متاح':
-        return <UnifiedBadge variant="success" size="sm">متاح</UnifiedBadge>;
+        return <BaseBadge variant="success" size="sm">متاح</BaseBadge>;
       case 'قيد الإعداد':
-        return <UnifiedBadge variant="warning" size="sm">قيد الإعداد</UnifiedBadge>;
+        return <BaseBadge variant="warning" size="sm">قيد الإعداد</BaseBadge>;
       case 'جديد':
-        return <UnifiedBadge variant="info" size="sm">جديد</UnifiedBadge>;
+        return <BaseBadge variant="info" size="sm">جديد</BaseBadge>;
       default:
-        return <UnifiedBadge variant="default" size="sm">غير معروف</UnifiedBadge>;
+        return <BaseBadge variant="default" size="sm">غير معروف</BaseBadge>;
     }
   };
 
@@ -121,10 +122,10 @@ export const ReportsTab: React.FC = () => {
             <FileText className="h-6 w-6 text-black" />
             <h3 className="text-xl font-bold text-black font-arabic">أنواع التقارير التسويقية</h3>
           </div>
-          <UnifiedButton variant="outline" size="sm">
+          <BaseActionButton variant="outline" size="sm">
             <Filter className="h-4 w-4 ml-1" />
             فلترة
-          </UnifiedButton>
+          </BaseActionButton>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -137,9 +138,9 @@ export const ReportsTab: React.FC = () => {
                     <h4 className="font-medium font-arabic text-sm">{report.title}</h4>
                     <p className="text-xs text-gray-600 mt-1 font-arabic">{report.description}</p>
                     <div className="flex items-center gap-2 mt-2">
-                      <UnifiedBadge variant="default" size="sm">
+                      <BaseBadge variant="default" size="sm">
                         {report.frequency}
-                      </UnifiedBadge>
+                      </BaseBadge>
                     </div>
                   </div>
                 </div>
@@ -148,13 +149,13 @@ export const ReportsTab: React.FC = () => {
               
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-500 font-arabic">آخر إنشاء: {report.lastGenerated}</span>
-                <UnifiedButton 
+                <BaseActionButton 
                   size="sm" 
                   variant={report.status === 'متاح' ? 'primary' : 'outline'}
                   disabled={report.status !== 'متاح'}
                 >
                   {report.status === 'متاح' ? 'تحميل' : 'إنشاء'}
-                </UnifiedButton>
+                </BaseActionButton>
               </div>
             </div>
           ))}
@@ -169,9 +170,9 @@ export const ReportsTab: React.FC = () => {
                 <Download className="h-5 w-5 text-black" />
                 <h3 className="text-xl font-bold text-black font-arabic">التقارير الحديثة</h3>
               </div>
-            <UnifiedButton variant="outline" size="sm">
+            <BaseActionButton variant="outline" size="sm">
               عرض الكل
-            </UnifiedButton>
+            </BaseActionButton>
           </div>
           
           <div className="space-y-3">
@@ -184,15 +185,15 @@ export const ReportsTab: React.FC = () => {
                     <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
                       <span>{report.date}</span>
                       <span>{report.size}</span>
-                      <UnifiedBadge variant="default" size="sm">{report.type}</UnifiedBadge>
+                      <BaseBadge variant="default" size="sm">{report.type}</BaseBadge>
                       <span className="font-arabic">{report.downloads} تحميل</span>
                     </div>
                   </div>
                 </div>
                 
-                <UnifiedButton size="sm" variant="outline">
+                <BaseActionButton size="sm" variant="outline">
                   <Download className="h-4 w-4" />
-                </UnifiedButton>
+                </BaseActionButton>
               </div>
             ))}
           </div>
@@ -205,9 +206,9 @@ export const ReportsTab: React.FC = () => {
                 <Calendar className="h-5 w-5 text-black" />
                 <h3 className="text-xl font-bold text-black font-arabic">التقارير المجدولة</h3>
               </div>
-            <UnifiedButton variant="outline" size="sm">
+            <BaseActionButton variant="outline" size="sm">
               إضافة جدولة
-            </UnifiedButton>
+            </BaseActionButton>
           </div>
           
           <div className="space-y-3">
@@ -215,12 +216,12 @@ export const ReportsTab: React.FC = () => {
               <div key={index} className="p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium font-arabic text-sm">{report.name}</h4>
-                  <UnifiedBadge 
+                  <BaseBadge 
                     variant={report.automated ? 'success' : 'warning'} 
                     size="sm"
                   >
                     {report.automated ? 'تلقائي' : 'يدوي'}
-                  </UnifiedBadge>
+                  </BaseBadge>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
                   <div>

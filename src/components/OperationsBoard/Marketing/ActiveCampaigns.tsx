@@ -1,5 +1,5 @@
 import React from 'react';
-import { UnifiedBadge } from '@/components/shared/components';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Progress } from '@/components/ui/progress';
 interface Campaign {
@@ -40,7 +40,7 @@ export const ActiveCampaigns: React.FC<ActiveCampaignsProps> = ({
       label: status,
       variant: 'default'
     };
-    return <UnifiedBadge variant={statusInfo.variant as any}>{statusInfo.label}</UnifiedBadge>;
+    return <BaseBadge variant={statusInfo.variant as any}>{statusInfo.label}</BaseBadge>;
   };
   const getStatusText = (status: string) => {
     switch (status) {

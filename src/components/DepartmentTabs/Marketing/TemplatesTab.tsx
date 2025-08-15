@@ -2,7 +2,8 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { FileText, Download, Eye, Copy, Plus, Search } from 'lucide-react';
-import { UnifiedBadge, UnifiedButton } from '@/components/shared/components';
+import { BaseBadge } from '@/components/ui/BaseBadge';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 export const TemplatesTab: React.FC = () => {
   const templateCategories = [
@@ -104,13 +105,13 @@ export const TemplatesTab: React.FC = () => {
               className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-arabic"
             />
           </div>
-          <UnifiedButton variant="outline" size="sm">
+          <BaseActionButton variant="outline" size="sm">
             فلترة
-          </UnifiedButton>
-          <UnifiedButton variant="primary" size="sm">
+          </BaseActionButton>
+          <BaseActionButton variant="primary" size="sm">
             <Plus className="h-4 w-4 ml-1" />
             إضافة قالب
-          </UnifiedButton>
+          </BaseActionButton>
         </div>
       </BaseCard>
 
@@ -126,9 +127,9 @@ export const TemplatesTab: React.FC = () => {
             <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center justify-between mb-3">
                 <category.icon className={`h-6 w-6 ${category.color}`} />
-                <UnifiedBadge variant="default" size="sm">
+                <BaseBadge variant="default" size="sm">
                   {category.count}
-                </UnifiedBadge>
+                </BaseBadge>
               </div>
               <h4 className="font-medium font-arabic text-sm">{category.name}</h4>
             </div>
@@ -144,9 +145,9 @@ export const TemplatesTab: React.FC = () => {
                 <Download className="h-5 w-5 text-black" />
                 <h3 className="text-xl font-bold text-black font-arabic">الأكثر استخداماً</h3>
               </div>
-            <UnifiedButton variant="outline" size="sm">
+            <BaseActionButton variant="outline" size="sm">
               عرض الكل
-            </UnifiedButton>
+            </BaseActionButton>
           </div>
           
           <div className="space-y-3">
@@ -159,26 +160,26 @@ export const TemplatesTab: React.FC = () => {
                     <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
                       <span className="font-arabic">{template.category}</span>
                       <span>{template.downloads} تحميل</span>
-                      <UnifiedBadge 
+                      <BaseBadge 
                         variant={template.status === 'محدث' ? 'success' : 'warning'} 
                         size="sm"
                       >
                         {template.status}
-                      </UnifiedBadge>
+                      </BaseBadge>
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-1">
-                  <UnifiedButton size="sm" variant="outline">
+                 <div className="flex items-center gap-1">
+                  <BaseActionButton size="sm" variant="outline">
                     <Eye className="h-4 w-4" />
-                  </UnifiedButton>
-                  <UnifiedButton size="sm" variant="outline">
+                  </BaseActionButton>
+                  <BaseActionButton size="sm" variant="outline">
                     <Download className="h-4 w-4" />
-                  </UnifiedButton>
-                  <UnifiedButton size="sm" variant="outline">
+                  </BaseActionButton>
+                  <BaseActionButton size="sm" variant="outline">
                     <Copy className="h-4 w-4" />
-                  </UnifiedButton>
+                  </BaseActionButton>
                 </div>
               </div>
             ))}
@@ -192,9 +193,9 @@ export const TemplatesTab: React.FC = () => {
                 <Plus className="h-5 w-5 text-black" />
                 <h3 className="text-xl font-bold text-black font-arabic">المضافة حديثاً</h3>
               </div>
-            <UnifiedButton variant="outline" size="sm">
+            <BaseActionButton variant="outline" size="sm">
               عرض الكل
-            </UnifiedButton>
+            </BaseActionButton>
           </div>
           
           <div className="space-y-3">
@@ -212,13 +213,13 @@ export const TemplatesTab: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-1">
-                  <UnifiedButton size="sm" variant="outline">
+                 <div className="flex items-center gap-1">
+                  <BaseActionButton size="sm" variant="outline">
                     <Eye className="h-4 w-4" />
-                  </UnifiedButton>
-                  <UnifiedButton size="sm" variant="outline">
+                  </BaseActionButton>
+                  <BaseActionButton size="sm" variant="outline">
                     <Download className="h-4 w-4" />
-                  </UnifiedButton>
+                  </BaseActionButton>
                 </div>
               </div>
             ))}

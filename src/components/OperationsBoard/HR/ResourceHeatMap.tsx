@@ -1,6 +1,6 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { UnifiedBadge } from '@/components/shared/components';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
@@ -62,9 +62,9 @@ export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({
               <div className="space-y-2 mb-3">
                 <div className="flex justify-between text-sm">
                   <span>الاستخدام: {resource.utilization}%</span>
-                  <UnifiedBadge variant={getUtilizationVariant(resource.utilization)} size="sm">
+                  <BaseBadge variant={getUtilizationVariant(resource.utilization)} size="sm">
                     {getUtilizationText(resource.utilization)}
-                  </UnifiedBadge>
+                  </BaseBadge>
                 </div>
                 <Progress value={resource.utilization} className="h-2" />
               </div>
@@ -73,24 +73,24 @@ export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({
                 <div>
                   <p className="text-xs text-gray-600 mb-1">المشاريع:</p>
                   <div className="flex flex-wrap gap-1">
-                    {resource.projects.slice(0, 2).map((project, idx) => <UnifiedBadge key={idx} variant="default" size="sm">
+                    {resource.projects.slice(0, 2).map((project, idx) => <BaseBadge key={idx} variant="default" size="sm">
                         {project}
-                      </UnifiedBadge>)}
-                    {resource.projects.length > 2 && <UnifiedBadge variant="default" size="sm">
+                      </BaseBadge>)}
+                    {resource.projects.length > 2 && <BaseBadge variant="default" size="sm">
                         +{resource.projects.length - 2}
-                      </UnifiedBadge>}
+                      </BaseBadge>}
                   </div>
                 </div>
                 
                 <div>
                   <p className="text-xs text-gray-600 mb-1">المهارات:</p>
                   <div className="flex flex-wrap gap-1">
-                    {resource.skills.slice(0, 2).map((skill, idx) => <UnifiedBadge key={idx} variant="info" size="sm">
+                    {resource.skills.slice(0, 2).map((skill, idx) => <BaseBadge key={idx} variant="info" size="sm">
                         {skill}
-                      </UnifiedBadge>)}
-                    {resource.skills.length > 2 && <UnifiedBadge variant="info" size="sm">
+                      </BaseBadge>)}
+                    {resource.skills.length > 2 && <BaseBadge variant="info" size="sm">
                         +{resource.skills.length - 2}
-                      </UnifiedBadge>}
+                      </BaseBadge>}
                   </div>
                 </div>
               </div>
@@ -183,9 +183,9 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <UnifiedBadge variant={getPriorityVariant(skill.priority)} size="sm">
+                <BaseBadge variant={getPriorityVariant(skill.priority)} size="sm">
                   {getPriorityText(skill.priority)}
-                </UnifiedBadge>
+                </BaseBadge>
                 <div className="text-center">
                   <p className="text-xs text-gray-600">الحالي/المطلوب</p>
                   <p className="font-bold">{skill.current}/{skill.required}</p>
@@ -270,9 +270,9 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({
                 </div>
 
                 <div className="mt-2 text-center">
-                  <UnifiedBadge variant={isOverloaded ? 'error' : 'success'} size="sm">
+                  <BaseBadge variant={isOverloaded ? 'error' : 'success'} size="sm">
                     {isOverloaded ? 'مرهق' : 'طبيعي'}
-                  </UnifiedBadge>
+                  </BaseBadge>
                 </div>
               </div>;
         })}
