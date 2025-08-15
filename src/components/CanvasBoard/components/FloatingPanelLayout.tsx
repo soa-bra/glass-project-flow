@@ -5,7 +5,7 @@ import { EnhancedLayer } from './panels/EnhancedLayersPanel';
 // import SmartAssistantPanel from '../panels/SmartAssistantPanel'; // Removed
 import { EnhancedLayersPanel } from './panels/EnhancedLayersPanel';
 import { ElementStylePanel } from './panels/ElementStylePanel';
-// import { EnhancedCollaborationPanel } from './panels/EnhancedCollaborationPanel'; // Removed
+
 import { AppearancePanel } from './panels/AppearancePanel';
 import { ToolPanel } from './ToolPanel';
 interface FloatingPanelLayoutProps {
