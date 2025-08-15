@@ -36,7 +36,7 @@ export const MiniGanttChart: React.FC<MiniGanttChartProps> = ({
     }
   };
   const formatProgress = (progress: number) => `${progress}%`;
-  return <Card className="rounded-[40px] bg-[#f3ffff] ">
+  return <Card className="rounded-[40px] bg-[#ffffff] border-[#DADCE0] ">
       <CardHeader>
         <CardTitle className="text-right font-arabic text-lg">
           أعلى 10 مشاريع حرجة (Gantt مصغر)
