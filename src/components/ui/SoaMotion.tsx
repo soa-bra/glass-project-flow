@@ -141,6 +141,39 @@ export const SoaPress: React.FC<SoaPressProps> = ({
   );
 };
 
+// Reveal Component
+interface SoaRevealProps {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+  duration?: number;
+  y?: number;
+}
+
+export const SoaReveal: React.FC<SoaRevealProps> = ({
+  children,
+  className,
+  delay = 0,
+  duration = 0.7,
+  y = 24
+}) => {
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: y }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{
+        duration: duration,
+        delay: delay,
+        ease: soabraMotionConfig.ease
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
 // Combined Interactive Component
 interface SoaInteractiveProps {
   children: React.ReactNode;
@@ -172,3 +205,8 @@ export const SoaInteractive: React.FC<SoaInteractiveProps> = ({
     </motion.div>
   );
 };
+
+// Export Motion with Reveal attached
+export const SoaMotionWithReveal = Object.assign(SoaMotion, {
+  Reveal: SoaReveal
+});

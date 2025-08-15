@@ -6,7 +6,7 @@ export { SoaTooltip } from './SoaTooltip';
 export { SoaNotification } from './SoaNotification';
 export { SoaScrollIndicator } from './SoaScrollIndicator';
 export { SoaTypography } from './SoaTypography';
-export { SoaMotion, SoaHover, SoaPress, SoaInteractive } from './SoaMotion';
+export { SoaMotion, SoaHover, SoaPress, SoaInteractive, SoaReveal, SoaMotionWithReveal } from './SoaMotion';
 export { SoaBadge } from './SoaBadge';
 export { SoaKPICard } from './SoaKPICard';
 export { SoaProgressTape } from './SoaProgressTape';

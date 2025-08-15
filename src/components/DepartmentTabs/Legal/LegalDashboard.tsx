@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
+import { SoaReveal } from '@/components/ui';
 import { OverviewTab } from './OverviewTab';
 import { ContractsTab } from './ContractsTab';
 import { ComplianceTab } from './ComplianceTab';
@@ -23,39 +24,55 @@ export const LegalDashboard: React.FC = () => {
   ];
 
   return (
-    <DashboardLayout
-      title="إدارة الأحوال القانونية"
-      tabs={tabItems}
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-    >
-      <UnifiedTabContent value="overview">
-        <OverviewTab />
-      </UnifiedTabContent>
+    <SoaReveal>
+      <DashboardLayout
+        title="إدارة الأحوال القانونية"
+        tabs={tabItems}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      >
+        <UnifiedTabContent value="overview">
+          <SoaReveal delay={0.1}>
+            <OverviewTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="contracts">
-        <ContractsTab />
-      </UnifiedTabContent>
+        <UnifiedTabContent value="contracts">
+          <SoaReveal delay={0.1}>
+            <ContractsTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="compliance">
-        <ComplianceTab />
-      </UnifiedTabContent>
+        <UnifiedTabContent value="compliance">
+          <SoaReveal delay={0.1}>
+            <ComplianceTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="risks">
-        <RisksTab />
-      </UnifiedTabContent>
+        <UnifiedTabContent value="risks">
+          <SoaReveal delay={0.1}>
+            <RisksTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="licenses">
-        <LicensesTab />
-      </UnifiedTabContent>
+        <UnifiedTabContent value="licenses">
+          <SoaReveal delay={0.1}>
+            <LicensesTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="templates">
-        <TemplatesTab />
-      </UnifiedTabContent>
+        <UnifiedTabContent value="templates">
+          <SoaReveal delay={0.1}>
+            <TemplatesTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="reports">
-        <ReportsTab />
-      </UnifiedTabContent>
-    </DashboardLayout>
+        <UnifiedTabContent value="reports">
+          <SoaReveal delay={0.1}>
+            <ReportsTab />
+          </SoaReveal>
+        </UnifiedTabContent>
+      </DashboardLayout>
+    </SoaReveal>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
+import { SoaReveal } from '@/components/ui';
 import { OverviewTab } from './OverviewTab';
 import { BudgetsTab } from './BudgetsTab';
 import { TransactionsTab } from './TransactionsTab';
@@ -25,43 +26,61 @@ export const FinancialDashboard: React.FC = () => {
   ];
 
   return (
-    <DashboardLayout
-      title="إدارة الأوضاع المالية"
-      tabs={tabItems}
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-    >
-      <UnifiedTabContent value="overview">
-        <OverviewTab />
-      </UnifiedTabContent>
+    <SoaReveal>
+      <DashboardLayout
+        title="إدارة الأوضاع المالية"
+        tabs={tabItems}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      >
+        <UnifiedTabContent value="overview">
+          <SoaReveal delay={0.1}>
+            <OverviewTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="budgets">
-        <BudgetsTab />
-      </UnifiedTabContent>
+        <UnifiedTabContent value="budgets">
+          <SoaReveal delay={0.1}>
+            <BudgetsTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="transactions">
-        <TransactionsTab />
-      </UnifiedTabContent>
+        <UnifiedTabContent value="transactions">
+          <SoaReveal delay={0.1}>
+            <TransactionsTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="invoices">
-        <InvoicesTab />
-      </UnifiedTabContent>
+        <UnifiedTabContent value="invoices">
+          <SoaReveal delay={0.1}>
+            <InvoicesTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="analysis">
-        <AnalysisTab />
-      </UnifiedTabContent>
+        <UnifiedTabContent value="analysis">
+          <SoaReveal delay={0.1}>
+            <AnalysisTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="settings">
-        <SettingsTab />
-      </UnifiedTabContent>
+        <UnifiedTabContent value="settings">
+          <SoaReveal delay={0.1}>
+            <SettingsTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="templates">
-        <TemplatesTab />
-      </UnifiedTabContent>
+        <UnifiedTabContent value="templates">
+          <SoaReveal delay={0.1}>
+            <TemplatesTab />
+          </SoaReveal>
+        </UnifiedTabContent>
 
-      <UnifiedTabContent value="reports">
-        <ReportsTab />
-      </UnifiedTabContent>
-    </DashboardLayout>
+        <UnifiedTabContent value="reports">
+          <SoaReveal delay={0.1}>
+            <ReportsTab />
+          </SoaReveal>
+        </UnifiedTabContent>
+      </DashboardLayout>
+    </SoaReveal>
   );
 };
