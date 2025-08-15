@@ -41,7 +41,7 @@ export const DelayedMilestones: React.FC<DelayedMilestonesProps> = ({
         return 'غير محدد';
     }
   };
-  return <Card className="rounded-[40px] bg-[#f0fafa]">
+  return <Card className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
       <CardHeader>
         <CardTitle className="text-right font-arabic text-lg flex items-center justify-between">
           <span>المعالم المتأخرة</span>
