@@ -33,9 +33,9 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   const variantClasses = {
     glass: 'bg-white/40 backdrop-blur-[20px] border border-white/20',
     flat: 'bg-opacity-100',
-    operations: 'bg-[#FFFFFF] ring-1 ring-[#DADCE0] shadow-sm',
-    unified: 'bg-[#FFFFFF] ring-1 ring-[#DADCE0] shadow-sm hover:shadow-md transition-shadow duration-300',
-    legal: 'bg-[#FFFFFF] ring-1 ring-[#DADCE0] shadow-sm hover:shadow-md transition-shadow duration-300'
+    operations: 'bg-[#FFFFFF] border border-[#DADCE0] shadow-sm',
+    unified: 'bg-[#FFFFFF] border border-[#DADCE0] shadow-sm hover:shadow-md transition-shadow duration-300',
+    legal: 'bg-[#FFFFFF] border border-[#DADCE0] shadow-sm hover:shadow-md transition-shadow duration-300'
   };
   const colorClasses = {
     info: 'bg-blue-500',
