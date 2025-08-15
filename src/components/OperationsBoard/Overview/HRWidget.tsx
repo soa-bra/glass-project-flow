@@ -1,26 +1,21 @@
-
 import React from 'react';
-
 interface HRData {
   members: number;
   vacancies: number;
   onLeave: number;
 }
-
 interface HRWidgetProps {
   hr: HRData;
   className?: string;
 }
-
-export const HRWidget: React.FC<HRWidgetProps> = ({ 
-  hr, 
-  className = '' 
+export const HRWidget: React.FC<HRWidgetProps> = ({
+  hr,
+  className = ''
 }) => {
-  return (
-    <div className={`
+  return <div className={`
       ${className}
-      rounded-[40px] p-5 h-full min-h-0
-      bg-[#FFFFFF] border border-[#DADCE0] shadow-sm
+      rounded-[40px] p-5
+      bg-[#FFFFFF] ring-1 ring-[#DADCE0] shadow-sm
       hover:shadow-md transition-all duration-300
       flex flex-col justify-between
     `}>
@@ -29,7 +24,7 @@ export const HRWidget: React.FC<HRWidgetProps> = ({
         الموارد البشرية
       </h3>
 
-      <div className="space-y-4 flex-1">
+      <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden">
         <div className="flex items-center justify-between">
           <span className="text-sm text-black font-arabic">الموظفين</span>
           <span className="text-xl font-bold text-black">{hr.members}</span>
@@ -45,6 +40,5 @@ export const HRWidget: React.FC<HRWidgetProps> = ({
           <span className="text-xl font-bold text-black">{hr.onLeave}</span>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };

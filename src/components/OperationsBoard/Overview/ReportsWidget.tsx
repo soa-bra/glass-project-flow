@@ -1,25 +1,21 @@
 import React from 'react';
-
 interface ReportsData {
   totalReports: number;
   pendingReports: number;
   completedReports: number;
 }
-
 interface ReportsWidgetProps {
   reports: ReportsData;
   className?: string;
 }
-
-export const ReportsWidget: React.FC<ReportsWidgetProps> = ({ 
-  reports, 
-  className = '' 
+export const ReportsWidget: React.FC<ReportsWidgetProps> = ({
+  reports,
+  className = ''
 }) => {
-  return (
-    <div className={`
+  return <div className={`
       ${className}
-      rounded-[40px] p-5 h-full min-h-0
-      bg-[#FFFFFF] border border-[#DADCE0] shadow-sm
+      rounded-[40px] p-5
+      bg-[#FFFFFF] ring-1 ring-[#DADCE0] shadow-sm
       hover:shadow-md transition-all duration-300
       flex flex-col justify-between
     `}>
@@ -28,7 +24,7 @@ export const ReportsWidget: React.FC<ReportsWidgetProps> = ({
         التقارير
       </h3>
 
-      <div className="space-y-4 flex-1">
+      <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden ">
         <div className="flex items-center justify-between">
           <span className="text-sm text-black">إجمالي التقارير</span>
           <span className="text-xl font-bold text-black">{reports.totalReports}</span>
@@ -44,6 +40,5 @@ export const ReportsWidget: React.FC<ReportsWidgetProps> = ({
           <span className="text-xl font-bold text-black">{reports.completedReports}</span>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
