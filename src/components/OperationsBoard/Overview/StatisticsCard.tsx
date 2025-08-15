@@ -118,7 +118,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
   };
   if (chartType === 'simple') {
     return <BaseCard variant="glass" size="md" className="h-full min-h-0" style={{
-      backgroundColor: '#f3ffff'
+      backgroundColor: '#ffffff' 'border-[#DADCE0]'
     }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
         <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden">
           <div className="flex items-baseline gap-2 mb-2">
@@ -137,11 +137,11 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
       </BaseCard>;
   }
   return <BaseCard variant="glass" size="md" className="h-full min-h-0" style={{
-    backgroundColor: '#f3ffff'
+    backgroundColor: '#ffffff'
   }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
       <div className="flex gap-14 h-90 w-full overflow-hidden my-[25px] px-px mx-[10px] py-px">
-        {/* النصوص والأرقام - 2/5 من المساحة */}
-        <div className="w-2/5 flex flex-col justify-center overflow-hidden">
+        {/* النصوص والأرقام - 2/7 من المساحة */}
+        <div className="w-2/7 flex flex-col justify-center overflow-hidden">
           <div className="flex items-baseline gap-2 mb-2">
             <div className="text-2xl font-bold text-black font-arabic">
               {value}
@@ -156,8 +156,8 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
           </div>
         </div>
 
-        {/* الرسم البياني - 3/5 من المساحة */}
-        <div className="w-3/5 flex justify-center items-center overflow-hidden">
+        {/* الرسم البياني - 5/7 من المساحة */}
+        <div className="w-5/7 flex justify-center items-center overflow-hidden">
           <div className="w-full h-90">
             {renderChart()}
           </div>
