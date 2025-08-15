@@ -11,7 +11,7 @@
 @layer base {
   :root {
     /* SoaBra Unified Theme Colors - Updated */
-    --sb-ink: #0B0F12;
+    --sb-ink: #000000
     --sb-ink-70: rgba(11,15,18,0.7);
     --sb-ink-40: rgba(11,15,18,0.4);
     --sb-ink-20: rgba(11,15,18,0.2);
@@ -26,15 +26,15 @@
     --sb-shadow-soft: 0 2px 8px rgba(0,0,0,0.08);
     
     /* Legacy backgrounds for exceptions (projects, tasks, financial) */
-    --backgrounds-project-column-bg: #d1e1ea;
-    --backgrounds-project-cards-bg: #f2f9fb;
-    --backgrounds-timeline-bg: #f2ffff;
+    --backgrounds-project-column-bg: #EBEFF2;
+    --backgrounds-project-cards-bg: #f8f9fa;
+    --backgrounds-timeline-bg: #FFFFFF;
     --backgrounds-admin-ops-board-bg: var(--sb-surface-01);
     --backgrounds-financial-card-profit: #96d8d0;
     --backgrounds-financial-card-loss: #f1b5b9;
-    --backgrounds-project-summary-card: #a4e2f6;
-    --backgrounds-project-mgmt-board-bg: #f9fbfc;
-    --backgrounds-project-mgmt-cards-bg: #ecf2f7;
+    --backgrounds-project-summary-card: #FFFFFF;
+    --backgrounds-project-mgmt-board-bg: #FFFFFF;
+    --backgrounds-project-mgmt-cards-bg: #FFFFFF;
     --backgrounds-active-tab-project-mgmt: #000000;
     --backgrounds-inactive-tab-project-mgmt: transparent;
 
@@ -278,7 +278,7 @@
   
   /* خط عربي محسن */
   .font-arabic {
-    font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
+    font-family: 'IBM Plex Sans Arabic',  sans-serif;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
     text-rendering: optimizeLegibility;
   }
@@ -325,7 +325,7 @@
   
   .sb-primary-btn {
     @apply h-[44px] rounded-full px-5;
-    background: #0B0F12;
+    background: #000000;
     color: #FFFFFF;
   }
   
