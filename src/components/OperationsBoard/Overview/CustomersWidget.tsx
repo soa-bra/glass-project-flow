@@ -1,25 +1,21 @@
 import React from 'react';
-
 interface CustomersData {
   totalClients: number;
   newClients: number;
   satisfaction: number;
 }
-
 interface CustomersWidgetProps {
   customers: CustomersData;
   className?: string;
 }
-
-export const CustomersWidget: React.FC<CustomersWidgetProps> = ({ 
-  customers, 
-  className = '' 
+export const CustomersWidget: React.FC<CustomersWidgetProps> = ({
+  customers,
+  className = ''
 }) => {
-  return (
-    <div className={`
+  return <div className={`
       ${className}
-      rounded-[40px] p-5 h-full min-h-0
-      bg-[#FFFFFF] border border-[#DADCE0] shadow-sm
+      rounded-[40px] p-5
+      bg-[#FFFFFF] ring-1 ring-[#DADCE0] shadow-sm
       hover:shadow-md transition-all duration-300
       flex flex-col justify-between
     `}>
@@ -39,11 +35,7 @@ export const CustomersWidget: React.FC<CustomersWidgetProps> = ({
           <span className="text-xl font-bold text-black">{customers.newClients}</span>
         </div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-black">مستوى الرضا</span>
-          <span className="text-xl font-bold text-black">{customers.satisfaction}%</span>
-        </div>
+        
       </div>
-    </div>
-  );
+    </div>;
 };
