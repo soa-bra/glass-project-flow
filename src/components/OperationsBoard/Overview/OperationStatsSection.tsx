@@ -23,13 +23,13 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
         </div>
       </div>;
   }
-  return <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-0 mx-[5px]">
+  return <div className="grid grid-cols-3 gap-6 mb-6">
       {/* ميزانية المشروع */}
-      <div className="text-right p-6 py-0 my-[15px]">
+      <div className="text-right p-6">
         <div className="mb-2">
           <span className="text-sm text-black font-arabic font-medium">ميزانية المشروع</span>
         </div>
-        <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
+        <div className="flex items-baseline gap-2 mb-1">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
             {stats.expectedRevenue || 0}
           </div>
@@ -39,11 +39,11 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
       </div>
 
       {/* عدد الأيام المتبقية */}
-      <div className="text-right p-6 mx-0 px-[24px] py-0 my-[15px]">
+      <div className="text-right p-6">
         <div className="mb-2">
           <span className="text-sm text-black font-arabic font-medium">عدد الأيام المتبقية</span>
         </div>
-        <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
+        <div className="flex items-baseline gap-2 mb-1">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
             {String(stats.complaints || 0).padStart(2, '0')}
           </div>
@@ -53,11 +53,11 @@ export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
       </div>
 
       {/* المشاريع المتأخرة */}
-      <div className="text-right p-6 py-0 my-[15px]">
+      <div className="text-right p-6">
         <div className="mb-2">
           <span className="text-sm text-black font-arabic font-medium">المشاريع المتأخرة</span>
         </div>
-        <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
+        <div className="flex items-baseline gap-2 mb-1">
           <div className="text-5xl font-normal text-gray-900 font-arabic">
             {String(stats.delayedProjects || 0).padStart(2, '0')}
           </div>

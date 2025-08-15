@@ -17,9 +17,9 @@ export const FinanceLayout: React.FC<FinanceLayoutProps> = ({
 }) => {
   
   return (
-    <div className="font-arabic px-[15px] py-0">
+    <div className="space-y-6">
       {/* قسم المؤشرات المالية الرئيسية */}
-      <div className="mb-6 py-0 px-0 my-0">
+      <div className="mb-6">
         <FinancialKPICards kpis={data.kpis} />
       </div>
 
@@ -32,8 +32,8 @@ export const FinanceLayout: React.FC<FinanceLayoutProps> = ({
       </div>
       
       {/* أدوات التصدير والتحليل */}
-      <div className="flex justify-between items-center py-0">
-        <div className="text-sm font-normal text-black font-arabic">
+      <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+        <div className="text-sm font-normal text-gray-600">
           دقة التنبؤات: {data.forecastAccuracy}%
         </div>
         <ExportButton />

@@ -37,7 +37,7 @@ export const ProjectSummaryCard: React.FC = () => {
         </div>}>
       <div className="overflow-y-hidden ">
         {/* النصوص والأرقام - النصف الأول */}
-        <div className="bottom-0 flex-col justify-center gap-1 overflow-hidden mx-[15px] px-0 my-0 py-0">
+        <div className="bottom-0 flex-col justify-center gap-1 overflow-hidden mx-4">
           <div className="text-right">
             <div className="text-2xl font-bold text-black font-arabic">140</div>
             <div className="text-xs font-normal text-gray-400 font-arabic">هذا النص مثال</div>
@@ -53,7 +53,7 @@ export const ProjectSummaryCard: React.FC = () => {
         </div>
 
         {/* الرسم البياني - النصف الثاني بنسبة3/10  */}
-        <div className="bottom-1 h-180 overflow-hidden my-0 mx-0 py-0 px-0">
+        <div className="bottom-1 h-180 overflow-hidden">
           <div className="w-full max-w-[120px]" style={{
           aspectRatio: '3/10'
         }}>

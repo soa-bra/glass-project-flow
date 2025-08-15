@@ -1,6 +1,6 @@
 import React from 'react';
 import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Progress } from '@/components/ui/progress';
 
 interface Campaign {
@@ -50,9 +50,9 @@ export const ActiveCampaigns: React.FC<ActiveCampaignsProps> = ({ campaigns }) =
     <div className="bg-[#f2ffff] rounded-3xl border border-black/10 p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-black font-arabic">الحملات النشطة</h3>
-        <UnifiedButton variant="primary">
+        <BaseActionButton variant="primary">
           عرض الكل
-        </UnifiedButton>
+        </BaseActionButton>
       </div>
       
       <div className="space-y-4">

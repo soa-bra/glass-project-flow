@@ -1,16 +1,15 @@
 
 import React from 'react';
 import { UserPlus } from 'lucide-react';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { TYPOGRAPHY, LAYOUT } from '@/components/shared/design-system/constants';
 
 export const AddMemberButton: React.FC = () => {
   return (
     <div className={`${LAYOUT.FLEX_CENTER} mt-6`}>
-      <UnifiedButton variant="primary" size="md" className={TYPOGRAPHY.ARABIC_FONT}>
-        <UserPlus className="h-5 w-5 ml-2" />
+      <BaseActionButton variant="primary" size="md" icon={<UserPlus className="h-5 w-5" />}>
         إضافة عضو جديد
-      </UnifiedButton>
+      </BaseActionButton>
     </div>
   );
 };
