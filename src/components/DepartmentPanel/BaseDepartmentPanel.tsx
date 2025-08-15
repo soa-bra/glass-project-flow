@@ -9,11 +9,11 @@ import { TrainingDashboard } from '../DepartmentTabs/Training/TrainingDashboard'
 import { KMPADashboard } from '../DepartmentTabs/KMPA';
 import { BrandDashboard } from '../DepartmentTabs/Brand';
 
-interface GenericDepartmentPanelProps {
+interface BaseDepartmentPanelProps {
   selectedDepartment: string;
 }
 
-export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({ 
+export const BaseDepartmentPanel: React.FC<BaseDepartmentPanelProps> = ({
   selectedDepartment 
 }) => {
   const [activeTab, setActiveTab] = useState('');

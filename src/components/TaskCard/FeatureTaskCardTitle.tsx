@@ -1,11 +1,11 @@
-interface TaskCardTitleProps {
+interface FeatureTaskCardTitleProps {
   title: string;
   description: string;
 }
-const TaskCardTitle = ({
+const FeatureTaskCardTitle = ({
   title,
   description
-}: TaskCardTitleProps) => {
+}: FeatureTaskCardTitleProps) => {
   return <div className="px-0 my-[15px] mx-[15px]">
       <h4 style={{
       fontSize: '16px',
@@ -30,4 +30,4 @@ const TaskCardTitle = ({
       </p>
     </div>;
 };
-export default TaskCardTitle;
+export default FeatureTaskCardTitle;

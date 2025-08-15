@@ -8,11 +8,11 @@ import { CRMDashboard } from '../DepartmentTabs/CRM';
 import { CSRDashboard } from '../DepartmentTabs/CSR';
 import { TrainingDashboard } from '../DepartmentTabs/Training';
 
-interface SpecializedDepartmentPanelProps {
+interface FeatureDepartmentPanelProps {
   selectedDepartment: string;
 }
 
-export const SpecializedDepartmentPanel: React.FC<SpecializedDepartmentPanelProps> = ({ 
+export const FeatureDepartmentPanel: React.FC<FeatureDepartmentPanelProps> = ({
   selectedDepartment 
 }) => {
   const renderDepartmentDashboard = () => {

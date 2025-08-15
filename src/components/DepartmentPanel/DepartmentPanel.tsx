@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { DepartmentPanelLayout } from './DepartmentPanelLayout';
-import { SpecializedDepartmentPanel } from './SpecializedDepartmentPanel';
-import { GenericDepartmentPanel } from './GenericDepartmentPanel';
+import { FeatureDepartmentPanel } from './FeatureDepartmentPanel';
+import { BaseDepartmentPanel } from './BaseDepartmentPanel';
 import { EmptyDepartmentState } from './EmptyDepartmentState';
 
 interface DepartmentPanelProps {
@@ -27,7 +27,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   if (specializedDepartments.includes(selectedDepartment)) {
     return (
       <DepartmentPanelLayout>
-        <SpecializedDepartmentPanel selectedDepartment={selectedDepartment} />
+        <FeatureDepartmentPanel selectedDepartment={selectedDepartment} />
       </DepartmentPanelLayout>
     );
   }
@@ -35,7 +35,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   // Generic departments with tabbed interface
   return (
     <div className="h-full rounded-3xl overflow-hidden bg-[#d9e7ed]">
-      <GenericDepartmentPanel selectedDepartment={selectedDepartment} />
+      <BaseDepartmentPanel selectedDepartment={selectedDepartment} />
     </div>
   );
 };

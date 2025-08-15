@@ -1,6 +1,6 @@
 
 export { default } from './DepartmentPanel';
 export { DepartmentPanelLayout } from './DepartmentPanelLayout';
-export { SpecializedDepartmentPanel } from './SpecializedDepartmentPanel';
-export { GenericDepartmentPanel } from './GenericDepartmentPanel';
+export { FeatureDepartmentPanel } from './FeatureDepartmentPanel';
+export { BaseDepartmentPanel } from './BaseDepartmentPanel';
 export { EmptyDepartmentState } from './EmptyDepartmentState';

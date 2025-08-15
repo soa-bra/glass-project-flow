@@ -1,9 +1,9 @@
-interface TaskCardPriorityCircleProps {
+interface FeatureTaskCardPriorityCircleProps {
   priority: string;
 }
-const TaskCardPriorityCircle = ({
+const FeatureTaskCardPriorityCircle = ({
   priority
-}: TaskCardPriorityCircleProps) => {
+}: FeatureTaskCardPriorityCircleProps) => {
   const getPriorityConfig = (priority: string) => {
     const configs = {
       'urgent-important': {
@@ -63,4 +63,4 @@ const TaskCardPriorityCircle = ({
       </span>
     </div>;
 };
-export default TaskCardPriorityCircle;
+export default FeatureTaskCardPriorityCircle;

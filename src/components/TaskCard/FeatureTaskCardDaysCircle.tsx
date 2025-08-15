@@ -1,9 +1,9 @@
 
-interface TaskCardDaysCircleProps {
+interface FeatureTaskCardDaysCircleProps {
   daysLeft: number;
 }
 
-const TaskCardDaysCircle = ({ daysLeft }: TaskCardDaysCircleProps) => {
+const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps) => {
   return (
     <div style={{
       position: 'absolute',
@@ -41,4 +41,4 @@ const TaskCardDaysCircle = ({ daysLeft }: TaskCardDaysCircleProps) => {
   );
 };
 
-export default TaskCardDaysCircle;
+export default FeatureTaskCardDaysCircle;
