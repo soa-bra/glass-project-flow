@@ -33,22 +33,22 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   const variantClasses = {
     glass: 'bg-white/40 backdrop-blur-[20px] border border-white/20',
     flat: 'bg-opacity-100',
-    operations: 'bg-[#FFFFFF] border border-[#DADCE0] shadow-sm',
-    unified: 'bg-[#FFFFFF] border border-[#DADCE0] shadow-sm hover:shadow-md transition-shadow duration-300',
-    legal: 'bg-[#FFFFFF] border border-[#DADCE0] shadow-sm hover:shadow-md transition-shadow duration-300'
+    operations: 'bg-[var(--sb-surface-00)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]',
+    unified: 'bg-[var(--sb-surface-00)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)] hover:shadow-[var(--sb-shadow-strong)] transition-shadow duration-300',
+    legal: 'bg-[var(--sb-surface-00)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)] hover:shadow-[var(--sb-shadow-strong)] transition-shadow duration-300'
   };
   const colorClasses = {
-    info: 'bg-blue-500',
-    success: 'bg-green-500',
-    warning: 'bg-yellow-500',
-    error: 'bg-red-500',
-    crimson: 'bg-red-600'
+    info: 'bg-[var(--visual-data-secondary-4)]',
+    success: 'bg-[var(--visual-data-secondary-1)]',
+    warning: 'bg-[var(--visual-data-secondary-5)]',
+    error: 'bg-[var(--visual-data-secondary-2)]',
+    crimson: 'bg-[var(--visual-data-secondary-2)]'
   };
   const neonRingClasses = {
-    info: 'ring-2 ring-blue-400/30 ring-offset-2',
-    success: 'ring-2 ring-green-400/30 ring-offset-2',
-    warning: 'ring-2 ring-yellow-400/30 ring-offset-2',
-    error: 'ring-2 ring-red-400/30 ring-offset-2'
+    info: 'ring-2 ring-[var(--visual-data-secondary-4)]/30 ring-offset-2',
+    success: 'ring-2 ring-[var(--visual-data-secondary-1)]/30 ring-offset-2',
+    warning: 'ring-2 ring-[var(--visual-data-secondary-5)]/30 ring-offset-2',
+    error: 'ring-2 ring-[var(--visual-data-secondary-2)]/30 ring-offset-2'
   };
   return <div className={cn('rounded-[40px] transition-all duration-300 overflow-hidden', sizeClasses[size], variantClasses[variant], color && colorClasses[color], neonRing && neonRingClasses[neonRing], className)} style={style}>
       {header && <div className="mb-6">
