@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
+import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { Input } from '@/components/ui/input';
 import { 
   Calendar, 

@@ -2,8 +2,8 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Megaphone, Users, Calendar, FileText, Award, TrendingUp } from 'lucide-react';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
+import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 
 export const PublicRelationsTab: React.FC = () => {
   const prCampaigns = [

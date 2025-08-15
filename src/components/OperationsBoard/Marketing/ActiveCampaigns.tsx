@@ -1,5 +1,5 @@
 import React from 'react';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { UnifiedBadge } from '@/components/shared/components';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Progress } from '@/components/ui/progress';
 interface Campaign {

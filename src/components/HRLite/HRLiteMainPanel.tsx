@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Users, Calendar, Clock, TrendingUp } from 'lucide-react';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { InnerCard } from '@/components/ui/InnerCard';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { useHRLite } from '@/hooks/useHRLite';
 
 export const HRLiteMainPanel: React.FC = () => {

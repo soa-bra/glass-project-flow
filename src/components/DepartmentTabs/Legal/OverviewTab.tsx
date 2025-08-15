@@ -2,7 +2,7 @@ import React from 'react';
 import { AlertTriangle, FileText, Scale, Shield, Calendar, TrendingUp, Bell, CheckCircle, Clock } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { BaseCard, BaseStatsCard, BaseListItem } from '@/components/shared';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { mockLegalMetrics, mockAlerts } from './data';
 import { getStatusColor, getStatusText, getPriorityColor } from './utils';
 import { SPACING, LAYOUT } from '@/components/shared/design-system/constants';

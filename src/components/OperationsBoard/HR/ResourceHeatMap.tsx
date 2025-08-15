@@ -1,6 +1,6 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { UnifiedBadge } from '@/components/shared/components';
 import { Progress } from '@/components/ui/progress';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';

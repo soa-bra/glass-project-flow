@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
+import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { Calendar, Plus, Settings, BarChart3, Target, DollarSign } from 'lucide-react';
 export const CampaignsChannelsTab: React.FC = () => {
   const [activeView, setActiveView] = useState<'campaigns' | 'channels' | 'calendar'>('campaigns');

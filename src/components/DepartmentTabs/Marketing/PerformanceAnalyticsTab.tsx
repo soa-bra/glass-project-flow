@@ -2,7 +2,7 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { TrendingUp, BarChart3, Users, Target, DollarSign, MousePointer } from 'lucide-react';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 
 export const PerformanceAnalyticsTab: React.FC = () => {
   const kpiData = [

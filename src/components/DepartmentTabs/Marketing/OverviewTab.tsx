@@ -2,8 +2,8 @@ import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { TrendingUp, DollarSign, Users, BarChart3, Target, Zap } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
+import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 export const OverviewTab: React.FC = () => {
   const kpiStats = [{
     title: 'العائد على الإنفاق',

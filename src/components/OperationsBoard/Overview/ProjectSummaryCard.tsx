@@ -1,7 +1,8 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, ResponsiveContainer, XAxis } from 'recharts';
+import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis } from 'recharts';
+import { ChartWrapper } from '@/components/shared/charts/ChartWrapper';
 const projectData = [{
   name: '1',
   value: 20
@@ -53,32 +54,36 @@ export const ProjectSummaryCard: React.FC = () => {
           <div className="w-full max-w-[120px]" style={{
           aspectRatio: '6/10'
         }}>
-            <ChartContainer config={{
-            main: {
-              label: "الرئيسي",
-              color: "#000000"
-            },
-            others: {
-              label: "الآخرين",
-              color: "#ffffff"
-            }
-          }} className="w-full h-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={projectData} margin={{
-                top: 5,
-                right: 5,
-                left: 5,
-                bottom: 5
-              }}>
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{
-                  fontSize: 8,
-                  fill: '#666'
-                }} />
-                  <Bar dataKey="value" fill="#bdeed3" radius={[2, 2, 0, 0]} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+            <ChartWrapper 
+              config={{
+                main: {
+                  label: "الرئيسي",
+                  color: "#000000"
+                },
+                others: {
+                  label: "الآخرين",
+                  color: "#ffffff"
+                }
+              }}
+              className="w-full h-full"
+              minHeight={100}
+              minWidth={120}
+              aspectRatio="6/10"
+            >
+              <BarChart 
+                data={projectData} 
+                margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+              >
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 8, fill: '#666' }} 
+                />
+                <Bar dataKey="value" fill="#bdeed3" radius={[2, 2, 0, 0]} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+              </BarChart>
+            </ChartWrapper>
           </div>
         </div>
       </div>

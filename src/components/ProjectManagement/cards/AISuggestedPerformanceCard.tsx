@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { BarChart3, Users, Target, FileText, TrendingUp, PieChart } from 'lucide-react';
-import { BarChart, Bar, LineChart, Line, PieChart as RechartsPieChart, Cell, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { BarChart, Bar, LineChart, Line, PieChart as RechartsPieChart, Cell, XAxis, YAxis } from 'recharts';
+import { ChartWrapper } from '@/components/shared/charts/ChartWrapper';
 
 interface AISuggestedPerformanceCardProps {
   type: 'analytics' | 'team' | 'goals' | 'reports';
@@ -57,24 +58,24 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
     switch (chartType) {
       case 'line':
         return (
-          <ResponsiveContainer width="100%" height="100%">
+          <ChartWrapper minHeight={60} minWidth={100} aspectRatio="16/9">
             <LineChart data={lineData}>
               <Line type="monotone" dataKey="value" stroke="#000000" strokeWidth={2} dot={false} />
             </LineChart>
-          </ResponsiveContainer>
+          </ChartWrapper>
         );
       case 'bar':
         return (
-          <ResponsiveContainer width="100%" height="100%">
+          <ChartWrapper minHeight={60} minWidth={100} aspectRatio="16/9">
             <BarChart data={barData}>
               <Bar dataKey="value" fill="#aec2cf" radius={[2, 2, 0, 0]} />
             </BarChart>
-          </ResponsiveContainer>
+          </ChartWrapper>
         );
       case 'pie':
       case 'donut':
         return (
-          <ResponsiveContainer width="100%" height="100%">
+          <ChartWrapper minHeight={60} minWidth={100} aspectRatio="1/1">
             <RechartsPieChart>
               <RechartsPieChart
                 data={pieData}
@@ -89,7 +90,7 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
                 ))}
               </RechartsPieChart>
             </RechartsPieChart>
-          </ResponsiveContainer>
+          </ChartWrapper>
         );
       default:
         return null;

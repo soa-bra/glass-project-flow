@@ -1,7 +1,8 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { LineChart, Line, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
+import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis } from 'recharts';
+import { ChartWrapper } from '@/components/shared/charts/ChartWrapper';
 interface StatisticsCardProps {
   title: string;
   value: string;
@@ -52,67 +53,78 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
 }) => {
   const renderChart = () => {
     if (chartType === 'line') {
-      return <div className="w-full h-full">
-          <ChartContainer config={{
-          value: {
-            label: "القيمة",
-            color: "#d9d2fd"
-          }
-        }} className="w-full h-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData || sampleLineData} margin={{
-              top: 5,
-              right: 5,
-              left: 5,
-              bottom: 5
-            }}>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{
-                fontSize: 10,
-                fill: '#000000'
-              }} />
-                <YAxis axisLine={false} tickLine={false} tick={{
-                fontSize: 10,
-                fill: '#000000'
-              }} />
-                <Line type="monotone" dataKey="value" stroke="#d9d2fd" strokeWidth={2} dot={{
-                fill: '#000000',
-                r: 2
-              }} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </div>;
+      return (
+        <ChartWrapper 
+          config={{
+            value: {
+              label: "القيمة",
+              color: "#d9d2fd"
+            }
+          }}
+          className="w-full h-full"
+          minHeight={80}
+          minWidth={120}
+        >
+          <LineChart 
+            data={chartData || sampleLineData} 
+            margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+          >
+            <XAxis 
+              dataKey="name" 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fontSize: 10, fill: '#000000' }} 
+            />
+            <YAxis 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fontSize: 10, fill: '#000000' }} 
+            />
+            <Line 
+              type="monotone" 
+              dataKey="value" 
+              stroke="#d9d2fd" 
+              strokeWidth={2} 
+              dot={{ fill: '#000000', r: 2 }} 
+            />
+            <ChartTooltip content={<ChartTooltipContent />} />
+          </LineChart>
+        </ChartWrapper>
+      );
     }
     if (chartType === 'bar') {
-      return <div className="w-full h-full">
-          <ChartContainer config={{
-          value: {
-            label: "القيمة",
-            color: "#bdeed3"
-          }
-        }} className="w-full h-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData || sampleBarData} margin={{
-              top: 5,
-              right: 5,
-              left: 5,
-              bottom: 5
-            }}>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{
-                fontSize: 10,
-                fill: '#000000'
-              }} />
-                <YAxis axisLine={false} tickLine={false} tick={{
-                fontSize: 10,
-                fill: '#000000'
-              }} />
-                <Bar dataKey="value" fill="#bdeed3" radius={[2, 2, 0, 0]} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </div>;
+      return (
+        <ChartWrapper 
+          config={{
+            value: {
+              label: "القيمة",
+              color: "#bdeed3"
+            }
+          }}
+          className="w-full h-full"
+          minHeight={80}
+          minWidth={120}
+        >
+          <BarChart 
+            data={chartData || sampleBarData} 
+            margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+          >
+            <XAxis 
+              dataKey="name" 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fontSize: 10, fill: '#000000' }} 
+            />
+            <YAxis 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fontSize: 10, fill: '#000000' }} 
+            />
+            <Bar dataKey="value" fill="#bdeed3" radius={[2, 2, 0, 0]} />
+            <ChartTooltip content={<ChartTooltipContent />} />
+          </BarChart>
+        </ChartWrapper>
+      );
     }
     return null;
   };

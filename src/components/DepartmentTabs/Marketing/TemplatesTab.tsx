@@ -2,8 +2,7 @@
 import React from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { FileText, Download, Eye, Copy, Plus, Search } from 'lucide-react';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { UnifiedBadge, UnifiedButton } from '@/components/shared/components';
 
 export const TemplatesTab: React.FC = () => {
   const templateCategories = [

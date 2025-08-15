@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Users, Search, Filter, Plus, Eye, Edit, Phone, Mail, MapPin } from 'lucide-react';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
+import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { mockEmployees } from './data';
 import { Employee } from './types';

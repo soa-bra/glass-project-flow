@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
+import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { 

@@ -1,9 +1,10 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { DESIGN_TOKENS, TYPOGRAPHY } from '@/components/shared/design-system/constants';
 
 interface BaseBadgeProps {
   children: React.ReactNode;
-  variant?: 'success' | 'warning' | 'error' | 'info' | 'default';
+  variant?: 'success' | 'warning' | 'error' | 'info' | 'default' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
@@ -15,11 +16,13 @@ export const BaseBadge: React.FC<BaseBadgeProps> = ({
   className = ''
 }) => {
   const variantClasses = {
-    success: 'bg-[#bdeed3] text-black',
-    warning: 'bg-[#fbe2aa] text-black',
-    error: 'bg-[#f1b5b9] text-black',
-    info: 'bg-[#a4e2f6] text-black',
-    default: 'bg-[#d9d2fd] text-black'
+    success: 'bg-[#bdeed3] text-[#000000]',
+    warning: 'bg-[#fbe2aa] text-[#000000]',
+    error: 'bg-[#f1b5b9] text-[#000000]',
+    info: 'bg-[#a4e2f6] text-[#000000]',
+    default: 'bg-[#d9d2fd] text-[#000000]',
+    secondary: `bg-[${DESIGN_TOKENS.COLORS.INK_30}] text-[${DESIGN_TOKENS.COLORS.INK}]`,
+    outline: `bg-transparent border border-[${DESIGN_TOKENS.COLORS.BORDER}] text-[${DESIGN_TOKENS.COLORS.INK}]`
   };
 
   const sizeClasses = {
@@ -31,7 +34,8 @@ export const BaseBadge: React.FC<BaseBadgeProps> = ({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full font-medium font-arabic',
+        'inline-flex items-center rounded-full font-medium',
+        TYPOGRAPHY.ARABIC_FONT,
         variantClasses[variant],
         sizeClasses[size],
         className
@@ -41,3 +45,7 @@ export const BaseBadge: React.FC<BaseBadgeProps> = ({
     </span>
   );
 };
+
+// Backward compatibility exports
+export { BaseBadge as UnifiedBadge };
+export { BaseBadge as Badge };
