@@ -1,21 +1,25 @@
 import React from 'react';
+
 interface MarketingData {
   roas: number;
   activeCampaigns: number;
   conversion: number;
 }
+
 interface MarketingWidgetProps {
   marketing: MarketingData;
   className?: string;
 }
-export const MarketingWidget: React.FC<MarketingWidgetProps> = ({
-  marketing,
-  className = ''
+
+export const MarketingWidget: React.FC<MarketingWidgetProps> = ({ 
+  marketing, 
+  className = '' 
 }) => {
-  return <div className={`
+  return (
+    <div className={`
       ${className}
-      rounded-[40px] p-5
-      bg-[#FFFFFF] ring-1 ring-[#DADCE0] shadow-sm
+      rounded-[40px] p-5 h-full min-h-0
+      bg-[#FFFFFF] border border-[#DADCE0] shadow-sm
       hover:shadow-md transition-all duration-300
       flex flex-col justify-between
     `}>
@@ -24,7 +28,7 @@ export const MarketingWidget: React.FC<MarketingWidgetProps> = ({
         التسويق
       </h3>
 
-      <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden">
+      <div className="space-y-4 flex-1">
         <div className="flex items-center justify-between">
           <span className="text-sm text-black">عائد الاستثمار</span>
           <span className="text-xl font-bold text-black">{marketing.roas.toFixed(1)}x</span>
@@ -40,5 +44,6 @@ export const MarketingWidget: React.FC<MarketingWidgetProps> = ({
           <span className="text-xl font-bold text-black">{marketing.conversion}%</span>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };

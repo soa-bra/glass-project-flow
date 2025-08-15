@@ -136,10 +136,10 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
         </div>
       </BaseCard>;
   }
-  return <BaseCard variant="glass" size="md" className="h-full min-h-0" style={{
+  return <BaseCard variant="glass" size="md" className="h-full min-h-0 border-[#DADCE0]" style={{
     backgroundColor: '#ffffff'
   }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
-      <div className="flex gap-14 h-90 w-full overflow-hidden mx-0 py-0 my-0 px-0">
+      <div className="flex gap-14 h-90 w-full overflow-hidden my-[25px] px-px mx-[10px] py-px">
         {/* النصوص والأرقام - 2/7 من المساحة */}
         <div className="w-2/7 flex flex-col justify-center overflow-hidden">
           <div className="flex items-baseline gap-2 mb-2">

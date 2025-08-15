@@ -24,7 +24,7 @@ export const CustomersWidget: React.FC<CustomersWidgetProps> = ({
         العملاء
       </h3>
 
-      <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden">
+      <div className="space-y-4 flex-1">
         <div className="flex items-center justify-between">
           <span className="text-sm text-black">إجمالي العملاء</span>
           <span className="text-xl font-bold text-black">{customers.totalClients}</span>
