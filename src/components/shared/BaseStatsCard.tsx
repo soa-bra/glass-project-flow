@@ -28,7 +28,7 @@ export const BaseStatsCard: React.FC<UnifiedStatsCardProps> = ({
           <div className={`text-2xl font-bold ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT}`}>
             {stat.value}
           </div>
-          <div className={`${TYPOGRAPHY.BODY_TEXT} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT}`}>
+          <div className={`${TYPOGRAPHY.BODY} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT}`}>
             {stat.title}
           </div>
           {stat.description && (

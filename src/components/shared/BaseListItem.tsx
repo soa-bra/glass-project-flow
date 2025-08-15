@@ -27,7 +27,7 @@ export const BaseListItem: React.FC<UnifiedListItemProps> = ({
             {icon}
           </div>
         )}
-        <span className={`${TYPOGRAPHY.BODY_TEXT} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} flex-1`}>
+        <span className={`${TYPOGRAPHY.BODY} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} flex-1`}>
           {children}
         </span>
         {badge && (

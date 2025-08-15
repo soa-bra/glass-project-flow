@@ -89,12 +89,6 @@ export const TYPOGRAPHY = {
   H3: 'text-lg font-semibold', // 600
   BODY: 'text-sm font-normal', // 400
   SMALL: 'text-xs font-normal', // 400
-  
-  // Legacy title sizes (deprecated)
-  TITLE_SIZE: 'text-xl font-semibold',
-  LARGE_TITLE_SIZE: 'text-large font-semibold',
-  BODY_TEXT: 'text-sm font-medium',
-  CAPTION_TEXT: 'text-xs font-normal',
 } as const;
 
 export const LAYOUT = {

@@ -11,7 +11,7 @@ export const EmptySettingsState: React.FC = () => {
         </div>
         
         <div className="space-y-3">
-          <h3 className={`${TYPOGRAPHY.LARGE_TITLE_SIZE} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT}`}>
+          <h3 className={`${TYPOGRAPHY.H2} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT}`}>
             مرحباً بك في الإعدادات
           </h3>
           <p className={`text-gray-600 leading-relaxed ${TYPOGRAPHY.ARABIC_FONT}`}>
@@ -20,7 +20,7 @@ export const EmptySettingsState: React.FC = () => {
         </div>
         
         <div className={`${COLORS.TRANSPARENT_BACKGROUND} ${LAYOUT.CARD_ROUNDED} p-4 ${COLORS.BORDER_COLOR}`}>
-          <p className={`${TYPOGRAPHY.CAPTION_TEXT} text-gray-600 ${TYPOGRAPHY.ARABIC_FONT}`}>
+          <p className={`${TYPOGRAPHY.SMALL} text-gray-600 ${TYPOGRAPHY.ARABIC_FONT}`}>
             💡 <strong>نصيحة:</strong> يمكنك البدء بإعدادات الملف الشخصي أو الأمان والخصوصية
           </p>
         </div>

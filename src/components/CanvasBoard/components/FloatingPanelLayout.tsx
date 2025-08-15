@@ -123,12 +123,6 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
   return <>
       {/* منطقة اللوحات الأولى - First Panels Area */}
       <div className="fixed top-0 bottom-8 right-5 w-60 z-30 pointer-events-auto flex flex-col my-[45px] ">
-        {/* Enhanced Collaboration Panel - 30% */}
-        <div className="h-[30%] mb-2.5" style={{
-        backdropFilter: 'blur(8px)'
-      }}>
-          {/* Enhanced Collaboration Panel - Removed */}
-        </div>
         
         {/* Enhanced Layers Panel - 35% */}
         <div className="h-[35%] mb-2.5" style={{

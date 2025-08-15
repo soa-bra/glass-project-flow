@@ -71,7 +71,7 @@ export const BaseArchiveItem: React.FC<BaseArchiveItemProps> = ({
             <IconComponent className={LAYOUT.ICON_SIZE} />
           </div>
           <div className="flex-1">
-            <h3 className={`${TYPOGRAPHY.BODY_TEXT} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} mb-2`}>
+            <h3 className={`${TYPOGRAPHY.BODY} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} mb-2`}>
               {item.title}
             </h3>
             

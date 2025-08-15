@@ -20,7 +20,7 @@ export const BaseArchivePanel: React.FC<BaseArchivePanelProps> = ({ category }) 
   return (
     <div className={`h-full ${LAYOUT.FLEX_CENTER} ${COLORS.TRANSPARENT_BACKGROUND}`}>
       <div className="text-center">
-        <h2 className={`${TYPOGRAPHY.LARGE_TITLE_SIZE} text-gray-600 mb-4 ${TYPOGRAPHY.ARABIC_FONT}`}>
+        <h2 className={`${TYPOGRAPHY.H2} text-gray-600 mb-4 ${TYPOGRAPHY.ARABIC_FONT}`}>
           {getCategoryTitle(category)}
         </h2>
         <p className={`text-gray-500 ${TYPOGRAPHY.ARABIC_FONT}`}>
