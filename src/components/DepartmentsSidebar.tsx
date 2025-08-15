@@ -99,7 +99,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
                     ${isActive ? 'bg-white/30 border-[#3e494c]/60 shadow-lg scale-105' : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/60 group-hover:bg-white/20 group-hover:shadow-md group-hover:scale-110 group-active:scale-95'}
                   `}>
                    <IconComponent className={`
-                      w-2.5 h-2.5 sync-transition-fast
+                      w-[20px] h-[20px] sync-transition-fast
                       ${isActive ? 'text-[#3e494c] scale-110' : 'text-soabra-text-secondary group-hover:text-[#3e494c] group-hover:scale-110'}
                     `} />
                 </div>
