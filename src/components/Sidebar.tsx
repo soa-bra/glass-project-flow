@@ -56,7 +56,7 @@ const Sidebar = ({
     transition: 'all var(--animation-duration-main) var(--animation-easing)',
     background: '#dfecf2'
   }} className="z-sidebar h-full backdrop-blur-xl rounded-3xl mx-0 overflow-hidden px-0 bg-slate-100">
-      <nav className="flex flex-colbg-slate-100 gap-2 h-full py-0 mx-0 px-0 ">
+      <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0 bg-slate-100">
         {/* Menu Title Section with Toggle */}
         <div className={`text-center mb-2 rounded-full mx-0 px-0 py-[24px] my-[24px] sync-transition ${forceCollapsed || isCollapsed ? 'flex justify-center' : ''}`}>
           <div className={`flex items-center rounded-lg sync-transition ${forceCollapsed || isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[20px]'}`}>
