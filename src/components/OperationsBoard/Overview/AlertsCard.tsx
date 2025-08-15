@@ -41,12 +41,12 @@ const getAlertColor = (type: Alert['type']) => {
     case 'info':
       return '#d0e1e9';
     default:
-      return '#f3ffff';
+      return '##ffffff border-[#DADCE0]';
   }
 };
 export const AlertsCard: React.FC = () => {
   return <BaseCard variant="glass" size="md" className="h-full min-h-0" style={{
-    backgroundColor: '#f3ffff'
+    backgroundColor: '##ffffff border-[#DADCE0]'
   }}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-arabic font-semibold text-gray-800">التنبيهات</h3>
