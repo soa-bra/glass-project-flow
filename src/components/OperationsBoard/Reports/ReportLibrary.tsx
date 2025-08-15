@@ -34,7 +34,7 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({
         return 'bg-gray-100 text-gray-800';
     }
   };
-  return <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
+  return <Card className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
       <CardHeader>
         <CardTitle className="text-right font-arabic flex items-center gap-2">
           <FileText className="w-5 h-5" />
@@ -44,7 +44,7 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({
       <CardContent>
         <div className="flex gap-2 mb-4">
           <div className="flex-1">
-            <Input placeholder="ابحث في التقارير..." className="text-right border-2 border-[#000000]/50" />
+            <Input placeholder="ابحث في التقارير..." className="text-right rounded-[40px] bg-[#ffffff] border-[#DADCE0]" />
           </div>
           <Button variant="outline" size="icon" className="w-[37px] h-[37px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#000000]/50 bg-transparent">
             <Search className="w-4 h-4" />

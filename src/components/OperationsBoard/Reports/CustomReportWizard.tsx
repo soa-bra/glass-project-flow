@@ -28,7 +28,7 @@ export const CustomReportWizard: React.FC = () => {
   const [reportName, setReportName] = useState('');
   const [reportType, setReportType] = useState('');
   const [description, setDescription] = useState('');
-  return <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
+  return <Card className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
       <CardHeader>
         <CardTitle className="text-right font-arabic flex items-center gap-2">
           <FileSpreadsheet className="w-5 h-5" />
@@ -41,7 +41,7 @@ export const CustomReportWizard: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1 text-right">
               اسم التقرير
             </label>
-            <Input value={reportName} onChange={e => setReportName(e.target.value)} placeholder="أدخل اسم التقرير" className="text-right border-2 border-[#000000]/50" />
+            <Input value={reportName} onChange={e => setReportName(e.target.value)} placeholder="أدخل اسم التقرير" className="text-right rounded-[40px] bg-[#ffffff] border-[#DADCE0]" />
           </div>
 
           <div>
@@ -49,7 +49,7 @@ export const CustomReportWizard: React.FC = () => {
               نوع التقرير
             </label>
             <Select value={reportType} onValueChange={setReportType}>
-              <SelectTrigger className="text-right">
+              <SelectTrigger className="text-right rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
                 <SelectValue placeholder="اختر نوع التقرير" />
               </SelectTrigger>
               <SelectContent>
@@ -66,11 +66,11 @@ export const CustomReportWizard: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1 text-right">
               الوصف
             </label>
-            <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="وصف موجز للتقرير" rows={3} className="text-right border-2 border-[#000000]/50" />
+            <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="وصف موجز للتقرير" rows={3} className="text-right rounded-[10px] bg-[#ffffff] border-[#DADCE0]" />
           </div>
 
           <div className="flex gap-2">
-            <Button className="flex-1 rounded-full">
+            <Button className="flex-1 rounded-full text-base bg-black">
               إنشاء التقرير
             </Button>
             <Button variant="outline" className="rounded-full">

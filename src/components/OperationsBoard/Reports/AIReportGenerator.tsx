@@ -22,7 +22,7 @@ export const AIReportGenerator: React.FC<AIReportGeneratorProps> = ({
     if (confidence >= 70) return 'text-yellow-600 bg-yellow-100';
     return 'text-red-600 bg-red-100';
   };
-  return <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
+  return <Card className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
       <CardHeader>
         <CardTitle className="text-right font-arabic flex items-center gap-2">
           <Bot className="w-5 h-5" />
