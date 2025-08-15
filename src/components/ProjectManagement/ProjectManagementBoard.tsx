@@ -4,9 +4,11 @@ import { ProjectManagementHeader } from './ProjectManagementHeader';
 import { ProjectProgressBar } from './ProjectProgressBar';
 import { ProjectCardGrid } from './ProjectCardGrid';
 import { AddProjectModal } from '@/components/ProjectsColumn/AddProjectModal';
-import { FinancialTab, ClientTab, TeamTab, AttachmentsTab, TemplatesTab } from '@/components/ProjectPanel/ProjectTabs';
+import { FinancialTab, ClientTab, TeamTab, AttachmentsTab, TemplatesTab } from './ProjectTabs';
 import { TaskManagementTab } from './TaskManagementTab';
 import { ReportsTab } from './ReportsTab';
+import { BaseProjectTabLayout } from './BaseProjectTabLayout';
+import { SPACING, TYPOGRAPHY, COLORS, buildCardClasses, LAYOUT } from '@/components/shared/design-system/constants';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { Reveal, Stagger } from '@/components/shared/motion';
@@ -108,148 +110,88 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
-        return <>
-            {/* الإحصائيات - منقولة لتكون مع معلومات المشروع */}
-            <div className="flex justify-between items-start mb-6 flex-shrink-0 py-0 my-0">
-              {/* معلومات المشروع الأساسية */}
-              <Reveal delay={0}>
-                <div className="flex-1 mx-[15px]">
-                  <div className="flex items-center gap-4 mb-4">
-                    {/* اسم المشروع */}
-                    <h2 className="text-xl font-arabic font-semibold text-gray-800">
-                      {project.title}
-                    </h2>
-
-                    {/* مدير المشروع */}
-                    <div className="px-3 py-1.5 bg-transparent border border-black rounded-full font-arabic text-sm text-black">
-                      {project.owner}
-                    </div>
-
-                    {/* حالة المشروع */}
-                    <div className="px-3 py-1.5 bg-transparent border border-black rounded-full font-arabic text-sm flex items-center gap-2 text-black">
-                      <div className="w-2 h-2 rounded-full"
-                        style={{
-                          backgroundColor: project.status === 'success' ? 'var(--status-colors-on-plan)' :
-                                           project.status === 'warning' ? 'var(--status-colors-delayed)' :
-                                           project.status === 'error' ? 'var(--status-colors-stopped)' :
-                                           'var(--status-colors-in-preparation)'
-                        }}></div>
-                      {project.status === 'success' ? 'مكتمل' :
-                       project.status === 'warning' ? 'متأخر' :
-                       project.status === 'error' ? 'متوقف' :
-                       'قيد التحضير'}
-                    </div>
-                  </div>
-
-                  {/* النبذة التعريفية */}
-                  <div className="text-sm text-gray-600 font-arabic leading-relaxed max-w-2xl">
-                    {project.description || "تطوير موقع إلكتروني متكامل باستخدام أحدث التقنيات وفقاً للمعايير العالمية مع ضمان الأمان والسرعة في الأداء."}
-                  </div>
+        return (
+          <BaseProjectTabLayout 
+            value="overview"
+            kpiStats={[
+              {
+                title: 'الإيرادات المتوقعة',
+                value: String(mockStats.expectedRevenue || 0),
+                unit: 'ألف ر.س',
+                description: 'الإيرادات المتوقعة من المشروع'
+              },
+              {
+                title: 'أيام التأخير',
+                value: String(mockStats.complaints || 0).padStart(2, '0'),
+                unit: 'يوم',
+                description: 'المهام المتبقية: 5 مهام'
+              },
+              {
+                title: 'أعضاء الفريق',
+                value: String(mockStats.delayedProjects || 0).padStart(2, '0'),
+                unit: 'عضو',
+                description: 'معدل الإنجاز العام 94%'
+              }
+            ]}
+          >
+            {/* Project Information */}
+            <div className={buildCardClasses('mb-6')}>
+              <div className="flex items-center gap-4 mb-4">
+                <h2 className={`${TYPOGRAPHY.H2} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT}`}>
+                  {project.title}
+                </h2>
+                <div className="px-3 py-1.5 bg-transparent border border-gray-300 rounded-full text-sm">
+                  {project.owner}
                 </div>
-              </Reveal>
-
-              {/* الإحصائيات */}
-              <Reveal delay={0.15}>
-                <div className="flex-shrink-0">
-                  <Stagger delay={0.25} gap={0.12} className="grid grid-cols-3 gap-6 px-[45px] my-0">
-                    {/* الإيرادات المتوقعة */}
-                    <Stagger.Item className="text-right p-6 py-0 px-[20px]">
-                      <div className="mb-2">
-                        <span className="text-sm text-black font-arabic font-medium">الإيرادات المتوقعة</span>
-                      </div>
-                      <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
-                        <div className="text-3xl font-normal text-gray-900 font-arabic">
-                          {mockStats.expectedRevenue || 0}
-                        </div>
-                        <div className="text-xs text-black font-arabic font-bold">الف</div>
-                      </div>
-                      <div className="text-xs font-Regular text-black font-arabic">ريال سعودي والمتبقي منها 25 الف</div>
-                    </Stagger.Item>
-
-                    {/* الشكاوى */}
-                    <Stagger.Item className="text-right p-6 mx-0 py-0 px-[20px]">
-                      <div className="mb-2">
-                        <span className="text-sm text-black font-arabic font-medium">الشكاوى</span>
-                      </div>
-                      <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
-                        <div className="text-3xl font-normal text-gray-900 font-arabic">
-                          {String(mockStats.complaints || 0).padStart(2, '0')}
-                        </div>
-                        <div className="text-xs text-black font-arabic font-bold">يوم</div>
-                      </div>
-                      <div className="text-xs font-Regular text-black font-arabic">وعدد المهام المتبقية: 5 مهام</div>
-                    </Stagger.Item>
-
-                    {/* المشاريع المتأخرة */}
-                    <Stagger.Item className="text-right p-6 py-0 px-[20px]">
-                      <div className="mb-2">
-                        <span className="text-sm text-black font-arabic font-medium">عدد اعضاء فريق المشروع</span>
-                      </div>
-                      <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
-                        <div className="text-3xl font-normal text-gray-900 font-arabic">
-                          {String(mockStats.delayedProjects || 0).padStart(2, '0')}
-                        </div>
-                        <div className="text-xs text-black font-arabic font-bold">عضو</div>
-                      </div>
-                      <div className="text-xs font-Regular text-black font-arabic">ومعدل الانجاز العام 94٪</div>
-                    </Stagger.Item>
-                  </Stagger>
+                <div className="px-3 py-1.5 bg-transparent border border-gray-300 rounded-full text-sm flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full"
+                    style={{
+                      backgroundColor: project.status === 'success' ? '#3DBE8B' :
+                                       project.status === 'warning' ? '#F6C445' :
+                                       project.status === 'error' ? '#E5564D' :
+                                       '#3DA8F5'
+                    }}></div>
+                  {project.status === 'success' ? 'مكتمل' :
+                   project.status === 'warning' ? 'متأخر' :
+                   project.status === 'error' ? 'متوقف' :
+                   'قيد التحضير'}
                 </div>
-              </Reveal>
+              </div>
+              <div className={`${TYPOGRAPHY.BODY} ${COLORS.SECONDARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} leading-relaxed max-w-2xl`}>
+                {project.description || "تطوير موقع إلكتروني متكامل باستخدام أحدث التقنيات وفقاً للمعايير العالمية مع ضمان الأمان والسرعة في الأداء."}
+              </div>
             </div>
 
-            {/* شريط تقدم المراحل */}
-            <Reveal delay={0.3}>
-              <div className="flex-shrink-10 my-0 px-0 mx-[15px]">
-                <ProjectProgressBar progress={project.progress || 0} stages={[{
-                label: 'التحضير'
-              }, {
-                label: 'التنفيذ المبدئي'
-              }, {
-                label: 'المراجعة الأولية'
-              }, {
-                label: 'المعالجة الأولية'
-              }, {
-                label: 'المراجعة النهائية'
-              }, {
-                label: 'المعالجة النهائية'
-              }]} />
-              </div>
-            </Reveal>
+            {/* Progress Bar */}
+            <div className={buildCardClasses('mb-6')}>
+              <ProjectProgressBar progress={project.progress || 0} stages={[
+                { label: 'التحضير' },
+                { label: 'التنفيذ المبدئي' },
+                { label: 'المراجعة الأولية' },
+                { label: 'المعالجة الأولية' },
+                { label: 'المراجعة النهائية' },
+                { label: 'المعالجة النهائية' }
+              ]} />
+            </div>
 
-            {/* المحتوى الرئيسي */}
-            <Reveal delay={0.45}>
-              <div className="flex-1 min-h-0 my-0 py-[12px]">
-                <ProjectCardGrid project={project} />
-              </div>
-            </Reveal>
-          </>;
+            {/* Project Cards Grid */}
+            <ProjectCardGrid project={project} />
+          </BaseProjectTabLayout>
+        );
       case 'tasks':
-        return <Reveal delay={0.2}><TaskManagementTab project={project} /></Reveal>;
+        return <TaskManagementTab project={project} />;
       case 'finance':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><FinancialTab data={project} /></Reveal>
-          </div>;
+        return <FinancialTab data={project} />;
       case 'team':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><TeamTab teamData={project.team} /></Reveal>
-          </div>;
+        return <TeamTab teamData={project.team} />;
       case 'client':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><ClientTab clientData={null} /></Reveal>
-          </div>;
+        return <ClientTab clientData={null} />;
       case 'files':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><AttachmentsTab documents={null} /></Reveal>
-          </div>;
+        return <AttachmentsTab documents={null} />;
       case 'templates':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><TemplatesTab templates={null} /></Reveal>
-          </div>;
+        return <TemplatesTab templates={null} />;
       case 'reports':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><ReportsTab project={project} /></Reveal>
-          </div>;
+        return <ReportsTab project={project} />;
       default:
         return null;
     }
