@@ -11,7 +11,7 @@ import {
   TemplatesArchivePanel,
   PoliciesArchivePanel
 } from './categories';
-import { GenericArchivePanel } from './GenericArchivePanel';
+import { BaseArchivePanel } from './BaseArchivePanel';
 import { ArchiveCategoryType } from './CategoryPanelTypes';
 
 interface CategoryPanelFactoryProps {
@@ -53,5 +53,5 @@ export const CategoryPanelFactory: React.FC<CategoryPanelFactoryProps> = ({ cate
   }
 
   // Fallback for unknown categories
-  return <GenericArchivePanel category={category} />;
+  return <BaseArchivePanel category={category} />;
 };

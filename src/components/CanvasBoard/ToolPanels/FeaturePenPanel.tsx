@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Pen, Brush, Highlighter, Eraser } from 'lucide-react';
 
-interface SmartPenPanelProps {
+interface FeaturePenPanelProps {
   onToolSelect: (tool: string) => void;
   selectedTool: string;
 }
 
-export const SmartPenPanel: React.FC<SmartPenPanelProps> = ({ onToolSelect, selectedTool }) => {
+export const FeaturePenPanel: React.FC<FeaturePenPanelProps> = ({ onToolSelect, selectedTool }) => {
   return (
     <Card className="w-64">
       <CardHeader>

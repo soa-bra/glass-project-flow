@@ -17,8 +17,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { AdvancedColorPicker } from './ColorPicker/AdvancedColorPicker';
-import { AdvancedBorderControls } from './BorderControls/AdvancedBorderControls';
+import { FeatureColorPicker } from './ColorPicker/FeatureColorPicker';
+import { FeatureBorderControls } from './BorderControls/FeatureBorderControls';
 import { StylePresetsManager } from './StylePresets/StylePresetsManager';
 
 interface SelectedElement {
@@ -38,7 +38,7 @@ interface AppearancePanelProps {
   onToggleVisibility?: () => void;
 }
 
-export const EnhancedAppearancePanel: React.FC<AppearancePanelProps> = ({
+export const FeatureAppearancePanel: React.FC<AppearancePanelProps> = ({
   selectedElements = [],
   onStyleUpdate,
   onBulkStyleUpdate,
@@ -274,7 +274,7 @@ export const EnhancedAppearancePanel: React.FC<AppearancePanelProps> = ({
 
             {/* Colors Tab */}
             <TabsContent value="colors" className="space-y-4 mt-4">
-              <AdvancedColorPicker
+              <FeatureColorPicker
                 color={currentStyle.fill || '#000000'}
                 onChange={handleColorChange}
                 onSave={saveColorToPresets}
@@ -284,7 +284,7 @@ export const EnhancedAppearancePanel: React.FC<AppearancePanelProps> = ({
 
             {/* Borders Tab */}
             <TabsContent value="borders" className="space-y-4 mt-4">
-              <AdvancedBorderControls
+              <FeatureBorderControls
                 border={{
                   width: currentStyle.strokeWidth || 1,
                   color: currentStyle.stroke || '#000000',

@@ -35,7 +35,7 @@ interface RGBColor {
   b: number;
 }
 
-export const AdvancedColorPicker: React.FC<ColorPickerProps> = ({
+export const FeatureColorPicker: React.FC<ColorPickerProps> = ({
   color,
   onChange,
   onSave,

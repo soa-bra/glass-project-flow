@@ -39,7 +39,7 @@ interface BorderPreset {
   preview: string;
 }
 
-export const AdvancedBorderControls: React.FC<BorderControlsProps> = ({
+export const FeatureBorderControls: React.FC<BorderControlsProps> = ({
   border,
   onChange,
   onPresetSave,

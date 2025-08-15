@@ -17,12 +17,12 @@ import {
   Workflow
 } from 'lucide-react';
 
-interface SmartElementsPanelProps {
-  onAddSmartElement: (elementConfig: any) => void;
+interface FeatureElementsPanelProps {
+  onAddElement: (elementConfig: any) => void;
 }
 
-export const SmartElementsPanel: React.FC<SmartElementsPanelProps> = ({
-  onAddSmartElement
+export const FeatureElementsPanel: React.FC<FeatureElementsPanelProps> = ({
+  onAddElement
 }) => {
   const smartElements = [
     {
@@ -91,7 +91,7 @@ export const SmartElementsPanel: React.FC<SmartElementsPanelProps> = ({
                       <Button
                         key={element.id}
                         variant="outline"
-                        onClick={() => onAddSmartElement(element.config)}
+                        onClick={() => onAddElement(element.config)}
                         className="h-auto p-3 flex items-start gap-3 text-left"
                       >
                         <Icon className="w-5 h-5 mt-0.5 text-primary" />

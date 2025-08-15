@@ -2,11 +2,11 @@
 import React from 'react';
 import { COLORS, LAYOUT, TYPOGRAPHY } from '@/components/shared/design-system/constants';
 
-interface GenericArchivePanelProps {
+interface BaseArchivePanelProps {
   category: string;
 }
 
-export const GenericArchivePanel: React.FC<GenericArchivePanelProps> = ({ category }) => {
+export const BaseArchivePanel: React.FC<BaseArchivePanelProps> = ({ category }) => {
   const getCategoryTitle = (category: string) => {
     const titles: { [key: string]: string } = {
       'organizational': 'الهيكل التنظيمي',
