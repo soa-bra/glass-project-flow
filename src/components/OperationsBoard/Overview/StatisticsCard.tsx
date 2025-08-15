@@ -136,7 +136,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = ({
         </div>
       </BaseCard>;
   }
-  return <BaseCard variant="glass" size="md" className="h-full min-h-0" style={{
+  return <BaseCard variant="glass" size="md" className="h-full min-h-0 border-[#DADCE0]" style={{
     backgroundColor: '#ffffff'
   }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
       <div className="flex gap-14 h-90 w-full overflow-hidden my-[25px] px-px mx-[10px] py-px">
