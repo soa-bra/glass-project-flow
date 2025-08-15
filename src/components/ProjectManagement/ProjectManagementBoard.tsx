@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs } from '@/components/ui/tabs';
 import { ProjectManagementHeader } from './ProjectManagementHeader';
 import { ProjectProgressBar } from './ProjectProgressBar';
 import { ProjectCardGrid } from './ProjectCardGrid';
@@ -224,7 +225,9 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         />
 
         {/* محتوى التبويبة النشطة */}
-        {renderTabContent()}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-auto" dir="rtl">
+          {renderTabContent()}
+        </Tabs>
 
         {/* حوارات التأكيد */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
