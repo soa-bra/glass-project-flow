@@ -24,7 +24,7 @@ export const DESIGN_TOKENS = {
   
   // Colors from specification
   COLORS: {
-    INK: '#0B0F12',
+    INK: '#000000',
     INK_60: 'rgba(11,15,18,0.6)',
     INK_30: 'rgba(11,15,18,0.3)',
     SURFACE: '#FFFFFF',
@@ -72,11 +72,11 @@ export const COLORS = {
   MUTED_TEXT: `text-[${DESIGN_TOKENS.COLORS.INK_30}]`,
   
   // Badge colors (keeping original for brand consistency)
-  BADGE_SUCCESS: 'bg-[#bdeed3] text-[#0B0F12]',
-  BADGE_WARNING: 'bg-[#fbe2aa] text-[#0B0F12]',
-  BADGE_ERROR: 'bg-[#f1b5b9] text-[#0B0F12]',
-  BADGE_INFO: 'bg-[#a4e2f6] text-[#0B0F12]',
-  BADGE_PRIMARY: 'bg-[#d9d2fd] text-[#0B0F12]',
+  BADGE_SUCCESS: 'bg-[#bdeed3] text-[#000000]',
+  BADGE_WARNING: 'bg-[#fbe2aa] text-[#000000]',
+  BADGE_ERROR: 'bg-[#f1b5b9] text-[#000000]',
+  BADGE_INFO: 'bg-[#a4e2f6] text-[#000000]',
+  BADGE_PRIMARY: 'bg-[#d9d2fd] text-[#000000]',
 } as const;
 
 export const TYPOGRAPHY = {
@@ -128,14 +128,14 @@ export const TRANSITIONS = {
 // Motion system from specification
 export const MOTION = {
   REVEAL: {
-    FADE_SLIDE_UP: 'animate-[fadeSlideUp_0.7s_cubic-bezier(0.22,1,0.36,1)]',
+    FADE_SLIDE_UP: 'animate-[fadeSlideUp_0.9s_cubic-bezier(0.22,1,0.36,1)]',
     Y_OFFSET: 24,
-    DURATION: 0.7,
+    DURATION: 0.9,
     EASE: [0.22, 1, 0.36, 1],
   },
   STAGGER: {
     GAP: 0.08,
-    ITEM_DURATION: 0.7,
+    ITEM_DURATION: 0.9,
   },
 } as const;
 
