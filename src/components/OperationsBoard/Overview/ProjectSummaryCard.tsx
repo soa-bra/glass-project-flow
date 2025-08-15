@@ -35,7 +35,7 @@ export const ProjectSummaryCard: React.FC = () => {
             </button>
           </div>
         </div>}>
-      <div className="bottom-2 flex h-[155px] overflow-hidden">
+      <div className="overflow-y-hidden ">
         {/* النصوص والأرقام - النصف الأول */}
         <div className="bottom-0 flex-col justify-center gap-1 overflow-hidden mx-[15px] px-0 my-0 py-0">
           <div className="text-right">
