@@ -41,7 +41,7 @@ export const TransactionsTab: React.FC = () => {
             <BaseActionButton 
               variant="primary" 
               onClick={() => setIsAccountingEntryModalOpen(true)}
-              icon={<FileText className="w-4 h-4" />}
+              icon={<FileText className="w-4 h-4 rounded-[40px] bg-[#ffffff] border-[#DADCE0] " />}
             >
               إضافة قيد
             </BaseActionButton>
