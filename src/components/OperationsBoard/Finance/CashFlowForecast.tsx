@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BaseCard } from '@/components/shared/BaseCard';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Area, AreaChart } from 'recharts';
 interface CashFlowData {
@@ -25,44 +25,40 @@ const chartConfig = {
 export const CashFlowForecast: React.FC<CashFlowForecastProps> = ({
   cashFlowData
 }) => {
-  return <Card style={{
-    backgroundColor: '#f3ffff'
-  }} className="w-full bg-[soabra-new-admin-ops-board] rounded-3xl border shadow-sm ">
-      <CardHeader>
-        <CardTitle className="text-right font-arabic text-lg font-semibold text-black">
-          التنبؤ بالتدفق النقدي
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-6">
-        <ChartContainer config={chartConfig} className="h-[350px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={cashFlowData} margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5
-          }}>
-              <defs>
-                <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-cumulativeBalance)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="var(--color-cumulativeBalance)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="date" tick={{
-              fontSize: 12
-            }} tickLine={false} axisLine={false} />
-              <YAxis tick={{
-              fontSize: 12
-            }} tickLine={false} axisLine={false} tickFormatter={value => `${value / 1000}ك`} />
-              <ChartTooltip content={<ChartTooltipContent formatter={(value: number, name: string) => [`${value.toLocaleString()} ر.س`, name]} />} />
-              <Area type="monotone" dataKey="cumulativeBalance" stroke="#a4e2f6" fillOpacity={1} fill="#d9d2fd" strokeWidth={2} name="الرصيد التراكمي" />
-              <Line type="monotone" dataKey="netFlow" stroke="#a4e2f6" strokeWidth={2} dot={{
-              r: 4,
-              fill: '#a4e2f6'
-            }} name="التدفق الصافي" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartContainer>
-      </CardContent>
-    </Card>;
+  return (
+    <BaseCard
+      className="w-full"
+      title="التنبؤ بالتدفق النقدي"
+    >
+      <ChartContainer config={chartConfig} className="h-[350px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={cashFlowData} margin={{
+          top: 20,
+          right: 30,
+          left: 20,
+          bottom: 5
+        }}>
+            <defs>
+              <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="var(--color-cumulativeBalance)" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="var(--color-cumulativeBalance)" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="date" tick={{
+            fontSize: 12
+          }} tickLine={false} axisLine={false} />
+            <YAxis tick={{
+            fontSize: 12
+          }} tickLine={false} axisLine={false} tickFormatter={value => `${value / 1000}ك`} />
+            <ChartTooltip content={<ChartTooltipContent formatter={(value: number, name: string) => [`${value.toLocaleString()} ر.س`, name]} />} />
+            <Area type="monotone" dataKey="cumulativeBalance" stroke="#a4e2f6" fillOpacity={1} fill="#d9d2fd" strokeWidth={2} name="الرصيد التراكمي" />
+            <Line type="monotone" dataKey="netFlow" stroke="#a4e2f6" strokeWidth={2} dot={{
+            r: 4,
+            fill: '#a4e2f6'
+          }} name="التدفق الصافي" />
+          </AreaChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+    </BaseCard>
+  );
 };
