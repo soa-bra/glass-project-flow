@@ -1,27 +1,26 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Receipt, FileText, ExternalLink, CreditCard } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseTabContent } from '@/components/shared/BaseTabContent';
+import { BaseCard } from '@/components/shared/BaseCard';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { BaseBadge } from '@/components/ui/BaseBadge';
+import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
+import { Reveal } from '@/components/shared/motion';
+import { cn } from '@/lib/utils';
 import { mockInvoices } from './data';
-import { formatCurrency, getStatusColor, getStatusText } from './utils';
+import { formatCurrency, getStatusText } from './utils';
 import { ClientInfoBox, getClientData } from './ClientInfoBox';
+
 export const InvoicesTab: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<any>(null);
 
-  const getInvoiceStatusColor = (status: string) => {
+  const getInvoiceStatusVariant = (status: string) => {
     switch (status) {
-      case 'paid':
-        return 'bg-[#bdeed3] text-black';
-      case 'pending':
-        return 'bg-[#fbe2aa] text-black';
-      case 'overdue':
-        return 'bg-[#f1b5b9] text-black';
-      case 'draft':
-        return 'bg-[#a4e2f6] text-black';
-      default:
-        return 'bg-[#d9d2fd] text-black';
+      case 'paid': return 'success';
+      case 'pending': return 'warning';
+      case 'overdue': return 'error';
+      case 'draft': return 'info';
+      default: return 'default';
     }
   };
 
@@ -31,33 +30,38 @@ export const InvoicesTab: React.FC = () => {
   };
 
   const handleProjectClick = (projectId: string) => {
-    // Navigate to project dashboard
     console.log('Navigate to project:', projectId);
-    // This would typically use router.push or similar navigation
   };
-  return <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-large font-semibold text-black font-arabic">الفواتير والمدفوعات</h3>
-        <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
-          <Receipt className="w-4 h-4" />
-          إنشاء فاتورة
-        </button>
-      </div>
 
-      <div className="bg-[#FFFFFF] p-6 rounded-[40px] ring-1 ring-[#DADCE0]">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-large font-semibold text-black font-arabic">جدول الفواتير</h3>
+  return (
+    <BaseTabContent value="invoices">
+      <Reveal>
+        <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
+          <h3 className={buildTitleClasses()}>الفواتير والمدفوعات</h3>
+          <BaseActionButton variant="primary" icon={<Receipt className="w-4 h-4" />}>
+            إنشاء فاتورة
+          </BaseActionButton>
         </div>
-        <div className="px-0">
-          <div className="space-y-3">
-            {mockInvoices.map(invoice => <div key={invoice.id} className="flex items-center justify-between p-4 bg-transparent border border-black/10 rounded-3xl">
+      </Reveal>
+
+      <BaseCard title="جدول الفواتير">
+        <div className="space-y-3">
+          {mockInvoices.map(invoice => (
+            <Reveal key={invoice.id} delay={0.1}>
+              <div className={cn(
+                'flex items-center justify-between p-4 rounded-lg',
+                COLORS.BORDER_COLOR,
+                'bg-transparent border'
+              )}>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#a4e2f6] flex items-center justify-center">
-                    <FileText className="h-6 w-6 text-black" />
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                    <FileText className="h-6 w-6 text-blue-600" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="text-sm font-bold text-black font-arabic">{invoice.id}</h4>
+                      <h4 className={cn(TYPOGRAPHY.BODY, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
+                        {invoice.id}
+                      </h4>
                       <div className="flex items-center gap-1 text-xs text-gray-500">
                         <CreditCard className="w-3 h-3" />
                         <span>{invoice.paymentNumber}</span>
@@ -65,7 +69,12 @@ export const InvoicesTab: React.FC = () => {
                     </div>
                     <button 
                       onClick={() => handleClientClick(invoice.client)}
-                      className="text-sm font-normal text-black font-arabic hover:text-blue-600 hover:underline transition-colors"
+                      className={cn(
+                        TYPOGRAPHY.SMALL,
+                        COLORS.PRIMARY_TEXT,
+                        TYPOGRAPHY.ARABIC_FONT,
+                        'hover:text-blue-600 hover:underline transition-colors'
+                      )}
                     >
                       {invoice.client}
                     </button>
@@ -78,27 +87,33 @@ export const InvoicesTab: React.FC = () => {
                         <ExternalLink className="w-3 h-3" />
                       </button>
                     </div>
-                    <p className="text-xs font-normal text-gray-400">تاريخ الاستحقاق: {invoice.dueDate}</p>
+                    <p className={cn(TYPOGRAPHY.SMALL, 'text-gray-400')}>
+                      تاريخ الاستحقاق: {invoice.dueDate}
+                    </p>
                   </div>
                 </div>
                 <div className="text-left">
-                  <p className="font-bold text-black text-sm my-[6px] py-0">{formatCurrency(invoice.amount)}</p>
-                  <div className={`px-3 py-1 rounded-full text-xs font-normal ${getInvoiceStatusColor(invoice.status)}`}>
+                  <p className={cn(TYPOGRAPHY.BODY, 'font-bold', COLORS.PRIMARY_TEXT, 'my-2')}>
+                    {formatCurrency(invoice.amount)}
+                  </p>
+                  <BaseBadge variant={getInvoiceStatusVariant(invoice.status)} size="sm">
                     {getStatusText(invoice.status)}
-                  </div>
+                  </BaseBadge>
                 </div>
-              </div>)}
-          </div>
+              </div>
+            </Reveal>
+          ))}
         </div>
-      </div>
+      </BaseCard>
 
       {selectedClient && (
-        <div className="mt-6">
+        <Reveal>
           <ClientInfoBox 
             client={selectedClient} 
             onClose={() => setSelectedClient(null)} 
           />
-        </div>
+        </Reveal>
       )}
-    </div>;
+    </BaseTabContent>
+  );
 };

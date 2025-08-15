@@ -1,11 +1,6 @@
 
-export { FinancialOverviewTab } from './FinancialOverviewTab';
-export { BudgetManagementTab } from './BudgetManagementTab';
-export { PaymentsInvoicesTab } from './PaymentsInvoicesTab';
-export { FinancialAnalysisTab } from './FinancialAnalysisTab';
+// Unified Financial Tabs (SoaBra Design System)
 export { FinancialDashboard } from './FinancialDashboard';
-
-// New refactored components
 export { OverviewTab } from './OverviewTab';
 export { BudgetsTab } from './BudgetsTab';
 export { TransactionsTab } from './TransactionsTab';

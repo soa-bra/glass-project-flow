@@ -1,46 +1,70 @@
-
 import React from 'react';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Database, Calculator } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseTabContent } from '@/components/shared/BaseTabContent';
+import { BaseCard } from '@/components/shared/BaseCard';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
+import { Reveal } from '@/components/shared/motion';
+import { cn } from '@/lib/utils';
 
 export const SettingsTab: React.FC = () => {
   return (
-    <div className="space-y-6">
-      <h3 className="text-large font-semibold text-black font-arabic mx-[26px]">إعدادات النظام المالي</h3>
+    <BaseTabContent value="settings">
+      <Reveal>
+        <h3 className={cn(buildTitleClasses(), SPACING.SECTION_MARGIN)}>
+          إعدادات النظام المالي
+        </h3>
+      </Reveal>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-          <div className="px-0 pt-0 mb-6">
-            <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
-              <Database className="h-5 w-5 text-black" />
-              مخطط الحسابات
-            </h3>
-          </div>
-          <div className="px-0 space-y-4">
+        <BaseCard 
+          title="مخطط الحسابات" 
+          icon={<Database className="h-5 w-5" />}
+        >
+          <div className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="account-code" className="text-sm font-bold text-black font-arabic">رمز الحساب</label>
+              <label htmlFor="account-code" className={cn(TYPOGRAPHY.SMALL, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
+                رمز الحساب
+              </label>
               <input 
                 id="account-code" 
                 placeholder="مثال: 1100" 
-                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+                className={cn(
+                  'w-full px-4 py-2 bg-transparent rounded-lg',
+                  COLORS.BORDER_COLOR,
+                  TYPOGRAPHY.SMALL,
+                  COLORS.PRIMARY_TEXT,
+                  'placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                )}
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="account-name" className="text-sm font-bold text-black font-arabic">اسم الحساب</label>
+              <label htmlFor="account-name" className={cn(TYPOGRAPHY.SMALL, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
+                اسم الحساب
+              </label>
               <input 
                 id="account-name" 
                 placeholder="مثال: النقدية بالصندوق" 
-                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+                className={cn(
+                  'w-full px-4 py-2 bg-transparent rounded-lg',
+                  COLORS.BORDER_COLOR,
+                  TYPOGRAPHY.SMALL,
+                  COLORS.PRIMARY_TEXT,
+                  'placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                )}
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="account-type" className="text-sm font-bold text-black font-arabic">نوع الحساب</label>
-              <select className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black focus:outline-none focus:border-black">
+              <label htmlFor="account-type" className={cn(TYPOGRAPHY.SMALL, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
+                نوع الحساب
+              </label>
+              <select className={cn(
+                'w-full px-4 py-2 bg-transparent rounded-lg',
+                COLORS.BORDER_COLOR,
+                TYPOGRAPHY.SMALL,
+                COLORS.PRIMARY_TEXT,
+                'focus:outline-none focus:ring-2 focus:ring-blue-500'
+              )}>
                 <option value="">اختر نوع الحساب</option>
                 <option value="asset">أصول</option>
                 <option value="liability">خصوم</option>
@@ -49,48 +73,69 @@ export const SettingsTab: React.FC = () => {
                 <option value="expense">مصروفات</option>
               </select>
             </div>
-            <UnifiedButton variant="primary">إضافة حساب</UnifiedButton>
+            <BaseActionButton variant="primary">إضافة حساب</BaseActionButton>
           </div>
-        </div>
+        </BaseCard>
 
-        <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-          <div className="px-0 pt-0 mb-6">
-            <h3 className="text-large font-semibold text-black font-arabic flex items-center gap-2">
-              <Calculator className="h-5 w-5 text-black" />
-              إعدادات الضرائب
-            </h3>
-          </div>
-          <div className="px-0 space-y-4">
+        <BaseCard 
+          title="إعدادات الضرائب" 
+          icon={<Calculator className="h-5 w-5" />}
+        >
+          <div className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="vat-rate" className="text-sm font-bold text-black font-arabic">معدل ضريبة القيمة المضافة (%)</label>
+              <label htmlFor="vat-rate" className={cn(TYPOGRAPHY.SMALL, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
+                معدل ضريبة القيمة المضافة (%)
+              </label>
               <input 
                 id="vat-rate" 
                 type="number" 
                 placeholder="15" 
-                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+                className={cn(
+                  'w-full px-4 py-2 bg-transparent rounded-lg',
+                  COLORS.BORDER_COLOR,
+                  TYPOGRAPHY.SMALL,
+                  COLORS.PRIMARY_TEXT,
+                  'placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                )}
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="tax-number" className="text-sm font-bold text-black font-arabic">الرقم الضريبي</label>
+              <label htmlFor="tax-number" className={cn(TYPOGRAPHY.SMALL, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
+                الرقم الضريبي
+              </label>
               <input 
                 id="tax-number" 
                 placeholder="300000000000003" 
-                className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black placeholder:text-gray-400 focus:outline-none focus:border-black"
+                className={cn(
+                  'w-full px-4 py-2 bg-transparent rounded-lg',
+                  COLORS.BORDER_COLOR,
+                  TYPOGRAPHY.SMALL,
+                  COLORS.PRIMARY_TEXT,
+                  'placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                )}
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="currency" className="text-sm font-bold text-black font-arabic">العملة الأساسية</label>
-              <select className="w-full px-4 py-2 bg-transparent border border-black/10 rounded-full text-sm font-normal text-black focus:outline-none focus:border-black">
+              <label htmlFor="currency" className={cn(TYPOGRAPHY.SMALL, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
+                العملة الأساسية
+              </label>
+              <select className={cn(
+                'w-full px-4 py-2 bg-transparent rounded-lg',
+                COLORS.BORDER_COLOR,
+                TYPOGRAPHY.SMALL,
+                COLORS.PRIMARY_TEXT,
+                'focus:outline-none focus:ring-2 focus:ring-blue-500'
+              )}>
                 <option value="">اختر العملة</option>
                 <option value="SAR">ريال سعودي (SAR)</option>
                 <option value="USD">دولار أمريكي (USD)</option>
                 <option value="EUR">يورو (EUR)</option>
               </select>
             </div>
-            <UnifiedButton variant="primary">حفظ الإعدادات</UnifiedButton>
+            <BaseActionButton variant="primary">حفظ الإعدادات</BaseActionButton>
           </div>
-        </div>
+        </BaseCard>
       </div>
-    </div>
+    </BaseTabContent>
   );
 };

@@ -1,93 +1,101 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, FileText, TrendingUp, TrendingDown } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseTabContent } from '@/components/shared/BaseTabContent';
+import { BaseCard } from '@/components/shared/BaseCard';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { BaseBadge } from '@/components/ui/BaseBadge';
+import { buildCardClasses, buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
+import { Reveal } from '@/components/shared/motion';
+import { cn } from '@/lib/utils';
 import { AccountingEntryModal } from '@/components/custom/AccountingEntryModal';
 import { mockTransactions } from './data';
-import { formatCurrency, getStatusColor, getStatusText } from './utils';
+import { formatCurrency, getStatusText } from './utils';
+
 export const TransactionsTab: React.FC = () => {
   const [isAccountingEntryModalOpen, setIsAccountingEntryModalOpen] = useState(false);
   
-  const getTransactionStatusColor = (status: string) => {
+  const getTransactionStatusVariant = (status: string) => {
     switch (status) {
-      case 'completed':
-        return 'bg-[#bdeed3] text-black';
-      case 'pending':
-        return 'bg-[#fbe2aa] text-black';
-      case 'cancelled':
-        return 'bg-[#f1b5b9] text-black';
-      case 'processing':
-        return 'bg-[#a4e2f6] text-black';
-      default:
-        return 'bg-[#d9d2fd] text-black';
+      case 'completed': return 'success';
+      case 'pending': return 'warning';
+      case 'cancelled': return 'error';
+      case 'processing': return 'info';
+      default: return 'default';
     }
   };
 
   const handleSaveAccountingEntry = (entry: any) => {
     console.log('حفظ القيد المحاسبي:', entry);
-    
-    // هنا يتم تحديث البيانات المالية في النظام
-    // - حساب الموجودات بعد إضافة الإيراد وحسم المصروفات
-    // - تحديث لوحة التشغيل والإدارة
-    // - إضافة القيد وتفاصيله إلى دفتر القيود
-    
-    // سيتم التكامل مع API النظام لاحقاً
     alert(`تم حفظ القيد المحاسبي بنجاح: ${entry.description}`);
   };
-  return <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-large font-semibold text-black font-arabic">النفقات والإيرادات</h3>
-        <div className="flex gap-2">
-          <button className="bg-transparent border border-black text-black px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
-            <Upload className="w-4 h-4" />
-            رفع مستند
-          </button>
-          <button 
-            onClick={() => setIsAccountingEntryModalOpen(true)}
-            className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2"
-          >
-            <FileText className="w-4 h-4" />
-            إضافة قيد
-          </button>
-        </div>
-      </div>
 
-      <div className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10">
-        <div className="px-0 pt-0 mb-6">
-          <h3 className="text-large font-semibold text-black font-arabic">دفتر القيود</h3>
+  return (
+    <BaseTabContent value="transactions">
+      <Reveal>
+        <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
+          <h3 className={buildTitleClasses()}>النفقات والإيرادات</h3>
+          <div className="flex gap-3">
+            <BaseActionButton variant="outline" icon={<Upload className="w-4 h-4" />}>
+              رفع مستند
+            </BaseActionButton>
+            <BaseActionButton 
+              variant="primary" 
+              onClick={() => setIsAccountingEntryModalOpen(true)}
+              icon={<FileText className="w-4 h-4" />}
+            >
+              إضافة قيد
+            </BaseActionButton>
+          </div>
         </div>
-        <div className="px-0">
-          <div className="space-y-3">
-            {mockTransactions.map(transaction => <div key={transaction.id} className="flex items-center justify-between p-4 bg-transparent border border-black/10 rounded-3xl">
+      </Reveal>
+
+      <BaseCard title="دفتر القيود">
+        <div className="space-y-3">
+          {mockTransactions.map(transaction => (
+            <Reveal key={transaction.id} delay={0.1}>
+              <div className={cn(
+                'flex items-center justify-between p-4 rounded-lg',
+                COLORS.BORDER_COLOR,
+                'bg-transparent border'
+              )}>
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${transaction.type === 'revenue' ? 'bg-[#bdeed3]' : 'bg-[#f1b5b9]'}`}>
-                    {transaction.type === 'revenue' ? <TrendingUp className="h-6 w-6 text-black" /> : <TrendingDown className="h-6 w-6 text-black" />}
+                  <div className={cn(
+                    'w-12 h-12 rounded-full flex items-center justify-center',
+                    transaction.type === 'revenue' ? 'bg-green-100' : 'bg-red-100'
+                  )}>
+                    {transaction.type === 'revenue' ? 
+                      <TrendingUp className="h-6 w-6 text-green-600" /> : 
+                      <TrendingDown className="h-6 w-6 text-red-600" />
+                    }
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-black font-arabic">{transaction.description}</h4>
-                    <p className="text-sm font-normal text-black font-arabic">{transaction.date} • {transaction.category}</p>
+                    <h4 className={cn(TYPOGRAPHY.BODY, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
+                      {transaction.description}
+                    </h4>
+                    <p className={cn(TYPOGRAPHY.SMALL, COLORS.SECONDARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
+                      {transaction.date} • {transaction.category}
+                    </p>
                   </div>
                 </div>
                 <div className="text-left">
-                  <p className="text-black font-bold text-sm mx-[10px] text-center my-[8px]">
+                  <p className={cn(TYPOGRAPHY.BODY, 'font-bold', COLORS.PRIMARY_TEXT, 'text-center mb-2')}>
                     {formatCurrency(Math.abs(transaction.amount))}
                   </p>
-                  <div className={`px-3 py-1 rounded-full text-xs font-normal ${getTransactionStatusColor(transaction.status)}`}>
+                  <BaseBadge variant={getTransactionStatusVariant(transaction.status)} size="sm">
                     {getStatusText(transaction.status)}
-                  </div>
+                  </BaseBadge>
                 </div>
-              </div>)}
-          </div>
+              </div>
+            </Reveal>
+          ))}
         </div>
-      </div>
+      </BaseCard>
 
-      {/* Modal إضافة القيد المحاسبي */}
       <AccountingEntryModal
         isOpen={isAccountingEntryModalOpen}
         onClose={() => setIsAccountingEntryModalOpen(false)}
         onSave={handleSaveAccountingEntry}
       />
-    </div>;
+    </BaseTabContent>
+  );
 };

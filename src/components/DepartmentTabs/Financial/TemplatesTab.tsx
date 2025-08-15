@@ -1,8 +1,11 @@
-
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Upload, Download, FileText } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseTabContent } from '@/components/shared/BaseTabContent';
+import { BaseCard } from '@/components/shared/BaseCard';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
+import { Reveal, Stagger } from '@/components/shared/motion';
+import { cn } from '@/lib/utils';
 
 export const TemplatesTab: React.FC = () => {
   const templates = [
@@ -15,35 +18,47 @@ export const TemplatesTab: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-large font-semibold text-black font-arabic">النماذج والقوالب المالية</h3>
-        <button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
-          <Upload className="w-4 h-4" />
-          رفع قالب جديد
-        </button>
-      </div>
+    <BaseTabContent value="templates">
+      <Reveal>
+        <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
+          <h3 className={buildTitleClasses()}>النماذج والقوالب المالية</h3>
+          <BaseActionButton variant="primary" icon={<Upload className="w-4 h-4" />}>
+            رفع قالب جديد
+          </BaseActionButton>
+        </div>
+      </Reveal>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Stagger gap={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((template, index) => (
-          <div key={index} className="bg-[#f2ffff] p-6 rounded-3xl border border-black/10 cursor-pointer hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-3 mb-4">
-              <FileText className="h-8 w-8 text-black" />
-              <div>
-                <h4 className="text-sm font-bold text-black font-arabic">{template.name}</h4>
-                <p className="text-sm font-normal text-black">{template.type}</p>
+          <Stagger.Item key={index}>
+            <BaseCard className="cursor-pointer hover:shadow-lg transition-shadow">
+              <div className="flex items-center gap-3 mb-4">
+                <FileText className="h-8 w-8 text-blue-600" />
+                <div>
+                  <h4 className={cn(TYPOGRAPHY.BODY, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
+                    {template.name}
+                  </h4>
+                  <p className={cn(TYPOGRAPHY.SMALL, COLORS.SECONDARY_TEXT)}>
+                    {template.type}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-normal text-gray-400">{template.downloads} تحميل</span>
-              <button className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
-                <Download className="w-4 h-4" />
-                تحميل
-              </button>
-            </div>
-          </div>
+              <div className="flex justify-between items-center">
+                <span className={cn(TYPOGRAPHY.SMALL, 'text-gray-400')}>
+                  {template.downloads} تحميل
+                </span>
+                <BaseActionButton 
+                  variant="primary" 
+                  size="sm"
+                  icon={<Download className="w-4 h-4" />}
+                >
+                  تحميل
+                </BaseActionButton>
+              </div>
+            </BaseCard>
+          </Stagger.Item>
         ))}
-      </div>
-    </div>
+      </Stagger>
+    </BaseTabContent>
   );
 };
