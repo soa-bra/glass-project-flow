@@ -49,9 +49,9 @@ export const TemplatesTab: React.FC = () => {
     };
     
     return (
-      <Badge className={`text-xs text-white ${colors[category as keyof typeof colors] || 'bg-gray-600'}`}>
+      <BaseBadge className={`text-xs text-white ${colors[category as keyof typeof colors] || 'bg-gray-600'}`}>
         {categoryLabels[category as keyof typeof categoryLabels] || category}
-      </Badge>
+      </BaseBadge>
     );
   };
 
@@ -160,9 +160,9 @@ export const TemplatesTab: React.FC = () => {
                   
                   <div className="flex items-center gap-2 mt-3">
                     {template.tags.map((tag, tagIndex) => (
-                      <Badge key={tagIndex} variant="outline" className="text-xs">
+                      <BaseBadge key={tagIndex} variant="outline" className="text-xs">
                         {tag}
-                      </Badge>
+                      </BaseBadge>
                     ))}
                   </div>
                 </div>

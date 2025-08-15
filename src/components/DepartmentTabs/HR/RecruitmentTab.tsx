@@ -25,9 +25,9 @@ export const RecruitmentTab: React.FC = () => {
     const text = getHRStatusText(status);
     
     return (
-      <Badge className={colorClass}>
+      <BaseBadge className={colorClass}>
         {text}
-      </Badge>
+      </BaseBadge>
     );
   };
 
@@ -36,9 +36,9 @@ export const RecruitmentTab: React.FC = () => {
     const text = getHRStatusText(status);
     
     return (
-      <Badge className={colorClass}>
+      <BaseBadge className={colorClass}>
         {text}
-      </Badge>
+      </BaseBadge>
     );
   };
 
@@ -153,14 +153,14 @@ export const RecruitmentTab: React.FC = () => {
                         interview.type === 'inPerson' ? 'شخصية' : 'تقنية'}</p>
                       <p className="text-sm text-gray-600">مع {interview.interviewerName}</p>
                     </div>
-                    <Badge 
+                    <BaseBadge 
                       variant={interview.status === 'completed' ? 'default' : 
                               interview.status === 'scheduled' ? 'secondary' : 'outline'}
                       className="text-xs"
                     >
                       {interview.status === 'completed' ? 'مكتملة' :
                        interview.status === 'scheduled' ? 'مجدولة' : 'ملغية'}
-                    </Badge>
+                    </BaseBadge>
                   </div>
                   <p className="text-sm text-gray-600 mb-2">التاريخ: {interview.scheduledDate}</p>
                   {interview.feedback && (

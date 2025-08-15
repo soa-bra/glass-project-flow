@@ -24,9 +24,9 @@ export const AttendanceTab: React.FC = () => {
     const text = getHRStatusText(status);
     
     return (
-      <Badge className={colorClass}>
+      <BaseBadge className={colorClass}>
         {text}
-      </Badge>
+      </BaseBadge>
     );
   };
 
@@ -35,9 +35,9 @@ export const AttendanceTab: React.FC = () => {
     const text = getHRStatusText(status);
     
     return (
-      <Badge className={colorClass}>
+      <BaseBadge className={colorClass}>
         {text}
-      </Badge>
+      </BaseBadge>
     );
   };
 

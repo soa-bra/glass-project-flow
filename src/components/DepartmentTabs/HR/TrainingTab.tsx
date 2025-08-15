@@ -24,9 +24,9 @@ export const TrainingTab: React.FC = () => {
     const text = getHRStatusText(status);
     
     return (
-      <Badge className={colorClass}>
+      <BaseBadge className={colorClass}>
         {text}
-      </Badge>
+      </BaseBadge>
     );
   };
 
@@ -63,9 +63,9 @@ export const TrainingTab: React.FC = () => {
     const text = getHRStatusText(status);
     
     return (
-      <Badge className={colorClass}>
+      <BaseBadge className={colorClass}>
         {text}
-      </Badge>
+      </BaseBadge>
     );
   };
 

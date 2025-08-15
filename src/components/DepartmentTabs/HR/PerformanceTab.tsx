@@ -29,9 +29,9 @@ export const PerformanceTab: React.FC = () => {
     const text = getHRStatusText(status);
     
     return (
-      <Badge className={colorClass}>
+      <BaseBadge className={colorClass}>
         {text}
-      </Badge>
+      </BaseBadge>
     );
   };
 
@@ -260,13 +260,13 @@ export const PerformanceTab: React.FC = () => {
                   </td>
                   <td className="py-3 px-4">{review.reviewDate}</td>
                   <td className="py-3 px-4">
-                    <Badge 
+                    <BaseBadge 
                       variant={review.status === 'completed' ? 'default' : 'secondary'}
                       className="text-xs"
                     >
                       {review.status === 'completed' ? 'مكتمل' :
                        review.status === 'draft' ? 'مسودة' : 'معتمد'}
-                    </Badge>
+                    </BaseBadge>
                   </td>
                   <td className="py-3 px-4">
                     <Button 

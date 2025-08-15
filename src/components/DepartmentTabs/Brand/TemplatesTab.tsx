@@ -148,9 +148,9 @@ export const TemplatesTab: React.FC = () => {
                         <IconComponent className="h-4 w-4" />
                         <span className="font-medium">{category.name}</span>
                       </div>
-                      <Badge variant="secondary">
+                      <BaseBadge variant="secondary">
                         {category.count}
-                      </Badge>
+                      </BaseBadge>
                     </button>
                   );
                 })}
@@ -193,7 +193,7 @@ export const TemplatesTab: React.FC = () => {
                       <h3 className="text-lg font-semibold text-black mb-2">{template.name}</h3>
                       <p className="text-sm text-gray-600 mb-3">{template.description}</p>
                       <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="outline">{template.type}</Badge>
+                        <BaseBadge variant="outline">{template.type}</BaseBadge>
                         <div className="flex items-center gap-1 text-sm text-yellow-600">
                           <Star className="h-3 w-3 fill-current" />
                           <span>{template.rating}</span>
@@ -227,9 +227,9 @@ export const TemplatesTab: React.FC = () => {
                     {/* Tags */}
                     <div className="flex flex-wrap gap-1">
                       {template.tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
+                        <BaseBadge key={index} variant="secondary" className="text-xs">
                           {tag}
-                        </Badge>
+                        </BaseBadge>
                       ))}
                     </div>
 

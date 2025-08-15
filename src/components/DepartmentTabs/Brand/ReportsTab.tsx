@@ -201,17 +201,17 @@ export const ReportsTab: React.FC = () => {
                   <div>
                     <CardTitle className="text-lg mb-2">{report.title}</CardTitle>
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge className={getTypeColor(report.type)}>
+                      <BaseBadge className={getTypeColor(report.type)}>
                         {getTypeIcon(report.type)}
                         <span className="mr-1">
                           {report.type === 'cultural' ? 'ثقافي' :
                            report.type === 'performance' ? 'أداء' :
                            report.type === 'engagement' ? 'تفاعل' : 'أثر'}
                         </span>
-                      </Badge>
-                      <Badge className={getStatusColor(report.status)}>
+                      </BaseBadge>
+                      <BaseBadge className={getStatusColor(report.status)}>
                         {report.status}
-                      </Badge>
+                      </BaseBadge>
                     </div>
                     <div className="text-sm text-gray-600">
                       الفترة: {report.period}
@@ -278,7 +278,7 @@ export const ReportsTab: React.FC = () => {
                     }`}
                   >
                     <span className="font-medium">{category.name}</span>
-                    <Badge variant="secondary">{category.count}</Badge>
+                    <BaseBadge variant="secondary">{category.count}</BaseBadge>
                   </button>
                 ))}
               </div>
@@ -332,15 +332,15 @@ export const ReportsTab: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                   <span className="text-sm font-medium">التقرير الشهري</span>
-                  <Badge variant="outline">نشط</Badge>
+                  <BaseBadge variant="outline">نشط</BaseBadge>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                   <span className="text-sm font-medium">التقرير الربعي</span>
-                  <Badge variant="outline">نشط</Badge>
+                  <BaseBadge variant="outline">نشط</BaseBadge>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                   <span className="text-sm font-medium">التقرير السنوي</span>
-                  <Badge variant="outline">مجدول</Badge>
+                  <BaseBadge variant="outline">مجدول</BaseBadge>
                 </div>
               </div>
             </CardContent>

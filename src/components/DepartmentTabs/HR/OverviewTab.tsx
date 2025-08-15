@@ -177,7 +177,7 @@ export const OverviewTab: React.FC = () => {
                   <p className="text-sm font-arabic font-medium">{event.title}</p>
                   <p className="text-xs text-gray-500">{event.date}</p>
                 </div>
-                <Badge 
+                <BaseBadge 
                   variant={
                     event.type === 'meeting' ? 'default' :
                     event.type === 'training' ? 'secondary' :
@@ -188,7 +188,7 @@ export const OverviewTab: React.FC = () => {
                   {event.type === 'meeting' ? 'اجتماع' :
                    event.type === 'training' ? 'تدريب' :
                    event.type === 'interview' ? 'مقابلة' : 'ورشة'}
-                </Badge>
+                </BaseBadge>
               </div>
             ))}
           </div>
@@ -228,9 +228,9 @@ export const OverviewTab: React.FC = () => {
                 <div key={index} className="p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-arabic font-medium">{skill.skill}</span>
-                    <Badge variant="destructive" className="text-xs">
+                    <BaseBadge variant="error" className="text-xs">
                       فجوة {skill.gap.toFixed(1)}
-                    </Badge>
+                    </BaseBadge>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-gray-600">
                     <span>الحالي: {skill.currentLevel}</span>
