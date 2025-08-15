@@ -22,7 +22,7 @@ export const AttributionChart: React.FC<AttributionChartProps> = ({
       label: "النسبة المئوية"
     }
   };
-  return <div className="rounded-[40px] bg-[#f0fafa] border border-black/10 p-6">
+  return <div className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-black font-arabic">تحليل نقاط التواصل</h3>
       </div>
@@ -42,7 +42,7 @@ export const AttributionChart: React.FC<AttributionChartProps> = ({
       </ChartContainer>
       
       <div className="mt-4 space-y-3">
-        {attribution.map((item, index) => <div key={index} className="flex items-center justify-between p-3 bg-white/60 rounded-2xl border border-black/5">
+        {attribution.map((item, index) => <div key={index} className="flex items-center justify-between p-3 bg-white/60 border border-black/5 rounded-3xl">
             <div className="flex items-center gap-3">
               <div className="w-4 h-4 rounded-full" style={{
             backgroundColor: COLORS[index % COLORS.length]
