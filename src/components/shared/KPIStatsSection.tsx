@@ -1,5 +1,4 @@
 import React from 'react';
-import { BaseCard } from './BaseCard';
 import { Stagger } from './motion';
 interface KPIStat {
   title: string;
@@ -29,21 +28,19 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
       </div>;
   }
   return (
-    <Stagger delay={0.2} gap={0.15} className={`grid grid-cols-4 gap-6 mb-6 ${className}`}>
+    <Stagger delay={0.2} gap={0.15} className={`grid grid-cols-4 gap-6 mb-6 px-0 mx-0 ${className}`}>
       {stats.map((stat, index) => (
-        <Stagger.Item key={index}>
-          <BaseCard className="text-right">
-            <div className="mb-2">
-              <span className="text-base text-black font-arabic font-medium">{stat.title}</span>
+        <Stagger.Item key={index} className="text-right p-0 py-0 my-0 mx-0 px-6">
+          <div className="mb-2">
+            <span className="text-base text-black font-arabic font-medium">{stat.title}</span>
+          </div>
+          <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
+            <div className="text-5xl font-bold text-black font-arabic">
+              {typeof stat.value === 'number' ? String(stat.value).padStart(2, '0') : stat.value}
             </div>
-            <div className="flex items-baseline gap-2 mb-1">
-              <div className="text-5xl font-bold text-black font-arabic">
-                {typeof stat.value === 'number' ? String(stat.value).padStart(2, '0') : stat.value}
-              </div>
-              {stat.unit && <div className="text-sm text-black font-arabic font-bold">{stat.unit}</div>}
-            </div>
-            {stat.description && <div className="text-sm font-normal text-black font-arabic">{stat.description}</div>}
-          </BaseCard>
+            {stat.unit && <div className="text-sm text-black font-arabic font-bold">{stat.unit}</div>}
+          </div>
+          {stat.description && <div className="text-sm font-normal text-black font-arabic">{stat.description}</div>}
         </Stagger.Item>
       ))}
     </Stagger>
