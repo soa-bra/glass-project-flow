@@ -1,7 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SoaCard, SoaIcon } from '@/components/ui';
 import { buildCardClasses, TYPOGRAPHY, LAYOUT } from './design-system/constants';
 
 interface UnifiedSearchBarProps {
@@ -18,17 +17,17 @@ export const UnifiedSearchBar: React.FC<UnifiedSearchBarProps> = ({
   className = '',
 }) => {
   return (
-    <SoaCard className={cn('', className)}>
+    <div className={cn(buildCardClasses('p-4'), className)}>
       <div className="relative">
         <input
           type="text"
           placeholder={placeholder}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pr-12 pl-4 py-3 bg-transparent border border-soabra-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-soabra-ink-30 font-arabic text-soabra-ink"
+          className={`w-full pr-12 pl-4 py-3 border border-black/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-black/20 ${TYPOGRAPHY.ARABIC_FONT}`}
         />
-        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-soabra-ink-60 w-5 h-5" />
+        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
       </div>
-    </SoaCard>
+    </div>
   );
 };

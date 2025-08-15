@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
-import { SoaPanel, SoaTypography, SoaReveal } from '@/components/ui';
 import { GeneralOverviewTab } from '../DepartmentTabs/GeneralOverviewTab';
 import { ReportsTab } from '../DepartmentTabs/ReportsTab';
 import { TemplatesTab } from '../DepartmentTabs/TemplatesTab';
@@ -61,10 +60,10 @@ export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({
     }
     
     return (
-      <SoaPanel className="text-center">
-        <SoaTypography variant="title" className="mb-2">{tab}</SoaTypography>
-        <SoaTypography variant="body" className="text-soabra-ink-60">محتوى تبويب {tab} سيتم تطويره هنا</SoaTypography>
-      </SoaPanel>
+      <div className="text-center text-gray-600 font-arabic p-8">
+        <h3 className="text-xl font-semibold mb-2">{tab}</h3>
+        <p className="text-base">محتوى تبويب {tab} سيتم تطويره هنا</p>
+      </div>
     );
   };
 
@@ -80,29 +79,25 @@ export const GenericDepartmentPanel: React.FC<GenericDepartmentPanelProps> = ({
   return (
     <div className="h-full flex flex-col bg-transparent">
       {/* Header with Title and Tabs */}
-      <SoaReveal>
-        <div className="flex items-center justify-between px-6 py-6 my-6">
-          <SoaTypography variant="display-m" className="whitespace-nowrap px-6">
-            {content.title}
-          </SoaTypography>
-          <div className="w-fit">
-            <AnimatedTabs 
-              tabs={tabItems}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
-          </div>
+      <div className="flex items-center justify-between px-6 py-[24px] my-[24px]">
+        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
+          {content.title}
+        </h2>
+        <div className="w-fit">
+          <AnimatedTabs 
+            tabs={tabItems}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
         </div>
-      </SoaReveal>
+      </div>
 
       {/* Content */}
       <div className="flex-1 overflow-auto px-6 pb-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
           {content.tabs.map(tab => (
             <TabsContent key={tab} value={tab} className="space-y-6">
-              <SoaReveal delay={0.2}>
-                {renderTabContent(tab, selectedDepartment)}
-              </SoaReveal>
+              {renderTabContent(tab, selectedDepartment)}
             </TabsContent>
           ))}
         </Tabs>

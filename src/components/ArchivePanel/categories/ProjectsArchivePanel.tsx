@@ -1,9 +1,8 @@
+
 import React, { useState } from 'react';
 import { Search, Filter, Download, Eye, Briefcase, Calendar, User, CheckCircle, Clock, DollarSign } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { SoaCard, SoaTypography, SoaBadge, SoaIcon, SoaProgressTape } from '@/components/ui';
-import { SoaMotion } from '@/components/ui/SoaMotion';
 
 export const ProjectsArchivePanel: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,14 +49,23 @@ export const ProjectsArchivePanel: React.FC = () => {
     }
   ];
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'مكتمل': return 'bg-green-100 text-green-800';
+      case 'متأخر': return 'bg-red-100 text-red-800';
+      case 'قيد التنفيذ': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div className="h-full flex flex-col bg-transparent">
       <div className="flex items-center justify-between px-6 py-6">
-        <SoaTypography variant="display-m" className="text-soabra-ink">
+        <h2 className="font-medium text-black font-arabic text-3xl">
           المشاريع المكتملة
-        </SoaTypography>
+        </h2>
         <div className="flex items-center gap-3">
-          <Button className="bg-soabra-ink text-soabra-white rounded-full">
+          <Button className="bg-black text-white rounded-full">
             <Download className="w-4 h-4 mr-2" />
             تقرير المشاريع
           </Button>
@@ -70,98 +78,98 @@ export const ProjectsArchivePanel: React.FC = () => {
 
       {/* Search */}
       <div className="px-6 mb-6">
-        <SoaCard variant="main">
+        <div className="bg-[#FFFFFF] p-4 rounded-[40px] ring-1 ring-[#DADCE0]">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-soabra-ink-30 w-5 h-5" />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="البحث في المشاريع المكتملة..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pr-12 pl-4 py-3 rounded-full ring-1 ring-soabra-border focus:outline-none focus:ring-2 focus:ring-soabra-ink/20 font-arabic"
+                className="w-full pr-12 pl-4 py-3 rounded-full ring-1 ring-[#DADCE0] focus:outline-none focus:ring-2 focus:ring-black/20 font-arabic"
               />
             </div>
           </div>
-        </SoaCard>
+        </div>
       </div>
 
       {/* Projects List */}
       <div className="flex-1 overflow-auto px-6 pb-6">
         <div className="space-y-4">
           {mockProjects.map((project) => (
-            <SoaMotion key={project.id} variant="reveal" delay={0.1}>
-              <SoaCard variant="main" className="hover:shadow-lg transition-shadow duration-200">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <SoaTypography variant="title" className="text-soabra-ink flex-1">{project.title}</SoaTypography>
-                      <SoaBadge variant="success">
-                        <CheckCircle className="w-3 h-3 mr-1" />
-                        {project.status}
-                      </SoaBadge>
-                      <SoaBadge variant="outline">
-                        {project.category}
-                      </SoaBadge>
+            <div key={project.id} className="bg-[#FFFFFF] p-6 rounded-[40px] ring-1 ring-[#DADCE0]">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <h3 className="font-bold text-black font-arabic text-lg">{project.title}</h3>
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
+                      <CheckCircle className="w-3 h-3 inline mr-1" />
+                      {project.status}
                     </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-body text-soabra-ink-60 mb-4">
-                      <span className="flex items-center gap-1">
-                        <SoaIcon icon={Briefcase} size="sm" />
-                        {project.client}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <SoaIcon icon={Calendar} size="sm" />
-                        {project.startDate} - {project.endDate}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <SoaIcon icon={DollarSign} size="sm" />
-                        {project.budget} ر.س
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-4 mb-3">
-                      <SoaTypography variant="body" className="text-soabra-ink-60">
-                        المسلمات: {project.deliverables}
-                      </SoaTypography>
-                      <SoaTypography variant="body" className="text-soabra-ink-60">
-                        الفريق: {project.team.length} أعضاء
-                      </SoaTypography>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <SoaIcon icon={User} size="sm" className="text-soabra-ink-30" />
-                      <SoaTypography variant="body" className="text-soabra-ink-60">
-                        {project.team.join('، ')}
-                      </SoaTypography>
-                    </div>
-
-                    {/* Progress Section */}
-                    <div className="mt-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <SoaTypography variant="label" className="text-soabra-ink-60">التقدم</SoaTypography>
-                        <SoaTypography variant="body" className="text-soabra-ink-60">{project.completion}%</SoaTypography>
-                      </div>
-                      <SoaProgressTape 
-                        totalTicks={20} 
-                        completedTicks={Math.floor(20 * (project.completion / 100))} 
-                      />
-                    </div>
+                    <Badge variant="secondary" className="font-arabic">
+                      {project.category}
+                    </Badge>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-4">
+                    <span className="flex items-center gap-1 font-arabic">
+                      <Briefcase className="w-4 h-4" />
+                      {project.client}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      {project.startDate} - {project.endDate}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <DollarSign className="w-4 h-4" />
+                      {project.budget} ر.س
+                    </span>
                   </div>
 
-                  <div className="flex flex-col gap-2 ml-4">
-                    <Button size="sm" className="bg-soabra-ink text-soabra-white rounded-full">
-                      <Eye className="w-4 h-4 mr-1" />
-                      عرض التفاصيل
-                    </Button>
-                    <Button size="sm" variant="outline" className="rounded-full">
-                      <Download className="w-4 h-4 mr-1" />
-                      تحميل الملفات
-                    </Button>
+                  <div className="flex items-center gap-4 mb-3">
+                    <span className="text-sm text-gray-600 font-arabic">
+                      المسلمات: {project.deliverables}
+                    </span>
+                    <span className="text-sm text-gray-600 font-arabic">
+                      الفريق: {project.team.length} أعضاء
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-600 font-arabic">
+                      {project.team.join('، ')}
+                    </span>
                   </div>
                 </div>
-              </SoaCard>
-            </SoaMotion>
+
+                <div className="flex flex-col gap-2 ml-4">
+                  <Button size="sm" className="bg-black text-white rounded-full">
+                    <Eye className="w-4 h-4 mr-1" />
+                    عرض التفاصيل
+                  </Button>
+                  <Button size="sm" variant="outline" className="rounded-full">
+                    <Download className="w-4 h-4 mr-1" />
+                    تحميل الملفات
+                  </Button>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="mt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700 font-arabic">التقدم</span>
+                  <span className="text-sm text-gray-600">{project.completion}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${project.completion}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>

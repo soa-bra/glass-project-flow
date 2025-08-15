@@ -1,6 +1,5 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { SoaCard, SoaTypography } from '@/components/ui';
 import { COLORS, LAYOUT, TYPOGRAPHY, SPACING } from './design-system/constants';
 
 interface StatItem {
@@ -25,19 +24,19 @@ export const UnifiedStatsCard: React.FC<UnifiedStatsCardProps> = ({
   return (
     <div className={cn(`grid ${gridCols} ${SPACING.GRID_GAP}`, className)}>
       {stats.map((stat, index) => (
-        <SoaCard key={index} className="text-center">
-          <SoaTypography variant="display-m" className="text-soabra-ink mb-2">
+        <div key={index} className={`text-center p-4 ${COLORS.TRANSPARENT_BACKGROUND} ${COLORS.BORDER_COLOR} ${LAYOUT.CARD_ROUNDED}`}>
+          <div className={`text-2xl font-bold ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT}`}>
             {stat.value}
-          </SoaTypography>
-          <SoaTypography variant="subtitle" className="text-soabra-ink">
+          </div>
+          <div className={`${TYPOGRAPHY.BODY_TEXT} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT}`}>
             {stat.title}
-          </SoaTypography>
+          </div>
           {stat.description && (
-            <SoaTypography variant="label" className="text-soabra-ink-60 mt-1">
+            <div className={`text-xs ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} mt-1`}>
               {stat.description}
-            </SoaTypography>
+            </div>
           )}
-        </SoaCard>
+        </div>
       ))}
     </div>
   );

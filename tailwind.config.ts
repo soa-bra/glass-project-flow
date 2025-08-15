@@ -21,31 +21,77 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'arabic': ['IBM Plex Sans Arabic', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif'],
-			},
-			fontSize: {
-				'display-l': ['40px', { lineHeight: '48px', fontWeight: '700' }],
-				'display-m': ['32px', { lineHeight: '40px', fontWeight: '700' }],
-				'title': ['20px', { lineHeight: '28px', fontWeight: '700' }],
-				'subtitle': ['16px', { lineHeight: '24px', fontWeight: '600' }],
-				'body': ['14px', { lineHeight: '22px', fontWeight: '400' }],
-				'label': ['12px', { lineHeight: '18px', fontWeight: '500' }],
+				'arabic': ['IBM Plex Sans Arabic', 'sans-serif'],
 			},
 			colors: {
-				// SoaBra Design Tokens v1.0.0
+				// Updated SoaBra Color Palette
+				'soabra-new': {
+					// Backgrounds
+					'main-dashboard': '#dfecf2',
+					'project-column': '#d1e1ea',
+					'project-cards': '#f2f9fb',
+					'admin-ops-board': '#d0e0e2',
+					'active-tab-admin': '#000000',
+					'timeline': '#f2ffff',
+					'cards-admin-ops': '#f2ffff',
+					'financial-profit': '#96d8d0',
+					'financial-loss': '#f1b5b9',
+					'project-summary': '#a4e2f6',
+					'project-mgmt-board': '#f9fbfc',
+					'project-mgmt-cards': '#ecf2f7',
+					
+					// Visual Data Colors
+					'primary': '#000000',
+					'secondary-1': '#bdeed3',
+					'secondary-2': '#f1b5b9',
+					'secondary-3': '#d9d2fd',
+					'secondary-4': '#a4e2f6',
+					'secondary-5': '#fbe2aa',
+					'donut-slice-1': '#dbf4aa',
+					'donut-slice-2': '#e3e9f7',
+					
+					// Project Card Elements
+					'task-count': '#d1e1ea',
+					'title-text': '#000000',
+					'secondary-text': '#858789',
+					'info-bubbles': '#e9eff4',
+					
+					// Status Colors
+					'on-plan': '#bdeed3',
+					'in-preparation': '#a4e2f6',
+					'in-progress': '#d9d2fd',
+					'delayed': '#fbe2aa',
+					'stopped': '#f1b5b9',
+					
+					// Priority Colors
+					'urgent-important': '#f1b5b9',
+					'not-urgent-important': '#fbe2aa',
+					'urgent-not-important': '#a4e2f6',
+					'not-urgent-not-important': '#d9d2fd',
+				},
+				
+				// Original colors for compatibility
 				'soabra': {
-					'ink': '#0B0F12',
-					'ink-80': 'rgba(11,15,18,0.80)',
-					'ink-60': 'rgba(11,15,18,0.60)',
-					'ink-30': 'rgba(11,15,18,0.30)',
-					'white': '#FFFFFF',
-					'panel': '#d9e7ed',
-					'border': '#DADCE0',
-					'surface': '#FFFFFF',
-					'accent-green': '#3DBE8B',
-					'accent-yellow': '#F6C445',
-					'accent-red': '#E5564D',
-					'accent-blue': '#3DA8F5',
+					'solid-bg': '#CCD4D7',
+					'sidebar-bg': '#CCD4D7',
+					'projects-bg': '#E3E3E3',
+					'card-bg': '#F2F2F2',
+					'calendar-start': '#E8F2FE',
+					'calendar-mid': '#F9DBF8',
+					'calendar-end': '#DAD4FC',
+					'glass-bg': 'rgba(255, 255, 255, 0.45)',
+					'primary-blue': '#0099FF',
+					'primary-blue-hover': '#0077CC',
+					'success': '#34D399',
+					'warning': '#FBBF24',
+					'error': '#EF4444',
+					'secondary': '#6B7280',
+					'status-success': '#5DDC82',
+					'status-warning': '#ECFF8C',
+					'status-error': '#F23D3D',
+					'status-neutral': '#EDEDEE',
+					'text-primary': '#060606',
+					'text-secondary': '#4B5563',
 				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -94,12 +140,7 @@ export default {
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)',
-				'card-top': '24px',
-				'card-bottom': '6px',
-				'panel': '18px',
-				'chip': '9999px',
-				'tooltip': '10px',
+				sm: 'calc(var(--radius) - 4px)'
 			},
 			keyframes: {
 				'accordion-down': {
@@ -137,68 +178,15 @@ export default {
 						transform: 'translateX(100%)',
 						opacity: '0'
 					}
-				},
-				'fade-in': {
-					'0%': {
-						opacity: '0',
-						transform: 'translateY(24px)'
-					},
-					'100%': {
-						opacity: '1',
-						transform: 'translateY(0)'
-					}
-				},
-				'fade-out': {
-					'0%': {
-						opacity: '1',
-						transform: 'translateY(0)'
-					},
-					'100%': {
-						opacity: '0',
-						transform: 'translateY(24px)'
-					}
-				},
-				'scale-in': {
-					'0%': {
-						transform: 'scale(0.95)',
-						opacity: '0'
-					},
-					'100%': {
-						transform: 'scale(1)',
-						opacity: '1'
-					}
-				},
-				'scale-out': {
-					'0%': {
-						transform: 'scale(1)',
-						opacity: '1'
-					},
-					'100%': {
-						transform: 'scale(0.95)',
-						opacity: '0'
-					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'slide-in-right': 'slide-in-right 300ms ease-out',
-				'slide-out-right': 'slide-out-right 300ms ease-out',
-				'fade-in': 'fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1)',
-				'fade-out': 'fade-out 0.7s cubic-bezier(0.22, 1, 0.36, 1)',
-				'scale-in': 'scale-in 0.7s cubic-bezier(0.22, 1, 0.36, 1)',
-				'scale-out': 'scale-out 0.7s cubic-bezier(0.22, 1, 0.36, 1)',
-				'reveal': 'fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1)',
-				'stagger': 'fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1)'
+				'slide-out-right': 'slide-out-right 300ms ease-out'
 			},
 			spacing: {
-				'1': '4px',  // xs
-				'2': '8px',  // sm
-				'3': '12px', // md
-				'4': '16px', // lg
-				'6': '24px', // xl
-				'8': '32px', // xxl
-				'10': '40px', // 3xl
 				'18': '4.5rem',
 				'88': '22rem'
 			},

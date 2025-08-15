@@ -84,11 +84,11 @@ export const PoliciesArchivePanel: React.FC = () => {
     <div className="h-full flex flex-col bg-transparent">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-6">
-        <h2 className="text-display-m font-bold text-soabra-ink font-arabic">
+        <h2 className="font-medium text-black font-arabic text-3xl">
           السياسات والإجراءات
         </h2>
         <div className="flex items-center gap-3">
-          <Button className="bg-soabra-ink text-soabra-white rounded-full">
+          <Button className="bg-black text-white rounded-full">
             <Download className="w-4 h-4 mr-2" />
             تصدير شامل
           </Button>
@@ -168,7 +168,7 @@ export const PoliciesArchivePanel: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-2 ml-4">
-                  <Button size="sm" className="bg-soabra-ink text-soabra-white rounded-full">
+                  <Button size="sm" className="bg-black text-white rounded-full">
                     <Eye className="w-4 h-4 mr-1" />
                     عرض
                   </Button>

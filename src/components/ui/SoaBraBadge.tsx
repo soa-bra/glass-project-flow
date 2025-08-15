@@ -1,6 +1,5 @@
 
 import React, { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
 
 interface SoaBraBadgeProps {
   children: ReactNode;
@@ -16,26 +15,28 @@ export const SoaBraBadge: React.FC<SoaBraBadgeProps> = ({
   className = ''
 }) => {
   const variantClasses = {
-    primary: 'bg-[#d9d2fd] text-soabra-ink',
-    secondary: 'bg-soabra-panel text-soabra-ink',
-    success: 'bg-[#bdeed3] text-soabra-ink',
-    warning: 'bg-[#fbe2aa] text-soabra-ink',
-    error: 'bg-[#f1b5b9] text-soabra-ink'
+    primary: 'bg-soabra-primary-blue text-white',
+    secondary: 'bg-soabra-secondary text-white',
+    success: 'bg-soabra-success text-white',
+    warning: 'bg-soabra-warning text-black',
+    error: 'bg-soabra-error text-white'
   };
 
   const sizeClasses = {
-    sm: 'text-label px-2 py-1',      // 12px
-    md: 'text-body px-2.5 py-1',     // 14px
-    lg: 'text-subtitle px-3 py-1.5'  // 16px
+    sm: 'text-xs px-2 py-1',
+    md: 'text-sm px-2.5 py-1',
+    lg: 'text-base px-3 py-1.5'
   };
 
   return (
-    <span className={cn(
-      'inline-flex items-center rounded-chip font-arabic font-medium',
-      variantClasses[variant],
-      sizeClasses[size],
-      className
-    )}>
+    <span 
+      className={`
+        inline-flex items-center rounded-full font-medium
+        ${variantClasses[variant]}
+        ${sizeClasses[size]}
+        ${className}
+      `}
+    >
       {children}
     </span>
   );

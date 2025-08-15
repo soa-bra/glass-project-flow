@@ -1,5 +1,5 @@
 import React from 'react';
-import { SoaMotion } from '@/components/ui';
+import { Stagger } from '@/components/shared/motion';
 import { StatisticsCard } from './StatisticsCard';
 import { FinancialOverviewCard } from './FinancialOverviewCard';
 import { ProjectSummaryCard } from './ProjectSummaryCard';
@@ -34,63 +34,63 @@ export const OverviewGrid: React.FC = () => {
     satisfaction: 92
   };
   return (
-    <SoaMotion delay={0.3} className="grid grid-cols-4 grid-rows-4 gap-3 h-[calc(53vh)] min-h-0 overflow-hidden py-px my-0">
+    <Stagger delay={0.3} gap={0.12} className="grid grid-cols-4 grid-rows-4 gap-[10px] h-[calc(53vh)] min-h-0 overflow-hidden py-px my-0">
       {/* الصف الأول */}
-      <SoaMotion delay={0.32} className="row-span-3 h-full min-h-0">
+      <Stagger.Item className="row-span-3 h-full min-h-0">
         <FinancialOverviewCard />
-      </SoaMotion>
+      </Stagger.Item>
       
-      <SoaMotion delay={0.34}>
+      <Stagger.Item>
         <StatisticsCard title="بيانات" value="46" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="bar" />
-      </SoaMotion>
+      </Stagger.Item>
 
-      <SoaMotion delay={0.36}>
+      <Stagger.Item>
         <StatisticsCard title="بيانات" value="17" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="line" />
-      </SoaMotion>
+      </Stagger.Item>
 
-      <SoaMotion delay={0.38}>
+      <Stagger.Item>
         <StatisticsCard title="معدل" value="85" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
-      </SoaMotion>
+      </Stagger.Item>
 
       {/* الصف الثاني */}
-      <SoaMotion delay={0.40}>
+      <Stagger.Item>
         <StatisticsCard title="نسبة" value="75" unit="مئوية" description="هذا النص مثال للشكل البياني" chartType="simple" />
-      </SoaMotion>
+      </Stagger.Item>
 
-      <SoaMotion delay={0.42}>
+      <Stagger.Item>
         <CustomersWidget customers={mockCustomersData} />
-      </SoaMotion>
+      </Stagger.Item>
 
-      <SoaMotion delay={0.44}>
+      <Stagger.Item>
         <AlertsCard />
-      </SoaMotion>
+      </Stagger.Item>
 
       {/* الصف الثالث */}
-      <SoaMotion delay={0.46} className="col-span-2 h-full min-h-0">
+      <Stagger.Item className="col-span-2 h-full min-h-0">
         <ProjectSummaryCard />
-      </SoaMotion>
+      </Stagger.Item>
 
-      <SoaMotion delay={0.48}>
+      <Stagger.Item>
         <StatisticsCard title="أداء" value="78" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
-      </SoaMotion>
+      </Stagger.Item>
 
       {/* الصف الرابع - الكاردات الجديدة */}
-      <SoaMotion delay={0.50}>
+      <Stagger.Item>
         <HRWidget hr={mockHRData} />
-      </SoaMotion>
+      </Stagger.Item>
       
-      <SoaMotion delay={0.52}>
+      <Stagger.Item>
         <MarketingWidget marketing={mockMarketingData} />
-      </SoaMotion>
+      </Stagger.Item>
       
-      <SoaMotion delay={0.54}>
+      <Stagger.Item>
         <ReportsWidget reports={mockReportsData} />
-      </SoaMotion>
+      </Stagger.Item>
 
-      <SoaMotion delay={0.56}>
+      <Stagger.Item>
         <StatisticsCard title="جودة" value="96" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
-      </SoaMotion>
+      </Stagger.Item>
 
-    </SoaMotion>
+    </Stagger>
   );
 };

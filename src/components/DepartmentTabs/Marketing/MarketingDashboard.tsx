@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
-import { SoaReveal } from '@/components/ui';
 import { OverviewTab } from './OverviewTab';
 import { CampaignsChannelsTab } from './CampaignsChannelsTab';
 import { ContentAssetsTab } from './ContentAssetsTab';
@@ -34,61 +33,43 @@ export const MarketingDashboard: React.FC = () => {
     label: 'التقارير'
   }];
   return (
-    <SoaReveal>
-      <DashboardLayout
-        title="إدارة الأنشطة التسويقية"
-        tabs={tabItems}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      >
-        <UnifiedTabContent value="overview">
-          <SoaReveal delay={0.1}>
-            <OverviewTab />
-          </SoaReveal>
-        </UnifiedTabContent>
+    <DashboardLayout
+      title="إدارة الأنشطة التسويقية"
+      tabs={tabItems}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+    >
+      <UnifiedTabContent value="overview">
+        <OverviewTab />
+      </UnifiedTabContent>
 
-        <UnifiedTabContent value="campaigns">
-          <SoaReveal delay={0.1}>
-            <CampaignsChannelsTab />
-          </SoaReveal>
-        </UnifiedTabContent>
+      <UnifiedTabContent value="campaigns">
+        <CampaignsChannelsTab />
+      </UnifiedTabContent>
 
-        <UnifiedTabContent value="content">
-          <SoaReveal delay={0.1}>
-            <ContentAssetsTab />
-          </SoaReveal>
-        </UnifiedTabContent>
+      <UnifiedTabContent value="content">
+        <ContentAssetsTab />
+      </UnifiedTabContent>
 
-        <UnifiedTabContent value="performance">
-          <SoaReveal delay={0.1}>
-            <PerformanceAnalyticsTab />
-          </SoaReveal>
-        </UnifiedTabContent>
+      <UnifiedTabContent value="performance">
+        <PerformanceAnalyticsTab />
+      </UnifiedTabContent>
 
-        <UnifiedTabContent value="budgets">
-          <SoaReveal delay={0.1}>
-            <BudgetsTab />
-          </SoaReveal>
-        </UnifiedTabContent>
+      <UnifiedTabContent value="budgets">
+        <BudgetsTab />
+      </UnifiedTabContent>
 
-        <UnifiedTabContent value="pr">
-          <SoaReveal delay={0.1}>
-            <PublicRelationsTab />
-          </SoaReveal>
-        </UnifiedTabContent>
+      <UnifiedTabContent value="pr">
+        <PublicRelationsTab />
+      </UnifiedTabContent>
 
-        <UnifiedTabContent value="templates">
-          <SoaReveal delay={0.1}>
-            <TemplatesTab />
-          </SoaReveal>
-        </UnifiedTabContent>
+      <UnifiedTabContent value="templates">
+        <TemplatesTab />
+      </UnifiedTabContent>
 
-        <UnifiedTabContent value="reports">
-          <SoaReveal delay={0.1}>
-            <ReportsTab />
-          </SoaReveal>
-        </UnifiedTabContent>
-      </DashboardLayout>
-    </SoaReveal>
+      <UnifiedTabContent value="reports">
+        <ReportsTab />
+      </UnifiedTabContent>
+    </DashboardLayout>
   );
 };

@@ -1,8 +1,6 @@
 
 import React from 'react';
-import { SoaCard } from '@/components/ui/SoaCard';
-import { SoaTypography } from '@/components/ui/SoaTypography';
-import { SoaMotion } from '@/components/ui/SoaMotion';
+import { COLORS, LAYOUT, TYPOGRAPHY } from '@/components/shared/design-system/constants';
 
 interface GenericArchivePanelProps {
   category: string;
@@ -20,17 +18,15 @@ export const GenericArchivePanel: React.FC<GenericArchivePanelProps> = ({ catego
   };
 
   return (
-    <SoaCard variant="sub" className="h-full flex items-center justify-center">
-      <SoaMotion variant="scale" delay={0.3}>
-        <div className="text-center">
-          <SoaTypography variant="display-m" className="text-soabra-ink-60 mb-4">
-            {getCategoryTitle(category)}
-          </SoaTypography>
-          <SoaTypography variant="body" className="text-soabra-ink-30">
-            هذا القسم قيد التطوير وسيتم إضافة المحتوى قريباً
-          </SoaTypography>
-        </div>
-      </SoaMotion>
-    </SoaCard>
+    <div className={`h-full ${LAYOUT.FLEX_CENTER} ${COLORS.TRANSPARENT_BACKGROUND}`}>
+      <div className="text-center">
+        <h2 className={`${TYPOGRAPHY.LARGE_TITLE_SIZE} text-gray-600 mb-4 ${TYPOGRAPHY.ARABIC_FONT}`}>
+          {getCategoryTitle(category)}
+        </h2>
+        <p className={`text-gray-500 ${TYPOGRAPHY.ARABIC_FONT}`}>
+          هذا القسم قيد التطوير وسيتم إضافة المحتوى قريباً
+        </p>
+      </div>
+    </div>
   );
 };
