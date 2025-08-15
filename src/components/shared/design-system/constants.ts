@@ -29,7 +29,7 @@ export const DESIGN_TOKENS = {
     INK_30: 'rgba(11,15,18,0.3)',
     SURFACE: '#FFFFFF',
     SURFACE_MUTED: '#F6F7F8',
-    BORDER: 'rgba(11,15,18,0.18)',
+    BORDER: '#DADCE0',
     APP_BG: '#F6F8FA',
     PANEL_BG: '#FFFFFF',
     CARD_BG: '#FFFFFF',
@@ -64,7 +64,7 @@ export const COLORS = {
   
   // Border colors from design system
   BORDER_COLOR: `border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
-  RING_BORDER: `ring-1 ring-[${DESIGN_TOKENS.COLORS.BORDER}]`,
+  RING_BORDER: `border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
   
   // Text colors from design system
   PRIMARY_TEXT: `text-[${DESIGN_TOKENS.COLORS.INK}]`,
