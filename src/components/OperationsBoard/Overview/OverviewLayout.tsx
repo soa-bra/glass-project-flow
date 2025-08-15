@@ -13,7 +13,8 @@ interface OverviewLayoutProps {
 export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
   data
 }) => {
-  return <div className="space-y-6  ">
+  return (
+    <div className="space-y-6">
       {/* بطاقة الأحداث القادمة */}
       <Reveal delay={0}>
         <TimelineCard />
@@ -23,5 +24,6 @@ export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
       <Reveal delay={0.2}>
         <OverviewGrid />
       </Reveal>
-    </div>;
+    </div>
+  );
 };
