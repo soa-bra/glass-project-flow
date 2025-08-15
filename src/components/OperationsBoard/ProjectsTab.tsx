@@ -3,6 +3,7 @@ import { MiniGanttChart } from './Projects/MiniGanttChart';
 import { DelayedMilestones } from './Projects/DelayedMilestones';
 import { ProjectProgressSummary } from './Projects/ProjectProgressSummary';
 import { AIDelayAdvisor } from './Projects/AIDelayAdvisor';
+import { BaseOperationsTabLayout } from './BaseOperationsTabLayout';
 
 interface CriticalProject {
   id: string;
@@ -54,33 +55,48 @@ interface ProjectsTabProps {
 }
 
 export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
-  if (loading || !data) {
-    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
-  }
+  // تحويل البيانات إلى تنسيق KPI
+  const kpiStats = data ? [{
+    title: 'إجمالي المشاريع',
+    value: String(data.summary.totalProjects),
+    unit: 'مشروع',
+    description: 'مشاريع نشطة ومكتملة'
+  }, {
+    title: 'في الموعد',
+    value: String(data.summary.onTrack),
+    unit: 'مشروع',
+    description: 'تسير وفق الجدول الزمني'
+  }, {
+    title: 'معرضة للخطر',
+    value: String(data.summary.atRisk),
+    unit: 'مشروع',
+    description: 'تحتاج إلى متابعة'
+  }, {
+    title: 'متأخرة',
+    value: String(data.summary.delayed),
+    unit: 'مشروع',
+    description: 'تجاوزت الموعد المحدد'
+  }] : [];
 
   return (
-    <div className="space-y-4 h-full overflow-auto bg-transparent">
-      {/* العنوان و KPI في نفس السطر */}
-      <div className="flex justify-between items-start px-6 pt-6">
-        <div className="text-right">
-          <h2 className="text-lg font-semibold text-black font-arabic mb-1">إدارة المشاريع</h2>
-          <p className="text-xs font-normal text-gray-400 font-arabic">تتبع التقدم الإجمالي ومعالجة الانحرافات</p>
+    <BaseOperationsTabLayout
+      value="projects"
+      kpiStats={kpiStats}
+      loading={loading}
+      error={!data && !loading ? "لا توجد بيانات مشاريع متاحة" : undefined}
+    >
+      {data && (
+        <div className="space-y-6">
+          {/* الرسوم البيانية الأساسية */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <MiniGanttChart criticalProjects={data.criticalProjects} />
+            <DelayedMilestones delayedMilestones={data.delayedMilestones} />
+          </div>
+          
+          {/* مستشار التأخير بالذكاء الاصطناعي */}
+          <AIDelayAdvisor aiAdvice={data.aiAdvice} />
         </div>
-        <div className="flex-1 max-w-2xl">
-          <ProjectProgressSummary summary={data.summary} />
-        </div>
-      </div>
-      
-      {/* الرسوم البيانية الأساسية */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 px-6">
-        <MiniGanttChart criticalProjects={data.criticalProjects} />
-        <DelayedMilestones delayedMilestones={data.delayedMilestones} />
-      </div>
-      
-      {/* مستشار التأخير بالذكاء الاصطناعي */}
-      <div className="px-6">
-        <AIDelayAdvisor aiAdvice={data.aiAdvice} />
-      </div>
-    </div>
+      )}
+    </BaseOperationsTabLayout>
   );
 };

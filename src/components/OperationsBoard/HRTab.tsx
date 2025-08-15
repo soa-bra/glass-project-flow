@@ -1,6 +1,6 @@
 import React from 'react';
 import { ResourceHeatMap, SkillGapRadar, WorkloadBalance } from './HR/ResourceHeatMap';
-import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
+import { BaseOperationsTabLayout } from './BaseOperationsTabLayout';
 
 interface ResourceUtilization {
   employeeId: string;
@@ -53,57 +53,49 @@ interface HRTabProps {
 }
 
 const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
-  if (loading || !data) {
-    return <div className="h-full flex items-center justify-center text-gray-600 font-arabic">جارٍ التحميل...</div>;
-  }
-
-  // إعداد البيانات لمكون KPI الموحد
-  const formatKPIData = () => {
-    return [
-      {
-        title: 'أعضاء نشطين',
-        value: data.stats.active,
-        description: 'يعملون حالياً في المشاريع'
-      },
-      {
-        title: 'في إجازة',
-        value: data.stats.onLeave,
-        description: 'في إجازة رسمية أو مرضية'
-      },
-      {
-        title: 'شواغر',
-        value: data.stats.vacancies,
-        description: 'مناصب مطلوب شغلها'
-      },
-      {
-        title: 'معدل الأداء',
-        value: data.stats.performanceScore,
-        unit: '%',
-        description: 'متوسط تقييم الأداء العام'
-      }
-    ];
-  };
+  // تحويل البيانات إلى تنسيق KPI
+  const kpiStats = data ? [{
+    title: 'أعضاء نشطين',
+    value: String(data.stats.active),
+    unit: 'عضو',
+    description: 'يعملون حالياً في المشاريع'
+  }, {
+    title: 'في إجازة',
+    value: String(data.stats.onLeave),
+    unit: 'عضو',
+    description: 'في إجازة رسمية أو مرضية'
+  }, {
+    title: 'شواغر',
+    value: String(data.stats.vacancies),
+    unit: 'منصب',
+    description: 'مناصب مطلوب شغلها'
+  }, {
+    title: 'معدل الأداء',
+    value: data.stats.performanceScore.toFixed(1),
+    unit: '%',
+    description: 'متوسط تقييم الأداء العام'
+  }] : [];
 
   return (
-    <div className="font-arabic px-[15px] py-0">
-      {/* قسم المؤشرات الرئيسية */}
-      <div className="mb-6 py-0 px-0 my-0">
-        <KPIStatsSection stats={formatKPIData()} />
-      </div>
-      
-      {/* الرسوم البيانية الأساسية */}
-      <div className="mb-6">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <ResourceHeatMap resourceData={data.resourceUtilization} />
-          <SkillGapRadar skillGaps={data.skillGaps} />
+    <BaseOperationsTabLayout
+      value="hr"
+      kpiStats={kpiStats}
+      loading={loading}
+      error={!data && !loading ? "لا توجد بيانات موارد بشرية متاحة" : undefined}
+    >
+      {data && (
+        <div className="space-y-6">
+          {/* الرسوم البيانية الأساسية */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <ResourceHeatMap resourceData={data.resourceUtilization} />
+            <SkillGapRadar skillGaps={data.skillGaps} />
+          </div>
+          
+          {/* توازن أعباء العمل */}
+          <WorkloadBalance workloadData={data.workloadBalance} />
         </div>
-      </div>
-      
-      {/* توازن أعباء العمل */}
-      <div className="mb-6">
-        <WorkloadBalance workloadData={data.workloadBalance} />
-      </div>
-    </div>
+      )}
+    </BaseOperationsTabLayout>
   );
 };
 

@@ -2,6 +2,7 @@
 import React from 'react';
 import { OverviewLayout } from './Overview/OverviewLayout';
 import { mockOverviewData, OverviewData } from './Overview/OverviewData';
+import { BaseOperationsTabLayout } from './BaseOperationsTabLayout';
 
 interface OverviewTabProps {
   data?: OverviewData;
@@ -15,17 +16,34 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   data,
   loading
 }) => {
-
-  if (loading) {
-    return (
-      <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
-        جارٍ التحميل...
-      </div>
-    );
-  }
-
   // استخدام البيانات التجريبية إذا لم تكن البيانات متوفرة
   const finalData = data || mockOverviewData;
 
-  return <OverviewLayout data={finalData} />;
+  // تحويل البيانات إلى تنسيق KPI
+  const kpiStats = finalData?.stats ? [{
+    title: 'الإيرادات المتوقعة',
+    value: String(finalData.stats.expectedRevenue || 0),
+    unit: 'ألف ر.س',
+    description: 'عن الربع الأول'
+  }, {
+    title: 'الشكاوى',
+    value: String(finalData.stats.complaints || 0).padStart(2, '0'),
+    unit: 'شكاوى',
+    description: 'تحتاج إلى معالجة'
+  }, {
+    title: 'المشاريع المتأخرة',
+    value: String(finalData.stats.delayedProjects || 0).padStart(2, '0'),
+    unit: 'مشاريع',
+    description: 'تحتاج إلى تدخل'
+  }] : [];
+
+  return (
+    <BaseOperationsTabLayout
+      value="overview"
+      kpiStats={kpiStats}
+      loading={loading}
+    >
+      <OverviewLayout data={finalData} />
+    </BaseOperationsTabLayout>
+  );
 };

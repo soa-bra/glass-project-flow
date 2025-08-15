@@ -1,5 +1,6 @@
 import React from 'react';
 import { FinanceLayout } from './Finance/FinanceLayout';
+import { BaseOperationsTabLayout } from './BaseOperationsTabLayout';
 
 interface MonthlyBudget {
   month: string;
@@ -46,23 +47,32 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
   data,
   loading
 }) => {
+  // تحويل البيانات إلى تنسيق KPI
+  const kpiStats = data ? [{
+    title: 'إجمالي الميزانية',
+    value: (data.totalBudget / 1000).toFixed(0),
+    unit: 'ألف ر.س',
+    description: 'للعام الحالي'
+  }, {
+    title: 'المبلغ المنفق',
+    value: (data.totalSpent / 1000).toFixed(0),
+    unit: 'ألف ر.س',
+    description: `${((data.totalSpent / data.totalBudget) * 100).toFixed(1)}% من الميزانية`
+  }, {
+    title: 'دقة التوقعات',
+    value: data.forecastAccuracy.toFixed(1),
+    unit: '%',
+    description: 'دقة التنبؤات المالية'
+  }] : [];
 
-  if (loading) {
-    return (
-      <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
-        جارٍ التحميل...
-      </div>
-    );
-  }
-
-  // التأكد من وجود البيانات
-  if (!data) {
-    return (
-      <div className="h-full flex items-center justify-center text-gray-600 font-arabic">
-        لا توجد بيانات متاحة
-      </div>
-    );
-  }
-
-  return <FinanceLayout data={data} />;
+  return (
+    <BaseOperationsTabLayout
+      value="finance"
+      kpiStats={kpiStats}
+      loading={loading}
+      error={!data && !loading ? "لا توجد بيانات مالية متاحة" : undefined}
+    >
+      {data && <FinanceLayout data={data} />}
+    </BaseOperationsTabLayout>
+  );
 };
