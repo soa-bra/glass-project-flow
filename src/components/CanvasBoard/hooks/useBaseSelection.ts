@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import { CanvasElement } from '@/types/canvas';
 
-export interface UnifiedSelectionState {
+export interface BaseSelectionState {
   selectedElementIds: string[];
   hasSelection: boolean;
   multipleSelection: boolean;
@@ -13,7 +13,7 @@ export interface UnifiedSelectionState {
   isSelected: (elementId: string) => boolean;
 }
 
-export const useUnifiedSelection = (): UnifiedSelectionState => {
+export const useBaseSelection = (): BaseSelectionState => {
   const [selectedElementIds, setSelectedElementIds] = useState<string[]>([]);
 
   const hasSelection = selectedElementIds.length > 0;

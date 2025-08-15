@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { buildTitleClasses, LAYOUT, SPACING, COLORS } from './design-system/constants';
 import { Reveal } from './motion';
 
-interface UnifiedPageHeaderProps {
+interface BasePageHeaderProps {
   title: string;
   subtitle?: string;
   icon?: LucideIcon;
@@ -12,7 +12,7 @@ interface UnifiedPageHeaderProps {
   className?: string;
 }
 
-export const UnifiedPageHeader: React.FC<UnifiedPageHeaderProps> = ({
+export const BasePageHeader: React.FC<BasePageHeaderProps> = ({
   title,
   subtitle,
   icon: IconComponent,

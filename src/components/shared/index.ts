@@ -12,8 +12,8 @@ export { BaseListItem } from './BaseListItem';
 
 // Interactive Components
 export { BaseSearchBar } from './BaseSearchBar';
-export { UnifiedArchiveItem } from './UnifiedArchiveItem';
-export { UnifiedPageHeader } from './UnifiedPageHeader';
+export { BaseArchiveItem } from './BaseArchiveItem';
+export { BasePageHeader } from './BasePageHeader';
 
 // Statistics and Analytics
 export { KPIStatsSection } from './KPIStatsSection';

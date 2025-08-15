@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { COLORS, LAYOUT, TYPOGRAPHY, SPACING } from './design-system/constants';
 
 interface UnifiedListItemProps {
@@ -31,9 +31,9 @@ export const BaseListItem: React.FC<UnifiedListItemProps> = ({
           {children}
         </span>
         {badge && (
-          <UnifiedBadge variant={badge.variant} size="sm">
+          <BaseBadge variant={badge.variant} size="sm">
             {badge.text}
-          </UnifiedBadge>
+          </BaseBadge>
         )}
       </div>
     </div>

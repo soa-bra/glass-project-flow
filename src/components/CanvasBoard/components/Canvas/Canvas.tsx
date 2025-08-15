@@ -4,7 +4,7 @@ import { CanvasElement as CanvasElementComponent } from './CanvasElement';
 import { SimplifiedSelectionBoundingBox } from '../SimplifiedSelectionBoundingBox';
 import { CanvasDiagnostics } from '../CanvasDiagnostics';
 import { InfiniteCanvas, InfiniteCanvasRef } from './InfiniteCanvas';
-import { useUnifiedSelection } from '../../hooks/useUnifiedSelection';
+import { useBaseSelection } from '../../hooks/useBaseSelection';
 import { useSimplifiedCanvasInteraction } from '../../hooks/useSimplifiedCanvasInteraction';
 import { useCanvasElements } from '../../hooks/useCanvasElements';
 import { useCanvasHistory } from '../../hooks/useCanvasHistory';
@@ -41,7 +41,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   const dummyRef = useRef<HTMLDivElement>(null);
   const { saveToHistory } = useCanvasHistory();
   const { elements, addElement, updateElement, deleteElement } = useCanvasElements(saveToHistory);
-  const selection = useUnifiedSelection();
+  const selection = useBaseSelection();
   const interaction = useSimplifiedCanvasInteraction(dummyRef);
   
   // Create wrapper function to match expected signature

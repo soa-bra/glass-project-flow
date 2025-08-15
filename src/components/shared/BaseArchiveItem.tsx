@@ -1,7 +1,7 @@
 import React from 'react';
 import { LucideIcon, Calendar, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { buildCardClasses, TYPOGRAPHY, COLORS, LAYOUT } from './design-system/constants';
 
 interface ArchiveItemData {
@@ -18,14 +18,14 @@ interface ArchiveItemData {
   status?: string;
 }
 
-interface UnifiedArchiveItemProps {
+interface BaseArchiveItemProps {
   item: ArchiveItemData;
   icon?: LucideIcon;
   onClick?: () => void;
   className?: string;
 }
 
-export const UnifiedArchiveItem: React.FC<UnifiedArchiveItemProps> = ({
+export const BaseArchiveItem: React.FC<BaseArchiveItemProps> = ({
   item,
   icon: IconComponent = FileText,
   onClick,
@@ -104,19 +104,19 @@ export const UnifiedArchiveItem: React.FC<UnifiedArchiveItemProps> = ({
 
             <div className={`${LAYOUT.FLEX_GAP} flex-wrap gap-2`}>
               {item.classification && (
-                <UnifiedBadge variant={getClassificationVariant(item.classification)} size="sm">
+                <BaseBadge variant={getClassificationVariant(item.classification)} size="sm">
                   {item.classification}
-                </UnifiedBadge>
+                </BaseBadge>
               )}
               {item.status && (
-                <UnifiedBadge variant={getStatusVariant(item.status)} size="sm">
+                <BaseBadge variant={getStatusVariant(item.status)} size="sm">
                   {item.status}
-                </UnifiedBadge>
+                </BaseBadge>
               )}
               {item.version && (
-                <UnifiedBadge variant="info" size="sm">
+                <BaseBadge variant="info" size="sm">
                   {item.version}
-                </UnifiedBadge>
+                </BaseBadge>
               )}
             </div>
           </div>

@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Download, Eye } from 'lucide-react';
-import { UnifiedArchiveItem } from '@/components/shared/UnifiedArchiveItem';
-import { UnifiedActionButton } from '@/components/ui/UnifiedActionButton';
+import { BaseArchiveItem } from '@/components/shared/BaseArchiveItem';
+import { BaseActionButton } from '@/components/ui/BaseActionButton';
 import { SPACING } from '@/components/shared/design-system/constants';
 
 interface Document {
@@ -25,18 +25,18 @@ interface DocumentsListItemProps {
 export const DocumentsListItem: React.FC<DocumentsListItemProps> = ({ document }) => {
   return (
     <div className="relative">
-      <UnifiedArchiveItem
+      <BaseArchiveItem
         item={document}
         className="pr-20"
       />
       
       <div className="absolute left-4 top-4 flex flex-col gap-2">
-        <UnifiedActionButton
+        <BaseActionButton
           icon={Eye}
           variant="view"
           size="sm"
         />
-        <UnifiedActionButton
+        <BaseActionButton
           icon={Download}
           variant="download"
           size="sm"
