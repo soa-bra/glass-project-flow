@@ -57,7 +57,7 @@ export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({
     if (confidence >= 70) return 'text-yellow-600';
     return 'text-red-600';
   };
-  return <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
+  return <Card className="glass-enhanced rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
       <CardHeader>
         <CardTitle className="text-right font-arabic text-lg flex items-center justify-between">
           <span>مستشار التأخير بالذكاء الاصطناعي</span>
