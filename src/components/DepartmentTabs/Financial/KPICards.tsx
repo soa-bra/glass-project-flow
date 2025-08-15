@@ -2,14 +2,14 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { DollarSign, TrendingUp, TrendingDown, Wallet, Target, BarChart } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseCard } from '@/components/shared/BaseCard';
 import { mockKPIData } from './data';
 import { formatCurrency } from './utils';
 
 export const KPICards: React.FC = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <BaseCard variant="operations" className="p-6">
+      <BaseCard className="p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">إجمالي الإيرادات</p>
@@ -25,7 +25,7 @@ export const KPICards: React.FC = () => {
         </div>
       </BaseCard>
 
-      <BaseCard variant="operations" className="p-6">
+      <BaseCard className="p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">إجمالي المصروفات</p>
@@ -41,7 +41,7 @@ export const KPICards: React.FC = () => {
         </div>
       </BaseCard>
 
-      <BaseCard variant="operations" className="p-6">
+      <BaseCard className="p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">صافي الربح</p>
@@ -57,7 +57,7 @@ export const KPICards: React.FC = () => {
         </div>
       </BaseCard>
 
-      <BaseCard variant="operations" className="p-6">
+      <BaseCard className="p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">التدفق النقدي</p>

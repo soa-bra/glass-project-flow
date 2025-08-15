@@ -5,7 +5,7 @@ import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FileText, BookOpen, ChevronDown, ChevronRight } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseCard } from '@/components/shared/BaseCard';
 import { mockBudgetTree } from './data';
 import { formatCurrency, getStatusColor, getStatusText } from './utils';
 import { CreateBudgetModal } from './CreateBudgetModal';

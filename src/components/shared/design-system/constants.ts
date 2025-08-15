@@ -141,7 +141,7 @@ export const MOTION = {
 
 // Unified component class builders with design system tokens
 export const buildCardClasses = (customClasses = '') => 
-  `${COLORS.CARD_BACKGROUND} ${SPACING.CARD_PADDING} ${LAYOUT.CARD_ROUNDED} ${COLORS.RING_BORDER} ${LAYOUT.CARD_SHADOW} ${customClasses}`.trim();
+  `bg-white ${SPACING.CARD_PADDING} ${LAYOUT.CARD_ROUNDED} border border-[#DADCE0] ${LAYOUT.CARD_SHADOW} ${customClasses}`.trim();
 
 export const buildPanelClasses = (customClasses = '') => 
   `${COLORS.PANEL_BACKGROUND} ${SPACING.CARD_PADDING} ${LAYOUT.PANEL_ROUNDED} ${COLORS.RING_BORDER} ${LAYOUT.PANEL_SHADOW} backdrop-blur-[2px] ${customClasses}`.trim();
