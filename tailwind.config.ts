@@ -28,17 +28,17 @@ export default {
 				'soabra-new': {
 					// Backgrounds
 					'main-dashboard': '#dfecf2',
-					'project-column': '#d1e1ea',
-					'project-cards': '#f2f9fb',
+					'project-column': '#ebeff2',
+					'project-cards': '#f8f9fa',
 					'admin-ops-board': '#d0e0e2',
 					'active-tab-admin': '#000000',
-					'timeline': '#f2ffff',
-					'cards-admin-ops': '#f2ffff',
+					'timeline': '#ffffff',
+					'cards-admin-ops': '#ffffff',
 					'financial-profit': '#96d8d0',
 					'financial-loss': '#f1b5b9',
-					'project-summary': '#a4e2f6',
-					'project-mgmt-board': '#f9fbfc',
-					'project-mgmt-cards': '#ecf2f7',
+					'project-summary': '#ffffff',
+					'project-mgmt-board': '#f8f9fa',
+					'project-mgmt-cards': '#f8f9fa',
 					
 					// Visual Data Colors
 					'primary': '#000000',
@@ -75,7 +75,7 @@ export default {
 					'solid-bg': '#CCD4D7',
 					'sidebar-bg': '#CCD4D7',
 					'projects-bg': '#E3E3E3',
-					'card-bg': '#F2F2F2',
+					'card-bg': '#f8f9fa',
 					'calendar-start': '#E8F2FE',
 					'calendar-mid': '#F9DBF8',
 					'calendar-end': '#DAD4FC',
