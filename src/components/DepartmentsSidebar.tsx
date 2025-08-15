@@ -49,7 +49,6 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
     label: 'إدارة العلامة التجارية',
     icon: Award
   }];
-  
   const toggleSidebar = () => {
     onToggleCollapse(!isCollapsed);
   };
@@ -76,7 +75,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
             
             <button onClick={toggleSidebar} className="group w-[60px] h-[60px] rounded-full flex items-center justify-center border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/20 hover:shadow-lg flex-shrink-0 sync-transition-fast">
               <div className="sync-transition-fast">
-                {isCollapsed ? <ChevronRight className="w-3 h-3 text-[#3e494c] sync-transition-fast group-hover:scale-110" /> : <ChevronLeft className="w-3 h-3 text-[#3e494c] sync-transition-fast group-hover:scale-110" />}
+                {isCollapsed ? <ChevronRight className="w-5 h-5 text-[#3e494c] sync-transition-fast group-hover:scale-110" /> : <ChevronLeft className="w-3 h-3 text-[#3e494c] sync-transition-fast group-hover:scale-110" />}
               </div>
             </button>
           </div>

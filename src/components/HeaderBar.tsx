@@ -30,27 +30,27 @@ const HeaderBar = () => {
         <div className="flex items-center gap-0 px-0 mx-0">
           <button className="p-2 hover:bg-white/20 transition-colors group rounded-full">
             <div className="w-[50px] h-[50px] bg-transparent border border-black rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 ">
-              <Search className="w-[15px] h-[15px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+              <Search className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
             </div>
           </button>
           <button className="p-2 hover:bg-white/20 transition-colors group rounded-full">
             <div className="w-[50px] h-[50px] bg-transparent border border-black rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 ">
-              <RefreshCcw className="w-[15px] h-[15px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+              <RefreshCcw className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
             </div>
           </button>
           <button className="p-2 hover:bg-white/20 transition-colors group rounded-full">
             <div className="w-[50px] h-[50px] bg-transparent border border-black rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 ">
-              <Bell className="w-[15px] h-[15px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+              <Bell className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
             </div>
           </button>
           <button className="p-2 hover:bg-white/20 transition-colors group rounded-full">
             <div className="w-[50px] h-[50px] bg-transparent border border-black rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 ">
-              <CircleUser className="w-[15px] h-[15px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+              <CircleUser className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
             </div>
           </button>
           <button className="p-2 hover:bg-white/20 rounded-full transition-colors group">
             <div className="w-[50px] h-[50px] bg-transparent border border-black rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 ">
-              <Settings className="w-[15px] h-[15px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+              <Settings className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
             </div>
           </button>
         </div>
