@@ -23,7 +23,7 @@ const projectData = [{
 }];
 export const ProjectSummaryCard: React.FC = () => {
   return <BaseCard variant="glass" size="sm" className="h-full min-h-0 w-full" style={{
-    backgroundColor: '#f3ffff'
+      backgroundColor: '#ffffff' 'border-[#DADCE0]'
   }} header={<div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-black font-arabic">ملخص للمشاريع</h3>
           <div className="flex gap-2">
@@ -46,16 +46,11 @@ export const ProjectSummaryCard: React.FC = () => {
             <div className="text-2xl font-bold text-black font-arabic">50</div>
             <div className="text-xs font-normal text-gray-400 font-arabic">هذا النص مثال</div>
           </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-black font-arabic">02</div>
-            <div className="text-xs font-normal text-gray-400 font-arabic">النص مثال</div>
-          </div>
-        </div>
 
-        {/* الرسم البياني - النصف الثاني بنسبة3/10  */}
+        {/* الرسم البياني - النصف الثاني بنسبة6/10  */}
         <div className="bottom-1 h-180 overflow-hidden">
           <div className="w-full max-w-[120px]" style={{
-          aspectRatio: '3/10'
+          aspectRatio: '6/10'
         }}>
             <ChartContainer config={{
             main: {
@@ -64,7 +59,7 @@ export const ProjectSummaryCard: React.FC = () => {
             },
             others: {
               label: "الآخرين",
-              color: "#f2ffff"
+              color: "#ffffff"
             }
           }} className="w-full h-full">
               <ResponsiveContainer width="100%" height="100%">

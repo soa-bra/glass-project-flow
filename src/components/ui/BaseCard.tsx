@@ -20,7 +20,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   className = '',
   size = 'lg',
   variant = 'unified',
-  color,
+  color = '#ffffff border-[#DADCE0]',
   neonRing,
   header,
   style
