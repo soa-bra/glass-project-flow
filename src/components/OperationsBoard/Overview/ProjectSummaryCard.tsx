@@ -22,8 +22,8 @@ const projectData = [{
   value: 15
 }];
 export const ProjectSummaryCard: React.FC = () => {
-  return <BaseCard variant="glass" size="sm" className="h-full min-h-0 w-full" style={{
-      backgroundColor: '#ffffff' 'border-[#DADCE0]'
+  return <BaseCard variant="glass" size="sm" className="h-full min-h-0 w-full border-[#DADCE0]" style={{
+      backgroundColor: '#ffffff'
   }} header={<div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-black font-arabic">ملخص للمشاريع</h3>
           <div className="flex gap-2">
@@ -35,7 +35,7 @@ export const ProjectSummaryCard: React.FC = () => {
             </button>
           </div>
         </div>}>
-      <div className="overflow-y-hidden ">
+      <div className="overflow-y-hidden">
         {/* النصوص والأرقام - النصف الأول */}
         <div className="bottom-0 flex-col justify-center gap-1 overflow-hidden mx-4">
           <div className="text-right">
@@ -46,6 +46,7 @@ export const ProjectSummaryCard: React.FC = () => {
             <div className="text-2xl font-bold text-black font-arabic">50</div>
             <div className="text-xs font-normal text-gray-400 font-arabic">هذا النص مثال</div>
           </div>
+        </div>
 
         {/* الرسم البياني - النصف الثاني بنسبة6/10  */}
         <div className="bottom-1 h-180 overflow-hidden">
