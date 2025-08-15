@@ -2,7 +2,7 @@ import React from 'react';
 import { Separator } from '@/components/ui/separator';
 import { CanvasElement } from '../../types';
 
-console.log('Loading SelectionPanel...');
+// Loading SelectionPanel...
 
 import {
   SelectionPanelBasicActions,
@@ -12,7 +12,7 @@ import {
   SelectionPanelAlignmentActions
 } from './components';
 
-console.log('SelectionPanel imports loaded successfully');
+// SelectionPanel imports loaded successfully
 
 interface SelectionPanelProps {
   selectedElements: CanvasElement[];

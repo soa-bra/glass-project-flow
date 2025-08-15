@@ -98,7 +98,7 @@ export const InvoicesDashboard: React.FC = () => {
       setInvoiceStats(statsData);
     } catch (error) {
       toast.error('فشل في تحميل بيانات الفواتير');
-      console.error(error);
+      // Error handled silently
     } finally {
       setLoading(false);
     }
@@ -134,7 +134,7 @@ export const InvoicesDashboard: React.FC = () => {
       loadData();
     } catch (error) {
       toast.error('فشل في إنشاء الفاتورة');
-      console.error(error);
+      // Error handled silently
     }
   };
 
@@ -145,7 +145,7 @@ export const InvoicesDashboard: React.FC = () => {
       loadData();
     } catch (error) {
       toast.error('فشل في إرسال الفاتورة');
-      console.error(error);
+      // Error handled silently
     }
   };
 
@@ -168,7 +168,7 @@ export const InvoicesDashboard: React.FC = () => {
       loadData();
     } catch (error) {
       toast.error('فشل في تسجيل الدفعة');
-      console.error(error);
+      // Error handled silently
     }
   };
 

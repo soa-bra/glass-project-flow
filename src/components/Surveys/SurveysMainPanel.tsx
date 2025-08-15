@@ -36,7 +36,7 @@ export const SurveysMainPanel: React.FC = () => {
         createdBy: 'current-user'
       });
     } catch (error) {
-      console.error('Error creating survey:', error);
+      // Error handled silently
     }
   };
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Brain, 
@@ -85,9 +85,9 @@ export const AIAnalysisPanel: React.FC<AIAnalysisPanelProps> = ({
               {results.classification.slice(0, 3).map((item: any, index: number) => (
                 <div key={index} className="flex justify-between items-center">
                   <span className="text-xs">{item.label}</span>
-                  <Badge variant="secondary" className="text-xs">
+                  <BaseBadge variant="secondary" className="text-xs">
                     {(item.score * 100).toFixed(1)}%
-                  </Badge>
+                  </BaseBadge>
                 </div>
               ))}
             </div>
@@ -109,9 +109,9 @@ export const AIAnalysisPanel: React.FC<AIAnalysisPanelProps> = ({
                     {sentiment.label === 'NEGATIVE' && '🔴 سلبي'}
                     {sentiment.label === 'NEUTRAL' && '🟡 محايد'}
                   </span>
-                  <Badge variant="outline" className="text-xs">
+                  <BaseBadge variant="outline" className="text-xs">
                     {(sentiment.score * 100).toFixed(1)}%
-                  </Badge>
+                  </BaseBadge>
                 </div>
               ))}
             </div>
@@ -127,9 +127,9 @@ export const AIAnalysisPanel: React.FC<AIAnalysisPanelProps> = ({
             </h4>
             <div className="flex flex-wrap gap-1">
               {results.keywords.slice(0, 8).map((keyword: string, index: number) => (
-                <Badge key={index} variant="outline" className="text-xs">
+                <BaseBadge key={index} variant="outline" className="text-xs">
                   {keyword}
-                </Badge>
+                </BaseBadge>
               ))}
             </div>
           </div>

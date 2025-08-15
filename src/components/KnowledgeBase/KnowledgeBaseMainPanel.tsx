@@ -41,7 +41,7 @@ export const KnowledgeBaseMainPanel: React.FC = () => {
         content: { body: '' }
       });
     } catch (error) {
-      console.error('Error creating article:', error);
+      // Error handled silently
     }
   };
 

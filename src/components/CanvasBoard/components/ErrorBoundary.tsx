@@ -50,11 +50,7 @@ export class CanvasErrorBoundary extends Component<Props, State> {
   private handleReportError = () => {
     if (this.state.error && this.state.errorId) {
       // In a real app, this would send to error reporting service
-      console.log('Reporting error:', {
-        error: this.state.error,
-        errorId: this.state.errorId,
-        timestamp: new Date().toISOString()
-      });
+      // Error reporting logic for error tracking
     }
   };
 

@@ -129,7 +129,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
   };
   const handleSave = async () => {
     try {
-      console.log('Saving theme settings to /settings/theme/commit');
+      // Saving theme settings
       clearDraft();
 
       // تطبيق الثيم على الصفحة
@@ -144,7 +144,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       });
       window.dispatchEvent(event);
     } catch (error) {
-      console.error('Failed to save theme settings:', error);
+      // Error handled silently
     }
   };
   return <div className="h-full flex flex-col bg-transparent">

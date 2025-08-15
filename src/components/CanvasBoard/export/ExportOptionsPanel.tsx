@@ -75,7 +75,7 @@ export const ExportOptionsPanel: React.FC<ExportOptionsPanelProps> = ({
       
       toast.success(`تم تصدير المشروع بصيغة ${format.toUpperCase()}`);
     } catch (error) {
-      console.error('فشل في التصدير:', error);
+      // Error handled silently
       toast.error('فشل في عملية التصدير');
     } finally {
       setLoading(null);

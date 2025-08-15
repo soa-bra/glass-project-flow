@@ -46,7 +46,7 @@ export const SmartProjectGenerator: React.FC<SmartProjectGeneratorProps> = ({
       toast.success('تم توليد المشروع بنجاح');
     } catch (error) {
       toast.error('فشل في توليد المشروع');
-      console.error('فشل في توليد المشروع:', error);
+      // Error handled silently
     } finally {
       setLoading(false);
     }

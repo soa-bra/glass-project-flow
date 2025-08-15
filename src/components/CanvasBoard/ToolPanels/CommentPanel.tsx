@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
   MessageCircle, 
@@ -112,7 +112,7 @@ export const CommentPanel: React.FC<CommentPanelProps> = ({
         <CardTitle className="flex items-center gap-2">
           <MessageCircle className="w-5 h-5" />
           التعليقات
-          <Badge variant="secondary">{comments.length}</Badge>
+          <BaseBadge variant="secondary">{comments.length}</BaseBadge>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

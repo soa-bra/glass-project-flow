@@ -60,7 +60,7 @@ export const BrainstormEnginePanel: React.FC<BrainstormEnginePanelProps> = ({
       onResult(ideas);
       toast.success('تم توليد الأفكار بنجاح');
     } catch (err) {
-      console.error('💥 فشل توليد الأفكار:', err);
+      // Error handled silently
       toast.error('فشل في توليد الأفكار');
     } finally {
       setLoading(false);

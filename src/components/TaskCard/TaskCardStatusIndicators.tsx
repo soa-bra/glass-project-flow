@@ -47,17 +47,17 @@ const TaskCardStatusIndicators = ({
   };
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log('تعديل المهمة:', taskId);
+    // تعديل المهمة
     onEdit?.(taskId, taskData);
   };
   const handleArchive = () => {
     setShowArchiveDialog(false);
-    console.log('أرشفة المهمة:', taskId);
+    // أرشفة المهمة
     onArchive?.(taskId);
   };
   const handleDelete = () => {
     setShowDeleteDialog(false);
-    console.log('حذف المهمة:', taskId);
+    // حذف المهمة
     onDelete?.(taskId);
   };
   const handleDropdownClick = (e: React.MouseEvent) => {

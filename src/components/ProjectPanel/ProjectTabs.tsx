@@ -93,7 +93,7 @@ export const FinancialTab = ({
     setApprovalRequests(prev => [...prev, newRequest]);
 
     // Here you would typically send notifications to Financial Manager and Admin
-    console.log('طلب موافقة مالية جديد:', newRequest);
+    // طلب موافقة مالية جديد
     alert('تم إرسال طلب الموافقة المالية بنجاح وسيتم مراجعته من قبل الإدارة المالية');
   };
   const remainingBudget = financialData.totalBudget - financialData.totalExpenses;
@@ -421,7 +421,7 @@ export const TeamTab = ({
   // معالج توزيع المهام
   const handleTaskDistribution = (redistributedTasks: any[]) => {
     // تحديث توزيع المهام حسب النتائج
-    console.log('توزيع المهام يدوياً أو بالذكاء الاصطناعي:', redistributedTasks);
+    // توزيع المهام يدوياً أو بالذكاء الاصطناعي
   };
   return <div className="space-y-6">
       {/* حالة الفريق */}
@@ -558,15 +558,12 @@ export const TeamTab = ({
       </div>
 
       <TaskAssignmentModal isOpen={isTaskAssignmentModalOpen} onClose={() => setIsTaskAssignmentModalOpen(false)} onSave={(employeeId, taskIds) => {
-      console.log('إسناد مهام:', {
-        employeeId,
-        taskIds
-      });
-      alert(`تم إسناد ${taskIds.length} مهام بنجاح إلى الموظف المحدد`);
-    }} />
+        // إسناد مهام
+        alert(`تم إسناد ${taskIds.length} مهام بنجاح إلى الموظف المحدد`);
+      }} />
 
       <TaskRedistributionModal isOpen={isTaskRedistributionModalOpen} onClose={() => setIsTaskRedistributionModalOpen(false)} onRedistribute={redistributedTasks => {
-      console.log('إعادة توزيع المهام:', redistributedTasks);
+      // إعادة توزيع المهام
       alert(`تم إعادة توزيع ${redistributedTasks.length} مهام بنجاح باستخدام الذكاء الاصطناعي`);
     }} />
 
@@ -629,13 +626,13 @@ export const AttachmentsTab = ({
     }));
     setProjectFiles(prev => [...prev, ...newFiles]);
     setIsFileUploadModalOpen(false);
-    console.log('ملفات جديدة تم رفعها:', newFiles);
+    // ملفات جديدة تم رفعها
   };
   const handleFolderOrganization = (data: {
     folders: any[];
     actions: any[];
   }) => {
-    console.log('تنظيم المجلدات:', data);
+    // تنظيم المجلدات
     setIsFolderOrganizationModalOpen(false);
   };
 

@@ -137,7 +137,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
 
   const handleSave = async () => {
     try {
-      console.log('Saving integrations settings to /settings/integrations/commit');
+      // Saving integrations settings
       clearDraft();
       
       const event = new CustomEvent('settings.updated', {
@@ -145,7 +145,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
       });
       window.dispatchEvent(event);
     } catch (error) {
-      console.error('Failed to save integrations settings:', error);
+      // Error handled silently
     }
   };
 

@@ -72,7 +72,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
 
   const handleSave = async () => {
     try {
-      console.log('Saving notifications settings to /settings/notifications/commit');
+      // Saving notifications settings
       clearDraft();
       
       const event = new CustomEvent('settings.updated', {
@@ -80,7 +80,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
       });
       window.dispatchEvent(event);
     } catch (error) {
-      console.error('Failed to save notifications settings:', error);
+      // Error handled silently
     }
   };
 

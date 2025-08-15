@@ -39,7 +39,7 @@ export const HRLiteMainPanel: React.FC = () => {
         department: ''
       });
     } catch (error) {
-      console.error('Error creating employee:', error);
+      // Error handled silently
     }
   };
 

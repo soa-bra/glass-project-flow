@@ -96,7 +96,7 @@ export const FileUploaderPanel: React.FC<FileUploaderPanelProps> = ({
       toast.success('تم تحليل الملف وإضافة العناصر بنجاح');
       setFile(null);
     } catch (error) {
-      console.error('خطأ في تحليل الملف:', error);
+      // Error handled silently
       toast.error('فشل في تحليل الملف');
     } finally {
       setLoading(false);

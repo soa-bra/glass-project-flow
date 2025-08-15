@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Textarea } from '@/components/ui/textarea';
 import { Edit, Trash2 } from 'lucide-react';
 import { CanvasItem } from './types';
@@ -32,9 +32,9 @@ const CanvasItemComponent: React.FC<CanvasItemComponentProps> = ({
       style={{ left: item.position.x, top: item.position.y }}
     >
       <div className="flex items-center justify-between mb-2">
-        <Badge variant="secondary" className="text-xs">
+        <BaseBadge variant="secondary" className="text-xs">
           {item.type}
-        </Badge>
+        </BaseBadge>
         <div className="flex gap-1">
           <Button
             size="sm"
@@ -79,9 +79,9 @@ const CanvasItemComponent: React.FC<CanvasItemComponentProps> = ({
           {item.tags.length > 0 && (
             <div className="flex gap-1 mt-2">
               {item.tags.map((tag, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
+                <BaseBadge key={index} variant="outline" className="text-xs">
                   {tag}
-                </Badge>
+                </BaseBadge>
               ))}
             </div>
           )}

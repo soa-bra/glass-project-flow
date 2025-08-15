@@ -182,7 +182,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
 
   const handleSave = async () => {
     try {
-      console.log('Saving users & roles settings to /settings/users-roles/commit');
+      // Saving users & roles settings
       clearDraft();
       
       const event = new CustomEvent('settings.updated', {
@@ -190,7 +190,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
       });
       window.dispatchEvent(event);
     } catch (error) {
-      console.error('Failed to save users & roles settings:', error);
+      // Error handled silently
     }
   };
 

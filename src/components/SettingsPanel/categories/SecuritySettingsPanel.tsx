@@ -83,7 +83,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
 
   const handleSave = async () => {
     try {
-      console.log('Saving security settings to /settings/security/commit');
+      // Saving security settings
       clearDraft();
       
       const event = new CustomEvent('settings.updated', {
@@ -91,7 +91,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
       });
       window.dispatchEvent(event);
     } catch (error) {
-      console.error('Failed to save security settings:', error);
+      // Error handled silently
     }
   };
 

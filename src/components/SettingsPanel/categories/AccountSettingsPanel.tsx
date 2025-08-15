@@ -104,7 +104,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
         return;
       }
 
-      console.log('Saving account settings to /settings/account/commit');
+      // Saving account settings
       clearDraft();
       
       const event = new CustomEvent('settings.updated', {
@@ -112,7 +112,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
       });
       window.dispatchEvent(event);
     } catch (error) {
-      console.error('Failed to save account settings:', error);
+      // Error handled silently
     }
   };
 

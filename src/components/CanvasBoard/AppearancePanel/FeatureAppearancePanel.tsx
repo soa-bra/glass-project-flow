@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { 
   Palette, 
   Square, 
@@ -205,9 +205,9 @@ export const FeatureAppearancePanel: React.FC<AppearancePanelProps> = ({
               {selectedElements.map((element) => (
                 <div key={element.id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="text-xs">
+                    <BaseBadge variant="secondary" className="text-xs">
                       {element.type}
-                    </Badge>
+                    </BaseBadge>
                     <span className="text-xs truncate max-w-20">
                       {element.name || element.id}
                     </span>

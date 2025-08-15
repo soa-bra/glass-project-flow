@@ -76,12 +76,12 @@ const TaskCard: React.FC<ExtendedTaskCardProps> = ({
   };
 
   const handleEdit = (taskId: string, taskData?: TaskData) => {
-    console.log('فتح لوحة تعديل المهمة:', taskId);
+    // فتح لوحة تعديل المهمة
     setShowEditModal(true);
   };
 
   const handleTaskUpdate = (updatedTask: TaskData) => {
-    console.log('تم تحديث المهمة:', updatedTask);
+    // تم تحديث المهمة
     
     // تحديث البيانات المحلية
     setTaskData(updatedTask);

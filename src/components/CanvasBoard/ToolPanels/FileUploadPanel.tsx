@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { 
   Upload, 
   File, 
@@ -299,17 +299,17 @@ export const FileUploadPanel: React.FC<FileUploadPanelProps> = ({
 
                     <div className="flex items-center gap-1">
                       {uploadFile.status === 'completed' && (
-                        <Badge variant="secondary" className="text-xs">
+                        <BaseBadge variant="secondary" className="text-xs">
                           <Check className="w-3 h-3 mr-1" />
                           مكتمل
-                        </Badge>
+                        </BaseBadge>
                       )}
                       
                       {uploadFile.status === 'error' && (
-                        <Badge variant="destructive" className="text-xs">
+                        <BaseBadge variant="error" className="text-xs">
                           <AlertCircle className="w-3 h-3 mr-1" />
                           خطأ
-                        </Badge>
+                        </BaseBadge>
                       )}
 
                       <Button

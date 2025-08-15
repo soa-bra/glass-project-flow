@@ -81,13 +81,13 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
   };
 
   const handleDataPurge = async (category: string) => {
-    console.log(`Initiating data purge for category: ${category}`);
+    // Initiating data purge for category
     // هنا سيكون استدعاء API لحذف البيانات
   };
 
   const handleSave = async () => {
     try {
-      console.log('Saving data governance settings to /settings/data-governance/commit');
+      // Saving data governance settings
       clearDraft();
       
       const event = new CustomEvent('settings.updated', {
@@ -95,7 +95,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       });
       window.dispatchEvent(event);
     } catch (error) {
-      console.error('Failed to save data governance settings:', error);
+      // Error handled silently
     }
   };
 

@@ -1,7 +1,7 @@
 // CRM Opportunity Pipeline Component
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { 
   Dialog, 
@@ -58,13 +58,13 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ opportunity, onMove, 
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h4 className="font-medium text-sm">{opportunity.account?.name || `عميل ${opportunity.accountId}`}</h4>
-          <Badge className={stageColors[opportunity.stage]}>
+          <BaseBadge className={stageColors[opportunity.stage]}>
             {stageLabels[opportunity.stage]}
-          </Badge>
+          </BaseBadge>
         </div>
         
         {opportunity.value && (
-          <p className="text-lg font-bold text-primary mb-2">
+          <p className="text-lg font-bold text-black mb-2 font-arabic">
             {opportunity.value.toLocaleString('ar-SA')} ر.س
           </p>
         )}
@@ -131,7 +131,7 @@ export const OpportunityPipeline: React.FC = () => {
       setPipelineStats(statsData);
     } catch (error) {
       toast.error('فشل في تحميل بيانات المبيعات');
-      console.error(error);
+      // Error handled silently
     } finally {
       setLoading(false);
     }
@@ -144,7 +144,7 @@ export const OpportunityPipeline: React.FC = () => {
       loadData();
     } catch (error) {
       toast.error('فشل في نقل الفرصة');
-      console.error(error);
+      // Error handled silently
     }
   };
 
@@ -164,7 +164,7 @@ export const OpportunityPipeline: React.FC = () => {
       loadData();
     } catch (error) {
       toast.error('فشل في إنشاء الفرصة');
-      console.error(error);
+      // Error handled silently
     }
   };
 
@@ -191,7 +191,7 @@ export const OpportunityPipeline: React.FC = () => {
     <div className="space-y-6">
       {/* Header & Stats */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">مسار المبيعات</h2>
+        <h2 className="text-xl font-bold font-arabic">مسار المبيعات</h2>
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -253,7 +253,7 @@ export const OpportunityPipeline: React.FC = () => {
                 <DollarSign className="h-4 w-4 text-green-600" />
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">إجمالي المسار</p>
-                  <p className="text-xl font-bold">{pipelineStats.totalValue?.toLocaleString('ar-SA')} ر.س</p>
+                  <p className="text-lg font-bold font-arabic">{pipelineStats.totalValue?.toLocaleString('ar-SA')} ر.س</p>
                 </div>
               </div>
             </CardContent>
@@ -265,7 +265,7 @@ export const OpportunityPipeline: React.FC = () => {
                 <Target className="h-4 w-4 text-blue-600" />
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">معدل النجاح</p>
-                  <p className="text-xl font-bold">{pipelineStats.winRate?.toFixed(1)}%</p>
+                  <p className="text-lg font-bold font-arabic">{pipelineStats.winRate?.toFixed(1)}%</p>
                 </div>
               </div>
             </CardContent>
@@ -277,7 +277,7 @@ export const OpportunityPipeline: React.FC = () => {
                 <Users className="h-4 w-4 text-orange-600" />
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">العملاء المحتملون</p>
-                  <p className="text-xl font-bold">{pipelineStats.countByStage?.LEAD || 0}</p>
+                  <p className="text-lg font-bold font-arabic">{pipelineStats.countByStage?.LEAD || 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -289,7 +289,7 @@ export const OpportunityPipeline: React.FC = () => {
                 <TrendingUp className="h-4 w-4 text-purple-600" />
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">عروض مقدمة</p>
-                  <p className="text-xl font-bold">{pipelineStats.countByStage?.PROPOSAL || 0}</p>
+                  <p className="text-lg font-bold font-arabic">{pipelineStats.countByStage?.PROPOSAL || 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -303,9 +303,9 @@ export const OpportunityPipeline: React.FC = () => {
           <div key={stage} className="space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-sm">{stageLabels[stage]}</h3>
-              <Badge variant="secondary" className="text-xs">
+              <BaseBadge variant="secondary" className="text-xs">
                 {groupedOpportunities[stage]?.length || 0}
-              </Badge>
+              </BaseBadge>
             </div>
             
             <div className="space-y-2 min-h-[200px] bg-muted/30 rounded-lg p-3">
