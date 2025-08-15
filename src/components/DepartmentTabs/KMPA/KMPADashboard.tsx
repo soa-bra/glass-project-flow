@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
-import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
+import { BaseTabContent } from '@/components/shared';
 import { OverviewTab } from './OverviewTab';
 import { KnowledgeRepositoryTab } from './KnowledgeRepositoryTab';
 import { AuthoringVersionsTab } from './AuthoringVersionsTab';
@@ -35,29 +35,29 @@ export const KMPADashboard: React.FC = () => {
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >
-      <UnifiedTabContent value="overview">
+      <BaseTabContent value="overview">
         <OverviewTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="repository">
+      <BaseTabContent value="repository">
         <KnowledgeRepositoryTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="authoring">
+      <BaseTabContent value="authoring">
         <AuthoringVersionsTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="analytics">
+      <BaseTabContent value="analytics">
         <AnalyticsImpactTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="templates">
+      <BaseTabContent value="templates">
         <ModelsTemplatesTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="reports">
+      <BaseTabContent value="reports">
         <ReportsTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
     </DashboardLayout>
   );
 };

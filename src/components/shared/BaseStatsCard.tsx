@@ -14,7 +14,7 @@ interface UnifiedStatsCardProps {
   className?: string;
 }
 
-export const UnifiedStatsCard: React.FC<UnifiedStatsCardProps> = ({
+export const BaseStatsCard: React.FC<UnifiedStatsCardProps> = ({
   stats,
   columns = 2,
   className = '',

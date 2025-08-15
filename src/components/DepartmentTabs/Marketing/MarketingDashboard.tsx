@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
-import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
+import { BaseTabContent } from '@/components/shared';
 import { OverviewTab } from './OverviewTab';
 import { CampaignsChannelsTab } from './CampaignsChannelsTab';
 import { ContentAssetsTab } from './ContentAssetsTab';
@@ -39,37 +39,37 @@ export const MarketingDashboard: React.FC = () => {
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >
-      <UnifiedTabContent value="overview">
+      <BaseTabContent value="overview">
         <OverviewTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="campaigns">
+      <BaseTabContent value="campaigns">
         <CampaignsChannelsTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="content">
+      <BaseTabContent value="content">
         <ContentAssetsTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="performance">
+      <BaseTabContent value="performance">
         <PerformanceAnalyticsTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="budgets">
+      <BaseTabContent value="budgets">
         <BudgetsTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="pr">
+      <BaseTabContent value="pr">
         <PublicRelationsTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="templates">
+      <BaseTabContent value="templates">
         <TemplatesTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="reports">
+      <BaseTabContent value="reports">
         <ReportsTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
     </DashboardLayout>
   );
 };

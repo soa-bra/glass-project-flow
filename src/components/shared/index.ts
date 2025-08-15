@@ -5,13 +5,13 @@
 
 // Core Layout Components
 export { DashboardLayout } from './DashboardLayout';
-export { UnifiedTabContent } from './UnifiedTabContent';
-export { UnifiedCard } from './UnifiedCard';
-export { UnifiedStatsCard } from './UnifiedStatsCard';
-export { UnifiedListItem } from './UnifiedListItem';
+export { BaseTabContent } from './BaseTabContent';
+export { BaseCard } from './BaseCard';
+export { BaseStatsCard } from './BaseStatsCard';
+export { BaseListItem } from './BaseListItem';
 
 // Interactive Components
-export { UnifiedSearchBar } from './UnifiedSearchBar';
+export { BaseSearchBar } from './BaseSearchBar';
 export { UnifiedArchiveItem } from './UnifiedArchiveItem';
 export { UnifiedPageHeader } from './UnifiedPageHeader';
 

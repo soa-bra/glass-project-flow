@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
-import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
+import { BaseTabContent } from '@/components/shared';
 import { OverviewTab } from './OverviewTab';
 import { CustomersTab } from './CustomersTab';
 import { OpportunitiesTab } from './OpportunitiesTab';
@@ -39,33 +39,33 @@ export const CRMDashboard: React.FC = () => {
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >
-      <UnifiedTabContent value="overview">
+      <BaseTabContent value="overview">
         <OverviewTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="customers">
+      <BaseTabContent value="customers">
         <CustomersTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="opportunities">
+      <BaseTabContent value="opportunities">
         <OpportunitiesTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="service">
+      <BaseTabContent value="service">
         <ServiceTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="analytics">
+      <BaseTabContent value="analytics">
         <AnalyticsTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="templates">
+      <BaseTabContent value="templates">
         <TemplatesTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="reports">
+      <BaseTabContent value="reports">
         <ReportsTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
     </DashboardLayout>
   );
 };

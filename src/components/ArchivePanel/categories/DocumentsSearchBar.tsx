@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { UnifiedSearchBar } from '@/components/shared/UnifiedSearchBar';
+import { BaseSearchBar } from '@/components/shared';
 import { SPACING } from '@/components/shared/design-system/constants';
 
 interface DocumentsSearchBarProps {
@@ -14,7 +14,7 @@ export const DocumentsSearchBar: React.FC<DocumentsSearchBarProps> = ({
 }) => {
   return (
     <div className={`px-6 ${SPACING.CARD_MARGIN}`}>
-      <UnifiedSearchBar
+      <BaseSearchBar
         searchQuery={searchQuery}
         onSearchChange={onSearchChange}
         placeholder="البحث في الوثائق..."

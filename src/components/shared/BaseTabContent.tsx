@@ -9,7 +9,7 @@ interface UnifiedTabContentProps {
   className?: string;
 }
 
-export const UnifiedTabContent: React.FC<UnifiedTabContentProps> = ({
+export const BaseTabContent: React.FC<UnifiedTabContentProps> = ({
   value,
   children,
   className = '',

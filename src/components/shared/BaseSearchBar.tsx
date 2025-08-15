@@ -10,7 +10,7 @@ interface UnifiedSearchBarProps {
   className?: string;
 }
 
-export const UnifiedSearchBar: React.FC<UnifiedSearchBarProps> = ({
+export const BaseSearchBar: React.FC<UnifiedSearchBarProps> = ({
   searchQuery,
   onSearchChange,
   placeholder = 'البحث...',

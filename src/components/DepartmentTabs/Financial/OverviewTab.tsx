@@ -3,8 +3,7 @@ import React, { useState } from 'react';
 import { AlertTriangle, CheckCircle, Clock, Bell, BarChart, TrendingUp } from 'lucide-react';
 import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
-import { UnifiedCard } from '@/components/shared/UnifiedCard';
-import { UnifiedListItem } from '@/components/shared/UnifiedListItem';
+import { BaseCard, BaseListItem } from '@/components/shared';
 import { mockBudgetData, mockCashFlowData } from './data';
 import { formatCurrency } from './utils';
 import { Alert } from './types';
@@ -75,7 +74,7 @@ export const OverviewTab: React.FC = () => {
       
       <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
         {/* Budget vs Actual Chart */}
-        <UnifiedCard
+        <BaseCard
           title="الميزانية مقابل الفعلي (شهري)"
           icon={<BarChart className={LAYOUT.ICON_SIZE} />}
           className="p-6"
@@ -101,10 +100,10 @@ export const OverviewTab: React.FC = () => {
               <Bar dataKey="actual" fill="#a4e2f6" name="الفعلي" />
             </RechartsBarChart>
           </ResponsiveContainer>
-        </UnifiedCard>
+        </BaseCard>
 
         {/* Cash Flow Forecast */}
-        <UnifiedCard
+        <BaseCard
           title="توقعات التدفق النقدي"
           icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
           className="p-6"
@@ -130,18 +129,18 @@ export const OverviewTab: React.FC = () => {
               <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} name="التدفق الخارج" />
             </LineChart>
           </ResponsiveContainer>
-        </UnifiedCard>
+        </BaseCard>
       </div>
 
       {/* AI Alerts */}
-      <UnifiedCard
+      <BaseCard
         title="تنبيهات الذكاء الاصطناعي"
         icon={<Bell className={LAYOUT.ICON_SIZE} />}
         className="p-6"
       >
         <div className="space-y-3">
           {alerts.map(alert => (
-            <UnifiedListItem
+            <BaseListItem
               key={alert.id}
               icon={
                 alert.type === 'warning' ? <AlertTriangle className={LAYOUT.ICON_SIZE} /> :
@@ -154,10 +153,10 @@ export const OverviewTab: React.FC = () => {
               }}
             >
               {alert.message}
-            </UnifiedListItem>
+            </BaseListItem>
           ))}
         </div>
-      </UnifiedCard>
+      </BaseCard>
     </div>
   );
 };

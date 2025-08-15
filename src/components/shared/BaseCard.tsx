@@ -10,7 +10,7 @@ interface UnifiedCardProps {
   className?: string;
 }
 
-export const UnifiedCard: React.FC<UnifiedCardProps> = ({
+export const BaseCard: React.FC<UnifiedCardProps> = ({
   children,
   title,
   icon,

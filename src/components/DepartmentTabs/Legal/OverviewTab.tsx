@@ -1,9 +1,7 @@
 import React from 'react';
 import { AlertTriangle, FileText, Scale, Shield, Calendar, TrendingUp, Bell, CheckCircle, Clock } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
-import { UnifiedCard } from '@/components/shared/UnifiedCard';
-import { UnifiedStatsCard } from '@/components/shared/UnifiedStatsCard';
-import { UnifiedListItem } from '@/components/shared/UnifiedListItem';
+import { BaseCard, BaseStatsCard, BaseListItem } from '@/components/shared';
 import { UnifiedBadge } from '@/components/ui/UnifiedBadge';
 import { mockLegalMetrics, mockAlerts } from './data';
 import { getStatusColor, getStatusText, getPriorityColor } from './utils';
@@ -55,11 +53,11 @@ export const OverviewTab: React.FC = () => {
       
       <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
         {/* إحصائيات العقود */}
-        <UnifiedCard 
+        <BaseCard 
           title="توزيع العقود حسب الحالة"
           icon={<FileText className={LAYOUT.ICON_SIZE} />}
         >
-          <UnifiedStatsCard 
+          <BaseStatsCard 
             stats={[
               { title: 'موقعة', value: metrics.contractsCount.signed },
               { title: 'في الانتظار', value: metrics.contractsCount.pending },
@@ -68,10 +66,10 @@ export const OverviewTab: React.FC = () => {
             ]}
             columns={2}
           />
-        </UnifiedCard>
+        </BaseCard>
 
         {/* درجة الامتثال ومؤشرات المخاطر */}
-        <UnifiedCard 
+        <BaseCard 
           title="مؤشرات الامتثال والمخاطر"
           icon={<Shield className={LAYOUT.ICON_SIZE} />}
         >
@@ -91,16 +89,16 @@ export const OverviewTab: React.FC = () => {
               <div className="text-sm font-medium text-black font-arabic">درجة المخاطر الإجمالية</div>
             </div>
           </div>
-        </UnifiedCard>
+        </BaseCard>
       </div>
 
       <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
         {/* الإحصائيات الشهرية */}
-        <UnifiedCard 
+        <BaseCard 
           title="الإنجازات الشهرية"
           icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
         >
-          <UnifiedStatsCard 
+          <BaseStatsCard 
             stats={[
               { title: 'عقد موقع', value: metrics.monthlyStats.contractsSigned },
               { title: 'قضية محلولة', value: metrics.monthlyStats.casesResolved },
@@ -109,16 +107,16 @@ export const OverviewTab: React.FC = () => {
             ]}
             columns={2}
           />
-        </UnifiedCard>
+        </BaseCard>
 
         {/* التنبيهات القانونية */}
-        <UnifiedCard 
+        <BaseCard 
           title="تنبيهات قانونية عاجلة"
           icon={<Bell className={LAYOUT.ICON_SIZE} />}
         >
           <div className="space-y-3">
             {alerts.map(alert => (
-              <UnifiedListItem
+              <BaseListItem
                 key={alert.id}
                 icon={
                   alert.priority === 'high' ? <AlertTriangle className={LAYOUT.ICON_SIZE} /> :
@@ -131,10 +129,10 @@ export const OverviewTab: React.FC = () => {
                 }}
               >
                 {alert.message}
-              </UnifiedListItem>
+              </BaseListItem>
             ))}
           </div>
-        </UnifiedCard>
+        </BaseCard>
       </div>
     </div>;
 };

@@ -13,7 +13,7 @@ interface UnifiedListItemProps {
   className?: string;
 }
 
-export const UnifiedListItem: React.FC<UnifiedListItemProps> = ({
+export const BaseListItem: React.FC<UnifiedListItemProps> = ({
   children,
   icon,
   badge,

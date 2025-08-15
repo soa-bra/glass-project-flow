@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
-import { UnifiedTabContent } from '@/components/shared/UnifiedTabContent';
+import { BaseTabContent } from '@/components/shared';
 import { OverviewTab } from './OverviewTab';
 import { EmployeesTab } from './EmployeesTab';
 import { AttendanceTab } from './AttendanceTab';
@@ -43,37 +43,37 @@ export const HRDashboard: React.FC = () => {
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >
-      <UnifiedTabContent value="overview">
+      <BaseTabContent value="overview">
         <OverviewTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="employees">
+      <BaseTabContent value="employees">
         <EmployeesTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="attendance">
+      <BaseTabContent value="attendance">
         <AttendanceTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="performance">
+      <BaseTabContent value="performance">
         <PerformanceTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="recruitment">
+      <BaseTabContent value="recruitment">
         <RecruitmentTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="training">
+      <BaseTabContent value="training">
         <TrainingTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="templates">
+      <BaseTabContent value="templates">
         <TemplatesTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
 
-      <UnifiedTabContent value="reports">
+      <BaseTabContent value="reports">
         <ReportsTab />
-      </UnifiedTabContent>
+      </BaseTabContent>
     </DashboardLayout>
   );
 };
