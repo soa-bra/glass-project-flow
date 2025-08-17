@@ -1,6 +1,7 @@
 import React from 'react';
 import { Clock, GitBranch } from 'lucide-react';
 import { CanvasElement } from '../types';
+import { convertCompleteStyle } from '@/utils/styleConverter';
 
 interface ElementRendererProps {
   element: CanvasElement;
@@ -8,48 +9,24 @@ interface ElementRendererProps {
 
 export const ElementRenderer: React.FC<ElementRendererProps> = ({ element }) => {
   const baseStyle = element.style || {};
-  
+  const styleClasses = convertCompleteStyle(baseStyle);
   
   switch (element.type) {
     case 'text':
       return (
-        <div 
-          className="w-full h-full flex items-center justify-center bg-white/90 rounded p-2 border border-gray-300 shadow-sm"
-          style={{
-            fontSize: baseStyle.fontSize || '16px',
-            fontFamily: baseStyle.fontFamily || 'IBM Plex Sans Arabic',
-            color: baseStyle.color || '#000000',
-            textAlign: baseStyle.textAlign || 'right',
-            fontWeight: baseStyle.fontWeight || 'normal'
-          }}
-        >
+        <div className={`w-full h-full flex items-center justify-center bg-white/90 rounded p-2 border border-gray-300 shadow-sm ${styleClasses}`}>
           <span className="font-arabic select-none">{element.content || 'نص جديد'}</span>
         </div>
       );
 
     case 'shape':
       return (
-        <div 
-          className="w-full h-full rounded border-2" 
-          style={{
-            backgroundColor: baseStyle.fill || '#3B82F6',
-            borderColor: baseStyle.stroke || '#1D4ED8',
-            borderWidth: baseStyle.strokeWidth || 2
-          }}
-        />
+        <div className={`w-full h-full rounded border-2 ${styleClasses}`} />
       );
 
     case 'sticky':
       return (
-        <div 
-          className="w-full h-full rounded shadow-md p-2 border"
-          style={{
-            backgroundColor: baseStyle.backgroundColor || '#FEF3C7',
-            borderColor: '#F59E0B',
-            borderRadius: baseStyle.borderRadius || '8px',
-            padding: baseStyle.padding || '12px'
-          }}
-        >
+        <div className={`w-full h-full rounded shadow-md p-2 border ${styleClasses}`}>
           <span className="text-xs font-arabic text-gray-800">{element.content || 'ملاحظة'}</span>
         </div>
       );

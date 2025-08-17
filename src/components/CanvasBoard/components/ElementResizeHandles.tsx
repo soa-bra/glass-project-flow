@@ -22,8 +22,7 @@ export const ElementResizeHandles: React.FC<ElementResizeHandlesProps> = ({
     <div
       className="absolute pointer-events-none"
       style={{
-        left: element.position.x - 4,
-        top: element.position.y - 4,
+        transform: `translate(${element.position.x - 4}px, ${element.position.y - 4}px)`,
         width: element.size.width + 8,
         height: element.size.height + 8
       }}

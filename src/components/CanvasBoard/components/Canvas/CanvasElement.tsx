@@ -18,58 +18,46 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   onMouseMove,
   onMouseUp
 }) => {
-  const { elementClasses } = useCanvasStyles({
+  const { elementClasses, convertCompleteStyle } = useCanvasStyles({
     position: element.position,
     size: element.size,
     style: element.style,
     isSelected
   });
+
   const renderElementContent = () => {
+    const styleClasses = convertCompleteStyle(element.style || {});
+    
     switch (element.type) {
       case 'text':
         return (
-          <div
-            className="p-2 bg-white border border-gray-300 rounded"
-            style={element.style}
-          >
+          <div className={`p-2 bg-white border border-gray-300 rounded ${styleClasses}`}>
             {element.content || 'نص جديد'}
           </div>
         );
       
       case 'sticky':
         return (
-          <div
-            className="p-3 bg-yellow-200 border border-yellow-400 rounded shadow-sm"
-            style={element.style}
-          >
+          <div className={`p-3 bg-yellow-200 border border-yellow-400 rounded shadow-sm ${styleClasses}`}>
             {element.content || 'ملاحظة جديدة'}
           </div>
         );
       
       case 'shape':
         return (
-          <div
-            className="bg-blue-500 border-2 border-blue-700 rounded"
-            style={element.style}
-          />
+          <div className={`bg-blue-500 border-2 border-blue-700 rounded ${styleClasses}`} />
         );
       
       case 'comment':
         return (
-          <div
-            className="p-2 bg-orange-100 border border-orange-300 rounded shadow-sm"
-            style={element.style}
-          >
+          <div className={`p-2 bg-orange-100 border border-orange-300 rounded shadow-sm ${styleClasses}`}>
             💬 {element.content || 'تعليق'}
           </div>
         );
       
       case 'upload':
         return (
-          <div
-            className="p-2 bg-gray-100 border border-gray-300 rounded flex flex-col items-center justify-center text-xs"
-            style={element.style}
-          >
+          <div className={`p-2 bg-gray-100 border border-gray-300 rounded flex flex-col items-center justify-center text-xs ${styleClasses}`}>
             📁 
             <span className="mt-1 text-center">{element.data?.fileName || 'ملف'}</span>
           </div>
@@ -80,8 +68,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
           <img
             src={element.data?.src}
             alt={element.content || 'صورة'}
-            className="w-full h-full object-cover rounded"
-            style={element.style}
+            className={`w-full h-full object-cover rounded ${styleClasses}`}
           />
         );
       
@@ -95,10 +82,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
         }, '');
         
         return (
-          <svg 
-            className="w-full h-full absolute inset-0"
-            style={element.style}
-          >
+          <svg className={`w-full h-full absolute inset-0 ${styleClasses}`}>
             <path
               d={pathString}
               stroke={element.style?.stroke || '#000000'}
@@ -110,10 +94,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       
       case 'smart-element':
         return (
-          <div
-            className="p-4 bg-gradient-to-br from-purple-100 to-blue-100 border border-purple-300 rounded-lg"
-            style={element.style}
-          >
+          <div className={`p-4 bg-gradient-to-br from-purple-100 to-blue-100 border border-purple-300 rounded-lg ${styleClasses}`}>
             <div className="text-sm font-medium text-purple-800">
               {element.data?.type || 'عنصر ذكي'}
             </div>
@@ -125,10 +106,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       
       default:
         return (
-          <div
-            className="p-2 bg-gray-200 border border-gray-400 rounded"
-            style={element.style}
-          >
+          <div className={`p-2 bg-gray-200 border border-gray-400 rounded ${styleClasses}`}>
             {element.content || element.type}
           </div>
         );

@@ -16,6 +16,7 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { convertCompleteStyle } from '@/utils/styleConverter';
 
 interface BorderStyle {
   width: number;
@@ -159,6 +160,17 @@ export const FeatureBorderControls: React.FC<BorderControlsProps> = ({
     opacity: borderStyle.opacity / 100
   });
 
+  const getPreviewClasses = (borderStyle: BorderStyle) => {
+    const style = {
+      borderWidth: `${borderStyle.width}px`,
+      borderStyle: borderStyle.style,
+      borderColor: borderStyle.color,
+      borderRadius: `${borderStyle.radius}px`,
+      opacity: borderStyle.opacity / 100
+    };
+    return `w-24 h-24 bg-gray-100 dark:bg-gray-800 ${convertCompleteStyle(style)}`;
+  };
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
@@ -180,10 +192,7 @@ export const FeatureBorderControls: React.FC<BorderControlsProps> = ({
           <TabsContent value="style" className="space-y-4">
             {/* Preview */}
             <div className="flex justify-center">
-              <div
-                className="w-24 h-24 bg-gray-100 dark:bg-gray-800"
-                style={getPreviewStyle(border)}
-              />
+              <div className={getPreviewClasses(border)} />
             </div>
 
             {/* Border Width */}
@@ -282,10 +291,13 @@ export const FeatureBorderControls: React.FC<BorderControlsProps> = ({
                 >
                   <div className="w-full flex items-center justify-between">
                     <span className="text-sm font-medium">{preset.name}</span>
-                    <div
-                      className="w-6 h-6 border-2 rounded"
-                      style={getPreviewStyle(preset.border)}
-                    />
+                    <div className={`w-6 h-6 border-2 rounded ${convertCompleteStyle({
+                      borderWidth: `${preset.border.width}px`,
+                      borderStyle: preset.border.style,
+                      borderColor: preset.border.color,
+                      borderRadius: `${preset.border.radius}px`,
+                      opacity: preset.border.opacity / 100
+                    })}`} />
                   </div>
                   <span className="text-xs text-gray-500 font-mono">
                     {preset.preview}

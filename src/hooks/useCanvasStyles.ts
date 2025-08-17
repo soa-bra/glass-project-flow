@@ -84,6 +84,7 @@ export const useCanvasStyles = ({
     viewportClasses,
     boundingBoxClasses,
     resizeHandleClasses,
+    convertCompleteStyle,
   };
 };
 

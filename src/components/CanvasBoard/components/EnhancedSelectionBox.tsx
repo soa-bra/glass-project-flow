@@ -44,8 +44,7 @@ export const EnhancedSelectionBox: React.FC<EnhancedSelectionBoxProps> = ({
     <div
       className={`absolute pointer-events-none border-dashed ${getThemeClasses()}`}
       style={{
-        left,
-        top,
+        transform: `translate(${left}px, ${top}px)`,
         width,
         height,
         borderWidth: `${borderWidth}px`,

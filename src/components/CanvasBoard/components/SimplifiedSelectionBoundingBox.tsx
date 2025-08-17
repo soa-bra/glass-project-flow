@@ -94,8 +94,7 @@ export const SimplifiedSelectionBoundingBox: React.FC<SimplifiedSelectionBoundin
     <div
       className="absolute border-2 border-blue-500 border-dashed bg-blue-500/10 pointer-events-none z-[1001]"
       style={{
-        left: bounds.x * zoomFactor + canvasPosition.x,
-        top: bounds.y * zoomFactor + canvasPosition.y,
+        transform: `translate(${bounds.x * zoomFactor + canvasPosition.x}px, ${bounds.y * zoomFactor + canvasPosition.y}px)`,
         width: bounds.width * zoomFactor,
         height: bounds.height * zoomFactor
       }}
@@ -114,44 +113,37 @@ export const SimplifiedSelectionBoundingBox: React.FC<SimplifiedSelectionBoundin
         onMouseDown={(e) => handleResizeStart('ne', e)}
       />
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-nw-resize pointer-events-auto hover:bg-blue-600"
-        style={{ top: -6, left: -6 }}
+        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-nw-resize pointer-events-auto hover:bg-blue-600 top-[-6px] left-[-6px]"
         onMouseDown={(e) => handleResizeStart('nw', e)}
       />
       
       {/* Side resize handles */}
       <div 
-        className="absolute w-3 h-2 bg-blue-500 border border-white cursor-e-resize pointer-events-auto hover:bg-blue-600"
-        style={{ top: '50%', right: -6, transform: 'translateY(-50%)' }}
+        className="absolute w-3 h-2 bg-blue-500 border border-white cursor-e-resize pointer-events-auto hover:bg-blue-600 top-1/2 right-[-6px] transform -translate-y-1/2"
         onMouseDown={(e) => handleResizeStart('e', e)}
       />
       <div 
-        className="absolute w-3 h-2 bg-blue-500 border border-white cursor-w-resize pointer-events-auto hover:bg-blue-600"
-        style={{ top: '50%', left: -6, transform: 'translateY(-50%)' }}
+        className="absolute w-3 h-2 bg-blue-500 border border-white cursor-w-resize pointer-events-auto hover:bg-blue-600 top-1/2 left-[-6px] transform -translate-y-1/2"
         onMouseDown={(e) => handleResizeStart('w', e)}
       />
       <div 
-        className="absolute w-2 h-3 bg-blue-500 border border-white cursor-n-resize pointer-events-auto hover:bg-blue-600"
-        style={{ top: -6, left: '50%', transform: 'translateX(-50%)' }}
+        className="absolute w-2 h-3 bg-blue-500 border border-white cursor-n-resize pointer-events-auto hover:bg-blue-600 top-[-6px] left-1/2 transform -translate-x-1/2"
         onMouseDown={(e) => handleResizeStart('n', e)}
       />
       <div 
-        className="absolute w-2 h-3 bg-blue-500 border border-white cursor-s-resize pointer-events-auto hover:bg-blue-600"
-        style={{ bottom: -6, left: '50%', transform: 'translateX(-50%)' }}
+        className="absolute w-2 h-3 bg-blue-500 border border-white cursor-s-resize pointer-events-auto hover:bg-blue-600 bottom-[-6px] left-1/2 transform -translate-x-1/2"
         onMouseDown={(e) => handleResizeStart('s', e)}
       />
       
       {/* Rotation handle */}
       <div 
-        className="absolute w-3 h-3 bg-green-500 border border-white cursor-crosshair pointer-events-auto hover:bg-green-600 rounded-full"
-        style={{ top: -20, left: '50%', transform: 'translateX(-50%)' }}
+        className="absolute w-3 h-3 bg-green-500 border border-white cursor-crosshair pointer-events-auto hover:bg-green-600 rounded-full top-[-20px] left-1/2 transform -translate-x-1/2"
         onMouseDown={(e) => handleResizeStart('rotate', e)}
       />
       
       {/* Rotation line */}
       <div 
-        className="absolute w-0.5 h-3 bg-green-500 pointer-events-none"
-        style={{ top: -17, left: '50%', transform: 'translateX(-50%)' }}
+        className="absolute w-0.5 h-3 bg-green-500 pointer-events-none top-[-17px] left-1/2 transform -translate-x-1/2"
       />
     </div>
   );
