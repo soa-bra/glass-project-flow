@@ -262,7 +262,7 @@ export const ClientTab = ({
   };
   return <div className="space-y-6">
       {/* حالة رضا العميل */}
-      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-[#DADCE0]">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">رضا العميل</h3>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
@@ -652,7 +652,7 @@ export const AttachmentsTab = ({
 
       {/* إحصائيات المرفقات */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[#FFFFFF] rounded-[41px]l p-6 text-center border border-[#DADCE0]">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي الملفات</h4>
           <p className="text-2xl font-bold text-black mb-1">23</p>
           <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
@@ -686,21 +686,21 @@ export const AttachmentsTab = ({
       <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة مرفقات المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-2xl border border[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">رفع ملف جديد</h4>
             <p className="text-xs text-black/70 mb-3">إضافة مستندات وملفات جديدة للمشروع</p>
             <button onClick={() => setIsFileUploadModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               رفع ملف
             </button>
           </div>
-          <div className="p-4 rounded-2xl border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تنظيم المجلدات</h4>
             <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم مجلدات المشروع</p>
             <button onClick={() => setIsFolderOrganizationModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تنظيم المجلدات
             </button>
           </div>
-          <div className="p-4 rounded-2xl border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
             <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للملفات</p>
             <button onClick={() => {
@@ -829,14 +829,14 @@ export const TemplatesTab = ({
               رفع قالب
             </button>
           </div>
-          <div className="p-4 rounded-2xl border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تنظيم الفئات</h4>
             <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم فئات القوالب</p>
             <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تنظيم الفئات
             </button>
           </div>
-          <div className="p-4 rounded-2xl border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
             <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للقوالب</p>
             <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">

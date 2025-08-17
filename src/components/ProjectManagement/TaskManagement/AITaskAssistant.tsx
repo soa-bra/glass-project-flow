@@ -93,7 +93,7 @@ export const AITaskAssistant: React.FC<AITaskAssistantProps> = ({ projectId }) =
   };
 
   return (
-    <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+    <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-black">مساعد الذكاء الاصطناعي</h3>
         <div className="flex items-center gap-2">
