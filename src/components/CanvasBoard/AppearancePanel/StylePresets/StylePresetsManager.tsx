@@ -329,11 +329,9 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
             ${preset.style.borderRadius ? DYNAMIC_CLASSES.createBorderRadiusClass(preset.style.borderRadius) : 'rounded'}
             ${preset.style.boxShadow ? DYNAMIC_CLASSES.createBoxShadowClass(preset.style.boxShadow) : ''}
             ${preset.style.fontSize ? DYNAMIC_CLASSES.createFontSizeClass(Math.min(preset.style.fontSize, 12)) : 'text-xs'}
-            ${preset.style.fill ? `text-[${preset.style.fill}]` : 'text-gray-500'}`}
-          style={{
-            fontFamily: preset.style.fontFamily,
-            fontWeight: preset.style.fontWeight
-          }}
+            ${preset.style.fill ? `text-[${preset.style.fill}]` : 'text-gray-500'}
+            ${preset.style.fontFamily ? `font-[${preset.style.fontFamily}]` : ''}
+            ${preset.style.fontWeight ? `font-[${preset.style.fontWeight}]` : ''}`}
         >
           {preset.category === 'text' ? 'نص تجريبي' : preset.name}
         </div>
@@ -527,11 +525,9 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
                   ${currentStyle.borderRadius ? DYNAMIC_CLASSES.createBorderRadiusClass(currentStyle.borderRadius) : 'rounded'}
                   ${currentStyle.boxShadow ? DYNAMIC_CLASSES.createBoxShadowClass(currentStyle.boxShadow) : ''}
                   ${currentStyle.fontSize ? DYNAMIC_CLASSES.createFontSizeClass(currentStyle.fontSize) : 'text-sm'}
-                  ${currentStyle.fill ? `text-[${currentStyle.fill}]` : 'text-gray-700'}`}
-                style={{
-                  fontFamily: currentStyle.fontFamily,
-                  fontWeight: currentStyle.fontWeight
-                }}
+                  ${currentStyle.fill ? `text-[${currentStyle.fill}]` : 'text-gray-700'}
+                  ${currentStyle.fontFamily ? `font-[${currentStyle.fontFamily}]` : ''}
+                  ${currentStyle.fontWeight ? `font-[${currentStyle.fontWeight}]` : ''}`}
               >
                 معاينة النمط
               </div>

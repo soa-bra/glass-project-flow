@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { CanvasElement } from '../types';
+import { DYNAMIC_CLASSES } from '@/components/shared/design-system/constants';
 
 interface SelectionBoundingBoxProps {
   selectedElements: CanvasElement[];
@@ -158,39 +159,29 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
     { position: 'w', cursor: 'w-resize', x: -4, y: boundingBox.height / 2 - 4 },
   ];
 
+  const transformContainerClasses = `absolute pointer-events-none transform origin-[0_0]`;
+  const boundingBoxClasses = `absolute border-2 border-blue-500 border-dashed bg-blue-500/10 pointer-events-none ${DYNAMIC_CLASSES.createPositionClasses(boundingBox.x, boundingBox.y)} ${DYNAMIC_CLASSES.createSizeClasses(boundingBox.width, boundingBox.height)}`;
+
   return (
     <div
-      className="absolute pointer-events-none"
-      style={{
-        transform,
-        transformOrigin: '0 0'
-      }}
+      className={transformContainerClasses}
+      style={{ transform, transformOrigin: '0 0' }}
     >
       {/* Bounding box outline */}
-      <div
-        className="absolute border-2 border-blue-500 border-dashed bg-blue-500/10"
-        style={{
-          left: boundingBox.x,
-          top: boundingBox.y,
-          width: boundingBox.width,
-          height: boundingBox.height,
-          pointerEvents: 'none'
-        }}
-      />
+      <div className={boundingBoxClasses} />
 
       {/* Resize handles */}
-      {resizeHandles.map(handle => (
-        <div
-          key={handle.position}
-          className="absolute w-2 h-2 bg-blue-500 border border-white cursor-pointer hover:bg-blue-600 pointer-events-auto"
-          style={{
-            left: boundingBox.x + handle.x,
-            top: boundingBox.y + handle.y,
-            cursor: handle.cursor
-          }}
-          onMouseDown={(e) => handleResizeStart(handle.position, e)}
-        />
-      ))}
+      {resizeHandles.map(handle => {
+        const handleClasses = `absolute w-2 h-2 bg-blue-500 border border-white hover:bg-blue-600 pointer-events-auto ${DYNAMIC_CLASSES.createPositionClasses(boundingBox.x + handle.x, boundingBox.y + handle.y)}`;
+        return (
+          <div
+            key={handle.position}
+            className={handleClasses}
+            style={{ cursor: handle.cursor }}
+            onMouseDown={(e) => handleResizeStart(handle.position, e)}
+          />
+        );
+      })}
     </div>
   );
 };

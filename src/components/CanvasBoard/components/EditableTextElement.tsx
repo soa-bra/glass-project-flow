@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CanvasElement } from '@/types/canvas';
+import { useCanvasStyles } from '@/hooks/useCanvasStyles';
+import { convertCompleteStyle } from '@/utils/styleConverter';
 
 interface EditableTextElementProps {
   element: CanvasElement;
@@ -49,55 +51,48 @@ export const EditableTextElement: React.FC<EditableTextElementProps> = ({
     handleSave();
   };
 
+  const { elementClasses } = useCanvasStyles({
+    position: element.position,
+    size: element.size,
+    style: element.style,
+    isSelected: false
+  });
+
+  const editingContainerClasses = `absolute z-[1002] ${elementClasses}`;
+  const editingTextareaClasses = `w-full h-full p-2 border-2 border-blue-500 rounded resize-none focus:outline-none`;
+  
   if (isEditing) {
     return (
-      <div className="absolute" style={{
-        left: element.position.x,
-        top: element.position.y,
-        width: element.size.width,
-        height: element.size.height,
-        zIndex: 1002
-      }}>
+      <div className={editingContainerClasses}>
         <textarea
           ref={textAreaRef}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
-          className="w-full h-full p-2 border-2 border-blue-500 rounded resize-none focus:outline-none"
-          style={{
-            fontSize: element.style?.fontSize || '14px',
+          className={`${editingTextareaClasses} ${convertCompleteStyle({
+            fontSize: element.style?.fontSize || 14,
             fontFamily: element.style?.fontFamily || 'inherit',
             fontWeight: element.style?.fontWeight || 'normal',
             textAlign: element.style?.textAlign || 'left',
-             backgroundColor: element.style?.backgroundColor || '#ffffff'
-          }}
+            backgroundColor: element.style?.backgroundColor || '#ffffff'
+          })}`}
         />
       </div>
     );
   }
 
+  const displayContainerClasses = `absolute cursor-pointer ${elementClasses}`;
+  const displayContentClasses = `w-full h-full p-2 bg-white border border-gray-300 rounded whitespace-pre-wrap overflow-hidden ${convertCompleteStyle(element.style || {})}`;
+
   return (
     <div
-      className="absolute cursor-pointer"
-      style={{
-        left: element.position.x,
-        top: element.position.y,
-        width: element.size.width,
-        height: element.size.height
-      }}
+      className={displayContainerClasses}
       onDoubleClick={() => {
         // This would trigger edit mode
       }}
     >
-      <div
-        className="w-full h-full p-2 bg-white border border-gray-300 rounded"
-        style={{
-          ...element.style,
-          whiteSpace: 'pre-wrap',
-          overflow: 'hidden'
-        }}
-      >
+      <div className={displayContentClasses}>
         {content || 'نص جديد'}
       </div>
     </div>
