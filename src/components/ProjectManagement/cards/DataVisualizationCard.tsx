@@ -15,10 +15,7 @@ const chartData = [
 export const DataVisualizationCard: React.FC = () => {
   return (
     <div 
-      className="h-full p-6 rounded-3xl border border-white/20 overflow-hidden"
-      style={{
-        background: '#f7ffff',
-      }}
+      className="h-full p-6 rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] overflow-hidden"
     >
       {/* العنوان */}
       <div className="flex items-center justify-between mb-6">
