@@ -183,7 +183,7 @@ export const TimelineCard: React.FC = () => {
 
             <div className="space-y-2">
               <label className="font-bold text-black font-arabic">الموقع</label>
-              <div className="space-y-3">
+              <div className="flex items-center gap-3">
                 <div className="flex bg-transparent border border-black/10 rounded-full p-1">
                   <button
                     onClick={() => setNewEventLocation('داخلي')}
