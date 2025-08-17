@@ -153,7 +153,7 @@ export const TimelineCard: React.FC = () => {
               </div>
               <DialogTitle className="text-xl font-bold text-black font-arabic">إضافة حدث جديد</DialogTitle>
             </div>
-            <button onClick={() => setShowAddEventModal(false)} className="w-8 h-8 rounded-full bg-transparent hover:bg-black/5 flex items-center justify-center text-black transition-colors">
+            <button onClick={() => setShowAddEventModal(false)} className="w-8 h-8 rounded-full bg-transparent hover:bg-black/5 flex items-center justify-center text-black transition-colors border border-black">
               <X size={16} />
             </button>
           </DialogHeader>
