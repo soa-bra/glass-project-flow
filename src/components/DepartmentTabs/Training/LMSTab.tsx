@@ -63,34 +63,28 @@ export const LMSTab: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">24</div>
-            <div className="text-sm text-gray-600">حزم SCORM</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Play className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">156</div>
-            <div className="text-sm text-gray-600">جلسات تفاعلية</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <FileText className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">89</div>
-            <div className="text-sm text-gray-600">موارد تعليمية</div>
-          </CardContent>
-        </Card>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+          <div className="text-2xl font-bold">24</div>
+          <div className="text-sm text-gray-600">حزم SCORM</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <Play className="h-8 w-8 text-green-600 mx-auto mb-2" />
+          <div className="text-2xl font-bold">156</div>
+          <div className="text-sm text-gray-600">جلسات تفاعلية</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <FileText className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+          <div className="text-2xl font-bold">89</div>
+          <div className="text-sm text-gray-600">موارد تعليمية</div>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>حزم SCORM المرفوعة</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="p-6 pb-2">
+          <div className="text-lg font-semibold">حزم SCORM المرفوعة</div>
+        </div>
+        <div className="px-6 pb-6">
           <div className="space-y-4">
             {scormPackages.map((pkg) => (
               <div key={pkg.id} className="flex items-center justify-between p-4 border rounded-lg">
@@ -113,8 +107,8 @@ export const LMSTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 
@@ -123,41 +117,33 @@ export const LMSTab: React.FC = () => {
       <h3 className="text-xl font-semibold">تتبع التقدم والتحليلات</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">847</div>
-            <div className="text-sm text-gray-600">إجمالي المستخدمين</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Clock className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">2,340</div>
-            <div className="text-sm text-gray-600">ساعات التعلم</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <CheckCircle className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">89%</div>
-            <div className="text-sm text-gray-600">معدل الإنجاز</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <FileText className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">456</div>
-            <div className="text-sm text-gray-600">شهادة صادرة</div>
-          </CardContent>
-        </Card>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+          <div className="text-2xl font-bold">847</div>
+          <div className="text-sm text-gray-600">إجمالي المستخدمين</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <Clock className="h-8 w-8 text-green-600 mx-auto mb-2" />
+          <div className="text-2xl font-bold">2,340</div>
+          <div className="text-sm text-gray-600">ساعات التعلم</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <CheckCircle className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+          <div className="text-2xl font-bold">89%</div>
+          <div className="text-sm text-gray-600">معدل الإنجاز</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <FileText className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+          <div className="text-2xl font-bold">456</div>
+          <div className="text-sm text-gray-600">شهادة صادرة</div>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>بيانات xAPI الحديثة</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="p-6 pb-2">
+          <div className="text-lg font-semibold">بيانات xAPI الحديثة</div>
+        </div>
+        <div className="px-6 pb-6">
           <div className="space-y-4">
             {xapiStatements.map((statement) => (
               <div key={statement.id} className="flex items-center justify-between p-3 border rounded-lg">
@@ -181,8 +167,8 @@ export const LMSTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 
@@ -191,11 +177,11 @@ export const LMSTab: React.FC = () => {
       <h3 className="text-xl font-semibold">إعدادات نظام إدارة التعلم</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>إعدادات SCORM</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+          <div className="p-6 pb-2">
+            <div className="text-lg font-semibold">إعدادات SCORM</div>
+          </div>
+          <div className="px-6 pb-6 space-y-4">
             <div className="flex items-center justify-between">
               <span>دعم SCORM 1.2</span>
               <Badge variant="default">مفعل</Badge>
@@ -208,14 +194,14 @@ export const LMSTab: React.FC = () => {
               <span>الحد الأقصى لحجم الحزمة</span>
               <span className="text-sm text-gray-600">500 MB</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>إعدادات xAPI</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+          <div className="p-6 pb-2">
+            <div className="text-lg font-semibold">إعدادات xAPI</div>
+          </div>
+          <div className="px-6 pb-6 space-y-4">
             <div className="flex items-center justify-between">
               <span>Learning Record Store</span>
               <Badge variant="default">متصل</Badge>
@@ -228,15 +214,15 @@ export const LMSTab: React.FC = () => {
               <span>حفظ البيانات</span>
               <span className="text-sm text-gray-600">6 أشهر</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>إعدادات التتبع</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="p-6 pb-2">
+          <div className="text-lg font-semibold">إعدادات التتبع</div>
+        </div>
+        <div className="px-6 pb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">مدة الجلسة (دقيقة)</label>
@@ -247,8 +233,8 @@ export const LMSTab: React.FC = () => {
               <input type="number" className="w-full p-2 border rounded" defaultValue={30} />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 

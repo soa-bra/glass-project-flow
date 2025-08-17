@@ -94,8 +94,8 @@ export const SchedulingTab: React.FC = () => {
   const ListView = () => (
     <div className="space-y-4">
       {scheduledSessions.map((session) => (
-        <Card key={session.id} className="hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
+        <div key={session.id} className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] hover:shadow-md transition-shadow">
+          <div className="p-6">
             <div className="flex justify-between items-start">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
@@ -153,8 +153,8 @@ export const SchedulingTab: React.FC = () => {
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ))}
     </div>
   );
@@ -175,34 +175,26 @@ export const SchedulingTab: React.FC = () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Calendar className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{scheduledSessions.length}</div>
-            <div className="text-sm text-gray-600">جلسات مجدولة</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{scheduledSessions.reduce((acc, s) => acc + s.registered, 0)}</div>
-            <div className="text-sm text-gray-600">إجمالي المسجلين</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Clock className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{upcomingThisWeek.length}</div>
-            <div className="text-sm text-gray-600">هذا الأسبوع</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <MapPin className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{scheduledSessions.reduce((acc, s) => acc + s.waitlist, 0)}</div>
-            <div className="text-sm text-gray-600">قوائم الانتظار</div>
-          </CardContent>
-        </Card>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <Calendar className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+          <div className="text-2xl font-bold">{scheduledSessions.length}</div>
+          <div className="text-sm text-gray-600">جلسات مجدولة</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
+          <div className="text-2xl font-bold">{scheduledSessions.reduce((acc, s) => acc + s.registered, 0)}</div>
+          <div className="text-sm text-gray-600">إجمالي المسجلين</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <Clock className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+          <div className="text-2xl font-bold">{upcomingThisWeek.length}</div>
+          <div className="text-sm text-gray-600">هذا الأسبوع</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <MapPin className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+          <div className="text-2xl font-bold">{scheduledSessions.reduce((acc, s) => acc + s.waitlist, 0)}</div>
+          <div className="text-sm text-gray-600">قوائم الانتظار</div>
+        </div>
       </div>
 
       {/* Controls */}
@@ -237,24 +229,24 @@ export const SchedulingTab: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <Card>
-        <CardHeader>
-          <CardTitle>
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="p-6 pb-2">
+          <div className="text-lg font-semibold">
             {viewMode === 'calendar' ? 'تقويم الجلسات' : 'قائمة الجلسات المجدولة'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </div>
+        </div>
+        <div className="px-6 pb-6">
           {viewMode === 'calendar' ? <CalendarView /> : <ListView />}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Upcoming This Week */}
       {upcomingThisWeek.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>الجلسات القادمة هذا الأسبوع</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+          <div className="p-6 pb-2">
+            <div className="text-lg font-semibold">الجلسات القادمة هذا الأسبوع</div>
+          </div>
+          <div className="px-6 pb-6">
             <div className="space-y-3">
               {upcomingThisWeek.map((session) => (
                 <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
@@ -270,8 +262,8 @@ export const SchedulingTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );

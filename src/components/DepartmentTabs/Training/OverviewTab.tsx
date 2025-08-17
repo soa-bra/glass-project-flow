@@ -46,22 +46,22 @@ export const OverviewTab: React.FC = () => {
   const upcomingSessions = mockTrainingSessions.filter(s => s.status === 'scheduled').slice(0, 3);
 
   const StatCard = ({ title, value, icon: Icon, trend, color = "bg-blue-500" }: any) => (
-    <Card className="relative overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-gray-600">{title}</CardTitle>
+    <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] relative overflow-hidden">
+      <div className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
+        <div className="text-sm font-medium text-gray-600">{title}</div>
         <div className={`p-2 rounded-lg ${color} text-white`}>
           <Icon className="h-4 w-4" />
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="px-6 pb-6">
         <div className="text-2xl font-bold">{value}</div>
         {trend && (
           <p className="text-xs text-muted-foreground">
             {trend > 0 ? '+' : ''}{trend}% من الشهر الماضي
           </p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 
   return (
@@ -98,14 +98,14 @@ export const OverviewTab: React.FC = () => {
       </div>
 
       {/* Kirkpatrick Metrics */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="p-6 pb-2">
+          <div className="flex items-center gap-2 text-lg font-semibold">
             <Target className="h-5 w-5" />
             مؤشرات كيركباتريك للتقييم
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </div>
+        </div>
+        <div className="px-6 pb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="space-y-2">
               <div className="flex justify-between">
@@ -136,19 +136,19 @@ export const OverviewTab: React.FC = () => {
               <Progress value={(metrics.kirkpatrickMetrics.results / 5) * 100} className="h-2" />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Skill Gap Alerts */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+          <div className="p-6 pb-2">
+            <div className="flex items-center gap-2 text-lg font-semibold">
               <AlertTriangle className="h-5 w-5" />
               تنبيهات فجوات المهارات
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </div>
+          </div>
+          <div className="px-6 pb-6">
             <div className="space-y-4">
               {alerts.map((alert) => (
                 <div key={alert.id} className="flex items-start justify-between p-3 border rounded-lg">
@@ -173,15 +173,15 @@ export const OverviewTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Upcoming Sessions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>الجلسات القادمة</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+          <div className="p-6 pb-2">
+            <div className="text-lg font-semibold">الجلسات القادمة</div>
+          </div>
+          <div className="px-6 pb-6">
             <div className="space-y-4">
               {upcomingSessions.map((session) => (
                 <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
@@ -204,16 +204,16 @@ export const OverviewTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Recent Enrollments */}
-      <Card>
-        <CardHeader>
-          <CardTitle>التسجيلات الأخيرة</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="p-6 pb-2">
+          <div className="text-lg font-semibold">التسجيلات الأخيرة</div>
+        </div>
+        <div className="px-6 pb-6">
           <div className="space-y-4">
             {recentEnrollments.map((enrollment) => (
               <div key={enrollment.id} className="flex items-center justify-between p-3 border rounded-lg">
@@ -244,8 +244,8 @@ export const OverviewTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

@@ -45,46 +45,36 @@ export const CoursesTab: React.FC = () => {
 
       {/* Course Categories Summary */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">8</div>
-            <div className="text-sm text-gray-600">دورات التأهيل</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">12</div>
-            <div className="text-sm text-gray-600">دورات تقنية</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600">6</div>
-            <div className="text-sm text-gray-600">دورات إدارية</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-orange-600">4</div>
-            <div className="text-sm text-gray-600">برامج مؤسسية</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-red-600">3</div>
-            <div className="text-sm text-gray-600">ورش عمل</div>
-          </CardContent>
-        </Card>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <div className="text-2xl font-bold text-blue-600">8</div>
+          <div className="text-sm text-gray-600">دورات التأهيل</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <div className="text-2xl font-bold text-green-600">12</div>
+          <div className="text-sm text-gray-600">دورات تقنية</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <div className="text-2xl font-bold text-purple-600">6</div>
+          <div className="text-sm text-gray-600">دورات إدارية</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <div className="text-2xl font-bold text-orange-600">4</div>
+          <div className="text-sm text-gray-600">برامج مؤسسية</div>
+        </div>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <div className="text-2xl font-bold text-red-600">3</div>
+          <div className="text-sm text-gray-600">ورش عمل</div>
+        </div>
       </div>
 
       {/* Courses Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <Card key={course.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
+          <div key={course.id} className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] hover:shadow-lg transition-shadow">
+            <div className="p-6 pb-2">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <CardTitle className="text-lg">{course.title}</CardTitle>
+                  <div className="text-lg font-semibold">{course.title}</div>
                   <div className="flex items-center gap-2 mt-2">
                     <Badge variant="outline">{getCategoryLabel(course.category)}</Badge>
                     <Badge variant="secondary">{getTypeLabel(course.type)}</Badge>
@@ -95,8 +85,8 @@ export const CoursesTab: React.FC = () => {
                    course.status === 'draft' ? 'مسودة' : 'مؤرشف'}
                 </Badge>
               </div>
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="px-6 pb-6">
               <p className="text-gray-600 text-sm mb-4 line-clamp-3">{course.description}</p>
               
               <div className="space-y-3">
@@ -146,17 +136,17 @@ export const CoursesTab: React.FC = () => {
                 <Button size="sm" className="flex-1">عرض التفاصيل</Button>
                 <Button size="sm" variant="outline">تعديل</Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
 
       {/* Course Builder Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>محرر الدورات البصري</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="p-6 pb-2">
+          <div className="text-lg font-semibold">محرر الدورات البصري</div>
+        </div>
+        <div className="px-6 pb-6">
           <div className="text-center py-8">
             <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">Course Builder</h3>
@@ -165,8 +155,8 @@ export const CoursesTab: React.FC = () => {
             </p>
             <Button>إطلاق محرر الدورات</Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
