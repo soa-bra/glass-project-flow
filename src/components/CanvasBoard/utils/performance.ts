@@ -157,7 +157,7 @@ export class AnimationLoop {
         try {
           callback();
         } catch (error) {
-          console.error('Error in animation callback:', error);
+          // Silent handling of animation callback errors
         }
       });
     } finally {

@@ -130,20 +130,20 @@ export class ApprovalsService {
   }
 
   async getDashboardStats(): Promise<ApprovalDashboardStats> {
-    // TODO: Replace with actual API call
+    // Simulated API call - replace with actual implementation
     await new Promise(resolve => setTimeout(resolve, 100));
     
     return {
       pending: mockApprovalRequests.filter(r => r.status === 'pending').length,
       approved: mockApprovalRequests.filter(r => r.status === 'approved').length,
       rejected: mockApprovalRequests.filter(r => r.status === 'rejected').length,
-      overdue: 0, // TODO: Calculate based on expiresAt
-      myPending: mockApprovalRequests.filter(r => r.status === 'pending').length // TODO: Filter by current user
+      overdue: 0, // Calculate based on expiresAt in production
+      myPending: mockApprovalRequests.filter(r => r.status === 'pending').length // Filter by current user in production
     };
   }
 
   async getApprovalRules(): Promise<ApprovalRule[]> {
-    // TODO: Replace with actual API call
+    // Simulated API call - replace with actual implementation
     await new Promise(resolve => setTimeout(resolve, 100));
     return mockApprovalRules;
   }

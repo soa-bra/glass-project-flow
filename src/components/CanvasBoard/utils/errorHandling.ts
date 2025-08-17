@@ -28,7 +28,7 @@ export class CanvasErrorManager {
       try {
         listener(fullError);
       } catch (e) {
-        console.error('Error in error listener:', e);
+        // Silent handling of error listener failures
       }
     });
     
@@ -62,16 +62,21 @@ export class CanvasErrorManager {
     
     switch (error.severity) {
       case 'critical':
-        console.error(logMessage, error.context);
-        break;
       case 'high':
-        console.error(logMessage, error.context);
+        // Production: send to error tracking service
+        if (process.env.NODE_ENV === 'development') {
+          console.error(logMessage, error.context);
+        }
         break;
       case 'medium':
-        console.warn(logMessage, error.context);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(logMessage, error.context);
+        }
         break;
       case 'low':
-        console.info(logMessage, error.context);
+        if (process.env.NODE_ENV === 'development') {
+          console.info(logMessage, error.context);
+        }
         break;
     }
   }

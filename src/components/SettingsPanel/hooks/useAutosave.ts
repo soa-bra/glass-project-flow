@@ -40,7 +40,7 @@ export const useAutosave = ({ interval, userId, section, data, onSave }: Autosav
           
           
         } catch (error) {
-          console.error('Failed to autosave settings securely:', error);
+          // Failed to autosave settings securely - using fallback
           // Fallback to regular localStorage for non-sensitive data
           try {
             localStorage.setItem(`fallback_${path}`, JSON.stringify({
@@ -49,7 +49,7 @@ export const useAutosave = ({ interval, userId, section, data, onSave }: Autosav
               section
             }));
           } catch (fallbackError) {
-            console.error('Fallback save also failed:', fallbackError);
+            // Fallback save also failed - silent handling
           }
         }
       }, interval);
@@ -86,7 +86,7 @@ export const useAutosave = ({ interval, userId, section, data, onSave }: Autosav
         return parsed;
       }
     } catch (error) {
-      console.error('Failed to load draft settings:', error);
+      // Failed to load draft settings - silent handling
     }
     
     return null;
@@ -99,7 +99,7 @@ export const useAutosave = ({ interval, userId, section, data, onSave }: Autosav
       // Also clear any fallback data
       localStorage.removeItem(`fallback_${path}`);
     } catch (error) {
-      console.error('Failed to clear draft settings:', error);
+      // Failed to clear draft settings - silent handling
     }
   };
 

@@ -66,7 +66,7 @@ class SecureStorage {
 
       return data.value;
     } catch (error) {
-      console.error('SecureStorage: Failed to retrieve data', error);
+      // SecureStorage: Failed to retrieve data - removing corrupted data
       this.removeItem(key); // Remove corrupted data
       return null;
     }

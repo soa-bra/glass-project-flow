@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CanvasElement } from '@/types/canvas';
+import { DESIGN_TOKENS } from '@/components/shared/design-system/constants';
 
 interface TextEditorProps {
   element: CanvasElement;
@@ -102,7 +103,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
           padding: '8px',
           resize: 'none',
           outline: 'none',
-          backgroundColor: element.style?.backgroundColor || '#ffffff'
+          backgroundColor: element.style?.backgroundColor || DESIGN_TOKENS.COLORS.SURFACE
         }}
         placeholder="اكتب النص هنا..."
         dir="rtl"
@@ -115,7 +116,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
           left: '0',
           fontSize: '12px',
           color: '#666',
-          backgroundColor: '#fff',
+          backgroundColor: DESIGN_TOKENS.COLORS.SURFACE,
           padding: '2px 6px',
           borderRadius: '4px',
           border: '1px solid #ddd',

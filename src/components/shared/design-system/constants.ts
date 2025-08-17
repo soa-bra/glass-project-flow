@@ -93,6 +93,13 @@ export const COLORS = {
   TEXT_EDITOR_WHITE: 'bg-[#ffffff]',
   COLLABORATION_BACKGROUND: 'bg-[rgba(255,255,255,0.9)]',
   
+  // Canvas specific background tokens
+  CANVAS_SHAPE_FILL: '#3B82F6',
+  CANVAS_STICKY_BG: '#FEF3C7',
+  CANVAS_TEXT_BOX_BG: '#ffffff',
+  CANVAS_TRANSPARENT: 'transparent',
+  CANVAS_COLLAB_USER_BG: 'rgba(255,255,255,0.9)',
+  
   // Color Picker Palette Colors
   PALETTE_RED: '#FF0000',
   PALETTE_ORANGE: '#FF8000',

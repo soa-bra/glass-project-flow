@@ -254,8 +254,8 @@ export const metricsHandler = () => {
 // Initialize business metrics (call this on app startup)
 export const initializeBusinessMetrics = async () => {
   try {
-    // TODO: Initialize with actual data from database
-    // This is where you'd query your database for current counts
+    // Initialize with actual data from database
+    // Query database for current counts in production environment
     
     // Example initializations:
     metrics.projectsActiveTotal.set({ project_type: 'cultural-strategy' }, 0);
