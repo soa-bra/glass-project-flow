@@ -116,7 +116,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
         </h3>
         
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
+            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
             <h4 className="text-sm font-bold text-black mb-3">الملخص الذكي</h4>
             <label className="flex items-center gap-2">
               <input 
@@ -131,7 +131,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             </label>
           </div>
 
-            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
+            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
             <h4 className="text-sm font-bold text-black mb-3">فلترة الأولوية</h4>
             <label className="flex items-center gap-2">
               <input 
@@ -153,11 +153,13 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
         <h3 className="text-md font-bold text-black mb-4">تفضيلات الإشعارات</h3>
         
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
+            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
             <div className="flex items-center gap-3 mb-3">
               <Mail className="w-5 h-5 text-black" />
               <h4 className="text-sm font-bold text-black">البريد الإلكتروني</h4>
-              <div className={`w-3 h-3 rounded-full ${formData.preferences.email ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+              <BaseBadge variant={formData.preferences.email ? 'success' : 'secondary'} size="sm">
+                {formData.preferences.email ? 'مفعل' : 'معطل'}
+              </BaseBadge>
             </div>
             <label className="flex items-center gap-2">
               <input 
@@ -169,11 +171,13 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             </label>
           </div>
 
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
+          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
             <div className="flex items-center gap-3 mb-3">
               <Smartphone className="w-5 h-5 text-black" />
               <h4 className="text-sm font-bold text-black">الدفع</h4>
-              <div className={`w-3 h-3 rounded-full ${formData.preferences.push ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+              <BaseBadge variant={formData.preferences.push ? 'success' : 'secondary'} size="sm">
+                {formData.preferences.push ? 'مفعل' : 'معطل'}
+              </BaseBadge>
             </div>
             <label className="flex items-center gap-2">
               <input 
@@ -185,11 +189,13 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             </label>
           </div>
 
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
+          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
             <div className="flex items-center gap-3 mb-3">
               {formData.preferences.sound ? <Volume2 className="w-5 h-5 text-black" /> : <VolumeX className="w-5 h-5 text-black" />}
               <h4 className="text-sm font-bold text-black">الصوت</h4>
-              <div className={`w-3 h-3 rounded-full ${formData.preferences.sound ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+              <BaseBadge variant={formData.preferences.sound ? 'success' : 'secondary'} size="sm">
+                {formData.preferences.sound ? 'مفعل' : 'معطل'}
+              </BaseBadge>
             </div>
             <label className="flex items-center gap-2">
               <input 
@@ -208,9 +214,9 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
         <h3 className="text-md font-bold text-black mb-4">إعدادات التوقيت</h3>
         
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
+            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
             <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
-              <Clock className="w-4 h-4" />
+              <Clock className="w-5 h-5" />
               ساعات العمل
             </h4>
             <div className="space-y-3">
@@ -241,7 +247,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
+          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
             <h4 className="text-sm font-bold text-black mb-3">الساعات الهادئة</h4>
             <label className="flex items-center gap-2 mb-3">
               <input 
@@ -286,15 +292,17 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
         
           <div className="space-y-3">
             {notificationHistory.map(notification => (
-              <div key={notification.id} style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4 flex items-center justify-between border border-black/10">
+              <div key={notification.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`w-3 h-3 rounded-full ${notification.read ? 'bg-gray-400' : 'bg-blue-500'}`}></div>
+                <BaseBadge variant={notification.read ? 'secondary' : 'info'} size="sm">
+                  {notification.read ? 'مقروء' : 'جديد'}
+                </BaseBadge>
                 <div>
                   <p className="text-sm font-medium text-black">{notification.message}</p>
                   <p className="text-xs text-gray-500">{notification.time}</p>
                 </div>
               </div>
-              <span className="text-xs bg-black text-white px-2 py-1 rounded-full">{notification.type}</span>
+              <BaseBadge variant="outline" size="sm">{notification.type}</BaseBadge>
             </div>
           ))}
         </div>
@@ -302,21 +310,21 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
 
         {/* إحصائيات الإشعارات */}
         <div className="grid grid-cols-4 gap-4">
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
             <div className="text-2xl font-bold text-black mb-1">47</div>
-            <p className="text-xs font-normal text-gray-400">هذا الأسبوع</p>
+            <p className="text-xs font-normal text-gray-600">هذا الأسبوع</p>
           </div>
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
             <div className="text-2xl font-bold text-black mb-1">5</div>
-            <p className="text-xs font-normal text-gray-400">غير مقروءة</p>
+            <p className="text-xs font-normal text-gray-600">غير مقروءة</p>
           </div>
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
             <div className="text-2xl font-bold text-black mb-1">92%</div>
-            <p className="text-xs font-normal text-gray-400">معدل القراءة</p>
+            <p className="text-xs font-normal text-gray-600">معدل القراءة</p>
           </div>
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
             <div className="text-2xl font-bold text-black mb-1">3.2</div>
-            <p className="text-xs font-normal text-gray-400">متوسط يومي</p>
+            <p className="text-xs font-normal text-gray-600">متوسط يومي</p>
           </div>
         </div>
         </div>
