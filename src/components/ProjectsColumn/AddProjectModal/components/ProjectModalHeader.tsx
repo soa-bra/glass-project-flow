@@ -1,6 +1,8 @@
 
 import React from 'react';
-import { FolderIcon, X } from 'lucide-react';
+import { DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 
 interface ProjectModalHeaderProps {
   isEditMode: boolean;
@@ -12,24 +14,19 @@ export const ProjectModalHeader: React.FC<ProjectModalHeaderProps> = ({
   onClose,
 }) => {
   return (
-    <div className="flex items-center justify-between p-6">
-      {/* أيقونة وعنوان */}
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-          <FolderIcon className="text-white" size={20} />
-        </div>
-        <h2 className="text-xl font-bold text-black font-arabic">
-          {isEditMode ? 'تعديل المشروع' : 'إضافة مشروع جديد'}
-        </h2>
-      </div>
-
-      {/* زر الإغلاق */}
+    <>
       <button
         onClick={onClose}
-        className="w-8 h-8 rounded-full border border-black bg-transparent hover:bg-black/5 flex items-center justify-center transition-colors"
+        className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black/30 w-[32px] h-[32px] flex items-center justify-center transition z-10"
       >
-        <X className="text-black" size={16} />
+        <X className="text-black" size={18} />
       </button>
-    </div>
+
+      <DialogHeader className="px-8 pt-8 pb-4 flex-shrink-0">
+        <DialogTitle className="text-2xl font-bold text-right font-arabic">
+          {isEditMode ? 'تعديل المشروع' : 'إضافة مشروع جديد'}
+        </DialogTitle>
+      </DialogHeader>
+    </>
   );
 };

@@ -14,20 +14,23 @@ export const ProjectModalFooter: React.FC<ProjectModalFooterProps> = ({
   onCancel,
 }) => {
   return (
-    <div className="flex items-center justify-end gap-3 p-6 border-t border-black/10">
-      <Button
-        onClick={onCancel}
-        variant="outline"
-        className="bg-white/30 hover:bg-white/40 border border-black/20 text-black rounded-full font-arabic"
-      >
-        إلغاء
-      </Button>
-      <Button
-        onClick={onSave}
-        className="bg-black hover:bg-black/90 text-white rounded-full font-arabic"
-      >
-        {isEditMode ? 'حفظ التعديلات' : 'حفظ المشروع'}
-      </Button>
+    <div className="flex-shrink-0 px-8 pb-8">
+      <div className="flex gap-4 justify-start pt-6 border-t border-white/20">
+        <Button
+          onClick={onSave}
+          className="bg-black text-white hover:bg-gray-800 font-arabic rounded-full"
+        >
+          {isEditMode ? 'حفظ التعديلات' : 'حفظ المشروع'}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          className="bg-black/40 backdrop-blur-md border-white/20 text-white hover:bg-black/50 font-arabic rounded-full"
+        >
+          إلغاء
+        </Button>
+      </div>
     </div>
   );
 };
