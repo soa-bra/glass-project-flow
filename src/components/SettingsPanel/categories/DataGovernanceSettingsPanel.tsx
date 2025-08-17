@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Database, Shield, FileText, Clock, Users, Key, Eye, Lock } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 interface DataGovernanceSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
@@ -125,12 +126,13 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
           حوكمة البيانات
         </h2>
         <div className="flex items-center gap-3">
-          <button
+          <BaseActionButton
             onClick={handleSave}
-            className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+            variant="primary"
+            size="md"
           >
             حفظ التغييرات
-          </button>
+          </BaseActionButton>
         </div>
       </div>
 
@@ -138,7 +140,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
         <div className="space-y-6">
       {/* Header */}
-      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center gap-4 mb-3">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
             <Database className="w-6 h-6 text-black" />
@@ -155,7 +157,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       </div>
 
       {/* مراقبة الامتثال بالذكاء الاصطناعي */}
-      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           🤖 مراقب الامتثال الذكي
           <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">AI Compliance Monitor</span>
@@ -186,7 +188,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       </div>
 
       {/* سياسات الاحتفاظ بالبيانات */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           <Clock className="w-5 h-5" />
           سياسات الاحتفاظ بالبيانات
@@ -278,7 +280,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       </div>
 
       {/* تصنيف البيانات */}
-      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4">تصنيف البيانات</h3>
         
         <div className="space-y-3">
@@ -310,7 +312,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       </div>
 
       {/* إعدادات الخصوصية */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           <Shield className="w-5 h-5" />
           إعدادات الخصوصية
@@ -404,7 +406,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       </div>
 
       {/* تقارير الامتثال */}
-      <div style={{ backgroundColor: '#F2FFFF' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           <FileText className="w-5 h-5" />
           تقارير الامتثال

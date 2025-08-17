@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrainCircuit, Zap, Target, BarChart3, Settings, Eye, Database, Cpu } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 interface AISettingsPanelProps {
   isMainSidebarCollapsed: boolean;
@@ -100,12 +101,13 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
           الذكاء الاصطناعي
         </h2>
         <div className="flex items-center gap-3">
-          <button
+          <BaseActionButton
             onClick={handleSave}
-            className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+            variant="primary"
+            size="md"
           >
             حفظ التغييرات
-          </button>
+          </BaseActionButton>
         </div>
       </div>
 

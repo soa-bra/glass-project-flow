@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link2, Plus, Check, X, Settings, Zap, Key, MessageSquare, FileText, BarChart3 } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 interface Integration {
   id: string;
@@ -157,12 +158,13 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
           التكاملات والربط
         </h2>
         <div className="flex items-center gap-3">
-          <button
+          <BaseActionButton
             onClick={handleSave}
-            className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+            variant="primary"
+            size="md"
           >
             حفظ التغييرات
-          </button>
+          </BaseActionButton>
         </div>
       </div>
 
@@ -170,7 +172,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
       <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
         <div className="space-y-6">
       {/* Header */}
-      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center gap-4 mb-3">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
             <Link2 className="w-6 h-6 text-black" />
@@ -187,7 +189,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
       </div>
 
       {/* مساعد الإعداد التلقائي بالذكاء الاصطناعي */}
-      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           🤖 مساعد الإعداد التلقائي
           <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">AI Setup Assistant</span>
@@ -204,7 +206,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
       </div>
 
       {/* التكاملات المتاحة */}
-      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-md font-bold text-black">التكاملات المتاحة</h3>
           <button className="px-4 py-2 bg-black text-white rounded-full text-sm font-medium flex items-center gap-2">
@@ -217,7 +219,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
           {integrations.map(integration => {
             const IconComponent = integration.icon;
             return (
-              <div key={integration.id} style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
+              <div key={integration.id} className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -290,7 +292,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
 
       {/* معالج الإعداد */}
       {showSetupWizard && (
-        <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
           <h3 className="text-md font-bold text-black mb-4">
             معالج إعداد {integrations.find(i => i.id === showSetupWizard)?.name}
           </h3>
@@ -402,7 +404,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
 
       {/* إحصائيات التكاملات */}
       <div className="grid grid-cols-4 gap-4">
-        <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <div className="text-2xl font-bold text-black mb-1">{integrations.filter(i => i.status === 'connected').length}</div>
           <p className="text-xs font-normal text-gray-400">تكاملات نشطة</p>
         </div>

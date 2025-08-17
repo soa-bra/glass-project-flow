@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Bell, Smartphone, Mail, MessageSquare, Settings, Volume2, VolumeX, Clock, Target } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 
 interface NotificationsSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
@@ -92,12 +94,13 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
           الإشعارات والتنبيهات
         </h2>
         <div className="flex items-center gap-3">
-          <button
+          <BaseActionButton
             onClick={handleSave}
-            className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+            variant="primary"
+            size="md"
           >
             حفظ التغييرات
-          </button>
+          </BaseActionButton>
         </div>
       </div>
 
@@ -106,10 +109,10 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
         <div className="space-y-6">
 
         {/* الإشعارات الذكية بالذكاء الاصطناعي */}
-        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           🤖 نظام الإشعارات الذكي
-          <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">AI Smart Notify</span>
+          <BaseBadge variant="warning" size="sm">AI Smart Notify</BaseBadge>
         </h3>
         
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -146,7 +149,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
       </div>
 
         {/* تفضيلات الإشعارات */}
-        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4">تفضيلات الإشعارات</h3>
         
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -201,7 +204,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
       </div>
 
         {/* إعدادات التوقيت */}
-        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4">إعدادات التوقيت</h3>
         
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -278,7 +281,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
       </div>
 
         {/* سجل الإشعارات */}
-        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4">سجل الإشعارات الأخيرة</h3>
         
           <div className="space-y-3">

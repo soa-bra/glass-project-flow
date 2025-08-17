@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Palette, Sun, Moon, Monitor, Contrast, Paintbrush, Eye, Zap } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 interface ThemeSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
@@ -154,9 +155,9 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
           إعدادات المظهر
         </h2>
         <div className="flex items-center gap-3">
-          <button onClick={handleSave} className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
+          <BaseActionButton onClick={handleSave} variant="primary" size="md">
             حفظ التغييرات
-          </button>
+          </BaseActionButton>
         </div>
       </div>
 
@@ -164,7 +165,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
         <div className="space-y-6">
       {/* Header */}
-      <div className="bg-[#FFFFFF] rounded-[40px] p-6 ring-1 ring-[#DADCE0]">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center gap-4 mb-3">
           <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
             <Palette className="w-6 h-6 text-black" />
@@ -181,7 +182,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       </div>
 
       {/* مولد الثيمات بالذكاء الاصطناعي */}
-      <div className="bg-[#FFFFFF] rounded-[40px] p-6 ring-1 ring-[#DADCE0]">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           🎨 مولد الثيمات الذكي
           <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">AI Theme Generator</span>
@@ -208,7 +209,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       </div>
 
       {/* وضع الإضاءة */}
-      <div className="bg-[#FFFFFF] rounded-[40px] p-6 ring-1 ring-[#DADCE0]">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4">وضع الإضاءة</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -218,7 +219,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                 ...prev.appearance,
                 mode: 'light'
               }
-            }))} className={`bg-transparent p-4 rounded-[40px] ring-1 ring-[#DADCE0] transition-all ${formData.appearance.mode === 'light' ? 'ring-2 ring-black' : ''}`}>
+            }))} className={`bg-transparent p-4 rounded-[41px] border border-[#DADCE0] transition-all ${formData.appearance.mode === 'light' ? 'ring-2 ring-black' : ''}`}>
             <div className="flex flex-col items-center gap-3">
               <Sun className="w-8 h-8 text-black" />
               <div>
@@ -267,9 +268,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       </div>
 
       {/* الثيمات المحددة مسبقاً */}
-      <div style={{
-          backgroundColor: '#f2ffff'
-        }} className="rounded-3xl p-6 border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4">الثيمات المحددة مسبقاً</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -298,9 +297,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       </div>
 
       {/* تخصيص الألوان */}
-      <div style={{
-          backgroundColor: '#F2FFFF'
-        }} className="rounded-3xl p-6 border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4">تخصيص الألوان</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -381,9 +378,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       </div>
 
       {/* إعدادات إمكانية الوصول */}
-      <div style={{
-          backgroundColor: '#F2FFFF'
-        }} className="rounded-3xl p-6 border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4">إمكانية الوصول</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

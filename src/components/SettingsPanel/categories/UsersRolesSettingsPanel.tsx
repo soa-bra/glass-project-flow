@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Users, UserPlus, Shield, Key, Crown, Edit3, Trash2, Eye } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 interface UsersRolesSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
@@ -197,7 +198,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center gap-4 mb-3">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
             <Users className="w-6 h-6 text-black" />
@@ -214,7 +215,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
       </div>
 
       {/* نظام تعيين الأدوار الذكي */}
-      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
           🤖 نظام تعيين الأدوار الذكي
           <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">AI Role Assignment</span>
@@ -269,7 +270,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
       </div>
 
       {/* إدارة المستخدمين */}
-      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-md font-bold text-black">المستخدمين</h3>
           <button
@@ -282,7 +283,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
         </div>
 
         {showAddUser && (
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 mb-4">
+          <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 mb-4">
             <h4 className="text-sm font-bold text-black mb-3">إضافة مستخدم جديد</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <input
@@ -336,7 +337,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
         
         <div className="space-y-3">
           {users.map(user => (
-            <div key={user.id} style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4">
+            <div key={user.id} className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
@@ -387,7 +388,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
       </div>
 
       {/* إدارة الأدوار */}
-      <div style={{ backgroundColor: '#f2ffff' }} className="rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-md font-bold text-black">الأدوار والصلاحيات</h3>
           <button
@@ -400,7 +401,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {roles.map(role => (
-            <div key={role.id} style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
+            <div key={role.id} className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   {getRoleIcon(role.level)}
@@ -434,7 +435,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
 
       {/* إحصائيات المستخدمين */}
       <div className="grid grid-cols-4 gap-4">
-        <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <div className="text-2xl font-bold text-black mb-1">{users.length}</div>
           <p className="text-xs font-normal text-gray-400">إجمالي المستخدمين</p>
         </div>
