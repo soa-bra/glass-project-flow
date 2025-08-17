@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { Heart, AlertTriangle, Meh, Calendar, Phone, Mail } from 'lucide-react';
 interface SentimentData {

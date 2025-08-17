@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Bot, Brain, Zap, Clock, BarChart } from 'lucide-react';
 interface AIReportSuggestion {
   id: string;

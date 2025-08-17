@@ -9,7 +9,7 @@ import { MarketingWidget } from './MarketingWidget';
 import { ReportsWidget } from './ReportsWidget';
 import { CustomersWidget } from './CustomersWidget';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Zap, Target, Layers, Cpu } from 'lucide-react';
 export const OverviewGrid: React.FC = () => {
   // Mock data for the new widgets

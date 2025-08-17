@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Calendar, Clock, Users, MapPin, Plus, Filter, Search } from 'lucide-react';
 
 export const SchedulingTab: React.FC = () => {
@@ -107,9 +107,9 @@ export const SchedulingTab: React.FC = () => {
                     {session.type === 'workshop' ? 'ورشة عمل' :
                      session.type === 'course' ? 'دورة' : 'ندوة'}
                   </Badge>
-                  <Badge variant={
+                   <Badge variant={
                     session.status === 'confirmed' ? 'default' :
-                    session.status === 'full' ? 'destructive' : 'secondary'
+                    session.status === 'full' ? 'error' : 'secondary'
                   }>
                     {session.status === 'confirmed' ? 'مؤكد' :
                      session.status === 'full' ? 'مكتمل' : 'متاح'}
@@ -264,7 +264,7 @@ export const SchedulingTab: React.FC = () => {
                       {new Date(session.date).toLocaleDateString('ar-SA')} - {session.time}
                     </p>
                   </div>
-                  <Badge variant={session.status === 'full' ? 'destructive' : 'default'}>
+                  <Badge variant={session.status === 'full' ? 'error' : 'default'}>
                     {session.registered}/{session.capacity}
                   </Badge>
                 </div>

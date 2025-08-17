@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Star, TrendingUp, MessageCircle } from 'lucide-react';
+import { COLORS } from '@/components/shared/design-system/constants';
 interface NPSScore {
   id: number;
   score: number;
@@ -17,10 +18,10 @@ export const NPSScores: React.FC<NPSScoresProps> = ({
   nps
 }) => {
   const getNPSColor = (score: number): string => {
-    if (score >= 90) return 'bg-green-500';
-    if (score >= 75) return 'bg-green-400';
-    if (score >= 60) return 'bg-yellow-400';
-    return 'bg-red-500';
+    if (score >= 90) return COLORS.NPS_EXCELLENT;
+    if (score >= 75) return COLORS.NPS_VERY_GOOD;
+    if (score >= 60) return COLORS.NPS_GOOD;
+    return COLORS.NPS_POOR;
   };
   const getNPSRating = (score: number): string => {
     if (score >= 90) return 'ممتاز';
@@ -72,9 +73,10 @@ export const NPSScores: React.FC<NPSScoresProps> = ({
             </div>
             <div className="flex items-center gap-2">
               <TrendingUp className="w-8 h-8 text-green-500" />
-              <div className="w-4 h-4 rounded-full" style={{
-              backgroundColor: getNPSColor(averageNPS)
-            }}></div>
+                   <div 
+                    className="w-4 h-4 rounded-full" 
+                    style={{ backgroundColor: getNPSColor(averageNPS) }}
+                  ></div>
             </div>
           </div>
         </div>
@@ -101,10 +103,13 @@ export const NPSScores: React.FC<NPSScoresProps> = ({
                 </div>}
               
               <div className="mt-3 bg-gray-200 h-2 rounded-full">
-                <div className={`h-2 rounded-full transition-all duration-300`} style={{
-              width: `${item.score}%`,
-              backgroundColor: getNPSColor(item.score)
-            }}></div>
+                 <div 
+                  className="h-2 rounded-full transition-all duration-300" 
+                  style={{
+                    width: `${item.score}%`,
+                    backgroundColor: getNPSColor(item.score)
+                  }}
+                ></div>
               </div>
             </div>)}
         </div>

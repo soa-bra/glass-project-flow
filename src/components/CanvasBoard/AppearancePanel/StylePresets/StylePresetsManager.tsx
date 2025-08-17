@@ -138,7 +138,7 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
         stroke: COLORS.PRESET_NEON_GREEN,
         strokeWidth: 3,
         boxShadow: `0 0 20px ${COLORS.PRESET_NEON_GREEN}, 0 0 40px ${COLORS.PRESET_NEON_GREEN}, 0 0 60px ${COLORS.PRESET_NEON_GREEN}`,
-        backgroundColor: 'transparent'
+        backgroundColor: COLORS.CANVAS_TRANSPARENT
       },
       isFavorite: true,
       createdAt: '2024-01-04',

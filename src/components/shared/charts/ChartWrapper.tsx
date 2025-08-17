@@ -2,9 +2,17 @@ import React from 'react';
 import { ResponsiveContainer } from 'recharts';
 import { ChartContainer } from '@/components/ui/chart';
 
+interface ChartConfig {
+  [key: string]: {
+    label?: string;
+    color?: string;
+    icon?: React.ComponentType;
+  };
+}
+
 interface ChartWrapperProps {
   children: React.ReactElement;
-  config?: any;
+  config?: ChartConfig;
   className?: string;
   minHeight?: number;
   minWidth?: number;

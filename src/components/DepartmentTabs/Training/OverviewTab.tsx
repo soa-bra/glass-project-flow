@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Users, BookOpen, Award, TrendingUp, Clock, Target, AlertTriangle, DollarSign } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { 
@@ -157,8 +157,8 @@ export const OverviewTab: React.FC = () => {
                     <p className="text-sm text-gray-600 mt-1">{alert.businessImpact}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <Badge variant={
-                        alert.severity === 'critical' ? 'destructive' :
-                        alert.severity === 'high' ? 'destructive' :
+                        alert.severity === 'critical' ? 'error' :
+                        alert.severity === 'high' ? 'error' :
                         alert.severity === 'medium' ? 'secondary' : 'outline'
                       }>
                         {alert.severity === 'critical' ? 'حرج' :
@@ -226,10 +226,10 @@ export const OverviewTab: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge variant={
+                   <Badge variant={
                     enrollment.status === 'completed' ? 'default' :
                     enrollment.status === 'in_progress' ? 'secondary' :
-                    enrollment.status === 'failed' ? 'destructive' : 'outline'
+                    enrollment.status === 'failed' ? 'error' : 'outline'
                   }>
                     {enrollment.status === 'completed' ? 'مكتمل' :
                      enrollment.status === 'in_progress' ? 'قيد التقدم' :

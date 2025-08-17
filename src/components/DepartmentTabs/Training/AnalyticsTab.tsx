@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, TrendingUp, Users, Clock, Award, DollarSign, Target, BookOpen } from 'lucide-react';
@@ -244,15 +244,15 @@ export const AnalyticsTab: React.FC = () => {
                   <h4 className="font-medium">{gap.area}</h4>
                   <div className="flex gap-2">
                     <Badge variant={
-                      gap.severity === 'critical' ? 'destructive' :
-                      gap.severity === 'high' ? 'default' :
+                      gap.severity === 'critical' ? 'error' :
+                      gap.severity === 'high' ? 'warning' :
                       gap.severity === 'medium' ? 'secondary' : 'outline'
                     }>
                       {gap.severity === 'critical' ? 'حرجة' :
                        gap.severity === 'high' ? 'عالية' :
                        gap.severity === 'medium' ? 'متوسطة' : 'منخفضة'}
                     </Badge>
-                    <Badge variant={gap.status === 'open' ? 'destructive' : gap.status === 'addressing' ? 'default' : 'secondary'}>
+                    <Badge variant={gap.status === 'open' ? 'error' : gap.status === 'addressing' ? 'default' : 'secondary'}>
                       {gap.status === 'open' ? 'مفتوح' :
                        gap.status === 'addressing' ? 'قيد المعالجة' : 'محلول'}
                     </Badge>

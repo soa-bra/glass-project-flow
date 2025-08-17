@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Bot, Lightbulb, AlertTriangle, TrendingUp } from 'lucide-react';
 interface AIAdvice {
   id: string;

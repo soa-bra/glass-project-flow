@@ -100,6 +100,26 @@ export const COLORS = {
   CANVAS_TRANSPARENT: 'transparent',
   CANVAS_COLLAB_USER_BG: 'rgba(255,255,255,0.9)',
   
+  // NPS Score colors
+  NPS_EXCELLENT: '#22c55e',    // Green-500
+  NPS_VERY_GOOD: '#4ade80',    // Green-400
+  NPS_GOOD: '#facc15',         // Yellow-400
+  NPS_POOR: '#ef4444',         // Red-500
+  
+  // Common element colors for canvas
+  ELEMENT_SHAPE_FILL: '#3B82F6',
+  ELEMENT_STICKY_NOTE: '#FEF3C7',
+  ELEMENT_TEXT_BOX: '#ffffff',
+  ELEMENT_BORDER: '#DADCE0',
+  ELEMENT_USER_COLOR: 'rgba(255,255,255,0.9)',
+  
+  // Notification and user interface colors
+  STATUS_SUCCESS: '#10b981',
+  STATUS_WARNING: '#f59e0b', 
+  STATUS_ERROR: '#ef4444',
+  STATUS_INFO: '#3b82f6',
+  STATUS_NEUTRAL: '#6b7280',
+  
   // Color Picker Palette Colors
   PALETTE_RED: '#FF0000',
   PALETTE_ORANGE: '#FF8000',
