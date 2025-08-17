@@ -22,7 +22,7 @@ export const DESIGN_TOKENS = {
     XL: 'p-6', // 24px
   },
   
-  // Colors from specification
+  // Colors from specification - Updated according to requirements
   COLORS: {
     INK: '#000000',
     INK_60: 'rgba(11,15,18,0.6)',
@@ -30,10 +30,24 @@ export const DESIGN_TOKENS = {
     SURFACE: '#FFFFFF',
     SURFACE_MUTED: '#F6F7F8',
     BORDER: '#DADCE0',
-    APP_BG: '#F6F8FA',
-    PANEL_BG: '#FFFFFF',
-    CARD_BG: '#FFFFFF',
-    BOX_BG: '#FFFFFF',
+    
+    // Main background colors
+    PANEL_BG: '#F8F9FA',          // خلفية اللوحات
+    BOX_BG: '#FFFFFF',            // خلفية الصناديق
+    
+    // Project layouts
+    PROJECT_COLUMN_BG: '#ebeff2',     // خلفية عامود المشاريع
+    PROJECT_CARD_BG: '#F1F5F9',       // خلفية بطاقات المشاريع
+    PROJECT_CARD_CAPSULE_BG: '#FFFFFF', // خلفية كبسولات بطاقات المشاريع
+    
+    // Task layouts  
+    TASK_LIST_BOX_BG: '#eaecef',      // خلفية صندوق قائمة المهام
+    TASK_CARD_BG: '#f8f9fa',          // خلفية بطاقات المهام
+    TASK_CARD_CAPSULE_BG: '#FFFFFF',  // خلفية كبسولات بطاقات المهام
+    
+    // Financial status backgrounds
+    FINANCIAL_PROFIT_BG: '#BDEED3',   // خلفية ربح
+    FINANCIAL_LOSS_BG: '#F1B5B9',     // خلفية خسارة
   },
   
   // Elevation/Shadow
@@ -55,12 +69,28 @@ export const SPACING = {
 } as const;
 
 export const COLORS = {
-  // SoaBra Design System Colors
-  APP_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.APP_BG}]`,
+  // SoaBra Design System Colors - Updated with new tokens
   PANEL_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.PANEL_BG}]`,
-  CARD_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.CARD_BG}]`,
   BOX_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.BOX_BG}]`,
+  
+  // Project layout backgrounds
+  PROJECT_COLUMN_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.PROJECT_COLUMN_BG}]`,
+  PROJECT_CARD_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.PROJECT_CARD_BG}] border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
+  PROJECT_CARD_CAPSULE_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.PROJECT_CARD_CAPSULE_BG}] border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
+  
+  // Task layout backgrounds  
+  TASK_LIST_BOX_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.TASK_LIST_BOX_BG}]`,
+  TASK_CARD_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.TASK_CARD_BG}] border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
+  TASK_CARD_CAPSULE_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.TASK_CARD_CAPSULE_BG}] border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
+  
+  // Financial status backgrounds
+  FINANCIAL_PROFIT_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.FINANCIAL_PROFIT_BG}]`,
+  FINANCIAL_LOSS_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.FINANCIAL_LOSS_BG}]`,
+  
   TRANSPARENT_BACKGROUND: 'bg-transparent',
+  
+  // Legacy compatibility - keeping CARD_BACKGROUND for existing components
+  CARD_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.BOX_BG}]`,
   
   // Border colors from design system
   BORDER_COLOR: `border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
