@@ -20,20 +20,13 @@ import { toast } from 'sonner';
 import { FeatureColorPicker } from './ColorPicker/FeatureColorPicker';
 import { FeatureBorderControls } from './BorderControls/FeatureBorderControls';
 import { StylePresetsManager } from './StylePresets/StylePresetsManager';
+import { ElementStyle, SelectedElement, BorderStyle, StylePreset } from '@/types/canvas';
 
-interface SelectedElement {
-  id: string;
-  type: string;
-  style: Record<string, unknown>;
-  isLocked?: boolean;
-  isVisible?: boolean;
-  name?: string;
-}
 
 interface AppearancePanelProps {
   selectedElements?: SelectedElement[];
-  onStyleUpdate?: (elementId: string, style: any) => void;
-  onBulkStyleUpdate?: (elementIds: string[], style: any) => void;
+  onStyleUpdate?: (elementId: string, style: ElementStyle) => void;
+  onBulkStyleUpdate?: (elementIds: string[], style: ElementStyle) => void;
   isVisible?: boolean;
   onToggleVisibility?: () => void;
 }
@@ -56,7 +49,7 @@ export const FeatureAppearancePanel: React.FC<AppearancePanelProps> = ({
     if (selectedElements.length === 1) return selectedElements[0].style || {};
     
     // Find common properties across all selected elements
-    const commonStyle: any = {};
+    const commonStyle: ElementStyle = {};
     const firstElementStyle = selectedElements[0].style || {};
     
     Object.keys(firstElementStyle).forEach(key => {
@@ -78,7 +71,7 @@ export const FeatureAppearancePanel: React.FC<AppearancePanelProps> = ({
     setCurrentStyle(getCommonStyle());
   }, [selectedElements]);
 
-  const handleStyleChange = (property: string, value: any) => {
+  const handleStyleChange = (property: string, value: unknown) => {
     const newStyle = { ...currentStyle, [property]: value };
     setCurrentStyle(newStyle);
     
@@ -98,14 +91,14 @@ export const FeatureAppearancePanel: React.FC<AppearancePanelProps> = ({
     handleStyleChange('fill', color);
   };
 
-  const handleBorderChange = (border: any) => {
+  const handleBorderChange = (border: BorderStyle) => {
     handleStyleChange('stroke', border.color);
     handleStyleChange('strokeWidth', border.width);
     handleStyleChange('borderRadius', border.radius);
     handleStyleChange('opacity', border.opacity / 100);
   };
 
-  const handlePresetApply = (preset: any) => {
+  const handlePresetApply = (preset: StylePreset) => {
     const presetStyle = preset.style;
     setCurrentStyle(prev => ({ ...prev, ...presetStyle }));
     
