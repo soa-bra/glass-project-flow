@@ -77,7 +77,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
           return (
             <div
               key={column.name}
-              className="bg-[#F2FFFF] rounded-3xl border border-black/10 flex flex-col"
+              className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] flex flex-col"
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, column.status)}
             >

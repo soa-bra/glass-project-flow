@@ -82,7 +82,7 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({
 
       {/* Task Details Panel */}
       <div className="flex-1 min-w-0">
-        {selectedTask ? <TaskDetailsPanel task={selectedTask} /> : <div className="bg-[#F2FFFF] rounded-3xl border border-black/10 h-full flex items-center justify-center">
+        {selectedTask ? <TaskDetailsPanel task={selectedTask} /> : <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] h-full flex items-center justify-center">
             <div className="text-center text-black/50">
               
               <h3 className="text-lg font-medium mb-2">اختر مهمة لعرض التفاصيل</h3>
