@@ -8,11 +8,13 @@ interface TaskListContainerProps {
 export const TaskListContainer: React.FC<TaskListContainerProps> = ({ children }) => {
   return (
     <div 
-      className="font-arabic h-full rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]"
+      className="font-arabic h-full"
       style={{
         width: '100%',
         maxWidth: '100%',
-        padding: '10px',
+        backgroundColor: '#eaecef',
+        borderRadius: '40px',
+        padding: '10px', // قللت من 20px إلى 10px
         position: 'relative',
         direction: 'rtl',
         display: 'flex',

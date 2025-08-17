@@ -99,8 +99,9 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
 
   return (
     <div 
-      className="h-full p-4 rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] flex flex-col overflow-hidden"
+      className="h-full p-4 rounded-3xl border border-white/20 flex flex-col overflow-hidden"
       style={{
+        background: '#f7ffff',
         fontFamily: 'IBM Plex Sans Arabic'
       }}
     >

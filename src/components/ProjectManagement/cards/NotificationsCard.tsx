@@ -35,8 +35,9 @@ export const NotificationsCard: React.FC = () => {
 
   return (
     <div 
-      className="h-full p-6 rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]"
+      className="h-full p-6 rounded-3xl border border-white/20"
       style={{
+        background: '#f7ffff',
         fontFamily: 'IBM Plex Sans Arabic'
       }}
     >
