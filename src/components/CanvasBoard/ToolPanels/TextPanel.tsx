@@ -213,12 +213,12 @@ export const TextPanel: React.FC<TextPanelProps> = ({
                     <div>
                       <div className="font-medium text-sm">{preset.name}</div>
                       <div 
-                        className="text-xs text-muted-foreground"
+                        className={`text-xs text-muted-foreground font-[${preset.style.fontWeight}] ${
+                          preset.style.fontStyle === 'italic' ? 'italic' : 'not-italic'
+                        }`}
                         style={{
                           fontFamily: preset.style.fontFamily,
-                          fontSize: `${Math.min(preset.style.fontSize || 16, 12)}px`,
-                          fontWeight: preset.style.fontWeight,
-                          fontStyle: preset.style.fontStyle,
+                          fontSize: `${Math.min(preset.style.fontSize || 16, 12)}px`
                         }}
                       >
                         مثال على النص

@@ -87,8 +87,7 @@ export const Canvas: React.FC<CanvasProps> = ({
 
   return (
     <div 
-      className="w-full h-full relative"
-      style={{ cursor: eventHandlers.toolCursor.getCursorStyle(selectedTool) }}
+      className={`w-full h-full relative ${eventHandlers.toolCursor.getCursorStyle(selectedTool)}`}
       onWheel={eventHandlers.handleWheelZoom}
     >
       <InfiniteCanvas

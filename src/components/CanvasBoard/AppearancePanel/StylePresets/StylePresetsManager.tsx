@@ -521,10 +521,8 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
             <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <Label className="text-sm font-medium mb-2 block">معاينة النمط الحالي</Label>
               <div
-                className="w-full h-20 rounded border flex items-center justify-center text-sm"
+                className={`w-full h-20 rounded border flex items-center justify-center text-sm bg-[${currentStyle.backgroundColor || '#f3f4f6'}] border-[${currentStyle.stroke || '#d1d5db'}]`}
                 style={{
-                   backgroundColor: currentStyle.backgroundColor || '#f3f4f6',
-                  borderColor: currentStyle.stroke || '#d1d5db',
                   borderWidth: currentStyle.strokeWidth || 1,
                   borderRadius: currentStyle.borderRadius || 4,
                   boxShadow: currentStyle.boxShadow,

@@ -375,13 +375,10 @@ export const ShapesPanel: React.FC<ShapesPanelProps> = ({
           <label className="text-sm font-medium">معاينة</label>
           <div className="bg-muted/50 rounded-lg p-6 flex items-center justify-center">
             <div
+              className={`w-[60px] h-[60px] bg-[${currentShapeStyle.fill || '#4ECDC4'}] border-[${currentShapeStyle.strokeWidth || 2}px] border-[${currentShapeStyle.stroke || '#333333'}] ${
+                currentShapeStyle.strokeDashArray === 'none' ? 'border-solid' : 'border-dashed'
+              } rounded-[${currentShapeStyle.borderRadius || 0}px] opacity-[${currentShapeStyle.opacity || 1}]`}
               style={{
-                width: '60px',
-                height: '60px',
-                 backgroundColor: currentShapeStyle.fill || '#4ECDC4',
-                border: `${currentShapeStyle.strokeWidth || 2}px ${currentShapeStyle.strokeDashArray === 'none' ? 'solid' : 'dashed'} ${currentShapeStyle.stroke || '#333333'}`,
-                borderRadius: `${currentShapeStyle.borderRadius || 0}px`,
-                opacity: currentShapeStyle.opacity || 1,
                 transform: `rotate(${currentShapeStyle.rotation || 0}deg)`
               }}
             />

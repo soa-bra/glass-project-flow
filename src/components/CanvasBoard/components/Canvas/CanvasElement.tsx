@@ -130,13 +130,12 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
 
   return (
     <div
-      className={`absolute cursor-move ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+      className={`absolute cursor-move ${isSelected ? 'ring-2 ring-blue-500 z-[1000]' : 'z-[1]'}`}
       style={{
         left: element.position.x,
         top: element.position.y,
         width: element.size.width,
-        height: element.size.height,
-        zIndex: isSelected ? 1000 : 1
+        height: element.size.height
       }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}

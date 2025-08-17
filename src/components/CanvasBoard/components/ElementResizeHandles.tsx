@@ -33,45 +33,37 @@ export const ElementResizeHandles: React.FC<ElementResizeHandlesProps> = ({
       
       {/* Corner Handles */}
       <div
-        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-nw-resize pointer-events-auto"
-        style={{ left: -2, top: -2 }}
+        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-nw-resize pointer-events-auto top-[-2px] left-[-2px]"
         onMouseDown={(e) => onResizeMouseDown(e, 'nw')}
       />
       <div
-        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-ne-resize pointer-events-auto"
-        style={{ right: -2, top: -2 }}
+        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-ne-resize pointer-events-auto top-[-2px] right-[-2px]"
         onMouseDown={(e) => onResizeMouseDown(e, 'ne')}
       />
       <div
-        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-sw-resize pointer-events-auto"
-        style={{ left: -2, bottom: -2 }}
+        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-sw-resize pointer-events-auto bottom-[-2px] left-[-2px]"
         onMouseDown={(e) => onResizeMouseDown(e, 'sw')}
       />
       <div
-        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-se-resize pointer-events-auto"
-        style={{ right: -2, bottom: -2 }}
+        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-se-resize pointer-events-auto bottom-[-2px] right-[-2px]"
         onMouseDown={(e) => onResizeMouseDown(e, 'se')}
       />
       
       {/* Side Handles */}
       <div
-        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-n-resize pointer-events-auto"
-        style={{ left: '50%', top: -2, transform: 'translateX(-50%)' }}
+        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-n-resize pointer-events-auto top-[-2px] left-1/2 transform -translate-x-1/2"
         onMouseDown={(e) => onResizeMouseDown(e, 'n')}
       />
       <div
-        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-s-resize pointer-events-auto"
-        style={{ left: '50%', bottom: -2, transform: 'translateX(-50%)' }}
+        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-s-resize pointer-events-auto bottom-[-2px] left-1/2 transform -translate-x-1/2"
         onMouseDown={(e) => onResizeMouseDown(e, 's')}
       />
       <div
-        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-w-resize pointer-events-auto"
-        style={{ left: -2, top: '50%', transform: 'translateY(-50%)' }}
+        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-w-resize pointer-events-auto left-[-2px] top-1/2 transform -translate-y-1/2"
         onMouseDown={(e) => onResizeMouseDown(e, 'w')}
       />
       <div
-        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-e-resize pointer-events-auto"
-        style={{ right: -2, top: '50%', transform: 'translateY(-50%)' }}
+        className="absolute w-3 h-3 bg-white border-2 border-blue-500 cursor-e-resize pointer-events-auto right-[-2px] top-1/2 transform -translate-y-1/2"
         onMouseDown={(e) => onResizeMouseDown(e, 'e')}
       />
     </div>

@@ -92,19 +92,17 @@ export const SimplifiedSelectionBoundingBox: React.FC<SimplifiedSelectionBoundin
 
   return (
     <div
-      className="absolute border-2 border-blue-500 border-dashed bg-blue-500/10 pointer-events-none"
+      className="absolute border-2 border-blue-500 border-dashed bg-blue-500/10 pointer-events-none z-[1001]"
       style={{
         left: bounds.x * zoomFactor + canvasPosition.x,
         top: bounds.y * zoomFactor + canvasPosition.y,
         width: bounds.width * zoomFactor,
-        height: bounds.height * zoomFactor,
-        zIndex: 1001
+        height: bounds.height * zoomFactor
       }}
     >
       {/* Corner resize handles */}
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-se-resize pointer-events-auto hover:bg-blue-600"
-        style={{ bottom: -6, right: -6 }}
+        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-se-resize pointer-events-auto hover:bg-blue-600 bottom-[-6px] right-[-6px]"
         onMouseDown={(e) => handleResizeStart('se', e)}
       />
       <div 

@@ -69,12 +69,9 @@ const ArchiveSidebar: React.FC<ArchiveSidebarProps> = ({
 
   return (
     <aside 
-      style={{
-        width: isCollapsed ? 'var(--departments-sidebar-width-collapsed)' : 'var(--departments-sidebar-width-expanded)',
-        transition: 'all var(--animation-duration-main) var(--animation-easing)',
-        background: 'var(--backgrounds-project-column-bg)'
-      }} 
-      className="h-full backdrop-blur-xl rounded-3xl overflow-hidden"
+      className={`h-full backdrop-blur-xl rounded-3xl overflow-hidden transition-all duration-[var(--animation-duration-main)] ease-[var(--animation-easing)] bg-[var(--backgrounds-project-column-bg)] ${
+        isCollapsed ? 'w-[var(--departments-sidebar-width-collapsed)]' : 'w-[var(--departments-sidebar-width-expanded)]'
+      }`}
     >
       <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0">
         {/* Header with Toggle */}

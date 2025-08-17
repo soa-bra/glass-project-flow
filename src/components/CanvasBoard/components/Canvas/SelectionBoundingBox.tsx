@@ -189,22 +189,17 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
 
   return (
     <div
-      className="absolute border-2 border-blue-500 border-dashed bg-blue-500/10 pointer-events-none"
+      className="absolute border-2 border-blue-500 border-dashed bg-blue-500/10 pointer-events-none z-[1001]"
       style={{
         left: transformedX * zoomFactor,
         top: transformedY * zoomFactor,
         width: transformedWidth * zoomFactor,
-        height: transformedHeight * zoomFactor,
-        zIndex: 1001
+        height: transformedHeight * zoomFactor
       }}
     >
       {/* Corner handles */}
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-nw-resize pointer-events-auto hover:bg-blue-600"
-        style={{ 
-          top: -6, 
-          left: -6 
-        }}
+        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-nw-resize pointer-events-auto hover:bg-blue-600 top-[-6px] left-[-6px]"
         onMouseDown={(e) => handleResizeStart('nw', e)}
       />
       <div 
