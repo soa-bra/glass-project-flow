@@ -167,7 +167,12 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
             zIndex: 9999,
           }}
         >
-          <ProjectModalHeader isEditMode={isEditMode} onClose={handleClose} />
+          <ProjectModalHeader 
+            isEditMode={isEditMode} 
+            onClose={handleClose}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
 
           <ProjectModalTabs
             activeTab={activeTab}
