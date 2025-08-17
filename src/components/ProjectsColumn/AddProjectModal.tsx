@@ -1,16 +1,16 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
+import { UnifiedModal } from '@/components/ui/UnifiedModal';
 import { AddTaskModal } from './AddTaskModal';
 import type { ProjectData, TaskData } from '@/types';
 import { useProjectForm } from './AddProjectModal/hooks/useProjectForm';
 import { useSmartTasks } from './AddProjectModal/hooks/useSmartTasks';
-import { ProjectModalHeader } from './AddProjectModal/components/ProjectModalHeader';
 import { ProjectModalTabs } from './AddProjectModal/components/ProjectModalTabs';
 import { ProjectModalFooter } from './AddProjectModal/components/ProjectModalFooter';
 import { ProjectModalDialogs } from './AddProjectModal/components/ProjectModalDialogs';
+import { FolderPlus } from 'lucide-react';
 
 interface AddProjectModalProps {
   isOpen: boolean;
@@ -154,42 +154,34 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={() => {}}>
-        <DialogContent 
-          className="max-w-4xl max-h-[90vh] p-0 overflow-hidden font-arabic"
-          style={{
-            background: 'rgba(255,255,255,0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '24px',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-            zIndex: 9999,
-          }}
-        >
-          <ProjectModalHeader isEditMode={isEditMode} onClose={handleClose} />
+      <UnifiedModal
+        isOpen={isOpen}
+        onClose={handleClose}
+        title={isEditMode ? "تحديث المشروع" : "إضافة مشروع جديد"}
+        icon={<FolderPlus className="text-white" size={20} />}
+        size="xl"
+        showCloseButton={false}
+      >
+        <ProjectModalTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          projectData={projectData}
+          onInputChange={handleInputChange}
+          onClientDataChange={handleClientDataChange}
+          onAddTask={() => setShowAddTaskModal(true)}
+          onGenerateSmartTasks={handleGenerateSmartTasks}
+          onAddPayment={addPayment}
+          onRemovePayment={removePayment}
+          onUpdatePayment={updatePayment}
+          teamMembers={teamMembers}
+        />
 
-          <ProjectModalTabs
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            projectData={projectData}
-            onInputChange={handleInputChange}
-            onClientDataChange={handleClientDataChange}
-            onAddTask={() => setShowAddTaskModal(true)}
-            onGenerateSmartTasks={handleGenerateSmartTasks}
-            onAddPayment={addPayment}
-            onRemovePayment={removePayment}
-            onUpdatePayment={updatePayment}
-            teamMembers={teamMembers}
-          />
-
-          <ProjectModalFooter
-            isEditMode={isEditMode}
-            onSave={handleSaveProject}
-            onCancel={handleClose}
-          />
-        </DialogContent>
-      </Dialog>
+        <ProjectModalFooter
+          isEditMode={isEditMode}
+          onSave={handleSaveProject}
+          onCancel={handleClose}
+        />
+      </UnifiedModal>
 
       <AddTaskModal
         isOpen={showAddTaskModal}
