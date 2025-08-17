@@ -19,7 +19,7 @@ const monthlyData = [
 export const FinancialOverviewCard: React.FC = () => {
   return (
     <div 
-      className="h-full p-6 rounded-3xl border border-[#DADCE0] flex flex-col overflow-hidden bg-[#BDEED3]"
+      className="h-full p-6 rounded-3xl border border-[#DADCE0] flex flex-col overflow-hidden bg-[#96D8D0]"
       style={{ 
         fontFamily: 'IBM Plex Sans Arabic'
       }}

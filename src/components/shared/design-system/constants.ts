@@ -46,8 +46,15 @@ export const DESIGN_TOKENS = {
     TASK_CARD_CAPSULE_BG: '#FFFFFF',  // خلفية كبسولات بطاقات المهام
     
     // Financial status backgrounds
-    FINANCIAL_PROFIT_BG: '#BDEED3',   // خلفية ربح
-    FINANCIAL_LOSS_BG: '#F1B5B9',     // خلفية خسارة
+    FINANCIAL_PROFIT_BG: '#96D8D0',   // خلفية ربح/ضمن الميزانية
+    FINANCIAL_LOSS_BG: '#F1B5B9',     // خلفية خسارة/أعلى من الميزانية
+    
+    // Additional sidebar background
+    ADDITIONAL_SIDEBAR_BG: '#ebeff2',  // خلفية البار الإضافي
+    
+    // Project card elements
+    PROJECT_CARD_DAYS_CIRCLE_BG: 'transparent', // خلفية فقاعة الأيام المتبقية
+    PROJECT_CARD_TASKS_CIRCLE_BG: '#d1e1ea',    // خلفية فقاعة المهام
   },
   
   // Elevation/Shadow

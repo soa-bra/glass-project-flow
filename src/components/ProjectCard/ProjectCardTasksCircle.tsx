@@ -14,8 +14,7 @@ const ProjectCardTasksCircle = ({
     <div 
       className="w-[75px] h-[75px] rounded-full flex flex-col items-center justify-center px-0 py-0 my-0"
       style={{
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #DADCE0'
+        backgroundColor: '#d1e1ea'
       }}
     >
       <span 
