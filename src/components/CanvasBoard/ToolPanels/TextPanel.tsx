@@ -215,7 +215,11 @@ export const TextPanel: React.FC<TextPanelProps> = ({
                       <div 
                         className={`text-xs text-muted-foreground font-[${preset.style.fontWeight}] ${
                           preset.style.fontStyle === 'italic' ? 'italic' : 'not-italic'
-                        } font-[${preset.style.fontFamily}] text-[${Math.min(preset.style.fontSize || 16, 12)}px]`}
+                        }`}
+                        style={{
+                          fontFamily: preset.style.fontFamily,
+                          fontSize: `${Math.min(preset.style.fontSize || 16, 12)}px`
+                        }}
                       >
                         مثال على النص
                       </div>
@@ -408,7 +412,7 @@ export const TextPanel: React.FC<TextPanelProps> = ({
                 <div className="flex items-center gap-2">
                   <Input
                     type="color"
-                    value={currentStyle.backgroundColor || 'white'}
+                    value={currentStyle.backgroundColor || '#ffffff'}
                     onChange={(e) => updateStyle({ backgroundColor: e.target.value })}
                     className="w-12 h-8 p-1"
                   />
@@ -476,24 +480,20 @@ export const TextPanel: React.FC<TextPanelProps> = ({
         <div className="bg-muted/50 rounded-lg p-3 border">
           <div className="text-xs text-muted-foreground mb-2">معاينة</div>
           <div
-            className={`p-2 rounded font-[${currentStyle.fontFamily || 'Cairo'}] text-[${currentStyle.fontSize || 16}px] font-[${currentStyle.fontWeight || 'normal'}] ${
-              currentStyle.fontStyle === 'italic' ? 'italic' : 'not-italic'
-            } ${
-              currentStyle.textDecoration === 'underline' ? 'underline' :
-              currentStyle.textDecoration === 'line-through' ? 'line-through' :
-              currentStyle.textDecoration === 'underline line-through' ? 'underline line-through' : 'no-underline'
-            } text-[${currentStyle.color || '#000000'}] bg-[${currentStyle.backgroundColor || 'transparent'}] ${
-              currentStyle.textAlign === 'center' ? 'text-center' :
-              currentStyle.textAlign === 'right' ? 'text-right' :
-              currentStyle.textAlign === 'justify' ? 'text-justify' : 'text-left'
-            } ${
-              currentStyle.textTransform === 'uppercase' ? 'uppercase' :
-              currentStyle.textTransform === 'lowercase' ? 'lowercase' :
-              currentStyle.textTransform === 'capitalize' ? 'capitalize' : 'normal-case'
-            }`}
             style={{
+              fontFamily: currentStyle.fontFamily || 'Cairo',
+              fontSize: `${currentStyle.fontSize || 16}px`,
+              fontWeight: currentStyle.fontWeight || 'normal',
+              fontStyle: currentStyle.fontStyle || 'normal',
+              textDecoration: currentStyle.textDecoration || 'none',
+              textAlign: currentStyle.textAlign || 'left',
+              color: currentStyle.color || '#000000',
+              backgroundColor: currentStyle.backgroundColor || 'transparent',
               lineHeight: currentStyle.lineHeight || 1.4,
-              letterSpacing: `${currentStyle.letterSpacing || 0}px`
+              letterSpacing: `${currentStyle.letterSpacing || 0}px`,
+              textTransform: currentStyle.textTransform || 'none',
+              padding: '8px',
+              borderRadius: '4px'
             }}
           >
             {selectedText || newText || 'مثال على النص العربي ABC 123'}

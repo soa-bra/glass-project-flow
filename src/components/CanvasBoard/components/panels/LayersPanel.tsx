@@ -6,7 +6,6 @@ import { Separator } from '@/components/ui/separator';
 import { Layers, Eye, EyeOff, Lock, Unlock, Plus, Trash2, Folder, FolderOpen, ChevronDown, ChevronRight } from 'lucide-react';
 import { Layer } from '../CanvasPanelTypes';
 import { CanvasElement } from '../../types';
-import { getLayerDepthClass } from '@/components/shared/design-system/constants';
 interface LayersPanelProps {
   layers: Layer[];
   selectedLayerId: string | null;
@@ -135,7 +134,9 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
       
       
     </div>;
-  const renderFolder = (folder: LayerFolder, depth = 0) => <div key={folder.id} className={getLayerDepthClass(depth)}>
+  const renderFolder = (folder: LayerFolder, depth = 0) => <div key={folder.id} style={{
+    marginLeft: `${depth * 16}px`
+  }}>
       <div className="p-2 rounded-[12px] border border-[#d1e1ea] bg-[#e9eff4]/30 mb-2">
         <div className="flex items-center gap-2">
           <Button onClick={() => toggleFolder(folder.id)} size="sm" variant="ghost" className="w-4 h-4 p-0">

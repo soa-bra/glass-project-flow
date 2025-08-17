@@ -322,8 +322,10 @@ export const EnhancedLayersPanel: React.FC<EnhancedLayersPanelProps> = ({
             snapshot.isDragging && "shadow-lg bg-background border",
             layer.depth && `ml-${layer.depth * 4}`
           )}
-          style={provided.draggableProps.style}
-          data-depth={layer.depth}
+          style={{
+            marginLeft: layer.depth ? `${layer.depth * 16}px` : undefined,
+            ...provided.draggableProps.style
+          }}
         >
           {/* أيقونة النوع والتبديل */}
           <div className="flex items-center gap-1">

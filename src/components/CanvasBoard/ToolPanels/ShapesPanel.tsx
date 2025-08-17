@@ -29,7 +29,6 @@ import {
   Cloud,
   Flower
 } from 'lucide-react';
-import { TRANSFORMS } from '@/components/shared/design-system/constants';
 
 interface ShapeStyle {
   fill: string;
@@ -378,7 +377,10 @@ export const ShapesPanel: React.FC<ShapesPanelProps> = ({
             <div
               className={`w-[60px] h-[60px] bg-[${currentShapeStyle.fill || '#4ECDC4'}] border-[${currentShapeStyle.strokeWidth || 2}px] border-[${currentShapeStyle.stroke || '#333333'}] ${
                 currentShapeStyle.strokeDashArray === 'none' ? 'border-solid' : 'border-dashed'
-              } rounded-[${currentShapeStyle.borderRadius || 0}px] opacity-[${currentShapeStyle.opacity || 1}] transform ${TRANSFORMS.ROTATE(currentShapeStyle.rotation || 0)}`}
+              } rounded-[${currentShapeStyle.borderRadius || 0}px] opacity-[${currentShapeStyle.opacity || 1}]`}
+              style={{
+                transform: `rotate(${currentShapeStyle.rotation || 0}deg)`
+              }}
             />
           </div>
         </div>

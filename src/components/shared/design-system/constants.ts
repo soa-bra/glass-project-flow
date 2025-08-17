@@ -52,13 +52,6 @@ export const SPACING = {
   // Specific paddings
   CONTENT_PADDING: 'px-0',
   HEADER_PADDING: 'px-0 pt-0 mb-6',
-  
-  // Layer depth spacing (16px per level)
-  LAYER_DEPTH_1: 'ml-4', // 16px
-  LAYER_DEPTH_2: 'ml-8', // 32px
-  LAYER_DEPTH_3: 'ml-12', // 48px
-  LAYER_DEPTH_4: 'ml-16', // 64px
-  LAYER_DEPTH_5: 'ml-20', // 80px
 } as const;
 
 export const COLORS = {
@@ -193,17 +186,8 @@ export const COLORS = {
   // Additional background colors for specific elements
   SHAPE_FILL_BLUE: 'bg-[#3B82F6]',
   STICKY_NOTE_YELLOW: 'bg-[#FEF3C7]',
-  TEXT_EDITOR_WHITE: 'bg-white',
-  COLLABORATION_BACKGROUND: 'bg-white/90',
-  
-  // Common inline style replacements
-  BG_F2FFFF: 'bg-[#f2ffff]',
-  BG_E7F1F5: 'bg-[#e7f1f5]',
-  BG_E4F3F7: 'bg-[#e4f3f7]',
-  BG_F7FFFF: 'bg-[#f7ffff]',
-  BG_MUSTARD: 'bg-[#D4A574]',
-  BG_AEC2CF: 'bg-[#aec2cf]',
-  BG_D1E1EA: 'bg-[#d1e1ea]',
+  TEXT_EDITOR_WHITE: 'bg-[#ffffff]',
+  COLLABORATION_BACKGROUND: 'bg-[rgba(255,255,255,0.9)]',
   
   // Canvas specific background tokens
   CANVAS_SHAPE_FILL: '#3B82F6',
@@ -300,19 +284,6 @@ export const TYPOGRAPHY = {
   H3: 'text-lg font-semibold', // 600
   BODY: 'text-sm font-normal', // 400
   SMALL: 'text-xs font-normal', // 400
-  
-  // Font families
-  FONT_CAIRO: 'font-[Cairo]',
-  FONT_TAJAWAL: 'font-[Tajawal]',
-  FONT_ARIAL: 'font-[Arial,sans-serif]',
-  
-  // Font sizes
-  TEXT_12: 'text-[12px]',
-  TEXT_14: 'text-[14px]',
-  TEXT_16: 'text-[16px]',
-  TEXT_18: 'text-[18px]',
-  TEXT_24: 'text-[24px]',
-  TEXT_32: 'text-[32px]',
 } as const;
 
 export const LAYOUT = {
@@ -342,26 +313,6 @@ export const TRANSITIONS = {
   DEFAULT: 'transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
   SHADOW: 'transition-shadow duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
 } as const;
-
-// Transform and rotation utilities
-export const TRANSFORMS = {
-  ROTATE: (deg: number) => `rotate-[${deg}deg]`,
-  SCALE: (value: number) => `scale-[${value}]`,
-  TRANSLATE_X: (px: number) => `translate-x-[${px}px]`,
-  TRANSLATE_Y: (px: number) => `translate-y-[${px}px]`,
-} as const;
-
-// Dynamic layer depth utility
-export const getLayerDepthClass = (depth: number) => {
-  const depthMap: Record<number, string> = {
-    1: SPACING.LAYER_DEPTH_1,
-    2: SPACING.LAYER_DEPTH_2,
-    3: SPACING.LAYER_DEPTH_3,
-    4: SPACING.LAYER_DEPTH_4,
-    5: SPACING.LAYER_DEPTH_5,
-  };
-  return depthMap[depth] || `ml-[${depth * 16}px]`;
-};
 
 // Motion system from specification
 export const MOTION = {
