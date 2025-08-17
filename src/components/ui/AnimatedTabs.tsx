@@ -42,7 +42,7 @@ export function AnimatedTabs({ tabs, activeTab, onTabChange, className = "" }: A
   }, [activeTab]);
 
   return (
-    <div className={`relative bg-transparent border border-black mx-auto flex w-fit flex-col items-center rounded-full py-2 px-4 ${className}`}>
+    <div className={`relative bg-transparent border border-black flex w-fit flex-col items-center rounded-full py-2 px-4 ${className}`}>
       <div
         ref={containerRef}
         className="absolute z-10 w-full overflow-hidden [clip-path:inset(0px_75%_0px_0%_round_17px)] [transition:clip-path_0.25s_ease]"
