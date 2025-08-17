@@ -34,19 +34,23 @@ export const MindMapPanel: React.FC<MindMapPanelProps> = ({
       // محاكاة توليد خريطة ذهنية
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const mindMap = {
-        centralTopic: topic,
+      const mindMap: MindMapData = {
+        centerNode: {
+          id: 'center',
+          content: topic,
+          position: { x: 250, y: 200 }
+        },
         branches: [
-          { id: '1', text: `${topic} - الأهداف`, x: 200, y: 100 },
-          { id: '2', text: `${topic} - الخطوات`, x: 300, y: 200 },
-          { id: '3', text: `${topic} - المتطلبات`, x: 100, y: 200 },
-          { id: '4', text: `${topic} - النتائج`, x: 250, y: 300 }
+          { id: '1', content: `${topic} - الأهداف`, position: { x: 200, y: 100 }, connections: ['center'], level: 1 },
+          { id: '2', content: `${topic} - الخطوات`, position: { x: 300, y: 200 }, connections: ['center'], level: 1 },
+          { id: '3', content: `${topic} - المتطلبات`, position: { x: 100, y: 200 }, connections: ['center'], level: 1 },
+          { id: '4', content: `${topic} - النتائج`, position: { x: 250, y: 300 }, connections: ['center'], level: 1 }
         ],
         connections: [
-          { from: 'center', to: '1' },
-          { from: 'center', to: '2' },
-          { from: 'center', to: '3' },
-          { from: 'center', to: '4' }
+          { from: 'center', to: '1', type: 'parent-child', style: { strokeColor: '#3DBE8B', strokeWidth: 2, strokeStyle: 'solid', arrowType: 'arrow' } },
+          { from: 'center', to: '2', type: 'parent-child', style: { strokeColor: '#3DBE8B', strokeWidth: 2, strokeStyle: 'solid', arrowType: 'arrow' } },
+          { from: 'center', to: '3', type: 'parent-child', style: { strokeColor: '#3DBE8B', strokeWidth: 2, strokeStyle: 'solid', arrowType: 'arrow' } },
+          { from: 'center', to: '4', type: 'parent-child', style: { strokeColor: '#3DBE8B', strokeWidth: 2, strokeStyle: 'solid', arrowType: 'arrow' } }
         ]
       };
       
@@ -70,17 +74,21 @@ export const MindMapPanel: React.FC<MindMapPanelProps> = ({
       const text = await file.text();
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const mindMap = {
-        centralTopic: 'تحليل الملف',
+      const mindMap: MindMapData = {
+        centerNode: {
+          id: 'center',
+          content: 'تحليل الملف',
+          position: { x: 250, y: 200 }
+        },
         branches: [
-          { id: '1', text: 'النقاط الرئيسية', x: 200, y: 100 },
-          { id: '2', text: 'الأفكار المهمة', x: 300, y: 200 },
-          { id: '3', text: 'الاستنتاجات', x: 100, y: 200 }
+          { id: '1', content: 'النقاط الرئيسية', position: { x: 200, y: 100 }, connections: ['center'], level: 1 },
+          { id: '2', content: 'الأفكار المهمة', position: { x: 300, y: 200 }, connections: ['center'], level: 1 },
+          { id: '3', content: 'الاستنتاجات', position: { x: 100, y: 200 }, connections: ['center'], level: 1 }
         ],
         connections: [
-          { from: 'center', to: '1' },
-          { from: 'center', to: '2' },
-          { from: 'center', to: '3' }
+          { from: 'center', to: '1', type: 'parent-child', style: { strokeColor: '#3DBE8B', strokeWidth: 2, strokeStyle: 'solid', arrowType: 'arrow' } },
+          { from: 'center', to: '2', type: 'parent-child', style: { strokeColor: '#3DBE8B', strokeWidth: 2, strokeStyle: 'solid', arrowType: 'arrow' } },
+          { from: 'center', to: '3', type: 'parent-child', style: { strokeColor: '#3DBE8B', strokeWidth: 2, strokeStyle: 'solid', arrowType: 'arrow' } }
         ]
       };
       

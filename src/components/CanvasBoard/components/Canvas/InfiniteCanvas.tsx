@@ -241,7 +241,6 @@ const InfiniteCanvas = forwardRef<InfiniteCanvasRef, InfiniteCanvasProps>(({
       {/* Canvas layer */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -262,7 +261,7 @@ const InfiniteCanvas = forwardRef<InfiniteCanvasRef, InfiniteCanvasProps>(({
             }
           }
         }}
-        className={isDragging.current ? 'cursor-grabbing' : 'cursor-grab'}
+        className={`absolute inset-0 w-full h-full ${isDragging.current ? 'cursor-grabbing' : 'cursor-grab'}`}
       />
       
       {/* Content layer with transformation */}

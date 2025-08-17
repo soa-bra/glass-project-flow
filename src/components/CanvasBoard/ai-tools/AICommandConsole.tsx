@@ -59,37 +59,42 @@ export const AICommandConsole: React.FC<AICommandConsoleProps> = ({
     }
   };
 
-  const processCommand = async (command: string) => {
+  const processCommand = async (command: string): Promise<AICommandResult> => {
     // محاكاة معالجة الأوامر المختلفة
     if (command.includes('جدول زمني')) {
       return {
-        type: 'timeline',
+        type: 'element_creation',
         message: 'تم إنشاء جدول زمني يتضمن 5 مراحل رئيسية',
-        data: { phases: 5, duration: '3 أشهر' }
+        data: { phases: 5, duration: '3 أشهر' },
+        confidence: 0.9
       };
     } else if (command.includes('اربط')) {
       return {
-        type: 'connections',
+        type: 'element_modification',
         message: 'تم ربط 8 عناصر متشابهة تلقائياً',
-        data: { connections: 8 }
+        data: { connections: 8 },
+        confidence: 0.85
       };
     } else if (command.includes('مهام')) {
       return {
-        type: 'tasks',
+        type: 'element_creation',
         message: 'تم اقتراح 12 مهمة جديدة بناءً على المحتوى',
-        data: { tasks: 12 }
+        data: { tasks: 12 },
+        confidence: 0.8
       };
     } else if (command.includes('فجوات')) {
       return {
         type: 'analysis',
         message: 'تم تحديد 3 فجوات رئيسية تحتاج لمعالجة',
-        data: { gaps: 3 }
+        data: { gaps: 3 },
+        confidence: 0.75
       };
     } else {
       return {
-        type: 'general',
+        type: 'layout_suggestion',
         message: 'تم معالجة طلبك وتنفيذ التحسينات المقترحة',
-        data: {}
+        data: {},
+        confidence: 0.7
       };
     }
   };

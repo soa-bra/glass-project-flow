@@ -45,20 +45,30 @@ export const SmartRootConnector: React.FC<SmartRootConnectorProps> = ({
       // محاكاة تحليل العلاقة بالذكاء الاصطناعي
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const mockGeneratedNodes = [
+      const mockGeneratedNodes: GeneratedNode[] = [
         {
           id: `bridge-${Date.now()}`,
-          type: 'connector',
+          type: 'idea',
           content: 'نقطة ربط ذكية',
-          x: 200,
-          y: 150
+          parentId: sourceId,
+          confidence: 0.85,
+          metadata: {
+            generatedAt: new Date().toISOString(),
+            prompt: description,
+            aiModel: 'gpt-4'
+          }
         },
         {
           id: `analysis-${Date.now()}`,
-          type: 'analysis',
+          type: 'note',
           content: `تحليل العلاقة: ${description}`,
-          x: 300,
-          y: 200
+          parentId: targetId,
+          confidence: 0.9,
+          metadata: {
+            generatedAt: new Date().toISOString(),
+            prompt: description,
+            aiModel: 'gpt-4'
+          }
         }
       ];
 
