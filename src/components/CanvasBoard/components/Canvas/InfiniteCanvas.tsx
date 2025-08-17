@@ -266,9 +266,9 @@ const InfiniteCanvas = forwardRef<InfiniteCanvasRef, InfiniteCanvasProps>(({
       
       {/* Content layer with transformation */}
       <div
-        className="absolute inset-0 pointer-events-none origin-top-left"
+        className={`absolute inset-0 pointer-events-none origin-top-left scale-[${scale}]`}
         style={{ 
-          transform: `scale(${scale}) translate(${canvasPosition.x}px, ${canvasPosition.y}px)`
+          transform: `translate(${canvasPosition.x}px, ${canvasPosition.y}px)`
         }}
       >
         <div className="pointer-events-auto">

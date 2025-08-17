@@ -42,13 +42,9 @@ export const EnhancedSelectionBox: React.FC<EnhancedSelectionBoxProps> = ({
 
   return (
     <div
-      className={`absolute pointer-events-none border-dashed ${getThemeClasses()}`}
+      className={`absolute pointer-events-none border-dashed ${getThemeClasses()} w-[${width}px] h-[${height}px] border-[${borderWidth}px] animate-pulse`}
       style={{
-        transform: `translate(${left}px, ${top}px)`,
-        width,
-        height,
-        borderWidth: `${borderWidth}px`,
-        animation: 'selection-pulse 1.5s ease-in-out infinite',
+        transform: `translate(${left}px, ${top}px)`
       }}
     >
       {/* Corner indicators */}

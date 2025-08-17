@@ -92,7 +92,7 @@ export const TextToolPanel: React.FC = () => {
             <SelectContent>
               {fontFamilies.map((font) => (
                 <SelectItem key={font} value={font}>
-                  <span style={{ fontFamily: font }}>{font}</span>
+                  <span className={`font-[${font}]`}>{font}</span>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -216,8 +216,7 @@ export const TextToolPanel: React.FC = () => {
           {['#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#800080'].map((color) => (
             <Button
               key={color}
-              className="w-8 h-8 rounded-[8px] border-2 border-[#d1e1ea] p-0"
-              style={{ backgroundColor: color }}
+              className={`w-8 h-8 rounded-[8px] border-2 border-[#d1e1ea] p-0 bg-[${color}]`}
             />
           ))}
         </div>

@@ -28,8 +28,7 @@ const CanvasItemComponent: React.FC<CanvasItemComponentProps> = ({
 
   return (
     <div
-      className={`absolute ${item.color} p-3 rounded-lg shadow-md border border-black/10 min-w-48 max-w-64 cursor-move animate-fade-in`}
-      style={{ left: item.position.x, top: item.position.y }}
+      className={`absolute ${item.color} p-3 rounded-lg shadow-md border border-black/10 min-w-48 max-w-64 cursor-move animate-fade-in left-[${item.position.x}px] top-[${item.position.y}px]`}
     >
       <div className="flex items-center justify-between mb-2">
         <BaseBadge variant="secondary" className="text-xs">

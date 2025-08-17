@@ -57,8 +57,7 @@ export const AppearancePanel: React.FC<AppearancePanelProps> = ({
             {presetColors.map((color, index) => (
               <button
                 key={`${color}-${index}`}
-                className="w-6 h-6 rounded border-2 border-border"
-                style={{ backgroundColor: color }}
+                className={`w-6 h-6 rounded border-2 border-border bg-[${color}]`}
                 onClick={() => setFillColor(color)}
               />
             ))}

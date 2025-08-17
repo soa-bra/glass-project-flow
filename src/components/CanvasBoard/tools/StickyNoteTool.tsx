@@ -118,10 +118,9 @@ export const StickyNoteTool: React.FC<StickyNoteToolProps> = ({
               <button
                 key={colorOption.value}
                 onClick={() => setColor(colorOption.value)}
-                className={`w-full h-8 rounded border-2 ${
+                className={`w-full h-8 rounded border-2 bg-[${colorOption.value}] ${
                   color === colorOption.value ? 'border-black' : 'border-gray-300'
                 }`}
-                style={{ backgroundColor: colorOption.value }}
                 title={colorOption.name}
               />
             ))}

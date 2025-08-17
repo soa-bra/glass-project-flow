@@ -547,8 +547,7 @@ export const EnhancedCanvasControlPanel: React.FC<EnhancedCanvasControlPanelProp
                       size="sm"
                       variant="outline"
                       onClick={() => updateSettings('appearance', { background: color })}
-                      className="h-8 p-0"
-                      style={{ backgroundColor: color }}
+                      className={`h-8 p-0 bg-[${color}]`}
                     />
                   ))}
                 </div>

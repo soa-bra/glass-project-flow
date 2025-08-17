@@ -92,11 +92,9 @@ export const SimplifiedSelectionBoundingBox: React.FC<SimplifiedSelectionBoundin
 
   return (
     <div
-      className="absolute border-2 border-blue-500 border-dashed bg-blue-500/10 pointer-events-none z-[1001]"
+      className={`absolute border-2 border-blue-500 border-dashed bg-blue-500/10 pointer-events-none z-[1001] w-[${bounds.width * zoomFactor}px] h-[${bounds.height * zoomFactor}px]`}
       style={{
-        transform: `translate(${bounds.x * zoomFactor + canvasPosition.x}px, ${bounds.y * zoomFactor + canvasPosition.y}px)`,
-        width: bounds.width * zoomFactor,
-        height: bounds.height * zoomFactor
+        transform: `translate(${bounds.x * zoomFactor + canvasPosition.x}px, ${bounds.y * zoomFactor + canvasPosition.y}px)`
       }}
     >
       {/* Corner resize handles */}
