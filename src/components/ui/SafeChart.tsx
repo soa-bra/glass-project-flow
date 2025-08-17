@@ -12,17 +12,11 @@ export const SafeChart: React.FC<SafeChartProps> = ({
   width = "100%", 
   height = 300 
 }) => {
-  const [isMounted, setIsMounted] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    console.log('SafeChart mounted');
-    
     return () => {
-      console.log('SafeChart unmounting - cleaning up');
-      setIsMounted(false);
-      
       // Clear any pending timeouts
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -51,21 +45,11 @@ export const SafeChart: React.FC<SafeChartProps> = ({
     };
   }, []);
 
-  // Always call hooks consistently, then conditionally render
   return (
     <div ref={containerRef}>
-      {isMounted ? (
-        <ResponsiveContainer width={width} height={height}>
-          {children}
-        </ResponsiveContainer>
-      ) : (
-        <div 
-          style={{ width, height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          className="text-gray-400"
-        >
-          Chart unmounted
-        </div>
-      )}
+      <ResponsiveContainer width={width} height={height}>
+        {children}
+      </ResponsiveContainer>
     </div>
   );
 };
