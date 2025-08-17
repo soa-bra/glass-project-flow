@@ -47,7 +47,7 @@ export const CircularIconButton: React.FC<CircularIconButtonProps> = ({
         text-gray-700 transition-all duration-300
         backdrop-blur-sm shadow-sm hover:shadow-md
         hover:scale-105 active:scale-95
-        ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+        ${disabled ? 'opacity-70 cursor-not-allowed' : ''}
         ${className}
       `}
     >

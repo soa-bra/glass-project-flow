@@ -45,7 +45,7 @@ export const BaseActionButton: React.FC<BaseActionButtonProps> = ({
       disabled={disabled}
       className={cn(
         'rounded-full flex items-center justify-center transition-all duration-300 font-arabic',
-        'disabled:opacity-50 disabled:cursor-not-allowed',
+        'disabled:opacity-70 disabled:cursor-not-allowed',
         variantClasses[variant],
         sizeClasses[size],
         className
