@@ -44,7 +44,7 @@ const ProjectCardLayout = ({
       onClick={handleClick}
       className={getCardClasses()}
       style={{
-        background: '#e7f1f5',
+        backgroundColor: 'var(--colors-e7f1f5)',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
         border: '1px solid rgba(255, 255, 255, 0.1)',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'

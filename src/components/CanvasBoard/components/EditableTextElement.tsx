@@ -75,7 +75,7 @@ export const EditableTextElement: React.FC<EditableTextElementProps> = ({
             fontFamily: element.style?.fontFamily || 'inherit',
             fontWeight: element.style?.fontWeight || 'normal',
             textAlign: element.style?.textAlign || 'left',
-            backgroundColor: element.style?.backgroundColor || '#ffffff'
+            backgroundColor: element.style?.backgroundColor || 'white'
           })}`}
         />
       </div>
