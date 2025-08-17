@@ -205,7 +205,7 @@ export const TimelineCard: React.FC = () => {
             <button onClick={() => setShowAddEventModal(false)} className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors">
               إلغاء
             </button>
-            <button onClick={handleAddEvent} disabled={!newEventDate || !newEventTitle.trim()} className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <button onClick={handleAddEvent} disabled={!newEventDate || !newEventTitle.trim()} className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
               إضافة الحدث
             </button>
           </div>
