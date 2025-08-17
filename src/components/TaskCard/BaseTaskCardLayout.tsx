@@ -19,7 +19,7 @@ const BaseTaskCardLayout = ({
   isOtherSelected = false
 }: BaseTaskCardLayoutProps) => {
   const getCardStyle = () => {
-    let backgroundColor = '#EAF2F5';
+    let backgroundColor = '#f8f9fa';
     let opacity = 1;
     
     if (isSelectionMode) {
