@@ -368,3 +368,50 @@ export const SCROLL_INDICATOR = {
   DOT: 'w-[6px] h-[6px] rounded-full',
   DOT_GAP: 'gap-[8px]',
 } as const;
+
+// Canvas positioning and dynamic style classes
+export const CANVAS_POSITION_CLASSES = {
+  // Resize handle positions (absolute positioning)
+  HANDLE_TOP_LEFT: 'absolute top-[-6px] left-[-6px]',
+  HANDLE_TOP_RIGHT: 'absolute top-[-6px] right-[-6px]',
+  HANDLE_BOTTOM_LEFT: 'absolute bottom-[-6px] left-[-6px]',
+  HANDLE_BOTTOM_RIGHT: 'absolute bottom-[-6px] right-[-6px]',
+  HANDLE_TOP_CENTER: 'absolute top-[-6px] left-1/2 transform -translate-x-1/2',
+  HANDLE_BOTTOM_CENTER: 'absolute bottom-[-6px] left-1/2 transform -translate-x-1/2',
+  HANDLE_LEFT_CENTER: 'absolute top-1/2 left-[-6px] transform -translate-y-1/2',
+  HANDLE_RIGHT_CENTER: 'absolute top-1/2 right-[-6px] transform -translate-y-1/2',
+  
+  // Handle sizes and hover effects
+  HANDLE_BASE: 'w-3 h-3 bg-blue-500 border border-white pointer-events-auto',
+  HANDLE_HOVER: 'hover:bg-blue-600',
+  
+  // Cursor styles for handles
+  CURSOR_NW_RESIZE: 'cursor-nw-resize',
+  CURSOR_NE_RESIZE: 'cursor-ne-resize',
+  CURSOR_SW_RESIZE: 'cursor-sw-resize',
+  CURSOR_SE_RESIZE: 'cursor-se-resize',
+  CURSOR_N_RESIZE: 'cursor-n-resize',
+  CURSOR_S_RESIZE: 'cursor-s-resize',
+  CURSOR_E_RESIZE: 'cursor-e-resize',
+  CURSOR_W_RESIZE: 'cursor-w-resize',
+} as const;
+
+// Dynamic utility functions for style generation
+export const DYNAMIC_CLASSES = {
+  // Position utilities
+  createPositionClasses: (x: number, y: number) => `left-[${x}px] top-[${y}px]`,
+  createSizeClasses: (width: number, height: number) => `w-[${width}px] h-[${height}px]`,
+  createTransformClasses: (scale: number, x: number, y: number) => 
+    `transform scale-[${scale}] translate-x-[${x}px] translate-y-[${y}px]`,
+  
+  // Background utilities for Canvas elements
+  createBgColorClass: (color: string) => `bg-[${color}]`,
+  createBorderClass: (color: string, width: number) => `border-[${width}px] border-[${color}]`,
+  createFontSizeClass: (size: number) => `text-[${size}px]`,
+  
+  // Shadow utilities
+  createBoxShadowClass: (shadow: string) => `shadow-[${shadow}]`,
+  
+  // Border radius utilities
+  createBorderRadiusClass: (radius: number) => `rounded-[${radius}px]`,
+} as const;

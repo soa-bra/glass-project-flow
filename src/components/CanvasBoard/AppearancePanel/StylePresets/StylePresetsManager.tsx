@@ -21,7 +21,8 @@ import {
   Filter
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { COLORS } from '@/components/shared/design-system/constants';
+import { COLORS, DYNAMIC_CLASSES } from '@/components/shared/design-system/constants';
+import { convertCompleteStyle } from '@/utils/styleConverter';
 
 interface StyleProperty {
   fill?: string;
@@ -322,17 +323,16 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
       {/* Preview */}
       <div className="mb-3">
         <div
-          className="w-full h-16 rounded border flex items-center justify-center text-xs text-gray-600"
+          className={`w-full h-16 rounded border flex items-center justify-center text-xs text-gray-600 
+            ${DYNAMIC_CLASSES.createBgColorClass(preset.style.backgroundColor || COLORS.PRESET_MINIMAL_BG)}
+            ${DYNAMIC_CLASSES.createBorderClass(preset.style.stroke || '#d1d5db', preset.style.strokeWidth || 1)}
+            ${preset.style.borderRadius ? DYNAMIC_CLASSES.createBorderRadiusClass(preset.style.borderRadius) : 'rounded'}
+            ${preset.style.boxShadow ? DYNAMIC_CLASSES.createBoxShadowClass(preset.style.boxShadow) : ''}
+            ${preset.style.fontSize ? DYNAMIC_CLASSES.createFontSizeClass(Math.min(preset.style.fontSize, 12)) : 'text-xs'}
+            ${preset.style.fill ? `text-[${preset.style.fill}]` : 'text-gray-500'}`}
           style={{
-            backgroundColor: preset.style.backgroundColor || COLORS.PRESET_MINIMAL_BG,
-            borderColor: preset.style.stroke || '#d1d5db',
-            borderWidth: preset.style.strokeWidth || 1,
-            borderRadius: preset.style.borderRadius || 4,
-            boxShadow: preset.style.boxShadow,
-            fontSize: preset.style.fontSize ? `${Math.min(preset.style.fontSize, 12)}px` : '12px',
             fontFamily: preset.style.fontFamily,
-            fontWeight: preset.style.fontWeight,
-            color: preset.style.fill || '#6b7280'
+            fontWeight: preset.style.fontWeight
           }}
         >
           {preset.category === 'text' ? 'نص تجريبي' : preset.name}
@@ -521,15 +521,16 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
             <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <Label className="text-sm font-medium mb-2 block">معاينة النمط الحالي</Label>
               <div
-                className={`w-full h-20 rounded border flex items-center justify-center text-sm bg-[${currentStyle.backgroundColor || '#f3f4f6'}] border-[${currentStyle.stroke || '#d1d5db'}]`}
+                className={`w-full h-20 rounded border flex items-center justify-center text-sm 
+                  ${DYNAMIC_CLASSES.createBgColorClass(currentStyle.backgroundColor || '#f3f4f6')}
+                  ${DYNAMIC_CLASSES.createBorderClass(currentStyle.stroke || '#d1d5db', currentStyle.strokeWidth || 1)}
+                  ${currentStyle.borderRadius ? DYNAMIC_CLASSES.createBorderRadiusClass(currentStyle.borderRadius) : 'rounded'}
+                  ${currentStyle.boxShadow ? DYNAMIC_CLASSES.createBoxShadowClass(currentStyle.boxShadow) : ''}
+                  ${currentStyle.fontSize ? DYNAMIC_CLASSES.createFontSizeClass(currentStyle.fontSize) : 'text-sm'}
+                  ${currentStyle.fill ? `text-[${currentStyle.fill}]` : 'text-gray-700'}`}
                 style={{
-                  borderWidth: currentStyle.strokeWidth || 1,
-                  borderRadius: currentStyle.borderRadius || 4,
-                  boxShadow: currentStyle.boxShadow,
-                  fontSize: currentStyle.fontSize,
                   fontFamily: currentStyle.fontFamily,
-                  fontWeight: currentStyle.fontWeight,
-                  color: currentStyle.fill || '#374151'
+                  fontWeight: currentStyle.fontWeight
                 }}
               >
                 معاينة النمط

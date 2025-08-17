@@ -1,6 +1,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { CanvasElement } from '../../types';
+import { useCanvasStyles } from '@/hooks/useCanvasStyles';
 
 interface SelectionBoundingBoxProps {
   selectedElements: CanvasElement[];
@@ -187,81 +188,48 @@ export const SelectionBoundingBox: React.FC<SelectionBoundingBoxProps> = ({
 
   const zoomFactor = zoom / 100;
 
+  const { boundingBoxClasses, resizeHandleClasses } = useCanvasStyles({
+    position: { x: 0, y: 0 },
+    size: { width: 0, height: 0 }
+  });
+
   return (
     <div
-      className="absolute border-2 border-blue-500 border-dashed bg-blue-500/10 pointer-events-none z-[1001]"
-      style={{
-        left: transformedX * zoomFactor,
-        top: transformedY * zoomFactor,
-        width: transformedWidth * zoomFactor,
-        height: transformedHeight * zoomFactor
-      }}
+      className={boundingBoxClasses(transformedX, transformedY, transformedWidth, transformedHeight, zoomFactor)}
     >
       {/* Corner handles */}
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-nw-resize pointer-events-auto hover:bg-blue-600 top-[-6px] left-[-6px]"
+        className={`${resizeHandleClasses.base} ${resizeHandleClasses.topLeft}`}
         onMouseDown={(e) => handleResizeStart('nw', e)}
       />
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-ne-resize pointer-events-auto hover:bg-blue-600"
-        style={{ 
-          top: -6, 
-          right: -6 
-        }}
+        className={`${resizeHandleClasses.base} ${resizeHandleClasses.topRight}`}
         onMouseDown={(e) => handleResizeStart('ne', e)}
       />
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-sw-resize pointer-events-auto hover:bg-blue-600"
-        style={{ 
-          bottom: -6, 
-          left: -6 
-        }}
+        className={`${resizeHandleClasses.base} ${resizeHandleClasses.bottomLeft}`}
         onMouseDown={(e) => handleResizeStart('sw', e)}
       />
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-se-resize pointer-events-auto hover:bg-blue-600"
-        style={{ 
-          bottom: -6, 
-          right: -6 
-        }}
+        className={`${resizeHandleClasses.base} ${resizeHandleClasses.bottomRight}`}
         onMouseDown={(e) => handleResizeStart('se', e)}
       />
 
       {/* Edge handles */}
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-n-resize pointer-events-auto hover:bg-blue-600"
-        style={{ 
-          top: -6, 
-          left: '50%', 
-          transform: 'translateX(-50%)' 
-        }}
+        className={`${resizeHandleClasses.base} ${resizeHandleClasses.topCenter}`}
         onMouseDown={(e) => handleResizeStart('n', e)}
       />
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-s-resize pointer-events-auto hover:bg-blue-600"
-        style={{ 
-          bottom: -6, 
-          left: '50%', 
-          transform: 'translateX(-50%)' 
-        }}
+        className={`${resizeHandleClasses.base} ${resizeHandleClasses.bottomCenter}`}
         onMouseDown={(e) => handleResizeStart('s', e)}
       />
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-e-resize pointer-events-auto hover:bg-blue-600"
-        style={{ 
-          top: '50%', 
-          right: -6, 
-          transform: 'translateY(-50%)' 
-        }}
+        className={`${resizeHandleClasses.base} ${resizeHandleClasses.rightCenter}`}
         onMouseDown={(e) => handleResizeStart('e', e)}
       />
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-w-resize pointer-events-auto hover:bg-blue-600"
-        style={{ 
-          top: '50%', 
-          left: -6, 
-          transform: 'translateY(-50%)' 
-        }}
+        className={`${resizeHandleClasses.base} ${resizeHandleClasses.leftCenter}`}
         onMouseDown={(e) => handleResizeStart('w', e)}
       />
     </div>

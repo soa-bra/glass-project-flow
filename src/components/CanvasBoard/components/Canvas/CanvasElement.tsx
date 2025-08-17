@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { CanvasElement as CanvasElementType } from '../../types';
+import { useCanvasStyles } from '@/hooks/useCanvasStyles';
 
 interface CanvasElementProps {
   element: CanvasElementType;
@@ -17,6 +18,12 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   onMouseMove,
   onMouseUp
 }) => {
+  const { elementClasses } = useCanvasStyles({
+    position: element.position,
+    size: element.size,
+    style: element.style,
+    isSelected
+  });
   const renderElementContent = () => {
     switch (element.type) {
       case 'text':
@@ -130,13 +137,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
 
   return (
     <div
-      className={`absolute cursor-move ${isSelected ? 'ring-2 ring-blue-500 z-[1000]' : 'z-[1]'}`}
-      style={{
-        left: element.position.x,
-        top: element.position.y,
-        width: element.size.width,
-        height: element.size.height
-      }}
+      className={elementClasses}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onMouseUp={onMouseUp}
