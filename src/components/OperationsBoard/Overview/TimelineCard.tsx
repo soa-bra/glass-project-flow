@@ -184,40 +184,23 @@ export const TimelineCard: React.FC = () => {
             <div className="space-y-2">
               <label className="font-bold text-black font-arabic">الموقع</label>
               <div className="space-y-3">
-                <div className="relative bg-transparent border border-black/20 mx-auto flex w-fit flex-col items-center rounded-full py-1 px-2">
-                  <div className={`absolute z-10 w-full overflow-hidden transition-all duration-300 ease-out ${newEventLocation === 'داخلي' ? '[clip-path:inset(0_50%_0_0%_round_17px)]' : '[clip-path:inset(0_0%_0_50%_round_17px)]'}`}>
-                    <div className="relative flex w-full justify-center bg-white border border-black/10">
-                      <button
-                        onClick={() => setNewEventLocation('داخلي')}
-                        className="flex h-8 items-center rounded-full px-4 py-1 text-sm font-medium text-black whitespace-nowrap font-arabic"
-                        tabIndex={-1}
-                      >
-                        داخلي
-                      </button>
-                      <button
-                        onClick={() => setNewEventLocation('خارجي')}
-                        className="flex h-8 items-center rounded-full px-4 py-1 text-sm font-medium text-black whitespace-nowrap font-arabic"
-                        tabIndex={-1}
-                      >
-                        خارجي
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="relative flex w-full justify-center">
-                    <button
-                      onClick={() => setNewEventLocation('داخلي')}
-                      className="flex h-8 items-center cursor-pointer rounded-full px-4 py-1 text-sm font-medium text-black/60 whitespace-nowrap font-arabic"
-                    >
-                      داخلي
-                    </button>
-                    <button
-                      onClick={() => setNewEventLocation('خارجي')}
-                      className="flex h-8 items-center cursor-pointer rounded-full px-4 py-1 text-sm font-medium text-black/60 whitespace-nowrap font-arabic"
-                    >
-                      خارجي
-                    </button>
-                  </div>
+                <div className="flex bg-transparent border border-black/10 rounded-full p-1">
+                  <button
+                    onClick={() => setNewEventLocation('داخلي')}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
+                      newEventLocation === 'داخلي' ? 'bg-black text-white' : 'text-black hover:bg-black/5'
+                    }`}
+                  >
+                    داخلي
+                  </button>
+                  <button
+                    onClick={() => setNewEventLocation('خارجي')}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
+                      newEventLocation === 'خارجي' ? 'bg-black text-white' : 'text-black hover:bg-black/5'
+                    }`}
+                  >
+                    خارجي
+                  </button>
                 </div>
                 
                 {newEventLocation === 'خارجي' && <input type="text" value={customLocation} onChange={e => setCustomLocation(e.target.value)} placeholder="أدخل الموقع الخارجي" className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none" />}
