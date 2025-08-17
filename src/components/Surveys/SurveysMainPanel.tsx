@@ -3,7 +3,7 @@ import { Search, Plus, BarChart3, Users, Clock, CheckCircle } from 'lucide-react
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { useSurveys } from '@/hooks/useSurveys';
 
 export const SurveysMainPanel: React.FC = () => {
@@ -42,10 +42,10 @@ export const SurveysMainPanel: React.FC = () => {
 
   const getStatusVariant = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'default';
+      case 'ACTIVE': return 'success';
       case 'COMPLETED': return 'secondary';
-      case 'DRAFT': return 'outline';
-      case 'ARCHIVED': return 'destructive';
+      case 'DRAFT': return 'warning';
+      case 'ARCHIVED': return 'error';
       default: return 'outline';
     }
   };
@@ -175,9 +175,9 @@ export const SurveysMainPanel: React.FC = () => {
                   <CardTitle className="text-lg font-arabic line-clamp-2">
                     {survey.title}
                   </CardTitle>
-                  <Badge variant={getStatusVariant(survey.status)} className="font-arabic">
+                  <BaseBadge variant={getStatusVariant(survey.status)} className="font-arabic">
                     {getStatusLabel(survey.status)}
-                  </Badge>
+                  </BaseBadge>
                 </div>
               </CardHeader>
               <CardContent>
@@ -197,9 +197,9 @@ export const SurveysMainPanel: React.FC = () => {
 
                 {survey.deadline && (
                   <div className="mt-2">
-                    <Badge variant="outline" className="text-xs font-arabic">
+                    <BaseBadge variant="outline" className="text-xs font-arabic">
                       ينتهي: {new Date(survey.deadline).toLocaleDateString('ar-SA')}
-                    </Badge>
+                    </BaseBadge>
                   </div>
                 )}
               </CardContent>

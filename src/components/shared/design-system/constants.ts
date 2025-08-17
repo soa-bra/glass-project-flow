@@ -77,6 +77,15 @@ export const COLORS = {
   BADGE_ERROR: 'bg-[#f1b5b9] text-[#000000]',
   BADGE_INFO: 'bg-[#a4e2f6] text-[#000000]',
   BADGE_PRIMARY: 'bg-[#d9d2fd] text-[#000000]',
+  
+  // Canvas and Background colors for inline style replacements
+  CANVAS_BACKGROUND: 'bg-[#f8f9fa]',
+  CANVAS_ELEMENT_BACKGROUND: 'bg-[#ffffff]',
+  CANVAS_STICKY_BACKGROUND: 'bg-[#fef08a]',
+  CANVAS_TEXT_BACKGROUND: 'bg-[#f8fafc]',
+  CANVAS_ANNOTATION_BACKGROUND: 'bg-[#fff3cd]',
+  OVERLAY_BACKGROUND: 'bg-[rgba(255,255,255,0.9)]',
+  OVERLAY_BACKGROUND_95: 'bg-[rgba(255,255,255,0.95)]',
 } as const;
 
 export const TYPOGRAPHY = {

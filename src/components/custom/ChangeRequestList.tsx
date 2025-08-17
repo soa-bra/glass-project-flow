@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -140,13 +140,13 @@ export const ChangeRequestList: React.FC<ChangeRequestListProps> = ({ projectId 
                   <div className="space-y-3">
                     <div className="flex items-start justify-between">
                       <div className="flex gap-2">
-                        <Badge className={statusConfig.color}>
+                        <BaseBadge variant="secondary" className={statusConfig.color}>
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {statusConfig.text}
-                        </Badge>
-                        <Badge className={getPriorityColor(request.priority)}>
+                        </BaseBadge>
+                        <BaseBadge variant="secondary" className={getPriorityColor(request.priority)}>
                           {getPriorityText(request.priority)}
-                        </Badge>
+                        </BaseBadge>
                       </div>
                       <div className="text-right flex-1 mr-2">
                         <h4 className="font-medium text-sm">{request.title}</h4>

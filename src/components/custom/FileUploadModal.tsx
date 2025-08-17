@@ -4,7 +4,7 @@ import { Upload, X, FileText, Image, Video, Archive, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ProjectFile } from '@/data/projectFiles';
 import { useProjectFiles } from '@/hooks/useProjectFiles';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface FileUploadModalProps {
@@ -347,13 +347,13 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
                   {tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                    <BaseBadge key={index} variant="secondary" className="flex items-center gap-1">
                       {tag}
                       <X 
                         className="w-3 h-3 cursor-pointer" 
                         onClick={() => handleRemoveTag(tag)}
                       />
-                    </Badge>
+                    </BaseBadge>
                   ))}
                 </div>
               )}

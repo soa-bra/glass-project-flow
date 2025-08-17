@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { X, Plus, Edit3 } from 'lucide-react';
 import { ProjectFile } from '@/data/projectFiles';
 
@@ -168,13 +168,13 @@ export const EditFileDialog: React.FC<EditFileDialogProps> = ({
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
                   {tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                    <BaseBadge key={index} variant="secondary" className="flex items-center gap-1">
                       {tag}
                       <X 
                         className="w-3 h-3 cursor-pointer" 
                         onClick={() => handleRemoveTag(tag)}
                       />
-                    </Badge>
+                    </BaseBadge>
                   ))}
                 </div>
               )}

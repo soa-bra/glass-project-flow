@@ -143,7 +143,7 @@ const getDefaultStyle = (elementType: string): Record<string, any> => {
       };
     case 'sticky':
       return {
-        backgroundColor: '#FEF3C7',
+        backgroundColor: '#fef08a', // Using CANVAS_STICKY_BACKGROUND color
         borderRadius: '8px',
         padding: '12px'
       };

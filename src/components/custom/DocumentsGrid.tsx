@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -235,9 +235,9 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
-                      <Badge className={getClassificationColor(doc.classification)}>
+                      <BaseBadge variant="secondary" className={getClassificationColor(doc.classification)}>
                         {getClassificationText(doc.classification)}
-                      </Badge>
+                      </BaseBadge>
                       <h4 className="font-medium text-sm text-right mr-2 line-clamp-2">
                         {doc.name}
                       </h4>
@@ -256,12 +256,12 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
                     {/* التاغز */}
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {doc.tags.slice(0, 2).map((tag, idx) => <Badge key={idx} variant="secondary" className="text-xs">
+                      {doc.tags.slice(0, 2).map((tag, idx) => <BaseBadge key={idx} variant="secondary" className="text-xs">
                           {tag}
-                        </Badge>)}
-                      {doc.tags.length > 2 && <Badge variant="secondary" className="text-xs">
+                        </BaseBadge>)}
+                      {doc.tags.length > 2 && <BaseBadge variant="secondary" className="text-xs">
                           +{doc.tags.length - 2}
-                        </Badge>}
+                        </BaseBadge>}
                     </div>
 
                     {/* أزرار الإجراءات */}

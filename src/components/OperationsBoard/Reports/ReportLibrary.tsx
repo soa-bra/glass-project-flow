@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FileText, Download, Search, Filter } from 'lucide-react';
@@ -62,9 +62,9 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({
                   <p className="text-xs text-gray-600 mt-1">{template.description}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge className={getFormatColor(template.format)}>
+                  <BaseBadge variant="secondary" className={getFormatColor(template.format)}>
                     {template.format}
-                  </Badge>
+                  </BaseBadge>
                   <Button size="sm" variant="ghost">
                     <Download className="w-4 h-4" />
                   </Button>
@@ -72,12 +72,12 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({
               </div>
 
               <div className="flex flex-wrap gap-1 mb-3">
-                {template.tags.slice(0, 3).map((tag, idx) => <Badge key={idx} variant="outline" className="text-xs">
+                {template.tags.slice(0, 3).map((tag, idx) => <BaseBadge key={idx} variant="outline" className="text-xs">
                     {tag}
-                  </Badge>)}
-                {template.tags.length > 3 && <Badge variant="outline" className="text-xs">
+                  </BaseBadge>)}
+                {template.tags.length > 3 && <BaseBadge variant="outline" className="text-xs">
                     +{template.tags.length - 3}
-                  </Badge>}
+                  </BaseBadge>}
               </div>
 
               <div className="flex justify-between text-xs text-gray-500">

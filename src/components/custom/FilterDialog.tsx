@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { X } from 'lucide-react';
 
 interface FilterDialogProps {
@@ -166,7 +166,7 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
             <label className="block text-sm font-bold text-black">التاقز</label>
             <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
               {availableTags.map((tag) => (
-                <Badge
+                <BaseBadge
                   key={tag}
                   variant={selectedTags.includes(tag) ? "default" : "outline"}
                   className={`cursor-pointer rounded-full transition-all ${
@@ -180,7 +180,7 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                   {selectedTags.includes(tag) && (
                     <X className="w-3 h-3 ml-1" />
                   )}
-                </Badge>
+                </BaseBadge>
               ))}
             </div>
           </div>

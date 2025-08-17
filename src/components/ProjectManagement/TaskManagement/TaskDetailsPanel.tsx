@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { UnifiedTask } from '@/types/task';
 import { Edit, Archive, Trash2, MessageSquare, Paperclip, Activity, Calendar, User, Tag, Clock, X, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { AddTaskModal } from '@/components/ProjectsColumn/AddTaskModal';
 import type { TaskData } from '@/types';
@@ -276,9 +276,9 @@ const TaskDetailsTab: React.FC<{
       {task.tags.length > 0 && <div>
           <h4 className="text-sm font-semibold text-black mb-3">العلامات</h4>
           <div className="flex flex-wrap gap-2">
-            {task.tags.map((tag, index) => <Badge key={index} variant="secondary" className="bg-black/10 text-black">
+            {task.tags.map((tag, index) => <BaseBadge key={index} variant="secondary" className="bg-black/10 text-black">
                 {tag}
-              </Badge>)}
+              </BaseBadge>)}
           </div>
         </div>}
 

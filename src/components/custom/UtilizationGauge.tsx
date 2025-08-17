@@ -1,6 +1,6 @@
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { TrendingUp, TrendingDown, Minus, Users, Clock, Target } from 'lucide-react';
 
 interface UtilizationGaugeProps {
@@ -80,10 +80,10 @@ export const UtilizationGauge: React.FC<UtilizationGaugeProps> = ({ value = 75 }
       <div className="relative">
         <div className="text-center mb-4">
           <div className="text-4xl font-bold mb-2">{value}%</div>
-          <Badge className={`${level.bgColor} ${level.color}`}>
+          <BaseBadge variant="secondary" className={`${level.bgColor} ${level.color}`}>
             <Icon className="w-3 h-3 mr-1" />
             {level.text}
-          </Badge>
+          </BaseBadge>
         </div>
 
         {/* الدائرة المرئية */}

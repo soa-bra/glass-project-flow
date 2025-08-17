@@ -7,13 +7,15 @@ interface BaseBadgeProps {
   variant?: 'success' | 'warning' | 'error' | 'info' | 'default' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  onClick?: () => void;
 }
 
 export const BaseBadge: React.FC<BaseBadgeProps> = ({
   children,
   variant = 'default',
   size = 'md',
-  className = ''
+  className = '',
+  onClick
 }) => {
   const variantClasses = {
     success: 'bg-[#bdeed3] text-[#000000]',
@@ -38,8 +40,10 @@ export const BaseBadge: React.FC<BaseBadgeProps> = ({
         TYPOGRAPHY.ARABIC_FONT,
         variantClasses[variant],
         sizeClasses[size],
+        onClick && 'cursor-pointer',
         className
       )}
+      onClick={onClick}
     >
       {children}
     </span>

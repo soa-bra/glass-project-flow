@@ -1,6 +1,6 @@
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Heart, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface ClientSatisfactionProps {
@@ -35,10 +35,10 @@ export const ClientSatisfaction: React.FC<ClientSatisfactionProps> = ({ value = 
           <Heart className="w-6 h-6 text-pink-500" />
           <span className="text-2xl font-bold">{percentage}%</span>
         </div>
-        <Badge className={`${satisfactionLevel.bgColor} ${satisfactionLevel.color}`}>
+        <BaseBadge variant="secondary" className={`${satisfactionLevel.bgColor} ${satisfactionLevel.color}`}>
           <Icon className="w-3 h-3 mr-1" />
           {satisfactionLevel.text}
-        </Badge>
+        </BaseBadge>
       </div>
 
       {/* شريط التقدم */}

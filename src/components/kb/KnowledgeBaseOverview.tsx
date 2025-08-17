@@ -1,7 +1,7 @@
 // Knowledge Base Overview Component
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { BookOpen, Plus, Search, Tag } from "lucide-react";
 import { useKnowledgeBase } from "@/hooks/useKnowledgeBase";
 
@@ -68,9 +68,9 @@ export function KnowledgeBaseOverview() {
                     <h3 className="font-medium">{space.name}</h3>
                     <p className="text-sm text-muted-foreground">{space.desc}</p>
                   </div>
-                  <Badge variant="secondary">
+                  <BaseBadge variant="secondary">
                     {articles.filter(a => a.spaceId === space.id).length} مقال
-                  </Badge>
+                  </BaseBadge>
                 </div>
               ))}
             </div>
@@ -92,9 +92,9 @@ export function KnowledgeBaseOverview() {
                       {new Date(article.createdAt).toLocaleDateString('ar-SA')}
                     </p>
                   </div>
-                  <Badge variant={article.status === 'PUBLISHED' ? 'default' : 'secondary'}>
+                  <BaseBadge variant={article.status === 'PUBLISHED' ? 'success' : 'secondary'}>
                     {article.status === 'PUBLISHED' ? 'منشور' : 'مسودة'}
-                  </Badge>
+                  </BaseBadge>
                 </div>
               ))}
             </div>

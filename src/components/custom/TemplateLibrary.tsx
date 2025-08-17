@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Input } from '@/components/ui/input';
 import { FileText, Download, Eye, Plus, Search } from 'lucide-react';
 import { FileUploadModal } from './FileUploadModal';
@@ -69,9 +69,9 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
             <div className="flex items-start gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between mb-2">
-                  <Badge variant="secondary" className="text-xs">
+                  <BaseBadge variant="secondary" className="text-xs">
                     {template.category}
-                  </Badge>
+                  </BaseBadge>
                   <h4 className="font-medium text-sm text-right mr-2 line-clamp-2">
                     {template.name}
                   </h4>

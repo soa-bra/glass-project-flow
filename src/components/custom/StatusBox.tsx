@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { AlertTriangle, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
 interface StatusBoxProps {
@@ -54,9 +54,9 @@ export const StatusBox: React.FC<StatusBoxProps> = ({ title, status, children })
             <Icon className={`w-5 h-5 ${config.iconColor}`} />
             {title}
           </CardTitle>
-          <Badge className={config.badgeColor}>
+          <BaseBadge variant="secondary" className={config.badgeColor}>
             {config.badgeText}
-          </Badge>
+          </BaseBadge>
         </div>
       </CardHeader>
       <CardContent>

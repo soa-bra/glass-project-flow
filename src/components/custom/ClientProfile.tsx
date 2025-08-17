@@ -1,6 +1,6 @@
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { Phone, Mail, MapPin, Building, Calendar, User } from 'lucide-react';
 interface ClientData {
@@ -59,9 +59,9 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
         
         <div className="flex-1 text-right space-y-2">
           <div className="left-60 flex items-center justify-between px-0 my-0 mx-[240px]">
-            <Badge className={statusConfig.color}>
+            <BaseBadge variant="secondary" className={statusConfig.color}>
               {statusConfig.text}
-            </Badge>
+            </BaseBadge>
             <div>
               <h3 className="font-bold text-lg">{client.name}</h3>
               <p className="text-sm text-gray-600 flex items-center gap-1">

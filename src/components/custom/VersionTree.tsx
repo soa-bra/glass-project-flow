@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
@@ -181,14 +181,14 @@ export const VersionTree: React.FC<VersionTreeProps> = ({ documents = [] }) => {
                   <div className="flex-1 bg-white/20 rounded-xl p-4 hover:bg-white/30 transition-colors">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex gap-2">
-                        <Badge className={statusConfig.color}>
+                        <BaseBadge variant="secondary" className={statusConfig.color}>
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {statusConfig.text}
-                        </Badge>
+                        </BaseBadge>
                         {version.isBreaking && (
-                          <Badge className="bg-red-100 text-red-800">
+                          <BaseBadge variant="error" className="bg-red-100 text-red-800">
                             تغيير جذري
-                          </Badge>
+                          </BaseBadge>
                         )}
                       </div>
                       <div className="text-right">

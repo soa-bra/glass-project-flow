@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Search, 
@@ -175,9 +175,9 @@ export const SearchWithAI: React.FC = () => {
                 className="bg-white/20 rounded-xl p-3 hover:bg-white/30 transition-colors cursor-pointer"
               >
                 <div className="flex items-start justify-between">
-                  <Badge className="bg-blue-100 text-blue-800">
+                  <BaseBadge variant="info" className="bg-blue-100 text-blue-800">
                     {suggestion.confidence}% دقة
-                  </Badge>
+                  </BaseBadge>
                   <div className="text-right flex-1 mr-2">
                     <h5 className="font-medium text-sm flex items-center gap-1">
                       <Sparkles className="w-3 h-3 text-blue-500" />
@@ -223,9 +223,9 @@ export const SearchWithAI: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
-                        <Badge className={`${getRelevanceColor(result.relevance)} bg-white/50`}>
+                        <BaseBadge variant="secondary" className={`${getRelevanceColor(result.relevance)} bg-white/50`}>
                           {result.relevance}% صلة
-                        </Badge>
+                        </BaseBadge>
                         <span className="text-xs text-gray-500 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {result.lastModified}
@@ -245,9 +245,9 @@ export const SearchWithAI: React.FC = () => {
 
                     <div className="flex flex-wrap gap-1">
                       {result.highlights.map((highlight, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
+                        <BaseBadge key={idx} variant="secondary" className="text-xs">
                           {highlight}
-                        </Badge>
+                        </BaseBadge>
                       ))}
                     </div>
 

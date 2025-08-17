@@ -1,6 +1,6 @@
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -150,9 +150,9 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({ data = [], onRemoveMembe
 
                   <div className="flex-1 space-y-2">
                     <div className="flex items-start justify-between">
-                      <Badge className={availabilityConfig.color}>
+                      <BaseBadge variant="secondary" className={availabilityConfig.color}>
                         {availabilityConfig.text}
-                      </Badge>
+                      </BaseBadge>
                       <div className="text-right">
                         <h4 className="font-medium text-sm">{member.name}</h4>
                         <p className="text-xs text-gray-600">{member.role}</p>
