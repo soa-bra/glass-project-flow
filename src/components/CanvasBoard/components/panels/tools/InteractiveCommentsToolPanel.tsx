@@ -152,8 +152,7 @@ export const InteractiveCommentsToolPanel: React.FC = () => {
                   {['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'].map((color) => (
                     <Button
                       key={color}
-                      className="w-8 h-8 rounded-[8px] border-2 border-[#d1e1ea] p-0"
-                      style={{ backgroundColor: color }}
+                      className={`w-8 h-8 rounded-[8px] border-2 border-[#d1e1ea] p-0 bg-[${color}]`}
                     />
                   ))}
                 </div>

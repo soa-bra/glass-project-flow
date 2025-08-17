@@ -185,8 +185,7 @@ const AppearancePanel: React.FC<AppearancePanelProps> = ({
                     {scheme.colors.map((color, index) => (
                       <div
                         key={index}
-                        className="w-4 h-4 rounded-full border"
-                        style={{ backgroundColor: color }}
+                        className={`w-4 h-4 rounded-full border bg-[${color}]`}
                       />
                     ))}
                   </div>

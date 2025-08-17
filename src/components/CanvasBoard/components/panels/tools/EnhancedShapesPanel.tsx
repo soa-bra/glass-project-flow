@@ -335,8 +335,7 @@ export const EnhancedShapesPanel: React.FC<EnhancedShapesPanelProps> = ({
                           size="sm"
                           variant={shapeStyle.fillColor === color ? 'default' : 'outline'}
                           onClick={() => setShapeStyle(prev => ({ ...prev, fillColor: color }))}
-                          className="h-8 p-0"
-                          style={{ backgroundColor: color }}
+                          className={`h-8 p-0 bg-[${color}]`}
                         >
                           {shapeStyle.fillColor === color && (
                             <div className="w-2 h-2 bg-white rounded-full" />

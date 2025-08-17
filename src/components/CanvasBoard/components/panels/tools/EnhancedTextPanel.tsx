@@ -214,8 +214,7 @@ export const EnhancedTextPanel: React.FC<EnhancedTextPanelProps> = ({
                       size="sm"
                       variant={currentStyle.fontFamily === font.name ? 'default' : 'outline'}
                       onClick={() => updateStyle({ fontFamily: font.name })}
-                      className="text-xs justify-start"
-                      style={{ fontFamily: font.name }}
+                      className={`text-xs justify-start font-[${font.name}]`}
                     >
                       {font.label}
                       <BaseBadge variant="secondary" className="ml-auto text-xs">
@@ -353,8 +352,7 @@ export const EnhancedTextPanel: React.FC<EnhancedTextPanelProps> = ({
                       size="sm"
                       variant={currentStyle.color === color ? 'default' : 'outline'}
                       onClick={() => updateStyle({ color })}
-                      className="h-8 p-0"
-                      style={{ backgroundColor: color }}
+                      className={`h-8 p-0 bg-[${color}]`}
                     >
                       {currentStyle.color === color && (
                         <div className="w-2 h-2 bg-white rounded-full" />

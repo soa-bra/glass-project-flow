@@ -350,8 +350,7 @@ export const EnhancedLayersPanel: React.FC<EnhancedLayersPanelProps> = ({
               layer.isOpen ? <FolderOpen className="h-4 w-4" /> : <Folder className="h-4 w-4" />
             ) : (
               <div 
-                className="w-3 h-3 rounded-sm border" 
-                style={{ backgroundColor: layer.color }} 
+                className={`w-3 h-3 rounded-sm border bg-[${layer.color}]`}
               />
             )}
           </div>

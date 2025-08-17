@@ -93,9 +93,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         <div>
           <h4 className="text-sm font-medium font-arabic mb-3 text-black">لون التعبئة</h4>
           <div className="grid grid-cols-5 gap-2 mb-3">
-            {colorPalette.map(color => <Button key={color} onClick={() => handleColorChange(color)} className={`w-12 h-12 rounded-[12px] border-2 p-0 ${selectedColor === color ? 'border-black' : 'border-[#d1e1ea]'}`} style={{
-            backgroundColor: color
-          }} />)}
+            {colorPalette.map(color => <Button key={color} onClick={() => handleColorChange(color)} className={`w-12 h-12 rounded-[12px] border-2 p-0 bg-[${color}] ${selectedColor === color ? 'border-black' : 'border-[#d1e1ea]'}`} />)}
           </div>
           
           {/* Custom Color Picker */}
@@ -121,9 +119,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
           <div className="mb-4">
             <label className="text-xs font-arabic text-black/70 mb-2 block">لون الحد</label>
             <div className="grid grid-cols-5 gap-2 mb-2">
-              {colorPalette.slice(0, 10).map(color => <Button key={`border-${color}`} onClick={() => handleBorderColorChange(color)} className={`w-8 h-8 rounded-[8px] border-2 p-0 ${borderColor === color ? 'border-black' : 'border-[#d1e1ea]'}`} style={{
-              backgroundColor: color
-            }} />)}
+              {colorPalette.slice(0, 10).map(color => <Button key={`border-${color}`} onClick={() => handleBorderColorChange(color)} className={`w-8 h-8 rounded-[8px] border-2 p-0 bg-[${color}] ${borderColor === color ? 'border-black' : 'border-[#d1e1ea]'}`} />)}
             </div>
             <div className="flex gap-2">
               <Input type="color" value={borderColor} onChange={e => handleBorderColorChange(e.target.value)} className="w-12 h-8 rounded-[8px] border-[#d1e1ea] cursor-pointer" />
