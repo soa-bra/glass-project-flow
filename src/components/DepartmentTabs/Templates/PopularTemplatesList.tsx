@@ -2,7 +2,7 @@
 import React from 'react';
 import { Star, Download } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 
 interface PopularTemplate {
@@ -64,7 +64,7 @@ export const PopularTemplatesList: React.FC = () => {
               <div className="flex-1">
                 <h4 className="font-medium font-arabic text-sm">{template.name}</h4>
                 <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
-                  <Badge variant="outline" className="text-xs">{template.category}</Badge>
+                  <BaseBadge variant="outline" className="text-xs">{template.category}</BaseBadge>
                   <span>{template.downloads} تحميل</span>
                   <div className="flex items-center gap-1">
                     <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
@@ -78,7 +78,7 @@ export const PopularTemplatesList: React.FC = () => {
             </div>
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span>{template.size}</span>
-              <Badge variant="outline" className="text-xs">{template.type}</Badge>
+              <BaseBadge variant="outline" className="text-xs">{template.type}</BaseBadge>
             </div>
           </div>
         ))}

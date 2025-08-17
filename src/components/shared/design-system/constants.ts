@@ -86,6 +86,12 @@ export const COLORS = {
   CANVAS_ANNOTATION_BACKGROUND: 'bg-[#fff3cd]',
   OVERLAY_BACKGROUND: 'bg-[rgba(255,255,255,0.9)]',
   OVERLAY_BACKGROUND_95: 'bg-[rgba(255,255,255,0.95)]',
+  
+  // Additional background colors for specific elements
+  SHAPE_FILL_BLUE: 'bg-[#3B82F6]',
+  STICKY_NOTE_YELLOW: 'bg-[#FEF3C7]',
+  TEXT_EDITOR_WHITE: 'bg-[#ffffff]',
+  COLLABORATION_BACKGROUND: 'bg-[rgba(255,255,255,0.9)]',
 } as const;
 
 export const TYPOGRAPHY = {

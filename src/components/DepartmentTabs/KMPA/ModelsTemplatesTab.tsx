@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -98,7 +98,7 @@ export const ModelsTemplatesTab: React.FC = () => {
           <div className="flex-1">
             <h3 className="text-xl font-semibold mb-1">{metric.name}</h3>
             <p className="text-gray-600 mb-2">{metric.nameEn}</p>
-            <Badge variant="outline">{getCategoryLabel(metric.category)}</Badge>
+            <BaseBadge variant="outline">{getCategoryLabel(metric.category)}</BaseBadge>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm">
@@ -130,7 +130,7 @@ export const ModelsTemplatesTab: React.FC = () => {
               {metric.scale.levels.map((level: any, index: number) => (
                 <div key={index} className="flex items-center gap-4 p-3 border rounded-lg">
                   <div className="w-20 text-center">
-                    <Badge variant="outline">{level.range}</Badge>
+                    <BaseBadge variant="outline">{level.range}</BaseBadge>
                   </div>
                   <div className="flex-1">
                     <div className="font-medium">{level.label}</div>
@@ -313,9 +313,9 @@ export const ModelsTemplatesTab: React.FC = () => {
                               <div className="font-medium text-sm">{metric.name}</div>
                               <div className="text-xs text-gray-600">{metric.nameEn}</div>
                               <div className="flex justify-between items-center mt-1">
-                                <Badge variant="secondary" className="text-xs">
+                                <BaseBadge variant="secondary" className="text-xs">
                                   {metric.usage} استخدام
-                                </Badge>
+                                </BaseBadge>
                                 <Button size="sm" variant="ghost" className="h-6 px-2">
                                   <Eye className="h-3 w-3" />
                                 </Button>

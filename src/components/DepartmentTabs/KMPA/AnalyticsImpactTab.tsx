@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -231,13 +231,13 @@ export const AnalyticsImpactTab: React.FC = () => {
                   <span className="font-medium">{item.topic}</span>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600">{item.saturation}%</span>
-                    <Badge variant={
+                    <BaseBadge variant={
                       item.trend === 'up' ? 'default' : 
-                      item.trend === 'down' ? 'destructive' : 'secondary'
+                      item.trend === 'down' ? 'error' : 'secondary'
                     }>
                       {item.trend === 'up' ? '↗️ صاعد' : 
                        item.trend === 'down' ? '↘️ هابط' : '→ مستقر'}
-                    </Badge>
+                    </BaseBadge>
                   </div>
                 </div>
                 <Progress value={item.saturation} className="h-3" />

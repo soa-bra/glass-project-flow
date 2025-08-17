@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen, Users, TrendingUp, Download, Eye, FileText, Brain, Target } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
@@ -70,16 +70,16 @@ export const OverviewTab: React.FC = () => {
               {recommendations.map(rec => <div key={rec.id} className="p-3 border rounded-lg">
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="font-medium text-sm">{rec.title}</h4>
-                    <Badge variant={rec.priority === 'high' ? 'destructive' : rec.priority === 'medium' ? 'default' : 'secondary'}>
+                    <BaseBadge variant={rec.priority === 'high' ? 'error' : rec.priority === 'medium' ? 'default' : 'secondary'}>
                       {rec.priority === 'high' ? 'عالي' : rec.priority === 'medium' ? 'متوسط' : 'منخفض'}
-                    </Badge>
+                    </BaseBadge>
                   </div>
                   <p className="text-xs text-gray-600 mb-2">{rec.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-500">الثقة: {Math.round(rec.confidence * 100)}%</span>
-                    <Badge variant="outline" className="text-xs">
+                    <BaseBadge variant="outline" className="text-xs">
                       {rec.type === 'gap_analysis' ? 'تحليل الفجوات' : rec.type === 'content_suggestion' ? 'اقتراح محتوى' : 'موضوع بحث'}
-                    </Badge>
+                    </BaseBadge>
                   </div>
                 </div>)}
             </div>
@@ -100,9 +100,9 @@ export const OverviewTab: React.FC = () => {
             {gaps.map(gap => <div key={gap.id} className="p-4 border rounded-lg">
                 <div className="flex items-start justify-between mb-2">
                   <h4 className="font-medium">{gap.topic}</h4>
-                  <Badge variant={gap.priority === 'high' ? 'destructive' : 'default'}>
+                  <BaseBadge variant={gap.priority === 'high' ? 'error' : 'default'}>
                     {gap.priority === 'high' ? 'عالي' : 'متوسط'}
-                  </Badge>
+                  </BaseBadge>
                 </div>
                 <p className="text-sm text-gray-600 mb-3">{gap.description}</p>
                 <div className="space-y-2">
@@ -110,9 +110,9 @@ export const OverviewTab: React.FC = () => {
                     استعلامات البحث المتكررة:
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {gap.searchQueries.map((query, index) => <Badge key={index} variant="secondary" className="text-xs">
+                    {gap.searchQueries.map((query, index) => <BaseBadge key={index} variant="secondary" className="text-xs">
                         {query}
-                      </Badge>)}
+                      </BaseBadge>)}
                   </div>
                 </div>
               </div>)}

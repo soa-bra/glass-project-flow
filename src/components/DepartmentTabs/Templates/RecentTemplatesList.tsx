@@ -2,7 +2,7 @@
 import React from 'react';
 import { Plus, Download } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 
 interface RecentTemplate {
@@ -49,11 +49,11 @@ export const RecentTemplatesList: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <h4 className="font-medium font-arabic text-sm">{template.name}</h4>
                   {template.isNew && (
-                    <Badge variant="default" className="text-xs">جديد</Badge>
+                    <BaseBadge variant="success" className="text-xs">جديد</BaseBadge>
                   )}
                 </div>
                 <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
-                  <Badge variant="outline" className="text-xs">{template.category}</Badge>
+                  <BaseBadge variant="outline" className="text-xs">{template.category}</BaseBadge>
                   <span>أُضيف في {template.addedDate}</span>
                 </div>
               </div>

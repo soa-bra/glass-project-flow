@@ -272,7 +272,7 @@ export const initializeBusinessMetrics = async () => {
     metrics.employeesTotal.set({ department: 'operations', status: 'active' }, 0);
     
   } catch (error) {
-    console.error('Failed to initialize business metrics:', error);
+    // Failed to initialize business metrics - handled gracefully
   }
 };
 

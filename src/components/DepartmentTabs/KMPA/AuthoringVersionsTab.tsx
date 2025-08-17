@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Plus, 
@@ -290,9 +290,9 @@ export const AuthoringVersionsTab: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={doc.status === 'draft' ? 'secondary' : 'default'}>
+                  <BaseBadge variant={doc.status === 'draft' ? 'secondary' : 'default'}>
                     {doc.status === 'draft' ? 'مسودة' : 'قيد المراجعة'}
-                  </Badge>
+                  </BaseBadge>
                   <div className="flex items-center gap-1 text-sm text-gray-600">
                     <Users className="h-3 w-3" />
                     {doc.collaborators}
@@ -325,7 +325,7 @@ export const AuthoringVersionsTab: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium">الإصدار {version.version}</span>
                     {version.status === 'current' && (
-                      <Badge variant="default" className="text-xs">الحالي</Badge>
+                      <BaseBadge variant="default" className="text-xs">الحالي</BaseBadge>
                     )}
                   </div>
                   <div className="text-sm text-gray-600 mb-2">

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   FileText, 
@@ -172,11 +172,11 @@ export const ReportsTab: React.FC = () => {
                       <div className="flex-1">
                         <h4 className="font-medium text-lg mb-1">{report.title}</h4>
                         <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline">{getReportTypeLabel(report.type)}</Badge>
-                          <Badge variant="secondary">{report.period === 'monthly' ? 'شهري' : report.period === 'quarterly' ? 'ربع سنوي' : 'سنوي'}</Badge>
-                          <Badge variant={report.status === 'ready' ? 'default' : 'secondary'}>
+                          <BaseBadge variant="outline">{getReportTypeLabel(report.type)}</BaseBadge>
+                          <BaseBadge variant="secondary">{report.period === 'monthly' ? 'شهري' : report.period === 'quarterly' ? 'ربع سنوي' : 'سنوي'}</BaseBadge>
+                          <BaseBadge variant={report.status === 'ready' ? 'default' : 'secondary'}>
                             {report.status === 'ready' ? 'جاهز' : 'قيد المعالجة'}
-                          </Badge>
+                          </BaseBadge>
                         </div>
                         <div className="flex items-center gap-4 text-sm text-gray-600">
                           <span className="flex items-center gap-1">
@@ -225,7 +225,7 @@ export const ReportsTab: React.FC = () => {
                         <h4 className="font-medium">{template.name}</h4>
                         <p className="text-sm text-gray-600 mb-2">{template.description}</p>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline">{template.frequency}</Badge>
+                          <BaseBadge variant="outline">{template.frequency}</BaseBadge>
                           <span className="text-xs text-gray-500">
                             {template.sections.length} أقسام
                           </span>
@@ -264,7 +264,7 @@ export const ReportsTab: React.FC = () => {
                       <h4 className="font-medium">تقرير الأداء الشهري</h4>
                       <p className="text-sm text-gray-600">يُولد تلقائياً في نهاية كل شهر</p>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="default">نشط</Badge>
+                        <BaseBadge variant="default">نشط</BaseBadge>
                         <span className="text-xs text-gray-500">التقرير القادم: 31 مايو 2024</span>
                       </div>
                     </div>
@@ -284,7 +284,7 @@ export const ReportsTab: React.FC = () => {
                       <h4 className="font-medium">تقرير التأثير الربع سنوي</h4>
                       <p className="text-sm text-gray-600">يُولد تلقائياً في نهاية كل ربع</p>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="default">نشط</Badge>
+                        <BaseBadge variant="default">نشط</BaseBadge>
                         <span className="text-xs text-gray-500">التقرير القادم: 30 يونيو 2024</span>
                       </div>
                     </div>

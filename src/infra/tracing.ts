@@ -10,7 +10,7 @@ let isInitialized = false;
 
 export function initTracing(): void {
   if (isInitialized) {
-    console.warn('Tracing already initialized');
+    // Tracing already initialized
     return;
   }
 

@@ -2,7 +2,7 @@
 import React from 'react';
 import { FileText } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 
 interface TemplateCategory {
   name: string;
@@ -48,9 +48,9 @@ export const TemplateCategoriesGrid: React.FC = () => {
           <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
             <div className="flex items-center justify-between mb-3">
               <category.icon className={`h-6 w-6 ${category.color}`} />
-              <Badge variant="secondary" className="text-xs">
+              <BaseBadge variant="secondary" className="text-xs">
                 {category.count}
-              </Badge>
+              </BaseBadge>
             </div>
             <h4 className="font-medium font-arabic text-sm">{category.name}</h4>
           </div>

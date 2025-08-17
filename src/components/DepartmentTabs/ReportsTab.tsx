@@ -2,7 +2,7 @@
 import React from 'react';
 import { FileText, Download, Calendar, Filter, BarChart3, TrendingUp } from 'lucide-react';
 import { BaseCard } from '@/components/ui/BaseCard';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 
 interface ReportsTabProps {
@@ -82,7 +82,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ departmentTitle }) => {
                     <p className="text-xs text-gray-600 mt-1">{report.description}</p>
                   </div>
                 </div>
-                <Badge 
+                <BaseBadge 
                   variant={
                     report.status === 'متاح' ? 'default' :
                     report.status === 'قيد الإعداد' ? 'secondary' : 'outline'
@@ -90,7 +90,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ departmentTitle }) => {
                   className="text-xs"
                 >
                   {report.status}
-                </Badge>
+                </BaseBadge>
               </div>
               
               <div className="flex items-center justify-between">
@@ -131,7 +131,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ departmentTitle }) => {
                   <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
                     <span>{report.date}</span>
                     <span>{report.size}</span>
-                    <Badge variant="outline" className="text-xs">{report.type}</Badge>
+                    <BaseBadge variant="outline" className="text-xs">{report.type}</BaseBadge>
                   </div>
                 </div>
               </div>

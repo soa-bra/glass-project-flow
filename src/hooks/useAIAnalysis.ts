@@ -61,7 +61,7 @@ export function useAIAnalysis(): UseAIAnalysisReturn {
         if (!activeStreams.current.get(analysisId)) return;
         
         // يمكن معالجة النتائج الجزئية هنا
-        console.log('Partial result:', result);
+        // Partial results processing
       },
 
       onError: (error: string) => {

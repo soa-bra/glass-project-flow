@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Search, 
@@ -44,7 +44,7 @@ export const KnowledgeRepositoryTab: React.FC = () => {
       case 'published': return 'default';
       case 'draft': return 'secondary';
       case 'review': return 'outline';
-      case 'archived': return 'destructive';
+      case 'archived': return 'error';
       default: return 'secondary';
     }
   };
@@ -148,18 +148,18 @@ export const KnowledgeRepositoryTab: React.FC = () => {
                 <div className="flex-1">
                   <h3 className="font-medium text-sm line-clamp-2 mb-2">{doc.title}</h3>
                   <div className="flex items-center gap-2 mb-2">
-                    <Badge variant={getTypeBadgeVariant(doc.type)} className="text-xs">
+                    <BaseBadge variant={getTypeBadgeVariant(doc.type)} className="text-xs">
                       {doc.type === 'research' ? 'بحث' :
                        doc.type === 'publication' ? 'منشور' :
                        doc.type === 'report' ? 'تقرير' :
                        doc.type === 'guide' ? 'دليل' :
                        doc.type === 'template' ? 'نموذج' : 'مقياس'}
-                    </Badge>
-                    <Badge variant={getStatusBadgeVariant(doc.status)} className="text-xs">
+                    </BaseBadge>
+                    <BaseBadge variant={getStatusBadgeVariant(doc.status)} className="text-xs">
                       {doc.status === 'published' ? 'منشور' :
                        doc.status === 'draft' ? 'مسودة' :
                        doc.status === 'review' ? 'مراجعة' : 'مؤرشف'}
-                    </Badge>
+                    </BaseBadge>
                   </div>
                 </div>
                 <Button variant="ghost" size="sm">
@@ -185,14 +185,14 @@ export const KnowledgeRepositoryTab: React.FC = () => {
 
                 <div className="flex flex-wrap gap-1">
                   {doc.tags.slice(0, 3).map((tag, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
+                    <BaseBadge key={index} variant="outline" className="text-xs">
                       {tag}
-                    </Badge>
+                    </BaseBadge>
                   ))}
                   {doc.tags.length > 3 && (
-                    <Badge variant="outline" className="text-xs">
+                    <BaseBadge variant="outline" className="text-xs">
                       +{doc.tags.length - 3}
-                    </Badge>
+                    </BaseBadge>
                   )}
                 </div>
 
