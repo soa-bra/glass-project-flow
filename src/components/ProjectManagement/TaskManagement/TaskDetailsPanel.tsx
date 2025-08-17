@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { UnifiedTask } from '@/types/task';
+import { COLORS } from '@/components/shared/design-system/constants';
 import { Edit, Archive, Trash2, MessageSquare, Paperclip, Activity, Calendar, User, Tag, Clock, X, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BaseBadge } from '@/components/ui/BaseBadge';
@@ -17,12 +18,12 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
   const createdDate = new Date(task.createdAt);
   const updatedDate = new Date(task.updatedAt);
   const statusColorMap = {
-    completed: '#bdeed3',
-    'in-progress': '#a4e2f6',
-    todo: '#dfecf2',
-    stopped: '#f1b5b9',
-    treating: '#d9d2fd',
-    late: '#fbe2aa'
+    completed: COLORS.TASK_STATUS_COMPLETED,
+    'in-progress': COLORS.TASK_STATUS_IN_PROGRESS,
+    todo: COLORS.TASK_STATUS_TODO,
+    stopped: COLORS.TASK_STATUS_STOPPED,
+    treating: COLORS.TASK_STATUS_TREATING,
+    late: COLORS.TASK_STATUS_LATE
   };
   const statusTextMap = {
     completed: 'مكتملة',

@@ -87,6 +87,15 @@ export const COLORS = {
   OVERLAY_BACKGROUND: 'bg-[rgba(255,255,255,0.9)]',
   OVERLAY_BACKGROUND_95: 'bg-[rgba(255,255,255,0.95)]',
   
+  // Canvas Style Object Colors (for inline style to class conversion)
+  CANVAS_STYLE_BG_F8F9FA: '#f8f9fa',
+  CANVAS_STYLE_BG_FFFFFF: '#ffffff',
+  CANVAS_STYLE_BG_FEF08A: '#fef08a',
+  CANVAS_STYLE_BG_F8FAFC: '#f8fafc',
+  CANVAS_STYLE_BG_FFF3CD: '#fff3cd',
+  CANVAS_STYLE_OVERLAY_90: 'rgba(255,255,255,0.9)',
+  CANVAS_STYLE_OVERLAY_95: 'rgba(255,255,255,0.95)',
+  
   // Additional background colors for specific elements
   SHAPE_FILL_BLUE: 'bg-[#3B82F6]',
   STICKY_NOTE_YELLOW: 'bg-[#FEF3C7]',
@@ -99,6 +108,14 @@ export const COLORS = {
   CANVAS_TEXT_BOX_BG: '#ffffff',
   CANVAS_TRANSPARENT: 'transparent',
   CANVAS_COLLAB_USER_BG: 'rgba(255,255,255,0.9)',
+  
+  // Task Status Colors (for UI consistency)
+  TASK_STATUS_COMPLETED: '#bdeed3',
+  TASK_STATUS_IN_PROGRESS: '#a4e2f6', 
+  TASK_STATUS_TODO: '#dfecf2',
+  TASK_STATUS_STOPPED: '#f1b5b9',
+  TASK_STATUS_TREATING: '#d9d2fd',
+  TASK_STATUS_LATE: '#fbe2aa',
   
   // NPS Score colors
   NPS_EXCELLENT: '#22c55e',    // Green-500

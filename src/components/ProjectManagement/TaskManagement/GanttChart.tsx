@@ -1,6 +1,7 @@
 import React from 'react';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { UnifiedTask, TaskFilters } from '@/types/task';
+import { COLORS } from '@/components/shared/design-system/constants';
 
 interface GanttChartProps {
   projectId: string;
@@ -14,17 +15,17 @@ export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) =>
   const getStatusColor = (status: UnifiedTask['status']) => {
     switch (status) {
       case 'completed':
-        return 'bg-[#bdeed3]';
+        return `bg-[${COLORS.TASK_STATUS_COMPLETED}]`;
       case 'in-progress':
-        return 'bg-[#a4e2f6]';
+        return `bg-[${COLORS.TASK_STATUS_IN_PROGRESS}]`;
       case 'todo':
-        return 'bg-[#dfecf2]';
+        return `bg-[${COLORS.TASK_STATUS_TODO}]`;
       case 'stopped':
-        return 'bg-[#f1b5b9]';
+        return `bg-[${COLORS.TASK_STATUS_STOPPED}]`;
       case 'treating':
-        return 'bg-[#d9d2fd]';
+        return `bg-[${COLORS.TASK_STATUS_TREATING}]`;
       case 'late':
-        return 'bg-[#fbe2aa]';
+        return `bg-[${COLORS.TASK_STATUS_LATE}]`;
       default:
         return 'bg-gray-200';
     }
@@ -33,17 +34,17 @@ export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) =>
   const getProgressColor = (status: UnifiedTask['status']) => {
     switch (status) {
       case 'completed':
-        return 'bg-[#bdeed3]';
+        return `bg-[${COLORS.TASK_STATUS_COMPLETED}]`;
       case 'in-progress':
-        return 'bg-[#a4e2f6]';
+        return `bg-[${COLORS.TASK_STATUS_IN_PROGRESS}]`;
       case 'todo':
-        return 'bg-[#d9d2fd]';
+        return `bg-[${COLORS.TASK_STATUS_TREATING}]`;
       case 'stopped':
-        return 'bg-[#f1b5b9]';
+        return `bg-[${COLORS.TASK_STATUS_STOPPED}]`;
       case 'treating':
-        return 'bg-[#d9d2fd]';
+        return `bg-[${COLORS.TASK_STATUS_TREATING}]`;
       case 'late':
-        return 'bg-[#fbe2aa]';
+        return `bg-[${COLORS.TASK_STATUS_LATE}]`;
       default:
         return 'bg-gray-300';
     }
@@ -141,27 +142,27 @@ export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) =>
         <h4 className="text-sm font-semibold text-black mb-3">المفتاح:</h4>
         <div className="flex gap-6 text-xs">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-[#bdeed3]"></div>
+            <div className={`w-4 h-4 rounded bg-[${COLORS.TASK_STATUS_COMPLETED}]`}></div>
             <span className="text-black">مكتملة</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-[#a4e2f6]"></div>
+            <div className={`w-4 h-4 rounded bg-[${COLORS.TASK_STATUS_IN_PROGRESS}]`}></div>
             <span className="text-black">قيد التنفيذ</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-[#dfecf2]"></div>
+            <div className={`w-4 h-4 rounded bg-[${COLORS.TASK_STATUS_TODO}]`}></div>
             <span className="text-black">لم تبدأ</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-[#f1b5b9]"></div>
+            <div className={`w-4 h-4 rounded bg-[${COLORS.TASK_STATUS_STOPPED}]`}></div>
             <span className="text-black">متوقفة</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-[#d9d2fd]"></div>
+            <div className={`w-4 h-4 rounded bg-[${COLORS.TASK_STATUS_TREATING}]`}></div>
             <span className="text-black">تحت المعالجة</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-[#fbe2aa]"></div>
+            <div className={`w-4 h-4 rounded bg-[${COLORS.TASK_STATUS_LATE}]`}></div>
             <span className="text-black">متأخرة</span>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UnifiedTask, TaskFilters } from '@/types/task';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
+import { COLORS } from '@/components/shared/design-system/constants';
 import { TaskListCard } from '../cards/TaskListCard';
 import { TaskDetailsPanel } from './TaskDetailsPanel';
 import TaskCardLayout from '@/components/TaskCard/TaskCardLayout';
@@ -104,12 +105,12 @@ const TaskListItem: React.FC<TaskListItemProps> = ({
   const dueDate = new Date(task.dueDate);
   const daysLeft = Math.max(Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)), 0);
   const statusColorMap = {
-    completed: '#bdeed3',
-    'in-progress': '#a4e2f6',
-    todo: '#dfecf2',
-    stopped: '#f1b5b9',
-    treating: '#d9d2fd',
-    late: '#fbe2aa'
+    completed: COLORS.TASK_STATUS_COMPLETED,
+    'in-progress': COLORS.TASK_STATUS_IN_PROGRESS,
+    todo: COLORS.TASK_STATUS_TODO,
+    stopped: COLORS.TASK_STATUS_STOPPED,
+    treating: COLORS.TASK_STATUS_TREATING,
+    late: COLORS.TASK_STATUS_LATE
   };
   const statusTextMap = {
     completed: 'مكتملة',

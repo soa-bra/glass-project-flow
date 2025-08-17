@@ -4,6 +4,7 @@ import { AddTaskButton } from './AddTaskButton';
 import { BulkActionsBar } from './BulkActionsBar';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { UnifiedTask, TaskFilters, mapToTaskCardProps } from '@/types/task';
+import { COLORS } from '@/components/shared/design-system/constants';
 
 interface KanbanColumn {
   name: string;
@@ -18,12 +19,12 @@ interface KanbanBoardProps {
 }
 
 const columns: KanbanColumn[] = [
-  { name: "To-Do", color: "#dfecf2", description: "المهام المجدولة", status: "todo" },
-  { name: "Stopped", color: "#f1b5b9", description: "المهام المتوقفة", status: "stopped" },
-  { name: "Treating", color: "#d9d2fd", description: "المهام تحت المعالجة", status: "treating" },
-  { name: "Late", color: "#fbe2aa", description: "المهام المتأخرة", status: "late" },
-  { name: "In Progress", color: "#a4e2f6", description: "المهام الجارية", status: "in-progress" },
-  { name: "Done", color: "#bdeed3", description: "المهام المكتملة", status: "completed" }
+  { name: "To-Do", color: COLORS.TASK_STATUS_TODO, description: "المهام المجدولة", status: "todo" },
+  { name: "Stopped", color: COLORS.TASK_STATUS_STOPPED, description: "المهام المتوقفة", status: "stopped" },
+  { name: "Treating", color: COLORS.TASK_STATUS_TREATING, description: "المهام تحت المعالجة", status: "treating" },
+  { name: "Late", color: COLORS.TASK_STATUS_LATE, description: "المهام المتأخرة", status: "late" },
+  { name: "In Progress", color: COLORS.TASK_STATUS_IN_PROGRESS, description: "المهام الجارية", status: "in-progress" },
+  { name: "Done", color: COLORS.TASK_STATUS_COMPLETED, description: "المهام المكتملة", status: "completed" }
 ];
 
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) => {

@@ -4,7 +4,7 @@ import { DESIGN_TOKENS, TYPOGRAPHY } from '@/components/shared/design-system/con
 
 interface BaseBadgeProps {
   children: React.ReactNode;
-  variant?: 'success' | 'warning' | 'error' | 'info' | 'default' | 'secondary' | 'outline';
+  variant?: 'success' | 'warning' | 'error' | 'info' | 'default' | 'secondary' | 'outline' | 'primary';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   onClick?: () => void;
@@ -23,6 +23,7 @@ export const BaseBadge: React.FC<BaseBadgeProps> = ({
     error: 'bg-[#f1b5b9] text-[#000000]',
     info: 'bg-[#a4e2f6] text-[#000000]',
     default: 'bg-[#d9d2fd] text-[#000000]',
+    primary: 'bg-[#d9d2fd] text-[#000000]',
     secondary: `bg-[${DESIGN_TOKENS.COLORS.INK_30}] text-[${DESIGN_TOKENS.COLORS.INK}]`,
     outline: `bg-transparent border border-[${DESIGN_TOKENS.COLORS.BORDER}] text-[${DESIGN_TOKENS.COLORS.INK}]`
   };
