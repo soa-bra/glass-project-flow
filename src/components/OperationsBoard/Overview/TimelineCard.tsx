@@ -153,7 +153,7 @@ export const TimelineCard: React.FC = () => {
               </div>
               <DialogTitle className="text-xl font-bold text-black font-arabic">إضافة حدث جديد</DialogTitle>
             </div>
-            <button onClick={() => setShowAddEventModal(false)} className="w-8 h-8 rounded-full bg-transparent hover:bg-black/5 flex items-center justify-center text-black transition-colors border border-black">
+            <button onClick={() => setShowAddEventModal(false)} className="w-8 h-8 rounded-full bg-transparent hover:bg-black/5 flex items-center justify-center text-black transition-colors">
               <X size={16} />
             </button>
           </DialogHeader>
@@ -181,44 +181,17 @@ export const TimelineCard: React.FC = () => {
               <input type="text" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} placeholder="أدخل عنوان الحدث" className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none" />
             </div>
 
+            {/* موقع الحدث */}
             <div className="space-y-2">
               <label className="font-bold text-black font-arabic">الموقع</label>
-              <div className="space-y-3">
-                <div className="relative bg-transparent border border-black/20 mx-auto flex w-fit flex-col items-center rounded-full py-1 px-2">
-                  <div className={`absolute z-10 w-full overflow-hidden transition-all duration-300 ease-out ${newEventLocation === 'داخلي' ? '[clip-path:inset(0_50%_0_0%_round_17px)]' : '[clip-path:inset(0_0%_0_50%_round_17px)]'}`}>
-                    <div className="relative flex w-full justify-center bg-white border border-black/10">
-                      <button
-                        onClick={() => setNewEventLocation('داخلي')}
-                        className="flex h-8 items-center rounded-full px-4 py-1 text-sm font-medium text-black whitespace-nowrap font-arabic"
-                        tabIndex={-1}
-                      >
-                        داخلي
-                      </button>
-                      <button
-                        onClick={() => setNewEventLocation('خارجي')}
-                        className="flex h-8 items-center rounded-full px-4 py-1 text-sm font-medium text-black whitespace-nowrap font-arabic"
-                        tabIndex={-1}
-                      >
-                        خارجي
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="relative flex w-full justify-center">
-                    <button
-                      onClick={() => setNewEventLocation('داخلي')}
-                      className="flex h-8 items-center cursor-pointer rounded-full px-4 py-1 text-sm font-medium text-black/60 whitespace-nowrap font-arabic"
-                    >
-                      داخلي
-                    </button>
-                    <button
-                      onClick={() => setNewEventLocation('خارجي')}
-                      className="flex h-8 items-center cursor-pointer rounded-full px-4 py-1 text-sm font-medium text-black/60 whitespace-nowrap font-arabic"
-                    >
-                      خارجي
-                    </button>
-                  </div>
-                </div>
+            <div className="flex bg-transparent border border-black/10 rounded-full p-1">
+              <button onClick={() => setViewMode('kanban')} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${viewMode === 'kanban' ? 'bg-black text-white' : 'text-black hover:bg-black/5'}`}>
+                داخلي
+              </button>
+              <button onClick={() => setViewMode('details')} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${viewMode === 'details' ? 'bg-black text-white' : 'text-black hover:bg-black/5'}`}>
+                خارجي
+              </button>
+            </div>
                 
                 {newEventLocation === 'خارجي' && <input type="text" value={customLocation} onChange={e => setCustomLocation(e.target.value)} placeholder="أدخل الموقع الخارجي" className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none" />}
               </div>
@@ -229,7 +202,7 @@ export const TimelineCard: React.FC = () => {
             <button onClick={() => setShowAddEventModal(false)} className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors">
               إلغاء
             </button>
-            <button onClick={handleAddEvent} disabled={!newEventDate || !newEventTitle.trim()} className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
+            <button onClick={handleAddEvent} disabled={!newEventDate || !newEventTitle.trim()} className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               إضافة الحدث
             </button>
           </div>
