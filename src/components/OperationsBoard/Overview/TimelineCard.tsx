@@ -181,19 +181,43 @@ export const TimelineCard: React.FC = () => {
               <input type="text" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} placeholder="أدخل عنوان الحدث" className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none" />
             </div>
 
-            {/* موقع الحدث */}
             <div className="space-y-2">
               <label className="font-bold text-black font-arabic">الموقع</label>
               <div className="space-y-3">
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="location" value="داخلي" checked={newEventLocation === 'داخلي'} onChange={e => setNewEventLocation(e.target.value)} className="w-4 h-4" />
-                    <span className="text-black font-arabic">داخلي</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="location" value="خارجي" checked={newEventLocation === 'خارجي'} onChange={e => setNewEventLocation(e.target.value)} className="w-4 h-4" />
-                    <span className="text-black font-arabic">خارجي</span>
-                  </label>
+                <div className="relative bg-transparent border border-black/20 mx-auto flex w-fit flex-col items-center rounded-full py-2 px-4">
+                  <div className={`absolute z-10 w-full overflow-hidden transition-all duration-300 ease-out ${newEventLocation === 'داخلي' ? '[clip-path:inset(0_50%_0_0%_round_17px)]' : '[clip-path:inset(0_0%_0_50%_round_17px)]'}`}>
+                    <div className="relative flex w-full justify-center bg-black">
+                      <button
+                        onClick={() => setNewEventLocation('داخلي')}
+                        className="flex h-8 items-center rounded-full px-6 py-2 text-sm font-medium text-white whitespace-nowrap font-arabic"
+                        tabIndex={-1}
+                      >
+                        داخلي
+                      </button>
+                      <button
+                        onClick={() => setNewEventLocation('خارجي')}
+                        className="flex h-8 items-center rounded-full px-6 py-2 text-sm font-medium text-white whitespace-nowrap font-arabic"
+                        tabIndex={-1}
+                      >
+                        خارجي
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="relative flex w-full justify-center">
+                    <button
+                      onClick={() => setNewEventLocation('داخلي')}
+                      className="flex h-8 items-center cursor-pointer rounded-full px-6 py-2 text-sm font-medium text-black whitespace-nowrap font-arabic"
+                    >
+                      داخلي
+                    </button>
+                    <button
+                      onClick={() => setNewEventLocation('خارجي')}
+                      className="flex h-8 items-center cursor-pointer rounded-full px-6 py-2 text-sm font-medium text-black whitespace-nowrap font-arabic"
+                    >
+                      خارجي
+                    </button>
+                  </div>
                 </div>
                 
                 {newEventLocation === 'خارجي' && <input type="text" value={customLocation} onChange={e => setCustomLocation(e.target.value)} placeholder="أدخل الموقع الخارجي" className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none" />}
