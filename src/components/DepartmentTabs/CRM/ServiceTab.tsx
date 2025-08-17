@@ -17,7 +17,8 @@ import {
   Users,
   Timer
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from 'recharts';
+import { SafeChart } from '@/components/ui/SafeChart';
 import { mockCustomerService } from './data';
 
 export const ServiceTab: React.FC = () => {
@@ -247,7 +248,7 @@ export const ServiceTab: React.FC = () => {
         {/* Response Time Trend */}
         <GenericCard>
           <h3 className="text-lg font-bold font-arabic mb-4">اتجاه وقت الاستجابة</h3>
-          <ResponsiveContainer width="100%" height={200}>
+           <SafeChart width="100%" height={200}>
             <LineChart data={responseTimeData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" className="font-arabic" />
@@ -256,13 +257,13 @@ export const ServiceTab: React.FC = () => {
               <Line type="monotone" dataKey="avgTime" stroke="#3B82F6" strokeWidth={2} name="الفعلي" />
               <Line type="monotone" dataKey="target" stroke="#EF4444" strokeWidth={2} strokeDasharray="5 5" name="المستهدف" />
             </LineChart>
-          </ResponsiveContainer>
+           </SafeChart>
         </GenericCard>
 
         {/* Tickets by Category */}
         <GenericCard>
           <h3 className="text-lg font-bold font-arabic mb-4">التذاكر حسب الفئة</h3>
-          <ResponsiveContainer width="100%" height={200}>
+           <SafeChart width="100%" height={200}>
             <BarChart data={ticketCategoryData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="category" className="font-arabic" />
@@ -270,13 +271,13 @@ export const ServiceTab: React.FC = () => {
               <Tooltip />
               <Bar dataKey="count" fill="#10B981" />
             </BarChart>
-          </ResponsiveContainer>
+           </SafeChart>
         </GenericCard>
 
         {/* Satisfaction Trend */}
         <GenericCard>
           <h3 className="text-lg font-bold font-arabic mb-4">اتجاه الرضا</h3>
-          <ResponsiveContainer width="100%" height={200}>
+          <SafeChart width="100%" height={200}>
             <LineChart data={satisfactionData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" className="font-arabic" />
@@ -284,7 +285,7 @@ export const ServiceTab: React.FC = () => {
               <Tooltip />
               <Line type="monotone" dataKey="rating" stroke="#F59E0B" strokeWidth={3} />
             </LineChart>
-          </ResponsiveContainer>
+          </SafeChart>
         </GenericCard>
       </div>
 

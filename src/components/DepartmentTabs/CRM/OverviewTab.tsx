@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { SafeChart } from '@/components/ui/SafeChart';
 import { Users, TrendingUp, Heart, MessageSquare, Target, DollarSign, Clock, Award } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { mockCRMAnalytics, mockNPS } from './data';
@@ -67,7 +68,7 @@ export const OverviewTab: React.FC = () => {
             <TrendingUp className="ml-2 h-5 w-5" />
             مسار المبيعات
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <SafeChart width="100%" height={300}>
             <BarChart data={funnelData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="stage" className="font-arabic" />
@@ -75,7 +76,7 @@ export const OverviewTab: React.FC = () => {
               <Tooltip formatter={(value, name) => [value, name === 'count' ? 'العدد' : 'القيمة']} />
               <Bar dataKey="count" fill="#3B82F6" />
             </BarChart>
-          </ResponsiveContainer>
+          </SafeChart>
         </GenericCard>
 
         {/* Customer Satisfaction */}
@@ -84,7 +85,7 @@ export const OverviewTab: React.FC = () => {
             <Award className="ml-2 h-5 w-5" />
             توزيع رضا العملاء
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <SafeChart width="100%" height={300}>
             <PieChart>
               <Pie
                 data={satisfactionData}
@@ -100,7 +101,7 @@ export const OverviewTab: React.FC = () => {
               </Pie>
               <Tooltip />
             </PieChart>
-          </ResponsiveContainer>
+          </SafeChart>
         </GenericCard>
       </div>
 
@@ -110,7 +111,7 @@ export const OverviewTab: React.FC = () => {
           <LineChart className="ml-2 h-5 w-5" />
           الاتجاهات الشهرية
         </h3>
-        <ResponsiveContainer width="100%" height={300}>
+        <SafeChart width="100%" height={300}>
           <LineChart data={monthlyTrend} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" className="font-arabic" />
@@ -120,7 +121,7 @@ export const OverviewTab: React.FC = () => {
             <Line yAxisId="left" type="monotone" dataKey="customers" stroke="#3B82F6" strokeWidth={3} name="العملاء" />
             <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#10B981" strokeWidth={3} name="الإيرادات" />
           </LineChart>
-        </ResponsiveContainer>
+        </SafeChart>
       </GenericCard>
 
       {/* AI Insights */}
