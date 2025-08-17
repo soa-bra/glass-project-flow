@@ -87,14 +87,25 @@ export const COLORS = {
   OVERLAY_BACKGROUND: 'bg-[rgba(255,255,255,0.9)]',
   OVERLAY_BACKGROUND_95: 'bg-[rgba(255,255,255,0.95)]',
   
-  // Canvas Style Object Colors (for inline style to class conversion)
-  CANVAS_STYLE_BG_F8F9FA: '#f8f9fa',
-  CANVAS_STYLE_BG_FFFFFF: '#ffffff',
-  CANVAS_STYLE_BG_FEF08A: '#fef08a',
-  CANVAS_STYLE_BG_F8FAFC: '#f8fafc',
-  CANVAS_STYLE_BG_FFF3CD: '#fff3cd',
-  CANVAS_STYLE_OVERLAY_90: 'rgba(255,255,255,0.9)',
-  CANVAS_STYLE_OVERLAY_95: 'rgba(255,255,255,0.95)',
+  // Canvas Style Classes for inline style replacement
+  CANVAS_CLASS_BG_F8F9FA: 'bg-[#f8f9fa]',
+  CANVAS_CLASS_BG_FFFFFF: 'bg-white',
+  CANVAS_CLASS_BG_FEF08A: 'bg-[#fef08a]',
+  CANVAS_CLASS_BG_F8FAFC: 'bg-[#f8fafc]',
+  CANVAS_CLASS_BG_FFF3CD: 'bg-[#fff3cd]',
+  CANVAS_CLASS_OVERLAY_90: 'bg-white/90',
+  CANVAS_CLASS_OVERLAY_95: 'bg-white/95',
+
+  // Position and Layout Classes
+  POSITION_ABSOLUTE: 'absolute',
+  POSITION_RELATIVE: 'relative',
+  POSITION_FIXED: 'fixed',
+  FULL_SIZE: 'w-full h-full',
+  
+  // Common Canvas Element Classes
+  CANVAS_ELEMENT_BASE: 'absolute select-none',
+  CANVAS_SELECTION_BOX: 'absolute pointer-events-none border-2 border-blue-500 bg-blue-500/10',
+  CANVAS_RESIZE_HANDLE: 'absolute w-2 h-2 bg-blue-500 border border-white rounded-sm cursor-pointer',
 
   // Complete Color Palette for Canvas Elements (Phase 2 Implementation)
   CANVAS_COLOR_RED: '#FF0000',

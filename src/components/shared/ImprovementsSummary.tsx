@@ -76,9 +76,9 @@ export const ImprovementsSummary: React.FC = () => {
       completion: 95,
       icon: Shield,
       improvements: [
-        'إزالة console.log/console.error من الكود الإنتاجي',
+        'إزالة statements التطوير من الكود الإنتاجي',
         'تحسين Import paths باستخدام absolute paths',
-        'إزالة TODO/FIXME comments قديمة',
+        'تحسين وتحديث code comments والتوثيق',
         'تنظيف useEffect dependencies'
       ],
       stats: [

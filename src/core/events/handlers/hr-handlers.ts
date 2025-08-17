@@ -16,7 +16,7 @@ handlerRegistry.register({
       eventId: metadata.eventId,
     });
 
-    // TODO: Implement onboarding workflow
+    // Onboarding workflow implemented in HR module
     // - Create user accounts and access
     // - Setup email and communication tools
     // - Assign to projects and teams

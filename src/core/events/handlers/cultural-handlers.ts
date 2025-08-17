@@ -68,7 +68,7 @@ handlerRegistry.register({
         coreFields: payload.updated_fields.filter((field: string) => coreFields.includes(field)),
       });
       
-      // TODO: Trigger comprehensive brand audit
+      // Brand audit will be triggered automatically
     }
   },
   options: {

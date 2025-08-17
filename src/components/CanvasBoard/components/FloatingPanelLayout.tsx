@@ -138,9 +138,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
         </div>
         
         {/* Smart Assistant Panel - 35% */}
-        <div className="h-[35%]" style={{
-        backdropFilter: 'blur(8px)'
-      }}>
+        <div className="h-[35%] backdrop-blur-[8px]">
           <div className="p-4 bg-white rounded-lg shadow-lg">
             <p className="text-sm text-gray-600">المساعد الذكي قريباً</p>
           </div>
@@ -150,9 +148,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
       {/* منطقة اللوحات الثانية - Second Panels Area */}
       <div className="fixed top-0 bottom-12 left-5 w-60 z-30 pointer-events-auto flex flex-col my-8">
         {/* Appearance Panel - 25% */}
-        <div className="h-[25%] mb-2.5" style={{
-        backdropFilter: 'blur(8px)'
-      }}>
+        <div className="h-[25%] mb-2.5 backdrop-blur-[8px]">
           <AppearancePanel />
         </div>
 
@@ -160,9 +156,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
         
         
         {/* Tool Panel - 50% of remaining space */}
-        <div style={{
-        backdropFilter: 'blur(8px)'
-      }} className="h-[50%] my-[240px]">
+        <div className="h-[50%] my-[240px] backdrop-blur-[8px]">
           <ToolPanel selectedTool={selectedTool} selectedElements={selectedElements} elements={elements} selectedElementId={selectedElementId} zoom={zoom} canvasPosition={canvasPosition} panSpeed={panSpeed} lineWidth={lineWidth} lineStyle={lineStyle} selectedPenMode={selectedPenMode} showGrid={showGrid} snapEnabled={snapEnabled} gridSize={gridSize} gridShape={gridShape} layers={layers} selectedLayerId={selectedLayerId} onUpdateElement={onUpdateElement} onCopy={onCopy} onCut={onCut} onPaste={onPaste} onDelete={onDelete} onGroup={onGroup} onUngroup={onUngroup || (() => {})} onLock={onLock || (() => {})} onUnlock={onUnlock || (() => {})} onRotate={onRotate || (() => {})} onFlipHorizontal={onFlipHorizontal || (() => {})} onFlipVertical={onFlipVertical || (() => {})} onAlign={onAlign || (() => {})} onZoomChange={onZoomChange} onPositionChange={onPositionChange} onFitToScreen={onFitToScreen} onResetView={onResetView} onPanSpeedChange={onPanSpeedChange} onLineWidthChange={onLineWidthChange} onLineStyleChange={onLineStyleChange} onPenModeSelect={onPenModeSelect} onFileUpload={onFileUpload} onLayerReorder={onLayerReorder} onLayerSelect={onLayerSelect} onGridToggle={onGridToggle} onSnapToggle={onSnapToggle} onGridSizeChange={onGridSizeChange} onGridShapeChange={onGridShapeChange} onAlignToGrid={onAlignToGrid} />
         </div>
       </div>

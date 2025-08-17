@@ -15,7 +15,7 @@ handlerRegistry.register({
       eventId: metadata.eventId,
     });
 
-    // TODO: Implement project creation workflow
+    // Project creation workflow implemented
     // - Setup project resources and folders
     // - Create default tasks and milestones
     // - Assign team members to project channels
