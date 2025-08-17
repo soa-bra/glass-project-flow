@@ -401,7 +401,7 @@ export const TextPanel: React.FC<TextPanelProps> = ({
                     <button
                       key={color}
                       onClick={() => updateStyle({ color })}
-                      className="w-6 h-6 rounded border border-muted"
+                      className="w-6 h-6 rounded border border-muted hover:scale-110 transition-transform cursor-pointer"
                       style={{ backgroundColor: color }}
                     />
                   ))}

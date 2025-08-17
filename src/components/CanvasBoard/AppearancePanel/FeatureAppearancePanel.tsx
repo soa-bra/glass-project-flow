@@ -24,7 +24,7 @@ import { StylePresetsManager } from './StylePresets/StylePresetsManager';
 interface SelectedElement {
   id: string;
   type: string;
-  style: any;
+  style: Record<string, unknown>;
   isLocked?: boolean;
   isVisible?: boolean;
   name?: string;

@@ -261,7 +261,7 @@ export const ShapesPanel: React.FC<ShapesPanelProps> = ({
               <button
                 key={color}
                 onClick={() => updateStyle({ fill: color })}
-                className="w-6 h-6 rounded border border-muted"
+                className="w-6 h-6 rounded border border-muted hover:scale-110 transition-transform"
                 style={{ backgroundColor: color }}
               />
             ))}

@@ -137,7 +137,8 @@ export const COLORS = {
   STATUS_INFO: '#3b82f6',
   STATUS_NEUTRAL: '#6b7280',
   
-  // Color Picker Palette Colors
+  
+  // Color Picker Palette Colors (for dynamic styling)
   PALETTE_RED: '#FF0000',
   PALETTE_ORANGE: '#FF8000',
   PALETTE_YELLOW: '#FFFF00',
