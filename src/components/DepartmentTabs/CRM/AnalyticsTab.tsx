@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { Button } from '@/components/ui/button';
 import { 
@@ -31,10 +31,20 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { mockCRMAnalytics, mockNPS } from './data';
+import { SafeChart } from '@/components/ui/SafeChart';
 
 export const AnalyticsTab: React.FC = () => {
   const [timeRange, setTimeRange] = useState('6months');
   const [selectedMetric, setSelectedMetric] = useState('revenue');
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    console.log('AnalyticsTab mounted');
+    return () => {
+      console.log('AnalyticsTab unmounting');
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Enhanced mock data for analytics
   const customerGrowthData = [
@@ -200,7 +210,7 @@ export const AnalyticsTab: React.FC = () => {
             <TrendingUp className="ml-2 h-5 w-5" />
             نمو العملاء
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <SafeChart width="100%" height={300}>
             <AreaChart data={customerGrowthData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" className="font-arabic" />
@@ -209,7 +219,7 @@ export const AnalyticsTab: React.FC = () => {
               <Area type="monotone" dataKey="total" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} name="إجمالي" />
               <Area type="monotone" dataKey="new" stackId="2" stroke="#10B981" fill="#10B981" fillOpacity={0.6} name="جديد" />
             </AreaChart>
-          </ResponsiveContainer>
+          </SafeChart>
         </GenericCard>
 
         {/* Sales Performance */}
@@ -218,7 +228,7 @@ export const AnalyticsTab: React.FC = () => {
             <Target className="ml-2 h-5 w-5" />
             أداء المبيعات
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <SafeChart width="100%" height={300}>
             <BarChart data={salesPerformance}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" className="font-arabic" />
@@ -227,7 +237,7 @@ export const AnalyticsTab: React.FC = () => {
               <Bar dataKey="target" fill="#E5E7EB" name="المستهدف" />
               <Bar dataKey="actual" fill="#3B82F6" name="الفعلي" />
             </BarChart>
-          </ResponsiveContainer>
+          </SafeChart>
         </GenericCard>
       </div>
 
@@ -239,7 +249,7 @@ export const AnalyticsTab: React.FC = () => {
             <DollarSign className="ml-2 h-5 w-5" />
             الإيرادات حسب الشريحة
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <SafeChart width="100%" height={300}>
             <PieChart>
               <Pie
                 data={revenueBySegment}
@@ -255,7 +265,7 @@ export const AnalyticsTab: React.FC = () => {
               </Pie>
               <Tooltip formatter={(value) => [`${(value as number / 1000000).toFixed(1)}م ر.س`, 'الإيرادات']} />
             </PieChart>
-          </ResponsiveContainer>
+          </SafeChart>
         </GenericCard>
 
         {/* Customer Satisfaction Trend */}
@@ -264,7 +274,7 @@ export const AnalyticsTab: React.FC = () => {
             <Heart className="ml-2 h-5 w-5" />
             اتجاه رضا العملاء
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <SafeChart width="100%" height={300}>
             <LineChart data={customerSatisfactionTrend}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" className="font-arabic" />
@@ -274,7 +284,7 @@ export const AnalyticsTab: React.FC = () => {
               <Line yAxisId="left" type="monotone" dataKey="nps" stroke="#10B981" strokeWidth={3} name="NPS" />
               <Line yAxisId="right" type="monotone" dataKey="satisfaction" stroke="#3B82F6" strokeWidth={3} name="الرضا" />
             </LineChart>
-          </ResponsiveContainer>
+          </SafeChart>
         </GenericCard>
       </div>
 
@@ -315,7 +325,7 @@ export const AnalyticsTab: React.FC = () => {
             <Users className="ml-2 h-5 w-5" />
             تحليل أسباب فقدان العملاء
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <SafeChart width="100%" height={300}>
             <BarChart data={churnAnalysis} layout="horizontal">
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" />
@@ -323,7 +333,7 @@ export const AnalyticsTab: React.FC = () => {
               <Tooltip />
               <Bar dataKey="percentage" fill="#EF4444" />
             </BarChart>
-          </ResponsiveContainer>
+          </SafeChart>
         </GenericCard>
       </div>
 

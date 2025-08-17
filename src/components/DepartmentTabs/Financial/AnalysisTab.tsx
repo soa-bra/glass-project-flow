@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Download, PieChart, Target } from 'lucide-react';
 import { ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Tooltip } from 'recharts';
+import { SafeChart } from '@/components/ui/SafeChart';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
 import { BaseCard } from '@/components/shared/BaseCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
@@ -11,6 +12,15 @@ import { mockExpenseCategories } from './data';
 import { formatCurrency } from './utils';
 
 export const AnalysisTab: React.FC = () => {
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    console.log('Financial AnalysisTab mounted');
+    return () => {
+      console.log('Financial AnalysisTab unmounting');
+      isMountedRef.current = false;
+    };
+  }, []);
   const colors = ['#3DBE8B', '#3DA8F5', '#F6C445', '#E5564D', '#9B59B6'];
 
   const scenarios = [
@@ -50,7 +60,7 @@ export const AnalysisTab: React.FC = () => {
           title="توزيع المصروفات" 
           icon={<PieChart className="h-5 w-5" />}
         >
-          <ResponsiveContainer width="100%" height={300}>
+          <SafeChart width="100%" height={300}>
             <RechartsPieChart>
               <Pie 
                 data={mockExpenseCategories} 
@@ -76,7 +86,7 @@ export const AnalysisTab: React.FC = () => {
                 }}
               />
             </RechartsPieChart>
-          </ResponsiveContainer>
+          </SafeChart>
         </BaseCard>
 
         <BaseCard 
