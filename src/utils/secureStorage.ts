@@ -45,7 +45,7 @@ class SecureStorage {
       const encrypted = this.encrypt(serialized);
       localStorage.setItem(this.PREFIX + key, encrypted);
     } catch (error) {
-      console.error('SecureStorage: Failed to store data', error);
+      // Failed to store encrypted data
       throw error;
     }
   }

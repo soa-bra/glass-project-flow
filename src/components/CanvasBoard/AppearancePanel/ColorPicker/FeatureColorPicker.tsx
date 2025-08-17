@@ -15,6 +15,7 @@ import {
   Circle
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { COLORS } from '@/components/shared/design-system/constants';
 
 interface ColorPickerProps {
   color: string;
@@ -51,12 +52,14 @@ export const FeatureColorPicker: React.FC<ColorPickerProps> = ({
   const saturationRef = useRef<HTMLCanvasElement>(null);
   const isDragging = useRef(false);
 
-  // Default color palette
+  // Default color palette using design tokens
   const defaultColors = [
-    '#FF0000', '#FF8000', '#FFFF00', '#80FF00', '#00FF00', '#00FF80',
-    '#00FFFF', '#0080FF', '#0000FF', '#8000FF', '#FF00FF', '#FF0080',
-    '#000000', '#404040', '#808080', '#C0C0C0', '#FFFFFF', '#8B4513',
-    '#FFE4B5', '#DDA0DD', '#98FB98', '#F0E68C', '#87CEEB', '#DEB887'
+    COLORS.PALETTE_RED, COLORS.PALETTE_ORANGE, COLORS.PALETTE_YELLOW, COLORS.PALETTE_LIME, 
+    COLORS.PALETTE_GREEN, COLORS.PALETTE_MINT, COLORS.PALETTE_CYAN, COLORS.PALETTE_BLUE, 
+    COLORS.PALETTE_NAVY, COLORS.PALETTE_PURPLE, COLORS.PALETTE_MAGENTA, COLORS.PALETTE_PINK,
+    COLORS.PALETTE_BLACK, COLORS.PALETTE_DARK_GRAY, COLORS.PALETTE_GRAY, COLORS.PALETTE_LIGHT_GRAY,
+    COLORS.PALETTE_WHITE, COLORS.PALETTE_BROWN, COLORS.PALETTE_BEIGE, COLORS.PALETTE_PLUM,
+    COLORS.PALETTE_LIGHT_GREEN, COLORS.PALETTE_KHAKI, COLORS.PALETTE_SKY_BLUE, COLORS.PALETTE_TAN
   ];
 
   // Color conversion utilities

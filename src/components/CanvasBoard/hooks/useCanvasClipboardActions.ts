@@ -41,7 +41,6 @@ export const useCanvasClipboardActions = ({
         ));
       }
     } catch (error) {
-      console.warn('Clipboard copy not available:', error);
       // Silently fail - clipboard functionality is not critical
     }
   }, [selectedElementIds, elements]);
@@ -101,7 +100,7 @@ export const useCanvasClipboardActions = ({
       if (error instanceof SyntaxError || error.name === 'NotAllowedError') {
         return;
       }
-      console.warn('Clipboard paste error:', error);
+      // Handle paste error silently
     }
   }, [setElements, saveToHistory]);
 

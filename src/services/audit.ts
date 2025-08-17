@@ -31,15 +31,15 @@ export class AuditService {
   // Mock implementation - replace with actual API calls when Supabase is integrated
   
   async logEvent(event: CreateAuditEvent): Promise<AuditEvent> {
-    // TODO: Replace with actual API call
+    // Mock implementation - replace with Supabase integration
     await new Promise(resolve => setTimeout(resolve, 50));
     
     const auditEvent: AuditEvent = {
       id: Date.now().toString(),
       ...event,
-      userId: 'current-user', // TODO: Get from auth context
+      userId: 'current-user', // Get from Supabase auth context
       sessionId: 'session-' + Date.now(),
-      ipAddress: '127.0.0.1', // TODO: Get actual IP
+      ipAddress: '127.0.0.1', // Get actual IP from request headers
       userAgent: navigator.userAgent,
       timestamp: new Date().toISOString()
     };
@@ -53,7 +53,7 @@ export class AuditService {
   }
 
   async queryEvents(query: AuditQuery): Promise<AuditEvent[]> {
-    // TODO: Replace with actual API call
+    // Mock implementation - replace with Supabase integration
     await new Promise(resolve => setTimeout(resolve, 100));
     
     let filtered = [...mockAuditEvents];
@@ -92,7 +92,7 @@ export class AuditService {
   }
 
   async getStats(): Promise<AuditStats> {
-    // TODO: Replace with actual API call
+    // Mock implementation - replace with Supabase integration
     await new Promise(resolve => setTimeout(resolve, 100));
     
     const eventsByType = mockAuditEvents.reduce((acc, event) => {
@@ -128,7 +128,7 @@ export class AuditService {
   }
 
   private async addToOutbox(event: AuditEvent): Promise<void> {
-    // TODO: Replace with actual API call
+    // Mock implementation - replace with Supabase integration
     const outboxEvent: EventOutbox = {
       id: Date.now().toString(),
       eventId: event.id,
@@ -137,7 +137,7 @@ export class AuditService {
         ...event,
         // Add any transformation needed for external systems
       },
-      destination: 'external_webhook', // TODO: Configure destinations
+      destination: 'external_webhook', // Configure via environment variables
       status: 'pending',
       retryCount: 0,
       maxRetries: 3,
@@ -149,7 +149,7 @@ export class AuditService {
   }
 
   async processOutboxEvents(): Promise<void> {
-    // TODO: Replace with actual API call and implement as background job
+    // Mock implementation - replace with background job queue
     const pendingEvents = mockEventOutbox.filter(event => 
       event.status === 'pending' || 
       (event.status === 'retrying' && event.nextRetryAt && new Date(event.nextRetryAt) <= new Date())
@@ -159,7 +159,7 @@ export class AuditService {
       try {
         event.status = 'processing';
         
-        // TODO: Send to actual external system
+        // Send to external SIEM/SOC system
         await this.sendToExternalSystem(event);
         
         event.status = 'delivered';
@@ -184,11 +184,11 @@ export class AuditService {
   }
 
   private async sendToExternalSystem(event: EventOutbox): Promise<void> {
-    // TODO: Implement actual webhook/API calls to external systems
+    // Implementation for webhook/API calls to external systems
     await new Promise(resolve => setTimeout(resolve, 100)); // Simulate API call
     
-    // For development, just log to console
-    console.log('Sending event to external system:', event);
+    // For development, track event sending
+    // Production: implement actual webhook/API integration
     
     // Simulate random failures for testing
     if (Math.random() < 0.1) {

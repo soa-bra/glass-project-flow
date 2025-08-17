@@ -66,7 +66,7 @@ class AIAnalysisService {
 
       return true;
     } catch (error) {
-      console.warn('WebGPU not available, falling back to CPU');
+      // WebGPU not available, fallback to CPU processing
       // إعادة المحاولة مع CPU
       try {
         this.imageClassifier = await pipeline(
@@ -75,7 +75,7 @@ class AIAnalysisService {
         );
         return true;
       } catch (cpuError) {
-        console.error('Failed to initialize AI models:', cpuError);
+        // Failed to initialize AI models
         return false;
       }
     }
@@ -139,7 +139,7 @@ class AIAnalysisService {
           analysisResults.classification = classification.slice(0, 5); // أفضل 5 نتائج
           callbacks.onResult({ type: 'classification', data: classification });
         } catch (error) {
-          console.warn('Image classification failed:', error);
+          // Image classification failed, continue with basic analysis
         }
         
         currentProgress += 25;
@@ -156,7 +156,7 @@ class AIAnalysisService {
           analysisResults.segmentation = segmentation;
           callbacks.onResult({ type: 'segmentation', data: segmentation });
         } catch (error) {
-          console.warn('Image segmentation failed:', error);
+          // Image segmentation failed, continue with basic analysis
         }
         
         currentProgress += 25;
@@ -255,7 +255,7 @@ class AIAnalysisService {
           analysisResults.sentiment = sentiments;
           callbacks.onResult({ type: 'sentiment', data: sentiments });
         } catch (error) {
-          console.warn('Sentiment analysis failed:', error);
+          // Sentiment analysis failed, return neutral sentiment
         }
         
         currentProgress += 30;

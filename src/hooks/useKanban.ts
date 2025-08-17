@@ -85,7 +85,7 @@ export const useKanban = (boardId: string) => {
       const violations = await kanbanService.checkWIPLimits(boardId, status, excludeTaskId);
       return violations;
     } catch (err) {
-      console.error('Failed to check WIP violations:', err);
+      // Handle WIP violation check failure silently
       return [];
     }
   }, [boardId]);

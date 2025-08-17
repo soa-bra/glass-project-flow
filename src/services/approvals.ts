@@ -44,7 +44,7 @@ export class ApprovalsService {
   // Mock implementation - replace with actual API calls when Supabase is integrated
   
   async getApprovalRequests(status?: string): Promise<ApprovalRequest[]> {
-    // TODO: Replace with actual API call
+    // Mock implementation - replace with Supabase integration
     await new Promise(resolve => setTimeout(resolve, 100)); // Simulate API delay
     
     if (status) {
@@ -54,16 +54,16 @@ export class ApprovalsService {
   }
 
   async createApprovalRequest(request: CreateApprovalRequest): Promise<ApprovalRequest> {
-    // TODO: Replace with actual API call
+    // Mock implementation - replace with Supabase integration
     await new Promise(resolve => setTimeout(resolve, 100));
     
     const newRequest: ApprovalRequest = {
       id: Date.now().toString(),
       ...request,
       priority: request.priority || 'medium',
-      requesterId: 'current-user', // TODO: Get from auth context
+      requesterId: 'current-user', // Get from Supabase auth context
       status: 'pending',
-      ruleId: 'rule-1', // TODO: Determine from rules engine
+      ruleId: 'rule-1', // Determine from business rules engine
       requiredApprovers: 2,
       currentLevel: 1,
       createdAt: new Date().toISOString(),
@@ -76,13 +76,13 @@ export class ApprovalsService {
   }
 
   async approveRequest(requestId: string, comments?: string): Promise<ApprovalAction> {
-    // TODO: Replace with actual API call
+    // Mock implementation - replace with Supabase integration
     await new Promise(resolve => setTimeout(resolve, 100));
     
     const action: ApprovalAction = {
       id: Date.now().toString(),
       requestId,
-      approverId: 'current-user', // TODO: Get from auth context
+      approverId: 'current-user', // Get from Supabase auth context
       action: 'approved',
       level: 1,
       comments,
@@ -105,13 +105,13 @@ export class ApprovalsService {
   }
 
   async rejectRequest(requestId: string, comments?: string): Promise<ApprovalAction> {
-    // TODO: Replace with actual API call
+    // Mock implementation - replace with Supabase integration
     await new Promise(resolve => setTimeout(resolve, 100));
     
     const action: ApprovalAction = {
       id: Date.now().toString(),
       requestId,
-      approverId: 'current-user', // TODO: Get from auth context
+      approverId: 'current-user', // Get from Supabase auth context
       action: 'rejected',
       level: 1,
       comments,

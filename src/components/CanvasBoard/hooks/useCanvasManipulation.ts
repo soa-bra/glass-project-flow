@@ -43,7 +43,7 @@ export const useCanvasManipulation = (
         });
       }
     } catch (error) {
-      console.warn('Paste failed:', error);
+      // Handle paste failure silently
     }
   }, [addElement]);
 

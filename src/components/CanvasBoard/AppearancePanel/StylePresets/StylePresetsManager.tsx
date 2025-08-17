@@ -21,6 +21,7 @@ import {
   Filter
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { COLORS } from '@/components/shared/design-system/constants';
 
 interface StyleProperty {
   fill?: string;
@@ -80,7 +81,7 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
       description: 'تصميم بطاقة مع ظلال ناعمة وحواف مدورة',
       category: 'shapes',
       style: {
-        backgroundColor: '#ffffff',
+        backgroundColor: COLORS.PRESET_CARD_WHITE,
         borderRadius: 16,
         boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
         stroke: '#e5e7eb',
@@ -98,7 +99,7 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
       description: 'زر بتدرج ملون جذاب',
       category: 'shapes',
       style: {
-        backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        backgroundColor: `linear-gradient(135deg, ${COLORS.PRESET_GRADIENT_START} 0%, ${COLORS.PRESET_GRADIENT_END} 100%)`,
         borderRadius: 8,
         stroke: 'none',
         strokeWidth: 0,
@@ -134,9 +135,9 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
       description: 'تأثير توهج نيون مبهر',
       category: 'effects',
       style: {
-        stroke: '#00ff88',
+        stroke: COLORS.PRESET_NEON_GREEN,
         strokeWidth: 3,
-        boxShadow: '0 0 20px #00ff88, 0 0 40px #00ff88, 0 0 60px #00ff88',
+        boxShadow: `0 0 20px ${COLORS.PRESET_NEON_GREEN}, 0 0 40px ${COLORS.PRESET_NEON_GREEN}, 0 0 60px ${COLORS.PRESET_NEON_GREEN}`,
         backgroundColor: 'transparent'
       },
       isFavorite: true,
@@ -151,10 +152,10 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
       description: 'تأثير الزجاج الضبابي العصري',
       category: 'effects',
       style: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        backgroundColor: COLORS.PRESET_GLASS_WHITE,
         borderRadius: 16,
         boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-        stroke: 'rgba(255, 255, 255, 0.18)',
+        stroke: COLORS.PRESET_GLASS_BORDER,
         strokeWidth: 1
       },
       isFavorite: false,
@@ -169,8 +170,8 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
       description: 'تخطيط نظيف وبسيط',
       category: 'layouts',
       style: {
-        backgroundColor: '#f9fafb',
-        stroke: '#d1d5db',
+        backgroundColor: COLORS.PRESET_MINIMAL_BG,
+        stroke: COLORS.PRESET_MINIMAL_BORDER,
         strokeWidth: 1,
         borderRadius: 4
       },
@@ -323,7 +324,7 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
         <div
           className="w-full h-16 rounded border flex items-center justify-center text-xs text-gray-600"
           style={{
-            backgroundColor: preset.style.backgroundColor || '#f3f4f6',
+            backgroundColor: preset.style.backgroundColor || COLORS.PRESET_MINIMAL_BG,
             borderColor: preset.style.stroke || '#d1d5db',
             borderWidth: preset.style.strokeWidth || 1,
             borderRadius: preset.style.borderRadius || 4,

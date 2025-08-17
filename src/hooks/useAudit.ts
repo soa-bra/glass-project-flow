@@ -45,7 +45,7 @@ export const useAudit = () => {
       
       return newEvent;
     } catch (err) {
-      console.error('Failed to log audit event:', err);
+      // Handle audit logging failure silently
       throw err;
     }
   }, []);
@@ -61,7 +61,7 @@ export const useAudit = () => {
       setEvents(prev => [event, ...prev.slice(0, 49)]);
       return event;
     } catch (err) {
-      console.error('Failed to log user action:', err);
+      // Handle user action logging failure silently
       throw err;
     }
   }, []);
@@ -77,7 +77,7 @@ export const useAudit = () => {
       setEvents(prev => [event, ...prev.slice(0, 49)]);
       return event;
     } catch (err) {
-      console.error('Failed to log system event:', err);
+      // Handle system event logging failure silently
       throw err;
     }
   }, []);

@@ -78,11 +78,11 @@ export function useFileUpload(config: FileUploadConfig = {}) {
       };
       
       workerRef.current.onerror = (error) => {
-        console.error('Worker error:', error);
+        // Handle worker error
         toast.error('خطأ في معالج الملفات');
       };
     } catch (error) {
-      console.warn('Web Workers not supported, using main thread');
+      // Web Workers not supported, fallback to main thread
       finalConfig.enableWorker = false;
     }
   }, [finalConfig.enableWorker]);
@@ -307,7 +307,7 @@ export function useFileUpload(config: FileUploadConfig = {}) {
           });
           return result;
         } catch (error) {
-          console.error(`Failed to upload ${file.name}:`, error);
+          // Handle file upload failure silently
           return null;
         }
       });

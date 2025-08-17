@@ -47,10 +47,10 @@ export const OrganizationalArchivePanel: React.FC = () => {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'هيكل تنظيمي': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'وصف وظيفي': return 'bg-green-100 text-green-800 border-green-200';
-      case 'عمليات': return 'bg-purple-100 text-purple-800 border-purple-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'هيكل تنظيمي': return 'bg-[#a4e2f6] text-[#000000] border-[#a4e2f6]';
+      case 'وصف وظيفي': return 'bg-[#bdeed3] text-[#000000] border-[#bdeed3]';
+      case 'عمليات': return 'bg-[#d9d2fd] text-[#000000] border-[#d9d2fd]';
+      default: return 'bg-[#f1f5f9] text-[#000000] border-[#e2e8f0]';
     }
   };
 
