@@ -184,19 +184,19 @@ export const TimelineCard: React.FC = () => {
             <div className="space-y-2">
               <label className="font-bold text-black font-arabic">الموقع</label>
               <div className="space-y-3">
-                <div className="relative bg-transparent border border-black/20 mx-auto flex w-fit flex-col items-center rounded-full py-2 px-4">
+                <div className="relative bg-transparent border border-black/20 mx-auto flex w-fit flex-col items-center rounded-full py-1 px-2">
                   <div className={`absolute z-10 w-full overflow-hidden transition-all duration-300 ease-out ${newEventLocation === 'داخلي' ? '[clip-path:inset(0_50%_0_0%_round_17px)]' : '[clip-path:inset(0_0%_0_50%_round_17px)]'}`}>
-                    <div className="relative flex w-full justify-center bg-black">
+                    <div className="relative flex w-full justify-center bg-white border border-black/10">
                       <button
                         onClick={() => setNewEventLocation('داخلي')}
-                        className="flex h-8 items-center rounded-full px-6 py-2 text-sm font-medium text-white whitespace-nowrap font-arabic"
+                        className="flex h-8 items-center rounded-full px-4 py-1 text-sm font-medium text-black whitespace-nowrap font-arabic"
                         tabIndex={-1}
                       >
                         داخلي
                       </button>
                       <button
                         onClick={() => setNewEventLocation('خارجي')}
-                        className="flex h-8 items-center rounded-full px-6 py-2 text-sm font-medium text-white whitespace-nowrap font-arabic"
+                        className="flex h-8 items-center rounded-full px-4 py-1 text-sm font-medium text-black whitespace-nowrap font-arabic"
                         tabIndex={-1}
                       >
                         خارجي
@@ -207,13 +207,13 @@ export const TimelineCard: React.FC = () => {
                   <div className="relative flex w-full justify-center">
                     <button
                       onClick={() => setNewEventLocation('داخلي')}
-                      className="flex h-8 items-center cursor-pointer rounded-full px-6 py-2 text-sm font-medium text-black whitespace-nowrap font-arabic"
+                      className="flex h-8 items-center cursor-pointer rounded-full px-4 py-1 text-sm font-medium text-black/60 whitespace-nowrap font-arabic"
                     >
                       داخلي
                     </button>
                     <button
                       onClick={() => setNewEventLocation('خارجي')}
-                      className="flex h-8 items-center cursor-pointer rounded-full px-6 py-2 text-sm font-medium text-black whitespace-nowrap font-arabic"
+                      className="flex h-8 items-center cursor-pointer rounded-full px-4 py-1 text-sm font-medium text-black/60 whitespace-nowrap font-arabic"
                     >
                       خارجي
                     </button>
