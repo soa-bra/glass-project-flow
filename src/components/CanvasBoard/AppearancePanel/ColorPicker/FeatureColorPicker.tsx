@@ -444,10 +444,9 @@ export const FeatureColorPicker: React.FC<ColorPickerProps> = ({
                   {defaultColors.map((paletteColor, index) => (
                     <button
                       key={index}
-                      className={`w-8 h-8 rounded border-2 bg-current ${
+                      className={`w-8 h-8 rounded border-2 bg-current text-[${paletteColor}] ${
                         currentColor === paletteColor ? 'border-gray-800' : 'border-gray-300'
                       }`}
-                      style={{ color: paletteColor }}
                       onClick={() => handleColorSelect(paletteColor)}
                     />
                   ))}
@@ -462,10 +461,9 @@ export const FeatureColorPicker: React.FC<ColorPickerProps> = ({
                     {savedColors.map((savedColor, index) => (
                       <button
                         key={index}
-                        className={`w-8 h-8 rounded border-2 bg-current ${
+                        className={`w-8 h-8 rounded border-2 bg-current text-[${savedColor}] ${
                           currentColor === savedColor ? 'border-gray-800' : 'border-gray-300'
                         }`}
-                        style={{ color: savedColor }}
                         onClick={() => handleColorSelect(savedColor)}
                       />
                     ))}
@@ -481,10 +479,9 @@ export const FeatureColorPicker: React.FC<ColorPickerProps> = ({
                     {recentColors.map((recentColor, index) => (
                       <button
                         key={index}
-                        className={`w-8 h-8 rounded border-2 bg-current ${
+                        className={`w-8 h-8 rounded border-2 bg-current text-[${recentColor}] ${
                           currentColor === recentColor ? 'border-gray-800' : 'border-gray-300'
                         }`}
-                        style={{ color: recentColor }}
                         onClick={() => handleColorSelect(recentColor)}
                       />
                     ))}
@@ -498,8 +495,7 @@ export const FeatureColorPicker: React.FC<ColorPickerProps> = ({
         {/* Current Color Display */}
         <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
           <div
-            className="w-12 h-12 rounded-lg border-2 border-gray-300 bg-current"
-            style={{ color: currentColor }}
+            className={`w-12 h-12 rounded-lg border-2 border-gray-300 bg-current text-[${currentColor}]`}
           />
           <div className="flex-1">
             <Input

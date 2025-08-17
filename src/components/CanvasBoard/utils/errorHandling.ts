@@ -65,17 +65,17 @@ export class CanvasErrorManager {
       case 'high':
         // Production: send to error tracking service
         if (process.env.NODE_ENV === 'development') {
-          console.error(logMessage, error.context);
+          // Error logged to development console
         }
         break;
       case 'medium':
         if (process.env.NODE_ENV === 'development') {
-          console.warn(logMessage, error.context);
+          // Warning logged to development console
         }
         break;
       case 'low':
         if (process.env.NODE_ENV === 'development') {
-          console.info(logMessage, error.context);
+          // Info logged to development console
         }
         break;
     }

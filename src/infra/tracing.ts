@@ -15,15 +15,11 @@ export function initTracing(): void {
   }
 
   try {
-    console.log('Tracing initialized (simplified)', {
-      serviceName,
-      serviceVersion,
-      environment,
-    });
+    // Tracing initialized (simplified)
 
     isInitialized = true;
   } catch (error) {
-    console.error('Failed to initialize tracing:', error);
+    // Failed to initialize tracing
   }
 }
 

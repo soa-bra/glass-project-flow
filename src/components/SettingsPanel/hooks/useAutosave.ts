@@ -5,13 +5,13 @@ interface AutosaveConfig {
   interval: number; // in milliseconds
   userId: string;
   section: string;
-  data: any;
-  onSave?: (data: any) => void;
+  data: Record<string, unknown>;
+  onSave?: (data: Record<string, unknown>) => void;
 }
 
 export const useAutosave = ({ interval, userId, section, data, onSave }: AutosaveConfig) => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastSavedDataRef = useRef<any>(null);
+  const lastSavedDataRef = useRef<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     // Clear existing timeout
@@ -68,7 +68,7 @@ export const useAutosave = ({ interval, userId, section, data, onSave }: Autosav
       const saved = SecureStorage.getItem(path);
       
       if (saved && typeof saved === 'object' && saved !== null) {
-        const typedSaved = saved as { data: any; timestamp: string; section: string };
+        const typedSaved = saved as { data: Record<string, unknown>; timestamp: string; section: string };
         return {
           data: typedSaved.data,
           timestamp: typedSaved.timestamp,

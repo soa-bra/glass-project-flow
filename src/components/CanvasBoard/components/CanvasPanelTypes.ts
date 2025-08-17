@@ -1,4 +1,5 @@
 import { CanvasElement } from '../types';
+import { ElementUpdateData, HistoryEntry } from '../../../types/canvas-events';
 
 export interface Layer {
   id: string;
@@ -11,7 +12,7 @@ export interface Layer {
 export interface CanvasPanelLayoutProps {
   // History props
   historyIndex: number;
-  history: any[];
+  history: HistoryEntry[];
   onUndo: () => void;
   onRedo: () => void;
   onSave: () => void;
@@ -56,7 +57,7 @@ export interface CanvasPanelLayoutProps {
   handleUngroup: () => void;
   handleLock: () => void;
   handleUnlock: () => void;
-  updateElement: (elementId: string, updates: any) => void;
+  updateElement: (elementId: string, updates: ElementUpdateData) => void;
   deleteElement: (elementId: string) => void;
   onPositionChange: (position: { x: number; y: number }) => void;
   onFitToScreen: () => void;

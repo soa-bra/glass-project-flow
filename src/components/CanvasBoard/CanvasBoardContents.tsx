@@ -79,7 +79,13 @@ const CanvasBoardContents: React.FC<CanvasBoardContentsProps> = ({
       {/* UI Layer - All toolbars and panels */}
       <CleanCanvasPanelLayout
         historyIndex={canvasState.historyIndex}
-        history={canvasState.history}
+        history={canvasState.history.map((h: any, i: number) => ({
+          id: `history-${i}`,
+          timestamp: Date.now(),
+          action: 'canvas-update',
+          elements: h || [],
+          description: `Canvas state ${i}`
+        }))}
         onUndo={canvasState.undo}
         onRedo={canvasState.redo}
         onSave={canvasState.saveCanvas}

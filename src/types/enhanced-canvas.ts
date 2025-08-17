@@ -2,7 +2,8 @@
 // Phase 5: TypeScript Improvements
 
 import { ReactNode } from 'react';
-import { CanvasElement } from './canvas';
+import type { CanvasElement } from './canvas';
+export type { CanvasElement };
 
 // Tool Types
 export interface ToolConfig {
