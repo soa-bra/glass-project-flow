@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, ReactElement, JSXElementConstructor } from 'react';
+import React, { useEffect, useRef, ReactElement, JSXElementConstructor, useState } from 'react';
 import { ResponsiveContainer } from 'recharts';
 
 interface SafeChartProps {
@@ -12,38 +12,60 @@ export const SafeChart: React.FC<SafeChartProps> = ({
   width = "100%", 
   height = 300 
 }) => {
-  const isMountedRef = useRef(true);
+  const [isMounted, setIsMounted] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
+    console.log('SafeChart mounted');
+    
     return () => {
-      isMountedRef.current = false;
-      // Clear any potential chart references
-      if (containerRef.current) {
-        const chartElements = containerRef.current.querySelectorAll('svg');
-        chartElements.forEach(svg => {
-          // Remove any event listeners that might be attached
-          const listeners = (svg as any)._listeners;
-          if (listeners) {
-            Object.keys(listeners).forEach(event => {
-              svg.removeEventListener(event, listeners[event]);
-            });
-          }
-        });
+      console.log('SafeChart unmounting - cleaning up');
+      setIsMounted(false);
+      
+      // Clear any pending timeouts
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
+      
+      // Clean up chart references with a small delay to ensure DOM cleanup
+      timeoutRef.current = setTimeout(() => {
+        if (containerRef.current) {
+          const chartElements = containerRef.current.querySelectorAll('svg, canvas');
+          chartElements.forEach(element => {
+            // Remove any potential event listeners
+            const listeners = (element as any)._listeners;
+            if (listeners) {
+              Object.keys(listeners).forEach(event => {
+                element.removeEventListener(event, listeners[event]);
+              });
+            }
+            
+            // Clear any animation frames or timers that might be running
+            if ((element as any).__resizeObserver) {
+              (element as any).__resizeObserver.disconnect();
+            }
+          });
+        }
+      }, 100);
     };
   }, []);
 
-  // Don't render if component is unmounted
-  if (!isMountedRef.current) {
-    return null;
-  }
-
+  // Always call hooks consistently, then conditionally render
   return (
     <div ref={containerRef}>
-      <ResponsiveContainer width={width} height={height}>
-        {children}
-      </ResponsiveContainer>
+      {isMounted ? (
+        <ResponsiveContainer width={width} height={height}>
+          {children}
+        </ResponsiveContainer>
+      ) : (
+        <div 
+          style={{ width, height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          className="text-gray-400"
+        >
+          Chart unmounted
+        </div>
+      )}
     </div>
   );
 };
