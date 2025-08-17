@@ -36,7 +36,8 @@ const TaskCardStatusIndicators = ({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const pillStyle = {
-    backgroundColor: '#F7FFFF',
+    backgroundColor: '#FFFFFF',
+    border: '1px solid #DADCE0',
     borderRadius: '15px',
     padding: '3px 8px',
     fontSize: '10px',

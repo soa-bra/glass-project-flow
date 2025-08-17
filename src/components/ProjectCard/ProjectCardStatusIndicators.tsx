@@ -36,10 +36,7 @@ const ProjectCardStatusIndicators = ({
       <div className="flex items-center gap-[3px] flex-1 justify-end mx-0 px-0">
         {/* التاريخ */}
         <div 
-          className="rounded-full py-[2px] flex items-center px-[15px]"
-          style={{
-            backgroundColor: 'var(--project-card-elements-info-bubbles)'
-          }}
+          className="bg-white border border-[#DADCE0] rounded-full py-[2px] flex items-center px-[15px]"
         >
           <span 
             className="text-sm font-arabic"
@@ -53,10 +50,7 @@ const ProjectCardStatusIndicators = ({
 
         {/* عدد أعضاء الفريق */}
         <div 
-          className="rounded-full py-[2px] flex items-center px-[15px]"
-          style={{
-            backgroundColor: 'var(--project-card-elements-info-bubbles)'
-          }}
+          className="bg-white border border-[#DADCE0] rounded-full py-[2px] flex items-center px-[15px]"
         >
           <span 
             className="text-sm font-arabic"
@@ -70,10 +64,7 @@ const ProjectCardStatusIndicators = ({
 
         {/* المالك */}
         <div 
-          className="rounded-full justify-between flex items-center py-[2px] px-[8px] mx-[5px]"
-          style={{
-            backgroundColor: 'var(--project-card-elements-info-bubbles)'
-          }}
+          className="bg-white border border-[#DADCE0] rounded-full justify-between flex items-center py-[2px] px-[8px] mx-[5px]"
         >
           <span 
             className="text-sm font-arabic px-[3px]"
@@ -87,10 +78,7 @@ const ProjectCardStatusIndicators = ({
 
         {/* القيمة - محاذاة مع حد عنوان المشروع */}
         <div 
-          className="rounded-full py-[2px] px-[21px] flex items-center mr-[14px]"
-          style={{
-            backgroundColor: 'var(--project-card-elements-info-bubbles)'
-          }}
+          className="bg-white border border-[#DADCE0] rounded-full py-[2px] px-[21px] flex items-center mr-[14px]"
         >
           <span 
             className="text-sm font-arabic"
