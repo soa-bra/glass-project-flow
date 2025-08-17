@@ -3,10 +3,11 @@ import { Button } from '@/components/ui/button';
 import { ToolPanelContainer } from '@/components/custom/ToolPanelContainer';
 import { Minimize2, Loader2, Eye } from 'lucide-react';
 import { toast } from 'sonner';
+import type { LayerInfo } from '../../../types/canvas-ai-tools';
 
 interface AIShrinkToolProps {
   selectedTool: string;
-  layers: any[];
+  layers: LayerInfo[];
   onShrink: (isolateIds: string[]) => void;
 }
 

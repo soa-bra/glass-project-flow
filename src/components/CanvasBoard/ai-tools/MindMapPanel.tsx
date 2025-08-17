@@ -4,11 +4,12 @@ import { Input } from '@/components/ui/input';
 import { ToolPanelContainer } from '@/components/custom/ToolPanelContainer';
 import { GitBranch, Loader2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import type { MindMapData } from '../../../types/canvas-ai-tools';
 
 interface MindMapPanelProps {
   selectedTool: string;
   projectId: string;
-  onGenerated: (mindMap: any) => void;
+  onGenerated: (mindMap: MindMapData) => void;
 }
 
 export const MindMapPanel: React.FC<MindMapPanelProps> = ({ 

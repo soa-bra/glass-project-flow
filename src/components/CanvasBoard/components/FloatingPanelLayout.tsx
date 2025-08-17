@@ -125,9 +125,7 @@ export const FloatingPanelLayout: React.FC<FloatingPanelLayoutProps> = ({
       <div className="fixed top-0 bottom-8 right-5 w-60 z-30 pointer-events-auto flex flex-col my-[45px] ">
         
         {/* Enhanced Layers Panel - 35% */}
-        <div className="h-[35%] mb-2.5" style={{
-        backdropFilter: 'blur(8px)'
-      }}>
+        <div className="h-[35%] mb-2.5 backdrop-blur-[8px]">
           <EnhancedLayersPanel layers={convertToEnhancedLayers(layers)} selectedLayerId={selectedLayerId} elements={elements} onLayerUpdate={enhancedLayers => {
           const basicLayers = enhancedLayers.map(({
             type,

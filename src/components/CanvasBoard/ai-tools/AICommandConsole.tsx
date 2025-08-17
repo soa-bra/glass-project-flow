@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { ToolPanelContainer } from '@/components/custom/ToolPanelContainer';
 import { Terminal, Send, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import type { AICommandResult } from '../../../types/canvas-ai-tools';
 
 interface AICommandConsoleProps {
   selectedTool: string;
-  onCommand: (prompt: string, result: any) => void;
+  onCommand: (prompt: string, result: AICommandResult) => void;
 }
 
 export const AICommandConsole: React.FC<AICommandConsoleProps> = ({ 

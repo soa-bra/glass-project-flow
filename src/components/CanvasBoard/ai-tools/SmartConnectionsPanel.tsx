@@ -4,11 +4,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ToolPanelContainer } from '@/components/custom/ToolPanelContainer';
 import { Zap, GitBranch, Loader2, Network, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import type { CanvasElement } from '../../../types/enhanced-canvas';
+import type { SmartConnection } from '../../../types/canvas-ai-tools';
 
 interface SmartConnectionsPanelProps {
   selectedTool: string;
-  elements: any[];
-  onCreateConnections: (connections: any[]) => void;
+  elements: CanvasElement[];
+  onCreateConnections: (connections: SmartConnection[]) => void;
 }
 
 export const SmartConnectionsPanel: React.FC<SmartConnectionsPanelProps> = ({ 

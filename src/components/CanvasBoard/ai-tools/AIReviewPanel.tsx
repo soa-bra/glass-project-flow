@@ -3,11 +3,12 @@ import { Button } from '@/components/ui/button';
 import { ToolPanelContainer } from '@/components/custom/ToolPanelContainer';
 import { Search, Loader2, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import type { LayerInfo } from '../../../types/canvas-ai-tools';
 
 interface AIReviewPanelProps {
   selectedTool: string;
   projectId: string;
-  layers: any[];
+  layers: LayerInfo[];
 }
 
 export const AIReviewPanel: React.FC<AIReviewPanelProps> = ({ 

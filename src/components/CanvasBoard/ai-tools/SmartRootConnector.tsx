@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ToolPanelContainer } from '@/components/custom/ToolPanelContainer';
 import { GitBranch, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import type { GeneratedNode } from '../../../types/canvas-ai-tools';
 
 interface SmartRootConnectorProps {
   sourceId: string | null;
@@ -13,7 +14,7 @@ interface SmartRootConnectorProps {
     source: string; 
     target: string; 
     text: string; 
-    generatedNodes: any[] 
+    generatedNodes: GeneratedNode[] 
   }) => void;
 }
 

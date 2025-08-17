@@ -106,13 +106,11 @@ export const SimplifiedSelectionBoundingBox: React.FC<SimplifiedSelectionBoundin
         onMouseDown={(e) => handleResizeStart('se', e)}
       />
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-sw-resize pointer-events-auto hover:bg-blue-600"
-        style={{ bottom: -6, left: -6 }}
+        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-sw-resize pointer-events-auto hover:bg-blue-600 bottom-[-6px] left-[-6px]"
         onMouseDown={(e) => handleResizeStart('sw', e)}
       />
       <div 
-        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-ne-resize pointer-events-auto hover:bg-blue-600"
-        style={{ top: -6, right: -6 }}
+        className="absolute w-3 h-3 bg-blue-500 border border-white cursor-ne-resize pointer-events-auto hover:bg-blue-600 top-[-6px] right-[-6px]"
         onMouseDown={(e) => handleResizeStart('ne', e)}
       />
       <div 

@@ -262,9 +262,7 @@ const InfiniteCanvas = forwardRef<InfiniteCanvasRef, InfiniteCanvasProps>(({
             }
           }
         }}
-        style={{ 
-          cursor: isDragging.current ? 'grabbing' : 'grab'
-        }}
+        className={isDragging.current ? 'cursor-grabbing' : 'cursor-grab'}
       />
       
       {/* Content layer with transformation */}
