@@ -14,20 +14,19 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   isMainSidebarCollapsed,
   isSettingsSidebarCollapsed
 }) => {
+  // Early return for no selection
+  if (!selectedCategory) {
+    return <EmptySettingsState />;
+  }
+
   return (
-    <>
-      {!selectedCategory ? (
-        <EmptySettingsState />
-      ) : (
-        <SettingsPanelLayout>
-          <SettingsCategoryPanel 
-            category={selectedCategory}
-            isMainSidebarCollapsed={isMainSidebarCollapsed}
-            isSettingsSidebarCollapsed={isSettingsSidebarCollapsed}
-          />
-        </SettingsPanelLayout>
-      )}
-    </>
+    <SettingsPanelLayout>
+      <SettingsCategoryPanel 
+        category={selectedCategory}
+        isMainSidebarCollapsed={isMainSidebarCollapsed}
+        isSettingsSidebarCollapsed={isSettingsSidebarCollapsed}
+      />
+    </SettingsPanelLayout>
   );
 };
 

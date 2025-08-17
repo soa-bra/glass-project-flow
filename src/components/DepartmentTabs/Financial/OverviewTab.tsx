@@ -1,8 +1,7 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { AlertTriangle, CheckCircle, Clock, Bell, BarChart, TrendingUp } from 'lucide-react';
 import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { SafeChart } from '@/components/ui/SafeChart';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { BaseCard, BaseListItem } from '@/components/shared';
 import { mockBudgetData, mockCashFlowData } from './data';
@@ -11,15 +10,6 @@ import { Alert } from './types';
 import { SPACING, LAYOUT } from '@/components/shared/design-system/constants';
 
 export const OverviewTab: React.FC = () => {
-  const isMountedRef = useRef(true);
-
-  useEffect(() => {
-    console.log('Financial OverviewTab mounted');
-    return () => {
-      console.log('Financial OverviewTab unmounting');
-      isMountedRef.current = false;
-    };
-  }, []);
   const [alerts] = useState<Alert[]>([
     {
       id: 1,
@@ -89,7 +79,7 @@ export const OverviewTab: React.FC = () => {
           icon={<BarChart className={LAYOUT.ICON_SIZE} />}
           className="p-6"
         >
-          <SafeChart width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={300}>
             <RechartsBarChart data={mockBudgetData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.1} />
               <XAxis dataKey="month" stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
@@ -109,7 +99,7 @@ export const OverviewTab: React.FC = () => {
               <Bar dataKey="budget" fill="#bdeed3" name="الميزانية" />
               <Bar dataKey="actual" fill="#a4e2f6" name="الفعلي" />
             </RechartsBarChart>
-          </SafeChart>
+          </ResponsiveContainer>
         </BaseCard>
 
         {/* Cash Flow Forecast */}
@@ -118,7 +108,7 @@ export const OverviewTab: React.FC = () => {
           icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
           className="p-6"
         >
-          <SafeChart width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={300}>
             <LineChart data={mockCashFlowData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.1} />
               <XAxis dataKey="month" stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
@@ -138,7 +128,7 @@ export const OverviewTab: React.FC = () => {
               <Line type="monotone" dataKey="inflow" stroke="#d9d2fd" strokeWidth={3} name="التدفق الداخل" />
               <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} name="التدفق الخارج" />
             </LineChart>
-          </SafeChart>
+          </ResponsiveContainer>
         </BaseCard>
       </div>
 

@@ -1,25 +1,15 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Target, Plus, Search, Filter, Calendar, DollarSign, TrendingUp, FileText, Users } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { mockOpportunities, mockCRMAnalytics } from './data';
-import { SafeChart } from '@/components/ui/SafeChart';
 
 export const OpportunitiesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState<string>('all');
-  const isMountedRef = useRef(true);
-
-  useEffect(() => {
-    console.log('OpportunitiesTab mounted');
-    return () => {
-      console.log('OpportunitiesTab unmounting');
-      isMountedRef.current = false;
-    };
-  }, []);
 
   const stageColors = {
     'lead': '#6B7280',
@@ -155,7 +145,7 @@ export const OpportunitiesTab: React.FC = () => {
             <TrendingUp className="ml-2 h-5 w-5" />
             مسار المبيعات
           </h3>
-          <SafeChart width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={funnelData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="stage" className="font-arabic" />
@@ -168,7 +158,7 @@ export const OpportunitiesTab: React.FC = () => {
               />
               <Bar dataKey="count" fill="#3B82F6" name="count" />
             </BarChart>
-          </SafeChart>
+          </ResponsiveContainer>
         </GenericCard>
 
         {/* Opportunities by Source */}
@@ -177,7 +167,7 @@ export const OpportunitiesTab: React.FC = () => {
             <Users className="ml-2 h-5 w-5" />
             مصادر الفرص
           </h3>
-          <SafeChart width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
                 data={opportunityBySource}
@@ -193,7 +183,7 @@ export const OpportunitiesTab: React.FC = () => {
               </Pie>
               <Tooltip />
             </PieChart>
-          </SafeChart>
+          </ResponsiveContainer>
         </GenericCard>
       </div>
 

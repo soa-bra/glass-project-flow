@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CategoryPanelFactory } from './CategoryPanelFactory';
 
@@ -13,10 +12,11 @@ export const SettingsCategoryPanel: React.FC<SettingsCategoryPanelProps> = ({
   isMainSidebarCollapsed,
   isSettingsSidebarCollapsed
 }) => {
+  const CategoryComponent = CategoryPanelFactory.getComponent(category);
+  
   return (
     <div className="h-full flex flex-col bg-transparent">
-      <CategoryPanelFactory 
-        category={category}
+      <CategoryComponent 
         isMainSidebarCollapsed={isMainSidebarCollapsed}
         isSettingsSidebarCollapsed={isSettingsSidebarCollapsed}
       />

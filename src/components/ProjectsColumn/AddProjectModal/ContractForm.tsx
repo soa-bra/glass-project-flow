@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { UnifiedInput } from '@/components/ui/UnifiedInput';
-import { UnifiedButton } from '@/components/ui/UnifiedButton';
-import { BinaryToggle } from '@/components/ui/UnifiedToggle';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { ValidationSchemas, FormValidator, InputSanitizer } from '../../../utils/validation';
 
 interface ContractPayment {
@@ -56,13 +56,13 @@ export const ContractForm: React.FC<ContractFormProps> = ({
   };
   return (
     <div className="space-y-6">
-      <div className="space-y-3">
-        <div className="font-medium text-ink text-right font-arabic">يوجد عقد لهذا المشروع</div>
-        <BinaryToggle
-          value={projectData.hasContract}
-          onChange={(value) => onInputChange('hasContract', value)}
-          trueLabel="نعم"
-          falseLabel="لا"
+      <div className="flex items-center gap-3">
+        <Label className="font-arabic text-right">يوجد عقد لهذا المشروع</Label>
+        <input
+          type="checkbox"
+          checked={projectData.hasContract}
+          onChange={(e) => onInputChange('hasContract', e.target.checked)}
+          className="w-4 h-4"
         />
       </div>
 
@@ -72,9 +72,9 @@ export const ContractForm: React.FC<ContractFormProps> = ({
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
         }}>
-          <div>
-            <UnifiedInput
-              label="قيمة العقد (ر.س)"
+          <div className="space-y-2">
+            <Label className="font-arabic text-right">قيمة العقد (ر.س)</Label>
+            <Input
               type="text"
               value={projectData.contractValue}
               onChange={(e) => {
@@ -82,52 +82,62 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                 onInputChange('contractValue', sanitized);
                 validateField('contractValue', sanitized);
               }}
+              className={`text-right font-arabic ${validationErrors.contractValue ? 'border-red-500' : ''}`}
               placeholder="0"
-              error={validationErrors.contractValue}
-              fullWidth
             />
+            {validationErrors.contractValue && (
+              <p className="text-red-500 text-sm mt-1 text-right">{validationErrors.contractValue}</p>
+            )}
           </div>
 
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <UnifiedButton
-                variant="primary"
+              <Button
+                type="button"
                 onClick={onAddPayment}
+                className="bg-black text-white hover:bg-gray-800 font-arabic"
               >
                 إضافة دفعة +
-              </UnifiedButton>
-              <div className="font-medium text-ink text-right font-arabic text-lg">دفعات العقد</div>
+              </Button>
+              <Label className="font-arabic text-right text-lg">دفعات العقد</Label>
             </div>
 
             <div className="space-y-3">
               {projectData.contractPayments.map((payment: ContractPayment) => (
                 <div key={payment.id} className="grid grid-cols-3 gap-4 p-3 bg-white/10 rounded-lg">
-                  <UnifiedButton
+                  <Button
+                    type="button"
                     variant="destructive"
                     size="sm"
                     onClick={() => onRemovePayment(payment.id)}
                     className="w-8 h-8 p-0"
                   >
                     🗑️
-                  </UnifiedButton>
+                  </Button>
                   
-                  <div>
-                    <UnifiedInput
-                      label="تاريخ الدفع"
+                  <div className="space-y-1">
+                    <Label className="text-xs font-arabic">تاريخ الدفع</Label>
+                    <Input
                       type="date"
                       value={payment.date}
                       onChange={(e) => {
                         onUpdatePayment(payment.id, 'date', e.target.value);
                         validateField(`paymentDate_${payment.id}`, e.target.value);
                       }}
-                      error={validationErrors[`paymentDate_${payment.id}`]}
-                      fullWidth
+                      className={`text-right font-arabic text-sm ${
+                        validationErrors[`paymentDate_${payment.id}`] ? 'border-red-500' : ''
+                      }`}
                     />
+                    {validationErrors[`paymentDate_${payment.id}`] && (
+                      <p className="text-red-500 text-xs mt-1 text-right">{validationErrors[`paymentDate_${payment.id}`]}</p>
+                    )}
                   </div>
 
-                  <div>
-                    <UnifiedInput
-                      label={`المبلغ - دفعة ${payment.id}`}
+                  <div className="space-y-1">
+                    <Label className="text-xs font-arabic text-right">
+                      المبلغ - دفعة {payment.id}
+                    </Label>
+                    <Input
                       type="text"
                       value={payment.amount}
                       onChange={(e) => {
@@ -135,10 +145,14 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                         onUpdatePayment(payment.id, 'amount', sanitized);
                         validateField(`paymentAmount_${payment.id}`, sanitized);
                       }}
+                      className={`text-right font-arabic text-sm ${
+                        validationErrors[`paymentAmount_${payment.id}`] ? 'border-red-500' : ''
+                      }`}
                       placeholder="0"
-                      error={validationErrors[`paymentAmount_${payment.id}`]}
-                      fullWidth
                     />
+                    {validationErrors[`paymentAmount_${payment.id}`] && (
+                      <p className="text-red-500 text-xs mt-1 text-right">{validationErrors[`paymentAmount_${payment.id}`]}</p>
+                    )}
                   </div>
                 </div>
               ))}
