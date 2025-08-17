@@ -47,6 +47,8 @@ export const ProjectModalHeader: React.FC<ProjectModalHeaderProps> = ({
             onTabChange={onTabChange}
             className="font-arabic"
           />
+          
+          <div className="w-8"></div>
         </div>
       </DialogHeader>
     </>
