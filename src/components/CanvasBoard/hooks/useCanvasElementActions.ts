@@ -1,6 +1,7 @@
 
 import { useCallback } from 'react';
 import { CanvasElement } from '../types';
+import { toNumber } from '@/utils/canvasUtils';
 
 const GRID_SIZE = 20;
 
@@ -163,7 +164,7 @@ export const useCanvasElementActions = ({
       if (element && !element.locked) {
         const currentRotation = element.rotation || 0;
         updateElement(elementId, { 
-          rotation: (currentRotation + degrees) % 360
+          rotation: (toNumber(currentRotation, 0) + degrees) % 360
         });
       }
     });

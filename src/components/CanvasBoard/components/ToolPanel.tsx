@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CanvasElement } from '../types';
 import { Layer } from './CanvasPanelTypes';
+import { toNumber } from '@/utils/canvasUtils';
 
 // Enhanced Tool Panels (Direct imports)
 import { EnhancedFileUploadPanel, EnhancedSmartElementsPanel, EnhancedSelectionPanel, EnhancedTextPanel, EnhancedShapesPanel, EnhancedCommentPanel } from './panels/tools';
@@ -126,7 +127,7 @@ export const ToolPanel: React.FC<ToolPanelProps> = props => {
           const element = props.elements.find(el => el.id === elementId);
           if (element) {
             props.onUpdateElement(elementId, {
-              rotation: (element.rotation || 0) + angle
+              rotation: toNumber(element.rotation, 0) + angle
             });
           }
         }} onArrange={arrangement => {

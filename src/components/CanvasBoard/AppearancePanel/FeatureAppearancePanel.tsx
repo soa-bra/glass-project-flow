@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toNumber } from '@/utils/canvasUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,13 +21,13 @@ import { toast } from 'sonner';
 import { FeatureColorPicker } from './ColorPicker/FeatureColorPicker';
 import { FeatureBorderControls } from './BorderControls/FeatureBorderControls';
 import { StylePresetsManager } from './StylePresets/StylePresetsManager';
-import { ElementStyle, SelectedElement, BorderStyle, StylePreset } from '@/types/canvas';
+import { SelectedElement, BorderStyle, StylePreset } from '@/types/canvas';
 
 
 interface AppearancePanelProps {
   selectedElements?: SelectedElement[];
-  onStyleUpdate?: (elementId: string, style: ElementStyle) => void;
-  onBulkStyleUpdate?: (elementIds: string[], style: ElementStyle) => void;
+  onStyleUpdate?: (elementId: string, style: Record<string, any>) => void;
+  onBulkStyleUpdate?: (elementIds: string[], style: Record<string, any>) => void;
   isVisible?: boolean;
   onToggleVisibility?: () => void;
 }
@@ -49,7 +50,7 @@ export const FeatureAppearancePanel: React.FC<AppearancePanelProps> = ({
     if (selectedElements.length === 1) return selectedElements[0].style || {};
     
     // Find common properties across all selected elements
-    const commonStyle: ElementStyle = {};
+    const commonStyle: Record<string, any> = {};
     const firstElementStyle = selectedElements[0].style || {};
     
     Object.keys(firstElementStyle).forEach(key => {
@@ -95,7 +96,7 @@ export const FeatureAppearancePanel: React.FC<AppearancePanelProps> = ({
     handleStyleChange('stroke', border.color);
     handleStyleChange('strokeWidth', border.width);
     handleStyleChange('borderRadius', border.radius);
-    handleStyleChange('opacity', border.opacity / 100);
+    handleStyleChange('opacity', toNumber(border.opacity, 100) / 100);
   };
 
   const handlePresetApply = (preset: StylePreset) => {

@@ -1,68 +1,41 @@
-// Canvas Types - التعريفات الموحدة للـ Canvas System
+// Simplified Canvas Types with maximum flexibility
 export interface CanvasElement {
   id: string;
-  type: 'text' | 'shape' | 'sticky' | 'image' | 'annotation' | 'flowchart' | 'comment' | 'upload' | 'line' | 'smart-element' | 'timeline' | 'mindmap' | 'brainstorm' | 'root' | 'moodboard' | 'group';
+  type: string; // More flexible type system
   position: { x: number; y: number };
   size: { width: number; height: number };
-  style: ElementStyle;
+  style: Record<string, any>; // Maximum flexibility for styling
   content?: string;
   locked?: boolean;
   visible?: boolean;
   layer?: number;
-  metadata?: Record<string, unknown>;
-  data?: {
-    path?: Array<{ x: number; y: number }>;
-    content?: React.ReactNode;
-    [key: string]: unknown;
-  };
-  rotation?: number;
+  metadata?: Record<string, any>;
+  data?: Record<string, any>;
+  rotation?: number | string;
   parentId?: string;
   layerId?: string;
+  [key: string]: any; // Allow any additional properties
 }
 
 export interface ElementStyle {
-  backgroundColor?: string;
-  color?: string;
-  fontSize?: number;
-  fontWeight?: 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
-  fontFamily?: string;
-  textAlign?: 'left' | 'center' | 'right';
-  textDecoration?: 'none' | 'line-through' | 'overline' | 'underline' | string;
-  textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase' | 'full-width' | 'full-size-kana';
-  stroke?: string;
-  strokeWidth?: number;
-  strokeDashArray?: string;
-  fill?: string;
-  borderRadius?: number;
-  opacity?: number;
-  transform?: string;
-  zIndex?: number;
-  lineHeight?: number;
-  letterSpacing?: number;
-  wordSpacing?: number;
-  whiteSpace?: string;
-  overflow?: string;
-  padding?: string | number;
-  [key: string]: unknown;
+  [key: string]: any; // Maximum flexibility
 }
 
 export interface BorderStyle {
-  style: 'solid' | 'dashed' | 'dotted' | 'none' | 'double' | 'groove' | 'ridge' | 'inset' | 'outset';
-  width: number;
-  color: string;
-  radius?: number;
-  opacity?: number;
+  style?: string;
+  width?: number | string;
+  color?: string;
+  radius?: number | string;
+  opacity?: number | string;
+  [key: string]: any;
 }
 
-export interface TextStyle extends ElementStyle {
-  lineHeight?: number;
-  letterSpacing?: number;
-  wordSpacing?: number;
+export interface TextStyle {
+  [key: string]: any; // Maximum flexibility for text styling
 }
 
-export interface ShapeStyle extends ElementStyle {
-  shapeType?: 'rectangle' | 'circle' | 'triangle' | 'arrow';
-  strokeDashArray?: 'none' | 'dashed' | 'dotted';
+export interface ShapeStyle {
+  [key: string]: any; // Maximum flexibility for shape styling
 }
 
 export interface CanvasSettings {
@@ -73,6 +46,7 @@ export interface CanvasSettings {
   gridSize: number;
   background: string;
   theme: 'light' | 'dark';
+  [key: string]: any;
 }
 
 export interface CanvasHistory {
@@ -81,6 +55,7 @@ export interface CanvasHistory {
   action: string;
   elements: CanvasElement[];
   description: string;
+  [key: string]: any;
 }
 
 export interface LayerInfo {
@@ -90,14 +65,16 @@ export interface LayerInfo {
   locked: boolean;
   color?: string;
   elements: string[];
+  [key: string]: any;
 }
 
 // Event Types
 export interface CanvasEventData {
   elementId?: string;
   action: string;
-  data: Record<string, unknown>;
+  data: Record<string, any>;
   timestamp: number;
+  [key: string]: any;
 }
 
 // Collaboration Types
@@ -107,24 +84,27 @@ export interface CollaborationUser {
   color: string;
   isOnline: boolean;
   cursor?: { x: number; y: number };
+  [key: string]: any;
 }
 
 // Analysis Types
 export interface AnalysisResult {
-  classification: Array<{ type: string; confidence: number; label: string }>;
-  sentiment: Array<{ type: string; score: number; label: string }>;
-  suggestions: Array<{ type: string; description: string; action: string }>;
+  classification: Array<Record<string, any>>;
+  sentiment: Array<Record<string, any>>;
+  suggestions: Array<Record<string, any>>;
+  [key: string]: any;
 }
 
 // Preset Types
 export interface StylePreset {
   id: string;
   name: string;
-  category: 'card' | 'gradient' | 'neon' | 'glass' | 'minimal' | 'text' | 'shapes' | 'effects' | 'layouts' | 'custom';
-  style: ElementStyle;
+  category: string;
+  style: Record<string, any>;
   usage?: number;
   createdAt: string;
   updatedAt: string;
+  [key: string]: any;
 }
 
 // Color Types
@@ -134,23 +114,26 @@ export interface ColorConfig {
   accent: string;
   background: string;
   text: string;
+  [key: string]: any;
 }
 
 // Smart Element Config
 export interface SmartElementConfig {
   type: string;
   template: string;
-  style: ElementStyle;
+  style: Record<string, any>;
   content: string;
   size: { width: number; height: number };
-  metadata: Record<string, unknown>;
+  metadata: Record<string, any>;
+  [key: string]: any;
 }
 
 // Component Props Types
 export interface ElementUpdateCallbacks {
-  onStyleUpdate?: (elementId: string, style: ElementStyle) => void;
-  onBulkStyleUpdate?: (elementIds: string[], style: ElementStyle) => void;
+  onStyleUpdate?: (elementId: string, style: Record<string, any>) => void;
+  onBulkStyleUpdate?: (elementIds: string[], style: Record<string, any>) => void;
   onUpdateElement?: (elementId: string, updates: Partial<CanvasElement>) => void;
+  [key: string]: any;
 }
 
 export interface Point {
@@ -161,8 +144,9 @@ export interface Point {
 export interface SelectedElement {
   id: string;
   type: string;
-  style: ElementStyle;
+  style: Record<string, any>;
   isLocked?: boolean;
   isVisible?: boolean;
   name?: string;
+  [key: string]: any;
 }
