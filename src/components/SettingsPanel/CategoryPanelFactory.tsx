@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { GenericSettingsPanel } from './GenericSettingsPanel';
 import { AccountSettingsPanel } from './categories/AccountSettingsPanel';
@@ -9,25 +10,42 @@ import { ThemeSettingsPanel } from './categories/ThemeSettingsPanel';
 import { DataGovernanceSettingsPanel } from './categories/DataGovernanceSettingsPanel';
 import { UsersRolesSettingsPanel } from './categories/UsersRolesSettingsPanel';
 
-const componentMap: Record<string, React.ComponentType<any>> = {
-  'account': AccountSettingsPanel,
-  'security': SecuritySettingsPanel, 
-  'integrations': IntegrationsSettingsPanel,
-  'notifications': NotificationsSettingsPanel,
-  'ai': AISettingsPanel,
-  'theme': ThemeSettingsPanel,
-  'data-governance': DataGovernanceSettingsPanel,
-  'users-roles': UsersRolesSettingsPanel,
-};
-
-export class CategoryPanelFactory {
-  static getComponent(category: string): React.ComponentType<any> {
-    const Component = componentMap[category];
-    if (Component) {
-      return Component;
-    }
-    
-    // Return a stable component reference for default case
-    return React.memo((props: any) => <GenericSettingsPanel category={category} {...props} />);
-  }
+interface CategoryPanelFactoryProps {
+  category: string;
+  isMainSidebarCollapsed: boolean;
+  isSettingsSidebarCollapsed: boolean;
 }
+
+export const CategoryPanelFactory: React.FC<CategoryPanelFactoryProps> = ({ 
+  category, 
+  isMainSidebarCollapsed, 
+  isSettingsSidebarCollapsed 
+}) => {
+  // Always call hooks consistently, then render based on category
+  const sharedProps = {
+    isMainSidebarCollapsed,
+    isSettingsSidebarCollapsed
+  };
+
+  // Use switch with consistent hook calls - no early returns
+  switch (category) {
+    case 'account':
+      return <AccountSettingsPanel {...sharedProps} />;
+    case 'security':
+      return <SecuritySettingsPanel {...sharedProps} />;
+    case 'integrations':
+      return <IntegrationsSettingsPanel {...sharedProps} />;
+    case 'notifications':
+      return <NotificationsSettingsPanel {...sharedProps} />;
+    case 'ai':
+      return <AISettingsPanel {...sharedProps} />;
+    case 'theme':
+      return <ThemeSettingsPanel {...sharedProps} />;
+    case 'data-governance':
+      return <DataGovernanceSettingsPanel {...sharedProps} />;
+    case 'users-roles':
+      return <UsersRolesSettingsPanel {...sharedProps} />;
+    default:
+      return <GenericSettingsPanel category={category} {...sharedProps} />;
+  }
+};
