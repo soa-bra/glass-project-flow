@@ -56,7 +56,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
   return (
     <div className="space-y-6">
       {/* حالة التقارير */}
-      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">مركز التقارير</h3>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
@@ -68,28 +68,28 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
 
       {/* إحصائيات التقارير */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي التقارير</h4>
           <p className="text-2xl font-bold text-black mb-1">{reportStats.totalReports}</p>
           <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">تقرير متاح</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">هذا الشهر</h4>
           <p className="text-2xl font-bold text-black mb-1">{reportStats.thisMonth}</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">تقارير جديدة</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">متوسط التوليد</h4>
           <p className="text-2xl font-bold text-black mb-1">{reportStats.avgGenTime} دقيقة</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">زمن سريع</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">مرات التصدير</h4>
           <p className="text-2xl font-bold text-black mb-1">{reportStats.exportCount}</p>
           <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
@@ -99,7 +99,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
       </div>
 
       {/* فئات التقارير */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-lg font-semibold text-black mb-6">أنواع التقارير المتاحة</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
@@ -134,7 +134,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
       </div>
 
       {/* قائمة التقارير المتاحة */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-black">التقارير المتاحة للتصدير</h3>
           <Button className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-black/80 transition-colors">
@@ -176,7 +176,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
       </div>
 
       {/* إعدادات التقارير الآلية */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-lg font-semibold text-black mb-6">الإعدادات والتقارير الآلية</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">

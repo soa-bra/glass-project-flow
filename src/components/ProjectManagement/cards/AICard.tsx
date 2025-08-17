@@ -51,7 +51,7 @@ export const AICard: React.FC<AICardProps> = ({ project }) => {
   };
 
   return (
-    <BaseCard className="h-full">
+    <div className="h-full rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
       <div className="flex items-center gap-2 mb-4">
         <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm">
           🤖
@@ -85,6 +85,6 @@ export const AICard: React.FC<AICardProps> = ({ project }) => {
           </div>
         ))}
       </div>
-    </BaseCard>
+    </div>
   );
 };

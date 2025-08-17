@@ -23,7 +23,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
   } = useUnifiedTasks(project.id);
   return <div className="flex-1 overflow-auto space-y-6">
       {/* Header with view toggle and AI assistant */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-black">إدارة المهام</h3>
           <div className="flex items-center gap-4">
@@ -49,7 +49,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
 
       {/* Task Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي المهام</h4>
           <p className="text-2xl font-bold text-black mb-1">{tasks.length}</p>
           <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
@@ -57,7 +57,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
           </div>
         </div>
         
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">المكتملة</h4>
           <p className="text-2xl font-bold text-black mb-1">{tasks.filter(t => t.status === 'completed').length}</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
@@ -65,7 +65,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
           </div>
         </div>
         
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">المتأخرة</h4>
           <p className="text-2xl font-bold text-black mb-1">{tasks.filter(t => t.status === 'late').length}</p>
           <div className="bg-[#f1b5b9] px-3 py-1 rounded-full inline-block">
@@ -73,7 +73,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
           </div>
         </div>
         
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">معدل الإنجاز</h4>
           <p className="text-2xl font-bold text-black mb-1">{Math.round(tasks.reduce((acc, task) => acc + task.progress, 0) / Math.max(tasks.length, 1))}%</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">

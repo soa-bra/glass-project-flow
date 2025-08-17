@@ -103,7 +103,7 @@ export const FinancialTab = ({
 
   return <div className="space-y-6">
       {/* حالة الميزانية */}
-      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">الحالة المالية</h3>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
@@ -115,7 +115,7 @@ export const FinancialTab = ({
 
       {/* الإحصائيات المالية */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">المتبقي من الميزانية</h4>
           <p className="text-2xl font-bold text-black mb-1">{remainingBudget.toLocaleString()} ر.س</p>
           <p className="text-sm font-normal text-black">من إجمالي {financialData.totalBudget.toLocaleString()} ر.س</p>
@@ -125,7 +125,7 @@ export const FinancialTab = ({
             </div>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي المصروفات</h4>
           <p className="text-2xl font-bold text-black mb-1">{financialData.totalExpenses.toLocaleString()} ر.س</p>
           <p className="text-sm font-normal text-black">{expensePercentage}% من الميزانية المخططة</p>
@@ -135,7 +135,7 @@ export const FinancialTab = ({
             </div>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">الربح المتوقع</h4>
           <p className="text-2xl font-bold text-black mb-1">{Math.max(0, expectedProfit).toLocaleString()} ر.س</p>
           <p className="text-sm font-normal text-black">{Math.round(expectedProfit / financialData.totalBudget * 100)}% هامش ربح متوقع</p>
@@ -148,7 +148,7 @@ export const FinancialTab = ({
       </div>
 
       {/* تفاصيل المصروفات */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-lg font-semibold text-black mb-6">تفصيل المصروفات حسب الفئة</h3>
         <div className="space-y-4">
           {financialData.expenses.map((expense, index) => <div key={index} className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
@@ -166,7 +166,7 @@ export const FinancialTab = ({
       </div>
 
       {/* التدفق النقدي المتوقع */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-black">التدفق النقدي المتوقع (الأشهر القادمة)</h3>
           <div className="flex gap-2">
@@ -262,7 +262,7 @@ export const ClientTab = ({
   };
   return <div className="space-y-6">
       {/* حالة رضا العميل */}
-      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">رضا العميل</h3>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
@@ -274,21 +274,21 @@ export const ClientTab = ({
       
       {/* إحصائيات العميل */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10 py-[35px]">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center py-[35px]">
           <h4 className="text-xs text-gray-600">تقييم العميل</h4>
           <p className="font-bold text-base my-[10px]">4.8/5</p>
           <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
             <span className="text-xs text-black">تقييم ممتاز</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10 py-[35px] px-0">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center py-[35px] px-0">
           <h4 className="text-xs text-gray-600">المشاريع السابقة</h4>
           <p className="font-bold text-base my-[10px]">5</p>
           <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
             <span className="text-xs text-black">عميل دائم</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10 my-0 px-0 py-[35px]">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center my-0 px-0 py-[35px]">
           <h4 className="text-xs text-gray-600">معدل الاستجابة</h4>
           <p className="font-bold text-base my-[10px]">2.1 ساعة</p>
           <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
@@ -425,7 +425,7 @@ export const TeamTab = ({
   };
   return <div className="space-y-6">
       {/* حالة الفريق */}
-      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">حالة الفريق</h3>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
@@ -437,28 +437,28 @@ export const TeamTab = ({
 
       {/* إحصائيات الفريق */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي الأعضاء</h4>
           <p className="text-2xl font-bold text-black mb-1">4</p>
           <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">أعضاء نشطين</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">معدل الأداء العام</h4>
           <p className="text-2xl font-bold text-black mb-1">91%</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">أداء ممتاز</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">معدل الحمولة</h4>
           <p className="text-2xl font-bold text-black mb-1">83%</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">مثالي</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">المهام المكتملة</h4>
           <p className="text-2xl font-bold text-black mb-1">47/50</p>
           <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
@@ -470,7 +470,7 @@ export const TeamTab = ({
       <TeamRoster data={teamMembers} onRemoveMember={handleRemoveMember} />
 
       {/* أدوات إدارة الفريق */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة فريق المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
@@ -640,7 +640,7 @@ export const AttachmentsTab = ({
   const projectDocuments = getProjectFiles('current');
   return <div className="space-y-6">
       {/* حالة المرفقات */}
-      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">إدارة المرفقات</h3>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
@@ -652,28 +652,28 @@ export const AttachmentsTab = ({
 
       {/* إحصائيات المرفقات */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي الملفات</h4>
           <p className="text-2xl font-bold text-black mb-1">23</p>
           <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">ملف مرفوع</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">الحجم الإجمالي</h4>
           <p className="text-2xl font-bold text-black mb-1">156 MB</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">مساحة مستخدمة</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">الملفات المشتركة</h4>
           <p className="text-2xl font-bold text-black mb-1">8</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">ملفات مشتركة</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">المعدلة حديثاً</h4>
           <p className="text-2xl font-bold text-black mb-1">5</p>
           <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
@@ -683,7 +683,7 @@ export const AttachmentsTab = ({
       </div>
 
       {/* أدوات إدارة المرفقات */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة مرفقات المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
@@ -776,7 +776,7 @@ export const TemplatesTab = ({
   }];
   return <div className="space-y-6">
       {/* حالة مكتبة القوالب */}
-      <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">مكتبة القوالب</h3>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
@@ -788,28 +788,28 @@ export const TemplatesTab = ({
 
       {/* إحصائيات القوالب */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي القوالب</h4>
           <p className="text-2xl font-bold text-black mb-1">12</p>
           <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">قالب متاح</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">الأكثر استخداماً</h4>
           <p className="text-2xl font-bold text-black mb-1">6</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">قوالب شائعة</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">تم التحديث</h4>
           <p className="text-2xl font-bold text-black mb-1">3</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">هذا الأسبوع</span>
           </div>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي التحميلات</h4>
           <p className="text-2xl font-bold text-black mb-1">261</p>
           <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
@@ -819,7 +819,7 @@ export const TemplatesTab = ({
       </div>
 
       {/* أدوات إدارة القوالب */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة قوالب المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 rounded-2xl border border-black/10 bg-transparent">
