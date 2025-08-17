@@ -1,10 +1,8 @@
 
 import React from 'react';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { UnifiedInput, UnifiedTextarea, UnifiedSelect } from '@/components/ui/UnifiedInput';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 interface BasicInfoFormProps {
   projectData: {
@@ -39,78 +37,74 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label className="font-arabic text-right">اسم المشروع *</Label>
-          <Input
+        <div>
+          <UnifiedInput
+            label="اسم المشروع *"
             value={projectData.name}
             onChange={(e) => onInputChange('name', e.target.value)}
-            className="text-right font-arabic"
             placeholder="أدخل اسم المشروع"
+            fullWidth
           />
         </div>
         
-        <div className="space-y-2">
-          <Label className="font-arabic text-right">مدير المشروع *</Label>
-          <Select value={projectData.manager} onValueChange={(value) => onInputChange('manager', value)}>
-            <SelectTrigger className="text-right font-arabic">
-              <SelectValue placeholder="اختر مدير المشروع" />
-            </SelectTrigger>
-            <SelectContent>
-              {teamMembers.map((member) => (
-                <SelectItem key={member} value={member}>
-                  {member}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div>
+          <UnifiedSelect
+            label="مدير المشروع *"
+            value={projectData.manager}
+            onChange={(e) => onInputChange('manager', e.target.value)}
+            placeholder="اختر مدير المشروع"
+            options={teamMembers.map(member => ({ value: member, label: member }))}
+            fullWidth
+          />
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label className="font-arabic text-right">وصف المشروع</Label>
-        <Textarea
+      <div>
+        <UnifiedTextarea
+          label="وصف المشروع"
           value={projectData.description}
           onChange={(e) => onInputChange('description', e.target.value)}
-          className="text-right font-arabic min-h-[100px]"
           placeholder="أدخل وصف المشروع"
+          rows={4}
+          fullWidth
         />
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label className="font-arabic text-right">تاريخ البدء *</Label>
-          <Input
+        <div>
+          <UnifiedInput
+            label="تاريخ البدء *"
             type="date"
             value={projectData.startDate}
             onChange={(e) => onInputChange('startDate', e.target.value)}
-            className="text-right font-arabic"
+            fullWidth
           />
         </div>
         
-        <div className="space-y-2">
-          <Label className="font-arabic text-right">تاريخ التسليم المتوقع *</Label>
-          <Input
+        <div>
+          <UnifiedInput
+            label="تاريخ التسليم المتوقع *"
             type="date"
             value={projectData.endDate}
             onChange={(e) => onInputChange('endDate', e.target.value)}
-            className="text-right font-arabic"
+            fullWidth
           />
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label className="font-arabic text-right">الميزانية (ر.س)</Label>
-        <Input
+      <div>
+        <UnifiedInput
+          label="الميزانية (ر.س)"
           type="number"
           value={projectData.budget}
           onChange={(e) => onInputChange('budget', e.target.value)}
-          className="text-right font-arabic"
           placeholder="0"
+          fullWidth
         />
       </div>
 
       <div className="space-y-4">
-        <Label className="font-arabic text-right">أعضاء الفريق</Label>
+        <div className="font-medium text-ink text-right font-arabic">أعضاء الفريق</div>
         <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
           {teamMembers.map((member) => (
             <div key={member} className="flex items-center space-x-2 space-x-reverse">
