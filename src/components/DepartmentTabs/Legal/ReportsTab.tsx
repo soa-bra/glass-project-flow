@@ -33,34 +33,34 @@ export const ReportsTab: React.FC = () => {
       </div>
 
       {/* إحصائيات سريعة */}
-      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic">إحصائيات التقارير</h3>
         </div>
         <div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
               <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
                 <BarChart className="h-4 w-4 text-black" />
               </div>
               <div className="text-2xl font-bold text-black font-arabic">24</div>
               <div className="text-sm font-medium text-black font-arabic">التقارير المتاحة</div>
             </div>
-            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
               <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
                 <Calendar className="h-4 w-4 text-black" />
               </div>
               <div className="text-2xl font-bold text-black font-arabic">12</div>
               <div className="text-sm font-medium text-black font-arabic">تقارير هذا الشهر</div>
             </div>
-            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
               <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
                 <Download className="h-4 w-4 text-black" />
               </div>
               <div className="text-2xl font-bold text-black font-arabic">156</div>
               <div className="text-sm font-medium text-black font-arabic">مرات التحميل</div>
             </div>
-            <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
               <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2">
                 <Filter className="h-4 w-4 text-black" />
               </div>
@@ -72,15 +72,15 @@ export const ReportsTab: React.FC = () => {
       </div>
 
       {/* قائمة التقارير */}
-      <div className="bg-[#f2ffff] p-9 rounded-3xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic">التقارير المتاحة</h3>
         </div>
         <div>
           <div className="space-y-4">
-            {mockReports.map(report => <div key={report.id} className="flex items-center justify-between p-4 bg-transparent border border-black/10 rounded-3xl hover:bg-white/10 transition-colors">
+            {mockReports.map(report => <div key={report.id} className="flex items-center justify-between p-4 bg-transparent border border-[#DADCE0] rounded-[41px] hover:bg-white/10 transition-colors">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-transparent border border-black/10 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-transparent border border-[#DADCE0] rounded-full flex items-center justify-center">
                     <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
                       <BarChart className="w-4 h-4 text-black" />
                     </div>
