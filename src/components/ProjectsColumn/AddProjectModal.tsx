@@ -3,14 +3,9 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
-import { AddTaskModal } from './AddTaskModal';
-import type { ProjectData, TaskData } from '@/types';
-import { useProjectForm } from './AddProjectModal/hooks/useProjectForm';
-import { useSmartTasks } from './AddProjectModal/hooks/useSmartTasks';
+import type { ProjectData } from '@/types';
 import { ProjectModalHeader } from './AddProjectModal/components/ProjectModalHeader';
-import { ProjectModalTabs } from './AddProjectModal/components/ProjectModalTabs';
-import { ProjectModalFooter } from './AddProjectModal/components/ProjectModalFooter';
-import { ProjectModalDialogs } from './AddProjectModal/components/ProjectModalDialogs';
+import { SimpleProjectForm } from './AddProjectModal/SimpleProjectForm';
 
 interface AddProjectModalProps {
   isOpen: boolean;
@@ -30,101 +25,45 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   isEditMode = false,
 }) => {
   const { toast } = useToast();
-  const { addTasksToProject } = useProjectTasksContext();
-  const [activeTab, setActiveTab] = useState('basic');
-  const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  const {
-    projectData,
-    handleInputChange,
-    handleClientDataChange,
-    validateForm,
-    resetForm,
-    addTask,
-    addPayment,
-    removePayment,
-    updatePayment,
-  } = useProjectForm(editingProject, isEditMode);
-
-  const { generateSmartTasks } = useSmartTasks();
-
-  const teamMembers = [
-    'أحمد محمد',
-    'فاطمة علي',
-    'خالد الأحمد',
-    'نورا السالم',
-    'محمد العتيبي',
-    'سارة النجار'
-  ];
-
-  const handleGenerateSmartTasks = () => {
-    const smartTasks = generateSmartTasks(projectData, teamMembers);
-    smartTasks.forEach(task => addTask(task));
-  };
-
-  const handleSaveProject = () => {
-    if (!validateForm()) return;
-    setShowConfirmDialog(true);
-  };
-
-  const confirmSaveProject = () => {
+  const handleSaveProject = (data: { date: Date; title: string; type: string }) => {
     try {
       if (isEditMode && editingProject) {
         // تحديث المشروع الموجود
         const updatedProject: ProjectData = {
           ...editingProject,
-          name: projectData.name,
-          description: projectData.description,
-          owner: projectData.manager,
-          deadline: projectData.endDate || projectData.deadline,
-          team: projectData.team,
-          budget: Number(projectData.budget) || editingProject.budget,
-          tasksCount: projectData.tasks.length || editingProject.tasksCount,
+          name: data.title,
+          deadline: data.date.toISOString(),
         };
 
         onProjectUpdated?.(updatedProject);
         
-        // إضافة المهام للمشروع
-        if (projectData.tasks.length > 0) {
-          addTasksToProject(editingProject.id.toString(), projectData.tasks);
-        }
-        
         toast({
           title: "تم تحديث المشروع بنجاح",
-          description: `تم تحديث مشروع "${projectData.name}" بنجاح`,
+          description: `تم تحديث مشروع "${data.title}" بنجاح`,
         });
       } else {
         // إنشاء مشروع جديد
         const newProject: ProjectData = {
           id: Date.now(),
-          name: projectData.name,
-          description: projectData.description,
-          owner: projectData.manager,
-          deadline: projectData.endDate,
-          team: projectData.team,
+          name: data.title,
+          description: `${data.type} - ${data.title}`,
+          owner: 'غير محدد',
+          deadline: data.date.toISOString(),
+          team: [],
           status: 'info',
-          budget: Number(projectData.budget) || 0,
-          tasksCount: projectData.tasks.length,
+          budget: 0,
+          tasksCount: 0,
         };
 
         onProjectAdded(newProject);
         
-        // إضافة المهام للمشروع الجديد
-        if (projectData.tasks.length > 0) {
-          addTasksToProject(newProject.id.toString(), projectData.tasks);
-        }
-        
         toast({
           title: "تم إنشاء المشروع بنجاح",
-          description: `تم إضافة مشروع "${projectData.name}" بنجاح`,
+          description: `تم إضافة مشروع "${data.title}" بنجاح`,
         });
       }
       
-      resetForm();
-      setShowConfirmDialog(false);
-      setActiveTab('basic');
       onClose();
     } catch (error) {
       toast({
@@ -135,77 +74,27 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     }
   };
 
-  const handleClose = () => {
-    if (projectData.name.trim() || projectData.description.trim()) {
-      setShowCancelDialog(true);
-    } else {
-      resetForm();
-      setActiveTab('basic');
-      onClose();
-    }
-  };
-
-  const confirmClose = () => {
-    resetForm();
-    setShowCancelDialog(false);
-    setActiveTab('basic');
-    onClose();
-  };
-
   return (
-    <>
-      <Dialog open={isOpen} onOpenChange={() => {}}>
-        <DialogContent 
-          className="max-w-4xl max-h-[90vh] p-0 overflow-hidden font-arabic"
-          style={{
-            background: 'rgba(255,255,255,0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '24px',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-            zIndex: 9999,
-          }}
-        >
-          <ProjectModalHeader isEditMode={isEditMode} onClose={handleClose} />
-
-          <ProjectModalTabs
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            projectData={projectData}
-            onInputChange={handleInputChange}
-            onClientDataChange={handleClientDataChange}
-            onAddTask={() => setShowAddTaskModal(true)}
-            onGenerateSmartTasks={handleGenerateSmartTasks}
-            onAddPayment={addPayment}
-            onRemovePayment={removePayment}
-            onUpdatePayment={updatePayment}
-            teamMembers={teamMembers}
-          />
-
-          <ProjectModalFooter
-            isEditMode={isEditMode}
+    <Dialog open={isOpen} onOpenChange={() => {}}>
+      <DialogContent 
+        className="max-w-3xl max-h-[90vh] p-0 overflow-hidden font-arabic rounded-[24px] z-[9999]"
+        style={{
+          background: 'rgba(255,255,255,0.4)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+        }}
+      >
+        <ProjectModalHeader isEditMode={isEditMode} onClose={onClose} />
+        
+        <div className="p-6">
+          <SimpleProjectForm
             onSave={handleSaveProject}
-            onCancel={handleClose}
+            onCancel={onClose}
           />
-        </DialogContent>
-      </Dialog>
-
-      <AddTaskModal
-        isOpen={showAddTaskModal}
-        onClose={() => setShowAddTaskModal(false)}
-        onTaskAdded={addTask}
-      />
-
-      <ProjectModalDialogs
-        showConfirmDialog={showConfirmDialog}
-        onConfirmDialogChange={setShowConfirmDialog}
-        showCancelDialog={showCancelDialog}  
-        onCancelDialogChange={setShowCancelDialog}
-        isEditMode={isEditMode}
-        onConfirmSave={confirmSaveProject}
-        onConfirmCancel={confirmClose}
-      />
-    </>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
