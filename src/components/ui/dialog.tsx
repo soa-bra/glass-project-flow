@@ -19,10 +19,6 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
     <DialogOverlay />
     <DialogPrimitive.Content ref={ref} className={cn("fixed left-[50%] top-[50%] sb-modal-shell grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-3 p-5 duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-[0.98] data-[state=open]:zoom-in-[0.98] data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]", className)} {...props} role="dialog" aria-modal="true" dir="rtl">
       {children}
-      <DialogPrimitive.Close className="absolute left-4 top-4 sb-close-btn opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none" aria-label="إغلاق">
-        <X className="h-4 w-4 text-black" />
-        <span className="sr-only">إغلاق</span>
-      </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>);
 DialogContent.displayName = DialogPrimitive.Content.displayName;
