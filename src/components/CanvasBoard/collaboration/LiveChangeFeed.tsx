@@ -140,9 +140,8 @@ export const LiveChangeFeed: React.FC<LiveChangeFeedProps> = ({
                 className="flex items-start gap-3 p-2 bg-gray-50 rounded-lg border"
               >
                 {/* أيقونة المستخدم */}
-                <div 
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                  style={{ backgroundColor: event.color }}
+                 <div 
+                   className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 bg-[${event.color}]`}
                 >
                   {event.userName.charAt(0)}
                 </div>

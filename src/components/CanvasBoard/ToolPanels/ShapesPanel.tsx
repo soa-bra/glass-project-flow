@@ -258,11 +258,10 @@ export const ShapesPanel: React.FC<ShapesPanelProps> = ({
           
           <div className="grid grid-cols-8 gap-1">
             {colorPresets.map((color) => (
-              <button
-                key={color}
-                onClick={() => updateStyle({ fill: color })}
-                className="w-6 h-6 rounded border border-muted hover:scale-110 transition-transform"
-                style={{ backgroundColor: color }}
+               <button
+                 key={color}
+                 onClick={() => updateStyle({ fill: color })}
+                 className={`w-6 h-6 rounded cursor-pointer border-2 border-gray-300 bg-[${color}] hover:scale-110 transition-transform`}
               />
             ))}
           </div>
@@ -379,7 +378,7 @@ export const ShapesPanel: React.FC<ShapesPanelProps> = ({
               style={{
                 width: '60px',
                 height: '60px',
-                backgroundColor: currentShapeStyle.fill || '#4ECDC4',
+                 backgroundColor: currentShapeStyle.fill || '#4ECDC4',
                 border: `${currentShapeStyle.strokeWidth || 2}px ${currentShapeStyle.strokeDashArray === 'none' ? 'solid' : 'dashed'} ${currentShapeStyle.stroke || '#333333'}`,
                 borderRadius: `${currentShapeStyle.borderRadius || 0}px`,
                 opacity: currentShapeStyle.opacity || 1,

@@ -145,13 +145,12 @@ export const CollabBar: React.FC<CollabBarProps> = ({
           <div className="flex items-center gap-2">
             <div className="flex -space-x-2">
               {users.slice(0, 3).map((user) => (
-                <div 
-                  key={user.id} 
-                  className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center text-white text-xs border-2 border-background relative",
-                    user.isOnline ? "ring-2 ring-green-400" : "opacity-50"
-                  )}
-                  style={{ backgroundColor: user.color }}
+                 <div 
+                   key={user.id} 
+                   className={cn(
+                     `w-8 h-8 rounded-full flex items-center justify-center text-white text-xs border-2 border-background relative bg-[${user.color}]`,
+                     user.isOnline ? "ring-2 ring-green-400" : "opacity-50"
+                   )}
                   title={`${user.name} - ${user.isOnline ? 'متصل' : 'غير متصل'}`}
                 >
                   {user.avatar || user.name.charAt(0)}

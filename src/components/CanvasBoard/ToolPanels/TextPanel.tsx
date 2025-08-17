@@ -398,11 +398,10 @@ export const TextPanel: React.FC<TextPanelProps> = ({
                 
                 <div className="grid grid-cols-6 gap-1">
                   {colorPresets.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => updateStyle({ color })}
-                      className="w-6 h-6 rounded border border-muted hover:scale-110 transition-transform cursor-pointer"
-                      style={{ backgroundColor: color }}
+                     <button
+                       key={color}
+                       onClick={() => updateStyle({ color })}
+                       className={`w-6 h-6 rounded cursor-pointer border-2 border-gray-300 bg-[${color}] hover:scale-110 transition-transform`}
                     />
                   ))}
                 </div>

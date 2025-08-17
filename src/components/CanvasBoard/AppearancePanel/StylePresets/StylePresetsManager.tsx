@@ -523,7 +523,7 @@ export const StylePresetsManager: React.FC<StylePresetsManagerProps> = ({
               <div
                 className="w-full h-20 rounded border flex items-center justify-center text-sm"
                 style={{
-                  backgroundColor: currentStyle.backgroundColor || '#f3f4f6',
+                   backgroundColor: currentStyle.backgroundColor || '#f3f4f6',
                   borderColor: currentStyle.stroke || '#d1d5db',
                   borderWidth: currentStyle.strokeWidth || 1,
                   borderRadius: currentStyle.borderRadius || 4,

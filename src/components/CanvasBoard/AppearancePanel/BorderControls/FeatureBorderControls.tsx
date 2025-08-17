@@ -223,9 +223,8 @@ export const FeatureBorderControls: React.FC<BorderControlsProps> = ({
             <div className="space-y-2">
               <Label className="text-sm">لون الحد</Label>
               <div className="flex gap-2">
-                <div
-                  className="w-10 h-10 rounded border cursor-pointer"
-                  style={{ backgroundColor: border.color }}
+                 <div
+                   className={`w-10 h-10 rounded border cursor-pointer ${border.color ? `bg-[${border.color}]` : 'bg-white'}`}
                   onClick={() => {
                     // يمكن ربطه بـ Color Picker
                     toast.info('سيتم فتح منتقي الألوان');
