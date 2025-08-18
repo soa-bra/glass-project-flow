@@ -3,7 +3,12 @@ import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon, Trash2 } from 'lucide-react';
 import { ValidationSchemas, FormValidator, InputSanitizer } from '../../../utils/validation';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface ContractPayment {
   id: number;
@@ -79,11 +84,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
       </div>
 
       {projectData.hasContract && (
-        <div className="space-y-6 p-6 rounded-lg border border-white/40" style={{
-          background: 'rgba(255,255,255,0.15)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
-        }}>
+        <div className="space-y-6 p-6 rounded-3xl bg-white/30 border border-black/20 text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
           <div className="space-y-2">
             <Label className="font-arabic text-right">قيمة العقد (ر.س)</Label>
             <Input
@@ -119,27 +120,42 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                 <div key={payment.id} className="grid grid-cols-3 gap-4 p-3 bg-white/10 rounded-lg">
                   <Button
                     type="button"
-                    variant="destructive"
-                    size="sm"
                     onClick={() => onRemovePayment(payment.id)}
-                    className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors w-8 h-8 p-0"
+                    className="w-8 h-8 p-0 rounded-full bg-transparent border border-black/20 hover:bg-black/5 transition-colors flex items-center justify-center"
                   >
-                    🗑️
+                    <Trash2 className="w-4 h-4 text-black" />
                   </Button>
                   
                   <div className="space-y-1">
                     <Label className="text-xs font-arabic">تاريخ الدفع</Label>
-                    <Input
-                      type="date"
-                      value={payment.date}
-                      onChange={(e) => {
-                        onUpdatePayment(payment.id, 'date', e.target.value);
-                        validateField(`paymentDate_${payment.id}`, e.target.value);
-                      }}
-                      className={`w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none text-sm ${
-                        validationErrors[`paymentDate_${payment.id}`] ? 'border-red-500' : ''
-                      }`}
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none text-sm justify-start",
+                            !payment.date && "text-black/50",
+                            validationErrors[`paymentDate_${payment.id}`] && "border-red-500"
+                          )}
+                        >
+                          <CalendarIcon className="ml-2 h-4 w-4" />
+                          {payment.date ? format(new Date(payment.date), "PPP") : <span>اختر التاريخ</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                        <Calendar 
+                          mode="single" 
+                          selected={payment.date ? new Date(payment.date) : undefined} 
+                          onSelect={(date) => {
+                            const dateString = date ? date.toISOString().split('T')[0] : '';
+                            onUpdatePayment(payment.id, 'date', dateString);
+                            validateField(`paymentDate_${payment.id}`, dateString);
+                          }} 
+                          initialFocus 
+                          className="p-3 pointer-events-auto" 
+                        />
+                      </PopoverContent>
+                    </Popover>
                     {validationErrors[`paymentDate_${payment.id}`] && (
                       <p className="text-red-500 text-xs mt-1 text-right">{validationErrors[`paymentDate_${payment.id}`]}</p>
                     )}
