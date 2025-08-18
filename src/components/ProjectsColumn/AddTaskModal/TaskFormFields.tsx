@@ -261,9 +261,9 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
                 </div>
                 <button
                   onClick={() => removeFile(file.id)}
-                  className="w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors"
+                  className="w-6 h-6 bg-transparent hover:bg-red-500/10 hover:text-red-500 text-red-500 rounded-full flex items-center justify-center transition-colors"
                 >
-                  <X className="w-4 h-4 text-white" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             ))}
