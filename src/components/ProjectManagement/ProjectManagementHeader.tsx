@@ -191,7 +191,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
             className="rounded-full bg-transparent hover:bg-black/5 border border-black w-8 h-8 flex items-center justify-center transition focus-visible:ring-2 focus-visible:ring-black/20 focus-visible:outline-none"
             aria-label="إغلاق"
           >
-            <X className="text-black" size={18} />
+            <X className="text-black w-5 h-5" />
           </button>
         </div>
       </div>
