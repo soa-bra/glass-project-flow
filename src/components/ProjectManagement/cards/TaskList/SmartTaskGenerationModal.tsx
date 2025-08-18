@@ -182,9 +182,16 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
     <>
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent 
-          className="modal-surface-glass p-6 max-w-3xl max-h-[90vh] overflow-hidden font-arabic"
+          className="max-w-3xl max-h-[90vh] overflow-hidden font-arabic p-0"
+          style={{
+            background: 'rgba(255,255,255,0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '24px'
+          }}
         >
-          <div className="flex items-center justify-between border-b border-black/10 pb-4 mb-6">
+          <div className="flex items-center justify-between border-b border-black/10 pb-4 mb-6 px-6 pt-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
@@ -198,14 +205,14 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
             </div>
             <button
               onClick={handleClose}
-              className="modal-close"
+              className="rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition"
               aria-label="إغلاق"
             >
               <X className="text-black" size={18} />
             </button>
           </div>
 
-          <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
+          <div className="overflow-y-auto max-h-[calc(90vh-200px)] px-6">
             <div className="space-y-6">
               {/* حقل عدد المهام */}
               <div className="space-y-2">
@@ -216,7 +223,7 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
                   max="20"
                   value={formData.taskCount}
                   onChange={(e) => handleInputChange('taskCount', e.target.value)}
-                  className="text-right font-arabic"
+                  className="text-right font-arabic h-12 px-4 py-3 rounded-full border border-black/20 bg-white/50 hover:bg-white/70 focus:bg-white transition-colors"
                   placeholder="5 (افتراضي)"
                 />
               </div>
@@ -259,24 +266,20 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
             {/* أزرار الإجراءات */}
             <div className="flex gap-4 justify-start pt-6 border-t border-white/20 mt-6">
               <Button
+                onClick={generateTasks}
+                disabled={isGenerating}
+                className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isGenerating ? 'جاري التوليد...' : 'توليد'}
+              </Button>
+              <Button
                 type="button"
                 variant="outline"
                 onClick={handleClose}
                 disabled={isGenerating}
-                className="border-black text-black hover:bg-black/10 font-arabic"
+                className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
               >
                 إلغاء
-              </Button>
-              <Button
-                onClick={generateTasks}
-                disabled={isGenerating}
-                className="font-arabic"
-                style={{
-                  backgroundColor: '#D4A574', // لون Mustard من لوحة سوبرا
-                  color: 'white',
-                }}
-              >
-                {isGenerating ? 'جاري التوليد...' : 'توليد'}
               </Button>
             </div>
           </div>
