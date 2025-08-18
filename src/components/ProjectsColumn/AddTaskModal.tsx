@@ -178,7 +178,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
         }}>
           <button 
             onClick={handleClose} 
-            className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black/30 w-[32px] h-[32px] flex items-center justify-center transition z-10"
+            className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition z-10"
           >
             <X size={18} className="text-black" />
           </button>
