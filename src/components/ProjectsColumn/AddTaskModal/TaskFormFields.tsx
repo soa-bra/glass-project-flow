@@ -25,7 +25,7 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
           value={taskData.title} 
           onChange={e => onInputChange('title', e.target.value)} 
           placeholder="أدخل عنوان المهمة" 
-          className="text-right font-arabic rounded-full bg-black/40 backdrop-blur-md border-white/20 text-white placeholder:text-white/70"
+          className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
         />
       </div>
 
@@ -35,7 +35,7 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
           value={taskData.description} 
           onChange={e => onInputChange('description', e.target.value)} 
           placeholder="أدخل وصف المهمة" 
-          className="text-right font-arabic min-h-[100px] rounded-xl bg-black/40 backdrop-blur-md border-white/20 text-white placeholder:text-white/70"
+          className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none min-h-[100px]"
         />
       </div>
 
@@ -46,17 +46,17 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
             type="date" 
             value={taskData.dueDate} 
             onChange={e => onInputChange('dueDate', e.target.value)} 
-            className="text-right font-arabic rounded-full bg-black/40 backdrop-blur-md border-white/20 text-white"
+            className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
           />
         </div>
         
         <div className="space-y-2">
           <Label className="font-arabic text-right">المكلف</Label>
           <Select value={taskData.assignee} onValueChange={value => onInputChange('assignee', value)}>
-            <SelectTrigger className="text-right font-arabic rounded-full bg-black/40 backdrop-blur-md border-white/20 text-white">
+            <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
               <SelectValue placeholder="اختر المكلف" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[10000] sb-popover-shell text-[#0B0F12] font-arabic">
               {teamMembers.map(member => (
                 <SelectItem key={member} value={member}>
                   {member}
@@ -75,10 +75,10 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
             onTaskDataChange(prev => ({ ...prev, priority: value }))
           }
         >
-          <SelectTrigger className="text-right font-arabic rounded-full bg-black/40 backdrop-blur-md border-white/20 text-white">
+          <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
             <SelectValue placeholder="اختر الأولوية" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[10000] sb-popover-shell text-[#0B0F12] font-arabic">
             {priorities.map(priority => (
               <SelectItem key={priority.value} value={priority.value}>
                 {priority.label}
@@ -100,7 +100,7 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
               attachments: files.map(file => file.name)
             }));
           }} 
-          className="text-right font-arabic rounded-full bg-black/40 backdrop-blur-md border-white/20 text-white file:text-white"
+          className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none file:text-black"
         />
       </div>
     </div>
