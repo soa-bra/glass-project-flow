@@ -264,7 +264,7 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
             </div>
 
             {/* أزرار الإجراءات */}
-            <div className="flex gap-4 justify-start pt-4 border-t border-white/20 mt-4">
+            <div className="flex gap-4 justify-start pt-4 border-t border-white/20 mt-4 mb-6">
               <Button
                 onClick={generateTasks}
                 disabled={isGenerating}
