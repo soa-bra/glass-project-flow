@@ -38,7 +38,7 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
       <div 
         className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl mx-0"
         style={{
-          background: '#ebeff2'
+          background: '#F8F9FA'
         }}
       >
         {/* شريط الأدوات ثابت في الأعلى */}
