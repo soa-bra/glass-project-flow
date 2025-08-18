@@ -42,7 +42,12 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ project }) => {
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
       />
-      <TaskListContent ref={contentRef} projectId={project.id} />
+      <TaskListContent 
+        ref={contentRef} 
+        projectId={project.id}
+        filters={filters}
+        sortConfig={sortConfig}
+      />
     </TaskListContainer>
   );
 };

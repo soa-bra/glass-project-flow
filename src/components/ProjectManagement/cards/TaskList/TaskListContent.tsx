@@ -1,10 +1,11 @@
-import React, { useImperativeHandle, useEffect } from 'react';
+import React, { useImperativeHandle, useEffect, useMemo } from 'react';
 import type { TaskData } from '@/types';
 import TaskCard from '@/components/TaskCard';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
 import { mapToTaskCardProps, mapFromTaskData } from '@/types/task';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { TaskFilterOptions } from './TasksFilterDialog';
 
 export interface TaskListContentRef {
   addTask: (task: TaskData) => void;
@@ -13,9 +14,11 @@ export interface TaskListContentRef {
 
 interface TaskListContentProps {
   projectId?: string;
+  filters?: TaskFilterOptions;
+  sortConfig?: { field: string; direction: 'asc' | 'desc' } | null;
 }
 
-export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListContentProps>(({ projectId }, ref) => {
+export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListContentProps>(({ projectId, filters, sortConfig }, ref) => {
   const unifiedTasks = useUnifiedTasks(projectId || 'default');
   const projectTasksContext = useProjectTasksContext();
 
@@ -29,8 +32,11 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
     }
   }, [projectId, projectTasksContext.projectTasks[projectId || '']]);
 
-  // الحصول على المهام من النظام الموحد
-  const allTasks = unifiedTasks.tasks.map(mapToTaskCardProps);
+  // الحصول على المهام مع تطبيق الفلترة والترتيب
+  const allTasks = useMemo(() => {
+    const tasks = unifiedTasks.getProjectTasks(filters, sortConfig);
+    return tasks.map(mapToTaskCardProps);
+  }, [unifiedTasks, filters, sortConfig]);
 
   const addTask = (task: TaskData) => {
     const unifiedTask = mapFromTaskData(task);
@@ -69,18 +75,27 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
 
   return (
     <ScrollArea className="flex-1 h-full">
-      <div className="space-y-4 pr-1 py-0 my-0">
-        {allTasks.map((task, index) => (
-          <div key={`task-${task.id}-${index}`}>
-            <TaskCard 
-              {...task} 
-              onEdit={handleTaskEdit} 
-              onArchive={handleTaskArchive} 
-              onDelete={handleTaskDelete} 
-              onTaskUpdated={handleTaskUpdated}
-            />
+      <div className="space-y-4 pr-1 py-0 my-0 min-h-[200px]">
+        {allTasks.length > 0 ? (
+          allTasks.map((task, index) => (
+            <div key={`task-${task.id}-${index}`}>
+              <TaskCard 
+                {...task} 
+                onEdit={handleTaskEdit} 
+                onArchive={handleTaskArchive} 
+                onDelete={handleTaskDelete} 
+                onTaskUpdated={handleTaskUpdated}
+              />
+            </div>
+          ))
+        ) : (
+          <div className="flex items-center justify-center py-12 text-center">
+            <div className="text-gray-500">
+              <p className="text-lg mb-2">لا توجد مهام تطابق المعايير المحددة</p>
+              <p className="text-sm">جرب تعديل الفلاتر أو إضافة مهام جديدة</p>
+            </div>
           </div>
-        ))}
+        )}
       </div>
     </ScrollArea>
   );

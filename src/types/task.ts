@@ -17,10 +17,10 @@ export interface UnifiedTask {
 }
 
 export interface TaskFilters {
-  assignee: string;
-  priority: string;
-  status: string;
-  search: string;
+  assignee?: string;
+  priority?: string;
+  status?: string;
+  search?: string;
 }
 
 // Mapping functions
