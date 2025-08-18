@@ -208,7 +208,17 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
 
       {/* حوار تأكيد الحفظ */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent className="font-arabic" dir="rtl">
+        <AlertDialogContent 
+          className="font-arabic" 
+          dir="rtl"
+          style={{
+            background: 'rgba(255,255,255,0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '24px'
+          }}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle className="text-right">
               {isEditMode ? 'تأكيد التعديل' : 'تأكيد الحفظ'}
@@ -220,9 +230,14 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
               }
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex gap-2">
-            <AlertDialogCancel className="font-arabic">إلغاء</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmSaveTask} className="font-arabic">
+          <AlertDialogFooter className="flex items-center justify-end gap-3">
+            <AlertDialogCancel className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2">
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmSaveTask} 
+              className="bg-black hover:bg-black/90 text-white font-medium font-arabic rounded-full px-6 py-2"
+            >
               {isEditMode ? 'حفظ التعديلات' : 'إنشاء المهمة'}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -230,7 +245,17 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
       </AlertDialog>
 
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <AlertDialogContent className="font-arabic" dir="rtl">
+        <AlertDialogContent 
+          className="font-arabic" 
+          dir="rtl"
+          style={{
+            background: 'rgba(255,255,255,0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '24px'
+          }}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle className="text-right">تأكيد الإلغاء</AlertDialogTitle>
             <AlertDialogDescription className="text-right">
@@ -240,9 +265,14 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
               }
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex gap-2">
-            <AlertDialogCancel className="font-arabic">العودة</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmClose} className="font-arabic">
+          <AlertDialogFooter className="flex items-center justify-end gap-3">
+            <AlertDialogCancel className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2">
+              العودة
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmClose} 
+              className="bg-black hover:bg-black/90 text-white font-medium font-arabic rounded-full px-6 py-2"
+            >
               تأكيد الإلغاء
             </AlertDialogAction>
           </AlertDialogFooter>
