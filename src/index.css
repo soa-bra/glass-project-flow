@@ -10,20 +10,32 @@
 
 @layer base {
   :root {
-    /* SoaBra Unified Theme Colors - Updated */
-    --sb-ink: #000000
-    --sb-ink-70: rgba(11,15,18,0.7);
-    --sb-ink-40: rgba(11,15,18,0.4);
-    --sb-ink-20: rgba(11,15,18,0.2);
+    /* SoaBra UI Guidelines v1.2.6 - Design Tokens */
+    --sb-ink: #000000;
+    --sb-ink-70: rgba(0,0,0,0.7);
+    --sb-ink-40: rgba(0,0,0,0.4);
+    --sb-ink-20: rgba(0,0,0,0.2);
     --sb-white: #FFFFFF;
-    --sb-bg-00: #F8F9FA;
-    --sb-bg-01: #F1F3F4;
-    --sb-bg-02: #E8EAED;
-    --sb-surface-00: #FFFFFF;
-    --sb-surface-01: #FFFFFF;
+    --sb-app-bg: #F1F5F9;
+    --sb-panel-bg: #F8F9FA;
+    --sb-card-bg: #FFFFFF;
     --sb-border: #DADCE0;
-    --sb-shadow-strong: 0 4px 16px rgba(0,0,0,0.1);
-    --sb-shadow-soft: 0 2px 8px rgba(0,0,0,0.08);
+    --sb-brand-mint: #BDEED3;
+    --sb-brand-sky: #A4E2F6;
+    --sb-brand-lilac: #D9D2FE;
+    --sb-brand-rose: #F1B5B9;
+    --sb-brand-amber: #FBE2AA;
+    --sb-muted-blue: #D1E1EA;
+    --sb-todo-muted: #DFECF2;
+    --sb-project-card-bg: #F1F5F9;
+    --sb-task-card-bg: #F8F9FA;
+    --sb-box-bg: #FFFFFF;
+    --sb-modal-scrim: rgba(0,0,0,0.2);
+    --sb-shadow-strong: 0 10px 24px rgba(15,23,42,0.12);
+    --sb-shadow-soft: 0 6px 18px rgba(15,23,42,0.06);
+    
+    /* Global Radius System */
+    --sb-radius-global: 41px;
     
     --backgrounds-active-tab-project-mgmt: #000000;
     --backgrounds-inactive-tab-project-mgmt: transparent;
@@ -266,14 +278,44 @@
 
 /* Essential Components */
 @layer components {
-  /* SoaBra Glass UI Components */
+  /* SoaBra UI Components - v1.2.6 */
+  .sb-surface-panel {
+    @apply bg-[var(--sb-panel-bg)] rounded-[41px];
+    border: 1px solid var(--sb-border);
+    box-shadow: var(--sb-shadow-strong);
+  }
+  
+  .sb-surface-card {
+    @apply bg-[var(--sb-card-bg)] rounded-[41px];
+    border: 1px solid var(--sb-border);
+    box-shadow: var(--sb-shadow-soft);
+  }
+  
+  .sb-surface-project-card {
+    @apply bg-[var(--sb-project-card-bg)] rounded-[41px];
+    border: 1px solid var(--sb-border);
+    box-shadow: var(--sb-shadow-soft);
+  }
+  
+  .sb-surface-task-card {
+    @apply bg-[var(--sb-task-card-bg)] rounded-[41px];
+    border: 1px solid var(--sb-border);
+    box-shadow: var(--sb-shadow-soft);
+  }
+  
+  .sb-surface-box {
+    @apply bg-[var(--sb-box-bg)] rounded-[41px];
+    border: 1px solid var(--sb-border);
+    box-shadow: var(--sb-shadow-soft);
+  }
+  
   .sb-modal-shell {
-    @apply rounded-[20px];
-    background: var(--sb-glass-bg);
-    backdrop-filter: blur(var(--sb-glass-blur));
-    -webkit-backdrop-filter: blur(var(--sb-glass-blur));
-    border: 1px solid var(--sb-glass-outline);
-    box-shadow: var(--sb-elev-modal), inset 0 1px rgba(255,255,255,0.6);
+    @apply rounded-[24px];
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1);
     z-index: var(--z-modal-content);
   }
   
@@ -357,22 +399,44 @@
     z-index: var(--z-dropdown);
   }
 
+  /* SoaBra Card Styles - Updated Radius */
   .operations-board-card {
-    background: var(--backgrounds-cards-admin-ops);
-    border-radius: 24px;
+    @apply sb-surface-card;
     padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .project-card-glass {
-    background: var(--backgrounds-project-cards-bg);
-    border-radius: 40px;
+    @apply sb-surface-project-card;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .task-card-glass {
+    @apply sb-surface-task-card;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .project-column {
+    @apply rounded-[41px];
+    background: #EBEFF2;
+  }
+  
+  /* Capsule Styles */
+  .cap-in-card {
+    @apply bg-white text-black rounded-full;
+    border: 1px solid var(--sb-border);
+  }
+  
+  .cap-in-box-outline {
+    @apply bg-transparent text-black rounded-full;
+    border: 1px solid var(--sb-ink);
+  }
+  
+  .cap-in-box-solid {
+    @apply bg-black text-white rounded-full;
   }
 
   .project-card-hover:hover {
