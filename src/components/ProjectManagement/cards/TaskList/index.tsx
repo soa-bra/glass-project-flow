@@ -5,7 +5,6 @@ import { TaskListContainer } from './TaskListContainer';
 import { TaskListHeader } from './TaskListHeader';
 import { TaskListContent, TaskListContentRef } from './TaskListContent';
 import { TaskFilterOptions } from './TasksFilterDialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import type { TaskData } from '@/types';
 
 interface TaskListCardProps {
@@ -27,34 +26,29 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ project }) => {
 
   const handleFilterChange = (newFilters: TaskFilterOptions) => {
     setFilters(newFilters);
-    // يمكن إضافة منطق إضافي هنا لفلترة المهام
   };
 
   const handleSortChange = (field: string, direction: 'asc' | 'desc') => {
     setSortConfig({ field, direction });
-    // يمكن إضافة منطق إضافي هنا لترتيب المهام
   };
 
+  const header = (
+    <TaskListHeader 
+      onTaskAdded={handleTaskAdded} 
+      onTasksGenerated={handleTasksGenerated}
+      onFilterChange={handleFilterChange}
+      onSortChange={handleSortChange}
+    />
+  );
+
   return (
-    <TaskListContainer>
-      <div className="flex-shrink-0">
-        <TaskListHeader 
-          onTaskAdded={handleTaskAdded} 
-          onTasksGenerated={handleTasksGenerated}
-          onFilterChange={handleFilterChange}
-          onSortChange={handleSortChange}
-        />
-      </div>
-      <ScrollArea className="flex-1">
-        <div className="p-2">
-          <TaskListContent 
-            ref={contentRef} 
-            projectId={project.id}
-            filters={filters}
-            sortConfig={sortConfig}
-          />
-        </div>
-      </ScrollArea>
+    <TaskListContainer header={header}>
+      <TaskListContent 
+        ref={contentRef} 
+        projectId={project.id}
+        filters={filters}
+        sortConfig={sortConfig}
+      />
     </TaskListContainer>
   );
 };
