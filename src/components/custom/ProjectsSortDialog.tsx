@@ -108,21 +108,21 @@ export const ProjectsSortDialog: React.FC<ProjectsSortDialogProps> = ({
           {/* اتجاه الترتيب */}
           <div className="space-y-3">
             <label className="block text-sm font-bold text-black">اتجاه الترتيب</label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex bg-transparent border border-black/10 rounded-full p-1 w-fit mx-auto">
               {sortDirections.map((direction) => {
                 const IconComponent = direction.icon;
                 return (
                   <button
                     key={direction.value}
                     onClick={() => setSelectedDirection(direction.value)}
-                    className={`px-4 py-3 rounded-2xl border transition-all duration-200 flex items-center justify-center gap-2 ${
+                    className={`px-6 py-2 rounded-full text-sm font-medium transition-colors font-arabic flex items-center gap-2 ${
                       selectedDirection === direction.value
-                        ? 'bg-black text-white border-black'
-                        : 'bg-white/30 text-black border-black/20 hover:bg-white/40'
+                        ? 'bg-black text-white'
+                        : 'text-black hover:bg-black/5'
                     }`}
                   >
                     <IconComponent className="w-4 h-4" />
-                    <span className="font-medium">{direction.label}</span>
+                    <span>{direction.label}</span>
                   </button>
                 );
               })}
