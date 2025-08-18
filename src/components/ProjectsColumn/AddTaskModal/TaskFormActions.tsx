@@ -20,7 +20,7 @@ export const TaskFormActions: React.FC<TaskFormActionsProps> = ({
     <div className="pt-6 border-t border-white/20 mt-6">
       {/* منطقة عرض الأخطاء */}
       {validationErrors.length > 0 && (
-        <div className="mb-4 p-3 bg-white/30 border border-red-500 rounded-3xl">
+        <div className="mb-4 p-3 border border-red-500 rounded-3xl">
           <p className="text-red-700 font-medium text-sm font-arabic mb-2">يرجى إكمال الحقول التالية:</p>
           <ul className="text-red-600 text-sm font-arabic space-y-1">
             {validationErrors.map((error, index) => (
