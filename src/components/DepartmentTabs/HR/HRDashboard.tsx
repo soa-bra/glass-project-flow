@@ -7,6 +7,7 @@ import { AttendanceTab } from './AttendanceTab';
 import { PerformanceTab } from './PerformanceTab';
 import { RecruitmentTab } from './RecruitmentTab';
 import { TrainingTab } from './TrainingTab';
+import { PartnersTab } from './PartnersTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
 export const HRDashboard: React.FC = () => {
@@ -29,6 +30,9 @@ export const HRDashboard: React.FC = () => {
   }, {
     value: 'training',
     label: 'التدريب والتطوير'
+  }, {
+    value: 'partners',
+    label: 'الشركاء'
   }, {
     value: 'templates',
     label: 'النماذج والقوالب'
@@ -65,6 +69,10 @@ export const HRDashboard: React.FC = () => {
 
       <BaseTabContent value="training">
         <TrainingTab />
+      </BaseTabContent>
+
+      <BaseTabContent value="partners">
+        <PartnersTab />
       </BaseTabContent>
 
       <BaseTabContent value="templates">

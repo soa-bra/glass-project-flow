@@ -7,6 +7,7 @@ export { AttendanceTab } from './AttendanceTab';
 export { PerformanceTab } from './PerformanceTab';
 export { RecruitmentTab } from './RecruitmentTab';
 export { TrainingTab } from './TrainingTab';
+export { PartnersTab } from './PartnersTab';
 export { TemplatesTab } from './TemplatesTab';
 export { ReportsTab } from './ReportsTab';
 

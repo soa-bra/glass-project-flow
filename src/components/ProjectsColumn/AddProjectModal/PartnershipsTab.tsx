@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Edit, Trash2 } from 'lucide-react';
+import { usePartnersStore } from '@/stores/partnersStore';
 
 interface PartnerData {
   id: number;
@@ -30,6 +31,7 @@ export const PartnershipsTab: React.FC<PartnershipsTabProps> = ({
   onEditPartnership,
   onDeletePartnership
 }) => {
+  const { addPartner } = usePartnersStore();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState<Omit<PartnerData, 'id'>>({
@@ -68,6 +70,15 @@ export const PartnershipsTab: React.FC<PartnershipsTabProps> = ({
       onEditPartnership(editingId, newPartnership);
     } else {
       onAddPartnership(newPartnership);
+      // أضف الشريك أيضاً إلى المخزن المشترك
+      addPartner({
+        entityName: formData.entityName,
+        entityType: formData.entityType,
+        representativeName: formData.representativeName,
+        phone: formData.phone,
+        email: formData.email,
+        partnershipDescription: formData.partnershipDescription
+      });
     }
 
     resetForm();
