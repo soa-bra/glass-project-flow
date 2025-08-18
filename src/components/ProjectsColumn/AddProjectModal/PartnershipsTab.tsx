@@ -117,7 +117,7 @@ export const PartnershipsTab: React.FC<PartnershipsTabProps> = ({
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="font-arabic text-right">اسم الكيان *</Label>
+                <Label className="font-arabic text-right">اسم الكيان <span className="text-red-500">*</span></Label>
                 <Input
                   value={formData.entityName}
                   onChange={(e) => handleInputChange('entityName', e.target.value)}
@@ -127,7 +127,7 @@ export const PartnershipsTab: React.FC<PartnershipsTabProps> = ({
               </div>
 
               <div className="space-y-2">
-                <Label className="font-arabic text-right">نوع الكيان *</Label>
+                <Label className="font-arabic text-right">نوع الكيان <span className="text-red-500">*</span></Label>
                 <Select value={formData.entityType} onValueChange={(value) => handleInputChange('entityType', value)}>
                   <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
                     <SelectValue placeholder="اختر نوع الكيان" />
@@ -153,7 +153,7 @@ export const PartnershipsTab: React.FC<PartnershipsTabProps> = ({
               </div>
 
               <div className="space-y-2">
-                <Label className="font-arabic text-right">اسم ممثل الكيان *</Label>
+                <Label className="font-arabic text-right">اسم ممثل الكيان <span className="text-red-500">*</span></Label>
                 <Input
                   value={formData.representativeName}
                   onChange={(e) => handleInputChange('representativeName', e.target.value)}
@@ -173,7 +173,7 @@ export const PartnershipsTab: React.FC<PartnershipsTabProps> = ({
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <Label className="font-arabic text-right">البريد الإلكتروني *</Label>
+                <Label className="font-arabic text-right">البريد الإلكتروني <span className="text-red-500">*</span></Label>
                 <Input
                   type="email"
                   value={formData.email}

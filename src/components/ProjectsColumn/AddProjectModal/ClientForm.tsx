@@ -66,7 +66,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
           
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="font-arabic text-right">اسم الكيان *</Label>
+              <Label className="font-arabic text-right">اسم الكيان <span className="text-red-500">*</span></Label>
               <Input
                 value={projectData.clientData?.name || ''}
                 onChange={(e) => onClientDataChange('name', e.target.value)}
@@ -76,7 +76,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
             </div>
             
             <div className="space-y-2">
-              <Label className="font-arabic text-right">نوع الكيان *</Label>
+              <Label className="font-arabic text-right">نوع الكيان <span className="text-red-500">*</span></Label>
               <Select 
                 value={projectData.clientData?.type || ''} 
                 onValueChange={(value) => onClientDataChange('type', value)}
@@ -107,7 +107,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="font-arabic text-right">اسم ممثل الكيان *</Label>
+              <Label className="font-arabic text-right">اسم ممثل الكيان <span className="text-red-500">*</span></Label>
               <Input
                 value={projectData.clientData?.responsiblePerson || ''}
                 onChange={(e) => onClientDataChange('responsiblePerson', e.target.value)}
@@ -128,7 +128,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="font-arabic text-right">البريد الإلكتروني *</Label>
+            <Label className="font-arabic text-right">البريد الإلكتروني <span className="text-red-500">*</span></Label>
             <Input
               type="email"
               value={projectData.clientData?.email || ''}

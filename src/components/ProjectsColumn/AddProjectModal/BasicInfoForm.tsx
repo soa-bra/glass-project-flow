@@ -47,7 +47,7 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label className="font-arabic text-right">اسم المشروع *</Label>
+          <Label className="font-arabic text-right">اسم المشروع <span className="text-red-500">*</span></Label>
           <Input
             value={projectData.name}
             onChange={(e) => onInputChange('name', e.target.value)}
@@ -57,7 +57,7 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         </div>
         
         <div className="space-y-2">
-          <Label className="font-arabic text-right">مدير المشروع *</Label>
+          <Label className="font-arabic text-right">مدير المشروع <span className="text-red-500">*</span></Label>
           <Select value={projectData.manager} onValueChange={(value) => onInputChange('manager', value)}>
             <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
               <SelectValue placeholder="اختر مدير المشروع" />
@@ -95,7 +95,7 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
 
       <div className="grid grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label className="font-arabic text-right">تاريخ البدء *</Label>
+          <Label className="font-arabic text-right">تاريخ البدء <span className="text-red-500">*</span></Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -126,7 +126,7 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         </div>
         
         <div className="space-y-2">
-          <Label className="font-arabic text-right">تاريخ التسليم المتوقع *</Label>
+          <Label className="font-arabic text-right">تاريخ التسليم المتوقع <span className="text-red-500">*</span></Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
