@@ -97,7 +97,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="font-arabic text-right">اسم المسؤول *</Label>
+              <Label className="font-arabic text-right">اسم ممثل الكيان *</Label>
               <Input
                 value={projectData.clientData?.responsiblePerson || ''}
                 onChange={(e) => onClientDataChange('responsiblePerson', e.target.value)}
