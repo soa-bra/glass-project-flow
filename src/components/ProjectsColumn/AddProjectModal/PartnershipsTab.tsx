@@ -210,6 +210,17 @@ export const PartnershipsTab: React.FC<PartnershipsTabProps> = ({
             {partnerships.map((partnership) => (
               <div key={partnership.id} className="p-4 rounded-3xl bg-white/30 border border-black/20 text-black hover:bg-white/40 font-arabic transition-colors">
                 <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h4 className="font-bold font-arabic text-right">{partnership.entityName}</h4>
+                    <p className="text-sm text-gray-600 font-arabic text-right mt-1">{partnership.entityType}</p>
+                    <div className="flex justify-between items-center mt-2 text-sm text-gray-700 font-arabic">
+                      <span>الممثل: {partnership.representativeName}</span>
+                      <span>البريد: {partnership.email}</span>
+                    </div>
+                    {partnership.partnershipDescription && (
+                      <p className="text-sm text-gray-600 font-arabic text-right mt-1">{partnership.partnershipDescription}</p>
+                    )}
+                  </div>
                   <div className="flex gap-2">
                     <Button
                       onClick={() => handleEdit(partnership)}
@@ -227,17 +238,6 @@ export const PartnershipsTab: React.FC<PartnershipsTabProps> = ({
                     >
                       <Trash2 size={16} />
                     </Button>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-bold font-arabic text-right">{partnership.entityName}</h4>
-                    <p className="text-sm text-gray-600 font-arabic text-right mt-1">{partnership.entityType}</p>
-                    <div className="flex justify-between items-center mt-2 text-sm text-gray-700 font-arabic">
-                      <span>الممثل: {partnership.representativeName}</span>
-                      <span>البريد: {partnership.email}</span>
-                    </div>
-                    {partnership.partnershipDescription && (
-                      <p className="text-sm text-gray-600 font-arabic text-right mt-1">{partnership.partnershipDescription}</p>
-                    )}
                   </div>
                 </div>
               </div>
