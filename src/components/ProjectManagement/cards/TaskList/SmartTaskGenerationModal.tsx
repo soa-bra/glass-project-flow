@@ -182,7 +182,7 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
     <>
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent 
-          className="bg-white rounded-[24px] border border-[#DADCE0] shadow-[0_8px_24px_rgba(0,0,0,0.06)] p-0 max-w-3xl max-h-[90vh] overflow-hidden font-arabic"
+          className="modal-surface-glass p-6 max-w-3xl max-h-[90vh] overflow-hidden font-arabic"
         >
           <div className="flex items-center justify-between border-b border-black/10 pb-4 mb-6">
             <div className="flex items-center gap-3">
