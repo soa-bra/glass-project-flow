@@ -29,6 +29,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
   const { toast } = useToast();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [taskData, setTaskData] = useState<TaskFormData>({
     id: 0,
     title: '',
@@ -59,26 +60,30 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
       ...prev,
       [field]: value
     }));
+    
+    // إخفاء رسائل الخطأ عند البدء في الكتابة
+    if (validationErrors.length > 0) {
+      setValidationErrors([]);
+    }
   };
 
   const validateForm = (): boolean => {
+    const missingFields: string[] = [];
+    
     if (!taskData.title.trim()) {
-      toast({
-        title: "خطأ في التحقق",
-        description: "عنوان المهمة مطلوب",
-        variant: "destructive"
-      });
-      return false;
+      missingFields.push('عنوان المهمة');
     }
+    
     if (!taskData.dueDate) {
-      toast({
-        title: "خطأ في التحقق",
-        description: "تاريخ الاستحقاق مطلوب",
-        variant: "destructive"
-      });
-      return false;
+      missingFields.push('تاريخ الاستحقاق');
     }
-    return true;
+    
+    if (taskData.attachments.length === 0) {
+      missingFields.push('الملفات المرفقة');
+    }
+    
+    setValidationErrors(missingFields);
+    return missingFields.length === 0;
   };
 
   const handleSaveTask = () => {
@@ -143,6 +148,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
       priority: 'urgent-important',
       attachments: []
     });
+    setValidationErrors([]);
   };
 
   const handleClose = () => {
@@ -194,7 +200,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
               onCancel={handleClose} 
               onSave={handleSaveTask}
               saveButtonText={isEditMode ? 'حفظ التعديلات' : 'حفظ المهمة'}
-              taskData={taskData}
+              validationErrors={validationErrors}
             />
           </div>
         </DialogContent>

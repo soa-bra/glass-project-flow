@@ -1,73 +1,54 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 import { TaskFormData } from './types';
 
 interface TaskFormActionsProps {
   onCancel: () => void;
   onSave: () => void;
   saveButtonText?: string;
-  taskData: TaskFormData;
+  validationErrors?: string[];
 }
 
 export const TaskFormActions: React.FC<TaskFormActionsProps> = ({
   onCancel,
   onSave,
   saveButtonText = "حفظ المهمة",
-  taskData
+  validationErrors = []
 }) => {
-  const { toast } = useToast();
-
-  const validateRequiredFields = () => {
-    const missingFields: string[] = [];
-    
-    if (!taskData.title.trim()) {
-      missingFields.push('عنوان المهمة');
-    }
-    
-    if (!taskData.dueDate) {
-      missingFields.push('تاريخ الاستحقاق');
-    }
-    
-    if (taskData.attachments.length === 0) {
-      missingFields.push('الملفات');
-    }
-    
-    return missingFields;
-  };
-
-  const handleSave = () => {
-    const missingFields = validateRequiredFields();
-    
-    if (missingFields.length > 0) {
-      toast({
-        variant: "destructive",
-        title: "خطأ في البيانات المطلوبة",
-        description: `يرجى إكمال الحقول التالية: ${missingFields.join('، ')}`,
-      });
-      return;
-    }
-    
-    onSave();
-  };
-
   return (
-    <div className="flex gap-4 justify-start pt-6 border-t border-white/20 mt-6">
-      <Button
-        onClick={handleSave}
-        className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-      >
-        {saveButtonText}
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        onClick={onCancel}
-        className="px-6 py-3 bg-red-500 hover:bg-red-600 border border-red-500 rounded-full text-white font-medium font-arabic transition-colors"
-      >
-        إلغاء
-      </Button>
+    <div className="pt-6 border-t border-white/20 mt-6">
+      {/* منطقة عرض الأخطاء */}
+      {validationErrors.length > 0 && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-700 font-medium text-sm font-arabic mb-2">يرجى إكمال الحقول التالية:</p>
+          <ul className="text-red-600 text-sm font-arabic space-y-1">
+            {validationErrors.map((error, index) => (
+              <li key={index} className="flex items-center gap-2">
+                <span className="w-1 h-1 bg-red-500 rounded-full"></span>
+                {error}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      
+      <div className="flex gap-4 justify-start">
+        <Button
+          onClick={onSave}
+          className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+          {saveButtonText}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
+        >
+          إلغاء
+        </Button>
+      </div>
     </div>
   );
 };
