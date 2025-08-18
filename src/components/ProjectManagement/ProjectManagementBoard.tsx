@@ -286,18 +286,24 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
         {/* حوارات التأكيد */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <DialogContent className="font-arabic bg-white backdrop-filter backdrop-blur-lg border border-white/20">
+          <DialogContent className="font-arabic bg-white/65 backdrop-blur-[18px] border border-white/60 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_12px_28px_rgba(0,0,0,0.10)] rounded-[18px]">
             <DialogHeader>
-              <DialogTitle className="text-gray-800">تأكيد حذف المشروع</DialogTitle>
-              <DialogDescription className="text-gray-600">
+              <DialogTitle className="text-[hsl(var(--ink))] font-semibold text-lg">تأكيد حذف المشروع</DialogTitle>
+              <DialogDescription className="text-[hsl(var(--ink-80))] text-sm leading-relaxed">
                 هل أنت متأكد من أنك تريد حذف هذا المشروع نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
               </DialogDescription>
             </DialogHeader>
-            <div className="flex gap-3 justify-end mt-4">
-              <button onClick={() => setShowDeleteDialog(false)} className="px-4 py-2 bg-white/60 backdrop-filter backdrop-blur-lg border border-white/20 rounded-lg hover:bg-white/80 transition-colors font-arabic">
+            <div className="flex gap-3 justify-end mt-6">
+              <button 
+                onClick={() => setShowDeleteDialog(false)} 
+                className="px-6 py-2.5 bg-white/60 backdrop-blur-sm border border-white/20 rounded-[10px] hover:bg-white/80 transition-all duration-200 font-arabic text-sm font-medium text-[hsl(var(--ink-80))]"
+              >
                 إلغاء
               </button>
-              <button onClick={handleDeleteProject} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-arabic">
+              <button 
+                onClick={handleDeleteProject} 
+                className="px-6 py-2.5 bg-[hsl(var(--accent-red))] text-white rounded-[10px] hover:bg-[hsl(var(--accent-red))]/90 transition-all duration-200 font-arabic text-sm font-medium shadow-sm"
+              >
                 حذف نهائي
               </button>
             </div>
@@ -305,18 +311,24 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         </Dialog>
 
         <Dialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
-          <DialogContent className="font-arabic bg-white backdrop-filter backdrop-blur-lg border border-white/20">
+          <DialogContent className="font-arabic bg-white/65 backdrop-blur-[18px] border border-white/60 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_12px_28px_rgba(0,0,0,0.10)] rounded-[18px]">
             <DialogHeader>
-              <DialogTitle className="text-gray-800">تأكيد أرشفة المشروع</DialogTitle>
-              <DialogDescription className="text-gray-600">
+              <DialogTitle className="text-[hsl(var(--ink))] font-semibold text-lg">تأكيد أرشفة المشروع</DialogTitle>
+              <DialogDescription className="text-[hsl(var(--ink-80))] text-sm leading-relaxed">
                 هل أنت متأكد من أنك تريد أرشفة هذا المشروع؟ يمكنك استعادته لاحقاً من الأرشيف.
               </DialogDescription>
             </DialogHeader>
-            <div className="flex gap-3 justify-end mt-4">
-              <button onClick={() => setShowArchiveDialog(false)} className="px-4 py-2 bg-white/60 backdrop-filter backdrop-blur-lg border border-white/20 rounded-lg hover:bg-white/80 transition-colors font-arabic">
+            <div className="flex gap-3 justify-end mt-6">
+              <button 
+                onClick={() => setShowArchiveDialog(false)} 
+                className="px-6 py-2.5 bg-white/60 backdrop-blur-sm border border-white/20 rounded-[10px] hover:bg-white/80 transition-all duration-200 font-arabic text-sm font-medium text-[hsl(var(--ink-80))]"
+              >
                 إلغاء
               </button>
-              <button onClick={handleArchiveProject} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-arabic">
+              <button 
+                onClick={handleArchiveProject} 
+                className="px-6 py-2.5 bg-[hsl(var(--accent-blue))] text-white rounded-[10px] hover:bg-[hsl(var(--accent-blue))]/90 transition-all duration-200 font-arabic text-sm font-medium shadow-sm"
+              >
                 أرشفة
               </button>
             </div>
