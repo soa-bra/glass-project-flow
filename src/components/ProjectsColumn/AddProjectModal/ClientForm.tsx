@@ -29,10 +29,10 @@ export const ClientForm: React.FC<ClientFormProps> = ({
     <div className="space-y-6">
       <div className="space-y-4">
         <Label className="font-arabic text-right text-lg">نوع المشروع</Label>
-        <div className="flex bg-transparent border border-black/10 rounded-full p-1">
+        <div className="flex bg-transparent border border-black/10 rounded-full p-1 w-fit mx-auto">
           <button
             onClick={() => onInputChange('clientType', 'internal')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
+            className={`px-6 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
               projectData.clientType === 'internal' ? 'bg-black text-white' : 'text-black hover:bg-black/5'
             }`}
           >
@@ -51,7 +51,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                 });
               }
             }}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
+            className={`px-6 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
               projectData.clientType === 'external' ? 'bg-black text-white' : 'text-black hover:bg-black/5'
             }`}
           >
@@ -61,11 +61,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
       </div>
 
       {projectData.clientType === 'external' && (
-        <div className="space-y-6 p-6 rounded-lg border border-white/40" style={{
-          background: 'rgba(255,255,255,0.15)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
-        }}>
+        <div className="space-y-6 p-6 bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-black/50 font-arabic rounded-full transition-colors">
           <h3 className="text-lg font-bold font-arabic text-right">بيانات العميل</h3>
           
           <div className="grid grid-cols-2 gap-6">
