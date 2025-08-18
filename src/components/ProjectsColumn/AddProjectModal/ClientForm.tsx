@@ -86,7 +86,10 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                 </SelectTrigger>
                 <SelectContent className="z-[10000]">
                   <SelectItem value="individual">فرد</SelectItem>
-                  <SelectItem value="company">شركة</SelectItem>
+                  <SelectItem value="government">مؤسسة حكومية</SelectItem>
+                  <SelectItem value="semi-government">مؤسسة شبه حكومية</SelectItem>
+                  <SelectItem value="commercial">مؤسسة تجارية</SelectItem>
+                  <SelectItem value="charity">مؤسسة خيرية</SelectItem>
                 </SelectContent>
               </Select>
             </div>
