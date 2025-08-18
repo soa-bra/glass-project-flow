@@ -98,11 +98,11 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
                       onClick={() => { onEdit(); setOpen(false); }}
                       className="flex items-center gap-2 relative overflow-hidden text-gray-800 cursor-pointer px-3 py-2 w-full text-right rounded-3xl hover:bg-white/60"
                       style={{
-                        background: 'rgba(255,255,255,0.6)',
-                        backdropFilter: 'blur(30px) saturate(1.2)',
-                        WebkitBackdropFilter: 'blur(30px) saturate(1.2)',
-                        border: '1px solid rgba(255,255,255,0.35)',
-                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1)',
+                        background: 'rgba(255,255,255,0.95)',
+                        backdropFilter: 'blur(10px) saturate(1.1)',
+                        WebkitBackdropFilter: 'blur(10px) saturate(1.1)',
+                        border: '1px solid rgba(255,255,255,0.8)',
+                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.3)',
                       }}
                     >
                       {/* نويز خفيف فوق الزجاج */}
@@ -129,11 +129,11 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
                       onClick={() => { onArchive(); setOpen(false); }}
                       className="flex items-center gap-2 relative overflow-hidden text-gray-800 cursor-pointer px-3 py-2 w-full text-right rounded-3xl hover:bg-white/60"
                       style={{
-                        background: 'rgba(255,255,255,0.4)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(255,255,255,0.35)',
-                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1)',
+                        background: 'rgba(255,255,255,0.9)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(255,255,255,0.7)',
+                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.3)',
                       }}
                     >
                       <span
@@ -159,11 +159,11 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
                       onClick={() => { onDelete(); setOpen(false); }}
                       className="flex items-center gap-2 relative overflow-hidden text-red-600 cursor-pointer px-3 py-2 w-full text-right rounded-3xl hover:bg-red-50"
                       style={{
-                        background: 'rgba(255,255,255,0.6)',
-                        backdropFilter: 'blur(30px) saturate(1.2)',
-                        WebkitBackdropFilter: 'blur(30px) saturate(1.2)',
-                        border: '1px solid rgba(255,255,255,0.35)',
-                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1)',
+                        background: 'rgba(255,255,255,0.92)',
+                        backdropFilter: 'blur(8px) saturate(1.1)',
+                        WebkitBackdropFilter: 'blur(8px) saturate(1.1)',
+                        border: '1px solid rgba(255,255,255,0.7)',
+                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.3)',
                       }}
                     >
                       <span
