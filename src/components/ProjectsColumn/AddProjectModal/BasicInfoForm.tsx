@@ -44,7 +44,7 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           <Input
             value={projectData.name}
             onChange={(e) => onInputChange('name', e.target.value)}
-            className="text-right font-arabic"
+            className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
             placeholder="أدخل اسم المشروع"
           />
         </div>
@@ -52,10 +52,10 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         <div className="space-y-2">
           <Label className="font-arabic text-right">مدير المشروع *</Label>
           <Select value={projectData.manager} onValueChange={(value) => onInputChange('manager', value)}>
-            <SelectTrigger className="text-right font-arabic">
+            <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
               <SelectValue placeholder="اختر مدير المشروع" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[10000]">
               {teamMembers.map((member) => (
                 <SelectItem key={member} value={member}>
                   {member}
@@ -71,7 +71,7 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         <Textarea
           value={projectData.description}
           onChange={(e) => onInputChange('description', e.target.value)}
-          className="text-right font-arabic min-h-[100px]"
+          className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none min-h-[100px]"
           placeholder="أدخل وصف المشروع"
         />
       </div>
@@ -83,7 +83,7 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             type="date"
             value={projectData.startDate}
             onChange={(e) => onInputChange('startDate', e.target.value)}
-            className="text-right font-arabic"
+            className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
           />
         </div>
         
@@ -93,7 +93,7 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             type="date"
             value={projectData.endDate}
             onChange={(e) => onInputChange('endDate', e.target.value)}
-            className="text-right font-arabic"
+            className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
           />
         </div>
       </div>
@@ -104,7 +104,7 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           type="number"
           value={projectData.budget}
           onChange={(e) => onInputChange('budget', e.target.value)}
-          className="text-right font-arabic"
+          className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
           placeholder="0"
         />
       </div>

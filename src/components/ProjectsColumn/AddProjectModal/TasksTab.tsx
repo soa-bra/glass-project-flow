@@ -22,7 +22,7 @@ export const TasksTab: React.FC<TasksTabProps> = ({
           <div className="flex gap-2">
             <Button
               onClick={onAddTask}
-              className="bg-black text-white hover:bg-gray-800 font-arabic rounded-full"
+              className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
               <Plus size={16} className="ml-1" />
               إضافة مهمة
@@ -31,7 +31,7 @@ export const TasksTab: React.FC<TasksTabProps> = ({
               <Button
                 onClick={onGenerateSmartTasks}
                 variant="outline"
-                className="bg-black/40 backdrop-blur-md border-white/20 text-white hover:bg-black/50 font-arabic rounded-full"
+                className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
               >
                 <Sparkles size={16} className="ml-1" />
                 توليد ذكي

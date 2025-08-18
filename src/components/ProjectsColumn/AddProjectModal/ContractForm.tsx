@@ -56,14 +56,26 @@ export const ContractForm: React.FC<ContractFormProps> = ({
   };
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Label className="font-arabic text-right">يوجد عقد لهذا المشروع</Label>
-        <input
-          type="checkbox"
-          checked={projectData.hasContract}
-          onChange={(e) => onInputChange('hasContract', e.target.checked)}
-          className="w-4 h-4"
-        />
+      <div className="space-y-4">
+        <Label className="font-arabic text-right text-lg">نوع المشروع</Label>
+        <div className="flex bg-transparent border border-black/10 rounded-full p-1">
+          <button
+            onClick={() => onInputChange('hasContract', false)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
+              !projectData.hasContract ? 'bg-black text-white' : 'text-black hover:bg-black/5'
+            }`}
+          >
+            بدون عقد
+          </button>
+          <button
+            onClick={() => onInputChange('hasContract', true)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
+              projectData.hasContract ? 'bg-black text-white' : 'text-black hover:bg-black/5'
+            }`}
+          >
+            بعقد
+          </button>
+        </div>
       </div>
 
       {projectData.hasContract && (
@@ -82,7 +94,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                 onInputChange('contractValue', sanitized);
                 validateField('contractValue', sanitized);
               }}
-              className={`text-right font-arabic ${validationErrors.contractValue ? 'border-red-500' : ''}`}
+              className={`w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none ${validationErrors.contractValue ? 'border-red-500' : ''}`}
               placeholder="0"
             />
             {validationErrors.contractValue && (
@@ -95,7 +107,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
               <Button
                 type="button"
                 onClick={onAddPayment}
-                className="bg-black text-white hover:bg-gray-800 font-arabic"
+                className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 إضافة دفعة +
               </Button>
@@ -110,7 +122,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                     variant="destructive"
                     size="sm"
                     onClick={() => onRemovePayment(payment.id)}
-                    className="w-8 h-8 p-0"
+                    className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors w-8 h-8 p-0"
                   >
                     🗑️
                   </Button>
@@ -124,7 +136,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                         onUpdatePayment(payment.id, 'date', e.target.value);
                         validateField(`paymentDate_${payment.id}`, e.target.value);
                       }}
-                      className={`text-right font-arabic text-sm ${
+                      className={`w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none text-sm ${
                         validationErrors[`paymentDate_${payment.id}`] ? 'border-red-500' : ''
                       }`}
                     />
@@ -145,7 +157,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                         onUpdatePayment(payment.id, 'amount', sanitized);
                         validateField(`paymentAmount_${payment.id}`, sanitized);
                       }}
-                      className={`text-right font-arabic text-sm ${
+                      className={`w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none text-sm ${
                         validationErrors[`paymentAmount_${payment.id}`] ? 'border-red-500' : ''
                       }`}
                       placeholder="0"

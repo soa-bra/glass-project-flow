@@ -29,18 +29,16 @@ export const ClientForm: React.FC<ClientFormProps> = ({
     <div className="space-y-6">
       <div className="space-y-4">
         <Label className="font-arabic text-right text-lg">نوع المشروع</Label>
-        <div className="flex gap-4 justify-end">
-          <Button
-            type="button"
-            variant={projectData.clientType === 'internal' ? 'default' : 'outline'}
+        <div className="flex bg-transparent border border-black/10 rounded-full p-1">
+          <button
             onClick={() => onInputChange('clientType', 'internal')}
-            className="font-arabic"
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
+              projectData.clientType === 'internal' ? 'bg-black text-white' : 'text-black hover:bg-black/5'
+            }`}
           >
             مشروع داخلي
-          </Button>
-          <Button
-            type="button"
-            variant={projectData.clientType === 'external' ? 'default' : 'outline'}
+          </button>
+          <button
             onClick={() => {
               onInputChange('clientType', 'external');
               if (!projectData.clientData) {
@@ -53,10 +51,12 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                 });
               }
             }}
-            className="font-arabic"
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
+              projectData.clientType === 'external' ? 'bg-black text-white' : 'text-black hover:bg-black/5'
+            }`}
           >
             لصالح عميل
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -74,7 +74,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
               <Input
                 value={projectData.clientData?.name || ''}
                 onChange={(e) => onClientDataChange('name', e.target.value)}
-                className="text-right font-arabic"
+                className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
                 placeholder="أدخل اسم الكيان"
               />
             </div>
@@ -85,10 +85,10 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                 value={projectData.clientData?.type || ''} 
                 onValueChange={(value) => onClientDataChange('type', value)}
               >
-                <SelectTrigger className="text-right font-arabic">
+                <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
                   <SelectValue placeholder="اختر نوع الكيان" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[10000]">
                   <SelectItem value="individual">فرد</SelectItem>
                   <SelectItem value="company">شركة</SelectItem>
                 </SelectContent>
@@ -102,7 +102,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
               <Input
                 value={projectData.clientData?.responsiblePerson || ''}
                 onChange={(e) => onClientDataChange('responsiblePerson', e.target.value)}
-                className="text-right font-arabic"
+                className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
                 placeholder="أدخل اسم المسؤول"
               />
             </div>
@@ -112,7 +112,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
               <Input
                 value={projectData.clientData?.phone || ''}
                 onChange={(e) => onClientDataChange('phone', e.target.value)}
-                className="text-right font-arabic"
+                className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
                 placeholder="+966xxxxxxxxx"
               />
             </div>
@@ -124,7 +124,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
               type="email"
               value={projectData.clientData?.email || ''}
               onChange={(e) => onClientDataChange('email', e.target.value)}
-              className="text-right font-arabic"
+              className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
               placeholder="example@domain.com"
             />
           </div>
