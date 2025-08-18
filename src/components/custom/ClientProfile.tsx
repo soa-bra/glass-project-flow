@@ -94,29 +94,29 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
 
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="bg-[#FFFFFF] rounded-[35px] p-6 text-center border border-[#DADCE0] ">
           <p className="text-2xl font-bold text-primary">{client.totalProjects}</p>
           <p className="text-xs text-gray-600">إجمالي المشاريع</p>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+        <div className="bg-[#FFFFFF] rounded-[35px] p-6 text-center border border-[#DADCE0] ">
           <p className="text-2xl font-bold text-black">
             {client.sentiment ? Math.round(client.sentiment * 100) : 0}%
           </p>
           <p className="text-xs text-gray-600">مستوى الرضا</p>
         </div>
-        <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
-          <p className="font-bold text-[soabra-text-primary] text-black">4.8</p>
+        <div className="bg-[#FFFFFF] rounded-[35px] p-6 text-center border border-[#DADCE0] ">
+          <p className="text-2xl font-bold text-primary">4.8</p>
           <p className="text-xs text-gray-600">التقييم العام</p>
         </div>
       </div>
 
       {/* أزرار التفاعل */}
       <div className="flex gap-2">
-        <Button size="sm" className="flex-1 gap-1 rounded-full">
+        <Button size="sm" className="flex-1 gap-1 w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
           <Phone className="w-4 h-4" />
           اتصال
         </Button>
-        <Button size="sm" variant="outline" className="flex-1 gap-1 rounded-full bg-black text-white">
+        <Button size="sm" variant="outline" className="flex-1 gap-1 w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
           <Mail className="w-4 h-4" />
           إيميل
         </Button>
