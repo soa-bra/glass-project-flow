@@ -26,23 +26,22 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ project }) => {
 
   const handleFilterChange = (newFilters: TaskFilterOptions) => {
     setFilters(newFilters);
+    // يمكن إضافة منطق إضافي هنا لفلترة المهام
   };
 
   const handleSortChange = (field: string, direction: 'asc' | 'desc') => {
     setSortConfig({ field, direction });
+    // يمكن إضافة منطق إضافي هنا لترتيب المهام
   };
 
-  const header = (
-    <TaskListHeader 
-      onTaskAdded={handleTaskAdded} 
-      onTasksGenerated={handleTasksGenerated}
-      onFilterChange={handleFilterChange}
-      onSortChange={handleSortChange}
-    />
-  );
-
   return (
-    <TaskListContainer header={header}>
+    <TaskListContainer>
+      <TaskListHeader 
+        onTaskAdded={handleTaskAdded} 
+        onTasksGenerated={handleTasksGenerated}
+        onFilterChange={handleFilterChange}
+        onSortChange={handleSortChange}
+      />
       <TaskListContent 
         ref={contentRef} 
         projectId={project.id}

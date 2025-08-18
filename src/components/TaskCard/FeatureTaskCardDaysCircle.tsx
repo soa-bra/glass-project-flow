@@ -9,8 +9,8 @@ const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps)
       position: 'absolute',
       top: '0px',
       left: '0px',
-      width: '45px',
-      height: '45px',
+      width: '60px',
+      height: '60px',
       borderRadius: '50%',
       border: '1px solid #000000',
       backgroundColor: 'transparent',
@@ -20,7 +20,7 @@ const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps)
       justifyContent: 'center'
     }}>
       <span style={{
-        fontSize: '12px',
+        fontSize: '16px',
         fontWeight: 700,
         color: '#000000',
         lineHeight: 1,
