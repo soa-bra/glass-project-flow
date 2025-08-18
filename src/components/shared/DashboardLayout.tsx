@@ -25,7 +25,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="h-full flex flex-col bg-[var(--sb-bg-00)]">
+    <div className="h-full flex flex-col bg-[#F8F9FA]">
       {/* Header with Title and Tabs */}
       <div className={`${LAYOUT.FLEX_BETWEEN} my-0 py-[45px] px-6`}>
         <Reveal delay={0}>
@@ -41,7 +41,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6 bg-[var(--sb-bg-00)]">
+      <div className="flex-1 overflow-auto pb-6 px-6 bg-[#F8F9FA]">
         <Tabs value={activeTab} onValueChange={onTabChange} className="w-full" dir="rtl">
           {children}
         </Tabs>

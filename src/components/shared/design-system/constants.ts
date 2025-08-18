@@ -36,7 +36,7 @@ export const DESIGN_TOKENS = {
     BOX_BG: '#FFFFFF',            // خلفية الصناديق
     
     // Project layouts
-    PROJECT_COLUMN_BG: '#ebeff2',     // خلفية عامود المشاريع
+    PROJECT_COLUMN_BG: '#EBEFF2',     // خلفية عامود المشاريع
     PROJECT_CARD_BG: '#F1F5F9',       // خلفية بطاقات المشاريع
     PROJECT_CARD_CAPSULE_BG: '#FFFFFF', // خلفية كبسولات بطاقات المشاريع
     
@@ -50,7 +50,7 @@ export const DESIGN_TOKENS = {
     FINANCIAL_LOSS_BG: '#F1B5B9',     // خلفية خسارة/أعلى من الميزانية
     
     // Additional sidebar background
-    ADDITIONAL_SIDEBAR_BG: '#ebeff2',  // خلفية البار الإضافي
+    ADDITIONAL_SIDEBAR_BG: '#EBEFF2',  // خلفية البار الإضافي
     
     // Project card elements
     PROJECT_CARD_DAYS_CIRCLE_BG: 'transparent', // خلفية فقاعة الأيام المتبقية
@@ -367,7 +367,7 @@ export const MOTION = {
 
 // Unified component class builders with design system tokens
 export const buildCardClasses = (customClasses = '') => 
-  `bg-white ${SPACING.CARD_PADDING} ${LAYOUT.CARD_ROUNDED} border border-[#DADCE0] ${LAYOUT.CARD_SHADOW} ${customClasses}`.trim();
+  `bg-[#FFFFFF] border border-[#DADCE0] rounded-[41px] ${SPACING.CARD_PADDING} ${LAYOUT.CARD_SHADOW} ${customClasses}`.trim();
 
 export const buildPanelClasses = (customClasses = '') => 
   `${COLORS.PANEL_BACKGROUND} ${SPACING.CARD_PADDING} ${LAYOUT.PANEL_ROUNDED} ${COLORS.RING_BORDER} ${LAYOUT.PANEL_SHADOW} backdrop-blur-[2px] ${customClasses}`.trim();

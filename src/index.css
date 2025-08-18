@@ -253,7 +253,7 @@
 
   body {
     font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
-    background: var(--sb-bg-00);
+    background: #F8F9FA;
     min-height: 100vh;
     color: var(--sb-ink);
     overflow-x: hidden;
