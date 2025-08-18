@@ -10,7 +10,7 @@ interface ProjectsSortDialogProps {
 }
 
 export interface ProjectSortOptions {
-  sortBy: 'name' | 'date' | 'status' | 'manager';
+  sortBy: 'name' | 'deadline' | 'status' | 'manager' | 'tasks' | 'team' | 'budget';
   direction: 'asc' | 'desc';
 }
 
@@ -19,14 +19,17 @@ export const ProjectsSortDialog: React.FC<ProjectsSortDialogProps> = ({
   onClose,
   onApplySort
 }) => {
-  const [selectedSortBy, setSelectedSortBy] = useState<string>('date');
+  const [selectedSortBy, setSelectedSortBy] = useState<string>('deadline');
   const [selectedDirection, setSelectedDirection] = useState<string>('asc');
 
   const sortCriteria = [
     { value: 'name', label: 'الاسم' },
-    { value: 'date', label: 'التاريخ (الأيام المتبقية)' },
+    { value: 'deadline', label: 'تاريخ التسليم' },
     { value: 'status', label: 'الحالة' },
-    { value: 'manager', label: 'مدير المشروع' }
+    { value: 'manager', label: 'مدير المشروع' },
+    { value: 'tasks', label: 'عدد المهام' },
+    { value: 'team', label: 'عدد أعضاء الفريق' },
+    { value: 'budget', label: 'ميزانية المشروع' }
   ];
 
   const sortDirections = [
@@ -44,7 +47,7 @@ export const ProjectsSortDialog: React.FC<ProjectsSortDialogProps> = ({
   };
 
   const handleReset = () => {
-    setSelectedSortBy('date');
+    setSelectedSortBy('deadline');
     setSelectedDirection('asc');
   };
 

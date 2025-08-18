@@ -19,7 +19,7 @@ interface ProjectWorkspaceProps {
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
   // إدارة حالة المشاريع على مستوى ProjectWorkspace
   const [projects, setProjects] = useState<Project[]>(mockProjects);
-  const [currentSort, setCurrentSort] = useState<ProjectSortOptions>({ sortBy: 'date', direction: 'asc' });
+  const [currentSort, setCurrentSort] = useState<ProjectSortOptions>({ sortBy: 'deadline', direction: 'asc' });
 
   const {
     panelStage,
@@ -92,10 +92,19 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           comparison = statusOrder[a.status] - statusOrder[b.status];
           break;
         case 'manager':
-          // Using owner field as manager since manager field doesn't exist
           comparison = a.owner.localeCompare(b.owner, 'ar');
           break;
-        case 'date':
+        case 'tasks':
+          comparison = (a.tasksCount || 0) - (b.tasksCount || 0);
+          break;
+        case 'team':
+          comparison = (a.team?.length || 0) - (b.team?.length || 0);
+          break;
+        case 'budget':
+          // استخدام value كميزانية المشروع لأن budget غير موجود في نموذج Project
+          comparison = parseFloat(a.value || '0') - parseFloat(b.value || '0');
+          break;
+        case 'deadline':
         default:
           comparison = a.daysLeft - b.daysLeft;
           break;
