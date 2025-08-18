@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { EllipsisVertical, Check, Edit, Archive, Trash } from 'lucide-react';
+import { EllipsisVertical, Check, Edit, Archive, Trash, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TaskData } from '@/types';
 interface TaskCardStatusIndicatorsProps {
@@ -257,39 +257,77 @@ const TaskCardStatusIndicators = ({
 
       {/* حوار تأكيد الأرشفة */}
       <AlertDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
-        <AlertDialogContent className="font-arabic" style={{
-        direction: 'rtl'
-      }}>
+        <AlertDialogContent 
+          className="font-arabic" 
+          dir="rtl"
+          style={{
+            background: 'rgba(255,255,255,0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '24px'
+          }}
+        >
           <AlertDialogHeader>
-            <AlertDialogTitle>تأكيد الأرشفة</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-right">تأكيد أرشفة المهمة</AlertDialogTitle>
+            <AlertDialogDescription className="text-right">
               هل أنت متأكد من أنك تريد أرشفة هذه المهمة؟ يمكنك استعادتها لاحقاً من الأرشيف.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex gap-2">
-            <AlertDialogCancel className="rounded-full">إلغاء</AlertDialogCancel>
-            <AlertDialogAction onClick={handleArchive} className="rounded-full">أرشفة</AlertDialogAction>
-          </AlertDialogFooter>
+          <div className="flex items-center justify-end gap-3 mt-6">
+            <button 
+              onClick={() => setShowArchiveDialog(false)} 
+              className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2"
+            >
+              <X size={16} />
+              إلغاء
+            </button>
+            <button 
+              onClick={handleArchive} 
+              className="bg-black hover:bg-black/90 text-white font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2"
+            >
+              <Archive size={16} />
+              أرشفة
+            </button>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
 
       {/* حوار تأكيد الحذف */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="font-arabic" style={{
-        direction: 'rtl'
-      }}>
+        <AlertDialogContent 
+          className="font-arabic" 
+          dir="rtl"
+          style={{
+            background: 'rgba(255,255,255,0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '24px'
+          }}
+        >
           <AlertDialogHeader>
-            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-right">تأكيد حذف المهمة</AlertDialogTitle>
+            <AlertDialogDescription className="text-right">
               هل أنت متأكد من أنك تريد حذف هذه المهمة نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex gap-2">
-            <AlertDialogCancel>إلغاء</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+          <div className="flex items-center justify-end gap-3 mt-6">
+            <button 
+              onClick={() => setShowDeleteDialog(false)} 
+              className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2"
+            >
+              <X size={16} />
+              إلغاء
+            </button>
+            <button 
+              onClick={handleDelete} 
+              className="bg-red-500 hover:bg-red-600 text-white font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2"
+            >
+              <Trash2 size={16} />
               حذف نهائي
-            </AlertDialogAction>
-          </AlertDialogFooter>
+            </button>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
     </>;
