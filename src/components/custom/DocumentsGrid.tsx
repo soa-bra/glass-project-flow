@@ -3,7 +3,7 @@ import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { FileText, Image, Video, Music, Archive, Download, Edit3, Trash2, Search, Filter, Folder, FolderOpen, File, MessageCircle, RefreshCw } from 'lucide-react';
+import { FileText, Image, Video, Music, Archive, Download, Edit3, Trash2, Search, Filter, Folder, FolderOpen, File, MessageCircle, RefreshCw, ArrowUpDown } from 'lucide-react';
 import { ProjectFile, Comment } from '@/data/projectFiles';
 import { useProjectFiles } from '@/hooks/useProjectFiles';
 import { CommentDialog } from './CommentDialog';
@@ -196,8 +196,8 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input placeholder="البحث في المرفقات..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-[#FFFFFF] border border-[#DADCE0] rounded-full" />
         </div>
-        <button onClick={handleUpdateFile} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
-          <RefreshCw size={16} />
+        <button onClick={() => console.log('ترتيب المستندات')} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95" title="ترتيب المستندات">
+          <ArrowUpDown size={16} />
         </button>
         <button onClick={handleFilterFile} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
           <Filter size={16} />
