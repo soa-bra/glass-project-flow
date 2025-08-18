@@ -49,7 +49,7 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
   const statusConfig = getContractStatusConfig(client.contractStatus);
   return <div className="space-y-4">
       {/* بيانات العميل الأساسية */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+      <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0] ">
         <Avatar className="w-16 h-16">
           <AvatarImage src={client.avatar} alt={client.name} />
           <AvatarFallback className="bg-primary/10 text-primary">
@@ -58,7 +58,7 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
         </Avatar>
         
         <div className="flex-1 text-right space-y-2">
-          <div className="left-60 flex items-center justify-between px-0 my-0">
+          <div className="left-60 flex items-center justify-between px-0 my-0 mx-[240px]">
             <BaseBadge variant="secondary" className={statusConfig.color}>
               {statusConfig.text}
             </BaseBadge>
@@ -120,7 +120,7 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
           <Mail className="w-4 h-4" />
           إيميل
         </Button>
-        <Button size="sm" variant="outline" className="flex-1 gap-1 rounded-full bg-black text-white">
+        <Button size="sm" variant="outline" className="flex-1 gap-1 w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
           عرض الملف
         </Button>
       </div>
