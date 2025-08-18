@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { usePartnersStore } from '@/stores/partnersStore';
 
@@ -230,14 +231,36 @@ export const PartnershipsTab: React.FC<PartnershipsTabProps> = ({
                     >
                       <Edit size={16} />
                     </Button>
-                    <Button
-                      onClick={() => onDeletePartnership(partnership.id)}
-                      variant="ghost"
-                      size="sm"
-                      className="p-2 hover:bg-red-500/10 text-red-500 rounded-full"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-2 hover:bg-red-500/10 hover:text-red-500 text-red-500 rounded-full"
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="font-arabic">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="text-right">تأكيد الحذف</AlertDialogTitle>
+                          <AlertDialogDescription className="text-right">
+                            هل أنت متأكد من حذف الشريك "{partnership.entityName}"؟ لا يمكن التراجع عن هذا الإجراء.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter className="flex gap-2 justify-start">
+                          <AlertDialogCancel className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors">
+                            إلغاء
+                          </AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => onDeletePartnership(partnership.id)}
+                            className="px-6 py-3 bg-red-500 hover:bg-red-600 rounded-full text-white font-medium font-arabic transition-colors"
+                          >
+                            حذف
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </div>
