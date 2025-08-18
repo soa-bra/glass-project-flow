@@ -121,9 +121,9 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                   <Button
                     type="button"
                     onClick={() => onRemovePayment(payment.id)}
-                    className="w-8 h-8 p-0 rounded-full bg-transparent border border-black/20 hover:bg-black/5 transition-colors flex items-center justify-center"
+                    className="w-8 h-8 p-0 rounded-full bg-transparent hover:bg-red-500/10 hover:text-red-500 text-red-500 transition-colors flex items-center justify-center"
                   >
-                    <Trash2 className="w-4 h-4 text-black" />
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                   
                   <div className="space-y-1">
