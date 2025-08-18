@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Filter, Sparkles, RefreshCw } from 'lucide-react';
+import { Plus, Filter, Sparkles, RefreshCw, ArrowUpDown } from 'lucide-react';
 import { AddTaskModal } from '@/components/ProjectsColumn/AddTaskModal';
 import { SmartTaskGenerationModal } from './SmartTaskGenerationModal';
 import type { TaskData } from '@/types';
@@ -38,8 +38,8 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
           قائمة المهام
         </h3>
         <div className="flex items-center gap-2 mx-0">
-          <button onClick={handleUpdateTasks} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
-            <RefreshCw size={16} />
+          <button onClick={() => console.log('ترتيب المهام')} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95" title="ترتيب المهام">
+            <ArrowUpDown size={16} />
           </button>
           <button onClick={handleFilterTasks} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
             <Filter size={16} />
