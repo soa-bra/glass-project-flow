@@ -58,13 +58,13 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
         </Avatar>
         
         <div className="flex-1 text-right space-y-2">
-          <div className="left-60 flex items-center justify-between px-0 my-0 mx-[240px]">
+          <div className="right-15 flex items-center justify-between- my-0 px-[14px] mx-[228px]">
             <BaseBadge variant="secondary" className={statusConfig.color}>
               {statusConfig.text}
             </BaseBadge>
-            <div>
-              <h3 className="font-bold text-lg">{client.name}</h3>
-              <p className="text-sm text-gray-600 flex items-center gap-1">
+            <div className="px-0 mx-[90px]">
+              <h3 className="font-bold text-lg mx-0">{client.name}</h3>
+              <p className="text-sm text-gray-600 gap-1">
                 <Building className="w-4 h-4" />
                 {client.company}
               </p>

@@ -262,37 +262,37 @@ export const ClientTab = ({
   };
   return <div className="space-y-6">
       {/* حالة رضا العميل */}
-      <div className="rounded-[41px] bg-[var(--sb-surface-00)] border border-[var(--sb-border)] p-6 shadow-[var(--sb-shadow-soft)]">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-[var(--sb-ink)] font-arabic">رضا العميل</h3>
-          <div className="bg-[var(--visual-data-secondary-1)] px-4 py-2 rounded-full">
-            <span className="text-sm font-medium text-[var(--sb-ink)]">ممتاز</span>
+          <h3 className="text-lg font-semibold text-black">رضا العميل</h3>
+          <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
+            <span className="text-sm font-medium text-black">ممتاز</span>
           </div>
         </div>
-        <p className="text-sm font-medium text-[var(--sb-ink-70)] font-arabic">العميل راضٍ جداً عن سير المشروع والتسليم في المواعيد المحددة</p>
+        <p className="text-sm font-medium text-black">العميل راضٍ جداً عن سير المشروع والتسليم في المواعيد المحددة</p>
       </div>
       
       {/* إحصائيات العميل */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] py-[35px] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-xs text-[var(--sb-ink-40)] font-arabic">تقييم العميل</h4>
-          <p className="font-bold text-base my-[10px] text-[var(--sb-ink)] font-arabic">4.8/5</p>
-          <div className="bg-[var(--visual-data-secondary-1)] rounded-full inline-block py-0 px-[15px] my-0">
-            <span className="text-xs text-[var(--sb-ink)] font-arabic">تقييم ممتاز</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0] py-[35px]">
+          <h4 className="text-xs text-black">تقييم العميل</h4>
+          <p className="font-bold text-base my-[10px]">4.8/5</p>
+          <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
+            <span className="text-xs text-black">تقييم ممتاز</span>
           </div>
         </div>
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] py-[35px] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-xs text-[var(--sb-ink-40)] font-arabic">المشاريع السابقة</h4>
-          <p className="font-bold text-base my-[10px] text-[var(--sb-ink)] font-arabic">5</p>
-          <div className="bg-[var(--visual-data-secondary-1)] rounded-full inline-block py-0 px-[15px] my-0">
-            <span className="text-xs text-[var(--sb-ink)] font-arabic">عميل دائم</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0] py-[35px] px-0">
+          <h4 className="text-xs text-black">المشاريع السابقة</h4>
+          <p className="font-bold text-base my-[10px]">5</p>
+          <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
+            <span className="text-xs text-black">عميل دائم</span>
           </div>
         </div>
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] py-[35px] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-xs text-[var(--sb-ink-40)] font-arabic">معدل الاستجابة</h4>
-          <p className="font-bold text-base my-[10px] text-[var(--sb-ink)] font-arabic">2.1 ساعة</p>
-          <div className="bg-[var(--visual-data-secondary-1)] rounded-full inline-block py-0 px-[15px] my-0">
-            <span className="text-xs text-[var(--sb-ink)] font-arabic">سريع الاستجابة</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0] my-0 px-0 py-[35px]">
+          <h4 className="text-xs text-black">معدل الاستجابة</h4>
+          <p className="font-bold text-base my-[10px]">2.1 ساعة</p>
+          <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
+            <span className="text-xs text-black">سريع الاستجابة</span>
           </div>
         </div>
       </div>
@@ -425,44 +425,44 @@ export const TeamTab = ({
   };
   return <div className="space-y-6">
       {/* حالة الفريق */}
-      <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
+      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-[var(--sb-ink)] font-arabic">حالة الفريق</h3>
-          <div className="bg-[var(--visual-data-secondary-1)] px-4 py-2 rounded-full">
-            <span className="text-sm font-medium text-[var(--sb-ink)]">ممتاز</span>
+          <h3 className="text-lg font-semibold text-black">حالة الفريق</h3>
+          <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
+            <span className="text-sm font-medium text-black">ممتاز</span>
           </div>
         </div>
-        <p className="text-sm font-medium text-[var(--sb-ink-70)] font-arabic">الفريق يعمل بكفاءة عالية ومعدل الإنجاز يتجاوز التوقعات بنسبة 94%</p>
+        <p className="text-sm font-medium text-black">الفريق يعمل بكفاءة عالية ومعدل الإنجاز يتجاوز التوقعات بنسبة 94%</p>
       </div>
 
       {/* إحصائيات الفريق */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">إجمالي الأعضاء</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">4</p>
-          <div className="bg-[var(--visual-data-secondary-1)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">أعضاء نشطين</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+          <h4 className="text-lg font-semibold text-black mb-2">إجمالي الأعضاء</h4>
+          <p className="text-2xl font-bold text-black mb-1">4</p>
+          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">أعضاء نشطين</span>
           </div>
         </div>
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">معدل الأداء العام</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">91%</p>
-          <div className="bg-[var(--visual-data-secondary-4)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">أداء ممتاز</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-centerborder border-[#DADCE0]">
+          <h4 className="text-lg font-semibold text-black mb-2">معدل الأداء العام</h4>
+          <p className="text-2xl font-bold text-black mb-1">91%</p>
+          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">أداء ممتاز</span>
           </div>
         </div>
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">معدل الحمولة</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">83%</p>
-          <div className="bg-[var(--visual-data-secondary-3)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">مثالي</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+          <h4 className="text-lg font-semibold text-black mb-2">معدل الحمولة</h4>
+          <p className="text-2xl font-bold text-black mb-1">83%</p>
+          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">مثالي</span>
           </div>
         </div>
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">المهام المكتملة</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">47/50</p>
-          <div className="bg-[var(--visual-data-secondary-5)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">94% مكتمل</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+          <h4 className="text-lg font-semibold text-black mb-2">المهام المكتملة</h4>
+          <p className="text-2xl font-bold text-black mb-1">47/50</p>
+          <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">94% مكتمل</span>
           </div>
         </div>
       </div>
@@ -470,26 +470,26 @@ export const TeamTab = ({
       <TeamRoster data={teamMembers} onRemoveMember={handleRemoveMember} />
 
       {/* أدوات إدارة الفريق */}
-      <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-        <h3 className="text-lg font-semibold text-[var(--sb-ink)] mb-6 font-arabic">أدوات إدارة فريق المشروع</h3>
+      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+        <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة فريق المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-2xl border border-[var(--sb-border)] bg-[var(--sb-surface-01)]">
-            <h4 className="text-sm font-bold text-[var(--sb-ink)] mb-3 font-arabic">إسناد مهام للموارد البشرية</h4>
-            <p className="text-xs text-[var(--sb-ink-70)] mb-3 font-arabic">إسناد مهام المشروع لموظفي قسم الموارد البشرية</p>
-            <button onClick={() => setIsAddTeamMemberModalOpen(true)} className="w-full px-3 py-2 bg-[var(--sb-ink)] text-[var(--sb-white)] rounded-full text-sm hover:opacity-90 transition-opacity font-arabic">
+          <div className="p-4 rounded-2xl border border-[#DADCE0] bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">إسناد مهام للموارد البشرية</h4>
+            <p className="text-xs text-black/70 mb-3">إسناد مهام المشروع لموظفي قسم الموارد البشرية</p>
+            <button onClick={() => setIsAddTeamMemberModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إضافة عضو
             </button>
           </div>
-          <div className="p-4 border border-[var(--sb-border)] rounded-[41px] bg-[var(--sb-surface-01)]">
-            <h4 className="text-sm font-bold text-[var(--sb-ink)] mb-3 font-arabic">توزيع المهام</h4>
-            <p className="text-xs text-[var(--sb-ink-70)] mb-3 font-arabic">إعادة توزيع المهام بين أعضاء الفريق</p>
-            <button onClick={() => setIsManualTaskDistributionModalOpen(true)} className="w-full px-3 py-2 bg-[var(--sb-ink)] text-[var(--sb-white)] rounded-full text-sm hover:opacity-90 transition-opacity font-arabic">
+          <div className="p-4 border border-[#DADCE0] rounded-[41px] bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">توزيع المهام</h4>
+            <p className="text-xs text-black/70 mb-3">إعادة توزيع المهام بين أعضاء الفريق</p>
+            <button onClick={() => setIsManualTaskDistributionModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               توزيع المهام
             </button>
           </div>
-          <div className="p-4 border border-[var(--sb-border)] rounded-[41px] bg-[var(--sb-surface-01)]">
-            <h4 className="text-sm font-bold text-[var(--sb-ink)] mb-3 font-arabic">تقييم الأداء</h4>
-            <p className="text-xs text-[var(--sb-ink-70)] mb-3 font-arabic">إجراء تقييم دوري لأداء الفريق (متاحة فقط لمدير قسم فأعلى)</p>
+          <div className="p-4 border border-[#DADCE0] rounded-[41px] bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">تقييم الأداء</h4>
+            <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق (متاحة فقط لمدير قسم فأعلى)</p>
             <button onClick={() => {
             // Check if user has permission (Department Manager or above)
             const userRole = 'department_manager'; // This should come from user context
@@ -499,7 +499,7 @@ export const TeamTab = ({
             } else {
               alert('غير مصرح لك بالوصول إلى تقييم الأداء. هذه الميزة متاحة فقط لمدير القسم فأعلى.');
             }
-          }} className="w-full px-3 py-2 bg-[var(--sb-ink)] text-[var(--sb-white)] rounded-full text-sm hover:opacity-90 transition-opacity font-arabic">
+          }} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تقييم الأداء
             </button>
           </div>
@@ -507,49 +507,49 @@ export const TeamTab = ({
       </div>
 
       {/* تحليل توزيع المهارات */}
-      <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-        <h3 className="text-lg font-semibold text-[var(--sb-ink)] mb-6 font-arabic">توزيع المهارات والكفاءات في الفريق</h3>
+      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+        <h3 className="text-lg font-semibold text-black mb-6">توزيع المهارات والكفاءات في الفريق</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-[var(--sb-ink)] font-arabic">تطوير البرمجيات المتقدمة</span>
-              <span className="text-sm font-bold text-[var(--sb-ink)] font-arabic">85%</span>
+              <span className="text-sm font-bold text-black">تطوير البرمجيات المتقدمة</span>
+              <span className="text-sm font-bold text-black">85%</span>
             </div>
-            <div className="w-full bg-[var(--sb-bg-02)] border border-[var(--sb-border)] rounded-full h-3">
-              <div className="bg-[var(--visual-data-secondary-1)] h-3 rounded-full" style={{
+            <div className="w-full bg-transparent border border-[#DADCE0] rounded-full h-3">
+              <div className="bg-[#bdeed3] h-3 rounded-full" style={{
               width: '85%'
             }}></div>
             </div>
           </div>
           <div className="space-y-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-[var(--sb-ink)] font-arabic">تصميم الواجهات التفاعلية</span>
-              <span className="text-sm font-bold text-[var(--sb-ink)] font-arabic">92%</span>
+              <span className="text-sm font-bold text-black">تصميم الواجهات التفاعلية</span>
+              <span className="text-sm font-bold text-black">92%</span>
             </div>
-            <div className="w-full bg-[var(--sb-bg-02)] border border-[var(--sb-border)] rounded-full h-3">
-              <div className="bg-[var(--visual-data-secondary-4)] h-3 rounded-full" style={{
+            <div className="w-full bg-transparent border border-[#DADCE0] rounded-full h-3">
+              <div className="bg-[#a4e2f6] h-3 rounded-full" style={{
               width: '92%'
             }}></div>
             </div>
           </div>
           <div className="space-y-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-[var(--sb-ink)] font-arabic">تحليل الأنظمة المعقدة</span>
-              <span className="text-sm font-bold text-[var(--sb-ink)] font-arabic">78%</span>
+              <span className="text-sm font-bold text-black">تحليل الأنظمة المعقدة</span>
+              <span className="text-sm font-bold text-black">78%</span>
             </div>
-            <div className="w-full bg-[var(--sb-bg-02)] border border-[var(--sb-border)] rounded-full h-3">
-              <div className="bg-[var(--visual-data-secondary-3)] h-3 rounded-full" style={{
+            <div className="w-full bg-transparent border border-[#DADCE0] rounded-full h-3">
+              <div className="bg-[#d9d2fd] h-3 rounded-full" style={{
               width: '78%'
             }}></div>
             </div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 bg-transparent">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-[var(--sb-ink)] font-arabic">اختبار الجودة والأمان</span>
-              <span className="text-sm font-bold text-[var(--sb-ink)] font-arabic">88%</span>
+              <span className="text-sm font-bold text-black">اختبار الجودة والأمان</span>
+              <span className="text-sm font-bold text-black bg-transparent ">88%</span>
             </div>
-            <div className="w-full bg-[var(--sb-bg-02)] border border-[var(--sb-border)] rounded-full h-3">
-              <div className="bg-[var(--visual-data-secondary-2)] h-3 rounded-full" style={{
+            <div className="w-full bg-transparent border border-[#DADCE0] rounded-full h-3">
+              <div className="bg-[#f1b5b9] h-3 rounded-full" style={{
               width: '88%'
             }}></div>
             </div>
@@ -558,9 +558,9 @@ export const TeamTab = ({
       </div>
 
       <TaskAssignmentModal isOpen={isTaskAssignmentModalOpen} onClose={() => setIsTaskAssignmentModalOpen(false)} onSave={(employeeId, taskIds) => {
-        // إسناد مهام
-        alert(`تم إسناد ${taskIds.length} مهام بنجاح إلى الموظف المحدد`);
-      }} />
+      // إسناد مهام
+      alert(`تم إسناد ${taskIds.length} مهام بنجاح إلى الموظف المحدد`);
+    }} />
 
       <TaskRedistributionModal isOpen={isTaskRedistributionModalOpen} onClose={() => setIsTaskRedistributionModalOpen(false)} onRedistribute={redistributedTasks => {
       // إعادة توزيع المهام
@@ -640,69 +640,69 @@ export const AttachmentsTab = ({
   const projectDocuments = getProjectFiles('current');
   return <div className="space-y-6">
       {/* حالة المرفقات */}
-      <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
+      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-[var(--sb-ink)] font-arabic">إدارة المرفقات</h3>
-          <div className="bg-[var(--visual-data-secondary-1)] px-4 py-2 rounded-full">
-            <span className="text-sm font-medium text-[var(--sb-ink)]">محدثة</span>
+          <h3 className="text-lg font-semibold text-black">إدارة المرفقات</h3>
+          <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
+            <span className="text-sm font-medium text-black">محدثة</span>
           </div>
         </div>
-        <p className="text-sm font-medium text-[var(--sb-ink-70)] font-arabic">جميع المستندات محدثة ومنظمة بشكل احترافي - آخر رفع منذ ساعتين</p>
+        <p className="text-sm font-medium text-black">جميع المستندات محدثة ومنظمة بشكل احترافي - آخر رفع منذ ساعتين</p>
       </div>
 
       {/* إحصائيات المرفقات */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="rounded-[41px] bg-[var(--sb-surface-00)] border border-[var(--sb-border)] p-6 text-center shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">إجمالي الملفات</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">23</p>
-          <div className="bg-[var(--visual-data-secondary-1)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">ملف مرفوع</span>
+        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
+          <h4 className="text-lg font-semibold text-black mb-2">إجمالي الملفات</h4>
+          <p className="text-2xl font-bold text-black mb-1">23</p>
+          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">ملف مرفوع</span>
           </div>
         </div>
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">الحجم الإجمالي</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">156 MB</p>
-          <div className="bg-[var(--visual-data-secondary-4)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">مساحة مستخدمة</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+          <h4 className="text-lg font-semibold text-black mb-2">الحجم الإجمالي</h4>
+          <p className="text-2xl font-bold text-black mb-1">156 MB</p>
+          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">مساحة مستخدمة</span>
           </div>
         </div>
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">الملفات المشتركة</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">8</p>
-          <div className="bg-[var(--visual-data-secondary-3)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">ملفات مشتركة</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+          <h4 className="text-lg font-semibold text-black mb-2">الملفات المشتركة</h4>
+          <p className="text-2xl font-bold text-black mb-1">8</p>
+          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">ملفات مشتركة</span>
           </div>
         </div>
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">المعدلة حديثاً</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">5</p>
-          <div className="bg-[var(--visual-data-secondary-5)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">خلال اليوم</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+          <h4 className="text-lg font-semibold text-black mb-2">المعدلة حديثاً</h4>
+          <p className="text-2xl font-bold text-black mb-1">5</p>
+          <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">خلال اليوم</span>
           </div>
         </div>
       </div>
 
       {/* أدوات إدارة المرفقات */}
-      <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-        <h3 className="text-lg font-semibold text-[var(--sb-ink)] mb-6 font-arabic">أدوات إدارة مرفقات المشروع</h3>
+      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+        <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة مرفقات المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-[41px] border border-[var(--sb-border)] bg-[var(--sb-surface-01)]">
-            <h4 className="text-sm font-bold text-[var(--sb-ink)] mb-3 font-arabic">رفع ملف جديد</h4>
-            <p className="text-xs text-[var(--sb-ink-70)] mb-3 font-arabic">إضافة مستندات وملفات جديدة للمشروع</p>
-            <button onClick={() => setIsFileUploadModalOpen(true)} className="w-full px-3 py-2 bg-[var(--sb-ink)] text-[var(--sb-white)] rounded-full text-sm hover:opacity-90 transition-opacity font-arabic">
+          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">رفع ملف جديد</h4>
+            <p className="text-xs text-black/70 mb-3">إضافة مستندات وملفات جديدة للمشروع</p>
+            <button onClick={() => setIsFileUploadModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               رفع ملف
             </button>
           </div>
-          <div className="p-4 rounded-[41px] border border-[var(--sb-border)] bg-[var(--sb-surface-01)]">
-            <h4 className="text-sm font-bold text-[var(--sb-ink)] mb-3 font-arabic">تنظيم المجلدات</h4>
-            <p className="text-xs text-[var(--sb-ink-70)] mb-3 font-arabic">إنشاء وتنظيم مجلدات المشروع</p>
-            <button onClick={() => setIsFolderOrganizationModalOpen(true)} className="w-full px-3 py-2 bg-[var(--sb-ink)] text-[var(--sb-white)] rounded-full text-sm hover:opacity-90 transition-opacity font-arabic">
+          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">تنظيم المجلدات</h4>
+            <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم مجلدات المشروع</p>
+            <button onClick={() => setIsFolderOrganizationModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تنظيم المجلدات
             </button>
           </div>
-          <div className="p-4 rounded-[41px] border border-[var(--sb-border)] bg-[var(--sb-surface-01)]">
-            <h4 className="text-sm font-bold text-[var(--sb-ink)] mb-3 font-arabic">إدارة الصلاحيات</h4>
-            <p className="text-xs text-[var(--sb-ink-70)] mb-3 font-arabic">تحديد صلاحيات الوصول للملفات</p>
+          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
+            <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للملفات</p>
             <button onClick={() => {
             // التحقق من صلاحيات المستخدم (مدير المشروع فأعلى)
             const userRole = 'project_manager'; // هذا يجب أن يأتي من سياق المستخدم
@@ -712,7 +712,7 @@ export const AttachmentsTab = ({
             } else {
               alert('غير مصرح لك بالوصول إلى إدارة الصلاحيات. هذه الميزة متاحة فقط لمدير المشروع فأعلى.');
             }
-          }} className="w-full px-3 py-2 bg-[var(--sb-ink)] text-[var(--sb-white)] rounded-full text-sm hover:opacity-90 transition-opacity font-arabic">
+          }} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إدارة الصلاحيات
             </button>
           </div>
@@ -776,70 +776,70 @@ export const TemplatesTab = ({
   }];
   return <div className="space-y-6">
       {/* حالة مكتبة القوالب */}
-      <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
+      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-[var(--sb-ink)] font-arabic">مكتبة القوالب</h3>
-          <div className="bg-[var(--visual-data-secondary-1)] px-4 py-2 rounded-full">
-            <span className="text-sm font-medium text-[var(--sb-ink)]">محدثة</span>
+          <h3 className="text-lg font-semibold text-black">مكتبة القوالب</h3>
+          <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
+            <span className="text-sm font-medium text-black">محدثة</span>
           </div>
         </div>
-        <p className="text-sm font-medium text-[var(--sb-ink-70)] font-arabic">القوالب محدثة وجاهزة للاستخدام الفوري - 12 قالب احترافي متاح</p>
+        <p className="text-sm font-medium text-black">القوالب محدثة وجاهزة للاستخدام الفوري - 12 قالب احترافي متاح</p>
       </div>
 
       {/* إحصائيات القوالب */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">إجمالي القوالب</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">12</p>
-          <div className="bg-[var(--visual-data-secondary-1)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">قالب متاح</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+          <h4 className="text-lg font-semibold text-black mb-2">إجمالي القوالب</h4>
+          <p className="text-2xl font-bold text-black mb-1">12</p>
+          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">قالب متاح</span>
           </div>
         </div>
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">الأكثر استخداماً</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">6</p>
-          <div className="bg-[var(--visual-data-secondary-4)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">قوالب شائعة</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+          <h4 className="text-lg font-semibold text-black mb-2">الأكثر استخداماً</h4>
+          <p className="text-2xl font-bold text-black mb-1">6</p>
+          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">قوالب شائعة</span>
           </div>
         </div>
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">تم التحديث</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">3</p>
-          <div className="bg-[var(--visual-data-secondary-3)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">هذا الأسبوع</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+          <h4 className="text-lg font-semibold text-black mb-2">تم التحديث</h4>
+          <p className="text-2xl font-bold text-black mb-1">3</p>
+          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">هذا الأسبوع</span>
           </div>
         </div>
-        <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 text-center border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-          <h4 className="text-lg font-semibold text-[var(--sb-ink)] mb-2 font-arabic">إجمالي التحميلات</h4>
-          <p className="text-2xl font-bold text-[var(--sb-ink)] mb-1 font-arabic">261</p>
-          <div className="bg-[var(--visual-data-secondary-5)] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-[var(--sb-ink)] font-arabic">هذا الشهر</span>
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+          <h4 className="text-lg font-semibold text-black mb-2">إجمالي التحميلات</h4>
+          <p className="text-2xl font-bold text-black mb-1">261</p>
+          <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
+            <span className="text-sm font-medium text-black">هذا الشهر</span>
           </div>
         </div>
       </div>
 
       {/* أدوات إدارة القوالب */}
-      <div className="bg-[var(--sb-surface-00)] rounded-[41px] p-6 border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]">
-        <h3 className="text-lg font-semibold text-[var(--sb-ink)] mb-6 font-arabic">أدوات إدارة قوالب المشروع</h3>
+      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+        <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة قوالب المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-[41px] border border-[var(--sb-border)] bg-[var(--sb-surface-01)]">
-            <h4 className="text-sm font-bold text-[var(--sb-ink)] mb-3 font-arabic">رفع قالب جديد</h4>
-            <p className="text-xs text-[var(--sb-ink-70)] mb-3 font-arabic">إضافة قوالب ونماذج جديدة للمشروع</p>
-            <button className="w-full px-3 py-2 bg-[var(--sb-ink)] text-[var(--sb-white)] rounded-full text-sm hover:opacity-90 transition-opacity font-arabic">
+          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">رفع قالب جديد</h4>
+            <p className="text-xs text-black/70 mb-3">إضافة قوالب ونماذج جديدة للمشروع</p>
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               رفع قالب
             </button>
           </div>
-          <div className="p-4 rounded-[41px] border border-[var(--sb-border)] bg-[var(--sb-surface-01)]">
-            <h4 className="text-sm font-bold text-[var(--sb-ink)] mb-3 font-arabic">تنظيم الفئات</h4>
-            <p className="text-xs text-[var(--sb-ink-70)] mb-3 font-arabic">إنشاء وتنظيم فئات القوالب</p>
-            <button className="w-full px-3 py-2 bg-[var(--sb-ink)] text-[var(--sb-white)] rounded-full text-sm hover:opacity-90 transition-opacity font-arabic">
+          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">تنظيم الفئات</h4>
+            <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم فئات القوالب</p>
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تنظيم الفئات
             </button>
           </div>
-          <div className="p-4 rounded-[41px] border border-[var(--sb-border)] bg-[var(--sb-surface-01)]">
-            <h4 className="text-sm font-bold text-[var(--sb-ink)] mb-3 font-arabic">إدارة الصلاحيات</h4>
-            <p className="text-xs text-[var(--sb-ink-70)] mb-3 font-arabic">تحديد صلاحيات الوصول للقوالب</p>
-            <button className="w-full px-3 py-2 bg-[var(--sb-ink)] text-[var(--sb-white)] rounded-full text-sm hover:opacity-90 transition-opacity font-arabic">
+          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+            <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
+            <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للقوالب</p>
+            <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إدارة الصلاحيات
             </button>
           </div>
