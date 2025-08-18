@@ -78,8 +78,8 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
       missingFields.push('تاريخ الاستحقاق');
     }
     
-    if (taskData.attachments.length === 0) {
-      missingFields.push('الملفات المرفقة');
+    if (!taskData.assignee.trim()) {
+      missingFields.push('المكلف');
     }
     
     setValidationErrors(missingFields);
