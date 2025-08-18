@@ -29,7 +29,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
     <div className="space-y-6">
       <div className="space-y-4">
         <Label className="font-arabic text-right text-lg">نوع المشروع</Label>
-        <div className="flex bg-transparent border border-black/10 rounded-full p-1 w-fit mx-auto">
+        <div className="flex bg-transparent border border-black rounded-full p-1 w-fit mx-auto">
           <button
             onClick={() => onInputChange('clientType', 'internal')}
             className={`px-6 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
