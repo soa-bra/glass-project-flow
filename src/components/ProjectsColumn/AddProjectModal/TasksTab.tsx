@@ -51,10 +51,10 @@ export const TasksTab: React.FC<TasksTabProps> = ({
         ) : (
           <div className="space-y-3">
             {tasks.map((task, index) => (
-              <div key={index} className="p-4 bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-black/50 font-arabic rounded-full transition-colors">
+              <div key={index} className="p-4 rounded-3xl bg-white/30 border border-black/20 text-black hover:bg-white/40 font-arabic transition-colors">
                 <h4 className="font-bold font-arabic text-right">{task.title}</h4>
-                <p className="text-sm text-gray-600 font-arabic text-right mt-1">{task.description}</p>
-                <div className="flex justify-between items-center mt-2 text-sm text-gray-500 font-arabic">
+                <p className="text-sm text-black/60 font-arabic text-right mt-1">{task.description}</p>
+                <div className="flex justify-between items-center mt-2 text-sm text-black/50 font-arabic">
                   <span>المكلف: {task.assignee}</span>
                   <span>تاريخ الاستحقاق: {task.dueDate}</span>
                 </div>

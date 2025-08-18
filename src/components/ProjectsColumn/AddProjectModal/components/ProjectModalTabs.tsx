@@ -6,7 +6,7 @@ import { ClientForm } from '../ClientForm';
 import { TasksTab } from '../TasksTab';
 import { PartnershipsTab } from '../PartnershipsTab';
 import { ContractForm } from '../ContractForm';
-import type { ProjectFormData, ContractPayment } from '../types';
+import type { ProjectFormData, ContractPayment, PartnerData } from '../types';
 import type { TaskData } from '@/types';
 
 interface ProjectModalTabsProps {
@@ -17,6 +17,9 @@ interface ProjectModalTabsProps {
   onClientDataChange: (field: string, value: string) => void;
   onAddTask: () => void;
   onGenerateSmartTasks: () => void;
+  onAddPartnership: (partnership: PartnerData) => void;
+  onEditPartnership: (id: number, partnership: PartnerData) => void;
+  onDeletePartnership: (id: number) => void;
   onAddPayment: () => void;
   onRemovePayment: (id: number) => void;
   onUpdatePayment: (id: number, field: string, value: string) => void;
@@ -31,6 +34,9 @@ export const ProjectModalTabs: React.FC<ProjectModalTabsProps> = ({
   onClientDataChange,
   onAddTask,
   onGenerateSmartTasks,
+  onAddPartnership,
+  onEditPartnership,
+  onDeletePartnership,
   onAddPayment,
   onRemovePayment,
   onUpdatePayment,
@@ -67,7 +73,12 @@ export const ProjectModalTabs: React.FC<ProjectModalTabsProps> = ({
           </TabsContent>
 
           <TabsContent value="partnerships" className="mt-0">
-            <PartnershipsTab />
+            <PartnershipsTab 
+              partnerships={projectData.partnerships}
+              onAddPartnership={onAddPartnership}
+              onEditPartnership={onEditPartnership}
+              onDeletePartnership={onDeletePartnership}
+            />
           </TabsContent>
 
           <TabsContent value="contract" className="mt-0">

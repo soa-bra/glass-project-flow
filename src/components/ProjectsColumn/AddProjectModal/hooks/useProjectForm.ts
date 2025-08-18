@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { ProjectFormData, ContractPayment } from '../types';
+import { ProjectFormData, ContractPayment, PartnerData } from '../types';
 import type { ProjectData, TaskData } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
@@ -141,6 +141,27 @@ export const useProjectForm = (
     }));
   };
 
+  const addPartnership = (partnership: PartnerData) => {
+    setProjectData(prev => ({
+      ...prev,
+      partnerships: [...prev.partnerships, partnership]
+    }));
+  };
+
+  const editPartnership = (id: number, partnership: PartnerData) => {
+    setProjectData(prev => ({
+      ...prev,
+      partnerships: prev.partnerships.map(p => p.id === id ? partnership : p)
+    }));
+  };
+
+  const deletePartnership = (id: number) => {
+    setProjectData(prev => ({
+      ...prev,
+      partnerships: prev.partnerships.filter(p => p.id !== id)
+    }));
+  };
+
   return {
     projectData,
     handleInputChange,
@@ -151,5 +172,8 @@ export const useProjectForm = (
     addPayment,
     removePayment,
     updatePayment,
+    addPartnership,
+    editPartnership,
+    deletePartnership,
   };
 };

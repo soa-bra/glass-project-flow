@@ -7,6 +7,16 @@ export interface ContractPayment {
   date: string;
 }
 
+export interface PartnerData {
+  id: number;
+  entityName: string;
+  entityType: string;
+  representativeName: string;
+  phone: string;
+  email: string;
+  partnershipDescription: string;
+}
+
 export interface ProjectFormData extends Omit<ProjectData, 'id' | 'budget'> {
   id?: number;
   startDate: string;
@@ -22,7 +32,7 @@ export interface ProjectFormData extends Omit<ProjectData, 'id' | 'budget'> {
     email: string;
   };
   tasks: TaskData[];
-  partnerships: unknown[];
+  partnerships: PartnerData[];
   hasContract: boolean;
   contractValue: string;
   contractPayments: ContractPayment[];

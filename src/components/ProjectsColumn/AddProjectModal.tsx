@@ -46,6 +46,9 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     addPayment,
     removePayment,
     updatePayment,
+    addPartnership,
+    editPartnership,
+    deletePartnership,
   } = useProjectForm(editingProject, isEditMode);
 
   const { generateSmartTasks } = useSmartTasks();
@@ -189,6 +192,9 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
             onClientDataChange={handleClientDataChange}
             onAddTask={() => setShowAddTaskModal(true)}
             onGenerateSmartTasks={handleGenerateSmartTasks}
+            onAddPartnership={addPartnership}
+            onEditPartnership={editPartnership}
+            onDeletePartnership={deletePartnership}
             onAddPayment={addPayment}
             onRemovePayment={removePayment}
             onUpdatePayment={updatePayment}
