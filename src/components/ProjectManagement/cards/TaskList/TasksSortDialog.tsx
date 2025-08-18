@@ -1,18 +1,7 @@
-import React from 'react';
-import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { X, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface TasksSortDialogProps {
   isOpen: boolean;
@@ -25,10 +14,10 @@ export const TasksSortDialog: React.FC<TasksSortDialogProps> = ({
   onClose,
   onSort
 }) => {
-  const [sortField, setSortField] = React.useState<string>('');
-  const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
+  const [selectedSortBy, setSelectedSortBy] = useState<string>('title');
+  const [selectedDirection, setSelectedDirection] = useState<string>('asc');
 
-  const sortOptions = [
+  const sortCriteria = [
     { value: 'title', label: 'الاسم' },
     { value: 'priority', label: 'الأولوية' },
     { value: 'stage', label: 'الحالة' },
@@ -37,98 +26,131 @@ export const TasksSortDialog: React.FC<TasksSortDialogProps> = ({
     { value: 'attachments', label: 'عدد المرفقات' }
   ];
 
-  const handleApplySort = () => {
-    if (sortField) {
-      onSort(sortField, sortDirection);
-      onClose();
-    }
+  const sortDirections = [
+    { value: 'asc', label: 'تصاعدي', icon: ArrowUp },
+    { value: 'desc', label: 'تنازلي', icon: ArrowDown }
+  ];
+
+  const handleApply = () => {
+    onSort(selectedSortBy, selectedDirection as 'asc' | 'desc');
+    onClose();
+  };
+
+  const handleReset = () => {
+    setSelectedSortBy('title');
+    setSelectedDirection('asc');
+  };
+
+  const handleClose = () => {
+    onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-right font-arabic" style={{
-            fontSize: '18px',
-            fontWeight: 700,
-            color: 'hsl(var(--ink))',
-            fontFamily: 'IBM Plex Sans Arabic'
-          }}>
-            ترتيب المهام
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent 
+        className="sm:max-w-md p-0 overflow-hidden z-[9998]"
+        style={{
+          background: 'rgba(255,255,255,0.4)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '24px',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+        }}
+      >
+        <DialogTitle className="sr-only">ترتيب المهام</DialogTitle>
         
-        <div className="space-y-4 p-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-right block" style={{
-              color: 'hsl(var(--ink-80))',
-              fontFamily: 'IBM Plex Sans Arabic'
-            }}>
-              ترتيب حسب
-            </label>
-            <Select value={sortField} onValueChange={setSortField}>
-              <SelectTrigger className="w-full text-right">
-                <SelectValue placeholder="اختر خيار الترتيب" />
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-black/10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
+              <ArrowUpDown className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-black">ترتيب المهام</h2>
+              <p className="text-sm text-black/70">اختر معيار وطريقة الترتيب</p>
+            </div>
+          </div>
+          <button
+            onClick={handleClose}
+            className="w-8 h-8 bg-transparent hover:bg-black/5 rounded-full flex items-center justify-center transition-colors"
+          >
+            <X className="w-5 h-5 text-black" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 space-y-6">
+          {/* ترتيب حسب */}
+          <div className="space-y-3">
+            <label className="block text-sm font-bold text-black">ترتيب حسب</label>
+            <Select value={selectedSortBy} onValueChange={setSelectedSortBy}>
+              <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
+                <SelectValue placeholder="اختر معيار الترتيب" />
               </SelectTrigger>
-              <SelectContent>
-                {sortOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value} className="text-right">
-                    {option.label}
+              <SelectContent className="z-[9999] bg-white border border-black/20 shadow-lg">
+                {sortCriteria.map((criteria) => (
+                  <SelectItem key={criteria.value} value={criteria.value}>
+                    {criteria.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-right block" style={{
-              color: 'hsl(var(--ink-80))',
-              fontFamily: 'IBM Plex Sans Arabic'
-            }}>
-              اتجاه الترتيب
-            </label>
-            <Select value={sortDirection} onValueChange={(value: 'asc' | 'desc') => setSortDirection(value)}>
-              <SelectTrigger className="w-full text-right">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="asc" className="text-right">
-                  <div className="flex items-center gap-2">
-                    <ArrowUp size={16} />
-                    تصاعدي
-                  </div>
-                </SelectItem>
-                <SelectItem value="desc" className="text-right">
-                  <div className="flex items-center gap-2">
-                    <ArrowDown size={16} />
-                    تنازلي
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+          {/* اتجاه الترتيب */}
+          <div className="space-y-3">
+            <label className="block text-sm font-bold text-black">اتجاه الترتيب</label>
+            <div className="flex bg-transparent border border-black/10 rounded-full p-1 w-fit mx-auto">
+              {sortDirections.map((direction) => {
+                const IconComponent = direction.icon;
+                return (
+                  <button
+                    key={direction.value}
+                    onClick={() => setSelectedDirection(direction.value)}
+                    className={`px-6 py-2 rounded-full text-sm font-medium transition-colors font-arabic flex items-center gap-2 ${
+                      selectedDirection === direction.value
+                        ? 'bg-black text-white'
+                        : 'text-black hover:bg-black/5'
+                    }`}
+                  >
+                    <IconComponent className="w-4 h-4" />
+                    <span>{direction.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="flex justify-between gap-3 pt-4">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-border bg-transparent hover:bg-panel/50 transition-colors"
-              style={{
-                fontFamily: 'IBM Plex Sans Arabic'
-              }}
-            >
-              إلغاء
-            </button>
-            <button
-              onClick={handleApplySort}
-              disabled={!sortField}
-              className="px-4 py-2 rounded-lg bg-ink text-white hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              style={{
-                fontFamily: 'IBM Plex Sans Arabic'
-              }}
-            >
-              تطبيق الترتيب
-            </button>
+          {/* معاينة الترتيب */}
+          <div className="p-4 bg-white/20 rounded-2xl border border-black/10">
+            <p className="text-sm text-black/70 mb-2">معاينة الترتيب:</p>
+            <p className="text-sm font-medium text-black">
+              {sortCriteria.find(c => c.value === selectedSortBy)?.label} - {sortDirections.find(d => d.value === selectedDirection)?.label}
+            </p>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-black/10">
+          <button
+            onClick={handleReset}
+            className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium transition-colors"
+          >
+            إعادة تعيين
+          </button>
+          <button
+            onClick={handleClose}
+            className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium transition-colors"
+          >
+            إلغاء
+          </button>
+          <button
+            onClick={handleApply}
+            className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium transition-colors"
+          >
+            تطبيق الترتيب
+          </button>
         </div>
       </DialogContent>
     </Dialog>
