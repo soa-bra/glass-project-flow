@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Trash2, Archive, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProjectManagementHeader } from './ProjectManagementHeader';
 import { ProjectProgressBar } from './ProjectProgressBar';
@@ -296,14 +297,16 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             <div className="flex gap-3 justify-end mt-6">
               <button 
                 onClick={() => setShowDeleteDialog(false)} 
-                className="px-6 py-2.5 bg-white/60 backdrop-blur-sm border border-white/20 rounded-[10px] hover:bg-white/80 transition-all duration-200 font-arabic text-sm font-medium text-[hsl(var(--ink-80))]"
+                className="px-6 py-2.5 bg-white/60 backdrop-blur-sm border border-white/20 rounded-[10px] hover:bg-white/80 transition-all duration-200 font-arabic text-sm font-medium text-[hsl(var(--ink-80))] flex items-center gap-2"
               >
+                <X size={16} />
                 إلغاء
               </button>
               <button 
                 onClick={handleDeleteProject} 
-                className="px-6 py-2.5 bg-[hsl(var(--accent-red))] text-white rounded-[10px] hover:bg-[hsl(var(--accent-red))]/90 transition-all duration-200 font-arabic text-sm font-medium shadow-sm"
+                className="px-6 py-2.5 bg-[hsl(var(--accent-red))] text-white rounded-[10px] hover:bg-[hsl(var(--accent-red))]/90 transition-all duration-200 font-arabic text-sm font-medium shadow-sm flex items-center gap-2"
               >
+                <Trash2 size={16} />
                 حذف نهائي
               </button>
             </div>
@@ -321,14 +324,16 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             <div className="flex gap-3 justify-end mt-6">
               <button 
                 onClick={() => setShowArchiveDialog(false)} 
-                className="px-6 py-2.5 bg-white/60 backdrop-blur-sm border border-white/20 rounded-[10px] hover:bg-white/80 transition-all duration-200 font-arabic text-sm font-medium text-[hsl(var(--ink-80))]"
+                className="px-6 py-2.5 bg-white/60 backdrop-blur-sm border border-white/20 rounded-[10px] hover:bg-white/80 transition-all duration-200 font-arabic text-sm font-medium text-[hsl(var(--ink-80))] flex items-center gap-2"
               >
+                <X size={16} />
                 إلغاء
               </button>
               <button 
                 onClick={handleArchiveProject} 
-                className="px-6 py-2.5 bg-[hsl(var(--accent-blue))] text-white rounded-[10px] hover:bg-[hsl(var(--accent-blue))]/90 transition-all duration-200 font-arabic text-sm font-medium shadow-sm"
+                className="px-6 py-2.5 bg-[hsl(var(--accent-blue))] text-white rounded-[10px] hover:bg-[hsl(var(--accent-blue))]/90 transition-all duration-200 font-arabic text-sm font-medium shadow-sm flex items-center gap-2"
               >
+                <Archive size={16} />
                 أرشفة
               </button>
             </div>
