@@ -22,14 +22,18 @@ export const ProjectModalFooter: React.FC<ProjectModalFooterProps> = ({
         >
           {isEditMode ? 'حفظ التعديلات' : 'حفظ المشروع'}
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onCancel}
-          className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
-        >
-          إلغاء
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
+          >
+            إلغاء
+          </Button>
+          {/* مساحة للإشعارات بجانب زر الإلغاء */}
+          <div id="project-validation-notifications" className="flex-1"></div>
+        </div>
       </div>
     </div>
   );
