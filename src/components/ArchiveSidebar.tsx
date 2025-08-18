@@ -73,7 +73,7 @@ const ArchiveSidebar: React.FC<ArchiveSidebarProps> = ({
         isCollapsed ? 'w-[var(--departments-sidebar-width-collapsed)]' : 'w-[var(--departments-sidebar-width-expanded)]'
       }`}
     >
-      <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0" style={{ backgroundColor: '#F8F9FA' }}>
+      <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0" style={{ backgroundColor: '#EBEFF2' }}>
         {/* Header with Toggle */}
         <div className={`text-center mb-2 rounded-full mx-0 px-0 py-[24px] my-[24px] sync-transition ${isCollapsed ? 'flex justify-center' : ''}`}>
           <div className={`flex items-center rounded-lg sync-transition ${isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[20px]'}`}>
