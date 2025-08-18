@@ -66,7 +66,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
 
       {projectData.hasContract && <div className="space-y-6 p-6 rounded-3xl bg-white/30 border border-black/20 text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
           <div className="space-y-2">
-            <Label className="font-arabic text-right">قيمة العقد (ر.س)</Label>
+            <Label className="font-arabic text-red-500 text-right">قيمة العقد (ر.س)</Label>
             <Input type="text" value={projectData.contractValue} onChange={e => {
           const sanitized = InputSanitizer.sanitizeNumeric(e.target.value);
           onInputChange('contractValue', sanitized);
