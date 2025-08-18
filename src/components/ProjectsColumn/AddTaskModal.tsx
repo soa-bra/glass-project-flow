@@ -194,6 +194,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
               onCancel={handleClose} 
               onSave={handleSaveTask}
               saveButtonText={isEditMode ? 'حفظ التعديلات' : 'حفظ المهمة'}
+              taskData={taskData}
             />
           </div>
         </DialogContent>
