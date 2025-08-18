@@ -20,4 +20,3 @@ export { KPIStatsSection } from './KPIStatsSection';
 
 // Design System Constants
 export * from './design-system/constants';
-export * from './design-system/soabra-tokens';

@@ -10,7 +10,7 @@ const FeatureTaskCardTitle = ({
       <h4 style={{
       fontSize: '16px',
       fontWeight: 700,
-      color: 'var(--sb-ink)',
+      color: '#000000',
       marginBottom: '2px',
       lineHeight: 1.1,
       fontFamily: 'IBM Plex Sans Arabic'
@@ -21,11 +21,11 @@ const FeatureTaskCardTitle = ({
       <p style={{
       fontSize: '12px',
       fontWeight: 400,
-      color: 'var(--sb-ink-70)',
+      color: '#858789',
       marginBottom: '0px',
       lineHeight: 1.1,
       fontFamily: 'IBM Plex Sans Arabic'
-    }} className="text-right my-[3px] text-sm font-normal mx-[4px]">
+    }} className="text-right my-[3px] text-sm font-normal text-gray-600 mx-[4px]">
         {description}
       </p>
     </div>;

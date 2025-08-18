@@ -18,7 +18,7 @@ export const BaseCard: React.FC<UnifiedCardProps> = ({
 }) => {
   return (
     <Reveal>
-      <div className={cn(buildCardClasses('box'), className)}>
+      <div className={cn(buildCardClasses(), className)}>
         {title && (
           <div className="mb-6">
             <h3 className={buildTitleClasses()}>

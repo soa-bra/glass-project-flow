@@ -24,28 +24,50 @@ export default {
 				'arabic': ['IBM Plex Sans Arabic', 'sans-serif'],
 			},
 			colors: {
-				// SoaBra Design Tokens v1.2.5
-				'sb': {
-					'ink': '#000000',
-					'ink-70': 'rgba(0,0,0,0.7)',
-					'ink-40': 'rgba(0,0,0,0.4)',
-					'ink-20': 'rgba(0,0,0,0.2)',
-					'white': '#FFFFFF',
-					'app-bg': '#F1F5F9',
-					'panel-bg': '#F8F9FA',
-					'card-bg': '#FFFFFF',
-					'border': '#DADCE0',
-					'brand-mint': '#BDEED3',
-					'brand-sky': '#A4E2F6',
-					'brand-lilac': '#D9D2FE',
-					'brand-rose': '#F1B5B9',
-					'brand-amber': '#FBE2AA',
-					'muted-blue': '#D1E1EA',
-					'todo-muted': '#DFECF2',
-					'project-card-bg': '#F1F5F9',
-					'task-card-bg': '#F8F9FA',
-					'project-column-bg': '#EBEFF2',
-					'task-list-bg': '#EAECEF',
+				// Updated SoaBra Color Palette
+				'soabra-new': {
+					// Backgrounds
+					'main-dashboard': '#dfecf2',
+					'project-column': '#ebeff2',
+					'project-cards': '#f8f9fa',
+					'admin-ops-board': '#d0e0e2',
+					'active-tab-admin': '#000000',
+					'timeline': '#ffffff',
+					'cards-admin-ops': '#ffffff',
+					'financial-profit': '#96d8d0',
+					'financial-loss': '#f1b5b9',
+					'project-summary': '#ffffff',
+					'project-mgmt-board': '#f8f9fa',
+					'project-mgmt-cards': '#f8f9fa',
+					
+					// Visual Data Colors
+					'primary': '#000000',
+					'secondary-1': '#bdeed3',
+					'secondary-2': '#f1b5b9',
+					'secondary-3': '#d9d2fd',
+					'secondary-4': '#a4e2f6',
+					'secondary-5': '#fbe2aa',
+					'donut-slice-1': '#dbf4aa',
+					'donut-slice-2': '#e3e9f7',
+					
+					// Project Card Elements
+					'task-count': '#d1e1ea',
+					'title-text': '#000000',
+					'secondary-text': '#858789',
+					'info-bubbles': '#e9eff4',
+					
+					// Status Colors
+					'on-plan': '#bdeed3',
+					'in-preparation': '#a4e2f6',
+					'in-progress': '#d9d2fd',
+					'delayed': '#fbe2aa',
+					'stopped': '#f1b5b9',
+					
+					// Priority Colors
+					'urgent-important': '#f1b5b9',
+					'not-urgent-important': '#fbe2aa',
+					'urgent-not-important': '#a4e2f6',
+					'not-urgent-not-important': '#d9d2fd',
 				},
 				
 				// Original colors for compatibility
@@ -118,11 +140,7 @@ export default {
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)',
-				'card-top': '24px',
-				'card-bottom': '6px',
-				'panel': '18px',
-				'chip': '9999px',
+				sm: 'calc(var(--radius) - 4px)'
 			},
 			keyframes: {
 				'accordion-down': {

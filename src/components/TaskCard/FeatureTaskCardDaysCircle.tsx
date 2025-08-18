@@ -12,7 +12,7 @@ const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps)
       width: '60px',
       height: '60px',
       borderRadius: '50%',
-      border: '1.5px solid var(--sb-ink)',
+      border: '1px solid #000000',
       backgroundColor: 'transparent',
       display: 'flex',
       flexDirection: 'column',
@@ -22,7 +22,7 @@ const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps)
       <span style={{
         fontSize: '16px',
         fontWeight: 700,
-        color: 'var(--sb-ink)',
+        color: '#000000',
         lineHeight: 1,
         fontFamily: 'IBM Plex Sans Arabic'
       }}>
@@ -31,7 +31,7 @@ const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps)
       <span style={{
         fontSize: '10px',
         fontWeight: 400,
-        color: 'var(--sb-ink)',
+        color: '#000000',
         marginTop: '2px',
         fontFamily: 'IBM Plex Sans Arabic'
       }}>

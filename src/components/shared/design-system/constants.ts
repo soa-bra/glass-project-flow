@@ -365,26 +365,15 @@ export const MOTION = {
   },
 } as const;
 
-// Updated component class builders with SoaBra Tokens v1.2.5 - Backward Compatible
-export const buildCardClasses = (variantOrCustom: 'default' | 'project' | 'task' | 'box' | string = 'default', customClasses = '') => {
-  // Handle backward compatibility - if first param looks like custom classes, treat as old signature
-  if (typeof variantOrCustom === 'string' && !['default', 'project', 'task', 'box'].includes(variantOrCustom)) {
-    return `bg-[var(--sb-box-bg)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)] rounded-lg ${SPACING.CARD_PADDING} ${variantOrCustom}`.trim();
-  }
-  
-  const variant = variantOrCustom as 'default' | 'project' | 'task' | 'box';
-  const base = variant === 'project' 
-    ? 'bg-[var(--sb-project-card-bg)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)] rounded-t-[24px] rounded-b-[6px]'
-    : variant === 'task' 
-    ? 'bg-[var(--sb-task-card-bg)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)] rounded-t-[24px] rounded-b-[6px]'
-    : variant === 'box'
-    ? 'bg-[var(--sb-box-bg)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)] rounded-lg'
-    : 'bg-[var(--sb-card-bg)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)] rounded-t-[24px] rounded-b-[6px]';
-  return `${base} ${SPACING.CARD_PADDING} ${customClasses}`.trim();
-};
+// Unified component class builders with design system tokens
+export const buildCardClasses = (customClasses = '') => 
+  `bg-white ${SPACING.CARD_PADDING} ${LAYOUT.CARD_ROUNDED} border border-[#DADCE0] ${LAYOUT.CARD_SHADOW} ${customClasses}`.trim();
 
 export const buildPanelClasses = (customClasses = '') => 
-  `bg-[var(--sb-panel-bg)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-strong)] rounded-[18px] ${SPACING.CARD_PADDING} ${customClasses}`.trim();
+  `${COLORS.PANEL_BACKGROUND} ${SPACING.CARD_PADDING} ${LAYOUT.PANEL_ROUNDED} ${COLORS.RING_BORDER} ${LAYOUT.PANEL_SHADOW} backdrop-blur-[2px] ${customClasses}`.trim();
+
+export const buildBoxClasses = (customClasses = '') => 
+  `${COLORS.BOX_BACKGROUND} ${DESIGN_TOKENS.SPACING.LG} ${LAYOUT.CARD_ROUNDED} ${COLORS.RING_BORDER} ${LAYOUT.CARD_SHADOW} ${customClasses}`.trim();
 
 export const buildTitleClasses = (customClasses = '') => 
   `${TYPOGRAPHY.H3} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} ${LAYOUT.FLEX_GAP} ${customClasses}`.trim();

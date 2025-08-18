@@ -19,7 +19,7 @@ const BaseTaskCardLayout = ({
   isOtherSelected = false
 }: BaseTaskCardLayoutProps) => {
   const getCardStyle = () => {
-    let backgroundColor = 'var(--sb-task-card-bg)';
+    let backgroundColor = '#f8f9fa';
     let opacity = 1;
     
     if (isSelectionMode) {
@@ -34,15 +34,13 @@ const BaseTaskCardLayout = ({
       width: '100%',
       height: '120px',
       backgroundColor,
-      borderRadius: '24px 24px 6px 6px',
-      border: '1px solid var(--sb-border)',
+      borderRadius: '32px',
       padding: '12px',
       direction: 'rtl',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
       fontFamily: 'IBM Plex Sans Arabic',
-      boxShadow: 'var(--sb-shadow-soft)',
       opacity,
       transition: 'opacity 0.2s ease-in-out'
     } as CSSProperties;
