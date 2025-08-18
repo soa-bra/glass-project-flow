@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -182,33 +182,30 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
     <>
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent 
-          className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 font-arabic"
-          style={{
-            background: 'rgba(255,255,255,0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '24px',
-          }}
+          className="modal-surface-glass p-6 max-w-3xl max-h-[90vh] overflow-hidden font-arabic"
         >
-          <button
-            onClick={handleClose}
-            className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/5 border border-black w-8 h-8 flex items-center justify-center transition z-10 focus-visible:ring-2 focus-visible:ring-black/20 focus-visible:outline-none"
-            aria-label="إغلاق"
-          >
-            <X className="text-black" size={18} />
-          </button>
+          <div className="flex items-center justify-between border-b border-black/10 pb-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-bold text-black font-arabic">
+                  توليد ذكي للمهام
+                </DialogTitle>
+                <p className="text-sm text-black/70 font-arabic">أنشئ مهام المشروع أوتوماتيكيًا وفق معايير التطبيق</p>
+              </div>
+            </div>
+            <button
+              onClick={handleClose}
+              className="modal-close"
+              aria-label="إغلاق"
+            >
+              <X className="text-black" size={18} />
+            </button>
+          </div>
 
-          <DialogHeader className="px-8 pt-8 pb-2">
-            <DialogTitle className="text-2xl font-bold text-right font-arabic mb-2">
-              توليد ذكي للمهام
-            </DialogTitle>
-            <p className="text-sm text-gray-600 text-right font-arabic">
-              أنشئ مهام المشروع أوتوماتيكيًا وفق معايير التطبيق.
-            </p>
-          </DialogHeader>
-
-          <div className="px-8 pb-8">
+          <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
             <div className="space-y-6">
               {/* حقل عدد المهام */}
               <div className="space-y-2">
