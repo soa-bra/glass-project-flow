@@ -55,7 +55,7 @@ export const ProjectsSortDialog: React.FC<ProjectsSortDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="sm:max-w-md p-0 overflow-hidden"
+        className="sm:max-w-md p-0 overflow-hidden z-[9998]"
         style={{
           background: 'rgba(255,255,255,0.4)',
           backdropFilter: 'blur(20px)',
@@ -95,7 +95,7 @@ export const ProjectsSortDialog: React.FC<ProjectsSortDialogProps> = ({
               <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
                 <SelectValue placeholder="اختر معيار الترتيب" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[9999] bg-white border border-black/20 shadow-lg">
                 {sortCriteria.map((criteria) => (
                   <SelectItem key={criteria.value} value={criteria.value}>
                     {criteria.label}
