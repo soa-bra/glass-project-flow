@@ -268,6 +268,19 @@ export const useUnifiedTasks = (projectId: string) => {
     }));
   };
 
+  const reorderTasks = (sourceIndex: number, destinationIndex: number) => {
+    setAllTasks(prev => {
+      const currentTasks = [...(prev[projectId] || [])];
+      const [removed] = currentTasks.splice(sourceIndex, 1);
+      currentTasks.splice(destinationIndex, 0, removed);
+      
+      return {
+        ...prev,
+        [projectId]: currentTasks
+      };
+    });
+  };
+
   return {
     tasks: getProjectTasks(),
     getProjectTasks,
@@ -277,6 +290,7 @@ export const useUnifiedTasks = (projectId: string) => {
     updateTaskStatus,
     removeTask,
     mergeTasks,
+    reorderTasks,
     sortTasks: (sortConfig: { field: string; direction: 'asc' | 'desc' }) => sortTasks(allTasks[projectId] || [], sortConfig.field, sortConfig.direction)
   };
 };
