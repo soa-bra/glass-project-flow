@@ -300,14 +300,13 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
               <p className="text-sm text-black/70 font-arabic">إعداد وتخصيص ميزانية جديدة للمشاريع والأنشطة</p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={handleClose}
-            className="w-8 h-8 rounded-full bg-transparent hover:bg-black/5 text-black"
+            className="rounded-full bg-transparent hover:bg-black/5 border border-black w-8 h-8 flex items-center justify-center transition focus-visible:ring-2 focus-visible:ring-black/20 focus-visible:outline-none"
+            aria-label="إغلاق"
           >
-            <X className="w-4 h-4" />
-          </Button>
+            <X className="text-black" size={18} />
+          </button>
         </DialogHeader>
 
         {/* Content */}

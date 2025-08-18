@@ -73,14 +73,13 @@ const SmartElementsModal: React.FC<SmartElementsModalProps> = ({
             <ElementIcon className="w-5 h-5" />
             إنشاء {getElementName(selectedElement)}
           </CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={onClose}
-            className="h-8 w-8 p-0"
+            className="rounded-full bg-transparent hover:bg-black/5 border border-black w-8 h-8 flex items-center justify-center transition focus-visible:ring-2 focus-visible:ring-black/20 focus-visible:outline-none"
+            aria-label="إغلاق"
           >
-            <X className="w-4 h-4" />
-          </Button>
+            <X className="text-black" size={18} />
+          </button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>

@@ -193,9 +193,10 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
         >
           <button
             onClick={handleClose}
-            className="absolute top-4 left-4 rounded-full bg-white/70 hover:bg-white/100 shadow-lg border border-white/30 w-[32px] h-[32px] flex items-center justify-center transition z-10"
+            className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/5 border border-black w-8 h-8 flex items-center justify-center transition z-10 focus-visible:ring-2 focus-visible:ring-black/20 focus-visible:outline-none"
+            aria-label="إغلاق"
           >
-            <X className="text-gray-700" size={18} />
+            <X className="text-black" size={18} />
           </button>
 
           <DialogHeader className="px-8 pt-8 pb-2">

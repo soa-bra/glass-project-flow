@@ -87,9 +87,10 @@ export const ClientInfoBox: React.FC<ClientInfoBoxProps> = ({ client, onClose })
         <h3 className="text-lg font-bold text-black font-arabic">معلومات العميل</h3>
         <button 
           onClick={onClose}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="rounded-full bg-transparent hover:bg-black/5 border border-black w-8 h-8 flex items-center justify-center transition focus-visible:ring-2 focus-visible:ring-black/20 focus-visible:outline-none"
+          aria-label="إغلاق"
         >
-          <X className="w-5 h-5 text-gray-500" />
+          <X className="text-black" size={18} />
         </button>
       </div>
 

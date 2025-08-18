@@ -70,9 +70,10 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
         <div className="relative">
           <button
             onClick={onClose}
-            className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors z-10"
+            className="absolute -top-2 -right-2 rounded-full bg-transparent hover:bg-black/5 border border-black w-8 h-8 flex items-center justify-center transition focus-visible:ring-2 focus-visible:ring-black/20 focus-visible:outline-none z-10"
+            aria-label="إغلاق"
           >
-            <X className="w-4 h-4 text-white" />
+            <X className="text-black" size={18} />
           </button>
           
           <DialogHeader className="text-center pb-6">

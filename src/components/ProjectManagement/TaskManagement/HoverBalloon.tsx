@@ -1,4 +1,5 @@
 import React from 'react';
+import { X } from 'lucide-react';
 
 interface Task {
   id: string;
@@ -60,9 +61,10 @@ export const HoverBalloon: React.FC<HoverBalloonProps> = ({ task, onClose }) => 
         <h4 className="text-sm font-bold text-black">تفاصيل المهمة</h4>
         <button 
           onClick={onClose}
-          className="text-gray-400 hover:text-black transition-colors"
+          className="rounded-full bg-transparent hover:bg-black/5 border border-black w-8 h-8 flex items-center justify-center transition focus-visible:ring-2 focus-visible:ring-black/20 focus-visible:outline-none"
+          aria-label="إغلاق"
         >
-          ✕
+          <X className="text-black" size={18} />
         </button>
       </div>
 
