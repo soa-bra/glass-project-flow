@@ -3,18 +3,24 @@ import { Plus, Filter, Sparkles, RefreshCw, ArrowUpDown } from 'lucide-react';
 import { AddTaskModal } from '@/components/ProjectsColumn/AddTaskModal';
 import { SmartTaskGenerationModal } from './SmartTaskGenerationModal';
 import { TasksSortDialog } from './TasksSortDialog';
+import { TasksFilterDialog, TaskFilterOptions } from './TasksFilterDialog';
 import type { TaskData } from '@/types';
 interface TaskListHeaderProps {
   onTaskAdded: (task: TaskData) => void;
   onTasksGenerated: (tasks: TaskData[]) => void;
+  onFilterChange?: (filters: TaskFilterOptions) => void;
+  onSortChange?: (field: string, direction: 'asc' | 'desc') => void;
 }
 export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
   onTaskAdded,
-  onTasksGenerated
+  onTasksGenerated,
+  onFilterChange,
+  onSortChange
 }) => {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showSmartGenerationModal, setShowSmartGenerationModal] = useState(false);
   const [showSortDialog, setShowSortDialog] = useState(false);
+  const [showFilterDialog, setShowFilterDialog] = useState(false);
   const handleTaskAdded = (task: TaskData) => {
     onTaskAdded(task);
   };
@@ -26,14 +32,15 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
     // يمكن إضافة منطق تحديث المهام هنا
   };
   const handleFilterTasks = () => {
-    // Filter tasks functionality
-    // يمكن إضافة منطق فلترة المهام هنا
+    setShowFilterDialog(true);
   };
 
   const handleSort = (field: string, direction: 'asc' | 'desc') => {
-    // Sort tasks functionality
-    console.log('ترتيب المهام:', field, direction);
-    // يمكن إضافة منطق ترتيب المهام هنا
+    onSortChange?.(field, direction);
+  };
+
+  const handleApplyFilter = (filters: TaskFilterOptions) => {
+    onFilterChange?.(filters);
   };
   return <>
       <div className="flex items-center justify-between mb-6 px-0 mx-[15px] my-[15px]">
@@ -66,5 +73,7 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
       <SmartTaskGenerationModal isOpen={showSmartGenerationModal} onClose={() => setShowSmartGenerationModal(false)} onTasksGenerated={handleTasksGenerated} />
       
       <TasksSortDialog isOpen={showSortDialog} onClose={() => setShowSortDialog(false)} onSort={handleSort} />
+      
+      <TasksFilterDialog isOpen={showFilterDialog} onClose={() => setShowFilterDialog(false)} onApplyFilter={handleApplyFilter} />
       </>;
 };
