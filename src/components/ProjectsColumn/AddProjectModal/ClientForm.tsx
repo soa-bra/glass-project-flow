@@ -84,7 +84,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                 <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
                   <SelectValue placeholder="اختر نوع الكيان" />
                 </SelectTrigger>
-                <SelectContent className="w-auto p-0 z-[10000] bg-white/65 backdrop-blur-[18px] border border-white/60 rounded-[18px] text-[#0B0F12] font-arabic">
+                <SelectContent className="z-[10000] sb-popover-shell text-[#0B0F12] font-arabic">
                   <SelectItem value="individual">فرد</SelectItem>
                   <SelectItem value="government">مؤسسة حكومية</SelectItem>
                   <SelectItem value="semi-government">مؤسسة شبه حكومية</SelectItem>
