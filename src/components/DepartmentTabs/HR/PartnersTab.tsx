@@ -42,11 +42,11 @@ export const PartnersTab: React.FC = () => {
 
   const getEntityTypeText = (type: string) => {
     switch (type) {
-      case 'company': return 'شركة';
-      case 'organization': return 'منظمة';
-      case 'institution': return 'مؤسسة';
-      case 'government': return 'جهة حكومية';
-      case 'nonprofit': return 'جمعية خيرية';
+      case 'individual': return 'فرد';
+      case 'government': return 'مؤسسة حكومية';
+      case 'semi-government': return 'مؤسسة شبه حكومية';
+      case 'commercial': return 'مؤسسة تجارية';
+      case 'charity': return 'مؤسسة خيرية';
       default: return type;
     }
   };

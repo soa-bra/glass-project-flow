@@ -128,15 +128,15 @@ export const PartnershipsTab: React.FC<PartnershipsTabProps> = ({
               <div className="space-y-2">
                 <Label className="font-arabic text-right">نوع الكيان *</Label>
                 <Select value={formData.entityType} onValueChange={(value) => handleInputChange('entityType', value)}>
-                  <SelectTrigger className="rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black text-right font-arabic transition-colors outline-none">
+                  <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
                     <SelectValue placeholder="اختر نوع الكيان" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="company">شركة</SelectItem>
-                    <SelectItem value="organization">منظمة</SelectItem>
-                    <SelectItem value="institution">مؤسسة</SelectItem>
-                    <SelectItem value="government">جهة حكومية</SelectItem>
-                    <SelectItem value="nonprofit">جمعية خيرية</SelectItem>
+                  <SelectContent className="z-[10000]">
+                    <SelectItem value="individual">فرد</SelectItem>
+                    <SelectItem value="government">مؤسسة حكومية</SelectItem>
+                    <SelectItem value="semi-government">مؤسسة شبه حكومية</SelectItem>
+                    <SelectItem value="commercial">مؤسسة تجارية</SelectItem>
+                    <SelectItem value="charity">مؤسسة خيرية</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
