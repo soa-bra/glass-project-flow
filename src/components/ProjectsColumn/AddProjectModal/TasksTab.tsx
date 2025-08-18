@@ -51,11 +51,7 @@ export const TasksTab: React.FC<TasksTabProps> = ({
         ) : (
           <div className="space-y-3">
             {tasks.map((task, index) => (
-              <div key={index} className="p-4 border border-white/40 rounded-lg" style={{
-                background: 'rgba(255,255,255,0.15)',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
-              }}>
+              <div key={index} className="p-4 bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-black/50 font-arabic rounded-full transition-colors">
                 <h4 className="font-bold font-arabic text-right">{task.title}</h4>
                 <p className="text-sm text-gray-600 font-arabic text-right mt-1">{task.description}</p>
                 <div className="flex justify-between items-center mt-2 text-sm text-gray-500 font-arabic">
