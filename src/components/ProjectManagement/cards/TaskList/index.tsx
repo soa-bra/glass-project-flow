@@ -5,6 +5,7 @@ import { TaskListContainer } from './TaskListContainer';
 import { TaskListHeader } from './TaskListHeader';
 import { TaskListContent, TaskListContentRef } from './TaskListContent';
 import { TaskFilterOptions } from './TasksFilterDialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import type { TaskData } from '@/types';
 
 interface TaskListCardProps {
@@ -36,18 +37,24 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ project }) => {
 
   return (
     <TaskListContainer>
-      <TaskListHeader 
-        onTaskAdded={handleTaskAdded} 
-        onTasksGenerated={handleTasksGenerated}
-        onFilterChange={handleFilterChange}
-        onSortChange={handleSortChange}
-      />
-      <TaskListContent 
-        ref={contentRef} 
-        projectId={project.id}
-        filters={filters}
-        sortConfig={sortConfig}
-      />
+      <div className="flex-shrink-0">
+        <TaskListHeader 
+          onTaskAdded={handleTaskAdded} 
+          onTasksGenerated={handleTasksGenerated}
+          onFilterChange={handleFilterChange}
+          onSortChange={handleSortChange}
+        />
+      </div>
+      <ScrollArea className="flex-1">
+        <div className="p-2">
+          <TaskListContent 
+            ref={contentRef} 
+            projectId={project.id}
+            filters={filters}
+            sortConfig={sortConfig}
+          />
+        </div>
+      </ScrollArea>
     </TaskListContainer>
   );
 };
