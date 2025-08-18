@@ -6,13 +6,16 @@ import React, { useState } from 'react';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { AddProjectModal } from './ProjectsColumn/AddProjectModal';
+import { ProjectFilterOptions } from './custom/ProjectsFilterDialog';
+import { ProjectSortOptions } from './custom/ProjectsSortDialog';
 
 type ProjectsColumnProps = {
   projects: Project[];
   selectedProjectId?: string | null;
   onProjectSelect?: (projectId: string) => void;
   onProjectAdded: (newProject: ProjectData) => void;
-  onSort?: () => void;
+  onApplyFilter?: (filters: ProjectFilterOptions) => void;
+  onApplySort?: (sortOptions: ProjectSortOptions) => void;
 };
 
 const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
@@ -20,7 +23,8 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
   selectedProjectId,
   onProjectSelect,
   onProjectAdded,
-  onSort,
+  onApplyFilter,
+  onApplySort,
 }) => {
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
 
@@ -40,7 +44,11 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
         {/* شريط الأدوات ثابت في الأعلى */}
         <div className="flex-shrink-0 px-4 pt-4">
           <div className="mb-4">
-            <ProjectsToolbar onAddProject={() => setShowAddProjectModal(true)} onSort={onSort} />
+            <ProjectsToolbar 
+              onAddProject={() => setShowAddProjectModal(true)} 
+              onApplyFilter={onApplyFilter}
+              onApplySort={onApplySort}
+            />
           </div>
         </div>
         

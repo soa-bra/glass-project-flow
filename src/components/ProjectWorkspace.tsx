@@ -9,6 +9,8 @@ import { useProjectPanelAnimation } from '@/hooks/useProjectPanelAnimation';
 import { ProjectTasksProvider } from '@/contexts/ProjectTasksContext';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
+import { ProjectFilterOptions } from './custom/ProjectsFilterDialog';
+import { ProjectSortOptions } from './custom/ProjectsSortDialog';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
@@ -17,7 +19,7 @@ interface ProjectWorkspaceProps {
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
   // إدارة حالة المشاريع على مستوى ProjectWorkspace
   const [projects, setProjects] = useState<Project[]>(mockProjects);
-  const [sortOrder, setSortOrder] = useState<'name' | 'date' | 'status'>('date');
+  const [currentSort, setCurrentSort] = useState<ProjectSortOptions>({ sortBy: 'date', direction: 'asc' });
 
   const {
     panelStage,
@@ -68,22 +70,38 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     ));
   };
 
-  // دالة ترتيب المشاريع
-  const handleSort = () => {
-    const newSortOrder = sortOrder === 'date' ? 'name' : sortOrder === 'name' ? 'status' : 'date';
-    setSortOrder(newSortOrder);
+  // دالة تطبيق الفلترة
+  const handleApplyFilter = (filters: ProjectFilterOptions) => {
+    // TODO: Implement filtering logic
+    console.log('تطبيق الفلترة:', filters);
+  };
+
+  // دالة تطبيق الترتيب
+  const handleApplySort = (sortOptions: ProjectSortOptions) => {
+    setCurrentSort(sortOptions);
     
     setProjects(prev => [...prev].sort((a, b) => {
-      switch (newSortOrder) {
+      let comparison = 0;
+      
+      switch (sortOptions.sortBy) {
         case 'name':
-          return a.title.localeCompare(b.title, 'ar');
+          comparison = a.title.localeCompare(b.title, 'ar');
+          break;
         case 'status':
           const statusOrder = { success: 1, info: 2, warning: 3, error: 4 };
-          return statusOrder[a.status] - statusOrder[b.status];
+          comparison = statusOrder[a.status] - statusOrder[b.status];
+          break;
+        case 'manager':
+          // Using owner field as manager since manager field doesn't exist
+          comparison = a.owner.localeCompare(b.owner, 'ar');
+          break;
         case 'date':
         default:
-          return a.daysLeft - b.daysLeft;
+          comparison = a.daysLeft - b.daysLeft;
+          break;
       }
+      
+      return sortOptions.direction === 'desc' ? -comparison : comparison;
     }));
   };
 
@@ -124,7 +142,8 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
             selectedProjectId={selectedProjectId}
             onProjectSelect={handleProjectSelect}
             onProjectAdded={handleProjectAdded}
-            onSort={handleSort}
+            onApplyFilter={handleApplyFilter}
+            onApplySort={handleApplySort}
           />
         </div>
       </div>
