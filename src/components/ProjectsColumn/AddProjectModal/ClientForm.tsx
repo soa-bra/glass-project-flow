@@ -76,7 +76,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
             </div>
             
             <div className="space-y-2">
-              <Label className="font-arabic text-right">نوع الكيان</Label>
+              <Label className="font-arabic text-right">نوع الكيان *</Label>
               <Select 
                 value={projectData.clientData?.type || ''} 
                 onValueChange={(value) => onClientDataChange('type', value)}
@@ -107,7 +107,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
             </div>
             
             <div className="space-y-2">
-              <Label className="font-arabic text-right">رقم التواصل *</Label>
+              <Label className="font-arabic text-right">رقم التواصل</Label>
               <Input
                 value={projectData.clientData?.phone || ''}
                 onChange={(e) => onClientDataChange('phone', e.target.value)}
