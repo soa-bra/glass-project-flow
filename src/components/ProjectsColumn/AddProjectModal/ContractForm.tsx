@@ -58,10 +58,10 @@ export const ContractForm: React.FC<ContractFormProps> = ({
     <div className="space-y-6">
       <div className="space-y-4">
         <Label className="font-arabic text-right text-lg">نوع المشروع</Label>
-        <div className="flex bg-transparent border border-black/10 rounded-full p-1">
+        <div className="flex bg-transparent border border-black/10 rounded-full p-1 w-fit mx-auto">
           <button
             onClick={() => onInputChange('hasContract', false)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
+            className={`px-6 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
               !projectData.hasContract ? 'bg-black text-white' : 'text-black hover:bg-black/5'
             }`}
           >
@@ -69,7 +69,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
           </button>
           <button
             onClick={() => onInputChange('hasContract', true)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
+            className={`px-6 py-2 rounded-full text-sm font-medium transition-colors font-arabic ${
               projectData.hasContract ? 'bg-black text-white' : 'text-black hover:bg-black/5'
             }`}
           >
