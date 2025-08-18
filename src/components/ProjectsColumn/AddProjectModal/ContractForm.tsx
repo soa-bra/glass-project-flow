@@ -136,8 +136,8 @@ export const ContractForm: React.FC<ContractFormProps> = ({
             <div
               className={cn(
                 "w-full p-6 rounded-3xl border-2 border-dashed transition-colors cursor-pointer",
-                dragActive ? "border-black bg-black/5" : "border-black/30 hover:border-black/50",
-                projectData.contractFile ? "bg-green-50 border-green-300" : "bg-white/20"
+                dragActive ? "border-black/30 bg-white/10" : "border-black/20 hover:border-black/30",
+                projectData.contractFile ? "bg-white/30 border-black/20" : "bg-white/20"
               )}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -155,26 +155,24 @@ export const ContractForm: React.FC<ContractFormProps> = ({
               <div className="flex flex-col items-center space-y-3 text-center">
                 {projectData.contractFile ? (
                   <>
-                    <FileText className="w-8 h-8 text-green-600" />
+                    <FileText className="w-8 h-8 text-black/70" />
                     <div className="space-y-1">
-                      <p className="text-sm font-medium text-green-700 font-arabic">
+                      <p className="text-sm font-medium text-black font-arabic">
                         {projectData.contractFile.name}
                       </p>
-                      <p className="text-xs text-green-600 font-arabic">
+                      <p className="text-xs text-black/60 font-arabic">
                         {(projectData.contractFile.size / 1024 / 1024).toFixed(2)} ميجابايت
                       </p>
                     </div>
                     <Button
                       type="button"
-                      variant="outline"
-                      size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
                         onInputChange('contractFile', null);
                       }}
-                      className="text-red-500 hover:text-red-700 font-arabic"
+                      className="w-8 h-8 p-0 rounded-full bg-transparent hover:bg-red-500/10 hover:text-red-500 text-red-500 transition-colors flex items-center justify-center"
                     >
-                      إزالة الملف
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </>
                 ) : (
