@@ -211,8 +211,8 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
 
       {/* منطقة رفع الملفات */}
       <div className="space-y-4">
-        <label className="block text-sm font-bold text-black">
-          الملفات <span className="text-red-500">*</span>
+        <label className="block text-sm font-bold text-black font-arabic">
+          المرفقات
         </label>
                      
         <div
