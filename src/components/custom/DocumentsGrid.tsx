@@ -179,7 +179,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
   // استخراج التاقز المتاحة من جميع الملفات
   const availableTags = Array.from(new Set(docs.flatMap(doc => doc.tags)));
-  return <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+  return <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
       {/* شريط التنقل */}
       {currentFolderId && <div className="flex items-center gap-2 mb-4">
           <Button size="sm" variant="outline" onClick={handleBackClick} className="rounded-full bg-black text-sm text-white">
@@ -194,7 +194,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
       <div className="flex gap-2 mb-4">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input placeholder="البحث في المرفقات..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="h-8 bg-[#F2FFFF] border border-black/80 rounded-full" />
+          <Input placeholder="البحث في المرفقات..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-[#FFFFFF] border border-[#DADCE0] rounded-full" />
         </div>
         <button onClick={handleUpdateFile} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
           <RefreshCw size={16} />
@@ -230,10 +230,10 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
           {/* عرض الملفات */}
           {currentDocs.map(doc => {
           const FileIcon = getFileIcon(doc.type);
-          return <div key={doc.id} className="bg-[#F2FFFF] rounded-3xl p-4 border border-black/10">
+          return <div key={doc.id} className="bg-[#FFFFFF] rounded-3xl p-6 border border-[#DADCE0] px-[20px] py-[15px]">
                 <div className="flex items-start gap-3">
                   
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 mx-px">
                     <div className="flex items-start justify-between mb-2">
                       <BaseBadge variant="secondary" className={getClassificationColor(doc.classification)}>
                         {getClassificationText(doc.classification)}
