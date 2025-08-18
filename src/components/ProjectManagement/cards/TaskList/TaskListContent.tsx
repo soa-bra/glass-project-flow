@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, useEffect, useMemo, useState } from 'react';
+import React, { useImperativeHandle, useEffect, useMemo, useCallback } from 'react';
 import type { TaskData } from '@/types';
 import TaskCard from '@/components/TaskCard';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
@@ -6,6 +6,7 @@ import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
 import { mapToTaskCardProps, mapFromTaskData } from '@/types/task';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { TaskFilterOptions } from './TasksFilterDialog';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 export interface TaskListContentRef {
   addTask: (task: TaskData) => void;
@@ -21,8 +22,6 @@ interface TaskListContentProps {
 export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListContentProps>(({ projectId, filters, sortConfig }, ref) => {
   const unifiedTasks = useUnifiedTasks(projectId || 'default');
   const projectTasksContext = useProjectTasksContext();
-  const [draggedTask, setDraggedTask] = useState<any | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   // دمج المهام من ProjectTasksContext عند التحديث
   useEffect(() => {
@@ -40,77 +39,54 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
     return tasks.map(mapToTaskCardProps);
   }, [unifiedTasks, filters, sortConfig]);
 
-  const addTask = (task: TaskData) => {
+  const addTask = useCallback((task: TaskData) => {
     const unifiedTask = mapFromTaskData(task);
     unifiedTasks.addTask(unifiedTask);
-  };
+  }, [unifiedTasks]);
 
-  const addTasks = (newTasks: TaskData[]) => {
+  const addTasks = useCallback((newTasks: TaskData[]) => {
     newTasks.forEach(task => {
       const unifiedTask = mapFromTaskData(task);
       unifiedTasks.addTask(unifiedTask);
     });
-  };
+  }, [unifiedTasks]);
 
   useImperativeHandle(ref, () => ({ addTask, addTasks }));
 
-  const handleTaskEdit = (taskId: string) => {
+  const handleTaskEdit = useCallback((taskId: string) => {
     // Edit task functionality
     // سيتم تنفيذ modal التعديل لاحقاً
-  };
+  }, []);
 
-  const handleTaskUpdated = (updatedTask: TaskData) => {
+  const handleTaskUpdated = useCallback((updatedTask: TaskData) => {
     // Task updated successfully
     const unifiedTask = mapFromTaskData(updatedTask);
     unifiedTasks.updateTask(updatedTask.id.toString(), unifiedTask);
-  };
+  }, [unifiedTasks]);
 
-  const handleTaskArchive = (taskId: string) => {
+  const handleTaskArchive = useCallback((taskId: string) => {
     unifiedTasks.removeTask(taskId);
     // Task archived successfully
-  };
+  }, [unifiedTasks]);
 
-  
-  const handleDragStart = (e: React.DragEvent, task: any, index: number) => {
-    setDraggedTask(task);
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', e.currentTarget.outerHTML);
-    
-    // إضافة كلاس للعنصر المسحوب
-    (e.target as HTMLElement).style.opacity = '0.5';
-  };
+  const handleTaskDelete = useCallback((taskId: string) => {
+    unifiedTasks.removeTask(taskId);
+    // Task deleted successfully
+  }, [unifiedTasks]);
 
-  const handleDragEnd = (e: React.DragEvent) => {
-    (e.target as HTMLElement).style.opacity = '1';
-    setDraggedTask(null);
-    setDragOverIndex(null);
-  };
+  const handleDragEnd = useCallback((result: DropResult) => {
+    if (!result.destination) return;
 
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    setDragOverIndex(index);
-  };
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
 
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOverIndex(null);
-  };
+    if (sourceIndex === destinationIndex) return;
 
-  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault();
-    setDragOverIndex(null);
-    
-    if (!draggedTask) return;
-    
-    const dragIndex = allTasks.findIndex(task => task.id === draggedTask.id);
-    if (dragIndex === dropIndex) return;
-    
     // إعادة ترتيب المهام
     const reorderedTasks = [...allTasks];
-    const [movedTask] = reorderedTasks.splice(dragIndex, 1);
-    reorderedTasks.splice(dropIndex, 0, movedTask);
-    
+    const [movedTask] = reorderedTasks.splice(sourceIndex, 1);
+    reorderedTasks.splice(destinationIndex, 0, movedTask);
+
     // تحديث ترتيب المهام في النظام
     reorderedTasks.forEach((task, newIndex) => {
       // إنشاء TaskData مناسب للتحويل
@@ -129,52 +105,71 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
       const unifiedTask = mapFromTaskData(taskData);
       unifiedTasks.updateTask(task.id.toString(), unifiedTask);
     });
-  };
-
-  const handleTaskDelete = (taskId: string) => {
-    unifiedTasks.removeTask(taskId);
-    // Task deleted successfully
-  };
+  }, [allTasks, unifiedTasks]);
 
   return (
-    <ScrollArea className="flex-1 h-full">
-      <div className="space-y-4 pr-1 py-0 my-0 min-h-[200px]">
-        {allTasks.length > 0 ? (
-          allTasks.map((task, index) => (
-            <div 
-              key={`task-${task.id}-${index}`}
-              draggable
-              onDragStart={(e) => handleDragStart(e, task, index)}
-              onDragEnd={handleDragEnd}
-              onDragOver={(e) => handleDragOver(e, index)}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, index)}
-              className={`transition-all duration-200 ${
-                dragOverIndex === index ? 'transform scale-105 shadow-lg' : ''
-              } ${draggedTask?.id === task.id ? 'opacity-50' : ''}`}
-              style={{
-                cursor: 'grab',
-                userSelect: 'none'
-              }}
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <ScrollArea className="flex-1 h-full">
+        <Droppable droppableId="task-list" direction="vertical">
+          {(provided, snapshot) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className={`space-y-4 pr-1 py-0 my-0 min-h-[200px] transition-colors duration-200 ${
+                snapshot.isDraggingOver ? 'bg-accent/20 rounded-lg' : ''
+              }`}
             >
-              <TaskCard 
-                {...task} 
-                onEdit={handleTaskEdit} 
-                onArchive={handleTaskArchive} 
-                onDelete={handleTaskDelete} 
-                onTaskUpdated={handleTaskUpdated}
-              />
+              {allTasks.length > 0 ? (
+                <>
+                  {allTasks.map((task, index) => (
+                    <Draggable 
+                      key={`task-${task.id}`} 
+                      draggableId={`task-${task.id}`} 
+                      index={index}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`transition-all duration-200 ${
+                            snapshot.isDragging 
+                              ? 'rotate-2 shadow-2xl ring-2 ring-primary/20 bg-card/95 backdrop-blur-sm' 
+                              : 'hover:shadow-md'
+                          } ${
+                            snapshot.isDragging ? 'z-50' : ''
+                          }`}
+                          style={{
+                            ...provided.draggableProps.style,
+                            cursor: snapshot.isDragging ? 'grabbing' : 'grab',
+                            userSelect: 'none'
+                          }}
+                        >
+                          <TaskCard 
+                            {...task} 
+                            onEdit={handleTaskEdit} 
+                            onArchive={handleTaskArchive} 
+                            onDelete={handleTaskDelete} 
+                            onTaskUpdated={handleTaskUpdated}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </>
+              ) : (
+                <div className="flex items-center justify-center py-12 text-center">
+                  <div className="text-muted-foreground">
+                    <p className="text-lg mb-2">لا توجد مهام تطابق المعايير المحددة</p>
+                    <p className="text-sm">جرب تعديل الفلاتر أو إضافة مهام جديدة</p>
+                  </div>
+                </div>
+              )}
             </div>
-          ))
-        ) : (
-          <div className="flex items-center justify-center py-12 text-center">
-            <div className="text-gray-500">
-              <p className="text-lg mb-2">لا توجد مهام تطابق المعايير المحددة</p>
-              <p className="text-sm">جرب تعديل الفلاتر أو إضافة مهام جديدة</p>
-            </div>
-          </div>
-        )}
-      </div>
-    </ScrollArea>
+          )}
+        </Droppable>
+      </ScrollArea>
+    </DragDropContext>
   );
 });
