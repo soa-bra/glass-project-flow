@@ -1,19 +1,23 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Sparkles } from 'lucide-react';
+import { Plus, Sparkles, Edit, Trash2 } from 'lucide-react';
 import type { TaskData } from '@/types';
 
 interface TasksTabProps {
   tasks: TaskData[];
   onAddTask: () => void;
   onGenerateSmartTasks?: () => void;
+  onEditTask?: (task: TaskData, index: number) => void;
+  onDeleteTask?: (index: number) => void;
 }
 
 export const TasksTab: React.FC<TasksTabProps> = ({ 
   tasks, 
   onAddTask, 
-  onGenerateSmartTasks 
+  onGenerateSmartTasks,
+  onEditTask,
+  onDeleteTask 
 }) => {
   return (
     <div className="space-y-6">
@@ -51,9 +55,29 @@ export const TasksTab: React.FC<TasksTabProps> = ({
         ) : (
           <div className="space-y-3">
             {tasks.map((task, index) => (
-              <div key={index} className="p-4 rounded-3xl bg-white/30 border border-black/20 text-black hover:bg-white/40 font-arabic transition-colors">
-                <h4 className="font-bold font-arabic text-right">{task.title}</h4>
-                <p className="text-sm text-black/60 font-arabic text-right mt-1">{task.description}</p>
+              <div key={index} className="p-4 rounded-3xl bg-white/30 border border-black/20 text-black hover:bg-white/40 font-arabic transition-colors relative group">
+                <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                  {onEditTask && (
+                    <button
+                      onClick={() => onEditTask(task, index)}
+                      className="p-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+                      title="تعديل المهمة"
+                    >
+                      <Edit size={14} />
+                    </button>
+                  )}
+                  {onDeleteTask && (
+                    <button
+                      onClick={() => onDeleteTask(index)}
+                      className="p-2 rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors"
+                      title="حذف المهمة"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
+                </div>
+                <h4 className="font-bold font-arabic text-right pr-16">{task.title}</h4>
+                <p className="text-sm text-black/60 font-arabic text-right mt-1 pr-16">{task.description}</p>
                 <div className="flex justify-between items-center mt-2 text-sm text-black/50 font-arabic">
                   <span>المكلف: {task.assignee}</span>
                   <span>تاريخ الاستحقاق: {task.dueDate}</span>
