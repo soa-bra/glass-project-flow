@@ -28,12 +28,8 @@ export const TaskListContainer: React.FC<TaskListContainerProps> = ({ children }
       </div>
       
       {/* منطقة التمرير للمهام */}
-      <div className="flex-1 overflow-hidden rounded-t-3xl">
-        <ScrollArea className="h-full w-full">
-          <div className="space-y-2 pb-4 px-0 rounded-full mx-[10px]">
-            {content}
-          </div>
-        </ScrollArea>
+      <div className="flex-1 overflow-hidden">
+        {content}
       </div>
     </div>
   );

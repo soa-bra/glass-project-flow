@@ -4,6 +4,7 @@ import TaskCard from '@/components/TaskCard';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
 import { mapToTaskCardProps, mapFromTaskData } from '@/types/task';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 import { TaskFilterOptions } from './TasksFilterDialog';
 
@@ -74,27 +75,29 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
   };
 
   return (
-    <div className="space-y-2 min-h-[200px]">
-      {allTasks.length > 0 ? (
-        allTasks.map((task, index) => (
-          <div key={`task-${task.id}-${index}`}>
-            <TaskCard 
-              {...task} 
-              onEdit={handleTaskEdit} 
-              onArchive={handleTaskArchive} 
-              onDelete={handleTaskDelete} 
-              onTaskUpdated={handleTaskUpdated}
-            />
+    <ScrollArea className="h-full w-full">
+      <div className="space-y-2 pb-4 px-4 min-h-[200px]">
+        {allTasks.length > 0 ? (
+          allTasks.map((task, index) => (
+            <div key={`task-${task.id}-${index}`}>
+              <TaskCard 
+                {...task} 
+                onEdit={handleTaskEdit} 
+                onArchive={handleTaskArchive} 
+                onDelete={handleTaskDelete} 
+                onTaskUpdated={handleTaskUpdated}
+              />
+            </div>
+          ))
+        ) : (
+          <div className="flex items-center justify-center py-12 text-center">
+            <div className="text-gray-500">
+              <p className="text-lg mb-2">لا توجد مهام تطابق المعايير المحددة</p>
+              <p className="text-sm">جرب تعديل الفلاتر أو إضافة مهام جديدة</p>
+            </div>
           </div>
-        ))
-      ) : (
-        <div className="flex items-center justify-center py-12 text-center">
-          <div className="text-gray-500">
-            <p className="text-lg mb-2">لا توجد مهام تطابق المعايير المحددة</p>
-            <p className="text-sm">جرب تعديل الفلاتر أو إضافة مهام جديدة</p>
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </ScrollArea>
   );
 });
