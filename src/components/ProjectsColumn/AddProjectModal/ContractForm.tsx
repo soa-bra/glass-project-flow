@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Trash2 } from 'lucide-react';
+import { CalendarIcon, Trash2, Upload, FileText } from 'lucide-react';
 import { ValidationSchemas, FormValidator, InputSanitizer } from '../../../utils/validation';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -21,6 +21,7 @@ interface ContractFormProps {
     hasContract: boolean;
     contractValue: string;
     contractPayments: ContractPayment[];
+    contractFile?: File | null;
   };
   onInputChange: (field: string, value: unknown) => void;
   onAddPayment: () => void;
@@ -36,6 +37,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
   onUpdatePayment,
 }) => {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [dragActive, setDragActive] = useState(false);
 
   const validateField = (field: string, value: string) => {
     let error: string | null = null;
@@ -58,6 +60,32 @@ export const ContractForm: React.FC<ContractFormProps> = ({
     }));
     
     return !error;
+  };
+
+  const handleFileUpload = (files: FileList | File[]) => {
+    const file = files[0];
+    if (file && (file.type === 'application/pdf' || file.type.startsWith('image/'))) {
+      onInputChange('contractFile', file);
+    }
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileUpload(e.dataTransfer.files);
+    }
   };
   return (
     <div className="space-y-6">
@@ -101,6 +129,69 @@ export const ContractForm: React.FC<ContractFormProps> = ({
             {validationErrors.contractValue && (
               <p className="text-red-500 text-sm mt-1 text-right">{validationErrors.contractValue}</p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label className="font-arabic text-right">رفع نسخة العقد</Label>
+            <div
+              className={cn(
+                "w-full p-6 rounded-3xl border-2 border-dashed transition-colors cursor-pointer",
+                dragActive ? "border-black bg-black/5" : "border-black/30 hover:border-black/50",
+                projectData.contractFile ? "bg-green-50 border-green-300" : "bg-white/20"
+              )}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              onClick={() => document.getElementById('contract-file-input')?.click()}
+            >
+              <input
+                id="contract-file-input"
+                type="file"
+                accept=".pdf,image/*"
+                onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+                className="hidden"
+              />
+              <div className="flex flex-col items-center space-y-3 text-center">
+                {projectData.contractFile ? (
+                  <>
+                    <FileText className="w-8 h-8 text-green-600" />
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-green-700 font-arabic">
+                        {projectData.contractFile.name}
+                      </p>
+                      <p className="text-xs text-green-600 font-arabic">
+                        {(projectData.contractFile.size / 1024 / 1024).toFixed(2)} ميجابايت
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onInputChange('contractFile', null);
+                      }}
+                      className="text-red-500 hover:text-red-700 font-arabic"
+                    >
+                      إزالة الملف
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 text-black/50" />
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-black font-arabic">
+                        اضغط أو اسحب ملف العقد هنا
+                      </p>
+                      <p className="text-xs text-black/60 font-arabic">
+                        PDF أو صورة (أقل من 10 ميجابايت)
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="space-y-4">
