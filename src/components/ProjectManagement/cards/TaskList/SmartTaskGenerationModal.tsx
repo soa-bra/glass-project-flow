@@ -231,7 +231,7 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
               {/* حقل نوع المهام */}
               <div className="space-y-3">
                 <Label className="font-arabic text-right font-bold">نوع المهام</Label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   {taskTypes.map((type) => (
                     <div key={type.id} className="flex items-center space-x-2 space-x-reverse">
                       <Checkbox
@@ -264,7 +264,7 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
             </div>
 
             {/* أزرار الإجراءات */}
-            <div className="flex gap-4 justify-start pt-6 border-t border-white/20 mt-6">
+            <div className="flex gap-4 justify-start pt-4 border-t border-white/20 mt-4">
               <Button
                 onClick={generateTasks}
                 disabled={isGenerating}
