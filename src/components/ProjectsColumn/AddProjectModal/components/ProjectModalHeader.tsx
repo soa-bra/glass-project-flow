@@ -45,7 +45,7 @@ export const ProjectModalHeader: React.FC<ProjectModalHeaderProps> = ({
         {/* زر الإغلاق - العمود الثالث */}
         <button
           onClick={onClose}
-          className="rounded-full bg-transparent hover:bg-black/10 border border-black/30 w-[32px] h-[32px] flex items-center justify-center transition justify-self-end"
+          className="rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition justify-self-end"
         >
           <X className="text-black" size={18} />
         </button>
