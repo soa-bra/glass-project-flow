@@ -1,0 +1,323 @@
+{
+  "meta": {
+    "name": "SoaBra Project Modal Design Language",
+    "version": "1.0.0",
+    "description": "دليل لغة التصميم المتبعة في نافذة إضافة مشروع جديد",
+    "language": "ar-SA",
+    "direction": "rtl",
+    "lastUpdated": "2024-12-19"
+  },
+  
+  "philosophy": {
+    "designSystem": "Glassmorphism",
+    "principles": [
+      "البساطة والوضوح",
+      "التجربة السلسة",
+      "الجمالية الحديثة",
+      "إمكانية الوصول الكاملة"
+    ]
+  },
+
+  "glassmorphism": {
+    "background": "rgba(255,255,255,0.4)",
+    "backdropFilter": "blur(20px)",
+    "WebkitBackdropFilter": "blur(20px)",
+    "border": "1px solid rgba(255,255,255,0.2)",
+    "borderRadius": "24px",
+    "boxShadow": "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)",
+    "zIndex": "9999"
+  },
+
+  "colors": {
+    "primary": {
+      "black": "#000000",
+      "white": "#FFFFFF",
+      "ink": "#0B0F12",
+      "ink_70": "rgba(11,15,18,0.7)",
+      "ink_40": "rgba(11,15,18,0.4)",
+      "ink_20": "rgba(11,15,18,0.2)"
+    },
+    "status": {
+      "success": "#3DBE8B",
+      "warning": "#F6C445", 
+      "error": "#E5564D",
+      "info": "#3DA8F5"
+    },
+    "backgrounds": {
+      "modal": "rgba(255,255,255,0.4)",
+      "field": "rgba(255,255,255,0.3)",
+      "button_primary": "#000000",
+      "button_secondary": "transparent"
+    },
+    "borders": {
+      "default": "rgba(0,0,0,0.2)",
+      "focus": "#000000",
+      "modal": "rgba(255,255,255,0.2)"
+    }
+  },
+
+  "typography": {
+    "fontFamily": {
+      "primary": "IBM Plex Sans Arabic",
+      "fallback": "sans-serif"
+    },
+    "fontWeights": {
+      "normal": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "hierarchy": {
+      "modalTitle": {
+        "fontSize": "1.5rem",
+        "fontWeight": 700,
+        "lineHeight": "2rem"
+      },
+      "fieldLabel": {
+        "fontSize": "0.875rem",
+        "fontWeight": 500,
+        "lineHeight": "1.25rem"
+      },
+      "bodyText": {
+        "fontSize": "1rem",
+        "fontWeight": 400,
+        "lineHeight": "1.5rem"
+      },
+      "secondaryText": {
+        "fontSize": "0.875rem",
+        "fontWeight": 400,
+        "lineHeight": "1.25rem"
+      }
+    },
+    "direction": "rtl",
+    "textAlign": "right"
+  },
+
+  "spacing": {
+    "modal": {
+      "padding": "2rem",
+      "maxWidth": "56rem",
+      "maxHeight": "90vh"
+    },
+    "sections": {
+      "vertical": "1.5rem",
+      "horizontal": "1.5rem"
+    },
+    "fields": {
+      "padding": "0.75rem 1rem",
+      "gap": "1.5rem"
+    },
+    "components": {
+      "buttonPadding": "0.75rem 1.5rem",
+      "inputPadding": "0.75rem 1rem"
+    }
+  },
+
+  "borderRadius": {
+    "modal": "24px",
+    "fields": "24px",
+    "buttons": "9999px",
+    "dropdowns": "24px",
+    "small": "12px"
+  },
+
+  "uiComponents": {
+    "inputs": {
+      "background": "rgba(255,255,255,0.3)",
+      "border": "1px solid rgba(0,0,0,0.2)",
+      "borderRadius": "24px",
+      "padding": "12px 16px",
+      "fontSize": "1rem",
+      "color": "#000000",
+      "placeholder": "rgba(0,0,0,0.5)",
+      "focus": {
+        "borderColor": "#000000",
+        "outline": "none"
+      }
+    },
+    "buttons": {
+      "primary": {
+        "background": "#000000",
+        "color": "#FFFFFF",
+        "borderRadius": "9999px",
+        "padding": "12px 24px",
+        "fontWeight": 500,
+        "hover": {
+          "background": "rgba(0,0,0,0.9)"
+        }
+      },
+      "secondary": {
+        "background": "rgba(255,255,255,0.3)",
+        "color": "#000000",
+        "border": "1px solid rgba(0,0,0,0.2)",
+        "borderRadius": "9999px",
+        "padding": "12px 24px",
+        "fontWeight": 500,
+        "hover": {
+          "background": "rgba(255,255,255,0.4)"
+        }
+      }
+    },
+    "dropdowns": {
+      "trigger": {
+        "background": "rgba(255,255,255,0.3)",
+        "border": "1px solid rgba(0,0,0,0.2)",
+        "borderRadius": "24px",
+        "padding": "12px 16px"
+      },
+      "content": {
+        "background": "rgba(255,255,255,0.4)",
+        "backdropFilter": "blur(20px)",
+        "border": "1px solid rgba(255,255,255,0.2)",
+        "borderRadius": "24px",
+        "boxShadow": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        "zIndex": "10000"
+      }
+    }
+  },
+
+  "layout": {
+    "grid": {
+      "twoColumns": "grid-cols-2",
+      "gap": "1.5rem"
+    },
+    "flex": {
+      "direction": "column",
+      "gap": "1.5rem"
+    },
+    "container": {
+      "maxWidth": "56rem",
+      "padding": "0",
+      "overflow": "hidden"
+    }
+  },
+
+  "tabs": {
+    "container": {
+      "background": "transparent",
+      "border": "1px solid #000000",
+      "borderRadius": "9999px",
+      "padding": "8px 16px"
+    },
+    "active": {
+      "background": "#000000",
+      "color": "#FFFFFF",
+      "borderRadius": "17px"
+    },
+    "inactive": {
+      "background": "transparent",
+      "color": "rgba(0,0,0,0.7)"
+    },
+    "animation": {
+      "transition": "clip-path 0.25s ease",
+      "clipPath": "inset(0px 75% 0px 0% round 17px)"
+    }
+  },
+
+  "animations": {
+    "durations": {
+      "fast": "300ms",
+      "medium": "500ms", 
+      "slow": "700ms"
+    },
+    "easings": {
+      "default": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+      "smooth": "ease-out"
+    },
+    "properties": [
+      "opacity",
+      "transform",
+      "background-color",
+      "border-color",
+      "clip-path"
+    ]
+  },
+
+  "accessibility": {
+    "contrast": {
+      "minimum": "4.5:1",
+      "enhanced": "7:1"
+    },
+    "focus": {
+      "ringWidth": "2px",
+      "ringColor": "#000000",
+      "ringOffset": "2px"
+    },
+    "hitArea": {
+      "minimum": "40px"
+    },
+    "rtlSupport": true,
+    "keyboardNavigation": true,
+    "screenReaderSupport": true
+  },
+
+  "responsive": {
+    "breakpoints": {
+      "sm": "640px",
+      "md": "768px", 
+      "lg": "1024px",
+      "xl": "1280px"
+    },
+    "behavior": {
+      "small": "single column layout",
+      "medium": "two column layout",
+      "large": "two column layout with increased spacing"
+    }
+  },
+
+  "zIndex": {
+    "modalBackdrop": 9998,
+    "modalContent": 9999,
+    "dropdown": 10000,
+    "tooltip": 10001,
+    "toast": 10002
+  },
+
+  "states": {
+    "default": {
+      "opacity": 1,
+      "transform": "scale(1)"
+    },
+    "hover": {
+      "transform": "translateY(-1px)",
+      "opacity": 0.9
+    },
+    "focus": {
+      "ringWidth": "2px",
+      "ringColor": "#000000"
+    },
+    "disabled": {
+      "opacity": 0.5,
+      "cursor": "not-allowed"
+    },
+    "loading": {
+      "opacity": 0.7,
+      "cursor": "wait"
+    }
+  },
+
+  "validation": {
+    "required": {
+      "indicator": "*",
+      "color": "#E5564D"
+    },
+    "error": {
+      "borderColor": "#E5564D",
+      "textColor": "#E5564D",
+      "backgroundColor": "rgba(229, 86, 77, 0.1)"
+    },
+    "success": {
+      "borderColor": "#3DBE8B",
+      "textColor": "#3DBE8B"
+    }
+  },
+
+  "implementation": {
+    "framework": "React + TypeScript",
+    "styling": "Tailwind CSS",
+    "components": "Shadcn UI + Custom Components",
+    "animations": "CSS Transitions + Framer Motion",
+    "icons": "Lucide React"
+  }
+}
