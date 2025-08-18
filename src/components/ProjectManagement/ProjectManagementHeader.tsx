@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, MoreHorizontal, Edit, Archive, Trash } from 'lucide-react';
 import { Project } from '@/types/project';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import FloatingActionMenu from '@/components/ui/FloatingActionMenu';
 interface TabItem {
   id: string;
   label: string;
@@ -43,27 +43,26 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
         </div>
 
         <div className="flex items-center gap-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="w-[50px] h-[50px] bg-transparent border border-black rounded-full flex items-center justify-center transition-all duration-300 bg-transparent hover:bg-white/20">
-                <MoreHorizontal className="w-5 h-5 text-gray-700" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" sideOffset={5} className="w-48 bg-white/40 backdrop-blur-lg border border-white/80 shadow-lg font-arabic z-[9999] rounded-3xl">
-              <DropdownMenuItem onClick={onEdit} className="flex items-center gap-2 text-gray-700 hover:bg-white/60 cursor-pointer">
-                <Edit className="w-4 h-4" />
-                تعديل المشروع
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={onArchive} className="flex items-center gap-2 text-gray-700 hover:bg-white/60 cursor-pointer">
-                <Archive className="w-4 h-4" />
-                أرشفة المشروع
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={onDelete} className="flex items-center gap-2 text-red-600 hover:bg-red-50 cursor-pointer">
-                <Trash className="w-4 h-4" />
-                حذف المشروع
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <FloatingActionMenu
+            className="relative"
+            options={[
+              {
+                label: "تعديل المشروع",
+                onClick: onEdit,
+                Icon: <Edit className="w-4 h-4" />
+              },
+              {
+                label: "أرشفة المشروع", 
+                onClick: onArchive,
+                Icon: <Archive className="w-4 h-4" />
+              },
+              {
+                label: "حذف المشروع",
+                onClick: onDelete,
+                Icon: <Trash className="w-4 h-4" />
+              }
+            ]}
+          />
 
           <button onClick={onClose} className="w-[50px] h-[50px] bg-transparent border border-black rounded-full flex items-center justify-center transition-all duration-300 bg-transparent hover:bg-white/20">
             <X className="w-5 h-5 text-gray-700" />
