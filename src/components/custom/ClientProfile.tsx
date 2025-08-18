@@ -49,7 +49,7 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
   const statusConfig = getContractStatusConfig(client.contractStatus);
   return <div className="space-y-4">
       {/* بيانات العميل الأساسية */}
-      <div className="bg-[#F2FFFF] rounded-3xl p-6 text-center border border-black/10">
+      <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0] ">
         <Avatar className="w-16 h-16">
           <AvatarImage src={client.avatar} alt={client.name} />
           <AvatarFallback className="bg-primary/10 text-primary">
