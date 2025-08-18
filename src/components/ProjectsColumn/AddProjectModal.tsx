@@ -167,9 +167,9 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
             zIndex: 9999,
             transformOrigin: 'top center',
             position: 'fixed',
-            top: '5vh',
+            top: '50%',
             left: '50%',
-            transform: 'translateX(-50%)',
+            transform: 'translate(-50%, -50%)',
             height: 'auto',
             maxHeight: '90vh',
           }}
