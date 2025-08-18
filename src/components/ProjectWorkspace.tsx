@@ -17,6 +17,7 @@ interface ProjectWorkspaceProps {
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
   // إدارة حالة المشاريع على مستوى ProjectWorkspace
   const [projects, setProjects] = useState<Project[]>(mockProjects);
+  const [sortOrder, setSortOrder] = useState<'name' | 'date' | 'status'>('date');
 
   const {
     panelStage,
@@ -67,6 +68,25 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     ));
   };
 
+  // دالة ترتيب المشاريع
+  const handleSort = () => {
+    const newSortOrder = sortOrder === 'date' ? 'name' : sortOrder === 'name' ? 'status' : 'date';
+    setSortOrder(newSortOrder);
+    
+    setProjects(prev => [...prev].sort((a, b) => {
+      switch (newSortOrder) {
+        case 'name':
+          return a.title.localeCompare(b.title, 'ar');
+        case 'status':
+          const statusOrder = { success: 1, info: 2, warning: 3, error: 4 };
+          return statusOrder[a.status] - statusOrder[b.status];
+        case 'date':
+        default:
+          return a.daysLeft - b.daysLeft;
+      }
+    }));
+  };
+
   // Dynamically set right offsets depending on collapsed state
   const projectsColumnRight = isSidebarCollapsed ? 'var(--projects-right-collapsed)' : 'var(--projects-right-expanded)';
   const projectsColumnWidth = 'var(--projects-width)';
@@ -104,6 +124,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
             selectedProjectId={selectedProjectId}
             onProjectSelect={handleProjectSelect}
             onProjectAdded={handleProjectAdded}
+            onSort={handleSort}
           />
         </div>
       </div>

@@ -12,6 +12,7 @@ type ProjectsColumnProps = {
   selectedProjectId?: string | null;
   onProjectSelect?: (projectId: string) => void;
   onProjectAdded: (newProject: ProjectData) => void;
+  onSort?: () => void;
 };
 
 const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
@@ -19,6 +20,7 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
   selectedProjectId,
   onProjectSelect,
   onProjectAdded,
+  onSort,
 }) => {
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
 
@@ -38,7 +40,7 @@ const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
         {/* شريط الأدوات ثابت في الأعلى */}
         <div className="flex-shrink-0 px-4 pt-4">
           <div className="mb-4">
-            <ProjectsToolbar onAddProject={() => setShowAddProjectModal(true)} />
+            <ProjectsToolbar onAddProject={() => setShowAddProjectModal(true)} onSort={onSort} />
           </div>
         </div>
         
