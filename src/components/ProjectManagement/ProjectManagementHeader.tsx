@@ -96,18 +96,18 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
                       exit={{ opacity: 0, x: -16 }}
                       transition={{ duration: 0.25, delay: 0 }}
                       onClick={() => { onEdit(); setOpen(false); }}
-                      className="flex items-center gap-2 relative overflow-hidden text-black cursor-pointer px-3 py-2 w-full text-right rounded-full hover:bg-white/60"
+                      className="flex items-center gap-2 relative overflow-hidden text-gray-800 cursor-pointer px-3 py-2 w-full text-right rounded-3xl hover:bg-white/60"
                       style={{
                         background: 'rgba(255,255,255,0.6)',
-                        backdropFilter: 'blur(70px) saturate(1.2)',
-                        WebkitBackdropFilter: 'blur(70px) saturate(1.2)',
+                        backdropFilter: 'blur(30px) saturate(1.2)',
+                        WebkitBackdropFilter: 'blur(30px) saturate(1.2)',
                         border: '1px solid rgba(255,255,255,0.35)',
                         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1)',
                       }}
                     >
                       {/* نويز خفيف فوق الزجاج */}
                       <span
-                        className="absolute inset-0 pointer-events-none rounded-full"
+                        className="absolute inset-0 pointer-events-none rounded-3xl"
                         style={{
                           backgroundImage:
                             'radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px)',
@@ -127,11 +127,11 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
                       exit={{ opacity: 0, x: -16 }}
                       transition={{ duration: 0.25, delay: 0.05 }}
                       onClick={() => { onArchive(); setOpen(false); }}
-                      className="flex items-center gap-2 relative overflow-hidden text-black cursor-pointer px-3 py-2 w-full text-right rounded-full hover:bg-white/60"
+                      className="flex items-center gap-2 relative overflow-hidden text-gray-800 cursor-pointer px-3 py-2 w-full text-right rounded-3xl hover:bg-white/60"
                       style={{
-                        background: 'rgba(255,255,255,0.6)',
-                        backdropFilter: 'blur(70px) saturate(1.2)',
-                        WebkitBackdropFilter: 'blur(70px) saturate(1.2)',
+                        background: 'rgba(255,255,255,0.4)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
                         border: '1px solid rgba(255,255,255,0.35)',
                         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1)',
                       }}
@@ -157,11 +157,11 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
                       exit={{ opacity: 0, x: -16 }}
                       transition={{ duration: 0.25, delay: 0.1 }}
                       onClick={() => { onDelete(); setOpen(false); }}
-                      className="flex items-center gap-2 relative overflow-hidden text-red-600 cursor-pointer px-3 py-2 w-full text-right rounded-full hover:bg-red-50"
+                      className="flex items-center gap-2 relative overflow-hidden text-red-600 cursor-pointer px-3 py-2 w-full text-right rounded-3xl hover:bg-red-50"
                       style={{
                         background: 'rgba(255,255,255,0.6)',
-                        backdropFilter: 'blur(70px) saturate(1.2)',
-                        WebkitBackdropFilter: 'blur(70px) saturate(1.2)',
+                        backdropFilter: 'blur(30px) saturate(1.2)',
+                        WebkitBackdropFilter: 'blur(30px) saturate(1.2)',
                         border: '1px solid rgba(255,255,255,0.35)',
                         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1)',
                       }}
