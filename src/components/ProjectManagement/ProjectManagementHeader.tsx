@@ -70,7 +70,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
               onClick={() => setOpen(v => !v)}
               className="w-[50px] h-[50px] bg-transparent border border-black rounded-full flex items-center justify-center transition-all duration-300 hover:bg-white/20 text-black hover:text-black focus:text-black active:text-black"
             >
-              {/* ترجيع الحركة: أفقي → عمودي عند الفتح */}
+              {/* اعادة الحركة: أفقي → عمودي عند الفتح */}
               <motion.span
                 animate={{ rotate: open ? 90 : 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut", type: "spring", stiffness: 300, damping: 20 }}
@@ -188,7 +188,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
           {/* زر الإغلاق */}
           <button
             onClick={onClose}
-            className="rounded-full bg-transparent hover:bg-black/5 border border-black w-8 h-8 flex items-center justify-center transition focus-visible:ring-2 focus-visible:ring-black/20 focus-visible:outline-none"
+            className="rounded-full bg-transparent hover:bg-black/5 border border-black w-[50px] h-[50px] flex items-center justify-center transition focus-visible:ring-2 focus-visible:ring-black/20 focus-visible:outline-none"
             aria-label="إغلاق"
           >
             <X className="text-black w-5 h-5" />
