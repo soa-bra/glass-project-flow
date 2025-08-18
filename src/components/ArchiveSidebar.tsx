@@ -73,7 +73,7 @@ const ArchiveSidebar: React.FC<ArchiveSidebarProps> = ({
         isCollapsed ? 'w-[var(--departments-sidebar-width-collapsed)]' : 'w-[var(--departments-sidebar-width-expanded)]'
       }`}
     >
-      <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0">
+      <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0" style={{ backgroundColor: '#EBEFF2' }}>
         {/* Header with Toggle */}
         <div className={`text-center mb-2 rounded-full mx-0 px-0 py-[24px] my-[24px] sync-transition ${isCollapsed ? 'flex justify-center' : ''}`}>
           <div className={`flex items-center rounded-lg sync-transition ${isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[20px]'}`}>
@@ -98,9 +98,9 @@ const ArchiveSidebar: React.FC<ArchiveSidebarProps> = ({
             >
               <div className="sync-transition-fast">
                 {isCollapsed ? (
-                  <ChevronRight className="w-3 h-3 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
+                  <ChevronRight className="w-5 h-5 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
                 ) : (
-                  <ChevronLeft className="w-3 h-3 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
+                  <ChevronLeft className="w-5 h-5 text-[#3e494c] sync-transition-fast group-hover:scale-110" />
                 )}
               </div>
             </button>
@@ -138,7 +138,7 @@ const ArchiveSidebar: React.FC<ArchiveSidebarProps> = ({
                     }
                   `}>
                   <IconComponent className={`
-                      w-2.5 h-2.5 sync-transition-fast
+                      w-[20px] h-[20px] sync-transition-fast
                       ${isActive 
                         ? 'text-[#3e494c] scale-110' 
                         : 'text-soabra-text-secondary group-hover:text-[#3e494c] group-hover:scale-110'
