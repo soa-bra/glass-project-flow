@@ -9,6 +9,7 @@ export const useProjectForm = (
   isEditMode: boolean = false
 ) => {
   const { toast } = useToast();
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   
   const [projectData, setProjectData] = useState<ProjectFormData>({
     name: '',
@@ -57,6 +58,10 @@ export const useProjectForm = (
 
   const handleInputChange = (field: string, value: unknown) => {
     setProjectData(prev => ({ ...prev, [field]: value }));
+    // إخفاء رسائل الخطأ عند بدء ملء الحقول
+    if (validationErrors.length > 0) {
+      setValidationErrors([]);
+    }
   };
 
   const handleClientDataChange = (field: string, value: string) => {
@@ -67,22 +72,43 @@ export const useProjectForm = (
   };
 
   const validateForm = (): boolean => {
+    const errors: string[] = [];
+    
     if (!projectData.name.trim()) {
-      toast({
-        title: "خطأ في التحقق",
-        description: "اسم المشروع مطلوب",
-        variant: "destructive",
-      });
-      return false;
+      errors.push("اسم المشروع");
     }
     if (!projectData.manager) {
-      toast({
-        title: "خطأ في التحقق",
-        description: "مدير المشروع مطلوب",
-        variant: "destructive",
-      });
+      errors.push("مدير المشروع");
+    }
+    if (!projectData.startDate) {
+      errors.push("تاريخ البدء");
+    }
+    if (!projectData.endDate) {
+      errors.push("تاريخ التسليم المتوقع");
+    }
+    
+    // التحقق من بيانات العميل الخارجي
+    if (projectData.clientType === 'external' && projectData.clientData) {
+      if (!projectData.clientData.name?.trim()) {
+        errors.push("اسم الكيان (العميل)");
+      }
+      if (!projectData.clientData.type) {
+        errors.push("نوع الكيان (العميل)");
+      }
+      if (!projectData.clientData.responsiblePerson?.trim()) {
+        errors.push("اسم ممثل الكيان (العميل)");
+      }
+      if (!projectData.clientData.email?.trim()) {
+        errors.push("البريد الإلكتروني (العميل)");
+      }
+    }
+    
+    setValidationErrors(errors);
+    
+    if (errors.length > 0) {
       return false;
     }
+    
     return true;
   };
 
@@ -106,6 +132,7 @@ export const useProjectForm = (
       contractValue: '',
       contractPayments: [{ amount: '', date: '', id: 1 }],
     });
+    setValidationErrors([]);
   };
 
   const addTask = (task: TaskData) => {
@@ -164,6 +191,7 @@ export const useProjectForm = (
 
   return {
     projectData,
+    validationErrors,
     handleInputChange,
     handleClientDataChange,
     validateForm,

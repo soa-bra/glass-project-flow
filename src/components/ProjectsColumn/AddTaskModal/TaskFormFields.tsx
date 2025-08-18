@@ -177,7 +177,17 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
             <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
               <SelectValue placeholder="اختر المكلف" />
             </SelectTrigger>
-            <SelectContent className="z-[10000] sb-popover-shell text-[#0B0F12] font-arabic">
+            <SelectContent 
+              className="z-[10000] text-[#0B0F12] font-arabic"
+              style={{
+                background: 'rgba(255,255,255,0.4)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '24px',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+              }}
+            >
               {teamMembers.map(member => (
                 <SelectItem key={member} value={member}>
                   {member}
@@ -199,7 +209,17 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
           <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
             <SelectValue placeholder="اختر الأولوية" />
           </SelectTrigger>
-          <SelectContent className="z-[10000] sb-popover-shell text-[#0B0F12] font-arabic">
+          <SelectContent 
+            className="z-[10000] text-[#0B0F12] font-arabic"
+            style={{
+              background: 'rgba(255,255,255,0.4)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '24px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            }}
+          >
             {priorities.map(priority => (
               <SelectItem key={priority.value} value={priority.value}>
                 {priority.label}

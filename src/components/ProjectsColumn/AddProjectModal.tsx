@@ -38,6 +38,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
   const {
     projectData,
+    validationErrors,
     handleInputChange,
     handleClientDataChange,
     validateForm,
@@ -205,6 +206,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
             isEditMode={isEditMode}
             onSave={handleSaveProject}
             onCancel={handleClose}
+            validationErrors={validationErrors}
           />
         </DialogContent>
       </Dialog>

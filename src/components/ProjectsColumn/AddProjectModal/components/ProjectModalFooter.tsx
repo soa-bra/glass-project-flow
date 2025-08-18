@@ -1,20 +1,24 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { ProjectFormErrors } from './ProjectFormErrors';
 
 interface ProjectModalFooterProps {
   isEditMode: boolean;
   onSave: () => void;
   onCancel: () => void;
+  validationErrors?: string[];
 }
 
 export const ProjectModalFooter: React.FC<ProjectModalFooterProps> = ({
   isEditMode,
   onSave,
   onCancel,
+  validationErrors,
 }) => {
   return (
     <div className="flex-shrink-0 px-8 pb-8">
+      <ProjectFormErrors validationErrors={validationErrors} />
       <div className="flex gap-4 justify-start pt-6 border-t border-white/20">
         <Button
           onClick={onSave}
