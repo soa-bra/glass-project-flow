@@ -156,7 +156,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     <>
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent 
-          className="max-w-4xl max-h-[90vh] p-0 overflow-hidden font-arabic"
+          className="max-w-4xl p-0 overflow-hidden font-arabic transition-all duration-300 ease-out"
           style={{
             background: 'rgba(255,255,255,0.4)',
             backdropFilter: 'blur(20px)',
@@ -165,6 +165,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
             borderRadius: '24px',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
             zIndex: 9999,
+            transformOrigin: 'top center',
           }}
         >
           <ProjectModalHeader 

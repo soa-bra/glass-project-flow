@@ -28,18 +28,18 @@ export const ProjectModalHeader: React.FC<ProjectModalHeaderProps> = ({
 
   return (
     <DialogHeader className="px-8 pt-8 pb-2 flex-shrink-0">
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 mb-4 w-full">
+      <div className="grid grid-cols-[2fr_auto_1fr] items-center gap-4 mb-4 w-full">
         {/* العنوان - العمود الأول */}
-        <DialogTitle className="text-2xl font-bold font-arabic text-right justify-self-start">
+        <DialogTitle className="text-2xl font-bold font-arabic text-right justify-self-start truncate">
           {isEditMode ? 'تعديل المشروع' : 'إضافة مشروع جديد'}
         </DialogTitle>
         
-        {/* قائمة التبويبات - العمود الأوسط (توسيط مطلق) */}
+        {/* قائمة التبويبات - العمود الأوسط (أقرب لزر الإغلاق) */}
         <AnimatedTabs
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={onTabChange}
-          className="font-arabic justify-self-center"
+          className="font-arabic justify-self-end"
         />
         
         {/* زر الإغلاق - العمود الثالث */}
