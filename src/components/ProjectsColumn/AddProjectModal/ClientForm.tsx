@@ -61,7 +61,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
       </div>
 
       {projectData.clientType === 'external' && (
-        <div className="space-y-6 p-6 bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-black/50 font-arabic rounded-full transition-colors">
+        <div className="space-y-6 p-6 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
           <h3 className="text-lg font-bold font-arabic text-right">بيانات العميل</h3>
           
           <div className="grid grid-cols-2 gap-6">
