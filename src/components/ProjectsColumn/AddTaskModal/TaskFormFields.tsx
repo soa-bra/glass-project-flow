@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Upload, X, FileText, Image, Video, Music, Archive } from 'lucide-react';
+import { CalendarIcon, Upload, X, FileText, Image, Video, Music, Archive, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -263,7 +263,7 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
                   onClick={() => removeFile(file.id)}
                   className="w-6 h-6 bg-transparent hover:bg-red-500/10 hover:text-red-500 text-red-500 rounded-full flex items-center justify-center transition-colors"
                 >
-                  <X className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
