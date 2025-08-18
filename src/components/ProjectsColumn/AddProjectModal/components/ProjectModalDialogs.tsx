@@ -56,9 +56,14 @@ export const ProjectModalDialogs: React.FC<ProjectModalDialogsProps> = ({
               }
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex gap-2">
-            <AlertDialogCancel className="font-arabic">إلغاء</AlertDialogCancel>
-            <AlertDialogAction onClick={onConfirmSave} className="font-arabic">
+          <AlertDialogFooter className="flex items-center justify-end gap-3">
+            <AlertDialogCancel className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2">
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={onConfirmSave} 
+              className="bg-black hover:bg-black/90 text-white font-medium font-arabic rounded-full px-6 py-2"
+            >
               {isEditMode ? 'حفظ التعديلات' : 'إنشاء المشروع'}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -86,9 +91,14 @@ export const ProjectModalDialogs: React.FC<ProjectModalDialogsProps> = ({
               }
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex gap-2">
-            <AlertDialogCancel className="font-arabic">العودة</AlertDialogCancel>
-            <AlertDialogAction onClick={onConfirmCancel} className="font-arabic">
+          <AlertDialogFooter className="flex items-center justify-end gap-3">
+            <AlertDialogCancel className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2">
+              العودة
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={onConfirmCancel} 
+              className="bg-black hover:bg-black/90 text-white font-medium font-arabic rounded-full px-6 py-2"
+            >
               تأكيد الإلغاء
             </AlertDialogAction>
           </AlertDialogFooter>
