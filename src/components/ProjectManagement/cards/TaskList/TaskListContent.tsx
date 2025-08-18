@@ -5,7 +5,6 @@ import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
 import { mapToTaskCardProps, mapFromTaskData } from '@/types/task';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
 import { TaskFilterOptions } from './TasksFilterDialog';
 
 export interface TaskListContentRef {
@@ -75,8 +74,8 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
   };
 
   return (
-    <ScrollArea className="h-full w-full">
-      <div className="space-y-2 pb-4 px-4 min-h-[200px]">
+    <ScrollArea className="flex-1 h-full">
+      <div className="space-y-4 pr-1 py-0 my-0 min-h-[200px]">
         {allTasks.length > 0 ? (
           allTasks.map((task, index) => (
             <div key={`task-${task.id}-${index}`}>
