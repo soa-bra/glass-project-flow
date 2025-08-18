@@ -111,7 +111,10 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <Label className="font-arabic text-right">عنوان المهمة *</Label>
+        <Label className="font-arabic text-right flex items-center gap-2">
+          عنوان المهمة 
+          <span className="text-[#f1b5b9] text-lg">*</span>
+        </Label>
         <Input 
           value={taskData.title} 
           onChange={e => onInputChange('title', e.target.value)} 
@@ -132,7 +135,10 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
 
       <div className="grid grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label className="font-arabic text-right">تاريخ الاستحقاق *</Label>
+          <Label className="font-arabic text-right flex items-center gap-2">
+            تاريخ الاستحقاق 
+            <span className="text-[#f1b5b9] text-lg">*</span>
+          </Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -163,7 +169,10 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
         </div>
         
         <div className="space-y-2">
-          <Label className="font-arabic text-right">المكلف</Label>
+          <Label className="font-arabic text-right flex items-center gap-2">
+            المكلف 
+            <span className="text-[#f1b5b9] text-lg">*</span>
+          </Label>
           <Select value={taskData.assignee} onValueChange={value => onInputChange('assignee', value)}>
             <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
               <SelectValue placeholder="اختر المكلف" />
