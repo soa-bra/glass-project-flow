@@ -75,6 +75,58 @@ npm run format      # تنسيق بـ Prettier
 npm run type-check  # فحص TypeScript
 ```
 
+## 🔄 تشغيل CI محلياً
+
+لضمان نجاح CI pipeline قبل الـ push، يمكنك تشغيل جميع فحوصات CI محلياً:
+
+### الطريقة السريعة (تشغيل جميع الفحوصات)
+```bash
+# تشغيل جميع مراحل CI بالترتيب
+pnpm install
+pnpm run type-check
+pnpm run lint
+pnpm run format:check
+pnpm run build
+pnpm run test:coverage
+pnpm run e2e
+```
+
+### فحص مرحلة واحدة
+```bash
+# فحص الأنواع
+pnpm run type-check
+
+# فحص وإصلاح التنسيق
+pnpm run format:check  # للفحص فقط
+pnpm run format        # للإصلاح
+
+# فحص ESLint
+pnpm run lint          # للفحص فقط
+pnpm run lint:fix      # للإصلاح
+
+# الاختبارات مع التغطية
+pnpm run test:coverage
+
+# اختبارات E2E
+pnpm run e2e
+```
+
+### أتمتة الفحص قبل الـ Commit
+```bash
+# تفعيل Git hooks (مرة واحدة فقط)
+pnpm run prepare
+
+# الآن سيتم فحص الملفات تلقائياً قبل كل commit
+git add .
+git commit -m "feat: new feature"  # سيشغل lint-staged تلقائياً
+```
+
+### متطلبات الأداء المحلية
+- **Build time**: ≤ 30s
+- **Test time**: ≤ 60s  
+- **E2E time**: ≤ 120s
+- **Total CI time**: ≤ 5min
+
 ## 📁 هيكل المشروع
 
 ```
