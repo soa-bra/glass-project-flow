@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Trash2, Archive, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProjectManagementHeader } from './ProjectManagementHeader';
@@ -33,7 +33,29 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
   // استخدام useUnifiedTasks لحساب التقدم الحقيقي بناءً على المهام
   const unifiedTasks = useUnifiedTasks(project.id);
-  const actualProgress = unifiedTasks.getProjectProgress();
+  
+  // تحسين حساب التقدم مع useCallback و useMemo
+  const calculateProgress = useCallback(() => {
+    return unifiedTasks.getProjectProgress();
+  }, [unifiedTasks]);
+
+  const actualProgress = useMemo(() => {
+    return calculateProgress();
+  }, [calculateProgress, unifiedTasks.tasks]);
+
+  // مراقبة تغييرات المهام وإعادة حساب التقدم فوريًا
+  useEffect(() => {
+    // إعادة تصيير المكون عند تغيير المهام
+    const taskCount = unifiedTasks.tasks.length;
+    const completedTasks = unifiedTasks.getTasksByStatus('completed').length;
+    
+    // تحديث السياق أو إجراء أي عمليات أخرى حسب الحاجة
+    console.log('Tasks updated:', {
+      total: taskCount,
+      completed: completedTasks,
+      progress: actualProgress
+    });
+  }, [unifiedTasks.tasks, actualProgress]);
   if (!isVisible) return null;
   const handleDeleteProject = () => {
     // تنفيذ عملية حذف المشروع
@@ -190,19 +212,31 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             {/* شريط تقدم المراحل */}
             <Reveal delay={0.3}>
               <div className="flex-shrink-0 mx-[15px]">
-                <ProjectProgressBar progress={actualProgress} stages={[{
-                label: 'التحضير'
-              }, {
-                label: 'التنفيذ المبدئي'
-              }, {
-                label: 'المراجعة الأولية'
-              }, {
-                label: 'المعالجة الأولية'
-              }, {
-                label: 'المراجعة النهائية'
-              }, {
-                label: 'المعالجة النهائية'
-              }]} />
+                <ProjectProgressBar 
+                  key={`progress-${unifiedTasks.tasks.length}-${actualProgress}`} 
+                  progress={actualProgress} 
+                  stages={[{
+                    label: 'التحضير'
+                  }, {
+                    label: 'التنفيذ المبدئي'
+                  }, {
+                    label: 'المراجعة الأولية'
+                  }, {
+                    label: 'المعالجة الأولية'
+                  }, {
+                    label: 'المراجعة النهائية'
+                  }, {
+                    label: 'المعالجة النهائية'
+                  }]} 
+                />
+                
+                {/* إضافة مؤشر بصري للتقدم */}
+                <div className="mt-2 text-center">
+                  <span className="text-sm font-arabic text-gray-600">
+                    التقدم الحالي: {Math.round(actualProgress)}% 
+                    ({unifiedTasks.getTasksByStatus('completed').length} من {unifiedTasks.tasks.length} مهام)
+                  </span>
+                </div>
               </div>
             </Reveal>
 
