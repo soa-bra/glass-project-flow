@@ -70,7 +70,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
       )}
 
       {/* Kanban Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-6 gap-4 min-h-[600px]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-6 gap-4 h-full max-h-[calc(100vh-16rem)]">
         {columns.map(column => {
           const columnTasks = getTasksByStatus(column.status, filters);
           
@@ -96,7 +96,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
               </div>
 
               {/* Tasks Container */}
-              <div className="flex-1 p-4 space-y-3 min-h-[400px]">
+              <div className="flex-1 p-4 space-y-3 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 20rem)' }}>
                 {columnTasks.map(task => {
                   const taskCardProps = mapToTaskCardProps(task);
                   return (

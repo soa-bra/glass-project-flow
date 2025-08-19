@@ -104,9 +104,9 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
-        return <>
+        return <div className="h-full flex flex-col space-y-6">
             {/* الإحصائيات - منقولة لتكون مع معلومات المشروع */}
-            <div className="flex justify-between items-start mb-6 flex-shrink-0 py-0 my-0">
+            <div className="flex justify-between items-start flex-shrink-0">
               {/* معلومات المشروع الأساسية */}
               <Reveal delay={0}>
                 <div className="flex-1 mx-[15px]">
@@ -140,7 +140,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
               {/* الإحصائيات */}
               <Reveal delay={0.15}>
                 <div className="flex-shrink-0">
-                  <Stagger delay={0.25} gap={0.12} className="grid grid-cols-3 gap-6 px-[45px] my-0">
+                  <Stagger delay={0.25} gap={0.12} className="grid grid-cols-3 gap-6 px-[45px]">
                     {/* الإيرادات المتوقعة */}
                     <Stagger.Item className="text-right p-6 py-0 px-[20px]">
                       <div className="mb-2">
@@ -189,7 +189,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
             {/* شريط تقدم المراحل */}
             <Reveal delay={0.3}>
-              <div className="flex-shrink-10 my-0 px-0 mx-[15px]">
+              <div className="flex-shrink-0 mx-[15px]">
                 <ProjectProgressBar progress={actualProgress} stages={[{
                 label: 'التحضير'
               }, {
@@ -208,37 +208,25 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
             {/* المحتوى الرئيسي */}
             <Reveal delay={0.45}>
-              <div className="flex-1 min-h-0 my-0 py-0">
+              <div className="flex-1 min-h-0">
                 <ProjectCardGrid project={project} />
               </div>
             </Reveal>
-          </>;
+          </div>;
       case 'tasks':
-        return <Reveal delay={0.2}><TaskManagementTab project={project} /></Reveal>;
+        return <div className="h-full"><Reveal delay={0.2}><TaskManagementTab project={project} /></Reveal></div>;
       case 'finance':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><FinancialTab data={project} /></Reveal>
-          </div>;
+        return <div className="h-full"><Reveal delay={0.2}><FinancialTab data={project} /></Reveal></div>;
       case 'team':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><TeamTab teamData={project.team} /></Reveal>
-          </div>;
+        return <div className="h-full"><Reveal delay={0.2}><TeamTab teamData={project.team} /></Reveal></div>;
       case 'client':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><ClientTab clientData={null} /></Reveal>
-          </div>;
+        return <div className="h-full"><Reveal delay={0.2}><ClientTab clientData={null} /></Reveal></div>;
       case 'files':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><AttachmentsTab documents={null} /></Reveal>
-          </div>;
+        return <div className="h-full"><Reveal delay={0.2}><AttachmentsTab documents={null} /></Reveal></div>;
       case 'templates':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><TemplatesTab templates={null} /></Reveal>
-          </div>;
+        return <div className="h-full"><Reveal delay={0.2}><TemplatesTab templates={null} /></Reveal></div>;
       case 'reports':
-        return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><ReportsTab project={project} /></Reveal>
-          </div>;
+        return <div className="h-full"><Reveal delay={0.2}><ReportsTab project={project} /></Reveal></div>;
       default:
         return null;
     }
@@ -254,13 +242,20 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       padding: "24px",
       display: "flex",
       flexDirection: "column",
-      overflow: "hidden"
+      overflow: "hidden",
+      paddingBottom: `max(24px, env(safe-area-inset-bottom, 0px))`
     }}>
         {/* الرأس */}
-        <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+        <div className="flex-shrink-0">
+          <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+        </div>
 
-        {/* محتوى التبويبة النشطة */}
-        {renderTabContent()}
+        {/* محتوى التبويبة النشطة - مع حد سفلي محكوم */}
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <div className="h-full overflow-y-auto scroll-smooth" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom, 0px))' }}>
+            {renderTabContent()}
+          </div>
+        </div>
 
         {/* حوارات التأكيد */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

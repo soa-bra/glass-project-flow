@@ -10,7 +10,7 @@ export const TaskListContainer = forwardRef<HTMLDivElement, TaskListContainerPro
     <div
       ref={ref}
       {...rest}
-      className={`font-arabic relative h-[calc(100vh-200px)] ${className}`}
+      className={`font-arabic relative h-full ${className}`}
       style={{
         width: '100%',
         maxWidth: '100%',
@@ -20,10 +20,12 @@ export const TaskListContainer = forwardRef<HTMLDivElement, TaskListContainerPro
         borderBottomLeftRadius: '0px',
         borderBottomRightRadius: '0px',
         padding: '10px',
-        paddingBottom: '0px',
+        paddingBottom: `max(10px, env(safe-area-inset-bottom, 0px))`,
         direction: 'rtl',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        flex: 1,
+        minHeight: 0
       }}
     >
       {children}
