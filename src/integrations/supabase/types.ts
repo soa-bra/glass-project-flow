@@ -357,6 +357,20 @@ export type Database = {
             foreignKeyName: "project_phases_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "finance_dashboard_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_phases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_cards_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_phases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
@@ -427,6 +441,20 @@ export type Database = {
             columns: ["phase_id"]
             isOneToOne: false
             referencedRelation: "project_phases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "finance_dashboard_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_cards_view"
             referencedColumns: ["id"]
           },
           {
@@ -570,6 +598,20 @@ export type Database = {
             foreignKeyName: "telemetry_events_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "finance_dashboard_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "telemetry_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_cards_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "telemetry_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
@@ -577,12 +619,102 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      crm_activities_view: {
+        Row: {
+          activity_status: string | null
+          activity_title: string | null
+          assigned_to: string | null
+          client_id: string | null
+          created_at: string | null
+          description: string | null
+          due_date: string | null
+          id: string | null
+          priority: Database["public"]["Enums"]["task_priority"] | null
+          priority_score: number | null
+          project_name: string | null
+          status: Database["public"]["Enums"]["task_status"] | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
+      csr_requests_view: {
+        Row: {
+          agent_id: string | null
+          customer_id: string | null
+          hours_open: number | null
+          id: string | null
+          is_overdue: boolean | null
+          last_updated: string | null
+          priority: Database["public"]["Enums"]["task_priority"] | null
+          project_context: string | null
+          request_date: string | null
+          request_details: string | null
+          request_title: string | null
+          resolution_due: string | null
+          severity_level: string | null
+          status: Database["public"]["Enums"]["task_status"] | null
+        }
+        Relationships: []
+      }
+      finance_dashboard_view: {
+        Row: {
+          avg_task_hours: number | null
+          budget: number | null
+          budget_used_percentage: number | null
+          end_date: string | null
+          estimated_cost: number | null
+          project_id: string | null
+          project_name: string | null
+          remaining_budget: number | null
+          spent_amount: number | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["project_status"] | null
+          total_tasks: number | null
+        }
+        Relationships: []
+      }
+      project_cards_view: {
+        Row: {
+          actual_hours: number | null
+          budget: number | null
+          completed_phases: number | null
+          completed_tasks: number | null
+          completion_percentage: number | null
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          estimated_hours: number | null
+          id: string | null
+          name: string | null
+          owner_id: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["project_status"] | null
+          total_phases: number | null
+          total_tasks: number | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_board_role: {
         Args: { board_id: string; user_id: string }
         Returns: Database["public"]["Enums"]["board_role"]
+      }
+      get_widget_data: {
+        Args: {
+          filters?: Json
+          limit_count?: number
+          user_id?: string
+          widget_type: string
+        }
+        Returns: {
+          data: Json
+        }[]
+      }
+      get_widget_stats: {
+        Args: { user_id?: string; widget_type: string }
+        Returns: Json
       }
       gtrgm_compress: {
         Args: { "": unknown }
