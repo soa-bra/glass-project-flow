@@ -99,60 +99,41 @@ export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProp
 
   return (
     <div 
-      className="h-full rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] flex flex-col overflow-hidden"
+      className="h-full p-4 rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] flex flex-col overflow-hidden"
       style={{
-        fontFamily: 'IBM Plex Sans Arabic',
-        padding: 'clamp(8px, 2vw, 16px)'
+        fontFamily: 'IBM Plex Sans Arabic'
       }}
     >
       {/* الرأس */}
-      <div className="flex items-center justify-between mb-2 flex-shrink-0">
-        <h4 
-          className="font-arabic font-semibold text-gray-800 leading-tight"
-          style={{ fontSize: 'clamp(0.7rem, 1.2vw, 0.9rem)' }}
-        >
+      <div className="flex items-center justify-between mb-3">
+        <h4 className="text-sm font-arabic font-semibold text-gray-800">
           {title}
         </h4>
-        <Icon 
-          className="text-gray-600 flex-shrink-0" 
-          style={{ width: 'clamp(12px, 1.5vw, 16px)', height: 'clamp(12px, 1.5vw, 16px)' }}
-        />
+        <Icon size={16} className="text-gray-600" />
       </div>
 
       {/* المقياس الرئيسي */}
-      <div className="mb-2 flex-shrink-0">
-        <div 
-          className="font-bold text-gray-900 font-arabic leading-none"
-          style={{ fontSize: 'clamp(1rem, 2.5vw, 1.5rem)' }}
-        >
+      <div className="mb-2">
+        <div className="text-2xl font-bold text-gray-900 font-arabic">
           {metric}
         </div>
-        <div 
-          className="text-gray-600 font-arabic leading-tight"
-          style={{ fontSize: 'clamp(0.6rem, 1vw, 0.75rem)' }}
-        >
+        <div className="text-xs text-gray-600 font-arabic">
           {description}
         </div>
       </div>
 
       {/* الرسم البياني */}
-      <div className="flex-1 mb-2 overflow-hidden min-h-0">
+      <div className="flex-1 mb-2 overflow-hidden">
         <div 
-          className="w-full h-full mx-auto flex items-center justify-center"
-          style={{ 
-            maxWidth: 'min(100%, 120px)',
-            aspectRatio: chartType === 'pie' || chartType === 'donut' ? '1/1' : '16/9'
-          }}
+          className="w-full h-full max-w-[120px] mx-auto"
+          style={{ aspectRatio: '16/9' }}
         >
           {renderChart()}
         </div>
       </div>
 
       {/* المؤشر */}
-      <div 
-        className="text-gray-500 font-arabic flex-shrink-0 leading-tight"
-        style={{ fontSize: 'clamp(0.6rem, 1vw, 0.75rem)' }}
-      >
+      <div className="text-xs text-gray-500 font-arabic">
         {trend}
       </div>
     </div>
