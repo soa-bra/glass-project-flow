@@ -54,7 +54,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="h-full flex flex-col space-y-6 p-6 overflow-y-auto" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       {/* حالة التقارير */}
       <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">

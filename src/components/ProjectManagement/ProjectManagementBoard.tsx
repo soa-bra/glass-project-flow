@@ -246,21 +246,26 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   return <>
       <div className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
       top: "var(--sidebar-top-offset)",
-      height: "calc(100vh - var(--sidebar-top-offset))",
+      height: "calc(100dvh - var(--sidebar-top-offset))",
       borderRadius: "24px",
       background: "#F8F9FA",
       border: "1px solid rgba(255,255,255,0.2)",
       transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
-      padding: "24px",
+      padding: "0",
+      paddingBottom: "clamp(16px, 2vh, 32px)",
       display: "flex",
       flexDirection: "column",
       overflow: "hidden"
     }}>
         {/* الرأس */}
-        <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+        <div className="flex-shrink-0 px-6 py-4 border-b bg-background/95 backdrop-blur">
+          <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+        </div>
 
-        {/* محتوى التبويبة النشطة */}
-        {renderTabContent()}
+        {/* محتوى التبويبة النشطة - منطقة التمرير الوحيدة */}
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+          {renderTabContent()}
+        </div>
 
         {/* حوارات التأكيد */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
