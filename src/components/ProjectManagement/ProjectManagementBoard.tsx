@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Trash2, Archive, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProjectManagementHeader } from './ProjectManagementHeader';
 import { ProjectProgressBar } from './ProjectProgressBar';
-import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { ProjectCardGrid } from './ProjectCardGrid';
 import { AddProjectModal } from '@/components/ProjectsColumn/AddProjectModal';
 import { FinancialTab, ClientTab, TeamTab, AttachmentsTab, TemplatesTab } from '@/components/ProjectPanel/ProjectTabs';
@@ -12,6 +11,7 @@ import { ReportsTab } from './ReportsTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { Reveal, Stagger } from '@/components/shared/motion';
+
 interface ProjectManagementBoardProps {
   project: Project;
   isVisible: boolean;
@@ -19,6 +19,7 @@ interface ProjectManagementBoardProps {
   isSidebarCollapsed: boolean;
   onProjectUpdated?: (project: ProjectData) => void;
 }
+
 export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   project,
   isVisible,
@@ -31,47 +32,26 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const [showEditModal, setShowEditModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
-  // استخدام useUnifiedTasks لحساب التقدم الحقيقي بناءً على المهام
-  const unifiedTasks = useUnifiedTasks(project.id);
-  
-  // تحسين حساب التقدم مع useCallback و useMemo
-  const calculateProgress = useCallback(() => {
-    return unifiedTasks.getProjectProgress();
-  }, [unifiedTasks]);
-
-  const actualProgress = useMemo(() => {
-    return calculateProgress();
-  }, [calculateProgress, unifiedTasks.tasks]);
-
-  // مراقبة تغييرات المهام وإعادة حساب التقدم فوريًا
-  useEffect(() => {
-    // إعادة تصيير المكون عند تغيير المهام
-    const taskCount = unifiedTasks.tasks.length;
-    const completedTasks = unifiedTasks.getTasksByStatus('completed').length;
-    
-    // تحديث السياق أو إجراء أي عمليات أخرى حسب الحاجة
-    console.log('Tasks updated:', {
-      total: taskCount,
-      completed: completedTasks,
-      progress: actualProgress
-    });
-  }, [unifiedTasks.tasks, actualProgress]);
   if (!isVisible) return null;
+
   const handleDeleteProject = () => {
     // تنفيذ عملية حذف المشروع
     setShowDeleteDialog(false);
     onProjectUpdated?.(editingProjectData);
     onClose();
   };
+
   const handleArchiveProject = () => {
     // تنفيذ عملية أرشفة المشروع
     setShowArchiveDialog(false);
     onProjectUpdated?.(editingProjectData);
     onClose();
   };
+
   const handleEditProject = () => {
     setShowEditModal(true);
   };
+
   const handleProjectUpdated = (updatedProject: ProjectData) => {
     onProjectUpdated?.(updatedProject);
     setShowEditModal(false);
@@ -87,33 +67,36 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     team: project.team?.map(t => t.name) || [],
     status: project.status,
     budget: Number(project.value) || 0,
-    tasksCount: project.tasksCount || 0
+    tasksCount: project.tasksCount || 0,
   };
-  const tabs = [{
-    id: 'overview',
-    label: 'نظرة عامة'
-  }, {
-    id: 'tasks',
-    label: 'إدارة المهام'
-  }, {
-    id: 'finance',
-    label: 'الإدارة المالية'
-  }, {
-    id: 'team',
-    label: 'إدارة الفريق'
-  }, {
-    id: 'client',
-    label: 'العميل'
-  }, {
-    id: 'files',
-    label: 'إدارة المرفقات'
-  }, {
-    id: 'templates',
-    label: 'النماذج والقوالب'
-  }, {
-    id: 'reports',
-    label: 'التقارير'
-  }];
+
+  const tabs = [
+    {
+      id: 'overview',
+      label: 'نظرة عامة'
+    }, {
+      id: 'tasks',
+      label: 'إدارة المهام'
+    }, {
+      id: 'finance',
+      label: 'الإدارة المالية'
+    }, {
+      id: 'team',
+      label: 'إدارة الفريق'
+    }, {
+      id: 'client',
+      label: 'العميل'
+    }, {
+      id: 'files',
+      label: 'إدارة المرفقات'
+    }, {
+      id: 'templates',
+      label: 'النماذج والقوالب'
+    }, {
+      id: 'reports',
+      label: 'التقارير'
+    }
+  ];
 
   // بيانات وهمية للإحصائيات
   const mockStats = {
@@ -126,9 +109,9 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
-        return <div className="h-full flex flex-col space-y-6">
+        return <>
             {/* الإحصائيات - منقولة لتكون مع معلومات المشروع */}
-            <div className="flex justify-between items-start flex-shrink-0">
+            <div className="flex justify-between items-start mb-6 flex-shrink-0 py-0 my-0">
               {/* معلومات المشروع الأساسية */}
               <Reveal delay={0}>
                 <div className="flex-1 mx-[15px]">
@@ -145,10 +128,17 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
                     {/* حالة المشروع */}
                     <div className="px-3 py-1.5 bg-transparent border border-black rounded-full font-arabic text-sm flex items-center gap-2 text-black">
-                      <div className="w-2 h-2 rounded-full" style={{
-                      backgroundColor: project.status === 'success' ? 'var(--status-colors-on-plan)' : project.status === 'warning' ? 'var(--status-colors-delayed)' : project.status === 'error' ? 'var(--status-colors-stopped)' : 'var(--status-colors-in-preparation)'
-                    }}></div>
-                      {project.status === 'success' ? 'مكتمل' : project.status === 'warning' ? 'متأخر' : project.status === 'error' ? 'متوقف' : 'قيد التحضير'}
+                      <div className="w-2 h-2 rounded-full"
+                        style={{
+                          backgroundColor: project.status === 'success' ? 'var(--status-colors-on-plan)' :
+                                           project.status === 'warning' ? 'var(--status-colors-delayed)' :
+                                           project.status === 'error' ? 'var(--status-colors-stopped)' :
+                                           'var(--status-colors-in-preparation)'
+                        }}></div>
+                      {project.status === 'success' ? 'مكتمل' :
+                       project.status === 'warning' ? 'متأخر' :
+                       project.status === 'error' ? 'متوقف' :
+                       'قيد التحضير'}
                     </div>
                   </div>
 
@@ -162,7 +152,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
               {/* الإحصائيات */}
               <Reveal delay={0.15}>
                 <div className="flex-shrink-0">
-                  <Stagger delay={0.25} gap={0.12} className="grid grid-cols-3 gap-6 px-[45px]">
+                  <Stagger delay={0.25} gap={0.12} className="grid grid-cols-3 gap-6 px-[45px] my-0">
                     {/* الإيرادات المتوقعة */}
                     <Stagger.Item className="text-right p-6 py-0 px-[20px]">
                       <div className="mb-2">
@@ -211,93 +201,103 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
             {/* شريط تقدم المراحل */}
             <Reveal delay={0.3}>
-              <div className="flex-shrink-0 mx-[15px]">
-                <ProjectProgressBar 
-                  key={`progress-${unifiedTasks.tasks.length}-${actualProgress}`} 
-                  progress={actualProgress} 
-                  stages={[{
-                    label: 'التحضير'
-                  }, {
-                    label: 'التنفيذ المبدئي'
-                  }, {
-                    label: 'المراجعة الأولية'
-                  }, {
-                    label: 'المعالجة الأولية'
-                  }, {
-                    label: 'المراجعة النهائية'
-                  }, {
-                    label: 'المعالجة النهائية'
-                  }]} 
-                />
-                
-                {/* إضافة مؤشر بصري للتقدم */}
-                <div className="mt-2 text-center">
-                  <span className="text-sm font-arabic text-gray-600">
-                    التقدم الحالي: {Math.round(actualProgress)}% 
-                    ({unifiedTasks.getTasksByStatus('completed').length} من {unifiedTasks.tasks.length} مهام)
-                  </span>
-                </div>
+              <div className="flex-shrink-10 my-0 px-0 mx-[15px]">
+                <ProjectProgressBar progress={project.progress || 0} stages={[{
+                label: 'التحضير'
+              }, {
+                label: 'التنفيذ المبدئي'
+              }, {
+                label: 'المراجعة الأولية'
+              }, {
+                label: 'المعالجة الأولية'
+              }, {
+                label: 'المراجعة النهائية'
+              }, {
+                label: 'المعالجة النهائية'
+              }]} />
               </div>
             </Reveal>
 
             {/* المحتوى الرئيسي */}
             <Reveal delay={0.45}>
-              <div className="flex-1 min-h-0">
+              <div className="flex-1 min-h-0 my-0 py-[12px]">
                 <ProjectCardGrid project={project} />
               </div>
             </Reveal>
-          </div>;
+          </>;
       case 'tasks':
-        return <div className="h-full"><Reveal delay={0.2}><TaskManagementTab project={project} /></Reveal></div>;
+        return <Reveal delay={0.2}><TaskManagementTab project={project} /></Reveal>;
       case 'finance':
-        return <div className="h-full"><Reveal delay={0.2}><FinancialTab data={project} /></Reveal></div>;
+        return <div className="flex-1 overflow-auto">
+            <Reveal delay={0.2}><FinancialTab data={project} /></Reveal>
+          </div>;
       case 'team':
-        return <div className="h-full"><Reveal delay={0.2}><TeamTab teamData={project.team} /></Reveal></div>;
+        return <div className="flex-1 overflow-auto">
+            <Reveal delay={0.2}><TeamTab teamData={project.team} /></Reveal>
+          </div>;
       case 'client':
-        return <div className="h-full"><Reveal delay={0.2}><ClientTab clientData={null} /></Reveal></div>;
+        return <div className="flex-1 overflow-auto">
+            <Reveal delay={0.2}><ClientTab clientData={null} /></Reveal>
+          </div>;
       case 'files':
-        return <div className="h-full"><Reveal delay={0.2}><AttachmentsTab documents={null} /></Reveal></div>;
+        return <div className="flex-1 overflow-auto">
+            <Reveal delay={0.2}><AttachmentsTab documents={null} /></Reveal>
+          </div>;
       case 'templates':
-        return <div className="h-full"><Reveal delay={0.2}><TemplatesTab templates={null} /></Reveal></div>;
+        return <div className="flex-1 overflow-auto">
+            <Reveal delay={0.2}><TemplatesTab templates={null} /></Reveal>
+          </div>;
       case 'reports':
-        return <div className="h-full"><Reveal delay={0.2}><ReportsTab project={project} /></Reveal></div>;
+        return <div className="flex-1 overflow-auto">
+            <Reveal delay={0.2}><ReportsTab project={project} /></Reveal>
+          </div>;
       default:
         return null;
     }
   };
-  return <>
-      <div className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
-      top: "var(--sidebar-top-offset)",
-      height: "calc(100vh - var(--sidebar-top-offset))",
-      borderRadius: "24px",
-      background: "#F8F9FA",
-      border: "1px solid rgba(255,255,255,0.2)",
-      transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
-      padding: "24px",
-      display: "flex",
-      flexDirection: "column",
-      overflow: "hidden",
-      paddingBottom: `max(24px, env(safe-area-inset-bottom, 0px))`
-    }}>
-        {/* الرأس */}
-        <div className="flex-shrink-0">
-          <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
-        </div>
 
-        {/* محتوى التبويبة النشطة - بدون تمرير عام */}
-        <div className="flex-1 min-h-0 overflow-hidden">
-          {renderTabContent()}
-        </div>
+  return (
+    <>
+      <div className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
+        top: "var(--sidebar-top-offset)",
+        height: "calc(100vh - var(--sidebar-top-offset))",
+        borderRadius: "24px",
+        background: "#F8F9FA",
+        border: "1px solid rgba(255,255,255,0.2)",
+        transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
+        padding: "24px",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden"
+      }}>
+        {/* الرأس */}
+        <ProjectManagementHeader 
+          project={project} 
+          onClose={onClose} 
+          onDelete={() => setShowDeleteDialog(true)} 
+          onArchive={() => setShowArchiveDialog(true)} 
+          onEdit={handleEditProject} 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab} 
+          tabs={tabs} 
+        />
+
+        {/* محتوى التبويبة النشطة */}
+        {renderTabContent()}
 
         {/* حوارات التأكيد */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <DialogContent className="font-arabic" dir="rtl" style={{
-          background: 'rgba(255,255,255,0.4)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          borderRadius: '24px'
-        }}>
+          <DialogContent 
+            className="font-arabic" 
+            dir="rtl"
+            style={{
+              background: 'rgba(255,255,255,0.4)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '24px'
+            }}
+          >
             <DialogHeader>
               <DialogTitle className="text-right">تأكيد حذف المشروع</DialogTitle>
               <DialogDescription className="text-right">
@@ -305,11 +305,17 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
               </DialogDescription>
             </DialogHeader>
             <div className="flex items-center justify-end gap-3 mt-6">
-              <button onClick={() => setShowDeleteDialog(false)} className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
+              <button 
+                onClick={() => setShowDeleteDialog(false)} 
+                className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2"
+              >
                 <X size={16} />
                 إلغاء
               </button>
-              <button onClick={handleDeleteProject} className="bg-red-500 hover:bg-red-600 text-white font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
+              <button 
+                onClick={handleDeleteProject} 
+                className="bg-red-500 hover:bg-red-600 text-white font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2"
+              >
                 <Trash2 size={16} />
                 حذف نهائي
               </button>
@@ -318,13 +324,17 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         </Dialog>
 
         <Dialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
-          <DialogContent className="font-arabic" dir="rtl" style={{
-          background: 'rgba(255,255,255,0.4)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          borderRadius: '24px'
-        }}>
+          <DialogContent 
+            className="font-arabic" 
+            dir="rtl"
+            style={{
+              background: 'rgba(255,255,255,0.4)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '24px'
+            }}
+          >
             <DialogHeader>
               <DialogTitle className="text-right">تأكيد أرشفة المشروع</DialogTitle>
               <DialogDescription className="text-right">
@@ -332,11 +342,17 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
               </DialogDescription>
             </DialogHeader>
             <div className="flex items-center justify-end gap-3 mt-6">
-              <button onClick={() => setShowArchiveDialog(false)} className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
+              <button 
+                onClick={() => setShowArchiveDialog(false)} 
+                className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2"
+              >
                 <X size={16} />
                 إلغاء
               </button>
-              <button onClick={handleArchiveProject} className="bg-black hover:bg-black/90 text-white font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
+              <button 
+                onClick={handleArchiveProject} 
+                className="bg-black hover:bg-black/90 text-white font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2"
+              >
                 <Archive size={16} />
                 أرشفة
               </button>
@@ -346,7 +362,14 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       </div>
 
       {/* نافذة تعديل المشروع */}
-      <AddProjectModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onProjectAdded={() => {}} // لن تستخدم في حالة التعديل
-    onProjectUpdated={handleProjectUpdated} editingProject={editingProjectData} isEditMode={true} />
-    </>;
+      <AddProjectModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onProjectAdded={() => {}} // لن تستخدم في حالة التعديل
+        onProjectUpdated={handleProjectUpdated}
+        editingProject={editingProjectData}
+        isEditMode={true}
+      />
+    </>
+  );
 };

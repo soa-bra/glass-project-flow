@@ -21,9 +21,9 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
   const {
     tasks
   } = useUnifiedTasks(project.id);
-  return <div className="h-full flex flex-col">
+  return <div className="flex-1 overflow-auto space-y-6">
       {/* Header with view toggle and AI assistant */}
-      <div className="flex-shrink-0 rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 mb-4">
+      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-black">إدارة المهام</h3>
           <div className="flex items-center gap-4">
@@ -48,7 +48,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
       </div>
 
       {/* Task Statistics */}
-      <div className="flex-shrink-0 grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي المهام</h4>
           <p className="text-2xl font-bold text-black mb-1">{tasks.length}</p>
@@ -83,13 +83,11 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0">
         {viewMode === 'kanban' ? <KanbanBoard projectId={project.id} filters={filters} /> : <TaskDetails projectId={project.id} filters={filters} />}
       </div>
 
       {/* AI Assistant Panel */}
-      <div className="flex-shrink-0 mt-4">
-        <AITaskAssistant projectId={project.id} />
-      </div>
+      <AITaskAssistant projectId={project.id} />
     </div>;
 };

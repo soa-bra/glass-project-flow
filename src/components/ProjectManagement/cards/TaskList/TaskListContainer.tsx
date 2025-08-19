@@ -1,26 +1,21 @@
 
-import React, { forwardRef } from 'react';
+import React, { ReactNode } from 'react';
 
-type TaskListContainerProps = React.HTMLAttributes<HTMLDivElement> & { 
-  children: React.ReactNode 
-};
+interface TaskListContainerProps {
+  children: ReactNode;
+}
 
-export const TaskListContainer = forwardRef<HTMLDivElement, TaskListContainerProps>(
-  ({ children, className = "", ...rest }, ref) => (
-    <div
-      ref={ref}
-      {...rest}
-      className={`font-arabic relative h-full ${className}`}
+export const TaskListContainer: React.FC<TaskListContainerProps> = ({ children }) => {
+  return (
+    <div 
+      className="font-arabic h-full"
       style={{
         width: '100%',
-        height: '100%',
+        maxWidth: '100%',
         backgroundColor: '#eaecef',
-        borderTopLeftRadius: '40px',
-        borderTopRightRadius: '40px',
-        borderBottomLeftRadius: '0px',
-        borderBottomRightRadius: '0px',
-        padding: '10px',
-        paddingBottom: `max(10px, env(safe-area-inset-bottom, 0px))`,
+        borderRadius: '40px',
+        padding: '10px', // قللت من 20px إلى 10px
+        position: 'relative',
         direction: 'rtl',
         display: 'flex',
         flexDirection: 'column'
@@ -28,7 +23,5 @@ export const TaskListContainer = forwardRef<HTMLDivElement, TaskListContainerPro
     >
       {children}
     </div>
-  )
-);
-
-TaskListContainer.displayName = 'TaskListContainer';
+  );
+};

@@ -54,8 +54,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
   };
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="space-y-6" style={{ paddingBottom: `max(24px, env(safe-area-inset-bottom, 0px))` }}>
+    <div className="space-y-6">
       {/* حالة التقارير */}
       <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
@@ -221,7 +220,6 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
             </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   );

@@ -268,28 +268,6 @@ export const useUnifiedTasks = (projectId: string) => {
     }));
   };
 
-  const reorderTasks = (sourceIndex: number, destinationIndex: number) => {
-    setAllTasks(prev => {
-      const currentTasks = [...(prev[projectId] || [])];
-      const [removed] = currentTasks.splice(sourceIndex, 1);
-      currentTasks.splice(destinationIndex, 0, removed);
-      
-      return {
-        ...prev,
-        [projectId]: currentTasks
-      };
-    });
-  };
-
-  // حساب نسبة إنجاز المشروع بناءً على المهام
-  const getProjectProgress = (): number => {
-    const tasks = allTasks[projectId] || [];
-    if (tasks.length === 0) return 0;
-    
-    const completedTasks = tasks.filter(task => task.status === 'completed').length;
-    return Math.round((completedTasks / tasks.length) * 100);
-  };
-
   return {
     tasks: getProjectTasks(),
     getProjectTasks,
@@ -299,8 +277,6 @@ export const useUnifiedTasks = (projectId: string) => {
     updateTaskStatus,
     removeTask,
     mergeTasks,
-    reorderTasks,
-    getProjectProgress,
     sortTasks: (sortConfig: { field: string; direction: 'asc' | 'desc' }) => sortTasks(allTasks[projectId] || [], sortConfig.field, sortConfig.direction)
   };
 };

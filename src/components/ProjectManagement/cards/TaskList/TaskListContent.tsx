@@ -4,6 +4,7 @@ import TaskCard from '@/components/TaskCard';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
 import { mapToTaskCardProps, mapFromTaskData } from '@/types/task';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { TaskFilterOptions } from './TasksFilterDialog';
 
 export interface TaskListContentRef {
@@ -63,42 +64,29 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
   };
 
   const handleTaskArchive = (taskId: string) => {
-    const confirmed = window.confirm('هل أنت متأكد من أرشفة هذه المهمة؟ يمكن استعادتها لاحقاً.');
-    if (confirmed) {
-      unifiedTasks.updateTask(taskId, { status: 'archived' as any });
-      // Task archived successfully - يمكن إضافة toast notification هنا
-    }
+    unifiedTasks.removeTask(taskId);
+    // Task archived successfully
   };
 
   const handleTaskDelete = (taskId: string) => {
-    const confirmed = window.confirm('هل أنت متأكد من حذف هذه المهمة نهائياً؟ لا يمكن التراجع عن هذا الإجراء.');
-    if (confirmed) {
-      unifiedTasks.removeTask(taskId);
-      // Task deleted permanently - يمكن إضافة toast notification هنا
-    }
+    unifiedTasks.removeTask(taskId);
+    // Task deleted successfully
   };
 
   return (
-    <div 
-      role="list" 
-      className="flex-1 min-h-0 overflow-y-auto scroll-smooth"
-      style={{
-        paddingBottom: `max(20px, env(safe-area-inset-bottom, 0px))`,
-        scrollBehavior: 'smooth',
-        scrollPaddingBottom: '20px'
-      }}
-    >
-      <div className="space-y-4 px-2 pb-4">
+    <ScrollArea className="flex-1 h-full">
+      <div className="space-y-4 pr-1 py-0 my-0 min-h-[200px]">
         {allTasks.length > 0 ? (
-          allTasks.map((task) => (
-            <TaskCard 
-              key={`task-${task.id}`}
-              {...task} 
-              onEdit={handleTaskEdit} 
-              onArchive={handleTaskArchive} 
-              onDelete={handleTaskDelete} 
-              onTaskUpdated={handleTaskUpdated}
-            />
+          allTasks.map((task, index) => (
+            <div key={`task-${task.id}-${index}`}>
+              <TaskCard 
+                {...task} 
+                onEdit={handleTaskEdit} 
+                onArchive={handleTaskArchive} 
+                onDelete={handleTaskDelete} 
+                onTaskUpdated={handleTaskUpdated}
+              />
+            </div>
           ))
         ) : (
           <div className="flex items-center justify-center py-12 text-center">
@@ -109,6 +97,6 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
           </div>
         )}
       </div>
-    </div>
+    </ScrollArea>
   );
 });
