@@ -1,92 +1,171 @@
-# نظام سوبرا المتكامل - Supra Integrated System
+# SoaBra - The Glass Project Flow
 
-نظام إدارة العمليات المتكامل لشركة سوبرا المتخصصة في علم اجتماع العلامة التجارية.
+منصة التخطيط التعاوني والعصف الذهني المدعومة بالذكاء الصناعي.
 
-## المكونات الرئيسية
+## 🏗️ البنية التقنية
 
-### 🎯 Event Bus + Contracts
-- كتالوج أحداث شامل مع مخططات Zod للتحقق
-- نظام Outbox pattern مع إعادة المحاولة والـ DLQ
-- معالجات أحداث قابلة للتوسع مع دعم Webhooks
+- **Frontend**: React 18 + TypeScript (Strict)
+- **Graphics**: WebGL (Pixi.js) + OffscreenCanvas + Workers
+- **Collaboration**: Yjs + Supabase Realtime
+- **Backend**: Supabase (Auth, Postgres, Storage, Edge Functions)
+- **AI**: OpenAI API عبر Edge Functions
 
-### 📊 Observability
-- تسجيل منظم مع Pino
-- مقاييس Prometheus مع /metrics endpoint
-- تتبع OpenTelemetry جاهز للإنتاج
+## 🚀 التشغيل المحلي
 
-### 🎛️ Feature Store (Lite)
-- تخزين ميزات عالي الأداء مع TTL
-- دعم السلاسل الزمنية والاستعلامات التاريخية
-- مُحسّن للتحليلات والمقاييس الثقافية
+### المتطلبات الأساسية
+- Node.js ≥ 18
+- npm أو yarn أو pnpm
+- Docker (للـ Supabase المحلي)
 
-## Project info
+### الإعداد
 
-**URL**: https://lovable.dev/projects/2125fc0c-19c8-4937-95ff-2aac89a16a17
+1. **استنساخ المشروع**
+```bash
+git clone [repository-url]
+cd soabra-glass-project
+```
 
-## How can I edit this code?
+2. **تثبيت التبعيات**
+```bash
+npm install
+```
 
-There are several ways of editing your application.
+3. **إعداد Supabase المحلي**
+```bash
+# تثبيت Supabase CLI
+npm install -g @supabase/cli
 
-**Use Lovable**
+# بدء Supabase محلياً
+supabase start
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2125fc0c-19c8-4937-95ff-2aac89a16a17) and start prompting.
+# تطبيق المايغريشن
+supabase db push
+```
 
-Changes made via Lovable will be committed automatically to this repo.
+4. **تكوين متغيرات البيئة**
+```bash
+cp .env.example .env
+# قم بتحديث المتغيرات بالقيم من supabase start
+```
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+5. **تشغيل التطبيق**
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+الآن افتح [http://localhost:8080](http://localhost:8080) لرؤية التطبيق.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🧪 الاختبارات
 
-**Use GitHub Codespaces**
+### اختبارات الوحدة
+```bash
+npm run test
+npm run test:coverage  # مع تقرير التغطية
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### اختبارات E2E
+```bash
+npm run e2e
+```
 
-## What technologies are used for this project?
+### فحص الجودة
+```bash
+npm run lint        # فحص ESLint
+npm run format      # تنسيق بـ Prettier
+npm run type-check  # فحص TypeScript
+```
 
-This project is built with:
+## 📁 هيكل المشروع
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+src/
+├── apps/brain/              # التطبيق الرئيسي
+│   ├── canvas/              # مكونات اللوحة
+│   ├── plugins/             # إضافات العناصر الذكية
+│   └── workflows/           # سير العمل
+├── components/              # المكونات المشتركة
+│   ├── Whiteboard/          # مكونات اللوحة البيضاء
+│   └── ui/                  # مكونات UI الأساسية
+├── lib/                     # مكتبات ومساعدات
+│   └── supabase/           # تكامل Supabase
+├── hooks/                   # React Hooks مخصصة
+├── types/                   # تعريفات TypeScript
+└── workers/                 # Web Workers
 
-## How can I deploy this project?
+supabase/
+├── functions/               # Edge Functions
+├── migrations/              # هجرة قاعدة البيانات
+└── config.toml             # تكوين Supabase
+```
 
-Simply open [Lovable](https://lovable.dev/projects/2125fc0c-19c8-4937-95ff-2aac89a16a17) and click on Share -> Publish.
+## 🔧 الأوامر المتاحة
 
-## Can I connect a custom domain to my Lovable project?
+| الأمر | الوصف |
+|-------|--------|
+| `npm run dev` | تشغيل التطوير المحلي |
+| `npm run build` | بناء الإنتاج |
+| `npm run preview` | معاينة بناء الإنتاج |
+| `npm run lint` | فحص الكود بـ ESLint |
+| `npm run lint:fix` | إصلاح مشاكل ESLint |
+| `npm run format` | تنسيق الكود بـ Prettier |
+| `npm run type-check` | فحص أنواع TypeScript |
+| `npm run test` | تشغيل اختبارات الوحدة |
+| `npm run test:ui` | تشغيل اختبارات الوحدة بواجهة |
+| `npm run test:coverage` | تقرير تغطية الاختبارات |
+| `npm run e2e` | اختبارات E2E بـ Playwright |
 
-Yes, you can!
+## 🌐 بيئات النشر
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### التطوير
+- **URL**: http://localhost:8080
+- **Supabase**: محلي عبر Docker
+- **Hot Reload**: مُفعّل
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### الإنتاج
+- **Platform**: Supabase Hosting
+- **CI/CD**: GitHub Actions
+- **Monitoring**: مدمج مع Supabase
+
+## 📊 مقاييس الأداء
+
+يهدف المشروع لتحقيق:
+- **60fps** في العرض
+- **TTI ≤ 2.5s** للتحميل الأولي
+- **Re-render ≤ 16ms** للتفاعلات
+- **Realtime ≤ 150ms** للتحديثات المباشرة
+
+## 🤝 المساهمة
+
+1. Fork المشروع
+2. إنشاء فرع للميزة (`git checkout -b feature/AmazingFeature`)
+3. Commit التغييرات (`git commit -m 'Add some AmazingFeature'`)
+4. Push للفرع (`git push origin feature/AmazingFeature`)
+5. فتح Pull Request
+
+### معايير الجودة
+- جميع الاختبارات يجب أن تمر
+- تغطية الكود ≥ 80%
+- لا أخطاء ESLint أو TypeScript
+- كود منسق بـ Prettier
+
+## 🔒 الأمان
+
+- **RLS**: مُطبق على جميع جداول قاعدة البيانات
+- **Auth**: مُدار بالكامل عبر Supabase
+- **API Keys**: محفوظة في Edge Functions فقط
+- **CORS**: مُكون بطريقة آمنة
+
+## 📄 الرخصة
+
+هذا المشروع محمي بحقوق الطبع والنشر لشركة SoaBra.
+
+## 📞 الدعم
+
+للاستفسارات والدعم التقني، يرجى التواصل عبر:
+- **Email**: support@soabra.com
+- **Documentation**: `/docs`
+- **Issues**: GitHub Issues
+
+---
+
+**ملاحظة**: هذا مشروع إنتاجي يتطلب الالتزام بمعايير الجودة العالية والأمان المؤسسي.
