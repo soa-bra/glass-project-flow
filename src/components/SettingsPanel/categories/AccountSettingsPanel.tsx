@@ -117,33 +117,26 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-transparent">
-      {/* Header */}
-      <div className="flex items-center justify-between px-0 py-[10px] my-[25px]">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
+    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+      {/* Header with Title */}
+      <div className="py-[45px] px-6">
+        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           إعدادات الحساب
         </h2>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleSave}
-            className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            حفظ التغييرات
-          </button>
-        </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
+      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
         <div className="space-y-6">
-        
-        {/* Security Disclaimer */}
-        <SecurityDisclaimer 
-          type="frontend-only" 
-          className="mb-4"
-        />
-          {/* Header */}
-          <div className="bg-[#FFFFFF] rounded-[40px] p-6 ring-1 ring-[#DADCE0]">
+          
+          {/* Security Disclaimer */}
+          <SecurityDisclaimer 
+            type="frontend-only" 
+            className="mb-4"
+          />
+          
+          {/* Header Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <User className="w-6 h-6 text-black" />
@@ -159,8 +152,8 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
             </div>
           </div>
 
-          {/* البيانات الشخصية */}
-          <div className="bg-[#FFFFFF] rounded-[40px] p-6 ring-1 ring-[#DADCE0]">
+          {/* Basic Information Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">البيانات الشخصية</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -240,8 +233,8 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
             </div>
           </div>
 
-          {/* إدارة كلمات المرور */}
-          <div className="bg-[#FFFFFF] rounded-[40px] p-6 ring-1 ring-[#DADCE0]">
+          {/* Password Management Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">إدارة كلمات المرور</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -314,8 +307,8 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
             </div>
           </div>
 
-          {/* إعدادات اللغة */}
-          <div className="bg-[#FFFFFF] rounded-[40px] p-6 ring-1 ring-[#DADCE0]">
+          {/* Language Preferences Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">تفضيلات اللغة</h3>
             
             <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
