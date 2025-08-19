@@ -23,7 +23,7 @@ const Sidebar = ({
     key: 'departments'
   }, {
     icon: Users,
-    label: 'التخطيط التشاركي',
+    label: 'التخطيط التضامني',
     key: 'planning'
   }, {
     icon: Archive,
