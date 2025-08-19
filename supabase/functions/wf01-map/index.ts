@@ -81,6 +81,10 @@ serve(async (req) => {
 
     console.log(`Processing snapshot: ${snapshot.name} with ${snapshot.data.elements.length} elements`);
 
+    // التحقق من وجود OpenAI API Key للتحسينات الاختيارية
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    const aiEnhancementsEnabled = !!openAIApiKey;
+
     // قواعد التحويل حسب سـوبــرا
     const mappingRules = {
       // Sticky Notes → Tasks
@@ -108,17 +112,33 @@ serve(async (req) => {
     const mapped: MappingResult['mapped'] = [];
     const skipped: MappingResult['skipped'] = [];
 
-    // إنشاء مشروع جديد أولاً
+    // تحسين اسم ووصف المشروع بالذكاء الاصطناعي (اختياري)
+    let projectName = `مشروع مُحوّل من ${snapshot.name}`;
+    let projectDescription = `تم تحويله من snapshot: ${snapshot.id}`;
+
+    if (aiEnhancementsEnabled) {
+      try {
+        const enhancement = await enhanceProjectNaming(openAIApiKey, snapshot);
+        projectName = enhancement.name || projectName;
+        projectDescription = enhancement.description || projectDescription;
+        console.log('AI enhancement applied to project naming');
+      } catch (aiError) {
+        console.warn('AI enhancement failed, using default naming:', aiError.message);
+      }
+    }
+
+    // إنشاء مشروع جديد
     const { data: project, error: projectError } = await supabase
       .from('projects')
       .insert({
-        name: `مشروع مُحوّل من ${snapshot.name}`,
-        description: `تم تحويله من snapshot: ${snapshot.id}`,
+        name: projectName,
+        description: projectDescription,
         owner_id: user.id,
         status: 'planning',
         settings: {
           source_snapshot_id: snapshot.id,
-          mapped_at: new Date().toISOString()
+          mapped_at: new Date().toISOString(),
+          ai_enhanced: aiEnhancementsEnabled
         }
       })
       .select()
@@ -139,12 +159,26 @@ serve(async (req) => {
         
         try {
           if (mapping.type === 'task') {
+            // تحسين عنوان ووصف المهمة بالذكاء الاصطناعي (اختياري)
+            let taskTitle = element.content || `مهمة من ${elementType}`;
+            let taskDescription = `تم تحويلها من عنصر ${elementType} في الـcanvas`;
+
+            if (aiEnhancementsEnabled && element.content) {
+              try {
+                const enhancement = await enhanceTaskDetails(openAIApiKey, element.content, elementType);
+                taskTitle = enhancement.title || taskTitle;
+                taskDescription = enhancement.description || taskDescription;
+              } catch (aiError) {
+                console.warn(`AI task enhancement failed for ${element.id}:`, aiError.message);
+              }
+            }
+
             const { data: task, error: taskError } = await supabase
               .from('project_tasks')
               .insert({
                 project_id: project.id,
-                title: element.content || `مهمة من ${elementType}`,
-                description: `تم تحويلها من عنصر ${elementType} في الـcanvas`,
+                title: taskTitle,
+                description: taskDescription,
                 status: mapping.status || 'todo',
                 priority: mapping.priority || 'medium',
                 created_by: user.id,
@@ -170,12 +204,26 @@ serve(async (req) => {
               });
             }
           } else if (mapping.type === 'phase') {
+            // تحسين اسم ووصف المرحلة بالذكاء الاصطناعي (اختياري)
+            let phaseName = element.content || `مرحلة من ${elementType}`;
+            let phaseDescription = `تم تحويلها من عنصر ${elementType} في الـcanvas`;
+
+            if (aiEnhancementsEnabled && element.content) {
+              try {
+                const enhancement = await enhancePhaseDetails(openAIApiKey, element.content, elementType);
+                phaseName = enhancement.name || phaseName;
+                phaseDescription = enhancement.description || phaseDescription;
+              } catch (aiError) {
+                console.warn(`AI phase enhancement failed for ${element.id}:`, aiError.message);
+              }
+            }
+
             const { data: phase, error: phaseError } = await supabase
               .from('project_phases')
               .insert({
                 project_id: project.id,
-                name: element.content || `مرحلة من ${elementType}`,
-                description: `تم تحويلها من عنصر ${elementType} في الـcanvas`,
+                name: phaseName,
+                description: phaseDescription,
                 status: mapping.status || 'planning',
                 order_index: mapped.filter(m => m.mapped_to === 'phase').length + 1,
               })
@@ -293,4 +341,106 @@ function extractEstimatedHours(content: string): number | null {
   }
   
   return null;
+}
+
+// دوال تحسين الذكاء الاصطناعي (اختيارية)
+async function enhanceProjectNaming(apiKey: string, snapshot: any): Promise<{name?: string, description?: string}> {
+  const prompt = `
+  بناءً على محتويات snapshot التالي، اقترح اسماً ووصفاً أفضل للمشروع:
+  
+  اسم الـSnapshot: ${snapshot.name}
+  عدد العناصر: ${snapshot.data.elements.length}
+  عينة من المحتوى: ${snapshot.data.elements.slice(0, 3).map(e => e.content).join(', ')}
+  
+  أرجع JSON بهذا الشكل:
+  {"name": "اسم المشروع المحسّن", "description": "وصف مفصل للمشروع"}
+  `;
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4.1-2025-04-14',
+      messages: [
+        { role: 'system', content: 'أنت مساعد متخصص في إدارة المشاريع. أرجع JSON صالح فقط.' },
+        { role: 'user', content: prompt }
+      ],
+      max_tokens: 300,
+      temperature: 0.5,
+    }),
+  });
+
+  if (!response.ok) throw new Error(`OpenAI API error: ${response.status}`);
+
+  const data = await response.json();
+  return JSON.parse(data.choices[0].message.content);
+}
+
+async function enhanceTaskDetails(apiKey: string, content: string, elementType: string): Promise<{title?: string, description?: string}> {
+  const prompt = `
+  حسّن عنوان ووصف هذه المهمة:
+  
+  المحتوى الأصلي: ${content}
+  نوع العنصر: ${elementType}
+  
+  أرجع JSON: {"title": "العنوان المحسّن", "description": "الوصف المفصل"}
+  `;
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4.1-2025-04-14',
+      messages: [
+        { role: 'system', content: 'أنت مساعد متخصص في إدارة المهام. أرجع JSON صالح فقط.' },
+        { role: 'user', content: prompt }
+      ],
+      max_tokens: 200,
+      temperature: 0.3,
+    }),
+  });
+
+  if (!response.ok) throw new Error(`OpenAI API error: ${response.status}`);
+
+  const data = await response.json();
+  return JSON.parse(data.choices[0].message.content);
+}
+
+async function enhancePhaseDetails(apiKey: string, content: string, elementType: string): Promise<{name?: string, description?: string}> {
+  const prompt = `
+  حسّن اسم ووصف هذه المرحلة:
+  
+  المحتوى الأصلي: ${content}
+  نوع العنصر: ${elementType}
+  
+  أرجع JSON: {"name": "الاسم المحسّن", "description": "الوصف المفصل"}
+  `;
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4.1-2025-04-14',
+      messages: [
+        { role: 'system', content: 'أنت مساعد متخصص في إدارة المشاريع. أرجع JSON صالح فقط.' },
+        { role: 'user', content: prompt }
+      ],
+      max_tokens: 200,
+      temperature: 0.3,
+    }),
+  });
+
+  if (!response.ok) throw new Error(`OpenAI API error: ${response.status}`);
+
+  const data = await response.json();
+  return JSON.parse(data.choices[0].message.content);
 }

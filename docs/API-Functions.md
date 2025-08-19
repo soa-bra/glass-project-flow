@@ -10,6 +10,10 @@
 Authorization: Bearer <supabase_jwt_token>
 ```
 
+### مطلوبات إضافية
+- **OPENAI_API_KEY**: مطلوب في Supabase Secrets لتفعيل ميزات الذكاء الاصطناعي
+- إذا لم يكن المفتاح موجوداً، ستعمل الدوال بنظام fallback بدون AI
+
 ### CORS Configuration
 جميع الدوال تدعم CORS للوصول من المتصفح:
 ```javascript
@@ -22,7 +26,7 @@ Authorization: Bearer <supabase_jwt_token>
 ## 1. analyze-links
 
 ### Description
-تحليل العناصر والروابط باستخدام الذكاء الاصطناعي وإرجاع اقتراحات ذكية للعناصر الجديدة.
+تحليل العناصر والروابط وإرجاع اقتراحات ذكية للعناصر الجديدة. يستخدم الذكاء الاصطناعي عند توفر OPENAI_API_KEY، وإلا يستخدم نظام fallback بسيط.
 
 ### Endpoint
 ```
@@ -56,17 +60,17 @@ interface AnalyzeLinksRequest {
 interface AnalyzeLinksResponse {
   success: boolean;
   suggestions: Array<{
-    name: string;
-    type: 'sticky' | 'frame' | 'connector' | 'task' | 'phase';
+    elementType: string; // 'ThinkingBoard' | 'KanbanBoard' | 'MindMap' | 'Timeline' | 'FlowChart'
     payload: Record<string, any>;
     score: number; // 0-1
-    reasoning: string;
+    rationale: string;
   }>;
   analysis_metadata: {
     elements_analyzed: number;
     links_analyzed: number;
     suggestions_generated: number;
-    model_used: string;
+    ai_used: boolean;
+    model_used: string; // 'gpt-4.1-2025-04-14' أو 'fallback'
   };
 }
 ```
@@ -104,7 +108,7 @@ const { data, error } = await supabase.functions.invoke('analyze-links', {
 ## 2. wf01-map
 
 ### Description
-تحويل Canvas Snapshot إلى مشروع منظم حسب منهجية سـوبــرا، مع تطبيق قواعد التحويل المحددة.
+تحويل Canvas Snapshot إلى مشروع منظم حسب منهجية سـوبــرا. التحويل الأساسي يعمل دائماً، وعند توفر OPENAI_API_KEY يتم تحسين الأسماء والأوصاف تلقائياً.
 
 ### Endpoint
 ```
@@ -247,9 +251,15 @@ const { data, error } = await supabase.functions.invoke('wf01-map', {
 
 ### Current Integration: OpenAI GPT
 - **Model**: `gpt-4.1-2025-04-14`
-- **Purpose**: تحليل العناصر وإنشاء اقتراحات ذكية
-- **Security**: API Key محفوظ في Supabase Secrets
+- **Purpose**: تحليل العناصر، إنشاء اقتراحات ذكية، وتحسين التسميات
+- **Security**: API Key محفوظ في Supabase Secrets (OPENAI_API_KEY)
 - **Rate Limits**: مراقبة استخدام API للحفاظ على الحدود
+- **Fallback**: إذا لم يكن المفتاح متوفراً، تعمل الدوال بنظام fallback آمن
+
+### تفعيل الذكاء الاصطناعي
+1. إضافة `OPENAI_API_KEY` في Supabase Edge Function Secrets
+2. إعادة تشغيل الدوال تلقائياً لتفعيل AI
+3. في حالة عدم وجود المفتاح، تعمل الدوال بنظام fallback بسيط
 
 ### Future Considerations
 - إمكانية إضافة نماذج أخرى (Claude, local models)
