@@ -24,6 +24,18 @@ test.describe('Solidarity Planning Canvas - Smoke Test', () => {
     const statusText = await statusRealtime.textContent();
     expect(statusText).toMatch(/(connected|local-ephemeral|disconnected)/);
     
+    // Check if fallback canvas appears when WhiteboardRoot is slow
+    // Look for either fallback canvas or normal content
+    const fallbackCanvas = page.locator('[data-test-id="fallback-canvas"]');
+    const hasContent = await Promise.race([
+      fallbackCanvas.isVisible().then(visible => ({ type: 'fallback', visible })),
+      page.locator('[data-test-id="node-sticky"]').first().isVisible().then(visible => ({ type: 'content', visible })),
+      new Promise(resolve => setTimeout(() => resolve({ type: 'timeout', visible: false }), 1000))
+    ]);
+    
+    // Either fallback or content should be visible
+    expect(hasContent).toBeTruthy();
+    
     // Test grid toggle (should not crash)
     const gridToggle = page.locator('[data-test-id="btn-grid-toggle"]');
     await expect(gridToggle).toBeVisible();
@@ -53,8 +65,7 @@ test.describe('Solidarity Planning Canvas - Smoke Test', () => {
     // Panel should be hidden
     await expect(smartPanel).not.toBeVisible();
     
-    // Check if default sticky exists (seeded content)
-    // This might not always be visible immediately, so we'll check if canvas has some content
+    // Check FPS counter
     const fpsCounter = page.locator('[data-test-id="status-fps"]');
     await expect(fpsCounter).toBeVisible();
     

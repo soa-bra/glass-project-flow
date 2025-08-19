@@ -7,7 +7,7 @@ export default function IntegratedPlanningCanvasCard() {
   return (
     <AuthProvider>
       <div 
-        className="relative w-full h-[calc(100vh-220px)] min-h-[560px] rounded-2xl overflow-hidden bg-white/90"
+        className="relative w-full h-[calc(100vh-180px)] min-h-[640px] rounded-2xl overflow-hidden bg-white/90"
         data-test-id="integrated-planning-canvas"
       >
         <CollaborativeCanvas

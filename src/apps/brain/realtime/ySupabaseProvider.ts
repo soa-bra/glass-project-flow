@@ -1,0 +1,160 @@
+// Y.js Supabase Provider for Real-time Collaboration
+import * as Y from 'yjs';
+import { supabase } from '@/integrations/supabase/client';
+
+export interface UserInfo {
+  name: string;
+  color: string;
+}
+
+export class YSupabaseProvider {
+  private doc: Y.Doc;
+  private boardId: string;
+  private userId: string;
+  private userInfo: UserInfo;
+  private connected: boolean = false;
+  private channel: any = null;
+
+  public onConnectionChange?: (connected: boolean) => void;
+
+  constructor(doc: Y.Doc, boardId: string, userId: string, userInfo: UserInfo) {
+    this.doc = doc;
+    this.boardId = boardId;
+    this.userId = userId;
+    this.userInfo = userInfo;
+  }
+
+  async connect(): Promise<void> {
+    try {
+      // Create realtime channel for this board
+      this.channel = supabase.channel(`board:${this.boardId}`)
+        .on('postgres_changes', 
+          { 
+            event: '*', 
+            schema: 'public', 
+            table: 'board_objects',
+            filter: `board_id=eq.${this.boardId}`
+          }, 
+          (payload) => {
+            this.handleBoardObjectChange(payload);
+          }
+        )
+        .on('presence', { event: 'sync' }, () => {
+          console.log('Presence sync');
+        })
+        .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+          console.log('User joined:', key, newPresences);
+        })
+        .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+          console.log('User left:', key, leftPresences);
+        });
+
+      const status = await this.channel.subscribe();
+      
+      if (status === 'SUBSCRIBED') {
+        // Track user presence
+        await this.channel.track({
+          user_id: this.userId,
+          name: this.userInfo.name,
+          color: this.userInfo.color,
+          online_at: new Date().toISOString()
+        });
+
+        this.connected = true;
+        this.onConnectionChange?.(true);
+        console.log('✅ Connected to realtime channel:', this.boardId);
+      } else {
+        throw new Error('Failed to subscribe to channel');
+      }
+    } catch (error) {
+      console.error('❌ Realtime connection failed:', error);
+      this.connected = false;
+      this.onConnectionChange?.(false);
+      throw error;
+    }
+  }
+
+  disconnect(): void {
+    if (this.channel) {
+      supabase.removeChannel(this.channel);
+      this.channel = null;
+    }
+    this.connected = false;
+    this.onConnectionChange?.(false);
+    console.log('🔌 Disconnected from realtime');
+  }
+
+  private handleBoardObjectChange(payload: any): void {
+    console.log('Board object changed:', payload);
+    // Here we would normally sync the changes to Y.js doc
+    // For now, just log the change
+  }
+
+  async createSnapshot(): Promise<void> {
+    if (!this.connected) {
+      console.warn('Cannot save snapshot - not connected');
+      return;
+    }
+
+    try {
+      // Convert Y.js document to state vector
+      const stateVector = Y.encodeStateAsUpdate(this.doc);
+      const base64State = btoa(String.fromCharCode(...new Uint8Array(stateVector)));
+
+      // Save snapshot as a special board object
+      const { error } = await supabase
+        .from('board_objects')
+        .upsert({
+          id: `snapshot-${this.boardId}`,
+          board_id: this.boardId,
+          type: 'text',
+          content: base64State,
+          metadata: { isSnapshot: true },
+          created_by: this.userId,
+          created_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      
+      console.log('📸 Snapshot saved successfully');
+    } catch (error) {
+      console.error('❌ Failed to save snapshot:', error);
+      throw error;
+    }
+  }
+
+  async loadSnapshot(): Promise<void> {
+    try {
+      const { data, error } = await supabase
+        .from('board_objects')
+        .select('content')
+        .eq('board_id', this.boardId)
+        .eq('type', 'text')
+        .contains('metadata', { isSnapshot: true })
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error || !data?.content) {
+        console.log('No snapshot found, starting with empty document');
+        return;
+      }
+
+      // Apply snapshot to Y.js document
+      const stateVector = Uint8Array.from(atob(data.content), c => c.charCodeAt(0));
+      Y.applyUpdate(this.doc, stateVector);
+      
+      console.log('📥 Snapshot loaded successfully');
+    } catch (error) {
+      console.error('❌ Failed to load snapshot:', error);
+    }
+  }
+
+  isConnected(): boolean {
+    return this.connected;
+  }
+
+  getPresenceState(): any {
+    return this.channel?.presenceState() || {};
+  }
+}

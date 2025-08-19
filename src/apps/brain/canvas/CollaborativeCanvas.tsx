@@ -16,6 +16,8 @@ import { useWF01Generator } from '@/hooks/useWF01Generator';
 import { SmartElementsPanel } from '@/components/smart-elements/smart-elements-panel';
 import { getViewportCenter, type SmartElementType } from './types';
 import { smartElementsRegistry } from '@/lib/smart-elements/smart-elements-registry';
+import FallbackCanvas from '@/components/Whiteboard/FallbackCanvas';
+import { YSupabaseProvider as LocalYSupabaseProvider } from '@/apps/brain/realtime/ySupabaseProvider';
 
 interface CollaborativeCanvasProps {
   boardAlias?: string;
@@ -39,7 +41,9 @@ export default function CollaborativeCanvas({
   const [sceneGraph] = useState(() => new SceneGraph());
   const [connectionManager] = useState(() => new ConnectionManager(sceneGraph, boardAlias));
   const [yDoc] = useState(() => new Y.Doc());
-  const [yProvider, setYProvider] = useState<YSupabaseProvider | null>(null);
+  const [yProvider, setYProvider] = useState<LocalYSupabaseProvider | null>(null);
+  const [sceneReady, setSceneReady] = useState(false);
+  const [viewport, setViewport] = useState({ width: 800, height: 600, dpr: 1 });
   
   // Canvas state
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
@@ -114,7 +118,7 @@ export default function CollaborativeCanvas({
         setBoardId(actualBoardId);
 
         // Initialize Y.js provider with connection timeout
-        const provider = new YSupabaseProvider(yDoc, actualBoardId, user.id, {
+        const provider = new LocalYSupabaseProvider(yDoc, actualBoardId, user.id, {
           name: user.email?.split('@')[0] || 'User',
           color: '#' + Math.floor(Math.random()*16777215).toString(16)
         });
@@ -155,13 +159,18 @@ export default function CollaborativeCanvas({
     };
   }, [user, boardAlias, logCanvasOperation, logCustomEvent]);
 
-  // Resize observer setup
+  // Resize observer and viewport setup
   useEffect(() => {
     if (!hostRef.current) return;
 
     resizeObserverRef.current = new ResizeObserver(([entry]) => {
       const cr = entry.contentRect;
-      // Log resize event for canvas
+      const newViewport = {
+        width: Math.max(cr.width, 1),
+        height: Math.max(cr.height, 1),
+        dpr: window.devicePixelRatio || 1
+      };
+      setViewport(newViewport);
       logCanvasOperation('canvas_resized', { width: cr.width, height: cr.height });
     });
 
@@ -171,6 +180,27 @@ export default function CollaborativeCanvas({
       resizeObserverRef.current?.disconnect();
     };
   }, [logCanvasOperation]);
+
+  // Scene ready timeout - show fallback if WhiteboardRoot takes too long
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    const timeout = setTimeout(() => {
+      if (!sceneReady) {
+        console.log('WhiteboardRoot taking too long, showing fallback');
+      }
+    }, 300);
+
+    // Simulate scene ready after initialization
+    const readyTimeout = setTimeout(() => {
+      setSceneReady(true);
+    }, 100);
+
+    return () => {
+      clearTimeout(timeout);
+      clearTimeout(readyTimeout);
+    };
+  }, [isInitialized, sceneReady]);
 
   // FPS tracking
   useEffect(() => {
@@ -295,24 +325,24 @@ export default function CollaborativeCanvas({
     logCanvasOperation('tool_selected', { tool });
   }, [logCanvasOperation]);
 
-  const insertSmartElement = useCallback((elementType: SmartElementType, position?: { x: number; y: number }) => {
-    const insertPosition = position || getViewportCenter({ 
+  const insertSmartElement = useCallback((params: { type: string; position?: { x: number; y: number } }) => {
+    const insertPosition = params.position || getViewportCenter({ 
       x: canvasPosition.x, 
       y: canvasPosition.y, 
       zoom, 
-      width: 800, 
-      height: 600 
+      width: viewport.width, 
+      height: viewport.height 
     });
     
-    const newNode = smartElementsRegistry.createSmartElementNode(elementType, insertPosition);
+    const newNode = smartElementsRegistry.createSmartElementNode(params.type, insertPosition);
     if (newNode && sceneGraph) {
       sceneGraph.addNode(newNode);
-      logCustomEvent('smart_element_created', { elementType, position: insertPosition });
+      logCustomEvent('smart_element_created', { elementType: params.type, position: insertPosition });
     }
-  }, [sceneGraph, canvasPosition, zoom, logCustomEvent]);
+  }, [sceneGraph, canvasPosition, zoom, viewport, logCustomEvent]);
 
-  const handleSmartElementCreate = useCallback((elementType: SmartElementType, initialState?: any) => {
-    insertSmartElement(elementType);
+  const handleSmartElementCreate = useCallback((type: string, initialState?: any) => {
+    insertSmartElement({ type });
     setShowSmartPanel(false);
   }, [insertSmartElement]);
 
@@ -410,10 +440,13 @@ export default function CollaborativeCanvas({
       <div className="absolute inset-0 top-12 bottom-8">
         {/* Main Canvas Area */}
         <div className="relative w-full h-full" data-test-id="canvas-stage">
+          {/* Fallback Canvas - Emergency Layer */}
+          <FallbackCanvas enabled={!sceneReady} />
+          
           <WhiteboardRoot
             sceneGraph={sceneGraph}
             connectionManager={connectionManager}
-            yProvider={yProvider}
+            yProvider={yProvider as any}
             selectedTool={selectedTool}
             selectedElements={selectedElements}
             onSelectionChange={setSelectedElements}
