@@ -11,7 +11,7 @@ interface ProjectCardGridProps {
 export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
   project
 }) => {
-  return <div className="grid grid-cols-3 grid-rows-4 gap-4 h-full my-[50px] py-0">
+  return <div className="grid grid-cols-3 grid-rows-4 gap-4 h-full py-0 my-[70px]">
       {/* العمود الأول - قائمة المهام (بعرض مساوي للأعمدة الأخرى) */}
       <div className="col-span-1 row-span-4">
         <TaskListCard project={project} />
