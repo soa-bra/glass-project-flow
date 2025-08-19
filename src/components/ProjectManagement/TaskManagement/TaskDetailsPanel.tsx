@@ -164,7 +164,7 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
 
       {/* Tabs */}
       <div className="px-6 py-4 border-b border-black/10">
-        <div className="flex items-center gap-x-4 py-1 ">
+        <div className="flex py-1 px-1">
           {[{
           key: 'details',
           label: 'التفاصيل',
