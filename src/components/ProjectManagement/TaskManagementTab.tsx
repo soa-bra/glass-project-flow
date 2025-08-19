@@ -21,7 +21,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
   const {
     tasks
   } = useUnifiedTasks(project.id);
-  return <div className="h-full min-h-0 flex flex-col overflow-hidden space-y-6">
+  return <div className="flex-1 overflow-auto space-y-6">
       {/* Header with view toggle and AI assistant */}
       <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-4">
@@ -83,11 +83,8 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
       </div>
 
       {/* Main Content Area */}
-      <div className="h-full min-h-0 flex overflow-hidden">
-        {/* تمرير أفقي للأعمدة */}
-        <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden">
-          {viewMode === 'kanban' ? <KanbanBoard projectId={project.id} filters={filters} /> : <TaskDetails projectId={project.id} filters={filters} />}
-        </div>
+      <div className="flex-1 min-h-0">
+        {viewMode === 'kanban' ? <KanbanBoard projectId={project.id} filters={filters} /> : <TaskDetails projectId={project.id} filters={filters} />}
       </div>
 
       {/* AI Assistant Panel */}
