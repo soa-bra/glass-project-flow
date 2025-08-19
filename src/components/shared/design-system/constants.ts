@@ -367,16 +367,20 @@ export const MOTION = {
 
 // Unified component class builders with design system tokens
 export const buildCardClasses = (customClasses = '') => 
-  `bg-white ${SPACING.CARD_PADDING} ${LAYOUT.CARD_ROUNDED} border border-[#DADCE0] ${LAYOUT.CARD_SHADOW} ${customClasses}`.trim();
+  `sb-surface-box p-6 ${customClasses}`.trim();
 
 export const buildPanelClasses = (customClasses = '') => 
   `${COLORS.PANEL_BACKGROUND} ${SPACING.CARD_PADDING} ${LAYOUT.PANEL_ROUNDED} ${COLORS.RING_BORDER} ${LAYOUT.PANEL_SHADOW} backdrop-blur-[2px] ${customClasses}`.trim();
 
 export const buildBoxClasses = (customClasses = '') => 
-  `${COLORS.BOX_BACKGROUND} ${DESIGN_TOKENS.SPACING.LG} ${LAYOUT.CARD_ROUNDED} ${COLORS.RING_BORDER} ${LAYOUT.CARD_SHADOW} ${customClasses}`.trim();
+  `sb-surface-box ${DESIGN_TOKENS.SPACING.LG} ${customClasses}`.trim();
 
 export const buildTitleClasses = (customClasses = '') => 
   `${TYPOGRAPHY.H3} ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} ${LAYOUT.FLEX_GAP} ${customClasses}`.trim();
+
+// بناء classes للصناديق المستثناة (النظرة المالية وقائمة المهام)
+export const buildExceptionBoxClasses = (customClasses = '') => 
+  `bg-transparent border-transparent shadow-none p-6 ${customClasses}`.trim();
 
 export const buildIconContainerClasses = (size: 'sm' | 'md' | 'lg' = 'sm') => {
   const sizeMap = {

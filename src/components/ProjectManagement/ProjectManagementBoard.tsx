@@ -262,7 +262,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         top: "var(--sidebar-top-offset)",
         height: "calc(100vh - var(--sidebar-top-offset))",
         borderRadius: "24px",
-        background: "#F8F9FA",
+        background: "var(--sb-column-3-bg)",
         border: "1px solid rgba(255,255,255,0.2)",
         transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
         padding: "24px",

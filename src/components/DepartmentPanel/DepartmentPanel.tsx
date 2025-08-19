@@ -34,7 +34,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
 
   // Generic departments with tabbed interface
   return (
-    <div className="h-full rounded-3xl overflow-hidden bg-[#d9e7ed]">
+    <div className="h-full rounded-3xl overflow-hidden" style={{ background: 'var(--sb-column-2-bg)' }}>
       <BaseDepartmentPanel selectedDepartment={selectedDepartment} />
     </div>
   );

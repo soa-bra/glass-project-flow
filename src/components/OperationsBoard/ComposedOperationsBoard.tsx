@@ -22,7 +22,7 @@ export const ComposedOperationsBoard = ({
         height: 'calc(100vh - 60px)',
         top: 'var(--sidebar-top-offset)',
         borderRadius: '20px',
-        background: 'var(--sb-bg-00)',
+        background: 'var(--sb-column-3-bg)',
         overflow: 'hidden',
         zIndex: 30
       }}

@@ -31,6 +31,12 @@
     --sb-task-card-bg: #F8F9FA;
     --sb-box-bg: #FFFFFF;
     --sb-modal-scrim: rgba(0,0,0,0.2);
+    
+    /* نظام الألوان الجديد */
+    --sb-column-2-bg: #EBEFF2;    /* العمود الثاني: المشاريع/الإدارات/الأرشيف/الإعدادات */
+    --sb-column-3-bg: #F8F9FA;    /* العمود الثالث: جميع اللوحات */
+    --sb-box-standard: #FFFFFF;   /* الصناديق العادية */
+    --sb-box-border: #DADCE0;     /* حدود الصناديق */
     --sb-shadow-strong: 0 10px 24px rgba(15,23,42,0.12);
     --sb-shadow-soft: 0 6px 18px rgba(15,23,42,0.06);
     
@@ -280,32 +286,32 @@
 @layer components {
   /* SoaBra UI Components - v1.2.6 */
   .sb-surface-panel {
-    @apply bg-[var(--sb-panel-bg)] rounded-[41px];
-    border: 1px solid var(--sb-border);
+    @apply bg-[var(--sb-column-3-bg)] rounded-[41px];
+    border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-strong);
   }
   
   .sb-surface-card {
-    @apply bg-[var(--sb-card-bg)] rounded-[41px];
-    border: 1px solid var(--sb-border);
+    @apply bg-[var(--sb-box-standard)] rounded-[41px];
+    border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-soft);
   }
   
   .sb-surface-project-card {
     @apply bg-[var(--sb-project-card-bg)] rounded-[41px];
-    border: 1px solid var(--sb-border);
+    border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-soft);
   }
   
   .sb-surface-task-card {
     @apply bg-[var(--sb-task-card-bg)] rounded-[41px];
-    border: 1px solid var(--sb-border);
+    border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-soft);
   }
   
   .sb-surface-box {
-    @apply bg-[var(--sb-box-bg)] rounded-[41px];
-    border: 1px solid var(--sb-border);
+    @apply bg-[var(--sb-box-standard)] rounded-[41px];
+    border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-soft);
   }
   
@@ -421,13 +427,13 @@
   
   .project-column {
     @apply rounded-[41px];
-    background: #EBEFF2;
+    background: var(--sb-column-2-bg);
   }
   
   /* Capsule Styles */
   .cap-in-card {
     @apply bg-white text-black rounded-full;
-    border: 1px solid var(--sb-border);
+    border: 1px solid var(--sb-box-border);
   }
   
   .cap-in-box-outline {
