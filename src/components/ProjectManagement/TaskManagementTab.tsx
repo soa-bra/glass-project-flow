@@ -28,7 +28,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
           <h3 className="text-lg font-semibold text-black">إدارة المهام</h3>
           <div className="flex items-center gap-4">
             {/* View mode toggle */}
-            <div className="flex bg-transparent border border-black/10 rounded-full p-1">
+            <div className="flex bg-transparent border border-black/60 rounded-full p-1">
               <button onClick={() => setViewMode('kanban')} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${viewMode === 'kanban' ? 'bg-black text-white' : 'text-black hover:bg-black/5'}`}>
                 لوحة كانبان
               </button>
