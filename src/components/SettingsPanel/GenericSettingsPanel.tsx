@@ -138,7 +138,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-slate-50 rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
         <div className="flex items-center gap-4 mb-3">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
             <IconComponent className="w-6 h-6 text-black" />
@@ -155,7 +155,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
       </div>
 
       {/* Main Content */}
-      <div className="bg-slate-50 rounded-3xl p-6 border border-black/10">
+      <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
         <div className="space-y-6">
           {/* Settings Form Content */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

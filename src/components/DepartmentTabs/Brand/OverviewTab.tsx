@@ -56,7 +56,7 @@ export const OverviewTab: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Cultural Identity Health */}
-        <div className="bg-[#FFFFFF] p-9 rounded-[40px] ring-1 ring-[#DADCE0] hover:shadow-md transition-shadow">
+        <div className="p-9 rounded-[41px] ring-1 hover:shadow-md transition-shadow" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
           <div className="px-0 pt-0 mb-6">
             <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
@@ -100,7 +100,7 @@ export const OverviewTab: React.FC = () => {
         </div>
 
         {/* Recent Activities */}
-        <div className="bg-[#FFFFFF] p-9 rounded-[40px] ring-1 ring-[#DADCE0] hover:shadow-md transition-shadow">
+        <div className="p-6 rounded-[41px] ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
           <div className="px-0 pt-0 mb-6">
             <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
@@ -111,7 +111,7 @@ export const OverviewTab: React.FC = () => {
           </div>
           <div className="px-0">
             <div className="space-y-3">
-              <div className="flex items-center gap-3 p-4 rounded-[40px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
+              <div className="flex items-center gap-3 p-4 rounded-[41px] ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
                 <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
                   <Palette className="h-3 w-3 text-white" />
                 </div>

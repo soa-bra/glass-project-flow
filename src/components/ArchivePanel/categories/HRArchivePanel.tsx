@@ -63,7 +63,7 @@ export const HRArchivePanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-transparent">
+    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
       <div className="flex items-center justify-between px-6 py-6">
         <h2 className="font-medium text-black font-arabic text-3xl">
           أرشيف الموارد البشرية
@@ -82,7 +82,7 @@ export const HRArchivePanel: React.FC = () => {
 
       {/* Search */}
       <div className="px-6 mb-6">
-        <div className="bg-white p-4 rounded-[40px] border border-[#DADCE0]">
+        <div className="p-4 rounded-[41px] ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -91,7 +91,8 @@ export const HRArchivePanel: React.FC = () => {
                 placeholder="البحث في أرشيف الموارد البشرية..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pr-12 pl-4 py-3 rounded-full ring-1 ring-[#DADCE0] focus:outline-none focus:ring-2 focus:ring-black/20 font-arabic"
+                className="w-full pr-12 pl-4 py-3 rounded-full ring-1 focus:outline-none focus:ring-2 focus:ring-black/20 font-arabic"
+                style={{ borderColor: 'var(--sb-box-border)' }}
               />
             </div>
           </div>
@@ -104,7 +105,7 @@ export const HRArchivePanel: React.FC = () => {
           {mockHRRecords.map((record) => {
             const IconComponent = getTypeIcon(record.type);
             return (
-              <div key={record.id} className="bg-white p-6 rounded-[40px] border border-[#DADCE0]">
+              <div key={record.id} className="p-6 rounded-[41px] ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
