@@ -11,40 +11,78 @@ interface ProjectCardGridProps {
 export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
   project
 }) => {
-  return <div className="grid grid-cols-3 grid-rows-4 gap-4 h-full">
-      {/* العمود الأول - قائمة المهام (بعرض مساوي للأعمدة الأخرى) */}
-      <div className="col-span-1 row-span-4">
+  return (
+    <div 
+      className="h-full w-full p-1 grid gap-2"
+      style={{
+        gridTemplateColumns: 'minmax(240px, 1fr) minmax(160px, 1fr) minmax(160px, 1fr)',
+        gridTemplateRows: 'minmax(60px, 1fr) minmax(80px, 1.5fr) minmax(80px, 1.5fr) minmax(80px, 1fr)',
+        gridTemplateAreas: `
+          "tasks notifications notifications"
+          "tasks analytics budget"
+          "tasks team budget"
+          "tasks goals reports"
+        `
+      }}
+    >
+      {/* قائمة المهام */}
+      <div style={{ gridArea: 'tasks' }} className="min-h-0">
         <TaskListCard project={project} />
       </div>
 
-      {/* الصف الأول - العمود الثاني والثالث - التنبيهات */}
-      <div className="col-span-2 row-span-1">
+      {/* التنبيهات */}
+      <div style={{ gridArea: 'notifications' }} className="min-h-0">
         <NotificationsCard />
       </div>
 
-      {/* الصف الثاني - العمود الثاني - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
-        <AISuggestedPerformanceCard type="analytics" title="تحليل الأداء" metric="94%" description="معدل الإنجاز" trend="+12%" chartType="line" />
+      {/* بطاقات الأداء */}
+      <div style={{ gridArea: 'analytics' }} className="min-h-0">
+        <AISuggestedPerformanceCard 
+          type="analytics" 
+          title="تحليل الأداء" 
+          metric="94%" 
+          description="معدل الإنجاز" 
+          trend="+12%" 
+          chartType="line" 
+        />
       </div>
 
-      {/* الصف الثاني والثالث - العمود الثالث - النظرة المالية */}
-      <div className="col-span-1 row-span-2">
+      <div style={{ gridArea: 'budget' }} className="min-h-0">
         <BudgetCard project={project} />
       </div>
 
-      {/* الصف الثالث - العمود الثاني - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
-        <AISuggestedPerformanceCard type="team" title="أداء الفريق" metric="23" description="عضو نشط" trend="+5 جدد" chartType="bar" />
+      <div style={{ gridArea: 'team' }} className="min-h-0">
+        <AISuggestedPerformanceCard 
+          type="team" 
+          title="أداء الفريق" 
+          metric="23" 
+          description="عضو نشط" 
+          trend="+5 جدد" 
+          chartType="bar" 
+        />
       </div>
 
-      {/* الصف الرابع - العمود الثاني - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
-        <AISuggestedPerformanceCard type="goals" title="الأهداف" metric="7/10" description="أهداف محققة" trend="3 متبقية" chartType="pie" />
+      <div style={{ gridArea: 'goals' }} className="min-h-0">
+        <AISuggestedPerformanceCard 
+          type="goals" 
+          title="الأهداف" 
+          metric="7/10" 
+          description="أهداف محققة" 
+          trend="3 متبقية" 
+          chartType="pie" 
+        />
       </div>
 
-      {/* الصف الرابع - العمود الثالث - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
-        <AISuggestedPerformanceCard type="reports" title="التقارير" metric="8" description="تقارير جاهزة" trend="3 جديدة" chartType="donut" />
+      <div style={{ gridArea: 'reports' }} className="min-h-0">
+        <AISuggestedPerformanceCard 
+          type="reports" 
+          title="التقارير" 
+          metric="8" 
+          description="تقارير جاهزة" 
+          trend="3 جديدة" 
+          chartType="donut" 
+        />
       </div>
-    </div>;
+    </div>
+  );
 };

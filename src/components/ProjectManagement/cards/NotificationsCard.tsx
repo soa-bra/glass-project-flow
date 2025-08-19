@@ -35,34 +35,60 @@ export const NotificationsCard: React.FC = () => {
 
   return (
     <div 
-      className="h-full p-6 rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]"
+      className="h-full rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] flex flex-col"
       style={{
-        fontFamily: 'IBM Plex Sans Arabic'
+        fontFamily: 'IBM Plex Sans Arabic',
+        padding: 'clamp(12px, 2vw, 24px)'
       }}
     >
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-arabic font-semibold text-gray-800">التنبيهات</h3>
-        <span className="text-sm text-gray-500 font-arabic">3 جديدة</span>
+      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+        <h3 
+          className="font-arabic font-semibold text-gray-800"
+          style={{ fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)' }}
+        >
+          التنبيهات
+        </h3>
+        <span 
+          className="text-gray-500 font-arabic"
+          style={{ fontSize: 'clamp(0.7rem, 1.2vw, 0.9rem)' }}
+        >
+          3 جديدة
+        </span>
       </div>
       
-      <div className="space-y-3 max-h-32 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-2">
         {notifications.map((notification) => {
           const Icon = notification.icon;
           return (
-            <div key={notification.id} className="flex items-start gap-3 p-2 rounded-lg hover:bg-white/50 transition-colors">
+            <div 
+              key={notification.id} 
+              className="flex items-start gap-2 p-2 rounded-lg hover:bg-white/50 transition-colors"
+            >
               <Icon 
-                size={16} 
-                style={{ color: notification.color }}
+                style={{ 
+                  color: notification.color,
+                  width: 'clamp(12px, 1.5vw, 16px)',
+                  height: 'clamp(12px, 1.5vw, 16px)'
+                }}
                 className="mt-0.5 flex-shrink-0"
               />
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-800 font-arabic">
+                <div 
+                  className="font-medium text-gray-800 font-arabic leading-tight"
+                  style={{ fontSize: 'clamp(0.7rem, 1.2vw, 0.85rem)' }}
+                >
                   {notification.title}
                 </div>
-                <div className="text-xs text-gray-600 font-arabic truncate">
+                <div 
+                  className="text-gray-600 font-arabic truncate leading-tight"
+                  style={{ fontSize: 'clamp(0.6rem, 1vw, 0.75rem)' }}
+                >
                   {notification.description}
                 </div>
-                <div className="text-xs text-gray-400 font-arabic mt-1">
+                <div 
+                  className="text-gray-400 font-arabic mt-1 leading-tight"
+                  style={{ fontSize: 'clamp(0.6rem, 1vw, 0.7rem)' }}
+                >
                   {notification.time}
                 </div>
               </div>

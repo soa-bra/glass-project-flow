@@ -30,81 +30,112 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
 
   // تحديد لون خلفية الكارد
   const cardBgColor = isOverBudget ? 'bg-[#f1b5b9]' : 'bg-[#96d8d0]';
-  return <BaseCard className={`h-full flex flex-col items-center justify-center relative ${cardBgColor} border-0`}>
+  return (
+    <BaseCard className={`h-full flex flex-col relative ${cardBgColor} border-0 overflow-hidden`}>
       {/* أيقونة التوسيع */}
-      <button className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95 font-extrabold text-xs">↖</button>
+      <button className="absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95 font-extrabold text-xs z-10">
+        ↖
+      </button>
 
       {/* أيقونة النقاط */}
-      <button className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95 text-xs my-0 font-extrabold">･･･</button>
+      <button className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95 text-xs font-extrabold z-10">
+        ･･･
+      </button>
 
-      <h3 className="text-xl font-arabic font-bold mb-8 text-center text-black">النظرة المالية</h3>
+      {/* العنوان */}
+      <div className="text-center pt-8 pb-2">
+        <h3 className="text-sm sm:text-base lg:text-lg font-arabic font-bold text-black">النظرة المالية</h3>
+      </div>
       
-      {/* الحلقة الدائرية الكبيرة */}
-      <div className="relative w-80 h-80 mb-8 flex items-center justify-center">
-        {/* الشرائط الدائرية */}
-        <div className="absolute inset-0">
-          {Array.from({
-          length: totalBars
-        }).map((_, index) => {
-          const angle = index / totalBars * 360;
-          const isVisible = index < filledBars || index >= filledBars;
-          return <div key={index} className={`absolute w-1 h-12 ${getBarColor(index)} transition-all duration-500`} style={{
-            transformOrigin: '50% 160px',
-            transform: `rotate(${angle}deg)`,
-            left: '50%',
-            top: '20px',
-            marginLeft: '-2px',
-            opacity: isVisible ? 1 : 0.3,
-            animationDelay: `${index * 50}ms`
-          }} />;
-        })}
-        </div>
-        
-        {/* المحتوى المركزي */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-6xl font-bold text-black mb-2">
-              {Math.round(spentPercentage)}
+      {/* المحتوى المرن */}
+      <div className="flex-1 flex items-center justify-center relative min-h-0 p-2">
+        {/* الحلقة الدائرية */}
+        <div 
+          className="relative flex items-center justify-center"
+          style={{
+            width: 'min(70%, 200px)',
+            height: 'min(70%, 200px)',
+            aspectRatio: '1/1'
+          }}
+        >
+          {/* الشرائط الدائرية */}
+          <div className="absolute inset-0">
+            {Array.from({ length: totalBars }).map((_, index) => {
+              const angle = (index / totalBars) * 360;
+              const isVisible = index < filledBars || index >= filledBars;
+              const radius = 'calc(50% - 10px)';
+              
+              return (
+                <div 
+                  key={index} 
+                  className={`absolute ${getBarColor(index)} transition-all duration-500`} 
+                  style={{
+                    width: 'clamp(1px, 0.5vw, 2px)',
+                    height: 'clamp(8px, 2vw, 16px)',
+                    transformOrigin: `50% ${radius}`,
+                    transform: `rotate(${angle}deg)`,
+                    left: '50%',
+                    top: '10px',
+                    marginLeft: 'calc(-0.25vw)',
+                    opacity: isVisible ? 1 : 0.3,
+                    animationDelay: `${index * 50}ms`
+                  }} 
+                />
+              );
+            })}
+          </div>
+          
+          {/* المحتوى المركزي */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center">
+              <div className="font-bold text-black mb-1" style={{ fontSize: 'clamp(1.5rem, 4vw, 3rem)' }}>
+                {Math.round(spentPercentage)}
+              </div>
+              <div className="text-black font-arabic" style={{ fontSize: 'clamp(0.6rem, 1.2vw, 0.9rem)' }}>
+                إجمالي الأرباح والخسائر
+              </div>
             </div>
-            <div className="text-lg text-black font-arabic">إجمالي الأرباح والخسائر</div>
+          </div>
+        </div>
+
+        {/* الإحصائيات الجانبية */}
+        <div className="absolute right-2 top-1/2 transform -translate-y-1/2" style={{ fontSize: 'clamp(0.6rem, 1vw, 0.8rem)' }}>
+          <div className="text-center mb-2">
+            <div className="font-bold text-black" style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}>02</div>
+            <div className="text-black font-arabic">مثال</div>
+          </div>
+          <div className="text-center mb-2">
+            <div className="font-bold text-black" style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}>14</div>
+            <div className="text-black font-arabic">مثال</div>
+          </div>
+          <div className="text-center">
+            <div className="font-bold text-black" style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}>
+              {Math.round(remainingAmount / 1000)}
+            </div>
+            <div className="text-black font-arabic">مثال</div>
           </div>
         </div>
       </div>
 
-      {/* الإحصائيات الجانبية */}
-      <div className="absolute right-8 top-1/2 transform -translate-y-1/2 space-y-6">
-        <div className="text-center">
-          <div className="text-4xl font-bold text-black">02</div>
-          <div className="text-sm text-black font-arabic">مثال</div>
-        </div>
-        <div className="text-center">
-          <div className="text-4xl font-bold text-black">14</div>
-          <div className="text-sm text-black font-arabic">مثال</div>
-        </div>
-        <div className="text-center">
-          <div className="text-4xl font-bold text-black">{Math.round(remainingAmount / 1000)}</div>
-          <div className="text-sm text-black font-arabic">مثال</div>
-        </div>
-      </div>
-
       {/* النص السفلي */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-center">
-        <div className="text-sm text-black font-arabic mb-1">
+      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-center">
+        <div className="text-black font-arabic mb-1" style={{ fontSize: 'clamp(0.6rem, 1vw, 0.8rem)' }}>
           هذا النص مثال للشكل النهائي
         </div>
-        <div className="text-sm text-black font-arabic">
+        <div className="text-black font-arabic" style={{ fontSize: 'clamp(0.6rem, 1vw, 0.8rem)' }}>
           هذا النص مثال
         </div>
       </div>
 
       {/* النص السفلي الأيمن */}
-      <div className="absolute bottom-6 right-6 text-center">
-        <div className="text-sm text-black font-arabic mb-1">
+      <div className="absolute bottom-2 right-2 text-center">
+        <div className="text-black font-arabic mb-1" style={{ fontSize: 'clamp(0.6rem, 1vw, 0.8rem)' }}>
           هذا النص مثال
         </div>
-        <div className="text-sm text-black font-arabic">
+        <div className="text-black font-arabic" style={{ fontSize: 'clamp(0.6rem, 1vw, 0.8rem)' }}>
           هذا النص مثال للشكل النهائي
         </div>
       </div>
-    </BaseCard>;
+    </BaseCard>
+  );
 };
