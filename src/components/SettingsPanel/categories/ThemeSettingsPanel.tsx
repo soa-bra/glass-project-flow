@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import { Palette, Sun, Moon, Monitor, Contrast, Paintbrush, Eye, Zap } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
-import { BaseActionButton } from '@/components/shared/BaseActionButton';
+
 interface ThemeSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
 }
+
 export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
   const [formData, setFormData] = useState({
     appearance: {
-      mode: 'auto',
-      // light, dark, auto
+      mode: 'auto', // light, dark, auto
       colorScheme: 'soabra-default',
-      contrast: 'normal',
-      // low, normal, high
+      contrast: 'normal', // low, normal, high
       fontSize: 16,
       borderRadius: 'medium'
     },
@@ -38,54 +37,11 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
     },
     lastModified: new Date().toISOString()
   });
-  const [previewMode, setPreviewMode] = useState<string>('current');
-  const themePresets = [{
-    id: 'soabra-default',
-    name: 'سوبرا الافتراضي',
-    colors: {
-      primary: '#000000',
-      secondary: '#F2FFFF',
-      accent: '#96d8d0'
-    }
-  }, {
-    id: 'ocean-breeze',
-    name: 'نسيم المحيط',
-    colors: {
-      primary: '#0066CC',
-      secondary: '#E6F3FF',
-      accent: '#00AAFF'
-    }
-  }, {
-    id: 'sunset-glow',
-    name: 'توهج الغروب',
-    colors: {
-      primary: '#FF6B35',
-      secondary: '#FFF4F0',
-      accent: '#FFB28A'
-    }
-  }, {
-    id: 'forest-green',
-    name: 'الأخضر الطبيعي',
-    colors: {
-      primary: '#2D5016',
-      secondary: '#F0F8E8',
-      accent: '#7CB342'
-    }
-  }, {
-    id: 'royal-purple',
-    name: 'البنفسجي الملكي',
-    colors: {
-      primary: '#6A1B9A',
-      secondary: '#F3E5F5',
-      accent: '#BA68C8'
-    }
-  }];
+
   const [lastAutosave, setLastAutosave] = useState<string>('');
   const userId = 'user123';
-  const {
-    loadDraft,
-    clearDraft
-  } = useAutosave({
+
+  const { loadDraft, clearDraft } = useAutosave({
     interval: 20000,
     userId,
     section: 'theme',
@@ -94,460 +50,248 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       setLastAutosave(new Date().toLocaleTimeString('ar-SA'));
     }
   });
-  const applyThemePreset = (preset: typeof themePresets[0]) => {
-    setFormData(prev => ({
-      ...prev,
-      colors: {
-        ...prev.colors,
-        ...preset.colors
-      },
-      appearance: {
-        ...prev.appearance,
-        colorScheme: preset.id
-      }
-    }));
-  };
-  const generateAITheme = async () => {
-    // هنا سيكون استدعاء مولد الثيمات بالذكاء الاصطناعي
-    const aiGeneratedColors = {
-      primary: '#1A365D',
-      secondary: '#EDF8FF',
-      accent: '#4299E1',
-      background: '#FFFFFF',
-      text: '#2D3748'
-    };
-    setFormData(prev => ({
-      ...prev,
-      colors: {
-        ...prev.colors,
-        ...aiGeneratedColors
-      },
-      appearance: {
-        ...prev.appearance,
-        colorScheme: 'ai-generated'
-      }
-    }));
-  };
+
+  const colorSchemes = [
+    { key: 'soabra-default', name: 'سـوبــرا الافتراضي', primary: '#000000', secondary: '#F2FFFF' },
+    { key: 'dark-professional', name: 'المهني الداكن', primary: '#FFFFFF', secondary: '#1a1a1a' },
+    { key: 'warm-earth', name: 'الأرض الدافئة', primary: '#8B4513', secondary: '#FDF5E6' },
+    { key: 'ocean-breeze', name: 'نسيم المحيط', primary: '#006994', secondary: '#E0F6FF' }
+  ];
+
   const handleSave = async () => {
     try {
-      // Saving theme settings
       clearDraft();
-
-      // تطبيق الثيم على الصفحة
-      document.documentElement.style.setProperty('--color-primary', formData.colors.primary);
-      document.documentElement.style.setProperty('--color-secondary', formData.colors.secondary);
-      document.documentElement.style.setProperty('--color-accent', formData.colors.accent);
+      
       const event = new CustomEvent('settings.updated', {
-        detail: {
-          section: 'theme',
-          data: formData
-        }
+        detail: { section: 'theme', data: formData }
       });
       window.dispatchEvent(event);
     } catch (error) {
       // Error handled silently
     }
   };
-  return <div className="h-full flex flex-col bg-transparent">
-      {/* Header */}
-      <div className="flex items-center justify-between px-0 py-[10px] my-[25px]">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
+
+  return (
+    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+      {/* Header with Title */}
+      <div className="py-[45px] px-6">
+        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           إعدادات المظهر
         </h2>
-        <div className="flex items-center gap-3">
-          <BaseActionButton onClick={handleSave} variant="primary" size="md">
-            حفظ التغييرات
-          </BaseActionButton>
-        </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
+      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
         <div className="space-y-6">
-      {/* Header */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-        <div className="flex items-center gap-4 mb-3">
-          <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
-            <Palette className="w-6 h-6 text-black" />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-lg font-semibold text-black">المظهر والثيمات</h2>
-            <p className="text-sm font-normal text-black">تخصيص شكل ومظهر النظام</p>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-indigo-600">●</div>
-            <p className="text-xs font-normal text-gray-400">مخصص</p>
-          </div>
-        </div>
-      </div>
 
-      {/* مولد الثيمات بالذكاء الاصطناعي */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-        <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
-          🎨 مولد الثيمات الذكي
-          <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">AI Theme Generator</span>
-        </h3>
-        <p className="text-sm text-black mb-4">
-          ينشئ ثيمات مخصصة بناءً على تفضيلاتك وسياق استخدامك للنظام
-        </p>
-        <div className="flex items-center gap-3">
-          <button onClick={generateAITheme} className="px-4 py-2 bg-black text-white rounded-full text-sm font-medium flex items-center gap-2">
-            <Zap size={14} />
-            توليد ثيم ذكي
-          </button>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={formData.aiPersonalization.adaptiveColors} onChange={e => setFormData(prev => ({
-                ...prev,
-                aiPersonalization: {
-                  ...prev.aiPersonalization,
-                  adaptiveColors: e.target.checked
-                }
-              }))} />
-            <span className="text-sm text-black">ألوان تكيفية</span>
-          </label>
-        </div>
-      </div>
+          {/* Theme Mode Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4">وضع المظهر</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { key: 'light', label: 'فاتح', icon: Sun },
+                { key: 'dark', label: 'داكن', icon: Moon },
+                { key: 'auto', label: 'تلقائي', icon: Monitor }
+              ].map(({ key, label, icon: Icon }) => (
+                <button
+                  key={key}
+                  onClick={() => setFormData(prev => ({ ...prev, appearance: { ...prev.appearance, mode: key } }))}
+                  className={`p-4 rounded-2xl border border-black/10 transition-all ${formData.appearance.mode === key ? 'ring-2 ring-black' : ''}`}
+                  style={{
+                    backgroundColor: key === 'light' ? '#FFFFFF' : key === 'dark' ? '#1a1a1a' : '#F8F9FA',
+                    color: key === 'dark' ? '#FFFFFF' : '#000000'
+                  }}
+                >
+                  <Icon className="w-6 h-6 mx-auto mb-2" />
+                  <p className="text-sm font-medium">{label}</p>
+                </button>
+              ))}
+            </div>
+          </div>
 
-      {/* وضع الإضاءة */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-        <h3 className="text-md font-bold text-black mb-4">وضع الإضاءة</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button onClick={() => setFormData(prev => ({
-              ...prev,
-              appearance: {
-                ...prev.appearance,
-                mode: 'light'
-              }
-            }))} className={`bg-transparent p-4 rounded-[41px] border border-[#DADCE0] transition-all ${formData.appearance.mode === 'light' ? 'ring-2 ring-black' : ''}`}>
-            <div className="flex flex-col items-center gap-3">
-              <Sun className="w-8 h-8 text-black" />
-              <div>
-                <h4 className="text-sm font-bold text-black">الوضع الفاتح</h4>
-                <p className="text-xs text-gray-600">مناسب للعمل النهاري</p>
+          {/* Color Schemes Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4">أنظمة الألوان</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {colorSchemes.map(scheme => (
+                <button
+                  key={scheme.key}
+                  onClick={() => setFormData(prev => ({ 
+                    ...prev, 
+                    appearance: { ...prev.appearance, colorScheme: scheme.key },
+                    colors: { ...prev.colors, primary: scheme.primary, secondary: scheme.secondary }
+                  }))}
+                  className={`p-4 rounded-2xl border transition-all text-right ${
+                    formData.appearance.colorScheme === scheme.key 
+                      ? 'ring-2 ring-black border-black/20' 
+                      : 'border-black/10 hover:border-black/20'
+                  }`}
+                  style={{ backgroundColor: scheme.secondary }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-8 h-8 rounded-full"
+                      style={{ backgroundColor: scheme.primary }}
+                    ></div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: scheme.primary }}>
+                        {scheme.name}
+                      </p>
+                      <div className="flex gap-1 mt-1">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: scheme.primary }}></div>
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: scheme.secondary }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* AI Personalization Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
+              🤖 التخصيص بالذكاء الاصطناعي
+              <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">AI Personalization</span>
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3">الألوان التكيفية</h4>
+                <label className="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.aiPersonalization.adaptiveColors}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      aiPersonalization: { ...prev.aiPersonalization, adaptiveColors: e.target.checked }
+                    }))}
+                  />
+                  <span className="text-sm text-black">تكيف الألوان حسب المحتوى</span>
+                </label>
+              </div>
+
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3">المظاهر السياقية</h4>
+                <label className="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.aiPersonalization.contextualThemes}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      aiPersonalization: { ...prev.aiPersonalization, contextualThemes: e.target.checked }
+                    }))}
+                  />
+                  <span className="text-sm text-black">مظاهر حسب نوع العمل</span>
+                </label>
               </div>
             </div>
-          </button>
+          </div>
 
-          <button onClick={() => setFormData(prev => ({
-              ...prev,
-              appearance: {
-                ...prev.appearance,
-                mode: 'dark'
-              }
-            }))} className={`p-4 rounded-2xl border border-black/10 transition-all ${formData.appearance.mode === 'dark' ? 'ring-2 ring-black' : ''}`} style={{
-              backgroundColor: '#96d8d0'
-            }}>
-            <div className="flex flex-col items-center gap-3">
-              <Moon className="w-8 h-8 text-black" />
-              <div>
-                <h4 className="text-sm font-bold text-black">الوضع الداكن</h4>
-                <p className="text-xs text-gray-600">مريح للعين</p>
-              </div>
-            </div>
-          </button>
-
-          <button onClick={() => setFormData(prev => ({
-              ...prev,
-              appearance: {
-                ...prev.appearance,
-                mode: 'auto'
-              }
-            }))} className={`p-4 rounded-2xl border border-black/10 transition-all ${formData.appearance.mode === 'auto' ? 'ring-2 ring-black' : ''}`} style={{
-              backgroundColor: '#f1b5b9'
-            }}>
-            <div className="flex flex-col items-center gap-3">
-              <Monitor className="w-8 h-8 text-black" />
-              <div>
-                <h4 className="text-sm font-bold text-black">تلقائي</h4>
-                <p className="text-xs text-gray-600">حسب النظام</p>
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      {/* الثيمات المحددة مسبقاً */}
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-        <h3 className="text-md font-bold text-black mb-4">الثيمات المحددة مسبقاً</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {themePresets.map(preset => <button key={preset.id} onClick={() => applyThemePreset(preset)} className={`p-4 rounded-2xl border border-black/10 transition-all text-left ${formData.appearance.colorScheme === preset.id ? 'ring-2 ring-black' : ''}`} style={{
-              backgroundColor: '#f2ffff'
-            }}>
-              <div className="flex items-center gap-3">
-                <div className="flex gap-1">
-                  <div className="w-4 h-4 rounded-full" style={{
-                    backgroundColor: preset.colors.primary
-                  }}></div>
-                  <div className="w-4 h-4 rounded-full" style={{
-                    backgroundColor: preset.colors.secondary
-                  }}></div>
-                  <div className="w-4 h-4 rounded-full" style={{
-                    backgroundColor: preset.colors.accent
-                  }}></div>
+          {/* Accessibility Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4">إعدادات إمكانية الوصول</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
+                  <Eye className="w-5 h-5" />
+                  البصر
+                </h4>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.accessibility.highContrast}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        accessibility: { ...prev.accessibility, highContrast: e.target.checked }
+                      }))}
+                    />
+                    <span className="text-sm text-black">تباين عالي</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.accessibility.dyslexiaFriendly}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        accessibility: { ...prev.accessibility, dyslexiaFriendly: e.target.checked }
+                      }))}
+                    />
+                    <span className="text-sm text-black">خط مناسب لعسر القراءة</span>
+                  </label>
                 </div>
-                <div>
-                  <h4 className="text-sm font-bold text-black">{preset.name}</h4>
-                  <p className="text-xs text-gray-600">ثيم جاهز</p>
+              </div>
+
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
+                  <Zap className="w-5 h-5" />
+                  الحركة
+                </h4>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.accessibility.reducedMotion}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        accessibility: { ...prev.accessibility, reducedMotion: e.target.checked }
+                      }))}
+                    />
+                    <span className="text-sm text-black">تقليل الحركة</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.accessibility.focusVisible}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        accessibility: { ...prev.accessibility, focusVisible: e.target.checked }
+                      }))}
+                    />
+                    <span className="text-sm text-black">حدود التركيز المرئية</span>
+                  </label>
                 </div>
               </div>
-            </button>)}
-        </div>
-      </div>
-
-      {/* تخصيص الألوان */}
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-        <h3 className="text-md font-bold text-black mb-4">تخصيص الألوان</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div style={{
-              backgroundColor: '#a4e2f6'
-            }} className="rounded-2xl p-4 border border-black/10 bg-transparent">
-            <h4 className="text-sm font-bold text-black mb-3">الألوان الأساسية</h4>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <label className="text-xs text-gray-600 w-16">الأساسي:</label>
-                <input type="color" value={formData.colors.primary} className="w-12 h-8 rounded border-none" onChange={e => setFormData(prev => ({
-                    ...prev,
-                    colors: {
-                      ...prev.colors,
-                      primary: e.target.value
-                    }
-                  }))} />
-                <span className="text-xs font-mono text-black">{formData.colors.primary}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <label className="text-xs text-gray-600 w-16">الثانوي:</label>
-                <input type="color" value={formData.colors.secondary} className="w-12 h-8 rounded border-none" onChange={e => setFormData(prev => ({
-                    ...prev,
-                    colors: {
-                      ...prev.colors,
-                      secondary: e.target.value
-                    }
-                  }))} />
-                <span className="text-xs font-mono text-black">{formData.colors.secondary}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <label className="text-xs text-gray-600 w-16">المميز:</label>
-                <input type="color" value={formData.colors.accent} className="w-12 h-8 rounded border-none" onChange={e => setFormData(prev => ({
-                    ...prev,
-                    colors: {
-                      ...prev.colors,
-                      accent: e.target.value
-                    }
-                  }))} />
-                <span className="text-xs font-mono text-black">{formData.colors.accent}</span>
-              </div>
             </div>
           </div>
 
-          <div style={{
-              backgroundColor: '#96d8d0'
-            }} className="rounded-2xl p-4 border border-black/10 bg-transparent">
-            <h4 className="text-sm font-bold text-black mb-3">إعدادات الخط</h4>
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs text-gray-600">حجم الخط</label>
-                <input type="range" min="12" max="24" value={formData.appearance.fontSize} className="w-full" onChange={e => setFormData(prev => ({
-                    ...prev,
-                    appearance: {
-                      ...prev.appearance,
-                      fontSize: parseInt(e.target.value)
-                    }
-                  }))} />
-                <span className="text-xs text-gray-500">{formData.appearance.fontSize}px</span>
-              </div>
-              <div>
-                <label className="text-xs text-gray-600">زوايا الحدود</label>
-                <select value={formData.appearance.borderRadius} onChange={e => setFormData(prev => ({
-                    ...prev,
-                    appearance: {
-                      ...prev.appearance,
-                      borderRadius: e.target.value
-                    }
-                  }))} className="w-full p-2 border text-sm rounded-full">
-                  <option value="small">صغيرة</option>
-                  <option value="medium">متوسطة</option>
-                  <option value="large">كبيرة</option>
-                </select>
-              </div>
+          {/* Action Buttons */}
+          <div className="flex justify-between items-center">
+            <div className="text-xs font-normal text-gray-400">
+              {lastAutosave ? `آخر حفظ تلقائي: ${lastAutosave}` : 'لم يتم الحفظ بعد'}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setFormData({
+                    appearance: { mode: 'auto', colorScheme: 'soabra-default', contrast: 'normal', fontSize: 16, borderRadius: 'medium' },
+                    colors: { primary: '#000000', secondary: '#F2FFFF', accent: '#96d8d0', background: '#FFFFFF', text: '#000000' },
+                    accessibility: { highContrast: false, reducedMotion: false, focusVisible: true, dyslexiaFriendly: false },
+                    aiPersonalization: { enabled: false, adaptiveColors: false, contextualThemes: false, moodBasedSwitching: false },
+                    lastModified: new Date().toISOString()
+                  });
+                  clearDraft();
+                }}
+                style={{ backgroundColor: '#F2FFFF', color: '#000000' }}
+                className="px-6 py-2 rounded-full text-sm font-medium border border-black/20 hover:bg-gray-50 transition-colors"
+              >
+                إعادة تعيين
+              </button>
+              <button
+                onClick={handleSave}
+                style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
+                className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+              >
+                حفظ التغييرات
+              </button>
             </div>
           </div>
         </div>
       </div>
-
-      {/* إعدادات إمكانية الوصول */}
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-        <h3 className="text-md font-bold text-black mb-4">إمكانية الوصول</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div style={{
-              backgroundColor: '#fbe2aa'
-            }} className="rounded-2xl p-4 border border-black/10 bg-transparent">
-            <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
-              <Eye className="w-4 h-4" />
-              البصر
-            </h4>
-            <div className="space-y-2">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={formData.accessibility.highContrast} onChange={e => setFormData(prev => ({
-                    ...prev,
-                    accessibility: {
-                      ...prev.accessibility,
-                      highContrast: e.target.checked
-                    }
-                  }))} />
-                <span className="text-sm">تباين عالي</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={formData.accessibility.dyslexiaFriendly} onChange={e => setFormData(prev => ({
-                    ...prev,
-                    accessibility: {
-                      ...prev.accessibility,
-                      dyslexiaFriendly: e.target.checked
-                    }
-                  }))} />
-                <span className="text-sm">صديق لعسر القراءة</span>
-              </label>
-            </div>
-          </div>
-
-          <div style={{
-              backgroundColor: '#f1b5b9'
-            }} className="rounded-2xl p-4 border border-black/10 bg-transparent">
-            <h4 className="text-sm font-bold text-black mb-3">الحركة</h4>
-            <div className="space-y-2">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={formData.accessibility.reducedMotion} onChange={e => setFormData(prev => ({
-                    ...prev,
-                    accessibility: {
-                      ...prev.accessibility,
-                      reducedMotion: e.target.checked
-                    }
-                  }))} />
-                <span className="text-sm">تقليل الحركة</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={formData.accessibility.focusVisible} onChange={e => setFormData(prev => ({
-                    ...prev,
-                    accessibility: {
-                      ...prev.accessibility,
-                      focusVisible: e.target.checked
-                    }
-                  }))} />
-                <span className="text-sm">إبراز التركيز</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* معاينة الثيم */}
-      <div style={{
-          backgroundColor: '#F2FFFF'
-        }} className="rounded-3xl p-6 border border-black/10">
-        <h3 className="text-md font-bold text-black mb-4">معاينة الثيم</h3>
-        
-        <div className="rounded-2xl p-4 border border-black/10" style={{
-            backgroundColor: formData.colors.secondary,
-            color: formData.colors.text
-          }}>
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-bold">عنوان تجريبي</h4>
-            <button className="px-3 py-1 rounded-full text-xs font-medium text-white" style={{
-                backgroundColor: formData.colors.primary
-              }}>
-              زر تجريبي
-            </button>
-          </div>
-          <p className="text-sm mb-3">هذا نص تجريبي لإظهار شكل الثيم المختار</p>
-          <div className="w-full h-2 rounded" style={{
-              backgroundColor: formData.colors.accent
-            }}></div>
-        </div>
-      </div>
-
-      {/* إحصائيات التخصيص */}
-      <div className="grid grid-cols-4 gap-4">
-        <div style={{
-            backgroundColor: '#bdeed3'
-          }} className="rounded-2xl p-4 border border-black/10 text-center bg-[#f3ffff]">
-          <div className="text-2xl font-bold text-black mb-1">5</div>
-          <p className="text-xs font-normal text-gray-400">ثيمات محفوظة</p>
-        </div>
-        <div style={{
-            backgroundColor: '#f1b5b9'
-          }} className="rounded-2xl p-4 border border-black/10 text-center bg-[#f3ffff]">
-          <div className="text-2xl font-bold text-black mb-1">23</div>
-          <p className="text-xs font-normal text-gray-400">تغيير هذا الشهر</p>
-        </div>
-        <div style={{
-            backgroundColor: '#a4e2f6'
-          }} className="rounded-2xl p-4 border border-black/10 text-center bg-[#f3ffff]">
-          <div className="text-2xl font-bold text-black mb-1">87%</div>
-          <p className="text-xs font-normal text-gray-400">رضا المستخدمين</p>
-        </div>
-        <div style={{
-            backgroundColor: '#d9d2fd'
-          }} className="rounded-2xl p-4 border border-black/10 text-center bg-[#f3ffff]">
-          <div className="text-2xl font-bold text-black mb-1">12</div>
-          <p className="text-xs font-normal text-black">ثيمات ذكية</p>
-        </div>
-      </div>
-
-      {/* أزرار العمل */}
-      <div className="flex justify-between items-center">
-        <div className="text-xs font-normal text-gray-400">
-          {lastAutosave ? `آخر حفظ تلقائي: ${lastAutosave}` : 'لم يتم الحفظ بعد'}
-        </div>
-        <div className="flex gap-3">
-          <button onClick={() => {
-              setFormData({
-                appearance: {
-                  mode: 'auto',
-                  colorScheme: 'soabra-default',
-                  contrast: 'normal',
-                  fontSize: 16,
-                  borderRadius: 'medium'
-                },
-                colors: {
-                  primary: '#000000',
-                  secondary: '#F2FFFF',
-                  accent: '#96d8d0',
-                  background: '#FFFFFF',
-                  text: '#000000'
-                },
-                accessibility: {
-                  highContrast: false,
-                  reducedMotion: false,
-                  focusVisible: true,
-                  dyslexiaFriendly: false
-                },
-                aiPersonalization: {
-                  enabled: false,
-                  adaptiveColors: false,
-                  contextualThemes: false,
-                  moodBasedSwitching: false
-                },
-                lastModified: new Date().toISOString()
-              });
-              clearDraft();
-            }} style={{
-              backgroundColor: '#F2FFFF',
-              color: '#000000'
-            }} className="px-6 py-2 rounded-full text-sm font-medium border border-black/20 hover:bg-gray-50 transition-colors">
-            إعادة تعيين
-          </button>
-          <button onClick={handleSave} style={{
-              backgroundColor: '#000000',
-              color: '#FFFFFF'
-            }} className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
-            حفظ التغييرات
-          </button>
-        </div>
-        </div>
-        </div>
-      </div>
-    </div>;
+    </div>
+  );
 };

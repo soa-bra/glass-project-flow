@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrainCircuit, Zap, Target, BarChart3, Settings, Eye, Database, Cpu } from 'lucide-react';
+import { BrainCircuit, Cpu, Database, Zap, Activity, Target, TrendingUp, Settings } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
@@ -8,49 +8,54 @@ interface AISettingsPanelProps {
   isSettingsSidebarCollapsed: boolean;
 }
 
+interface Experiment {
+  id: string;
+  name: string;
+  status: 'running' | 'completed' | 'paused';
+  progress: number;
+  startDate: string;
+  estimatedCompletion: string;
+}
+
 export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
+  const [activeExperiments] = useState<Experiment[]>([
+    {
+      id: '1',
+      name: 'تحليل أنماط العملاء',
+      status: 'running',
+      progress: 67,
+      startDate: '2024-01-15',
+      estimatedCompletion: '2024-01-25'
+    },
+    {
+      id: '2',
+      name: 'تحسين توقعات المشاريع',
+      status: 'completed',
+      progress: 100,
+      startDate: '2024-01-10',
+      estimatedCompletion: '2024-01-20'
+    }
+  ]);
+
   const [formData, setFormData] = useState({
     models: {
-      primary: 'gpt-4.1-2025-04-14',
-      fallback: 'gpt-4.1-mini-2025-04-14',
-      reasoning: 'o4-mini-2025-04-16'
+      nlp: { enabled: true, confidence: 0.85 },
+      vision: { enabled: false, confidence: 0.75 },
+      analytics: { enabled: true, confidence: 0.90 }
     },
-    features: {
-      smartSuggestions: true,
-      autoCompletion: true,
-      predictiveAnalytics: true,
-      anomalyDetection: true,
-      smartNotifications: true,
-      contentGeneration: true,
-      riskAssessment: true
+    training: {
+      autoRetrain: true,
+      dataQuality: 0.95,
+      lastTrainingDate: '2024-01-15',
+      nextScheduled: '2024-02-01'
     },
     performance: {
-      maxTokens: 4000,
-      temperature: 0.7,
-      responseTimeout: 30000,
-      batchProcessing: true,
+      maxConcurrent: 10,
+      timeout: 30,
       caching: true
-    },
-    privacy: {
-      dataRetention: 30,
-      anonymization: true,
-      auditLogs: true,
-      gdprCompliant: true
     },
     lastModified: new Date().toISOString()
   });
-
-  const [usage] = useState({
-    thisMonth: { requests: 12847, tokens: 2456789, cost: 432.50 },
-    lastMonth: { requests: 11203, tokens: 2134567, cost: 387.20 },
-    average: { dailyRequests: 427, efficiency: 94.2 }
-  });
-
-  const [activeExperiments] = useState([
-    { id: '1', name: 'تحسين دقة التنبؤات المالية', status: 'running', progress: 78 },
-    { id: '2', name: 'تحليل المشاعر في تقييم العملاء', status: 'completed', progress: 100 },
-    { id: '3', name: 'أتمتة تصنيف الوثائق القانونية', status: 'pending', progress: 23 }
-  ]);
 
   const [lastAutosave, setLastAutosave] = useState<string>('');
   const userId = 'user123';
@@ -65,23 +70,26 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
     }
   });
 
-  const updateFeature = (feature: string, enabled: boolean) => {
+  const handleModelToggle = (modelType: string) => {
     setFormData(prev => ({
       ...prev,
-      features: { ...prev.features, [feature]: enabled }
+      models: {
+        ...prev.models,
+        [modelType]: {
+          ...prev.models[modelType as keyof typeof prev.models],
+          enabled: !prev.models[modelType as keyof typeof prev.models].enabled
+        }
+      }
     }));
   };
 
-  const updateModel = (modelType: string, model: string) => {
-    setFormData(prev => ({
-      ...prev,
-      models: { ...prev.models, [modelType]: model }
-    }));
+  const handleTrainNewModel = () => {
+    // This would typically make an API call to start training
+    console.log('بدء تدريب نموذج جديد من الأرشيف...');
   };
 
   const handleSave = async () => {
     try {
-      // Save AI settings to backend
       clearDraft();
       
       const event = new CustomEvent('settings.updated', {
@@ -89,273 +97,312 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
       });
       window.dispatchEvent(event);
     } catch (error) {
-      // Handle AI settings save error
+      // Error handled silently
     }
   };
 
   return (
-    <div className="h-full flex flex-col bg-transparent">
-      {/* Header */}
-      <div className="flex items-center justify-between px-0 py-[10px] my-[25px]">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
+    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+      {/* Header with Title */}
+      <div className="py-[45px] px-6">
+        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           الذكاء الاصطناعي
         </h2>
-        <div className="flex items-center gap-3">
-          <BaseActionButton
-            onClick={handleSave}
-            variant="primary"
-            size="md"
-          >
-            حفظ التغييرات
-          </BaseActionButton>
-        </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
+      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
         <div className="space-y-6">
 
-        {/* تجارب الذكاء الاصطناعي الجارية */}
-        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
-        <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
-          🧪 التجارب النشطة
-          <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">AI Lab</span>
-        </h3>
-        
-          <div className="space-y-3">
-            {activeExperiments.map(experiment => (
-              <div key={experiment.id} style={{ backgroundColor: '#f2ffff' }} className="rounded-lg p-4 border border-black/10">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-bold text-black">{experiment.name}</h4>
-                <span className={`text-xs px-2 py-1 rounded-full ${
-                  experiment.status === 'running' ? 'bg-blue-100 text-blue-800' :
-                  experiment.status === 'completed' ? 'bg-green-100 text-green-800' :
-                  'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {experiment.status === 'running' ? 'جاري' : experiment.status === 'completed' ? 'مكتمل' : 'معلق'}
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-purple-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${experiment.progress}%` }}
-                ></div>
-              </div>
-              <p className="text-xs text-gray-500 mt-1">{experiment.progress}% مكتمل</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-        {/* نماذج الذكاء الاصطناعي */}
-        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
-        <h3 className="text-md font-bold text-black mb-4">نماذج الذكاء الاصطناعي</h3>
-        
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
-            <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
-              <Cpu className="w-4 h-4" />
-              النموذج الأساسي
-            </h4>
-            <select 
-              value={formData.models.primary}
-              onChange={(e) => updateModel('primary', e.target.value)}
-              className="w-full p-2 rounded-lg border text-sm"
-            >
-              <option value="gpt-4.1-2025-04-14">GPT-4.1 (2025)</option>
-              <option value="o3-2025-04-16">O3 (2025)</option>
-              <option value="gpt-4o">GPT-4O</option>
-            </select>
-          </div>
-
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
-            <h4 className="text-sm font-bold text-black mb-3">النموذج الاحتياطي</h4>
-            <select 
-              value={formData.models.fallback}
-              onChange={(e) => updateModel('fallback', e.target.value)}
-              className="w-full p-2 rounded-lg border text-sm"
-            >
-              <option value="gpt-4.1-mini-2025-04-14">GPT-4.1 Mini</option>
-              <option value="o4-mini-2025-04-16">O4 Mini</option>
-            </select>
-          </div>
-
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
-            <h4 className="text-sm font-bold text-black mb-3">نموذج التفكير</h4>
-            <select 
-              value={formData.models.reasoning}
-              onChange={(e) => updateModel('reasoning', e.target.value)}
-              className="w-full p-2 rounded-lg border text-sm"
-            >
-              <option value="o4-mini-2025-04-16">O4 Mini (سريع)</option>
-              <option value="o3-2025-04-16">O3 (قوي)</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-        {/* الميزات الذكية */}
-        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
-        <h3 className="text-md font-bold text-black mb-4">الميزات الذكية</h3>
-        
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
-            <h4 className="text-sm font-bold text-black mb-3">التحليل والتنبؤ</h4>
-            <div className="space-y-2">
-              <label className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  checked={formData.features.predictiveAnalytics}
-                  onChange={(e) => updateFeature('predictiveAnalytics', e.target.checked)}
-                />
-                <Target className="w-4 h-4" />
-                <span className="text-sm">التحليل التنبؤي</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  checked={formData.features.anomalyDetection}
-                  onChange={(e) => updateFeature('anomalyDetection', e.target.checked)}
-                />
-                <Eye className="w-4 h-4" />
-                <span className="text-sm">كشف الشذوذ</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  checked={formData.features.riskAssessment}
-                  onChange={(e) => updateFeature('riskAssessment', e.target.checked)}
-                />
-                <BarChart3 className="w-4 h-4" />
-                <span className="text-sm">تقييم المخاطر</span>
-              </label>
-            </div>
-          </div>
-
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
-            <h4 className="text-sm font-bold text-black mb-3">الأتمتة الذكية</h4>
-            <div className="space-y-2">
-              <label className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  checked={formData.features.smartSuggestions}
-                  onChange={(e) => updateFeature('smartSuggestions', e.target.checked)}
-                />
-                <Zap className="w-4 h-4" />
-                <span className="text-sm">الاقتراحات الذكية</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  checked={formData.features.autoCompletion}
-                  onChange={(e) => updateFeature('autoCompletion', e.target.checked)}
-                />
-                <span className="text-sm">الإكمال التلقائي</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  checked={formData.features.contentGeneration}
-                  onChange={(e) => updateFeature('contentGeneration', e.target.checked)}
-                />
-                <span className="text-sm">توليد المحتوى</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-        {/* إعدادات الأداء */}
-        <div style={{ backgroundColor: '#f2ffff' }} className="p-6 rounded-3xl border border-black/10">
-        <h3 className="text-md font-bold text-black mb-4">إعدادات الأداء</h3>
-        
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
-            <h4 className="text-sm font-bold text-black mb-3">المعاملات</h4>
+          {/* Active Experiments Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
+              🧪 التجارب النشطة
+              <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">AI Lab</span>
+            </h3>
+            
             <div className="space-y-3">
-              <div>
-                <label className="text-xs text-gray-600">الحد الأقصى للرموز</label>
+              {activeExperiments.map(experiment => (
+                <div key={experiment.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-bold text-black">{experiment.name}</h4>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      experiment.status === 'running' ? 'bg-blue-100 text-blue-800' :
+                      experiment.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {experiment.status === 'running' ? 'جاري' : experiment.status === 'completed' ? 'مكتمل' : 'معلق'}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${experiment.progress}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-500 mt-2">
+                    <span>بدأ: {experiment.startDate}</span>
+                    <span>متوقع: {experiment.estimatedCompletion}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* AI Training Wizard Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
+              🚀 معالج التدريب
+              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Training Wizard</span>
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3">نوع المهمة</h4>
+                <select className="w-full p-2 rounded-lg border text-sm">
+                  <option>تصنيف الوثائق</option>
+                  <option>تحليل المشاعر</option>
+                  <option>استخراج المعلومات</option>
+                  <option>توقع الاتجاهات</option>
+                </select>
+              </div>
+
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3">مصدر البيانات</h4>
+                <select className="w-full p-2 rounded-lg border text-sm">
+                  <option>أرشيف المشاريع</option>
+                  <option>بيانات العملاء</option>
+                  <option>الوثائق القانونية</option>
+                  <option>السجلات المالية</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={handleTrainNewModel}
+                style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
+                className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+              >
+                تدريب نموذج جديد من الأرشيف
+              </button>
+            </div>
+          </div>
+
+          {/* Model Management Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4">إدارة النماذج</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-bold text-black">معالجة اللغة</h4>
+                  <label className="flex items-center gap-2">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.models.nlp.enabled}
+                      onChange={() => handleModelToggle('nlp')}
+                    />
+                    <span className="text-xs">مفعل</span>
+                  </label>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-black">{(formData.models.nlp.confidence * 100).toFixed(0)}%</div>
+                  <p className="text-xs text-gray-500">دقة النموذج</p>
+                </div>
+              </div>
+
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-bold text-black">رؤية الحاسوب</h4>
+                  <label className="flex items-center gap-2">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.models.vision.enabled}
+                      onChange={() => handleModelToggle('vision')}
+                    />
+                    <span className="text-xs">مفعل</span>
+                  </label>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-black">{(formData.models.vision.confidence * 100).toFixed(0)}%</div>
+                  <p className="text-xs text-gray-500">دقة النموذج</p>
+                </div>
+              </div>
+
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-bold text-black">التحليلات</h4>
+                  <label className="flex items-center gap-2">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.models.analytics.enabled}
+                      onChange={() => handleModelToggle('analytics')}
+                    />
+                    <span className="text-xs">مفعل</span>
+                  </label>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-black">{(formData.models.analytics.confidence * 100).toFixed(0)}%</div>
+                  <p className="text-xs text-gray-500">دقة النموذج</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Performance Settings Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4">إعدادات الأداء</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3">الاستعلامات المتزامنة</h4>
                 <input 
-                  type="number" 
-                  value={formData.performance.maxTokens}
-                  min="1000" 
-                  max="8000"
+                  type="number"
+                  value={formData.performance.maxConcurrent}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    performance: { ...prev.performance, maxConcurrent: parseInt(e.target.value) }
+                  }))}
                   className="w-full p-2 rounded-lg border text-sm"
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    performance: { ...prev.performance, maxTokens: parseInt(e.target.value) }
-                  }))}
+                  min="1"
+                  max="50"
                 />
+                <p className="text-xs text-gray-500 mt-2">الحد الأقصى للطلبات المتزامنة</p>
               </div>
-              <div>
-                <label className="text-xs text-gray-600">درجة الحرارة (0-1)</label>
+
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3">مهلة الانتظار</h4>
                 <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.1"
-                  value={formData.performance.temperature}
-                  className="w-full"
+                  type="number"
+                  value={formData.performance.timeout}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
-                    performance: { ...prev.performance, temperature: parseFloat(e.target.value) }
+                    performance: { ...prev.performance, timeout: parseInt(e.target.value) }
                   }))}
+                  className="w-full p-2 rounded-lg border text-sm"
+                  min="5"
+                  max="120"
                 />
-                <span className="text-xs text-gray-500">{formData.performance.temperature}</span>
+                <p className="text-xs text-gray-500 mt-2">المدة بالثواني قبل انتهاء الوقت</p>
               </div>
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10">
-            <h4 className="text-sm font-bold text-black mb-3">التحسينات</h4>
-            <div className="space-y-2">
-              <label className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  checked={formData.performance.batchProcessing}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    performance: { ...prev.performance, batchProcessing: e.target.checked }
-                  }))}
-                />
-                <span className="text-sm">المعالجة المجمعة</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  checked={formData.performance.caching}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    performance: { ...prev.performance, caching: e.target.checked }
-                  }))}
-                />
-                <Database className="w-4 h-4" />
-                <span className="text-sm">التخزين المؤقت</span>
-              </label>
+          {/* Training Status Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4">حالة التدريب</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
+                  <Database className="w-5 h-5" />
+                  جودة البيانات
+                </h4>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-black mb-1">
+                    {(formData.training.dataQuality * 100).toFixed(1)}%
+                  </div>
+                  <p className="text-xs text-gray-500">نظافة وجودة البيانات</p>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+                  <div 
+                    className="bg-green-600 h-2 rounded-full"
+                    style={{ width: `${formData.training.dataQuality * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3">الجدول الزمني</h4>
+                <div className="space-y-2">
+                  <div className="text-xs text-gray-600">
+                    <span>آخر تدريب: </span>
+                    <span className="font-medium">{formData.training.lastTrainingDate}</span>
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    <span>التدريب القادم: </span>
+                    <span className="font-medium">{formData.training.nextScheduled}</span>
+                  </div>
+                  <label className="flex items-center gap-2 mt-3">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.training.autoRetrain}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        training: { ...prev.training, autoRetrain: e.target.checked }
+                      }))}
+                    />
+                    <span className="text-sm text-black">إعادة التدريب التلقائي</span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-        {/* إحصائيات الاستخدام */}
-        <div className="grid grid-cols-4 gap-4">
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
-            <div className="text-2xl font-bold text-black mb-1">{usage.thisMonth.requests.toLocaleString()}</div>
-            <p className="text-xs font-normal text-gray-400">طلبات هذا الشهر</p>
+          {/* Statistics */}
+          <div className="grid grid-cols-4 gap-4">
+            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+              <div className="text-2xl font-bold text-black mb-1">3</div>
+              <p className="text-xs font-normal text-gray-400">نماذج نشطة</p>
+            </div>
+            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+              <div className="text-2xl font-bold text-black mb-1">87%</div>
+              <p className="text-xs font-normal text-gray-400">متوسط الدقة</p>
+            </div>
+            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+              <div className="text-2xl font-bold text-black mb-1">2.3s</div>
+              <p className="text-xs font-normal text-gray-400">متوسط الاستجابة</p>
+            </div>
+            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+              <div className="text-2xl font-bold text-black mb-1">15K</div>
+              <p className="text-xs font-normal text-gray-400">طلبات اليوم</p>
+            </div>
           </div>
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
-            <div className="text-2xl font-bold text-black mb-1">{(usage.thisMonth.tokens / 1000000).toFixed(1)}M</div>
-            <p className="text-xs font-normal text-gray-400">رموز معالجة</p>
+
+          {/* Action Buttons */}
+          <div className="flex justify-between items-center">
+            <div className="text-xs font-normal text-gray-400">
+              {lastAutosave ? `آخر حفظ تلقائي: ${lastAutosave}` : 'لم يتم الحفظ بعد'}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setFormData({
+                    models: {
+                      nlp: { enabled: false, confidence: 0.75 },
+                      vision: { enabled: false, confidence: 0.75 },
+                      analytics: { enabled: false, confidence: 0.75 }
+                    },
+                    training: {
+                      autoRetrain: false,
+                      dataQuality: 0.80,
+                      lastTrainingDate: '',
+                      nextScheduled: ''
+                    },
+                    performance: {
+                      maxConcurrent: 5,
+                      timeout: 30,
+                      caching: false
+                    },
+                    lastModified: new Date().toISOString()
+                  });
+                  clearDraft();
+                }}
+                style={{ backgroundColor: '#F2FFFF', color: '#000000' }}
+                className="px-6 py-2 rounded-full text-sm font-medium border border-black/20 hover:bg-gray-50 transition-colors"
+              >
+                إعادة تعيين
+              </button>
+              <button
+                onClick={handleSave}
+                style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
+                className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+              >
+                حفظ التغييرات
+              </button>
+            </div>
           </div>
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
-            <div className="text-2xl font-bold text-black mb-1">{usage.average.efficiency}%</div>
-            <p className="text-xs font-normal text-gray-400">كفاءة النماذج</p>
-          </div>
-          <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
-            <div className="text-2xl font-bold text-black mb-1">${usage.thisMonth.cost.toFixed(0)}</div>
-            <p className="text-xs font-normal text-gray-400">تكلفة الشهر</p>
-          </div>
-        </div>
         </div>
       </div>
     </div>

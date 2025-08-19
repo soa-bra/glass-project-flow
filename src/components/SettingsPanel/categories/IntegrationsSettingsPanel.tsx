@@ -1,68 +1,74 @@
 import React, { useState } from 'react';
-import { Link2, Plus, Check, X, Settings, Zap, Key, MessageSquare, FileText, BarChart3 } from 'lucide-react';
+import { Link2, Key, Shield, CheckCircle, AlertCircle, Settings, Zap, Download, Upload } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
-
-interface Integration {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ComponentType<any>;
-  status: 'connected' | 'disconnected' | 'error';
-  type: 'communication' | 'storage' | 'analytics' | 'productivity';
-  apiKey?: string;
-  config?: Record<string, any>;
-  lastSync?: string;
-}
 
 interface IntegrationsSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
 }
 
+interface Integration {
+  id: string;
+  name: string;
+  category: string;
+  status: 'connected' | 'disconnected' | 'pending';
+  description: string;
+  apiEndpoint?: string;
+  webhookUrl?: string;
+  lastSync?: string;
+}
+
 export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps> = () => {
   const [integrations, setIntegrations] = useState<Integration[]>([
     {
-      id: '1',
+      id: 'slack',
       name: 'Slack',
-      description: 'تكامل مع فرق العمل والإشعارات',
-      icon: MessageSquare,
+      category: 'اتصالات',
       status: 'connected',
-      type: 'communication',
-      apiKey: 'xoxb-****-****-****',
+      description: 'إشعارات المشاريع والمهام',
+      webhookUrl: 'https://hooks.slack.com/services/...',
       lastSync: '2024-01-20 10:30'
     },
     {
-      id: '2',
+      id: 'google-drive',
       name: 'Google Drive',
-      description: 'تخزين ومشاركة الملفات',
-      icon: FileText,
+      category: 'تخزين',
       status: 'connected',
-      type: 'storage',
+      description: 'نسخ احتياطي للملفات',
+      apiEndpoint: 'https://www.googleapis.com/drive/v3',
       lastSync: '2024-01-20 09:15'
     },
     {
-      id: '3',
-      name: 'Power BI',
-      description: 'تحليل البيانات والتقارير',
-      icon: BarChart3,
+      id: 'github',
+      name: 'GitHub',
+      category: 'تطوير',
       status: 'disconnected',
-      type: 'analytics'
-    },
-    {
-      id: '4',
-      name: 'Zapier',
-      description: 'أتمتة العمليات والمهام',
-      icon: Zap,
-      status: 'error',
-      type: 'productivity'
+      description: 'إدارة المشاريع التقنية',
+      apiEndpoint: 'https://api.github.com'
     }
   ]);
 
-  const [showSetupWizard, setShowSetupWizard] = useState<string | null>(null);
-  const [setupStep, setSetupStep] = useState(1);
-  const [setupData, setSetupData] = useState<Record<string, any>>({});
-  const [aiAssistantActive, setAiAssistantActive] = useState(false);
+  const [formData, setFormData] = useState({
+    apiSettings: {
+      rateLimiting: true,
+      authentication: 'oauth2',
+      timeout: 30,
+      retryAttempts: 3
+    },
+    webhooks: {
+      enabled: true,
+      secretKey: 'wh_sec_' + Math.random().toString(36).substr(2, 9),
+      allowedIPs: ['192.168.1.0/24']
+    },
+    aiAutomation: {
+      autoMapping: true,
+      smartRetry: true,
+      anomalyDetection: true,
+      predictiveSync: false
+    },
+    lastModified: new Date().toISOString()
+  });
 
   const [lastAutosave, setLastAutosave] = useState<string>('');
   const userId = 'user123';
@@ -71,78 +77,26 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
     interval: 20000,
     userId,
     section: 'integrations',
-    data: { integrations },
+    data: formData,
     onSave: () => {
       setLastAutosave(new Date().toLocaleTimeString('ar-SA'));
     }
   });
 
-  const startAISetupAssistant = (integrationId: string) => {
-    setAiAssistantActive(true);
-    setShowSetupWizard(integrationId);
-    setSetupStep(1);
-    
-    // هنا سيكون استدعاء مساعد الإعداد التلقائي
-    setTimeout(() => {
-      const integration = integrations.find(i => i.id === integrationId);
-      if (integration) {
-        setSetupData({
-          name: integration.name,
-          type: integration.type,
-          suggestedConfig: {
-            apiKey: 'auto-generated-key-suggestion',
-            webhook: `https://api.soabra.com/webhooks/${integration.name.toLowerCase()}`,
-            scope: 'read,write,admin'
-          }
-        });
-      }
-      setAiAssistantActive(false);
-    }, 2000);
-  };
-
-  const connectIntegration = (integrationId: string) => {
+  const handleIntegrationToggle = (integrationId: string) => {
     setIntegrations(prev => prev.map(integration => 
       integration.id === integrationId 
-        ? { ...integration, status: 'connected' as const, lastSync: new Date().toLocaleString('ar-SA') }
+        ? { ...integration, status: integration.status === 'connected' ? 'disconnected' : 'connected' }
         : integration
     ));
-    setShowSetupWizard(null);
-    setSetupStep(1);
-  };
-
-  const disconnectIntegration = (integrationId: string) => {
-    setIntegrations(prev => prev.map(integration => 
-      integration.id === integrationId 
-        ? { ...integration, status: 'disconnected' as const, apiKey: undefined, lastSync: undefined }
-        : integration
-    ));
-  };
-
-  const getStatusColor = (status: Integration['status']) => {
-    switch (status) {
-      case 'connected': return 'bg-green-500';
-      case 'disconnected': return 'bg-gray-500';
-      case 'error': return 'bg-red-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const getStatusText = (status: Integration['status']) => {
-    switch (status) {
-      case 'connected': return 'متصل';
-      case 'disconnected': return 'منقطع';
-      case 'error': return 'خطأ';
-      default: return 'غير معروف';
-    }
   };
 
   const handleSave = async () => {
     try {
-      // Saving integrations settings
       clearDraft();
       
       const event = new CustomEvent('settings.updated', {
-        detail: { section: 'integrations', data: { integrations } }
+        detail: { section: 'integrations', data: formData }
       });
       window.dispatchEvent(event);
     } catch (error) {
@@ -150,303 +104,312 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
     }
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'connected': return <CheckCircle className="w-5 h-5 text-green-600" />;
+      case 'pending': return <AlertCircle className="w-5 h-5 text-yellow-600" />;
+      default: return <AlertCircle className="w-5 h-5 text-red-600" />;
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'connected': return 'متصل';
+      case 'pending': return 'في الانتظار';
+      default: return 'غير متصل';
+    }
+  };
+
   return (
-    <div className="h-full flex flex-col bg-transparent">
-      {/* Header */}
-      <div className="flex items-center justify-between px-0 py-[10px] my-[25px]">
-        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[10px]">
+    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+      {/* Header with Title */}
+      <div className="py-[45px] px-6">
+        <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
           التكاملات والربط
         </h2>
-        <div className="flex items-center gap-3">
-          <BaseActionButton
-            onClick={handleSave}
-            variant="primary"
-            size="md"
-          >
-            حفظ التغييرات
-          </BaseActionButton>
-        </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-0 my-[25px]">
+      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
         <div className="space-y-6">
-      {/* Header */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-        <div className="flex items-center gap-4 mb-3">
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
-            <Link2 className="w-6 h-6 text-black" />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-lg font-semibold text-black">التكاملات الخارجية</h2>
-            <p className="text-sm font-normal text-black">ربط النظام مع الخدمات الخارجية والتطبيقات الثالثة</p>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">●</div>
-            <p className="text-xs font-normal text-gray-400">نشط</p>
-          </div>
-        </div>
-      </div>
 
-      {/* مساعد الإعداد التلقائي بالذكاء الاصطناعي */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-        <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
-          🤖 مساعد الإعداد التلقائي
-          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">AI Setup Assistant</span>
-        </h3>
-        <p className="text-sm text-black mb-4">
-          يملأ الحقول والمفاتيح تلقائياً بناءً على وصف بسيط للتكامل المطلوب
-        </p>
-        <div className="flex items-center gap-3">
-          <div className={`w-3 h-3 rounded-full ${aiAssistantActive ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
-          <span className="text-sm text-black">
-            {aiAssistantActive ? 'يعمل الآن...' : 'جاهز للاستخدام'}
-          </span>
-        </div>
-      </div>
-
-      {/* التكاملات المتاحة */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-md font-bold text-black">التكاملات المتاحة</h3>
-          <button className="px-4 py-2 bg-black text-white rounded-full text-sm font-medium flex items-center gap-2">
-            <Plus size={14} />
-            إضافة تكامل جديد
-          </button>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {integrations.map(integration => {
-            const IconComponent = integration.icon;
-            return (
-              <div key={integration.id} className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                      <IconComponent className="w-5 h-5 text-black" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-black">{integration.name}</h4>
-                      <p className="text-xs text-gray-600">{integration.description}</p>
-                    </div>
-                  </div>
-                  <div className={`w-3 h-3 rounded-full ${getStatusColor(integration.status)}`}></div>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-600">الحالة:</span>
-                    <span className="font-medium text-black">{getStatusText(integration.status)}</span>
-                  </div>
-                  
-                  {integration.lastSync && (
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-600">آخر مزامنة:</span>
-                      <span className="font-medium text-black">{integration.lastSync}</span>
-                    </div>
-                  )}
-                  
-                  {integration.apiKey && (
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-600">API Key:</span>
-                      <code className="text-xs bg-white/50 p-1 rounded">{integration.apiKey}</code>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="flex gap-2 mt-4">
-                  {integration.status === 'connected' ? (
-                    <>
-                      <button
-                        onClick={() => disconnectIntegration(integration.id)}
-                        className="flex-1 px-3 py-2 bg-red-500 text-white rounded-full text-xs font-medium"
-                      >
-                        قطع الاتصال
-                      </button>
-                      <button className="px-3 py-2 bg-gray-200 text-black rounded-full text-xs font-medium">
-                        <Settings size={12} />
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => startAISetupAssistant(integration.id)}
-                        className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-full text-xs font-medium"
-                      >
-                        🤖 إعداد ذكي
-                      </button>
-                      <button
-                        onClick={() => setShowSetupWizard(integration.id)}
-                        className="flex-1 px-3 py-2 bg-green-500 text-white rounded-full text-xs font-medium"
-                      >
-                        إعداد يدوي
-                      </button>
-                    </>
-                  )}
-                </div>
+          {/* Header Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <div className="flex items-center gap-4 mb-3">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
+                <Link2 className="w-6 h-6 text-black" />
               </div>
-            );
-          })}
-        </div>
-      </div>
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold text-black">التكاملات الخارجية</h2>
+                <p className="text-sm font-normal text-black">ربط النظام مع الخدمات الخارجية والتطبيقات الثالثة</p>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">●</div>
+                <p className="text-xs font-normal text-gray-400">نشط</p>
+              </div>
+            </div>
+          </div>
 
-      {/* معالج الإعداد */}
-      {showSetupWizard && (
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-          <h3 className="text-md font-bold text-black mb-4">
-            معالج إعداد {integrations.find(i => i.id === showSetupWizard)?.name}
-          </h3>
-          
-          <div className="mb-4">
-            <div className="flex items-center gap-2">
-              {[1, 2, 3].map(step => (
-                <div key={step} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    step <= setupStep ? 'bg-black text-white' : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    {step < setupStep ? <Check size={16} /> : step}
+          {/* AI Setup Assistant Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
+              🤖 مساعد الإعداد التلقائي
+              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">AI Setup Assistant</span>
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3">الربط الذكي</h4>
+                <label className="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.aiAutomation.autoMapping}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      aiAutomation: { ...prev.aiAutomation, autoMapping: e.target.checked }
+                    }))}
+                  />
+                  <span className="text-sm text-black">تعيين الحقول تلقائيًا</span>
+                </label>
+              </div>
+
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3">كشف الشذوذ</h4>
+                <label className="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.aiAutomation.anomalyDetection}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      aiAutomation: { ...prev.aiAutomation, anomalyDetection: e.target.checked }
+                    }))}
+                  />
+                  <span className="text-sm text-black">مراقبة الأنشطة المشبوهة</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Available Integrations Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4">التكاملات المتاحة</h3>
+            
+            <div className="space-y-4">
+              {integrations.map(integration => (
+                <div key={integration.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {getStatusIcon(integration.status)}
+                      <div>
+                        <h4 className="text-sm font-bold text-black">{integration.name}</h4>
+                        <p className="text-xs text-gray-600">{integration.description}</p>
+                        <span className="text-xs text-gray-500">{integration.category}</span>
+                        {integration.lastSync && (
+                          <p className="text-xs text-gray-400">آخر مزامنة: {integration.lastSync}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        integration.status === 'connected' ? 'bg-green-100 text-green-800' :
+                        integration.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {getStatusBadge(integration.status)}
+                      </span>
+                      <button
+                        onClick={() => handleIntegrationToggle(integration.id)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium ${
+                          integration.status === 'connected'
+                            ? 'bg-red-500 text-white hover:bg-red-600'
+                            : 'bg-green-500 text-white hover:bg-green-600'
+                        }`}
+                      >
+                        {integration.status === 'connected' ? 'قطع الاتصال' : 'ربط'}
+                      </button>
+                    </div>
                   </div>
-                  {step < 3 && <div className="w-8 h-1 bg-gray-200 mx-2"></div>}
                 </div>
               ))}
             </div>
           </div>
 
-          {setupStep === 1 && (
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold text-black">الخطوة 1: معلومات الاتصال</h4>
-              <div className="space-y-3">
-                <input 
-                  type="text" 
-                  placeholder="API Key"
-                  value={setupData.suggestedConfig?.apiKey || ''}
-                  className="w-full p-3 rounded-lg border text-sm"
-                  onChange={(e) => setSetupData(prev => ({
-                    ...prev,
-                    suggestedConfig: { ...prev.suggestedConfig, apiKey: e.target.value }
-                  }))}
-                />
-                <input 
-                  type="url" 
-                  placeholder="Webhook URL"
-                  value={setupData.suggestedConfig?.webhook || ''}
-                  className="w-full p-3 rounded-lg border text-sm"
-                  onChange={(e) => setSetupData(prev => ({
-                    ...prev,
-                    suggestedConfig: { ...prev.suggestedConfig, webhook: e.target.value }
-                  }))}
-                />
-              </div>
-            </div>
-          )}
-
-          {setupStep === 2 && (
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold text-black">الخطوة 2: الصلاحيات</h4>
-              <div className="space-y-2">
-                {['read', 'write', 'admin'].map(scope => (
-                  <label key={scope} className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked={scope !== 'admin'} />
-                    <span className="text-sm text-black">{scope}</span>
+          {/* API Settings Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4">إعدادات API</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
+                  <Key className="w-5 h-5" />
+                  المصادقة والأمان
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs text-gray-600">نوع المصادقة</label>
+                    <select 
+                      value={formData.apiSettings.authentication}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        apiSettings: { ...prev.apiSettings, authentication: e.target.value }
+                      }))}
+                      className="w-full p-2 rounded-lg border text-sm"
+                    >
+                      <option value="oauth2">OAuth 2.0</option>
+                      <option value="jwt">JWT Token</option>
+                      <option value="api-key">API Key</option>
+                    </select>
+                  </div>
+                  <label className="flex items-center gap-2">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.apiSettings.rateLimiting}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        apiSettings: { ...prev.apiSettings, rateLimiting: e.target.checked }
+                      }))}
+                    />
+                    <span className="text-sm text-black">تفعيل حدود المعدل</span>
                   </label>
-                ))}
+                </div>
+              </div>
+
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
+                  <Settings className="w-5 h-5" />
+                  إعدادات الاتصال
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs text-gray-600">مهلة الانتظار (ثانية)</label>
+                    <input 
+                      type="number"
+                      value={formData.apiSettings.timeout}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        apiSettings: { ...prev.apiSettings, timeout: parseInt(e.target.value) }
+                      }))}
+                      className="w-full p-2 rounded-lg border text-sm"
+                      min="5"
+                      max="120"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-600">محاولات إعادة الاتصال</label>
+                    <input 
+                      type="number"
+                      value={formData.apiSettings.retryAttempts}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        apiSettings: { ...prev.apiSettings, retryAttempts: parseInt(e.target.value) }
+                      }))}
+                      className="w-full p-2 rounded-lg border text-sm"
+                      min="0"
+                      max="10"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          )}
-
-          {setupStep === 3 && (
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold text-black">الخطوة 3: اختبار الاتصال</h4>
-              <div className="p-4 bg-green-100 rounded-lg">
-                <p className="text-sm text-green-800">✅ تم اختبار الاتصال بنجاح</p>
-              </div>
-            </div>
-          )}
-
-          <div className="flex gap-3 mt-6">
-            {setupStep > 1 && (
-              <button
-                onClick={() => setSetupStep(setupStep - 1)}
-                className="px-4 py-2 bg-gray-200 text-black rounded-full text-sm font-medium"
-              >
-                السابق
-              </button>
-            )}
-            
-            {setupStep < 3 ? (
-              <button
-                onClick={() => setSetupStep(setupStep + 1)}
-                className="px-4 py-2 bg-black text-white rounded-full text-sm font-medium"
-              >
-                التالي
-              </button>
-            ) : (
-              <button
-                onClick={() => connectIntegration(showSetupWizard)}
-                className="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium"
-              >
-                إنهاء الإعداد
-              </button>
-            )}
-            
-            <button
-              onClick={() => {
-                setShowSetupWizard(null);
-                setSetupStep(1);
-              }}
-              className="px-4 py-2 bg-red-500 text-white rounded-full text-sm font-medium"
-            >
-              إلغاء
-            </button>
           </div>
-        </div>
-      )}
 
-      {/* إحصائيات التكاملات */}
-      <div className="grid grid-cols-4 gap-4">
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-          <div className="text-2xl font-bold text-black mb-1">{integrations.filter(i => i.status === 'connected').length}</div>
-          <p className="text-xs font-normal text-gray-400">تكاملات نشطة</p>
-        </div>
-        <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
-          <div className="text-2xl font-bold text-black mb-1">{integrations.filter(i => i.status === 'error').length}</div>
-          <p className="text-xs font-normal text-gray-400">تحتاج إصلاح</p>
-        </div>
-        <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
-          <div className="text-2xl font-bold text-black mb-1">24</div>
-          <p className="text-xs font-normal text-gray-400">مزامنة اليوم</p>
-        </div>
-        <div style={{ backgroundColor: '#f2ffff' }} className="rounded-2xl p-4 border border-black/10 text-center">
-          <div className="text-2xl font-bold text-black mb-1">99.8%</div>
-          <p className="text-xs font-normal text-gray-400">وقت التشغيل</p>
-        </div>
-      </div>
+          {/* Webhooks Card */}
+          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+            <h3 className="text-md font-bold text-black mb-4">Webhooks</h3>
+            
+            <div className="space-y-4">
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-bold text-black">حالة Webhooks</h4>
+                  <label className="flex items-center gap-2">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.webhooks.enabled}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        webhooks: { ...prev.webhooks, enabled: e.target.checked }
+                      }))}
+                    />
+                    <span className="text-sm text-black">مفعل</span>
+                  </label>
+                </div>
+                
+                {formData.webhooks.enabled && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs text-gray-600">المفتاح السري</label>
+                      <div className="flex gap-2">
+                        <input 
+                          type="text"
+                          value={formData.webhooks.secretKey}
+                          readOnly
+                          className="flex-1 p-2 rounded-lg border text-sm bg-gray-50"
+                        />
+                        <button
+                          onClick={() => setFormData(prev => ({
+                            ...prev,
+                            webhooks: { ...prev.webhooks, secretKey: 'wh_sec_' + Math.random().toString(36).substr(2, 9) }
+                          }))}
+                          className="px-4 py-2 bg-black text-white rounded-lg text-sm"
+                        >
+                          تجديد
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
 
-      {/* أزرار العمل */}
-      <div className="flex justify-between items-center">
-        <div className="text-xs font-normal text-gray-400">
-          {lastAutosave ? `آخر حفظ تلقائي: ${lastAutosave}` : 'لم يتم الحفظ بعد'}
-        </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => {
-              setIntegrations([]);
-              clearDraft();
-            }}
-            style={{ backgroundColor: '#F2FFFF', color: '#000000' }}
-            className="px-6 py-2 rounded-full text-sm font-medium border border-black/20 hover:bg-gray-50 transition-colors"
-          >
-            إعادة تعيين
-          </button>
-          <button
-            onClick={handleSave}
-            style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
-            className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            حفظ التغييرات
-          </button>
-        </div>
-        </div>
+          {/* Statistics */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+              <div className="text-2xl font-bold text-black mb-1">
+                {integrations.filter(i => i.status === 'connected').length}
+              </div>
+              <p className="text-xs font-normal text-gray-400">تكاملات نشطة</p>
+            </div>
+            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+              <div className="text-2xl font-bold text-black mb-1">12</div>
+              <p className="text-xs font-normal text-gray-400">تكاملات متاحة</p>
+            </div>
+            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+              <div className="text-2xl font-bold text-black mb-1">99.2%</div>
+              <p className="text-xs font-normal text-gray-400">وقت التشغيل</p>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-between items-center">
+            <div className="text-xs font-normal text-gray-400">
+              {lastAutosave ? `آخر حفظ تلقائي: ${lastAutosave}` : 'لم يتم الحفظ بعد'}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setFormData({
+                    apiSettings: { rateLimiting: false, authentication: 'oauth2', timeout: 30, retryAttempts: 3 },
+                    webhooks: { enabled: false, secretKey: '', allowedIPs: [] },
+                    aiAutomation: { autoMapping: false, smartRetry: false, anomalyDetection: false, predictiveSync: false },
+                    lastModified: new Date().toISOString()
+                  });
+                  clearDraft();
+                }}
+                style={{ backgroundColor: '#F2FFFF', color: '#000000' }}
+                className="px-6 py-2 rounded-full text-sm font-medium border border-black/20 hover:bg-gray-50 transition-colors"
+              >
+                إعادة تعيين
+              </button>
+              <button
+                onClick={handleSave}
+                style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
+                className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+              >
+                حفظ التغييرات
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
