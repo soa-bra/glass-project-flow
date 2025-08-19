@@ -220,7 +220,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
             {/* المحتوى الرئيسي */}
             <Reveal delay={0.45}>
-              <div className="flex-1 min-h-0 my-0 py-[12px]">
+              <div className="flex-1 min-h-0">
                 <ProjectCardGrid project={project} />
               </div>
             </Reveal>
