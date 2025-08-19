@@ -10,16 +10,25 @@ export const TaskListContainer = forwardRef<HTMLDivElement, TaskListContainerPro
     <div
       ref={ref}
       {...rest}
-      className={`font-arabic relative max-h-[calc(100vh-240px)] overflow-y-auto overscroll-contain scroll-smooth ${className}`}
+      className={`font-arabic relative h-[calc(100vh-200px)] ${className}`}
       style={{
         width: '100%',
         maxWidth: '100%',
         backgroundColor: '#eaecef',
-        borderRadius: '40px',
+        borderTopLeftRadius: '40px',
+        borderTopRightRadius: '40px',
+        borderBottomLeftRadius: '0px',
+        borderBottomRightRadius: '0px',
         padding: '10px',
+        paddingBottom: '0px',
         direction: 'rtl',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        position: 'fixed',
+        bottom: '0',
+        left: '0',
+        right: '0',
+        top: 'auto'
       }}
     >
       {children}

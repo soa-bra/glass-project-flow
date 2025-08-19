@@ -3,6 +3,7 @@ import { Trash2, Archive, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProjectManagementHeader } from './ProjectManagementHeader';
 import { ProjectProgressBar } from './ProjectProgressBar';
+import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { ProjectCardGrid } from './ProjectCardGrid';
 import { AddProjectModal } from '@/components/ProjectsColumn/AddProjectModal';
 import { FinancialTab, ClientTab, TeamTab, AttachmentsTab, TemplatesTab } from '@/components/ProjectPanel/ProjectTabs';
@@ -31,6 +32,10 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // استخدام useUnifiedTasks لحساب التقدم الحقيقي بناءً على المهام
+  const unifiedTasks = useUnifiedTasks(project.id);
+  const actualProgress = unifiedTasks.getProjectProgress();
 
   if (!isVisible) return null;
 
@@ -202,7 +207,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             {/* شريط تقدم المراحل */}
             <Reveal delay={0.3}>
               <div className="flex-shrink-10 my-0 px-0 mx-[15px]">
-                <ProjectProgressBar progress={project.progress || 0} stages={[{
+                <ProjectProgressBar progress={actualProgress} stages={[{
                 label: 'التحضير'
               }, {
                 label: 'التنفيذ المبدئي'

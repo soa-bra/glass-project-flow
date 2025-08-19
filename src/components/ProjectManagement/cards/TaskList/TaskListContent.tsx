@@ -63,21 +63,32 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
   };
 
   const handleTaskArchive = (taskId: string) => {
-    unifiedTasks.removeTask(taskId);
-    // Task archived successfully
+    const confirmed = window.confirm('هل أنت متأكد من أرشفة هذه المهمة؟ يمكن استعادتها لاحقاً.');
+    if (confirmed) {
+      unifiedTasks.updateTask(taskId, { status: 'archived' as any });
+      // Task archived successfully - يمكن إضافة toast notification هنا
+    }
   };
 
   const handleTaskDelete = (taskId: string) => {
-    unifiedTasks.removeTask(taskId);
-    // Task deleted successfully
+    const confirmed = window.confirm('هل أنت متأكد من حذف هذه المهمة نهائياً؟ لا يمكن التراجع عن هذا الإجراء.');
+    if (confirmed) {
+      unifiedTasks.removeTask(taskId);
+      // Task deleted permanently - يمكن إضافة toast notification هنا
+    }
   };
 
   return (
     <div 
       role="list" 
-      className="flex-1 h-full overflow-y-auto overscroll-contain"
+      className="flex-1 overflow-y-auto scroll-smooth"
+      style={{
+        height: 'calc(100vh - 300px)',
+        paddingBottom: '20px',
+        scrollBehavior: 'smooth'
+      }}
     >
-      <div className="space-y-4 pr-1 py-0 my-0 min-h-[200px]">
+      <div className="space-y-4 px-2 pb-4">
         {allTasks.length > 0 ? (
           allTasks.map((task) => (
             <TaskCard 
