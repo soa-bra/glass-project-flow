@@ -1,12 +1,14 @@
 import React from 'react';
 import { Download, Eye, FileText, BarChart3, PieChart, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface ReportsTabProps {
   project: any;
+  className?: string;
 }
 
-export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
+export const ReportsTab: React.FC<ReportsTabProps> = ({ project, className = "" }) => {
   const mockReports = [
     { 
       id: '1', 
@@ -54,7 +56,12 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={cn("h-full min-h-0 flex flex-col overflow-hidden", className)}>
+      <div className="px-3 py-2 border-b bg-background/60 backdrop-blur sticky top-0 z-10">
+        {/* فلاتر/مدخلات التقارير */}
+        <h3 className="text-lg font-semibold">التقارير</h3>
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-6">
       {/* حالة التقارير */}
       <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
@@ -220,6 +227,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

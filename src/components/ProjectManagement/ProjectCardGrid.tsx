@@ -5,13 +5,24 @@ import { TaskListCard } from './cards/TaskListCard';
 import { BudgetCard } from './cards/BudgetCard';
 import { DataVisualizationCard } from './cards/DataVisualizationCard';
 import { AISuggestedPerformanceCard } from './cards/AISuggestedPerformanceCard';
+import { cn } from '@/lib/utils';
 interface ProjectCardGridProps {
   project: Project;
+  className?: string;
 }
 export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
-  project
+  project,
+  className = ""
 }) => {
-  return <div className="grid grid-cols-3 grid-rows-4 gap-4 h-full py-0 my-[70px]">
+  return (
+    <div
+      className={cn(
+        "grid gap-3",
+        "grid-cols-[repeat(auto-fill,minmax(clamp(220px,24vw,360px),1fr))]",
+        "grid-rows-4",
+        className
+      )}
+    >
       {/* العمود الأول - قائمة المهام (بعرض مساوي للأعمدة الأخرى) */}
       <div className="col-span-1 row-span-4">
         <TaskListCard project={project} />
@@ -46,5 +57,6 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
       <div className="col-span-1 row-span-1">
         <AISuggestedPerformanceCard type="reports" title="التقارير" metric="8" description="تقارير جاهزة" trend="3 جديدة" chartType="donut" />
       </div>
-    </div>;
+    </div>
+  );
 };
