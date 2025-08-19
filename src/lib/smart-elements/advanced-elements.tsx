@@ -15,7 +15,16 @@ import {
   Shuffle,
   Target,
   Zap,
-  Network
+  Network,
+  Calendar,
+  Clock,
+  Grid3X3,
+  ArrowUp,
+  ArrowDown,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  Circle
 } from 'lucide-react';
 import { SmartElementDefinition, smartElementsRegistry } from './smart-elements-registry';
 import { CanvasNode } from '../canvas/types';
@@ -760,6 +769,505 @@ const BrainstormingElement: SmartElementDefinition = {
   }
 };
 
+// Timeline Element
+const TimelineElement: SmartElementDefinition = {
+  type: 'timeline',
+  name: 'Timeline',
+  icon: <Calendar className="w-4 h-4" />,
+  category: 'project',
+  defaultState: {
+    size: { width: 600, height: 280 },
+    style: {
+      fill: 'hsl(var(--card))',
+      stroke: 'hsl(var(--border))',
+      strokeWidth: 1
+    },
+    metadata: {
+      title: 'الخط الزمني',
+      timeUnit: 'day', // day, week, month
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // +30 days
+      events: [],
+      layers: 3, // prevent overlap
+      autoArrange: true,
+      showGrid: true
+    }
+  },
+  settingsSchema: {
+    type: 'object',
+    properties: {
+      title: {
+        type: 'string',
+        title: 'عنوان الخط الزمني',
+        default: 'الخط الزمني'
+      },
+      timeUnit: {
+        type: 'string',
+        title: 'وحدة الزمن',
+        enum: ['day', 'week', 'month'],
+        enumNames: ['يوم', 'أسبوع', 'شهر'],
+        default: 'day'
+      },
+      layers: {
+        type: 'number',
+        title: 'عدد الطبقات',
+        default: 3,
+        minimum: 1,
+        maximum: 10
+      },
+      autoArrange: {
+        type: 'boolean',
+        title: 'ترتيب تلقائي لمنع التداخل',
+        default: true
+      },
+      showGrid: {
+        type: 'boolean',
+        title: 'إظهار الشبكة',
+        default: true
+      }
+    },
+    required: ['title']
+  },
+  renderer: (node, context) => {
+    const [currentDate, setCurrentDate] = useState(new Date(node.metadata?.startDate || new Date()));
+    const [events, setEvents] = useState(node.metadata?.events || []);
+    const [timeUnit, setTimeUnit] = useState(node.metadata?.timeUnit || 'day');
+    
+    const timeUnits = {
+      day: { label: 'يوم', step: 1, format: 'dd/MM' },
+      week: { label: 'أسبوع', step: 7, format: 'dd/MM' },
+      month: { label: 'شهر', step: 30, format: 'MM/yyyy' }
+    };
+
+    const navigateTime = (direction: 'prev' | 'next') => {
+      const step = timeUnits[timeUnit].step;
+      const newDate = new Date(currentDate);
+      newDate.setDate(newDate.getDate() + (direction === 'next' ? step : -step));
+      setCurrentDate(newDate);
+      
+      broadcastTimelineUpdate(node.id, { 
+        currentDate: newDate.toISOString(), 
+        timeUnit 
+      });
+    };
+
+    const addEvent = () => {
+      const newEvent = {
+        id: Date.now(),
+        title: 'حدث جديد',
+        date: currentDate.toISOString(),
+        layer: Math.floor(Math.random() * (node.metadata?.layers || 3)),
+        color: '#3b82f6',
+        elementId: null // can link to other canvas elements
+      };
+      
+      const updatedEvents = [...events, newEvent];
+      setEvents(updatedEvents);
+      broadcastTimelineUpdate(node.id, { events: updatedEvents });
+    };
+
+    const changeTimeUnit = (unit: string) => {
+      setTimeUnit(unit);
+      broadcastTimelineUpdate(node.id, { timeUnit: unit });
+    };
+
+    // Calculate visible time range
+    const getTimeMarkers = () => {
+      const markers = [];
+      const start = new Date(currentDate);
+      const step = timeUnits[timeUnit].step;
+      
+      for (let i = -2; i <= 2; i++) {
+        const date = new Date(start);
+        date.setDate(date.getDate() + i * step);
+        markers.push({
+          date,
+          position: (i + 2) * 100, // distribute across 500px width
+          label: date.toLocaleDateString('ar-SA', { 
+            day: timeUnit === 'month' ? undefined : '2-digit', 
+            month: timeUnit === 'day' ? '2-digit' : 'short',
+            year: timeUnit === 'month' ? 'numeric' : undefined
+          })
+        });
+      }
+      return markers;
+    };
+
+    const timeMarkers = getTimeMarkers();
+
+    return (
+      <div className="w-full h-full bg-card border border-border rounded-lg overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-3 bg-muted/30 border-b">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-primary" />
+            <span className="font-medium text-sm">{node.metadata?.title}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* Time Unit Selector */}
+            <div className="flex items-center gap-1">
+              {Object.entries(timeUnits).map(([unit, config]) => (
+                <Button
+                  key={unit}
+                  size="sm"
+                  variant={timeUnit === unit ? "default" : "ghost"}
+                  className="text-xs h-6 px-2"
+                  onClick={() => changeTimeUnit(unit)}
+                >
+                  {config.label}
+                </Button>
+              ))}
+            </div>
+            
+            {/* Navigation */}
+            <div className="flex items-center gap-1">
+              <Button size="sm" variant="ghost" className="w-6 h-6 p-0" onClick={() => navigateTime('prev')}>
+                <ChevronLeft className="w-3 h-3" />
+              </Button>
+              <Button size="sm" variant="ghost" className="w-6 h-6 p-0" onClick={() => navigateTime('next')}>
+                <ChevronRight className="w-3 h-3" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Timeline Area */}
+        <div className="relative p-3 h-[calc(100%-48px)] overflow-hidden">
+          {/* Time Axis */}
+          <div className="relative h-8 mb-4 border-b border-border">
+            {timeMarkers.map((marker, index) => (
+              <div
+                key={index}
+                className="absolute flex flex-col items-center"
+                style={{ left: `${marker.position}px`, transform: 'translateX(-50%)' }}
+              >
+                <div className="w-px h-4 bg-border mb-1" />
+                <div className="text-xs text-muted-foreground whitespace-nowrap">
+                  {marker.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Events Layers */}
+          <div className="relative" style={{ height: `${(node.metadata?.layers || 3) * 40}px` }}>
+            {/* Grid Lines */}
+            {node.metadata?.showGrid && (
+              <div className="absolute inset-0">
+                {Array.from({ length: node.metadata?.layers || 3 }).map((_, layerIndex) => (
+                  <div
+                    key={layerIndex}
+                    className="absolute w-full border-t border-dashed border-border/50"
+                    style={{ top: `${layerIndex * 40 + 20}px` }}
+                  />
+                ))}
+              </div>
+            )}
+            
+            {/* Events */}
+            {events.map((event: any) => {
+              const eventDate = new Date(event.date);
+              const daysDiff = Math.floor((eventDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+              const position = 200 + (daysDiff * (100 / timeUnits[timeUnit].step));
+              
+              if (position < 0 || position > 500) return null;
+              
+              return (
+                <div
+                  key={event.id}
+                  className="absolute flex items-center cursor-pointer group"
+                  style={{ 
+                    left: `${position}px`, 
+                    top: `${event.layer * 40 + 10}px`,
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  <div
+                    className="w-3 h-3 rounded-full border-2 border-white shadow-sm group-hover:scale-110 transition-transform"
+                    style={{ backgroundColor: event.color }}
+                  />
+                  <div className="ms-2 text-xs bg-white px-2 py-1 rounded shadow-sm border group-hover:shadow-md transition-shadow whitespace-nowrap">
+                    {event.title}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Add Event Button */}
+          <div className="absolute bottom-2 right-2">
+            <Button size="sm" onClick={addEvent} className="w-8 h-8 p-0">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+          
+          {/* Empty State */}
+          {events.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs">
+              <div className="text-center">
+                <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p>لا توجد أحداث على الخط الزمني</p>
+                <p>انقر + لإضافة حدث</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+};
+
+// Decisions/Objectives Matrix Element
+const DecisionsMatrixElement: SmartElementDefinition = {
+  type: 'decisions_matrix',
+  name: 'Decisions Matrix',
+  icon: <Grid3X3 className="w-4 h-4" />,
+  category: 'analytics',
+  defaultState: {
+    size: { width: 500, height: 400 },
+    style: {
+      fill: 'hsl(var(--card))',
+      stroke: 'hsl(var(--border))',
+      strokeWidth: 1
+    },
+    metadata: {
+      title: 'مصفوفة القرارات',
+      type: 'decisions', // decisions, objectives
+      criteria: [
+        { id: 1, name: 'التكلفة', weight: 30, color: '#ef4444' },
+        { id: 2, name: 'الجودة', weight: 40, color: '#3b82f6' },
+        { id: 3, name: 'الوقت', weight: 30, color: '#f59e0b' }
+      ],
+      options: [
+        { id: 1, name: 'خيار أ', scores: { 1: 7, 2: 8, 3: 6 }, total: 0 },
+        { id: 2, name: 'خيار ب', scores: { 1: 9, 2: 6, 3: 8 }, total: 0 }
+      ],
+      autoSort: true,
+      showWeights: true,
+      colorCoding: true
+    }
+  },
+  settingsSchema: {
+    type: 'object',
+    properties: {
+      title: {
+        type: 'string',
+        title: 'عنوان المصفوفة',
+        default: 'مصفوفة القرارات'
+      },
+      type: {
+        type: 'string',
+        title: 'نوع المصفوفة',
+        enum: ['decisions', 'objectives'],
+        enumNames: ['قرارات', 'أهداف'],
+        default: 'decisions'
+      },
+      autoSort: {
+        type: 'boolean',
+        title: 'ترتيب تلقائي حسب النتيجة',
+        default: true
+      },
+      showWeights: {
+        type: 'boolean',
+        title: 'إظهار الأوزان',
+        default: true
+      },
+      colorCoding: {
+        type: 'boolean',
+        title: 'التلوين حسب النتيجة',
+        default: true
+      },
+      maxOptions: {
+        type: 'number',
+        title: 'الحد الأقصى للخيارات',
+        default: 10,
+        minimum: 2,
+        maximum: 20
+      }
+    },
+    required: ['title']
+  },
+  renderer: (node, context) => {
+    const [criteria, setCriteria] = useState(node.metadata?.criteria || []);
+    const [options, setOptions] = useState(node.metadata?.options || []);
+    const [selectedCell, setSelectedCell] = useState<{optionId: number, criteriaId: number} | null>(null);
+
+    // Calculate weighted scores
+    const calculateTotals = () => {
+      const totalWeight = criteria.reduce((sum, criterion) => sum + criterion.weight, 0);
+      
+      return options.map(option => {
+        const weightedScore = criteria.reduce((sum, criterion) => {
+          const score = option.scores[criterion.id] || 0;
+          const normalizedWeight = criterion.weight / totalWeight;
+          return sum + (score * normalizedWeight);
+        }, 0);
+        
+        return {
+          ...option,
+          total: Math.round(weightedScore * 10) / 10
+        };
+      }).sort((a, b) => node.metadata?.autoSort ? b.total - a.total : 0);
+    };
+
+    const sortedOptions = calculateTotals();
+
+    const updateScore = (optionId: number, criteriaId: number, newScore: number) => {
+      const updatedOptions = options.map(option => 
+        option.id === optionId 
+          ? { ...option, scores: { ...option.scores, [criteriaId]: Math.max(0, Math.min(10, newScore)) }}
+          : option
+      );
+      
+      setOptions(updatedOptions);
+      broadcastDecisionsMatrixUpdate(node.id, { options: updatedOptions });
+    };
+
+    const updateWeight = (criteriaId: number, newWeight: number) => {
+      const updatedCriteria = criteria.map(criterion =>
+        criterion.id === criteriaId 
+          ? { ...criterion, weight: Math.max(0, Math.min(100, newWeight)) }
+          : criterion
+      );
+      
+      setCriteria(updatedCriteria);
+      broadcastDecisionsMatrixUpdate(node.id, { criteria: updatedCriteria });
+    };
+
+    const addOption = () => {
+      const newOption = {
+        id: Date.now(),
+        name: `خيار ${options.length + 1}`,
+        scores: Object.fromEntries(criteria.map(c => [c.id, 5])),
+        total: 0
+      };
+      
+      const updatedOptions = [...options, newOption];
+      setOptions(updatedOptions);
+      broadcastDecisionsMatrixUpdate(node.id, { options: updatedOptions });
+    };
+
+    const getScoreColor = (score: number) => {
+      if (!node.metadata?.colorCoding) return 'hsl(var(--muted))';
+      
+      if (score >= 8) return '#10b981'; // Green
+      if (score >= 6) return '#f59e0b'; // Yellow  
+      if (score >= 4) return '#f97316'; // Orange
+      return '#ef4444'; // Red
+    };
+
+    return (
+      <div className="w-full h-full bg-card border border-border rounded-lg overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-3 bg-muted/30 border-b">
+          <div className="flex items-center gap-2">
+            <Grid3X3 className="w-4 h-4 text-primary" />
+            <span className="font-medium text-sm">{node.metadata?.title}</span>
+            {node.metadata?.autoSort && (
+              <Badge variant="secondary" className="text-xs">
+                ترتيب تلقائي
+              </Badge>
+            )}
+          </div>
+          <Button size="sm" variant="outline" className="text-xs" onClick={addOption}>
+            <Plus className="w-3 h-3 me-1" />
+            خيار
+          </Button>
+        </div>
+
+        {/* Matrix Content */}
+        <div className="p-2 h-[calc(100%-48px)] overflow-auto">
+          <div className="min-w-max">
+            {/* Criteria Headers */}
+            <div className="flex mb-2">
+              <div className="w-24 text-xs font-medium p-2">الخيارات</div>
+              {criteria.map(criterion => (
+                <div key={criterion.id} className="w-20 text-center">
+                  <div 
+                    className="text-xs font-medium p-1 rounded"
+                    style={{ backgroundColor: criterion.color + '20', borderColor: criterion.color }}
+                  >
+                    {criterion.name}
+                  </div>
+                  {node.metadata?.showWeights && (
+                    <input
+                      type="number"
+                      value={criterion.weight}
+                      onChange={(e) => updateWeight(criterion.id, parseInt(e.target.value) || 0)}
+                      className="w-full text-xs text-center mt-1 p-1 border rounded"
+                      min="0"
+                      max="100"
+                    />
+                  )}
+                </div>
+              ))}
+              <div className="w-16 text-xs font-medium p-2 text-center">النتيجة</div>
+            </div>
+
+            {/* Options Rows */}
+            {sortedOptions.map((option, index) => (
+              <div key={option.id} className="flex items-center mb-1">
+                {/* Option Name */}
+                <div className="w-24 text-xs p-2 font-medium flex items-center gap-1">
+                  {node.metadata?.autoSort && (
+                    <div className="flex flex-col text-xs text-muted-foreground">
+                      <span className="text-xs">#{index + 1}</span>
+                    </div>
+                  )}
+                  <span>{option.name}</span>
+                </div>
+                
+                {/* Score Cells */}
+                {criteria.map(criterion => (
+                  <div
+                    key={criterion.id}
+                    className="w-20 p-1"
+                  >
+                    <input
+                      type="number"
+                      value={option.scores[criterion.id] || 0}
+                      onChange={(e) => updateScore(option.id, criterion.id, parseInt(e.target.value) || 0)}
+                      className="w-full text-xs text-center p-1 rounded border"
+                      style={{ 
+                        backgroundColor: getScoreColor(option.scores[criterion.id] || 0) + '20',
+                        borderColor: getScoreColor(option.scores[criterion.id] || 0)
+                      }}
+                      min="0"
+                      max="10"
+                    />
+                  </div>
+                ))}
+                
+                {/* Total Score */}
+                <div className="w-16 text-center">
+                  <div 
+                    className="text-xs font-bold p-2 rounded"
+                    style={{ 
+                      backgroundColor: getScoreColor(option.total) + '30',
+                      color: getScoreColor(option.total)
+                    }}
+                  >
+                    {option.total}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Empty State */}
+            {options.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground text-xs">
+                <Grid3X3 className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p>لا توجد خيارات للمقارنة</p>
+                <p>انقر + خيار لإضافة خيار جديد</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+};
+
 // Realtime broadcast functions
 const broadcastThinkingBoardUpdate = async (boardId: string, updates: any) => {
   const channel = supabase.channel(`thinking_board:${boardId}`);
@@ -797,6 +1305,24 @@ const broadcastBrainstormingUpdate = async (sessionId: string, updates: any) => 
   });
 };
 
+const broadcastTimelineUpdate = async (timelineId: string, updates: any) => {
+  const channel = supabase.channel(`timeline:${timelineId}`);
+  await channel.send({
+    type: 'broadcast',
+    event: 'timeline_update',
+    payload: { timelineId, ...updates }
+  });
+};
+
+const broadcastDecisionsMatrixUpdate = async (matrixId: string, updates: any) => {
+  const channel = supabase.channel(`decisions_matrix:${matrixId}`);
+  await channel.send({
+    type: 'broadcast',
+    event: 'matrix_update',
+    payload: { matrixId, ...updates }
+  });
+};
+
 // Register advanced elements
 export function registerAdvancedSmartElements() {
   try {
@@ -804,6 +1330,8 @@ export function registerAdvancedSmartElements() {
     smartElementsRegistry.registerSmartElement(KanbanBoardElement);
     smartElementsRegistry.registerSmartElement(VotingElement);
     smartElementsRegistry.registerSmartElement(BrainstormingElement);
+    smartElementsRegistry.registerSmartElement(TimelineElement);
+    smartElementsRegistry.registerSmartElement(DecisionsMatrixElement);
     
     console.log('✅ Advanced smart elements registered successfully');
   } catch (error) {
