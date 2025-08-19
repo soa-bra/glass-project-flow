@@ -24,7 +24,16 @@ import {
   ChevronLeft,
   ChevronRight,
   Star,
-  Circle
+  Circle,
+  BarChart,
+  Table,
+  GitBranch,
+  Play,
+  Pause,
+  Link,
+  Calculator,
+  Sparkles,
+  Grip
 } from 'lucide-react';
 import { SmartElementDefinition, smartElementsRegistry } from './smart-elements-registry';
 import { CanvasNode } from '../canvas/types';
@@ -1268,6 +1277,979 @@ const DecisionsMatrixElement: SmartElementDefinition = {
   }
 };
 
+// Gantt Chart Element
+const GanttChartElement: SmartElementDefinition = {
+  type: 'gantt_chart',
+  name: 'Gantt Chart',
+  icon: <BarChart className="w-4 h-4" />,
+  category: 'analytics',
+  defaultState: {
+    size: { width: 700, height: 400 },
+    style: {
+      fill: 'hsl(var(--card))',
+      stroke: 'hsl(var(--border))',
+      strokeWidth: 1
+    },
+    metadata: {
+      title: 'مخطط جانت',
+      tasks: [
+        {
+          id: 1,
+          name: 'المرحلة الأولى',
+          startDate: new Date().toISOString(),
+          duration: 7, // days
+          progress: 30,
+          dependencies: [],
+          assignee: 'فريق أ',
+          color: '#3b82f6'
+        },
+        {
+          id: 2,
+          name: 'المرحلة الثانية',
+          startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          duration: 5,
+          progress: 0,
+          dependencies: [1],
+          assignee: 'فريق ب',
+          color: '#10b981'
+        }
+      ],
+      timeScale: 'days', // days, weeks, months
+      showDependencies: true,
+      allowDrag: true,
+      showProgress: true
+    }
+  },
+  settingsSchema: {
+    type: 'object',
+    properties: {
+      title: {
+        type: 'string',
+        title: 'عنوان المشروع',
+        default: 'مخطط جانت'
+      },
+      timeScale: {
+        type: 'string',
+        title: 'مقياس الزمن',
+        enum: ['days', 'weeks', 'months'],
+        enumNames: ['أيام', 'أسابيع', 'شهور'],
+        default: 'days'
+      },
+      showDependencies: {
+        type: 'boolean',
+        title: 'إظهار العلاقات',
+        default: true
+      },
+      allowDrag: {
+        type: 'boolean',
+        title: 'السماح بالسحب لتعديل المدد',
+        default: true
+      },
+      showProgress: {
+        type: 'boolean',
+        title: 'إظهار التقدم',
+        default: true
+      }
+    },
+    required: ['title']
+  },
+  renderer: (node, context) => {
+    const [tasks, setTasks] = useState(node.metadata?.tasks || []);
+    const [draggedTask, setDraggedTask] = useState<any>(null);
+    const [timeScale, setTimeScale] = useState(node.metadata?.timeScale || 'days');
+
+    const timeScales = {
+      days: { unit: 'يوم', multiplier: 1, format: 'dd/MM' },
+      weeks: { unit: 'أسبوع', multiplier: 7, format: 'dd/MM' },
+      months: { unit: 'شهر', multiplier: 30, format: 'MM/yyyy' }
+    };
+
+    const updateTaskDuration = (taskId: number, newDuration: number) => {
+      const updatedTasks = tasks.map(task => 
+        task.id === taskId 
+          ? { ...task, duration: Math.max(1, newDuration) }
+          : task
+      );
+      setTasks(updatedTasks);
+      broadcastGanttUpdate(node.id, { tasks: updatedTasks });
+    };
+
+    const updateTaskProgress = (taskId: number, newProgress: number) => {
+      const updatedTasks = tasks.map(task =>
+        task.id === taskId
+          ? { ...task, progress: Math.max(0, Math.min(100, newProgress)) }
+          : task
+      );
+      setTasks(updatedTasks);
+      broadcastGanttUpdate(node.id, { tasks: updatedTasks });
+    };
+
+    const addTask = () => {
+      const newTask = {
+        id: Date.now(),
+        name: 'مهمة جديدة',
+        startDate: new Date().toISOString(),
+        duration: 5,
+        progress: 0,
+        dependencies: [],
+        assignee: 'غير محدد',
+        color: '#' + Math.floor(Math.random() * 16777215).toString(16)
+      };
+      
+      const updatedTasks = [...tasks, newTask];
+      setTasks(updatedTasks);
+      broadcastGanttUpdate(node.id, { tasks: updatedTasks });
+    };
+
+    // Calculate task positions
+    const getTaskPosition = (task: any, index: number) => {
+      const startDate = new Date(task.startDate);
+      const today = new Date();
+      const daysDiff = Math.floor((startDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      const left = 150 + Math.max(0, daysDiff * 20);
+      const width = task.duration * 20;
+      const top = 60 + index * 40;
+      
+      return { left, width, top };
+    };
+
+    return (
+      <div className="w-full h-full bg-card border border-border rounded-lg overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-3 bg-muted/30 border-b">
+          <div className="flex items-center gap-2">
+            <BarChart className="w-4 h-4 text-primary" />
+            <span className="font-medium text-sm">{node.metadata?.title}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <select 
+              value={timeScale} 
+              onChange={(e) => setTimeScale(e.target.value)}
+              className="text-xs border rounded px-2 py-1"
+            >
+              {Object.entries(timeScales).map(([key, config]) => (
+                <option key={key} value={key}>{config.unit}</option>
+              ))}
+            </select>
+            <Button size="sm" variant="outline" className="text-xs" onClick={addTask}>
+              <Plus className="w-3 h-3 me-1" />
+              مهمة
+            </Button>
+          </div>
+        </div>
+
+        {/* Timeline Header */}
+        <div className="relative bg-muted/10 border-b h-8">
+          <div className="flex items-center text-xs text-muted-foreground">
+            <div className="w-36 px-3 border-e">المهام</div>
+            <div className="flex-1 px-2">
+              {Array.from({ length: 15 }).map((_, index) => {
+                const date = new Date();
+                date.setDate(date.getDate() + index);
+                return (
+                  <div 
+                    key={index}
+                    className="inline-block w-20 text-center border-e border-dashed"
+                    style={{ width: '20px' }}
+                  >
+                    {index % 3 === 0 && date.getDate()}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Tasks Area */}
+        <div className="relative h-[calc(100%-96px)] overflow-auto">
+          {/* Task Rows */}
+          {tasks.map((task, index) => {
+            const position = getTaskPosition(task, index);
+            
+            return (
+              <div key={task.id} className="relative border-b border-border/50">
+                {/* Task Name */}
+                <div className="absolute left-0 w-36 p-2 text-xs font-medium bg-card border-e">
+                  <div className="truncate" title={task.name}>{task.name}</div>
+                  <div className="text-muted-foreground text-xs">{task.assignee}</div>
+                </div>
+                
+                {/* Task Bar */}
+                <div
+                  className="absolute cursor-pointer rounded border shadow-sm flex items-center"
+                  style={{
+                    left: `${position.left}px`,
+                    width: `${position.width}px`,
+                    top: `${position.top - 50}px`,
+                    height: '24px',
+                    backgroundColor: task.color + '40',
+                    borderColor: task.color
+                  }}
+                  draggable={node.metadata?.allowDrag}
+                  onDragStart={() => setDraggedTask(task)}
+                >
+                  {/* Progress Bar */}
+                  {node.metadata?.showProgress && (
+                    <div
+                      className="h-full rounded-s"
+                      style={{
+                        width: `${task.progress}%`,
+                        backgroundColor: task.color
+                      }}
+                    />
+                  )}
+                  
+                  {/* Progress Text */}
+                  <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white mix-blend-difference">
+                    {task.progress}%
+                  </div>
+                  
+                  {/* Resize Handle */}
+                  <div
+                    className="absolute right-0 w-2 h-full cursor-ew-resize bg-black/20 opacity-0 hover:opacity-100"
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                      const startX = e.clientX;
+                      const startWidth = position.width;
+                      
+                      const handleMouseMove = (e: MouseEvent) => {
+                        const deltaX = e.clientX - startX;
+                        const newDuration = Math.max(1, Math.round((startWidth + deltaX) / 20));
+                        updateTaskDuration(task.id, newDuration);
+                      };
+                      
+                      const handleMouseUp = () => {
+                        document.removeEventListener('mousemove', handleMouseMove);
+                        document.removeEventListener('mouseup', handleMouseUp);
+                      };
+                      
+                      document.addEventListener('mousemove', handleMouseMove);
+                      document.addEventListener('mouseup', handleMouseUp);
+                    }}
+                  />
+                </div>
+
+                {/* Dependencies Lines */}
+                {node.metadata?.showDependencies && task.dependencies?.map(depId => {
+                  const depTask = tasks.find(t => t.id === depId);
+                  if (!depTask) return null;
+                  
+                  const depIndex = tasks.findIndex(t => t.id === depId);
+                  const depPos = getTaskPosition(depTask, depIndex);
+                  
+                  return (
+                    <svg
+                      key={depId}
+                      className="absolute pointer-events-none"
+                      style={{ 
+                        left: `${depPos.left + depPos.width}px`,
+                        top: `${depPos.top - 40}px`,
+                        width: `${position.left - (depPos.left + depPos.width)}px`,
+                        height: `${position.top - depPos.top + 20}px`
+                      }}
+                    >
+                      <path
+                        d={`M 0 12 L ${position.left - (depPos.left + depPos.width) - 10} 12 L ${position.left - (depPos.left + depPos.width) - 10} ${position.top - depPos.top + 8} L ${position.left - (depPos.left + depPos.width)} ${position.top - depPos.top + 8}`}
+                        stroke="#6b7280"
+                        strokeWidth="2"
+                        fill="none"
+                        markerEnd="url(#arrowhead)"
+                      />
+                      <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                          <polygon points="0 0, 10 3.5, 0 7" fill="#6b7280" />
+                        </marker>
+                      </defs>
+                    </svg>
+                  );
+                })}
+              </div>
+            );
+          })}
+          
+          {/* Empty State */}
+          {tasks.length === 0 && (
+            <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
+              <div className="text-center">
+                <BarChart className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p>لا توجد مهام في المخطط</p>
+                <p>انقر + مهمة لإضافة مهمة جديدة</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+};
+
+// Interactive Sheet Element  
+const InteractiveSheetElement: SmartElementDefinition = {
+  type: 'interactive_sheet',
+  name: 'Interactive Sheet',
+  icon: <Table className="w-4 h-4" />,
+  category: 'data',
+  defaultState: {
+    size: { width: 600, height: 400 },
+    style: {
+      fill: 'hsl(var(--card))',
+      stroke: 'hsl(var(--border))',
+      strokeWidth: 1
+    },
+    metadata: {
+      title: 'جدول البيانات التفاعلي',
+      rows: 15,
+      cols: 10,
+      cells: {
+        'A1': { value: 'الاسم', type: 'text', formula: null },
+        'B1': { value: 'العدد', type: 'text', formula: null },
+        'C1': { value: 'المجموع', type: 'text', formula: null },
+        'A2': { value: 'عنصر 1', type: 'text', formula: null },
+        'B2': { value: 10, type: 'number', formula: null },
+        'A3': { value: 'عنصر 2', type: 'text', formula: null },
+        'B3': { value: 20, type: 'number', formula: null },
+        'C2': { value: '=B2*2', type: 'formula', formula: 'B2*2' },
+        'C3': { value: '=B3*2', type: 'formula', formula: 'B3*2' },
+        'C4': { value: '=SUM(C2:C3)', type: 'formula', formula: 'SUM(C2:C3)' }
+      },
+      linkedElements: {}, // {cellId: elementId}
+      autoRecalc: true,
+      showFormulas: false,
+      allowEdit: true
+    }
+  },
+  settingsSchema: {
+    type: 'object',
+    properties: {
+      title: {
+        type: 'string',
+        title: 'عنوان الجدول',
+        default: 'جدول البيانات التفاعلي'
+      },
+      rows: {
+        type: 'number',
+        title: 'عدد الصفوف',
+        default: 15,
+        minimum: 5,
+        maximum: 50
+      },
+      cols: {
+        type: 'number',
+        title: 'عدد الأعمدة',
+        default: 10,
+        minimum: 3,
+        maximum: 26
+      },
+      autoRecalc: {
+        type: 'boolean',
+        title: 'إعادة حساب تلقائي',
+        default: true
+      },
+      showFormulas: {
+        type: 'boolean',
+        title: 'إظهار الصيغ',
+        default: false
+      },
+      allowEdit: {
+        type: 'boolean',
+        title: 'السماح بالتحرير',
+        default: true
+      }
+    },
+    required: ['title']
+  },
+  renderer: (node, context) => {
+    const [cells, setCells] = useState(node.metadata?.cells || {});
+    const [selectedCell, setSelectedCell] = useState<string | null>(null);
+    const [editingCell, setEditingCell] = useState<string | null>(null);
+    const [editValue, setEditValue] = useState('');
+
+    const getColumnName = (index: number): string => {
+      return String.fromCharCode(65 + index); // A, B, C...
+    };
+
+    const getCellId = (row: number, col: number): string => {
+      return `${getColumnName(col)}${row + 1}`;
+    };
+
+    const evaluateFormula = (formula: string, allCells: any): number => {
+      try {
+        // Simple formula evaluation
+        let expression = formula.replace(/([A-Z]\d+)/g, (match) => {
+          const cell = allCells[match];
+          if (cell && cell.type === 'number') {
+            return cell.value.toString();
+          }
+          if (cell && cell.type === 'formula') {
+            return evaluateFormula(cell.formula, allCells).toString();
+          }
+          return '0';
+        });
+
+        // Handle SUM function
+        expression = expression.replace(/SUM\(([A-Z]\d+):([A-Z]\d+)\)/g, (match, start, end) => {
+          const startCol = start.charCodeAt(0) - 65;
+          const startRow = parseInt(start.slice(1)) - 1;
+          const endCol = end.charCodeAt(0) - 65;
+          const endRow = parseInt(end.slice(1)) - 1;
+          
+          let sum = 0;
+          for (let r = startRow; r <= endRow; r++) {
+            for (let c = startCol; c <= endCol; c++) {
+              const cellId = getCellId(r, c);
+              const cell = allCells[cellId];
+              if (cell && cell.type === 'number') {
+                sum += parseFloat(cell.value) || 0;
+              }
+            }
+          }
+          return sum.toString();
+        });
+
+        // Handle AVG function
+        expression = expression.replace(/AVG\(([A-Z]\d+):([A-Z]\d+)\)/g, (match, start, end) => {
+          const startCol = start.charCodeAt(0) - 65;
+          const startRow = parseInt(start.slice(1)) - 1;
+          const endCol = end.charCodeAt(0) - 65;
+          const endRow = parseInt(end.slice(1)) - 1;
+          
+          let sum = 0;
+          let count = 0;
+          for (let r = startRow; r <= endRow; r++) {
+            for (let c = startCol; c <= endCol; c++) {
+              const cellId = getCellId(r, c);
+              const cell = allCells[cellId];
+              if (cell && cell.type === 'number') {
+                sum += parseFloat(cell.value) || 0;
+                count++;
+              }
+            }
+          }
+          return count > 0 ? (sum / count).toString() : '0';
+        });
+
+        // Evaluate simple mathematical expressions
+        return eval(expression) || 0;
+      } catch (error) {
+        return 0;
+      }
+    };
+
+    const updateCell = (cellId: string, value: any) => {
+      const newCells = { ...cells };
+      
+      if (typeof value === 'string' && value.startsWith('=')) {
+        // Formula cell
+        const formula = value.slice(1);
+        newCells[cellId] = {
+          value: value,
+          type: 'formula',
+          formula: formula
+        };
+      } else if (!isNaN(value) && value !== '') {
+        // Number cell
+        newCells[cellId] = {
+          value: parseFloat(value),
+          type: 'number',
+          formula: null
+        };
+      } else {
+        // Text cell
+        newCells[cellId] = {
+          value: value,
+          type: 'text',
+          formula: null
+        };
+      }
+
+      // Recalculate formulas if auto-recalc is enabled
+      if (node.metadata?.autoRecalc) {
+        Object.keys(newCells).forEach(id => {
+          const cell = newCells[id];
+          if (cell.type === 'formula') {
+            const result = evaluateFormula(cell.formula, newCells);
+            newCells[id] = { ...cell, calculatedValue: result };
+          }
+        });
+      }
+
+      setCells(newCells);
+      broadcastSheetUpdate(node.id, { cells: newCells });
+    };
+
+    const getCellValue = (cellId: string) => {
+      const cell = cells[cellId];
+      if (!cell) return '';
+      
+      if (cell.type === 'formula') {
+        if (node.metadata?.showFormulas) {
+          return cell.value; // Show formula
+        }
+        return cell.calculatedValue !== undefined ? cell.calculatedValue : evaluateFormula(cell.formula, cells);
+      }
+      
+      return cell.value;
+    };
+
+    const startEdit = (cellId: string) => {
+      if (!node.metadata?.allowEdit) return;
+      
+      setEditingCell(cellId);
+      const cell = cells[cellId];
+      setEditValue(cell ? cell.value : '');
+    };
+
+    const finishEdit = () => {
+      if (editingCell) {
+        updateCell(editingCell, editValue);
+        setEditingCell(null);
+        setEditValue('');
+      }
+    };
+
+    return (
+      <div className="w-full h-full bg-card border border-border rounded-lg overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-3 bg-muted/30 border-b">
+          <div className="flex items-center gap-2">
+            <Table className="w-4 h-4 text-primary" />
+            <span className="font-medium text-sm">{node.metadata?.title}</span>
+            {selectedCell && (
+              <Badge variant="secondary" className="text-xs">
+                {selectedCell}
+              </Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-xs"
+              onClick={() => {
+                const newCells = { ...cells };
+                Object.keys(newCells).forEach(id => {
+                  const cell = newCells[id];
+                  if (cell.type === 'formula') {
+                    const result = evaluateFormula(cell.formula, newCells);
+                    newCells[id] = { ...cell, calculatedValue: result };
+                  }
+                });
+                setCells(newCells);
+              }}
+            >
+              <Calculator className="w-3 h-3 me-1" />
+              حساب
+            </Button>
+          </div>
+        </div>
+
+        {/* Sheet Grid */}
+        <div className="overflow-auto h-[calc(100%-48px)]">
+          <table className="w-full text-xs">
+            <thead className="bg-muted/20 sticky top-0">
+              <tr>
+                <th className="w-8 h-6 border border-border text-center font-medium">#</th>
+                {Array.from({ length: node.metadata?.cols || 10 }).map((_, colIndex) => (
+                  <th key={colIndex} className="w-16 h-6 border border-border text-center font-medium">
+                    {getColumnName(colIndex)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: node.metadata?.rows || 15 }).map((_, rowIndex) => (
+                <tr key={rowIndex}>
+                  <td className="w-8 h-6 border border-border bg-muted/20 text-center font-medium">
+                    {rowIndex + 1}
+                  </td>
+                  {Array.from({ length: node.metadata?.cols || 10 }).map((_, colIndex) => {
+                    const cellId = getCellId(rowIndex, colIndex);
+                    const isSelected = selectedCell === cellId;
+                    const isEditing = editingCell === cellId;
+                    const cellValue = getCellValue(cellId);
+                    
+                    return (
+                      <td
+                        key={colIndex}
+                        className={`w-16 h-6 border border-border cursor-cell ${
+                          isSelected ? 'bg-primary/20 ring-1 ring-primary' : 'hover:bg-muted/50'
+                        }`}
+                        onClick={() => setSelectedCell(cellId)}
+                        onDoubleClick={() => startEdit(cellId)}
+                      >
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            onBlur={finishEdit}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') finishEdit();
+                              if (e.key === 'Escape') {
+                                setEditingCell(null);
+                                setEditValue('');
+                              }
+                            }}
+                            className="w-full h-full px-1 text-xs border-none outline-none bg-white"
+                            autoFocus
+                          />
+                        ) : (
+                          <div className="px-1 truncate">
+                            {cellValue}
+                          </div>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+};
+
+// Smart Mind Maps Element
+const SmartMindMapsElement: SmartElementDefinition = {
+  type: 'smart_mind_maps',
+  name: 'Smart Mind Maps',
+  icon: <GitBranch className="w-4 h-4" />,
+  category: 'basic',
+  defaultState: {
+    size: { width: 600, height: 450 },
+    style: {
+      fill: 'hsl(var(--card))',
+      stroke: 'hsl(var(--border))',
+      strokeWidth: 1
+    },
+    metadata: {
+      title: 'خريطة ذهنية ذكية',
+      centralNode: {
+        id: 'central',
+        text: 'الفكرة المركزية',
+        x: 300,
+        y: 225,
+        color: '#3b82f6',
+        level: 0
+      },
+      nodes: [
+        {
+          id: '1',
+          text: 'فرع رئيسي 1',
+          x: 150,
+          y: 150,
+          color: '#10b981',
+          level: 1,
+          parentId: 'central'
+        },
+        {
+          id: '2', 
+          text: 'فرع رئيسي 2',
+          x: 450,
+          y: 150,
+          color: '#f59e0b',
+          level: 1,
+          parentId: 'central'
+        }
+      ],
+      connections: [
+        { from: 'central', to: '1' },
+        { from: 'central', to: '2' }
+      ],
+      autoArrange: true,
+      allowAI: true,
+      maxLevels: 4
+    }
+  },
+  settingsSchema: {
+    type: 'object',
+    properties: {
+      title: {
+        type: 'string',
+        title: 'عنوان الخريطة الذهنية',
+        default: 'خريطة ذهنية ذكية'
+      },
+      autoArrange: {
+        type: 'boolean',
+        title: 'ترتيب تلقائي لمنع التداخل',
+        default: true
+      },
+      allowAI: {
+        type: 'boolean',
+        title: 'السماح بالتوليد بالذكاء الاصطناعي',
+        default: true
+      },
+      maxLevels: {
+        type: 'number',
+        title: 'أقصى عدد مستويات',
+        default: 4,
+        minimum: 2,
+        maximum: 8
+      },
+      centralIdea: {
+        type: 'string',
+        title: 'الفكرة المركزية',
+        default: 'الفكرة المركزية'
+      }
+    },
+    required: ['title']
+  },
+  renderer: (node, context) => {
+    const [centralNode, setCentralNode] = useState(node.metadata?.centralNode);
+    const [nodes, setNodes] = useState(node.metadata?.nodes || []);
+    const [connections, setConnections] = useState(node.metadata?.connections || []);
+    const [selectedNode, setSelectedNode] = useState<string | null>(null);
+    const [isGenerating, setIsGenerating] = useState(false);
+
+    const levelColors = [
+      '#3b82f6', // Central - Blue
+      '#10b981', // Level 1 - Green  
+      '#f59e0b', // Level 2 - Yellow
+      '#ef4444', // Level 3 - Red
+      '#8b5cf6', // Level 4 - Purple
+    ];
+
+    const calculateNodePosition = (parentNode: any, childIndex: number, totalChildren: number, level: number) => {
+      if (!node.metadata?.autoArrange) return { x: 100, y: 100 };
+      
+      const radius = 100 + (level * 50);
+      const angleStep = (2 * Math.PI) / Math.max(totalChildren, 1);
+      const angle = angleStep * childIndex - Math.PI / 2; // Start from top
+      
+      const x = parentNode.x + Math.cos(angle) * radius;
+      const y = parentNode.y + Math.sin(angle) * radius;
+      
+      return { x, y };
+    };
+
+    const addChildNode = (parentId: string) => {
+      const parent = parentId === 'central' ? centralNode : nodes.find(n => n.id === parentId);
+      if (!parent || parent.level >= (node.metadata?.maxLevels || 4)) return;
+      
+      const newLevel = parent.level + 1;
+      const siblings = nodes.filter(n => n.parentId === parentId);
+      const position = calculateNodePosition(parent, siblings.length, siblings.length + 1, newLevel);
+      
+      const newNode = {
+        id: Date.now().toString(),
+        text: 'فرع جديد',
+        x: position.x,
+        y: position.y,
+        color: levelColors[newLevel] || '#6b7280',
+        level: newLevel,
+        parentId: parentId
+      };
+
+      const updatedNodes = [...nodes, newNode];
+      const updatedConnections = [...connections, { from: parentId, to: newNode.id }];
+      
+      setNodes(updatedNodes);
+      setConnections(updatedConnections);
+      
+      broadcastMindMapUpdate(node.id, {
+        nodes: updatedNodes,
+        connections: updatedConnections
+      });
+    };
+
+    const generateAIBranches = async () => {
+      if (!node.metadata?.allowAI) return;
+      
+      setIsGenerating(true);
+      try {
+        // Simulate AI generation of related ideas
+        const centralIdea = centralNode.text;
+        const aiSuggestions = [
+          `تطبيق ${centralIdea}`,
+          `فوائد ${centralIdea}`,
+          `تحديات ${centralIdea}`,
+          `مستقبل ${centralIdea}`
+        ];
+
+        const newNodes = aiSuggestions.map((suggestion, index) => {
+          const position = calculateNodePosition(centralNode, index, aiSuggestions.length, 1);
+          return {
+            id: `ai_${Date.now()}_${index}`,
+            text: suggestion,
+            x: position.x,
+            y: position.y,
+            color: levelColors[1],
+            level: 1,
+            parentId: 'central'
+          };
+        });
+
+        const newConnections = newNodes.map(newNode => ({
+          from: 'central',
+          to: newNode.id
+        }));
+
+        const updatedNodes = [...nodes, ...newNodes];
+        const updatedConnections = [...connections, ...newConnections];
+        
+        setNodes(updatedNodes);
+        setConnections(updatedConnections);
+        
+        broadcastMindMapUpdate(node.id, {
+          nodes: updatedNodes,
+          connections: updatedConnections
+        });
+      } catch (error) {
+        console.error('فشل في توليد الأفكار:', error);
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+
+    const updateNodeText = (nodeId: string, newText: string) => {
+      if (nodeId === 'central') {
+        setCentralNode({ ...centralNode, text: newText });
+      } else {
+        const updatedNodes = nodes.map(n =>
+          n.id === nodeId ? { ...n, text: newText } : n
+        );
+        setNodes(updatedNodes);
+        broadcastMindMapUpdate(node.id, { nodes: updatedNodes });
+      }
+    };
+
+    return (
+      <div className="w-full h-full bg-card border border-border rounded-lg overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-purple-50 border-b">
+          <div className="flex items-center gap-2">
+            <GitBranch className="w-4 h-4 text-blue-600" />
+            <span className="font-medium text-sm">{node.metadata?.title}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {node.metadata?.allowAI && (
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-xs"
+                onClick={generateAIBranches}
+                disabled={isGenerating}
+              >
+                <Sparkles className="w-3 h-3 me-1" />
+                {isGenerating ? 'جاري...' : 'AI توليد'}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Mind Map Canvas */}
+        <div className="relative w-full h-[calc(100%-48px)] overflow-hidden bg-gradient-to-br from-blue-50/30 to-purple-50/30">
+          <svg className="w-full h-full">
+            {/* Connections */}
+            {connections.map((conn, index) => {
+              const fromNode = conn.from === 'central' ? centralNode : nodes.find(n => n.id === conn.from);
+              const toNode = nodes.find(n => n.id === conn.to);
+              
+              if (!fromNode || !toNode) return null;
+              
+              return (
+                <line
+                  key={index}
+                  x1={fromNode.x}
+                  y1={fromNode.y}
+                  x2={toNode.x}
+                  y2={toNode.y}
+                  stroke="#6b7280"
+                  strokeWidth="2"
+                  className="opacity-60"
+                />
+              );
+            })}
+          </svg>
+
+          {/* Central Node */}
+          <div
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
+            style={{ 
+              left: centralNode.x, 
+              top: centralNode.y
+            }}
+            onClick={() => setSelectedNode('central')}
+            onDoubleClick={() => addChildNode('central')}
+          >
+            <div 
+              className="w-24 h-24 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-xs font-bold text-white text-center p-2 group-hover:scale-110 transition-transform"
+              style={{ backgroundColor: centralNode.color }}
+            >
+              {centralNode.text}
+            </div>
+            {selectedNode === 'central' && (
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+                <input
+                  type="text"
+                  value={centralNode.text}
+                  onChange={(e) => updateNodeText('central', e.target.value)}
+                  className="text-xs text-center bg-white border rounded px-2 py-1 w-32"
+                  autoFocus
+                  onBlur={() => setSelectedNode(null)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') setSelectedNode(null);
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Branch Nodes */}
+          {nodes.map((mapNode) => (
+            <div
+              key={mapNode.id}
+              className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
+              style={{ 
+                left: mapNode.x, 
+                top: mapNode.y
+              }}
+              onClick={() => setSelectedNode(mapNode.id)}
+              onDoubleClick={() => addChildNode(mapNode.id)}
+            >
+              <div 
+                className="w-16 h-16 rounded-lg border-2 border-white shadow-md flex items-center justify-center text-xs font-medium text-white text-center p-1 group-hover:scale-110 transition-transform"
+                style={{ backgroundColor: mapNode.color }}
+              >
+                {mapNode.text}
+              </div>
+              
+              {selectedNode === mapNode.id && (
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+                  <input
+                    type="text"
+                    value={mapNode.text}
+                    onChange={(e) => updateNodeText(mapNode.id, e.target.value)}
+                    className="text-xs text-center bg-white border rounded px-2 py-1 w-24"
+                    autoFocus
+                    onBlur={() => setSelectedNode(null)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') setSelectedNode(null);
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+
+          {/* Instructions Overlay */}
+          {nodes.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs pointer-events-none">
+              <div className="text-center bg-white/80 p-4 rounded-lg">
+                <GitBranch className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p>انقر مزدوج على العقدة المركزية لإضافة فروع</p>
+                <p>انقر على أي عقدة لتحريرها</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+};
+
 // Realtime broadcast functions
 const broadcastThinkingBoardUpdate = async (boardId: string, updates: any) => {
   const channel = supabase.channel(`thinking_board:${boardId}`);
@@ -1323,6 +2305,33 @@ const broadcastDecisionsMatrixUpdate = async (matrixId: string, updates: any) =>
   });
 };
 
+const broadcastGanttUpdate = async (ganttId: string, updates: any) => {
+  const channel = supabase.channel(`gantt_chart:${ganttId}`);
+  await channel.send({
+    type: 'broadcast',
+    event: 'gantt_update',
+    payload: { ganttId, ...updates }
+  });
+};
+
+const broadcastSheetUpdate = async (sheetId: string, updates: any) => {
+  const channel = supabase.channel(`interactive_sheet:${sheetId}`);
+  await channel.send({
+    type: 'broadcast',
+    event: 'sheet_update',
+    payload: { sheetId, ...updates }
+  });
+};
+
+const broadcastMindMapUpdate = async (mapId: string, updates: any) => {
+  const channel = supabase.channel(`smart_mind_maps:${mapId}`);
+  await channel.send({
+    type: 'broadcast',
+    event: 'mindmap_update',
+    payload: { mapId, ...updates }
+  });
+};
+
 // Register advanced elements
 export function registerAdvancedSmartElements() {
   try {
@@ -1332,6 +2341,9 @@ export function registerAdvancedSmartElements() {
     smartElementsRegistry.registerSmartElement(BrainstormingElement);
     smartElementsRegistry.registerSmartElement(TimelineElement);
     smartElementsRegistry.registerSmartElement(DecisionsMatrixElement);
+    smartElementsRegistry.registerSmartElement(GanttChartElement);
+    smartElementsRegistry.registerSmartElement(InteractiveSheetElement);
+    smartElementsRegistry.registerSmartElement(SmartMindMapsElement);
     
     console.log('✅ Advanced smart elements registered successfully');
   } catch (error) {
