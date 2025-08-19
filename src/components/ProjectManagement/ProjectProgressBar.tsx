@@ -1,17 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { cn } from '@/lib/utils';
 interface Stage {
   label: string;
 }
 interface ProjectProgressBarProps {
   progress: number;
   stages: Stage[];
-  className?: string;
 }
 export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   progress,
-  stages,
-  className = ""
+  stages
 }) => {
   const barRef = useRef<HTMLDivElement>(null);
   const [segmentCount, setSegmentCount] = useState(100);
@@ -67,10 +64,9 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
     const colorIndex2 = Math.min(segmentIndex + 1, mainColors.length - 1);
     return interpolateColor(mainColors[colorIndex1], mainColors[colorIndex2], localPosition);
   };
-  return (
-    <div className={cn("w-full h-[clamp(6px,0.8vh,10px)] rounded-full bg-muted overflow-hidden relative flex flex-row-reverse items-center font-arabic pt-0 pb-0 my-0 mx-0 py-[16px] px-[10px]", className)} style={{
-      background: 'transparent'
-    }}>
+  return <div style={{
+    background: 'transparent'
+  }} className="relative w-full flex flex-row-reverse items-center font-arabic pt-0 pb-0 my-0 mx-0 py-[16px] px-[10px]">
 
       {/* شريط الشرائح */}
       <div ref={barRef} className="relative flex items-center justify-start flex-row-reverse gap-[3px] w-[80%] h-[25px]">
@@ -157,6 +153,5 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
             </span>
           </div>
         </div>}
-    </div>
-  );
+    </div>;
 };

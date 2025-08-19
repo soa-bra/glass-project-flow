@@ -12,22 +12,19 @@ import { ReportsTab } from './ReportsTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { Reveal, Stagger } from '@/components/shared/motion';
-import { cn } from '@/lib/utils';
 interface ProjectManagementBoardProps {
   project: Project;
   isVisible: boolean;
   onClose: () => void;
   isSidebarCollapsed: boolean;
   onProjectUpdated?: (project: ProjectData) => void;
-  className?: string;
 }
 export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   project,
   isVisible,
   onClose,
   isSidebarCollapsed,
-  onProjectUpdated,
-  className = ""
+  onProjectUpdated
 }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
@@ -246,99 +243,83 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         return null;
     }
   };
-  if (!isVisible) return null;
+  return <>
+      <div className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
+      top: "var(--sidebar-top-offset)",
+      height: "calc(100vh - var(--sidebar-top-offset))",
+      borderRadius: "24px",
+      background: "#F8F9FA",
+      border: "1px solid rgba(255,255,255,0.2)",
+      transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
+      padding: "24px",
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden"
+    }}>
+        {/* الرأس */}
+        <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
-  return (
-    <main
-      className={cn(
-        "h-[100dvh] flex flex-col overflow-hidden",
-        "[padding-bottom:env(safe-area-inset-bottom)]",
-        className
-      )}
-    >
-      <ProjectManagementHeader 
-        className="sticky top-0 z-30 shrink-0" 
-        project={project} 
-        onClose={onClose} 
-        onDelete={() => setShowDeleteDialog(true)} 
-        onArchive={() => setShowArchiveDialog(true)} 
-        onEdit={handleEditProject} 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab} 
-        tabs={tabs} 
-      />
-      
-      <section className="flex-1 min-h-0 flex flex-col overflow-hidden">
-        {/* محتوى التبويب يمرّر رأسيًا */}
-        <div className="flex-1 min-h-0 overflow-y-auto">
-          {renderTabContent()}
-        </div>
-      </section>
+        {/* محتوى التبويبة النشطة */}
+        {renderTabContent()}
 
-      {/* حوارات التأكيد */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="font-arabic" dir="rtl" style={{
+        {/* حوارات التأكيد */}
+        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <DialogContent className="font-arabic" dir="rtl" style={{
           background: 'rgba(255,255,255,0.4)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid rgba(255,255,255,0.2)',
           borderRadius: '24px'
         }}>
-          <DialogHeader>
-            <DialogTitle className="text-right">تأكيد حذف المشروع</DialogTitle>
-            <DialogDescription className="text-right">
-              هل أنت متأكد من أنك تريد حذف هذا المشروع نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center justify-end gap-3 mt-6">
-            <button onClick={() => setShowDeleteDialog(false)} className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
-              <X size={16} />
-              إلغاء
-            </button>
-            <button onClick={handleDeleteProject} className="bg-red-500 hover:bg-red-600 text-white font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
-              <Trash2 size={16} />
-              حذف نهائي
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
+            <DialogHeader>
+              <DialogTitle className="text-right">تأكيد حذف المشروع</DialogTitle>
+              <DialogDescription className="text-right">
+                هل أنت متأكد من أنك تريد حذف هذا المشروع نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center justify-end gap-3 mt-6">
+              <button onClick={() => setShowDeleteDialog(false)} className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
+                <X size={16} />
+                إلغاء
+              </button>
+              <button onClick={handleDeleteProject} className="bg-red-500 hover:bg-red-600 text-white font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
+                <Trash2 size={16} />
+                حذف نهائي
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
-      <Dialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
-        <DialogContent className="font-arabic" dir="rtl" style={{
+        <Dialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
+          <DialogContent className="font-arabic" dir="rtl" style={{
           background: 'rgba(255,255,255,0.4)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid rgba(255,255,255,0.2)',
           borderRadius: '24px'
         }}>
-          <DialogHeader>
-            <DialogTitle className="text-right">تأكيد أرشفة المشروع</DialogTitle>
-            <DialogDescription className="text-right">
-              هل أنت متأكد من أنك تريد أرشفة هذا المشروع؟ يمكنك استعادته لاحقاً من الأرشيف.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center justify-end gap-3 mt-6">
-            <button onClick={() => setShowArchiveDialog(false)} className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
-              <X size={16} />
-              إلغاء
-            </button>
-            <button onClick={handleArchiveProject} className="bg-black hover:bg-black/90 text-white font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
-              <Archive size={16} />
-              أرشفة
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
+            <DialogHeader>
+              <DialogTitle className="text-right">تأكيد أرشفة المشروع</DialogTitle>
+              <DialogDescription className="text-right">
+                هل أنت متأكد من أنك تريد أرشفة هذا المشروع؟ يمكنك استعادته لاحقاً من الأرشيف.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center justify-end gap-3 mt-6">
+              <button onClick={() => setShowArchiveDialog(false)} className="bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
+                <X size={16} />
+                إلغاء
+              </button>
+              <button onClick={handleArchiveProject} className="bg-black hover:bg-black/90 text-white font-medium font-arabic rounded-full px-6 py-2 flex items-center gap-2">
+                <Archive size={16} />
+                أرشفة
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       {/* نافذة تعديل المشروع */}
-      <AddProjectModal 
-        isOpen={showEditModal} 
-        onClose={() => setShowEditModal(false)} 
-        onProjectAdded={() => {}} 
-        onProjectUpdated={handleProjectUpdated} 
-        editingProject={editingProjectData} 
-        isEditMode={true} 
-      />
-    </main>
-  );
+      <AddProjectModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onProjectAdded={() => {}} // لن تستخدم في حالة التعديل
+    onProjectUpdated={handleProjectUpdated} editingProject={editingProjectData} isEditMode={true} />
+    </>;
 };

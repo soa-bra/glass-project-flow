@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, MoreHorizontal, Edit, Archive, Trash } from 'lucide-react';
 import { Project } from '@/types/project';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
-import { cn } from '@/lib/utils';
 
 interface TabItem {
   id: string;
@@ -19,7 +18,6 @@ interface ProjectManagementHeaderProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   tabs: TabItem[];
-  className?: string;
 }
 
 export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = ({
@@ -29,8 +27,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
   onEdit,
   activeTab,
   onTabChange,
-  tabs,
-  className = ""
+  tabs
 }) => {
   const animatedTabItems = tabs.map(tab => ({
     value: tab.id,
@@ -54,20 +51,17 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
   }, []);
 
   return (
-    <header
-      className={cn(
-        "h-14 md:h-16 flex items-center gap-3 px-3",
-        "border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-        className
-      )}
-    >
-      <h1 className="text-base md:text-lg font-medium">لوحة إدارة المشروع</h1>
-      
-      <div className="flex-1 flex justify-center">
-        <div className="w-fit">
-          <AnimatedTabs tabs={animatedTabItems} activeTab={activeTab} onTabChange={onTabChange} />
+    <div className="flex-shrink-0 mb-6">
+      <div className="flex items-center justify-between">
+        <h1 className="font-medium text-[#2A3437] font-arabic text-3xl my-[12px]">
+          إدارة المشروع
+        </h1>
+
+        <div className="flex-1 flex justify-center">
+          <div className="w-fit">
+            <AnimatedTabs tabs={animatedTabItems} activeTab={activeTab} onTabChange={onTabChange} />
+          </div>
         </div>
-      </div>
 
         <div className="flex items-center gap-3">
           {/* زر القائمة */}
@@ -200,6 +194,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
             <X className="text-black w-5 h-5" />
           </button>
         </div>
-    </header>
+      </div>
+    </div>
   );
 };
