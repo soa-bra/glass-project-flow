@@ -11,22 +11,32 @@ import { useDirection } from '../../contexts/direction-context';
 import { DirectionalIcon } from '../ui/directional-icon';
 import { Settings, Grid, Layers } from 'lucide-react';
 
-interface SmartElementsPanelProps {
+export type SmartElementType = string;
+
+export interface SmartElementsPanelProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onElementSelect: (elementType: SmartElementType, initialState?: any) => void;
+  selectedElementType?: SmartElementType;
   selectedElementId?: string | null;
-  selectedElementType?: string | null;
   selectedElementSettings?: Record<string, any>;
-  onElementSelect: (elementType: string) => void;
-  onSettingsChange: (elementId: string, settings: Record<string, any>) => void;
+  onSettingsChange?: (elementId: string, settings: Record<string, any>) => void;
+  registry?: any;
   className?: string;
+  'data-test-id'?: string;
 }
 
 export function SmartElementsPanel({ 
-  selectedElementId,
-  selectedElementType,
-  selectedElementSettings = {},
+  isOpen,
+  onClose,
   onElementSelect,
+  selectedElementType,
+  selectedElementId,
+  selectedElementSettings = {},
   onSettingsChange,
-  className 
+  registry,
+  className,
+  'data-test-id': testId
 }: SmartElementsPanelProps) {
   const { direction } = useDirection();
   const [availableElements, setAvailableElements] = useState<SmartElementDefinition[]>([]);
@@ -76,14 +86,30 @@ export function SmartElementsPanel({
     }
   };
 
+  // Handle Esc key for closing
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, onClose]);
+
   const handleSettingsSubmit = (settings: Record<string, any>) => {
-    if (selectedElementId) {
+    if (selectedElementId && onSettingsChange) {
       onSettingsChange(selectedElementId, settings);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Card className={`h-full flex flex-col ${className}`}>
+    <Card className={`h-full flex flex-col ${className}`} data-test-id={testId}>
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <DirectionalIcon 
@@ -91,6 +117,15 @@ export function SmartElementsPanel({
             className="w-5 h-5 text-primary" 
           />
           العناصر الذكية
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onClose}
+            className="mr-auto w-8 h-8 p-0"
+            data-test-id="btn-close-panel"
+          >
+            ×
+          </Button>
         </CardTitle>
       </CardHeader>
 

@@ -14,6 +14,8 @@ import { ConnectionManager } from '@/lib/canvas/controllers/connection-manager';
 import { useRootConnector } from '@/hooks/useRootConnector';
 import { useWF01Generator } from '@/hooks/useWF01Generator';
 import { SmartElementsPanel } from '@/components/smart-elements/smart-elements-panel';
+import { getViewportCenter, type SmartElementType } from './types';
+import { smartElementsRegistry } from '@/lib/smart-elements/smart-elements-registry';
 
 interface CollaborativeCanvasProps {
   boardId?: string;
@@ -190,10 +192,26 @@ export default function CollaborativeCanvas({
     logCanvasOperation('tool_selected', { tool });
   }, [logCanvasOperation]);
 
-  const handleSmartElementCreate = useCallback((elementType: string) => {
-    logCustomEvent('smart_element_created', { elementType });
+  const insertSmartElement = useCallback((elementType: SmartElementType, position?: { x: number; y: number }) => {
+    const insertPosition = position || getViewportCenter({ 
+      x: canvasPosition.x, 
+      y: canvasPosition.y, 
+      zoom, 
+      width: 800, 
+      height: 600 
+    });
+    
+    const newNode = smartElementsRegistry.createSmartElementNode(elementType, insertPosition);
+    if (newNode && sceneGraph) {
+      sceneGraph.addNode(newNode);
+      logCustomEvent('smart_element_created', { elementType, position: insertPosition });
+    }
+  }, [sceneGraph, canvasPosition, zoom, logCustomEvent]);
+
+  const handleSmartElementCreate = useCallback((elementType: SmartElementType, initialState?: any) => {
+    insertSmartElement(elementType);
     setShowSmartPanel(false);
-  }, [logCustomEvent]);
+  }, [insertSmartElement]);
 
   const handleWF01Generate = useCallback(async () => {
     try {
@@ -305,8 +323,9 @@ export default function CollaborativeCanvas({
           {showSmartPanel && (
             <div className="absolute inset-y-0 left-0 w-80 bg-background/95 backdrop-blur-sm border-r shadow-lg z-50">
               <SmartElementsPanel
-                onElementSelect={handleSmartElementCreate}
+                isOpen={showSmartPanel}
                 onClose={() => setShowSmartPanel(false)}
+                onElementSelect={handleSmartElementCreate}
                 data-test-id="modal-smart-panel"
               />
             </div>

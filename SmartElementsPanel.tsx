@@ -26,10 +26,12 @@ export default function LegacySmartElementsPanel(props: LegacySmartElementsPanel
 
   return (
     <SmartElementsPanel
+      isOpen={true}
+      onClose={() => {}}
+      onElementSelect={handleElementSelect}
       selectedElementId={props.selectedElementId}
       selectedElementType={props.selectedElementType}
       selectedElementSettings={props.selectedElementSettings || {}}
-      onElementSelect={handleElementSelect}
       onSettingsChange={handleSettingsChange}
     />
   );
