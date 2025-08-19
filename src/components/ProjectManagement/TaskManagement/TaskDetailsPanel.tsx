@@ -101,15 +101,15 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
           </div>
           
           <div className="flex items-center gap-2 ml-4">
-            <Button variant="outline" size="sm" onClick={handleEdit} className="flex h-8 items-center bg-black rounded-full px-3 py-2 text-sm font-medium text-white whitespace-nowrap">
+            <Button variant="outline" size="sm" onClick={handleEdit} className="h-9 bg-black text-white hover:bg-black/80 rounded-full gap-2 ">
               <Edit className="w-4 h-4 mr-1" />
               تعديل
             </Button>
-            <Button variant="outline" size="sm" onClick={handleArchive} className="bg-black text-white hover:bg-black/80 rounded-full">
+            <Button variant="outline" size="sm" onClick={handleArchive} className="h-9 bg-black text-white hover:bg-black/80 rounded-full gap-2 ">
               <Archive className="w-4 h-4 mr-1 bg-transparent" />
               أرشفة
             </Button>
-            <Button variant="outline" size="sm" onClick={handleDelete} className="bg-[#f1b5b9] text-black px-4 py-2 rounded-full text-sm font-medium hover:bg-[#f1b5b9]/80 transition-colors">
+            <Button variant="outline" size="sm" onClick={handleDelete} className="px-4 py-2 rounded-full font-medium transition-colors bg-soabra-error bg-[soabra-status-error] text-[soabra-sidebar-bg] text-rose-100">
               <Trash2 className="w-4 h-4 mr-1" />
               حذف
             </Button>
@@ -371,7 +371,7 @@ const TaskAttachmentsTab: React.FC<{
   return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold text-black">المرفقات ({attachments.length})</h4>
-        <Button size="sm" className="bg-black text-white hover:bg-black/80" onClick={handleAddAttachment}>
+        <Button size="sm" onClick={handleAddAttachment} className="h-9 bg-black text-white hover:bg-black/80 rounded-full gap-2 ">
           <Upload className="w-4 h-4 mr-1" />
           إضافة مرفق
         </Button>
@@ -379,7 +379,7 @@ const TaskAttachmentsTab: React.FC<{
       
       {attachments.length > 0 ? <div className="space-y-2">
           {attachments.map(attachment => <div key={attachment.id} className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
-              <div className="w-10 h-10 bg-black/10 rounded-lg flex items-center justify-center">
+              <div className="w-9 h-9 rounded-full bg-transparent border border-black">
                 <Paperclip className="w-5 h-5 text-black/60" />
               </div>
               <div className="flex-1">
@@ -387,10 +387,10 @@ const TaskAttachmentsTab: React.FC<{
                 <p className="text-xs text-black/60">{attachment.size} • {attachment.uploadedAt}</p>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="h-9 rounded-full bg-transparent border border-black">
                   تحميل
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setShowDeleteDialog(attachment.id)} className="text-red-600 border-red-200 hover:bg-red-50">
+                <Button variant="outline" size="sm" onClick={() => setShowDeleteDialog(attachment.id)} className="h-9 w-9 text-red-600 hover:bg-red-50 bg-[sb-brand-rose] rounded-full">
                   <X className="w-4 h-4" />
                 </Button>
               </div>
