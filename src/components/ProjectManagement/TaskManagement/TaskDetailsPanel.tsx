@@ -387,7 +387,7 @@ const TaskAttachmentsTab: React.FC<{
                 <p className="text-xs text-black/60">{attachment.size} • {attachment.uploadedAt}</p>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="h-9 rounded-full bg-transparent border border-black">
+                <Button variant="outline" size="sm" className="h-9 rounded-full bg-transparent border border-black/20">
                   تحميل
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => setShowDeleteDialog(attachment.id)} className="h-9 w-9 text-red-600 hover:bg-red-50  rounded-full">
