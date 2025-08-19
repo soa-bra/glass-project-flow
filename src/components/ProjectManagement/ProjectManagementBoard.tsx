@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { ProjectManagementHeader } from './ProjectManagementHeader';
 import { ProjectProgressBar } from './ProjectProgressBar';
 import { ProjectCardGrid } from './ProjectCardGrid';
-import { TaskListCard } from './cards/TaskListCard';
 import { AddProjectModal } from '@/components/ProjectsColumn/AddProjectModal';
 import { FinancialTab, ClientTab, TeamTab, AttachmentsTab, TemplatesTab } from '@/components/ProjectPanel/ProjectTabs';
 import { TaskManagementTab } from './TaskManagementTab';
@@ -221,16 +220,8 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
             {/* المحتوى الرئيسي */}
             <Reveal delay={0.45}>
-              <div className="flex-1 min-h-0 flex gap-4">
-                {/* قائمة المهام - عمود منفصل */}
-                <div className="w-80 flex-shrink-0">
-                  <TaskListCard project={project} />
-                </div>
-                
-                {/* شبكة البطاقات */}
-                <div className="flex-1 min-w-0">
-                  <ProjectCardGrid project={project} />
-                </div>
+              <div className="flex-1 min-h-0 my-0 py-[12px]">
+                <ProjectCardGrid project={project} />
               </div>
             </Reveal>
           </>;
