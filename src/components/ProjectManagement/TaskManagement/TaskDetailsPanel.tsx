@@ -101,15 +101,15 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
           </div>
           
           <div className="flex items-center gap-2 ml-4">
-            <Button variant="outline" size="sm" onClick={handleEdit} className="flex h-8 items-center bg-black rounded-full px-3 py-3 gap-2 text-sm text-white whitespace-nowrap font-normal">
+            <Button variant="outline" size="sm" onClick={handleEdit} className="flex h-8 items-center rounded-full px-3 py-2 text-sm font-medium text-white whitespace-nowrap">
               <Edit className="w-4 h-4 mr-1" />
               تعديل
             </Button>
-            <Button variant="outline" size="sm" onClick={handleArchive} className="flex h-8 items-center bg-black rounded-full px-3 py-3 gap-2 text-sm text-white whitespace-nowrap font-normal">
+            <Button variant="outline" size="sm" onClick={handleArchive} className="flex h-8 items-center rounded-full px-3 py-2 text-sm font-medium text-white whitespace-nowrap">
               <Archive className="w-4 h-4 mr-1 bg-transparent" />
               أرشفة
             </Button>
-            <Button variant="outline" size="sm" onClick={handleDelete} className="flex h-8 items-center rounded-full px-3 py-3 gap-2 text-sm whitespace-nowrap font-normal bg-red-700 hover:bg-red-600 text-white">
+            <Button variant="outline" size="sm" onClick={handleDelete} className="bg-[#f1b5b9] text-black px-4 py-2 rounded-full text-sm font-medium hover:bg-[#f1b5b9]/80 transition-colors">
               <Trash2 className="w-4 h-4 mr-1" />
               حذف
             </Button>
@@ -164,7 +164,7 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
 
       {/* Tabs */}
       <div className="px-6 py-4 border-b border-black/10">
-        <div className="bg-transparent border border-black/60 rounded-full p-2 w-4/12">
+        <div className="flex gap-4">
           {[{
           key: 'details',
           label: 'التفاصيل',
@@ -183,7 +183,7 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
           icon: MessageSquare
         }].map(tab => {
           const Icon = tab.icon;
-          return <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === tab.key ? 'bg-black text-white' : 'text-black hover:bg-black/5'}`}>
+          return <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} className={`flex items-center gap-2 px-4 py-0 rounded-full text-sm font-medium transition-colors ${activeTab === tab.key ? 'bg-black text-white' : 'text-black hover:bg-black/5'}`}>
                 <Icon className="w-4 h-4" />
                 {tab.label}
               </button>;
