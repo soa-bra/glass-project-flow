@@ -2,6 +2,7 @@ import Sidebar from '@/components/Sidebar';
 import { useState } from 'react';
 import ProjectWorkspace from './ProjectWorkspace';
 import DepartmentsWorkspace from './DepartmentsWorkspace';
+import CollaborativePlanningWorkspace from './CollaborativePlanningWorkspace';
 import ArchiveWorkspace from './ArchiveWorkspace';
 import SettingsWorkspace from './SettingsWorkspace';
 const MainContent = () => {
@@ -21,6 +22,8 @@ const MainContent = () => {
     switch (activeSection) {
       case 'departments':
         return <DepartmentsWorkspace isSidebarCollapsed={effectiveCollapsed} />;
+      case 'planning':
+        return <CollaborativePlanningWorkspace isSidebarCollapsed={effectiveCollapsed} />;
       case 'archive':
         return <ArchiveWorkspace isSidebarCollapsed={effectiveCollapsed} />;
       case 'settings':

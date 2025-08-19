@@ -1,4 +1,4 @@
-import { Home, Building, Archive, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, Building, Archive, Settings, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 interface SidebarProps {
   onToggle?: (collapsed: boolean) => void;
@@ -21,6 +21,10 @@ const Sidebar = ({
     icon: Building,
     label: 'الإدارات',
     key: 'departments'
+  }, {
+    icon: Users,
+    label: 'التخطيط التضامني',
+    key: 'planning'
   }, {
     icon: Archive,
     label: 'الأرشيف',
