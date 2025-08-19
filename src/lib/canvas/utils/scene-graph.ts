@@ -25,7 +25,13 @@ export class SceneGraph {
     const existingNode = this.nodes.get(id);
     if (!existingNode) return null;
 
-    const updatedNode = { ...existingNode, ...patch };
+    // If type is being changed, reject the update to maintain type safety
+    if (patch.type && patch.type !== existingNode.type) {
+      console.warn(`Cannot change node type from ${existingNode.type} to ${patch.type}`);
+      return null;
+    }
+
+    const updatedNode = { ...existingNode, ...patch } as CanvasNode;
     this.nodes.set(id, updatedNode);
     this.isDirty = true;
     
