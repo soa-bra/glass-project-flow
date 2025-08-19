@@ -81,9 +81,10 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
   return (
     <div 
       role="list" 
-      className="flex-1 min-h-0 overflow-y-auto scroll-smooth"
+      className="flex-1 overflow-y-auto scroll-smooth"
       style={{
-        paddingBottom: 'clamp(16px, 2vh, 24px)',
+        height: 'calc(100vh - 300px)',
+        paddingBottom: '20px',
         scrollBehavior: 'smooth'
       }}
     >

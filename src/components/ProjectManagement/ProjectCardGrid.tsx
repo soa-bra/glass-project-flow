@@ -11,10 +11,7 @@ interface ProjectCardGridProps {
 export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
   project
 }) => {
-  return <div className="grid gap-4 p-6" style={{ 
-      gridTemplateColumns: "repeat(auto-fit, minmax(clamp(240px, 28vw, 360px), 1fr))",
-      gridAutoRows: "minmax(200px, auto)"
-    }}>
+  return <div className="grid grid-cols-3 grid-rows-4 gap-4 h-full py-0 my-[70px]">
       {/* العمود الأول - قائمة المهام (بعرض مساوي للأعمدة الأخرى) */}
       <div className="col-span-1 row-span-4">
         <TaskListCard project={project} />

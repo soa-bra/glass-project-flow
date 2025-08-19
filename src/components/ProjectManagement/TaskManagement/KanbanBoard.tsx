@@ -70,15 +70,14 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
       )}
 
       {/* Kanban Columns */}
-      <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-4" style={{ minHeight: "calc(100vh - 400px)" }}>
+      <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-6 gap-4 min-h-[600px]">
         {columns.map(column => {
           const columnTasks = getTasksByStatus(column.status, filters);
           
           return (
             <div
               key={column.name}
-              className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] flex flex-col flex-shrink-0"
-              style={{ width: "clamp(280px, 30vw, 360px)", height: "100%" }}
+              className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] flex flex-col"
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, column.status)}
             >
@@ -97,7 +96,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) 
               </div>
 
               {/* Tasks Container */}
-              <div className="flex-1 min-h-0 p-4 space-y-3 overflow-y-auto">
+              <div className="flex-1 p-4 space-y-3 min-h-[400px]">
                 {columnTasks.map(task => {
                   const taskCardProps = mapToTaskCardProps(task);
                   return (
