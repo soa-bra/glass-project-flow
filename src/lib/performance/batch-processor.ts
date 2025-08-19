@@ -1,12 +1,114 @@
 // Batched Operations Processor for Canvas
 import { CanvasNode } from '@/lib/canvas/types';
 
+// Flexible operation data types
+export type MoveAbsolute = { x?: number; y?: number };
+export type MoveDelta = { dx?: number; dy?: number };
+export type SizeData = { width?: number; height?: number };
+export type PositionData = { position?: { x?: number; y?: number } };
+
+export type OperationData =
+  | Partial<CanvasNode>
+  | MoveAbsolute
+  | MoveDelta  
+  | SizeData
+  | PositionData
+  | { zIndex?: number }
+  | Record<string, unknown>;
+
 export interface BatchOperation {
   id: string;
   type: 'update' | 'delete' | 'create' | 'move';
   nodeId: string;
-  data?: Partial<CanvasNode>;
+  data?: OperationData;
   timestamp: number;
+}
+
+// Helper function to apply move operations with different data formats
+function applyMoveData(currentPosition: { x: number; y: number }, data: OperationData = {}): { x: number; y: number } {
+  const d = data as any;
+  
+  // Handle position object format
+  if (d.position && (d.position.x !== undefined || d.position.y !== undefined)) {
+    return {
+      x: d.position.x ?? currentPosition.x,
+      y: d.position.y ?? currentPosition.y,
+    };
+  }
+  
+  // Handle absolute x/y format
+  if (d.x !== undefined || d.y !== undefined) {
+    return {
+      x: d.x ?? currentPosition.x,
+      y: d.y ?? currentPosition.y,
+    };
+  }
+  
+  // Handle delta dx/dy format
+  if (d.dx !== undefined || d.dy !== undefined) {
+    return {
+      x: currentPosition.x + (d.dx ?? 0),
+      y: currentPosition.y + (d.dy ?? 0),
+    };
+  }
+  
+  return currentPosition;
+}
+
+// Helper function to normalize operation data to CanvasNode format
+function normalizeOperationData(operation: BatchOperation, currentNode?: Partial<CanvasNode>): Partial<CanvasNode> {
+  if (!operation.data) return {};
+  
+  const d = operation.data as any;
+  const result: any = {};
+  
+  // Handle different operation types
+  switch (operation.type) {
+    case 'move': {
+      if (currentNode?.transform?.position) {
+        const newPosition = applyMoveData(currentNode.transform.position, operation.data);
+        result.transform = {
+          ...currentNode.transform,
+          position: newPosition,
+        };
+      }
+      break;
+    }
+    
+    case 'update':
+    case 'create': {
+      // Copy all data as-is, handling position and size specially
+      Object.assign(result, d);
+      
+      // Handle shorthand position data
+      if (d.x !== undefined || d.y !== undefined) {
+        result.transform = {
+          ...result.transform,
+          position: {
+            x: d.x ?? (currentNode?.transform?.position?.x ?? 0),
+            y: d.y ?? (currentNode?.transform?.position?.y ?? 0),
+          },
+          rotation: result.transform?.rotation ?? 0,
+          scale: result.transform?.scale ?? { x: 1, y: 1 },
+        };
+        delete result.x;
+        delete result.y;
+      }
+      
+      // Handle shorthand size data
+      if (d.width !== undefined || d.height !== undefined) {
+        result.size = {
+          width: d.width ?? (currentNode?.size?.width ?? 100),
+          height: d.height ?? (currentNode?.size?.height ?? 100),
+        };
+        delete result.width;
+        delete result.height;
+      }
+      break;
+    }
+  }
+  
+  return result as Partial<CanvasNode>;
 }
 
 export class BatchProcessor {
@@ -70,9 +172,13 @@ export class BatchProcessor {
   }
 
   private mergeOperations(existing: BatchOperation, incoming: BatchOperation): BatchOperation {
+    // Normalize both operations to CanvasNode format before merging
+    const existingNormalized = normalizeOperationData(existing);
+    const incomingNormalized = normalizeOperationData(incoming);
+    
     return {
       ...existing,
-      data: { ...existing.data, ...incoming.data },
+      data: { ...existingNormalized, ...incomingNormalized },
       timestamp: incoming.timestamp
     };
   }
