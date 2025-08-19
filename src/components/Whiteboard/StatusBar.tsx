@@ -6,21 +6,26 @@ import { Wifi, WifiOff, Users, MousePointer, Zap } from 'lucide-react';
 
 interface StatusBarProps {
   isConnected: boolean;
+  isLocalMode?: boolean;
   fps: number;
   zoom: number;
   elementsCount: number;
   selectedCount: number;
+  boardId?: string | null;
   'data-test-id'?: string;
 }
 
 const StatusBar: React.FC<StatusBarProps> = ({
   isConnected,
+  isLocalMode = false,
   fps,
   zoom,
   elementsCount,
   selectedCount,
+  boardId,
   'data-test-id': testId
 }) => {
+  const connectionStatus = isLocalMode ? 'local-ephemeral' : (isConnected ? 'connected' : 'disconnected');
   return (
     <div 
       className="flex items-center justify-between px-4 py-2 bg-background/95 backdrop-blur-sm border-t text-xs"
@@ -28,16 +33,21 @@ const StatusBar: React.FC<StatusBarProps> = ({
     >
       <div className="flex items-center gap-3">
         {/* Connection Status */}
-        <div className="flex items-center gap-1">
-          {isConnected ? (
+        <div className="flex items-center gap-1" data-test-id="status-realtime">
+          {connectionStatus === 'connected' ? (
             <>
               <Wifi className="w-3 h-3 text-green-500" />
-              <span className="text-green-500">متصل</span>
+              <span className="text-green-500">connected</span>
+            </>
+          ) : connectionStatus === 'local-ephemeral' ? (
+            <>
+              <WifiOff className="w-3 h-3 text-yellow-500" />
+              <span className="text-yellow-500">local-ephemeral</span>
             </>
           ) : (
             <>
               <WifiOff className="w-3 h-3 text-red-500" />
-              <span className="text-red-500">غير متصل</span>
+              <span className="text-red-500">disconnected</span>
             </>
           )}
         </div>
@@ -71,11 +81,13 @@ const StatusBar: React.FC<StatusBarProps> = ({
           {Math.round(zoom * 100)}%
         </Badge>
 
-        {/* Session Info */}
-        <div className="flex items-center gap-1 text-muted-foreground" data-test-id="status-realtime">
-          <Users className="w-3 h-3" />
-          <span>جلسة فردية</span>
-        </div>
+        {/* Board ID */}
+        {boardId && (
+          <div className="flex items-center gap-1 text-muted-foreground text-xs">
+            <Users className="w-3 h-3" />
+            <span>{boardId.substring(0, 8)}...</span>
+          </div>
+        )}
       </div>
     </div>
   );

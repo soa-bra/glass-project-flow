@@ -7,11 +7,13 @@ export default function IntegratedPlanningCanvasCard() {
   return (
     <AuthProvider>
       <div 
-        id="solidarity-planning-canvas" 
-        className="h-full w-full rounded-2xl overflow-hidden bg-white shadow-lg"
+        className="relative w-full h-[calc(100vh-220px)] min-h-[560px] rounded-2xl overflow-hidden bg-white/90"
         data-test-id="integrated-planning-canvas"
       >
-        <CollaborativeCanvas boardId="integrated-planning-default" />
+        <CollaborativeCanvas
+          boardAlias="integrated-planning-default"
+          data-test-id="integrated-planning-canvas"
+        />
       </div>
     </AuthProvider>
   );

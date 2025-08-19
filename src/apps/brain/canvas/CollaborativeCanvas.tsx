@@ -18,21 +18,26 @@ import { getViewportCenter, type SmartElementType } from './types';
 import { smartElementsRegistry } from '@/lib/smart-elements/smart-elements-registry';
 
 interface CollaborativeCanvasProps {
-  boardId?: string;
+  boardAlias?: string;
   className?: string;
+  'data-test-id'?: string;
 }
 
 export default function CollaborativeCanvas({ 
-  boardId = 'integrated-planning-default', 
-  className = '' 
+  boardAlias = 'integrated-planning-default', 
+  className = '',
+  'data-test-id': testId
 }: CollaborativeCanvasProps) {
+  const [boardId, setBoardId] = useState<string | null>(null);
   const { user, hasPermission } = useAuth();
-  const { logCanvasOperation, logWF01Event, logCustomEvent } = useTelemetry({ boardId });
+  const { logCanvasOperation, logWF01Event, logCustomEvent } = useTelemetry({ boardId: boardId || boardAlias });
   
   // Core canvas state
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isLocalMode, setIsLocalMode] = useState(false);
+  const [showGrid, setShowGrid] = useState(true);
   const [sceneGraph] = useState(() => new SceneGraph());
-  const [connectionManager] = useState(() => new ConnectionManager(sceneGraph, boardId));
+  const [connectionManager] = useState(() => new ConnectionManager(sceneGraph, boardAlias));
   const [yDoc] = useState(() => new Y.Doc());
   const [yProvider, setYProvider] = useState<YSupabaseProvider | null>(null);
   
@@ -47,6 +52,7 @@ export default function CollaborativeCanvas({
   
   // Refs
   const canvasRef = useRef<HTMLDivElement>(null);
+  const hostRef = useRef<HTMLDivElement>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   
   // Hooks
@@ -70,20 +76,22 @@ export default function CollaborativeCanvas({
       try {
         logCanvasOperation('canvas_init_start', {});
         
-        // Check if board exists
+        // Try to find board by alias first
         let { data: board, error: boardError } = await supabase
           .from('boards')
           .select('*')
-          .eq('id', boardId)
+          .eq('title', boardAlias)
+          .eq('owner_id', user.id)
           .single();
+
+        let actualBoardId = boardAlias;
 
         if (boardError && boardError.code === 'PGRST116') {
           // Create default board
           const { data: newBoard, error: createError } = await supabase
             .from('boards')
             .insert({
-              id: boardId,
-              title: 'التخطيط التضامني',
+              title: boardAlias,
               description: 'لوحة التخطيط التضامني المتكاملة',
               owner_id: user.id,
               is_public: false
@@ -93,27 +101,49 @@ export default function CollaborativeCanvas({
 
           if (createError) throw createError;
           board = newBoard;
+          actualBoardId = newBoard.id;
         } else if (boardError) {
-          throw boardError;
+          console.warn('Board access failed, entering local mode:', boardError);
+          setIsLocalMode(true);
+          setIsInitialized(true);
+          return;
+        } else {
+          actualBoardId = board.id;
         }
 
-        // Initialize Y.js provider
-        const provider = new YSupabaseProvider(yDoc, boardId, user.id, {
+        setBoardId(actualBoardId);
+
+        // Initialize Y.js provider with connection timeout
+        const provider = new YSupabaseProvider(yDoc, actualBoardId, user.id, {
           name: user.email?.split('@')[0] || 'User',
           color: '#' + Math.floor(Math.random()*16777215).toString(16)
         });
 
         provider.onConnectionChange = setIsConnected;
         
-        await provider.connect();
-        setYProvider(provider);
-        setIsInitialized(true);
+        // Try to connect with 3 second timeout
+        const connectionPromise = provider.connect();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Connection timeout')), 3000)
+        );
 
+        try {
+          await Promise.race([connectionPromise, timeoutPromise]);
+          setYProvider(provider);
+        } catch (error) {
+          console.warn('Realtime connection failed, entering local mode:', error);
+          setIsLocalMode(true);
+          provider.disconnect();
+        }
+
+        setIsInitialized(true);
         logCanvasOperation('canvas_init_complete', {});
-        logCustomEvent('canvas_initialized', { boardId });
+        logCustomEvent('canvas_initialized', { boardId: actualBoardId });
         
       } catch (error) {
         console.error('Failed to initialize board:', error);
+        setIsLocalMode(true);
+        setIsInitialized(true);
         logCustomEvent('canvas_init_error', { error: error.message });
       }
     };
@@ -123,21 +153,19 @@ export default function CollaborativeCanvas({
     return () => {
       yProvider?.disconnect();
     };
-  }, [user, boardId, logCanvasOperation, logCustomEvent]);
+  }, [user, boardAlias, logCanvasOperation, logCustomEvent]);
 
   // Resize observer setup
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!hostRef.current) return;
 
-    resizeObserverRef.current = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect;
-        // Handle resize
-        logCanvasOperation('canvas_resized', { width, height });
-      }
+    resizeObserverRef.current = new ResizeObserver(([entry]) => {
+      const cr = entry.contentRect;
+      // Log resize event for canvas
+      logCanvasOperation('canvas_resized', { width: cr.width, height: cr.height });
     });
 
-    resizeObserverRef.current.observe(canvasRef.current);
+    resizeObserverRef.current.observe(hostRef.current);
 
     return () => {
       resizeObserverRef.current?.disconnect();
@@ -167,21 +195,96 @@ export default function CollaborativeCanvas({
     }
   }, [isInitialized]);
 
-  // Auto-save every 10 seconds
+  // Auto-save every 10 seconds and seed default sticky
   useEffect(() => {
-    if (!yProvider || !isInitialized) return;
+    if (!isInitialized) return;
 
-    const autoSave = setInterval(async () => {
+    // Seed default sticky if canvas is empty
+    const seedDefaultSticky = async () => {
       try {
-        await yProvider.createSnapshot();
-        logCanvasOperation('canvas_auto_saved', { boardId });
+        // Check if canvas is empty
+        const nodes = sceneGraph.getAllNodes();
+        if (nodes.length === 0) {
+          // Check if there are any board_objects
+          if (boardId && !isLocalMode) {
+            const { data: objects } = await supabase
+              .from('board_objects')
+              .select('id')
+              .eq('board_id', boardId)
+              .limit(1);
+            
+            if (objects && objects.length === 0) {
+              // Insert default sticky with proper structure
+              const defaultSticky = {
+                id: 'default-sticky-' + Date.now(),
+                type: 'sticky' as const,
+                transform: {
+                  position: { x: 0, y: 0 },
+                  rotation: 0,
+                  scale: { x: 1, y: 1 }
+                },
+                size: { width: 260, height: 180 },
+                style: { 
+                  fill: '#fef3c7', 
+                  stroke: '#92400e',
+                  strokeWidth: 2,
+                  opacity: 1 
+                },
+                content: 'أهلًا! جرّب التكبير والسحب أو اضغط S لإضافة عنصر ذكي.',
+                color: '#92400e',
+                metadata: { seeded: true }
+              };
+              
+              sceneGraph.addNode(defaultSticky);
+              logCustomEvent('default_sticky_seeded', { boardId });
+            }
+          } else if (isLocalMode) {
+            // Local mode - add directly to sceneGraph with proper structure
+            const defaultSticky = {
+              id: 'default-sticky-local-' + Date.now(),
+              type: 'sticky' as const,
+              transform: {
+                position: { x: 0, y: 0 },
+                rotation: 0,
+                scale: { x: 1, y: 1 }
+              },
+              size: { width: 260, height: 180 },
+              style: { 
+                fill: '#fef3c7', 
+                stroke: '#92400e',
+                strokeWidth: 2,
+                opacity: 1 
+              },
+              content: 'أهلًا! أنت في الوضع المحلي. جرّب التكبير والسحب أو اضغط S لإضافة عنصر ذكي.',
+              color: '#92400e',
+              metadata: { seeded: true, local: true }
+            };
+            
+            sceneGraph.addNode(defaultSticky);
+            logCustomEvent('default_sticky_seeded_local', {});
+          }
+        }
       } catch (error) {
-        console.error('Auto-save failed:', error);
+        console.error('Failed to seed default sticky:', error);
       }
-    }, 10000);
+    };
 
-    return () => clearInterval(autoSave);
-  }, [yProvider, isInitialized, boardId, logCanvasOperation]);
+    seedDefaultSticky();
+
+    // Auto-save for non-local mode
+    if (!isLocalMode && yProvider) {
+      const autoSave = setInterval(async () => {
+        try {
+          await yProvider.createSnapshot();
+          logCanvasOperation('canvas_auto_saved', { boardId });
+        } catch (error) {
+          console.error('Auto-save failed:', error);
+        }
+      }, 10000);
+
+      return () => clearInterval(autoSave);
+    }
+  }, [yProvider, isInitialized, boardId, isLocalMode, sceneGraph, logCanvasOperation, logCustomEvent]);
 
   // Tool handlers
   const handleToolChange = useCallback((tool: string) => {
@@ -283,9 +386,9 @@ export default function CollaborativeCanvas({
 
   return (
     <div 
-      className={`relative h-full w-full flex flex-col overflow-hidden ${className}`}
-      data-test-id="collaborative-canvas"
-      ref={canvasRef}
+      className={`relative w-full h-full ${className}`}
+      data-test-id={testId}
+      ref={hostRef}
     >
       {/* Top Toolbar */}
       <WhiteboardTopbar
@@ -299,12 +402,14 @@ export default function CollaborativeCanvas({
         onZoomOut={handleZoomOut}
         onZoomReset={handleZoomReset}
         zoom={zoom}
+        showGrid={showGrid}
+        onGridToggle={() => setShowGrid(prev => !prev)}
         data-test-id="canvas-topbar"
       />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="absolute inset-0 top-12 bottom-8">
         {/* Main Canvas Area */}
-        <div className="flex-1 relative">
+        <div className="relative w-full h-full" data-test-id="canvas-stage">
           <WhiteboardRoot
             sceneGraph={sceneGraph}
             connectionManager={connectionManager}
@@ -316,7 +421,6 @@ export default function CollaborativeCanvas({
             onZoomChange={setZoom}
             canvasPosition={canvasPosition}
             onCanvasPositionChange={setCanvasPosition}
-            data-test-id="canvas-stage"
           />
 
           {/* Smart Elements Panel Overlay */}
@@ -334,7 +438,7 @@ export default function CollaborativeCanvas({
 
         {/* Properties Panel */}
         {selectedElements.length > 0 && (
-          <div className="w-80 bg-background/95 backdrop-blur-sm border-l">
+          <div className="absolute right-0 top-0 bottom-0 w-80 bg-background/95 backdrop-blur-sm border-l">
             <PropertiesPanel
               selectedElements={selectedElements}
               sceneGraph={sceneGraph}
@@ -351,10 +455,12 @@ export default function CollaborativeCanvas({
       {/* Bottom Status Bar */}
       <StatusBar
         isConnected={isConnected}
+        isLocalMode={isLocalMode}
         fps={fps}
         zoom={zoom}
         elementsCount={sceneGraph.getAllNodes().length}
         selectedCount={selectedElements.length}
+        boardId={boardId}
         data-test-id="status-bar"
       />
     </div>

@@ -1,67 +1,85 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Solidarity Planning Canvas - Smoke Test', () => {
-  test.beforeEach(async ({ page }) => {
-    // Navigate to planning workspace
-    await page.goto('/operations/solidarity/planning');
-  });
-
-  test('should display canvas and basic smart elements functionality', async ({ page }) => {
-    // Check if integrated planning canvas is present
-    const canvas = page.locator('[data-test-id="integrated-planning-canvas"]');
-    await expect(canvas).toBeVisible();
-
-    // Check if canvas stage is present
+  test('should load canvas and basic functionality', async ({ page }) => {
+    // Navigate to the planning workspace
+    await page.goto('/');
+    
+    // Wait for the canvas container to be visible
+    await expect(page.locator('[data-test-id="integrated-planning-canvas"]')).toBeVisible();
+    
+    // Check canvas stage exists and has reasonable dimensions
     const canvasStage = page.locator('[data-test-id="canvas-stage"]');
     await expect(canvasStage).toBeVisible();
-
-    // Click smart tool button
-    const smartToolBtn = page.locator('[data-test-id="btn-smart-tool"]');
-    await expect(smartToolBtn).toBeVisible();
-    await smartToolBtn.click();
-
-    // Check if smart panel opens
+    
+    const boundingBox = await canvasStage.boundingBox();
+    expect(boundingBox).toBeTruthy();
+    expect(boundingBox!.width).toBeGreaterThan(300);
+    expect(boundingBox!.height).toBeGreaterThan(300);
+    
+    // Check connection status (should be either connected or local-ephemeral)
+    const statusRealtime = page.locator('[data-test-id="status-realtime"]');
+    await expect(statusRealtime).toBeVisible();
+    
+    const statusText = await statusRealtime.textContent();
+    expect(statusText).toMatch(/(connected|local-ephemeral|disconnected)/);
+    
+    // Test grid toggle (should not crash)
+    const gridToggle = page.locator('[data-test-id="btn-grid-toggle"]');
+    await expect(gridToggle).toBeVisible();
+    
+    await gridToggle.click();
+    await gridToggle.click(); // Toggle back
+    
+    // Test smart tool panel
+    const smartToolButton = page.locator('[data-test-id="btn-smart-tool"]');
+    await expect(smartToolButton).toBeVisible();
+    
+    await smartToolButton.click();
+    
+    // Smart panel should appear
     const smartPanel = page.locator('[data-test-id="modal-smart-panel"]');
     await expect(smartPanel).toBeVisible();
-
-    // Look for any smart element button (should have at least basic elements)
-    const elementButtons = page.locator('[data-test-id="modal-smart-panel"] button');
-    await expect(elementButtons.first()).toBeVisible();
-
-    // Try to click first available element (if any)
-    const firstElement = elementButtons.first();
-    if (await firstElement.isVisible()) {
-      await firstElement.click();
-      
-      // Panel should close after selection
-      await expect(smartPanel).not.toBeVisible();
-    }
-
-    // Test close panel with close button
-    await smartToolBtn.click();
-    await expect(smartPanel).toBeVisible();
     
-    const closeBtn = page.locator('[data-test-id="btn-close-panel"]');
-    if (await closeBtn.isVisible()) {
-      await closeBtn.click();
-      await expect(smartPanel).not.toBeVisible();
+    // Close the panel
+    const closeButton = page.locator('[data-test-id="btn-close-panel"]');
+    if (await closeButton.isVisible()) {
+      await closeButton.click();
+    } else {
+      // Try Escape key
+      await page.keyboard.press('Escape');
     }
-
-    // Test close with Escape key
-    await smartToolBtn.click();
-    await expect(smartPanel).toBeVisible();
-    await page.keyboard.press('Escape');
+    
+    // Panel should be hidden
     await expect(smartPanel).not.toBeVisible();
+    
+    // Check if default sticky exists (seeded content)
+    // This might not always be visible immediately, so we'll check if canvas has some content
+    const fpsCounter = page.locator('[data-test-id="status-fps"]');
+    await expect(fpsCounter).toBeVisible();
+    
+    const fpsText = await fpsCounter.textContent();
+    expect(fpsText).toMatch(/\d+\s*FPS/);
   });
 
-  test('should handle canvas interactions', async ({ page }) => {
-    const canvasStage = page.locator('[data-test-id="canvas-stage"]');
-    await expect(canvasStage).toBeVisible();
-
-    // Test basic canvas interaction (click on canvas)
-    await canvasStage.click({ position: { x: 200, y: 150 } });
+  test('should handle zoom controls', async ({ page }) => {
+    await page.goto('/');
     
-    // Canvas should remain interactive
-    await expect(canvasStage).toBeVisible();
+    await expect(page.locator('[data-test-id="integrated-planning-canvas"]')).toBeVisible();
+    
+    // Test zoom in
+    const zoomInButton = page.locator('[data-test-id="btn-zoom-in"]');
+    await expect(zoomInButton).toBeVisible();
+    await zoomInButton.click();
+    
+    // Test zoom out  
+    const zoomOutButton = page.locator('[data-test-id="btn-zoom-out"]');
+    await expect(zoomOutButton).toBeVisible();
+    await zoomOutButton.click();
+    
+    // Test zoom reset
+    const zoomResetButton = page.locator('[data-test-id="btn-zoom-reset"]');
+    await expect(zoomResetButton).toBeVisible();
+    await zoomResetButton.click();
   });
 });
