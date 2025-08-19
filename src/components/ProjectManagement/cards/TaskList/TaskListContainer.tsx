@@ -23,12 +23,7 @@ export const TaskListContainer = forwardRef<HTMLDivElement, TaskListContainerPro
         paddingBottom: '0px',
         direction: 'rtl',
         display: 'flex',
-        flexDirection: 'column',
-        position: 'fixed',
-        bottom: '0',
-        left: '0',
-        right: '0',
-        top: 'auto'
+        flexDirection: 'column'
       }}
     >
       {children}
