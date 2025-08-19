@@ -6,8 +6,9 @@ import { SnapManager } from './controllers/snap-manager';
 import { InputController } from './controllers/input-controller';
 import { NodeFactory } from './nodes/node-factory';
 import { nanoid } from 'nanoid';
+import { EventEmitter } from 'events';
 
-export class InfiniteCanvasEngine implements CanvasAPI {
+export class InfiniteCanvasEngine extends EventEmitter implements CanvasAPI {
   private sceneGraph: SceneGraph;
   private camera: CameraController;
   private selection: SelectionManager;
@@ -17,6 +18,7 @@ export class InfiniteCanvasEngine implements CanvasAPI {
   private ctx: CanvasRenderingContext2D;
 
   constructor(canvas: HTMLCanvasElement) {
+    super();
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
     
@@ -40,15 +42,20 @@ export class InfiniteCanvasEngine implements CanvasAPI {
       node
     );
     this.sceneGraph.addNode(fullNode);
+    this.emit('nodeAdded', fullNode);
     return fullNode.id;
   }
 
   updateNode(id: string, patch: Partial<CanvasNode>): void {
-    this.sceneGraph.updateNode(id, patch);
+    const updated = this.sceneGraph.updateNode(id, patch);
+    if (updated) {
+      this.emit('nodeUpdated', updated);
+    }
   }
 
   removeNode(id: string): void {
     this.sceneGraph.removeNode(id);
+    this.emit('nodeRemoved', id);
   }
 
   getNode(id: string): CanvasNode | undefined {
@@ -133,3 +140,6 @@ export class InfiniteCanvasEngine implements CanvasAPI {
     });
   }
 }
+
+// Export as CanvasEngine for convenience
+export const CanvasEngine = InfiniteCanvasEngine;
