@@ -101,15 +101,15 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
           </div>
           
           <div className="flex items-center gap-2 ml-4">
-            <Button variant="outline" size="sm" onClick={handleEdit} className="h-9 bg-black text-white hover:bg-black/80 rounded-full gap-2 ">
+            <Button variant="outline" size="sm" onClick={handleEdit} className="px-4 py-2 rounded-full bg-black text-white gap-2 font-normal">
               <Edit className="w-4 h-4 mr-1" />
               تعديل
             </Button>
-            <Button variant="outline" size="sm" onClick={handleArchive} className="h-9 bg-black text-white hover:bg-black/80 rounded-full gap-2 ">
+            <Button variant="outline" size="sm" onClick={handleArchive} className="px-4 py-2 rounded-full bg-black text-white gap-2 font-normal">
               <Archive className="w-4 h-4 mr-1 bg-transparent" />
               أرشفة
             </Button>
-            <Button variant="outline" size="sm" onClick={handleDelete} className="px-4 py-2 rounded-full font-medium transition-colors bg-soabra-error bg-[soabra-status-error] text-[soabra-sidebar-bg] text-rose-100">
+            <Button variant="outline" size="sm" onClick={handleDelete} className="px-4 py-2 rounded-full font-medium bg-soabra-error text-rose-100">
               <Trash2 className="w-4 h-4 mr-1" />
               حذف
             </Button>
@@ -371,7 +371,7 @@ const TaskAttachmentsTab: React.FC<{
   return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold text-black">المرفقات ({attachments.length})</h4>
-        <Button size="sm" onClick={handleAddAttachment} className="h-9 bg-black text-white hover:bg-black/80 rounded-full gap-2 ">
+        <Button size="sm" onClick={handleAddAttachment} className="px-4 py-2 rounded-full bg-black text-white gap-2 font-normal">
           <Upload className="w-4 h-4 mr-1" />
           إضافة مرفق
         </Button>
