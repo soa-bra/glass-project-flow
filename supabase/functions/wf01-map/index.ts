@@ -1,49 +1,45 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface WF01MapRequest {
-  snapshot: {
-    id: string;
-    name: string;
-    data: {
-      elements: Array<{
-        id: string;
-        type: string;
-        content?: string;
-        position: { x: number; y: number };
-        size?: { width: number; height: number };
-        metadata?: Record<string, any>;
-      }>;
-      links?: Array<{
-        id: string;
-        from_object_id: string;
-        to_object_id: string;
-        style?: Record<string, any>;
-      }>;
-    };
-  };
+interface CanvasElement {
+  id: string;
+  type: string;
+  content?: string;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  style?: Record<string, any>;
+  metadata?: Record<string, any>;
+}
+
+interface CanvasLink {
+  id: string;
+  from_object_id: string;
+  to_object_id: string;
+  style?: Record<string, any>;
+  label?: string;
 }
 
 interface MappingResult {
-  success: boolean;
-  mapped: Array<{
-    original_id: string;
-    original_type: string;
-    mapped_to: 'project' | 'phase' | 'task';
-    new_id: string;
-    reasoning: string;
-  }>;
-  skipped: Array<{
-    original_id: string;
-    original_type: string;
-    reason: string;
-  }>;
-  project_id?: string;
+  type: 'project' | 'phase' | 'task' | 'dependency' | 'skipped';
+  sourceId: string;
+  sourceType: string;
+  targetData?: Record<string, any>;
+  confidence: number;
+  reason: string;
+  suggestions?: string[];
+}
+
+interface WF01Request {
+  elements: CanvasElement[];
+  links: CanvasLink[];
+  boardId: string;
+  userId: string;
 }
 
 serve(async (req) => {
@@ -53,237 +49,129 @@ serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { elements, links, boardId, userId }: WF01Request = await req.json();
+
+    console.log(`WF-01 Processing ${elements.length} elements and ${links.length} links`);
+
+    // Step 1: Analyze and categorize elements
+    const mappingResults: MappingResult[] = [];
+    const elementMap = new Map<string, CanvasElement>();
     
-    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
+    // Build element map for quick lookup
+    elements.forEach(element => elementMap.set(element.id, element));
 
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader) {
-      throw new Error('Authorization header required');
-    }
-
-    // التحقق من المصادقة
-    const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
-    if (authError || !user) {
-      throw new Error('Invalid authentication');
-    }
-
-    const { snapshot }: WF01MapRequest = await req.json();
-
-    if (!snapshot || !snapshot.data || !snapshot.data.elements) {
-      throw new Error('Invalid snapshot data');
-    }
-
-    console.log(`Processing snapshot: ${snapshot.name} with ${snapshot.data.elements.length} elements`);
-
-    // التحقق من وجود OpenAI API Key للتحسينات الاختيارية
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    const aiEnhancementsEnabled = !!openAIApiKey;
-
-    // قواعد التحويل حسب سـوبــرا
-    const mappingRules = {
-      // Sticky Notes → Tasks
-      sticky: (element: any) => ({
-        type: 'task',
-        priority: extractPriority(element.content || ''),
-        status: extractStatus(element.content || ''),
-        reasoning: 'Sticky note converted to task based on سـوبــرا methodology'
-      }),
-      
-      // Frames → Project Phases
-      frame: (element: any) => ({
+    // Step 2: Map Frame elements to Project Phases
+    const frames = elements.filter(el => el.type === 'frame' || el.metadata?.smartElementType === 'Frame');
+    for (const frame of frames) {
+      const phaseData = mapFrameToPhase(frame, elements, links);
+      mappingResults.push({
         type: 'phase',
-        status: 'planning',
-        reasoning: 'Frame converted to project phase for structured workflow'
-      }),
-      
-      // Connectors → Dependencies
-      connector: (element: any) => ({
-        type: 'dependency',
-        reasoning: 'Connector represents task dependency relationship'
-      })
-    };
-
-    const mapped: MappingResult['mapped'] = [];
-    const skipped: MappingResult['skipped'] = [];
-
-    // تحسين اسم ووصف المشروع بالذكاء الاصطناعي (اختياري)
-    let projectName = `مشروع مُحوّل من ${snapshot.name}`;
-    let projectDescription = `تم تحويله من snapshot: ${snapshot.id}`;
-
-    if (aiEnhancementsEnabled) {
-      try {
-        const enhancement = await enhanceProjectNaming(openAIApiKey, snapshot);
-        projectName = enhancement.name || projectName;
-        projectDescription = enhancement.description || projectDescription;
-        console.log('AI enhancement applied to project naming');
-      } catch (aiError) {
-        console.warn('AI enhancement failed, using default naming:', aiError.message);
-      }
+        sourceId: frame.id,
+        sourceType: frame.type,
+        targetData: phaseData,
+        confidence: calculateConfidence(frame, 'phase'),
+        reason: `Frame "${frame.content || 'Unnamed'}" mapped to project phase`,
+        suggestions: generatePhaseSuggestions(frame, elements)
+      });
     }
 
-    // إنشاء مشروع جديد
-    const { data: project, error: projectError } = await supabase
-      .from('projects')
-      .insert({
-        name: projectName,
-        description: projectDescription,
-        owner_id: user.id,
-        status: 'planning',
-        settings: {
-          source_snapshot_id: snapshot.id,
-          mapped_at: new Date().toISOString(),
-          ai_enhanced: aiEnhancementsEnabled
-        }
-      })
-      .select()
-      .single();
-
-    if (projectError) {
-      throw new Error(`Failed to create project: ${projectError.message}`);
+    // Step 3: Map Sticky elements to Tasks
+    const stickies = elements.filter(el => 
+      el.type === 'sticky' || 
+      el.metadata?.smartElementType === 'StickyNote' ||
+      (el.type === 'text' && isTaskLike(el.content || ''))
+    );
+    
+    for (const sticky of stickies) {
+      const taskData = mapStickyToTask(sticky, elements, links);
+      mappingResults.push({
+        type: 'task',
+        sourceId: sticky.id,
+        sourceType: sticky.type,
+        targetData: taskData,
+        confidence: calculateConfidence(sticky, 'task'),
+        reason: `Sticky note mapped to task: "${taskData.title}"`,
+        suggestions: generateTaskSuggestions(sticky)
+      });
     }
 
-    console.log(`Created project: ${project.id}`);
-
-    // تحويل العناصر حسب القواعد
-    for (const element of snapshot.data.elements) {
-      const elementType = element.type.toLowerCase();
+    // Step 4: Map Links to Dependencies
+    for (const link of links) {
+      const fromElement = elementMap.get(link.from_object_id);
+      const toElement = elementMap.get(link.to_object_id);
       
-      if (mappingRules[elementType]) {
-        const mapping = mappingRules[elementType](element);
-        
-        try {
-          if (mapping.type === 'task') {
-            // تحسين عنوان ووصف المهمة بالذكاء الاصطناعي (اختياري)
-            let taskTitle = element.content || `مهمة من ${elementType}`;
-            let taskDescription = `تم تحويلها من عنصر ${elementType} في الـcanvas`;
-
-            if (aiEnhancementsEnabled && element.content) {
-              try {
-                const enhancement = await enhanceTaskDetails(openAIApiKey, element.content, elementType);
-                taskTitle = enhancement.title || taskTitle;
-                taskDescription = enhancement.description || taskDescription;
-              } catch (aiError) {
-                console.warn(`AI task enhancement failed for ${element.id}:`, aiError.message);
-              }
-            }
-
-            const { data: task, error: taskError } = await supabase
-              .from('project_tasks')
-              .insert({
-                project_id: project.id,
-                title: taskTitle,
-                description: taskDescription,
-                status: mapping.status || 'todo',
-                priority: mapping.priority || 'medium',
-                created_by: user.id,
-                estimated_hours: extractEstimatedHours(element.content || ''),
-              })
-              .select()
-              .single();
-
-            if (taskError) {
-              console.error(`Failed to create task for element ${element.id}:`, taskError);
-              skipped.push({
-                original_id: element.id,
-                original_type: elementType,
-                reason: `Database error: ${taskError.message}`
-              });
-            } else {
-              mapped.push({
-                original_id: element.id,
-                original_type: elementType,
-                mapped_to: 'task',
-                new_id: task.id,
-                reasoning: mapping.reasoning
-              });
-            }
-          } else if (mapping.type === 'phase') {
-            // تحسين اسم ووصف المرحلة بالذكاء الاصطناعي (اختياري)
-            let phaseName = element.content || `مرحلة من ${elementType}`;
-            let phaseDescription = `تم تحويلها من عنصر ${elementType} في الـcanvas`;
-
-            if (aiEnhancementsEnabled && element.content) {
-              try {
-                const enhancement = await enhancePhaseDetails(openAIApiKey, element.content, elementType);
-                phaseName = enhancement.name || phaseName;
-                phaseDescription = enhancement.description || phaseDescription;
-              } catch (aiError) {
-                console.warn(`AI phase enhancement failed for ${element.id}:`, aiError.message);
-              }
-            }
-
-            const { data: phase, error: phaseError } = await supabase
-              .from('project_phases')
-              .insert({
-                project_id: project.id,
-                name: phaseName,
-                description: phaseDescription,
-                status: mapping.status || 'planning',
-                order_index: mapped.filter(m => m.mapped_to === 'phase').length + 1,
-              })
-              .select()
-              .single();
-
-            if (phaseError) {
-              console.error(`Failed to create phase for element ${element.id}:`, phaseError);
-              skipped.push({
-                original_id: element.id,
-                original_type: elementType,
-                reason: `Database error: ${phaseError.message}`
-              });
-            } else {
-              mapped.push({
-                original_id: element.id,
-                original_type: elementType,
-                mapped_to: 'phase',
-                new_id: phase.id,
-                reasoning: mapping.reasoning
-              });
-            }
-          }
-        } catch (dbError) {
-          console.error(`Database operation failed for element ${element.id}:`, dbError);
-          skipped.push({
-            original_id: element.id,
-            original_type: elementType,
-            reason: `Database operation failed: ${dbError.message}`
-          });
-        }
-      } else {
-        skipped.push({
-          original_id: element.id,
-          original_type: elementType,
-          reason: `No mapping rule defined for type: ${elementType}`
+      if (fromElement && toElement) {
+        const dependencyData = mapLinkToDependency(link, fromElement, toElement);
+        mappingResults.push({
+          type: 'dependency',
+          sourceId: link.id,
+          sourceType: 'link',
+          targetData: dependencyData,
+          confidence: calculateConfidence(link, 'dependency'),
+          reason: `Connection from ${fromElement.content || fromElement.type} to ${toElement.content || toElement.type}`,
+          suggestions: []
         });
       }
     }
 
-    const result: MappingResult = {
+    // Step 5: Handle unmapped elements
+    const mappedIds = new Set(mappingResults.map(r => r.sourceId));
+    const unmappedElements = elements.filter(el => !mappedIds.has(el.id));
+    
+    for (const element of unmappedElements) {
+      mappingResults.push({
+        type: 'skipped',
+        sourceId: element.id,
+        sourceType: element.type,
+        confidence: 0,
+        reason: `Element type "${element.type}" not supported for project mapping`,
+        suggestions: getSkipSuggestions(element)
+      });
+    }
+
+    // Step 6: Generate project structure
+    const projectStructure = generateProjectStructure(mappingResults, boardId);
+
+    // Step 7: Calculate success metrics
+    const totalElements = elements.length + links.length;
+    const mappedCount = mappingResults.filter(r => r.type !== 'skipped').length;
+    const successRate = (mappedCount / totalElements) * 100;
+
+    const response = {
       success: true,
-      mapped,
-      skipped,
-      project_id: project.id
+      mappingResults,
+      projectStructure,
+      statistics: {
+        totalElements,
+        mappedElements: mappedCount,
+        skippedElements: totalElements - mappedCount,
+        successRate: Math.round(successRate * 100) / 100,
+        breakdown: {
+          phases: mappingResults.filter(r => r.type === 'phase').length,
+          tasks: mappingResults.filter(r => r.type === 'task').length,
+          dependencies: mappingResults.filter(r => r.type === 'dependency').length,
+          skipped: mappingResults.filter(r => r.type === 'skipped').length
+        }
+      },
+      recommendations: generateRecommendations(mappingResults, successRate)
     };
 
-    console.log(`Mapping completed: ${mapped.length} mapped, ${skipped.length} skipped`);
+    console.log(`WF-01 Complete: ${successRate}% success rate (${mappedCount}/${totalElements})`);
 
-    return new Response(JSON.stringify(result), {
+    return new Response(JSON.stringify(response), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Error in wf01-map function:', error);
-    return new Response(JSON.stringify({ 
+    console.error('WF-01 Error:', error);
+    return new Response(JSON.stringify({
       success: false,
       error: error.message,
-      mapped: [],
-      skipped: []
+      mappingResults: [],
+      statistics: { totalElements: 0, mappedElements: 0, skippedElements: 0, successRate: 0 }
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -291,156 +179,267 @@ serve(async (req) => {
   }
 });
 
-// دوال مساعدة لاستخراج البيانات من المحتوى
-function extractPriority(content: string): 'low' | 'medium' | 'high' | 'urgent' {
-  const lowKeywords = ['منخفض', 'بسيط', 'عادي', 'low'];
-  const highKeywords = ['مهم', 'عالي', 'أولوية', 'high', 'urgent'];
-  const urgentKeywords = ['عاجل', 'فوري', 'طارئ', 'urgent'];
+// Helper Functions
+
+function mapFrameToPhase(frame: CanvasElement, allElements: CanvasElement[], links: CanvasLink[]): any {
+  const childElements = findChildElements(frame, allElements);
   
+  return {
+    name: frame.content || `Phase ${frame.id.slice(-4)}`,
+    description: frame.metadata?.description || `Generated from frame element`,
+    status: 'planning' as const,
+    order_index: calculatePhaseOrder(frame, allElements),
+    estimated_duration: estimatePhaseTimeFromChildren(childElements),
+    metadata: {
+      sourceElementId: frame.id,
+      position: frame.position,
+      childCount: childElements.length
+    }
+  };
+}
+
+function mapStickyToTask(sticky: CanvasElement, allElements: CanvasElement[], links: CanvasLink[]): any {
+  const content = sticky.content || '';
+  const priority = extractPriority(content);
+  const status = extractStatus(content);
+  const timeEstimate = extractTimeEstimate(content);
+  
+  return {
+    title: cleanTaskTitle(content),
+    description: extractTaskDescription(content),
+    priority: mapToSupraPriority(priority),
+    status: mapToSupraStatus(status),
+    estimated_hours: timeEstimate,
+    metadata: {
+      sourceElementId: sticky.id,
+      position: sticky.position,
+      originalContent: content,
+      extractedInfo: { priority, status, timeEstimate }
+    }
+  };
+}
+
+function mapLinkToDependency(link: CanvasLink, fromElement: CanvasElement, toElement: CanvasElement): any {
+  return {
+    type: 'blocks' as const,
+    description: link.label || `${fromElement.content || fromElement.type} → ${toElement.content || toElement.type}`,
+    metadata: {
+      sourceLinkId: link.id,
+      fromElementId: fromElement.id,
+      toElementId: toElement.id,
+      linkStyle: link.style
+    }
+  };
+}
+
+function isTaskLike(content: string): boolean {
+  const taskKeywords = ['مهمة', 'task', 'todo', 'عمل', 'تنفيذ', 'إنجاز', 'تطوير'];
   const lowerContent = content.toLowerCase();
-  
-  if (urgentKeywords.some(keyword => lowerContent.includes(keyword))) return 'urgent';
-  if (highKeywords.some(keyword => lowerContent.includes(keyword))) return 'high';
-  if (lowKeywords.some(keyword => lowerContent.includes(keyword))) return 'low';
-  
+  return taskKeywords.some(keyword => lowerContent.includes(keyword));
+}
+
+function extractPriority(content: string): string {
+  const priorityPatterns = {
+    'عالي': /عالي|مرتفع|عاجل|هام/i,
+    'متوسط': /متوسط|عادي|طبيعي/i,
+    'منخفض': /منخفض|قليل|مؤجل/i,
+    'high': /high|urgent|critical/i,
+    'medium': /medium|normal/i,
+    'low': /low|minor/i
+  };
+
+  for (const [priority, pattern] of Object.entries(priorityPatterns)) {
+    if (pattern.test(content)) {
+      return priority;
+    }
+  }
   return 'medium';
 }
 
-function extractStatus(content: string): 'todo' | 'in_progress' | 'review' | 'done' {
-  const todoKeywords = ['جديد', 'للعمل', 'todo', 'new'];
-  const progressKeywords = ['جاري', 'تحت العمل', 'progress', 'working'];
-  const reviewKeywords = ['مراجعة', 'review', 'testing'];
-  const doneKeywords = ['منجز', 'مكتمل', 'done', 'complete'];
+function extractStatus(content: string): string {
+  const statusPatterns = {
+    'مكتمل': /مكتمل|منجز|انتهى|done|complete/i,
+    'جاري': /جاري|قيد التنفيذ|يعمل|in progress|doing/i,
+    'مخطط': /مخطط|جديد|لم يبدأ|planned|todo|new/i
+  };
+
+  for (const [status, pattern] of Object.entries(statusPatterns)) {
+    if (pattern.test(content)) {
+      return status;
+    }
+  }
+  return 'مخطط';
+}
+
+function extractTimeEstimate(content: string): number {
+  const timePattern = /(\d+)\s*(ساعة|hours?|يوم|days?|أسبوع|weeks?)/i;
+  const match = content.match(timePattern);
   
-  const lowerContent = content.toLowerCase();
+  if (match) {
+    const number = parseInt(match[1]);
+    const unit = match[2].toLowerCase();
+    
+    if (unit.includes('ساعة') || unit.includes('hour')) return number;
+    if (unit.includes('يوم') || unit.includes('day')) return number * 8;
+    if (unit.includes('أسبوع') || unit.includes('week')) return number * 40;
+  }
   
-  if (doneKeywords.some(keyword => lowerContent.includes(keyword))) return 'done';
-  if (reviewKeywords.some(keyword => lowerContent.includes(keyword))) return 'review';
-  if (progressKeywords.some(keyword => lowerContent.includes(keyword))) return 'in_progress';
-  
+  return Math.max(1, Math.min(8, content.length / 10)); // Estimate based on content length
+}
+
+function mapToSupraPriority(extracted: string): 'low' | 'medium' | 'high' {
+  if (['عالي', 'high'].includes(extracted)) return 'high';
+  if (['منخفض', 'low'].includes(extracted)) return 'low';
+  return 'medium';
+}
+
+function mapToSupraStatus(extracted: string): 'todo' | 'in_progress' | 'completed' {
+  if (['مكتمل'].includes(extracted)) return 'completed';
+  if (['جاري'].includes(extracted)) return 'in_progress';
   return 'todo';
 }
 
-function extractEstimatedHours(content: string): number | null {
-  // البحث عن أنماط الساعات في النص
-  const hourPatterns = [
-    /(\d+)\s*ساعة/g,
-    /(\d+)\s*س/g,
-    /(\d+)\s*hour/g,
-    /(\d+)h/g
-  ];
+function cleanTaskTitle(content: string): string {
+  // Remove priority/status indicators and clean up
+  return content
+    .replace(/\b(عالي|متوسط|منخفض|high|medium|low|مكتمل|جاري|مخطط)\b/gi, '')
+    .replace(/\s*[-:]\s*/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 100) || 'مهمة بدون عنوان';
+}
+
+function extractTaskDescription(content: string): string {
+  const title = cleanTaskTitle(content);
+  if (content.length > title.length + 20) {
+    return content.replace(title, '').trim();
+  }
+  return '';
+}
+
+function findChildElements(frame: CanvasElement, allElements: CanvasElement[]): CanvasElement[] {
+  const frameBounds = {
+    left: frame.position.x,
+    right: frame.position.x + frame.size.width,
+    top: frame.position.y,
+    bottom: frame.position.y + frame.size.height
+  };
+
+  return allElements.filter(element => {
+    if (element.id === frame.id) return false;
+    
+    const elBounds = {
+      left: element.position.x,
+      right: element.position.x + element.size.width,
+      top: element.position.y,
+      bottom: element.position.y + element.size.height
+    };
+
+    return (
+      elBounds.left >= frameBounds.left &&
+      elBounds.right <= frameBounds.right &&
+      elBounds.top >= frameBounds.top &&
+      elBounds.bottom <= frameBounds.bottom
+    );
+  });
+}
+
+function calculatePhaseOrder(frame: CanvasElement, allElements: CanvasElement[]): number {
+  const frames = allElements.filter(el => el.type === 'frame');
+  const sortedFrames = frames.sort((a, b) => a.position.x - b.position.x);
+  return sortedFrames.findIndex(f => f.id === frame.id) + 1;
+}
+
+function estimatePhaseTimeFromChildren(children: CanvasElement[]): number {
+  return Math.max(40, children.length * 8); // Minimum 1 week, 8 hours per child element
+}
+
+function calculateConfidence(element: any, targetType: string): number {
+  let confidence = 0.5; // Base confidence
+
+  if (targetType === 'phase' && element.type === 'frame') confidence += 0.3;
+  if (targetType === 'task' && element.type === 'sticky') confidence += 0.2;
+  if (element.content && element.content.length > 5) confidence += 0.2;
+  if (element.metadata?.description) confidence += 0.1;
+
+  return Math.min(1, confidence);
+}
+
+function generatePhaseSuggestions(frame: CanvasElement, allElements: CanvasElement[]): string[] {
+  const suggestions = [];
+  const children = findChildElements(frame, allElements);
   
-  for (const pattern of hourPatterns) {
-    const match = content.match(pattern);
-    if (match) {
-      const hours = parseInt(match[1]);
-      if (!isNaN(hours) && hours > 0) {
-        return hours;
-      }
-    }
+  if (children.length === 0) {
+    suggestions.push('إضافة مهام للمرحلة');
+  }
+  if (!frame.content || frame.content.length < 5) {
+    suggestions.push('تحسين اسم المرحلة');
   }
   
-  return null;
+  return suggestions;
 }
 
-// دوال تحسين الذكاء الاصطناعي (اختيارية)
-async function enhanceProjectNaming(apiKey: string, snapshot: any): Promise<{name?: string, description?: string}> {
-  const prompt = `
-  بناءً على محتويات snapshot التالي، اقترح اسماً ووصفاً أفضل للمشروع:
+function generateTaskSuggestions(sticky: CanvasElement): string[] {
+  const suggestions = [];
+  const content = sticky.content || '';
   
-  اسم الـSnapshot: ${snapshot.name}
-  عدد العناصر: ${snapshot.data.elements.length}
-  عينة من المحتوى: ${snapshot.data.elements.slice(0, 3).map(e => e.content).join(', ')}
+  if (!extractPriority(content)) suggestions.push('تحديد الأولوية');
+  if (!extractTimeEstimate(content)) suggestions.push('تقدير الوقت المطلوب');
+  if (content.length < 10) suggestions.push('إضافة تفاصيل أكثر');
   
-  أرجع JSON بهذا الشكل:
-  {"name": "اسم المشروع المحسّن", "description": "وصف مفصل للمشروع"}
-  `;
-
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-4.1-2025-04-14',
-      messages: [
-        { role: 'system', content: 'أنت مساعد متخصص في إدارة المشاريع. أرجع JSON صالح فقط.' },
-        { role: 'user', content: prompt }
-      ],
-      max_tokens: 300,
-      temperature: 0.5,
-    }),
-  });
-
-  if (!response.ok) throw new Error(`OpenAI API error: ${response.status}`);
-
-  const data = await response.json();
-  return JSON.parse(data.choices[0].message.content);
+  return suggestions;
 }
 
-async function enhanceTaskDetails(apiKey: string, content: string, elementType: string): Promise<{title?: string, description?: string}> {
-  const prompt = `
-  حسّن عنوان ووصف هذه المهمة:
+function getSkipSuggestions(element: CanvasElement): string[] {
+  const suggestions = [];
   
-  المحتوى الأصلي: ${content}
-  نوع العنصر: ${elementType}
+  if (element.type === 'image') {
+    suggestions.push('يمكن إضافته كمرفق للمشروع');
+  } else if (element.type === 'line' || element.type === 'arrow') {
+    suggestions.push('تحويل إلى رابط بين العناصر');
+  }
   
-  أرجع JSON: {"title": "العنوان المحسّن", "description": "الوصف المفصل"}
-  `;
-
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-4.1-2025-04-14',
-      messages: [
-        { role: 'system', content: 'أنت مساعد متخصص في إدارة المهام. أرجع JSON صالح فقط.' },
-        { role: 'user', content: prompt }
-      ],
-      max_tokens: 200,
-      temperature: 0.3,
-    }),
-  });
-
-  if (!response.ok) throw new Error(`OpenAI API error: ${response.status}`);
-
-  const data = await response.json();
-  return JSON.parse(data.choices[0].message.content);
+  return suggestions;
 }
 
-async function enhancePhaseDetails(apiKey: string, content: string, elementType: string): Promise<{name?: string, description?: string}> {
-  const prompt = `
-  حسّن اسم ووصف هذه المرحلة:
-  
-  المحتوى الأصلي: ${content}
-  نوع العنصر: ${elementType}
-  
-  أرجع JSON: {"name": "الاسم المحسّن", "description": "الوصف المفصل"}
-  `;
+function generateProjectStructure(mappingResults: MappingResult[], boardId: string): any {
+  const phases = mappingResults.filter(r => r.type === 'phase');
+  const tasks = mappingResults.filter(r => r.type === 'task');
+  const dependencies = mappingResults.filter(r => r.type === 'dependency');
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
+  return {
+    project: {
+      name: `مشروع مولد من اللوح ${boardId.slice(-8)}`,
+      description: 'مشروع تم إنشاؤه تلقائياً من عناصر اللوح باستخدام WF-01',
+      status: 'planning',
+      metadata: {
+        sourceBoard: boardId,
+        generatedAt: new Date().toISOString(),
+        wf01Version: '1.0'
+      }
     },
-    body: JSON.stringify({
-      model: 'gpt-4.1-2025-04-14',
-      messages: [
-        { role: 'system', content: 'أنت مساعد متخصص في إدارة المشاريع. أرجع JSON صالح فقط.' },
-        { role: 'user', content: prompt }
-      ],
-      max_tokens: 200,
-      temperature: 0.3,
-    }),
-  });
+    phases: phases.map(p => p.targetData),
+    tasks: tasks.map(t => t.targetData),
+    dependencies: dependencies.map(d => d.targetData)
+  };
+}
 
-  if (!response.ok) throw new Error(`OpenAI API error: ${response.status}`);
-
-  const data = await response.json();
-  return JSON.parse(data.choices[0].message.content);
+function generateRecommendations(mappingResults: MappingResult[], successRate: number): string[] {
+  const recommendations = [];
+  
+  if (successRate < 70) {
+    recommendations.push('معدل النجاح منخفض - استخدم المزيد من إطارات العمل والملاحظات اللاصقة');
+  }
+  
+  const skipped = mappingResults.filter(r => r.type === 'skipped').length;
+  if (skipped > 5) {
+    recommendations.push(`${skipped} عنصر تم تجاهله - راجع العناصر المدعومة`);
+  }
+  
+  const lowConfidence = mappingResults.filter(r => r.confidence < 0.6).length;
+  if (lowConfidence > 3) {
+    recommendations.push('بعض التطبيقات غير مؤكدة - راجع النتائج قبل التطبيق');
+  }
+  
+  return recommendations;
 }
