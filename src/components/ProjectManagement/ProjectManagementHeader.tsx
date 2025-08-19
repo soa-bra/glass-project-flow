@@ -51,8 +51,8 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
   }, []);
 
   return (
-    <div className="flex-shrink-0 mb-6">
-      <div className="flex items-center justify-between">
+    <header className="sticky top-0 z-30 shrink-0 h-14 md:h-16 flex items-center gap-3 px-3 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex items-center justify-between w-full">
         <h1 className="font-medium text-[#2A3437] font-arabic text-3xl my-[12px]">
           إدارة المشروع
         </h1>
@@ -195,6 +195,6 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
           </button>
         </div>
       </div>
-    </div>
+    </header>
   );
 };

@@ -244,23 +244,24 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     }
   };
   return <>
-      <div className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
-      top: "var(--sidebar-top-offset)",
-      height: "calc(100vh - var(--sidebar-top-offset))",
+      <section className={`${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'} flex-1 min-h-0 flex flex-col overflow-hidden`} style={{
       borderRadius: "24px",
       background: "#F8F9FA",
       border: "1px solid rgba(255,255,255,0.2)",
-      transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
-      padding: "24px",
-      display: "flex",
-      flexDirection: "column",
-      overflow: "hidden"
+      transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)"
     }}>
         {/* الرأس */}
         <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
-        {/* محتوى التبويبة النشطة */}
-        {renderTabContent()}
+        {/* شريط التبويب ثابت ضمن نفس الحاوية */}
+        <div className="sticky top-14 md:top-16 z-20 border-b bg-background p-4">
+          {/* Tab content will be handled here if needed */}
+        </div>
+
+        {/* محتوى التبويبة النشطة - يمرّر رأسيًا */}
+        <div className="flex-1 min-h-0 overflow-y-auto p-6">
+          {renderTabContent()}
+        </div>
 
         {/* حوارات التأكيد */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -316,7 +317,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </section>
 
       {/* نافذة تعديل المشروع */}
       <AddProjectModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onProjectAdded={() => {}} // لن تستخدم في حالة التعديل

@@ -54,7 +54,11 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="h-full min-h-0 flex flex-col overflow-hidden">
+      <div className="px-3 py-2 border-b bg-background/60 backdrop-blur sticky top-0 z-10">
+        <h2 className="text-lg font-semibold">مركز التقارير</h2>
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-6">
       {/* حالة التقارير */}
       <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
@@ -220,6 +224,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

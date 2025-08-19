@@ -64,9 +64,16 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
     const colorIndex2 = Math.min(segmentIndex + 1, mainColors.length - 1);
     return interpolateColor(mainColors[colorIndex1], mainColors[colorIndex2], localPosition);
   };
-  return <div style={{
+  return <div className="w-full h-[clamp(6px,0.8vh,10px)] rounded-full bg-muted overflow-hidden relative">
+      <div
+        className="h-full bg-primary transition-[width] duration-500"
+        style={{ width: `${Math.min(Math.max(progress, 0), 100)}%` }}
+      />
+      
+      {/* الشريط التفصيلي الأصلي - مخفي افتراضياً ويظهر عند التمرير */}
+      <div style={{
     background: 'transparent'
-  }} className="relative w-full flex flex-row-reverse items-center font-arabic pt-0 pb-0 my-0 mx-0 py-[16px] px-[10px]">
+  }} className="absolute top-8 left-0 right-0 w-full flex flex-row-reverse items-center font-arabic pt-0 pb-0 my-0 mx-0 py-[16px] px-[10px] opacity-0 hover:opacity-100 transition-opacity duration-300">
 
       {/* شريط الشرائح */}
       <div ref={barRef} className="relative flex items-center justify-start flex-row-reverse gap-[3px] w-[80%] h-[25px]">
@@ -153,5 +160,6 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
             </span>
           </div>
         </div>}
+      </div>
     </div>;
 };
