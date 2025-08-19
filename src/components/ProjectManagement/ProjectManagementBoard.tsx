@@ -250,11 +250,9 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
           <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
         </div>
 
-        {/* محتوى التبويبة النشطة - مع حد سفلي محكوم */}
+        {/* محتوى التبويبة النشطة - بدون تمرير عام */}
         <div className="flex-1 min-h-0 overflow-hidden">
-          <div className="h-full overflow-y-auto scroll-smooth" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom, 0px))' }}>
-            {renderTabContent()}
-          </div>
+          {renderTabContent()}
         </div>
 
         {/* حوارات التأكيد */}
