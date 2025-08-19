@@ -115,86 +115,15 @@ export const COLORS = {
   BADGE_INFO: 'bg-[#a4e2f6] text-[#000000]',
   BADGE_PRIMARY: 'bg-[#d9d2fd] text-[#000000]',
   
-  // Canvas and Background colors for inline style replacements
-  CANVAS_BACKGROUND: 'bg-[#f8f9fa]',
-  CANVAS_ELEMENT_BACKGROUND: 'bg-[#ffffff]',
-  CANVAS_STICKY_BACKGROUND: 'bg-[#fef08a]',
-  CANVAS_TEXT_BACKGROUND: 'bg-[#f8fafc]',
-  CANVAS_ANNOTATION_BACKGROUND: 'bg-[#fff3cd]',
+  // Background colors for elements
   OVERLAY_BACKGROUND: 'bg-[rgba(255,255,255,0.9)]',
   OVERLAY_BACKGROUND_95: 'bg-[rgba(255,255,255,0.95)]',
-  
-  // Canvas Style Classes for inline style replacement
-  CANVAS_CLASS_BG_F8F9FA: 'bg-[#f8f9fa]',
-  CANVAS_CLASS_BG_FFFFFF: 'bg-white',
-  CANVAS_CLASS_BG_FEF08A: 'bg-[#fef08a]',
-  CANVAS_CLASS_BG_F8FAFC: 'bg-[#f8fafc]',
-  CANVAS_CLASS_BG_FFF3CD: 'bg-[#fff3cd]',
-  CANVAS_CLASS_OVERLAY_90: 'bg-white/90',
-  CANVAS_CLASS_OVERLAY_95: 'bg-white/95',
 
   // Position and Layout Classes
   POSITION_ABSOLUTE: 'absolute',
   POSITION_RELATIVE: 'relative',
   POSITION_FIXED: 'fixed',
   FULL_SIZE: 'w-full h-full',
-  
-  // Common Canvas Element Classes
-  CANVAS_ELEMENT_BASE: 'absolute select-none',
-  CANVAS_SELECTION_BOX: 'absolute pointer-events-none border-2 border-blue-500 bg-blue-500/10',
-  CANVAS_RESIZE_HANDLE: 'absolute w-2 h-2 bg-blue-500 border border-white rounded-sm cursor-pointer',
-
-  // Complete Color Palette for Canvas Elements (Phase 2 Implementation)
-  CANVAS_COLOR_RED: '#FF0000',
-  CANVAS_COLOR_ORANGE: '#FF8000',
-  CANVAS_COLOR_YELLOW: '#FFFF00',
-  CANVAS_COLOR_LIME: '#80FF00',
-  CANVAS_COLOR_GREEN: '#00FF00',
-  CANVAS_COLOR_MINT: '#00FF80',
-  CANVAS_COLOR_CYAN: '#00FFFF',
-  CANVAS_COLOR_BLUE: '#0080FF',
-  CANVAS_COLOR_NAVY: '#0000FF',
-  CANVAS_COLOR_PURPLE: '#8000FF',
-  CANVAS_COLOR_MAGENTA: '#FF00FF',
-  CANVAS_COLOR_PINK: '#FF0080',
-  CANVAS_COLOR_BLACK: '#000000',
-  CANVAS_COLOR_DARK_GRAY: '#404040',
-  CANVAS_COLOR_GRAY: '#808080',
-  CANVAS_COLOR_LIGHT_GRAY: '#C0C0C0',
-  CANVAS_COLOR_WHITE: '#FFFFFF',
-  CANVAS_COLOR_BROWN: '#8B4513',
-  CANVAS_COLOR_BEIGE: '#FFE4B5',
-  CANVAS_COLOR_PLUM: '#DDA0DD',
-  CANVAS_COLOR_LIGHT_GREEN: '#98FB98',
-  CANVAS_COLOR_KHAKI: '#F0E68C',
-  CANVAS_COLOR_SKY_BLUE: '#87CEEB',
-  CANVAS_COLOR_TAN: '#DEB887',
-
-  // Canvas Element Background Classes
-  CANVAS_BG_RED: 'bg-[#FF0000]',
-  CANVAS_BG_ORANGE: 'bg-[#FF8000]',
-  CANVAS_BG_YELLOW: 'bg-[#FFFF00]',
-  CANVAS_BG_LIME: 'bg-[#80FF00]',
-  CANVAS_BG_GREEN: 'bg-[#00FF00]',
-  CANVAS_BG_MINT: 'bg-[#00FF80]',
-  CANVAS_BG_CYAN: 'bg-[#00FFFF]',
-  CANVAS_BG_BLUE: 'bg-[#0080FF]',
-  CANVAS_BG_NAVY: 'bg-[#0000FF]',
-  CANVAS_BG_PURPLE: 'bg-[#8000FF]',
-  CANVAS_BG_MAGENTA: 'bg-[#FF00FF]',
-  CANVAS_BG_PINK: 'bg-[#FF0080]',
-  CANVAS_BG_BLACK: 'bg-[#000000]',
-  CANVAS_BG_DARK_GRAY: 'bg-[#404040]',
-  CANVAS_BG_GRAY: 'bg-[#808080]',
-  CANVAS_BG_LIGHT_GRAY: 'bg-[#C0C0C0]',
-  CANVAS_BG_WHITE: 'bg-[#FFFFFF]',
-  CANVAS_BG_BROWN: 'bg-[#8B4513]',
-  CANVAS_BG_BEIGE: 'bg-[#FFE4B5]',
-  CANVAS_BG_PLUM: 'bg-[#DDA0DD]',
-  CANVAS_BG_LIGHT_GREEN: 'bg-[#98FB98]',
-  CANVAS_BG_KHAKI: 'bg-[#F0E68C]',
-  CANVAS_BG_SKY_BLUE: 'bg-[#87CEEB]',
-  CANVAS_BG_TAN: 'bg-[#DEB887]',
 
   // Operations Board Colors
   OPERATIONS_CARD_BG: '#ffffff',
@@ -225,13 +154,6 @@ export const COLORS = {
   STICKY_NOTE_YELLOW: 'bg-[#FEF3C7]',
   TEXT_EDITOR_WHITE: 'bg-[#ffffff]',
   COLLABORATION_BACKGROUND: 'bg-[rgba(255,255,255,0.9)]',
-  
-  // Canvas specific background tokens
-  CANVAS_SHAPE_FILL: '#3B82F6',
-  CANVAS_STICKY_BG: '#FEF3C7',
-  CANVAS_TEXT_BOX_BG: '#ffffff',
-  CANVAS_TRANSPARENT: 'transparent',
-  CANVAS_COLLAB_USER_BG: 'rgba(255,255,255,0.9)',
   
   // Task Status Colors (for UI consistency)
   TASK_STATUS_COMPLETED: '#bdeed3',
@@ -410,49 +332,17 @@ export const SCROLL_INDICATOR = {
   DOT_GAP: 'gap-[8px]',
 } as const;
 
-// Canvas positioning and dynamic style classes
-export const CANVAS_POSITION_CLASSES = {
-  // Resize handle positions (absolute positioning)
-  HANDLE_TOP_LEFT: 'absolute top-[-6px] left-[-6px]',
-  HANDLE_TOP_RIGHT: 'absolute top-[-6px] right-[-6px]',
-  HANDLE_BOTTOM_LEFT: 'absolute bottom-[-6px] left-[-6px]',
-  HANDLE_BOTTOM_RIGHT: 'absolute bottom-[-6px] right-[-6px]',
-  HANDLE_TOP_CENTER: 'absolute top-[-6px] left-1/2 transform -translate-x-1/2',
-  HANDLE_BOTTOM_CENTER: 'absolute bottom-[-6px] left-1/2 transform -translate-x-1/2',
-  HANDLE_LEFT_CENTER: 'absolute top-1/2 left-[-6px] transform -translate-y-1/2',
-  HANDLE_RIGHT_CENTER: 'absolute top-1/2 right-[-6px] transform -translate-y-1/2',
-  
-  // Handle sizes and hover effects
-  HANDLE_BASE: 'w-3 h-3 bg-blue-500 border border-white pointer-events-auto',
-  HANDLE_HOVER: 'hover:bg-blue-600',
-  
-  // Cursor styles for handles
-  CURSOR_NW_RESIZE: 'cursor-nw-resize',
-  CURSOR_NE_RESIZE: 'cursor-ne-resize',
-  CURSOR_SW_RESIZE: 'cursor-sw-resize',
-  CURSOR_SE_RESIZE: 'cursor-se-resize',
-  CURSOR_N_RESIZE: 'cursor-n-resize',
-  CURSOR_S_RESIZE: 'cursor-s-resize',
-  CURSOR_E_RESIZE: 'cursor-e-resize',
-  CURSOR_W_RESIZE: 'cursor-w-resize',
-} as const;
-
-// Dynamic utility functions for style generation
-export const DYNAMIC_CLASSES = {
+// Design System positioning and utility classes
+export const POSITION_CLASSES = {
   // Position utilities
-  createPositionClasses: (x: number, y: number) => `left-[${x}px] top-[${y}px]`,
-  createSizeClasses: (width: number, height: number) => `w-[${width}px] h-[${height}px]`,
-  createTransformClasses: (scale: number, x: number, y: number) => 
-    `transform scale-[${scale}] translate-x-[${x}px] translate-y-[${y}px]`,
-  
-  // Background utilities for Canvas elements
-  createBgColorClass: (color: string) => `bg-[${color}]`,
-  createBorderClass: (color: string, width: number) => `border-[${width}px] border-[${color}]`,
-  createFontSizeClass: (size: number) => `text-[${size}px]`,
-  
-  // Shadow utilities
-  createBoxShadowClass: (shadow: string) => `shadow-[${shadow}]`,
-  
-  // Border radius utilities
-  createBorderRadiusClass: (radius: number) => `rounded-[${radius}px]`,
+  ABSOLUTE: 'absolute',
+  RELATIVE: 'relative', 
+  FIXED: 'fixed',
+  FULL_SIZE: 'w-full h-full',
+  // Layout utilities
+  GRID: 'grid',
+  FLEX: 'flex',
+  FLEX_COL: 'flex-col',
+  ITEMS_CENTER: 'items-center',
+  JUSTIFY_CENTER: 'justify-center'
 } as const;

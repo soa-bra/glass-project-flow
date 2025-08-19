@@ -4,7 +4,6 @@ import ProjectWorkspace from './ProjectWorkspace';
 import DepartmentsWorkspace from './DepartmentsWorkspace';
 import ArchiveWorkspace from './ArchiveWorkspace';
 import SettingsWorkspace from './SettingsWorkspace';
-import PlanningWorkspace from './PlanningWorkspace';
 const MainContent = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeSection, setActiveSection] = useState('home'); // 'home', 'departments', 'archive', etc.
@@ -12,25 +11,16 @@ const MainContent = () => {
 
   // Handle section changes and sidebar state
   const handleSectionChange = (section: string) => {
-    if (section === 'planning' && activeSection !== 'planning') {
-      // Entering planning section - save current state and force collapse
-      setPreviousSidebarState(isSidebarCollapsed);
-    } else if (activeSection === 'planning' && section !== 'planning') {
-      // Leaving planning section - restore previous state
-      setIsSidebarCollapsed(previousSidebarState);
-    }
     setActiveSection(section);
   };
 
-  // Force collapsed state for planning section
-  const forceCollapsed = activeSection === 'planning';
+  // Force collapsed can be set to false or used for future sections
+  const forceCollapsed = false;
   const effectiveCollapsed = forceCollapsed || isSidebarCollapsed;
   const renderWorkspace = () => {
     switch (activeSection) {
       case 'departments':
         return <DepartmentsWorkspace isSidebarCollapsed={effectiveCollapsed} />;
-      case 'planning':
-        return <PlanningWorkspace isSidebarCollapsed={effectiveCollapsed} />;
       case 'archive':
         return <ArchiveWorkspace isSidebarCollapsed={effectiveCollapsed} />;
       case 'settings':

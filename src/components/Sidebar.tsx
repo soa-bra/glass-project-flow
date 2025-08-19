@@ -1,4 +1,4 @@
-import { Home, Building, Users, Archive, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, Building, Archive, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 interface SidebarProps {
   onToggle?: (collapsed: boolean) => void;
@@ -22,10 +22,6 @@ const Sidebar = ({
     label: 'الإدارات',
     key: 'departments'
   }, {
-    icon: Users,
-    label: 'التخطيط التشاركي',
-    key: 'planning'
-  }, {
     icon: Archive,
     label: 'الأرشيف',
     key: 'archive'
@@ -46,8 +42,6 @@ const Sidebar = ({
   useEffect(() => {
     if (forceCollapsed && !isCollapsed) {
       setIsCollapsed(true);
-    } else if (!forceCollapsed && isCollapsed && activeSection !== 'planning') {
-      // Only auto-expand if we're not on planning and not manually collapsed
     }
     onToggle?.(forceCollapsed || isCollapsed);
   }, [isCollapsed, onToggle, forceCollapsed, activeSection]);

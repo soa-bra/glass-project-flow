@@ -108,23 +108,10 @@ export const convertCompleteStyle = (style: React.CSSProperties): string => {
     classes.push(`shadow-[${style.boxShadow}]`);
   }
   
-  // Text color (fill property for Canvas elements)
-  if ((style as any).fill) {
-    classes.push(`text-[${(style as any).fill}]`);
+  // Text color
+  if ((style as any).color) {
+    classes.push(`text-[${(style as any).color}]`);
   }
   
   return classes.filter(Boolean).join(' ');
-};
-
-// Generate dynamic positioning classes for Canvas elements
-export const generateCanvasElementClasses = (
-  position: { x: number; y: number },
-  size: { width: number; height: number },
-  additionalStyle?: React.CSSProperties
-): string => {
-  const positionClasses = `absolute left-[${position.x}px] top-[${position.y}px]`;
-  const sizeClasses = getSizeClasses(size.width, size.height);
-  const styleClasses = additionalStyle ? convertCompleteStyle(additionalStyle) : '';
-  
-  return `${positionClasses} ${sizeClasses} ${styleClasses}`.trim();
 };
