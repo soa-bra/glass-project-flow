@@ -10,8 +10,6 @@ export interface StatusBarProps {
   elementsCount: number;
   selectedCount: number;
   boardId?: string | null;
-  connected?: boolean;
-  isLocalMode?: boolean;
   'data-test-id'?: string;
 }
 
@@ -21,11 +19,11 @@ const StatusBar: React.FC<StatusBarProps> = ({
   elementsCount,
   selectedCount,
   boardId,
-  connected = false,
-  isLocalMode = false,
   'data-test-id': testId
 }) => {
-  const connectionStatus = isLocalMode ? 'local-ephemeral' : (connected ? 'connected' : 'disconnected');
+  const isConnected = false; // Will be passed from parent later
+  const isLocalMode = false;
+  const connectionStatus = isLocalMode ? 'local-ephemeral' : (isConnected ? 'connected' : 'disconnected');
   return (
     <div 
       className="flex items-center justify-between px-4 py-2 bg-background/95 backdrop-blur-sm border-t text-xs"
