@@ -1,6 +1,6 @@
 // Enhanced Collaborative Canvas with Canvas Engine Integration
 import React, { useCallback, useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth/auth-provider';
 import { useTelemetry } from '@/hooks/useTelemetry';
 import { YSupabaseProvider } from '@/lib/yjs/y-supabase-provider';

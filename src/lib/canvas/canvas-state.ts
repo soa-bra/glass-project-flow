@@ -1,10 +1,10 @@
 import * as Y from 'yjs';
-import { InfiniteCanvasEngine } from './canvas-engine';
+import { CanvasEngine } from './engine/canvas-engine';
 import { YSupabaseProvider } from '../yjs/y-supabase-provider';
 import type { CanvasNode, Point, Size } from './types';
 
 export class CanvasState {
-  private engine: InfiniteCanvasEngine;
+  private engine: CanvasEngine;
   private doc: Y.Doc;
   private provider: YSupabaseProvider | null = null;
   private nodesMap: Y.Map<any>;
@@ -13,7 +13,7 @@ export class CanvasState {
   // Prevent infinite loops during sync
   private isSyncing = false;
 
-  constructor(engine: InfiniteCanvasEngine) {
+  constructor(engine: CanvasEngine) {
     this.engine = engine;
     this.doc = new Y.Doc();
     
@@ -220,13 +220,12 @@ export class CanvasState {
 
     this.provider.onPresenceUpdate = (users) => {
       console.log('Users in canvas:', users);
-      // Emit presence update for UI components
-      this.engine.emit('presenceUpdate', users);
+      // Note: CanvasEngine doesn't have emit method, we'll handle presence differently
     };
 
     this.provider.onConnectionChange = (connected) => {
       console.log('Canvas connection status:', connected);
-      this.engine.emit('connectionChange', connected);
+      // Note: CanvasEngine doesn't have emit method, we'll handle connection changes differently
     };
 
     // Connect to Supabase
