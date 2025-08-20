@@ -1,5 +1,5 @@
 // Collaborative Canvas - Main Integration Component
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth/auth-provider';
 import { useTelemetry } from '@/hooks/useTelemetry';
@@ -43,7 +43,6 @@ export default function CollaborativeCanvas({
   const [yDoc] = useState(() => new Y.Doc());
   const [yProvider, setYProvider] = useState<LocalYSupabaseProvider | null>(null);
   const [sceneReady, setSceneReady] = useState(false);
-  const [viewport, setViewport] = useState({ width: 800, height: 600, dpr: 1 });
   
   // Canvas state
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
@@ -53,9 +52,10 @@ export default function CollaborativeCanvas({
   const [showSmartPanel, setShowSmartPanel] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [fps, setFps] = useState(0);
+  const [viewport, setViewport] = useState({ width: 1, height: 1, dpr: 1 });
+  const [canvasReady, setCanvasReady] = useState(false);
   
   // Refs
-  const canvasRef = useRef<HTMLDivElement>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   
@@ -160,26 +160,23 @@ export default function CollaborativeCanvas({
   }, [user, boardAlias, logCanvasOperation, logCustomEvent]);
 
   // Resize observer and viewport setup
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!hostRef.current) return;
-
-    resizeObserverRef.current = new ResizeObserver(([entry]) => {
-      const cr = entry.contentRect;
-      const newViewport = {
-        width: Math.max(cr.width, 1),
-        height: Math.max(cr.height, 1),
-        dpr: window.devicePixelRatio || 1
-      };
-      setViewport(newViewport);
-      logCanvasOperation('canvas_resized', { width: cr.width, height: cr.height });
+    
+    const el = hostRef.current;
+    const update = () => setViewport({
+      width: Math.max(1, el.clientWidth),
+      height: Math.max(1, el.clientHeight),
+      dpr: window.devicePixelRatio || 1
     });
-
-    resizeObserverRef.current.observe(hostRef.current);
-
-    return () => {
-      resizeObserverRef.current?.disconnect();
-    };
-  }, [logCanvasOperation]);
+    
+    update();
+    
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    
+    return () => ro.disconnect();
+  }, []);
 
   // Scene ready timeout - show fallback if WhiteboardRoot takes too long
   useEffect(() => {
@@ -225,17 +222,16 @@ export default function CollaborativeCanvas({
     }
   }, [isInitialized]);
 
-  // Auto-save every 10 seconds and seed default sticky
+  // Proof-of-life: Seed default sticky when ready and canvas is empty
   useEffect(() => {
-    if (!isInitialized) return;
+    if (!isInitialized || !canvasReady) return;
 
-    // Seed default sticky if canvas is empty
     const seedDefaultSticky = async () => {
       try {
         // Check if canvas is empty
         const nodes = sceneGraph.getAllNodes();
         if (nodes.length === 0) {
-          // Check if there are any board_objects
+          // Check if there are any board_objects in remote mode
           if (boardId && !isLocalMode) {
             const { data: objects } = await supabase
               .from('board_objects')
@@ -260,7 +256,7 @@ export default function CollaborativeCanvas({
                   strokeWidth: 2,
                   opacity: 1 
                 },
-                content: 'أهلًا! جرّب التكبير والسحب أو اضغط S لإضافة عنصر ذكي.',
+                content: 'تم التشغيل ✓ — كبّر وصغّر/اسحب. اضغط S لإضافة عنصر ذكي.',
                 color: '#92400e',
                 metadata: { seeded: true }
               };
@@ -269,7 +265,7 @@ export default function CollaborativeCanvas({
               logCustomEvent('default_sticky_seeded', { boardId });
             }
           } else if (isLocalMode) {
-            // Local mode - add directly to sceneGraph with proper structure
+            // Local mode - add directly to sceneGraph
             const defaultSticky = {
               id: 'default-sticky-local-' + Date.now(),
               type: 'sticky' as const,
@@ -285,7 +281,7 @@ export default function CollaborativeCanvas({
                 strokeWidth: 2,
                 opacity: 1 
               },
-              content: 'أهلًا! أنت في الوضع المحلي. جرّب التكبير والسحب أو اضغط S لإضافة عنصر ذكي.',
+              content: 'تم التشغيل ✓ — كبّر وصغّر/اسحب. اضغط S لإضافة عنصر ذكي.',
               color: '#92400e',
               metadata: { seeded: true, local: true }
             };
@@ -300,9 +296,11 @@ export default function CollaborativeCanvas({
     };
 
     seedDefaultSticky();
+  }, [isInitialized, canvasReady, boardId, isLocalMode, sceneGraph, logCustomEvent]);
 
-    // Auto-save for non-local mode
-    if (!isLocalMode && yProvider) {
+  // Auto-save for non-local mode
+  useEffect(() => {
+    if (!isLocalMode && yProvider && isInitialized) {
       const autoSave = setInterval(async () => {
         try {
           await yProvider.createSnapshot();
@@ -314,7 +312,7 @@ export default function CollaborativeCanvas({
 
       return () => clearInterval(autoSave);
     }
-  }, [yProvider, isInitialized, boardId, isLocalMode, sceneGraph, logCanvasOperation, logCustomEvent]);
+  }, [yProvider, isInitialized, boardId, isLocalMode, logCanvasOperation]);
 
   // Tool handlers
   const handleToolChange = useCallback((tool: string) => {
@@ -345,6 +343,18 @@ export default function CollaborativeCanvas({
     insertSmartElement({ type });
     setShowSmartPanel(false);
   }, [insertSmartElement]);
+
+  const handleCanvasReady = useCallback(() => {
+    setCanvasReady(true);
+  }, []);
+
+  // Set canvas ready after initialization - WhiteboardRoot manages its own rendering
+  useEffect(() => {
+    if (isInitialized) {
+      // WhiteboardRoot is self-contained, set ready immediately
+      setCanvasReady(true);
+    }
+  }, [isInitialized]);
 
   const handleWF01Generate = useCallback(async () => {
     try {
@@ -416,9 +426,9 @@ export default function CollaborativeCanvas({
 
   return (
     <div 
+      ref={hostRef}
       className={`relative w-full h-full ${className}`}
       data-test-id={testId}
-      ref={hostRef}
     >
       {/* Top Toolbar */}
       <WhiteboardTopbar
@@ -438,11 +448,7 @@ export default function CollaborativeCanvas({
       />
 
       <div className="absolute inset-0 top-12 bottom-8">
-        {/* Main Canvas Area */}
-        <div className="relative w-full h-full" data-test-id="canvas-stage">
-          {/* Fallback Canvas - Emergency Layer */}
-          <FallbackCanvas enabled={!sceneReady} />
-          
+        <div className="absolute inset-0" data-test-id="canvas-stage">
           <WhiteboardRoot
             sceneGraph={sceneGraph}
             connectionManager={connectionManager}
@@ -455,14 +461,20 @@ export default function CollaborativeCanvas({
             canvasPosition={canvasPosition}
             onCanvasPositionChange={setCanvasPosition}
           />
-
+          
+          {/* Fallback Canvas - Emergency Layer */}
+          <FallbackCanvas enabled={!canvasReady} />
+          
           {/* Smart Elements Panel Overlay */}
           {showSmartPanel && (
             <div className="absolute inset-y-0 left-0 w-80 bg-background/95 backdrop-blur-sm border-r shadow-lg z-50">
               <SmartElementsPanel
                 isOpen={showSmartPanel}
                 onClose={() => setShowSmartPanel(false)}
-                onElementSelect={handleSmartElementCreate}
+                onElementSelect={(t) => { 
+                  insertSmartElement({ type: t, position: getViewportCenter() }); 
+                  setShowSmartPanel(false); 
+                }}
                 data-test-id="modal-smart-panel"
               />
             </div>
@@ -476,7 +488,6 @@ export default function CollaborativeCanvas({
               selectedElements={selectedElements}
               sceneGraph={sceneGraph}
               onUpdate={(elementId, updates) => {
-                // Handle element updates
                 logCanvasOperation('element_updated', { elementId, updates });
               }}
               data-test-id="panel-properties"

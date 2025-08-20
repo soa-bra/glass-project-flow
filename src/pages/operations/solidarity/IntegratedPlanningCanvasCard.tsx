@@ -11,8 +11,8 @@ export default function IntegratedPlanningCanvasCard() {
         data-test-id="integrated-planning-canvas"
       >
         <CollaborativeCanvas
-          boardAlias="integrated-planning-default"
           data-test-id="integrated-planning-canvas"
+          boardAlias="integrated-planning-default"
         />
       </div>
     </AuthProvider>
