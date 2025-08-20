@@ -20,14 +20,6 @@ export default {
 			}
 		},
 		extend: {
-			spacing: {
-				'logical-xs': '0.125rem',
-				'logical-sm': '0.25rem', 
-				'logical-md': '0.5rem',
-				'logical-lg': '1rem',
-				'logical-xl': '1.5rem',
-				'logical-2xl': '2rem',
-			},
 			fontFamily: {
 				'arabic': ['IBM Plex Sans Arabic', 'sans-serif'],
 			},
@@ -167,23 +159,13 @@ export default {
 						transform: 'translateX(100%)',
 						opacity: '0'
 					}
-				},
-				'slide-in-start': {
-					from: { transform: 'translateX(-100%)' },
-					to: { transform: 'translateX(0)' },
-				},
-				'slide-in-end': {
-					from: { transform: 'translateX(100%)' },
-					to: { transform: 'translateX(0)' },
-				},
+				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'slide-in-right': 'slide-in-right 300ms ease-out',
-				'slide-out-right': 'slide-out-right 300ms ease-out',
-				'slide-in-start': 'slide-in-start 0.3s ease-out',
-				'slide-in-end': 'slide-in-end 0.3s ease-out',
+				'slide-out-right': 'slide-out-right 300ms ease-out'
 			},
 			spacing: {
 				'18': '4.5rem',

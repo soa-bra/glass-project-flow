@@ -1,7 +1,1 @@
 project_id = "zdqkrrehlivayconjcgm"
-
-[functions.analyze-links]
-verify_jwt = true
-
-[functions.wf01-map]  
-verify_jwt = true
