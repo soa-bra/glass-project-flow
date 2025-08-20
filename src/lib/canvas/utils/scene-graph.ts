@@ -15,13 +15,13 @@ export class SceneGraph {
   }
 
   // Add a node to the scene graph
-  addNode(node: CanvasNode, _opts?: any): void {
+  addNode(node: CanvasNode): void {
     this.nodes.set(node.id, node);
     this.isDirty = true;
   }
 
   // Update a node in the scene graph
-  updateNode(id: string, patch: Partial<CanvasNode>, _opts?: any): CanvasNode | null {
+  updateNode(id: string, patch: Partial<CanvasNode>): CanvasNode | null {
     const existingNode = this.nodes.get(id);
     if (!existingNode) return null;
 
@@ -39,7 +39,7 @@ export class SceneGraph {
   }
 
   // Remove a node from the scene graph
-  removeNode(id: string, _opts?: any): boolean {
+  removeNode(id: string): boolean {
     const removed = this.nodes.delete(id);
     if (removed) {
       this.isDirty = true;
@@ -183,26 +183,5 @@ export class SceneGraph {
       visibleNodeCount: Array.from(this.nodes.values()).filter(n => n.visible !== false).length,
       sceneBounds: this.getSceneBounds()
     };
-  }
-
-  // Enhanced API methods for better integration
-
-  // Get node bounds by ID (missing method)
-  getNodeBoundsById(id: string): { x: number; y: number; width: number; height: number } | null {
-    const node = this.nodes.get(id);
-    if (!node) return null;
-    return this.getNodeBounds(node);
-  }
-
-  // Count nodes (simple accessor)
-  count(): number {
-    return this.nodes.size;
-  }
-
-  // Render method (placeholder for compatibility)
-  render(): void {
-    // This method is implemented by the actual rendering layer
-    // SceneGraph is primarily for data management
-    this.updateQuadTreeIfNeeded();
   }
 }

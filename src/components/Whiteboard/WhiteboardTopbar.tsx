@@ -18,8 +18,7 @@ import {
   Save,
   ZoomIn,
   ZoomOut,
-  RotateCcw,
-  Grid
+  RotateCcw
 } from 'lucide-react';
 
 interface WhiteboardTopbarProps {
@@ -33,8 +32,6 @@ interface WhiteboardTopbarProps {
   onZoomOut: () => void;
   onZoomReset: () => void;
   zoom: number;
-  showGrid?: boolean;
-  onGridToggle?: () => void;
   'data-test-id'?: string;
 }
 
@@ -49,8 +46,6 @@ const WhiteboardTopbar: React.FC<WhiteboardTopbarProps> = ({
   onZoomOut,
   onZoomReset,
   zoom,
-  showGrid = true,
-  onGridToggle,
   'data-test-id': testId
 }) => {
   const tools = [
@@ -151,20 +146,7 @@ const WhiteboardTopbar: React.FC<WhiteboardTopbarProps> = ({
 
       <Separator orientation="vertical" className="h-6" />
 
-      {/* Grid Toggle */}
-      <Button
-        variant={showGrid ? "default" : "outline"}
-        size="sm"
-        onClick={onGridToggle}
-        className="flex items-center gap-2"
-        title="إظهار/إخفاء الشبكة"
-        data-test-id="btn-grid-toggle"
-      >
-        <Grid className="w-4 h-4" />
-        <span className="hidden sm:inline">شبكة</span>
-      </Button>
-
-      <Separator orientation="vertical" className="h-6" />
+      {/* Zoom Controls */}
       <div className="flex items-center gap-1">
         <Button
           variant="outline"

@@ -243,7 +243,7 @@ export class CanvasState {
 
   async updateUserCursor(x: number, y: number): Promise<void> {
     if (this.provider) {
-      await this.provider.updateCursor({ x, y });
+      await this.provider.updateCursor(x, y);
     }
   }
 
@@ -302,7 +302,7 @@ export class CanvasState {
 
   // Getters
   get isConnected(): boolean {
-    return this.provider?.isConnected() || false;
+    return this.provider?.connected || false;
   }
 
   get currentUsers(): any[] {

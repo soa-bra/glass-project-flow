@@ -8,23 +8,19 @@ import { Separator } from '@/components/ui/separator';
 import { SceneGraph } from '@/lib/canvas/utils/scene-graph';
 import { Palette, Settings, Lock, Unlock, Copy, Trash2 } from 'lucide-react';
 
-export interface PropertiesPanelProps {
+interface PropertiesPanelProps {
+  selectedElements: string[];
   sceneGraph: SceneGraph;
-  selectedId?: string;
-  onPropertyChange?: (id: string, patch: any) => void;
-  onClose?: () => void;
+  onUpdate: (elementId: string, updates: any) => void;
   'data-test-id'?: string;
 }
 
 const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
+  selectedElements,
   sceneGraph,
-  selectedId,
-  onPropertyChange,
-  onClose,
+  onUpdate,
   'data-test-id': testId
 }) => {
-  const selectedElements = selectedId ? [selectedId] : [];
-  const onUpdate = onPropertyChange || (() => {});
   const selectedNode = selectedElements.length === 1 
     ? sceneGraph.getAllNodes().find(node => node.id === selectedElements[0])
     : null;

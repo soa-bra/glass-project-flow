@@ -6,46 +6,37 @@ import { YSupabaseProvider } from '@/lib/yjs/y-supabase-provider';
 import { RootConnector } from '@/components/canvas/RootConnector';
 import { EnhancedSmartElementRenderer } from '@/components/smart-elements/enhanced-smart-element-renderer';
 
-export interface WhiteboardRootProps {
+interface WhiteboardRootProps {
   sceneGraph: SceneGraph;
   connectionManager: ConnectionManager;
   yProvider: YSupabaseProvider | null;
   selectedTool: string;
   selectedElements: string[];
-  onSelectionChange: (ids: string[]) => void;
+  onSelectionChange: (elements: string[]) => void;
   zoom: number;
+  onZoomChange: (zoom: number) => void;
   canvasPosition: { x: number; y: number };
-  onReady?: () => void;
+  onCanvasPositionChange: (position: { x: number; y: number }) => void;
   'data-test-id'?: string;
 }
 
-const WhiteboardRoot: React.FC<WhiteboardRootProps> = (props) => {
-  const {
-    sceneGraph,
-    connectionManager,
-    yProvider,
-    selectedTool,
-    selectedElements,
-    onSelectionChange,
-    zoom,
-    canvasPosition,
-    onReady,
-    'data-test-id': testId
-  } = props;
-
+const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
+  sceneGraph,
+  connectionManager,
+  yProvider,
+  selectedTool,
+  selectedElements,
+  onSelectionChange,
+  zoom,
+  onZoomChange,
+  canvasPosition,
+  onCanvasPositionChange,
+  'data-test-id': testId
+}) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const readyRef = useRef(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [nodes, setNodes] = useState(sceneGraph.getAllNodes());
-
-  // Call onReady once after first render
-  useEffect(() => {
-    if (!readyRef.current) {
-      readyRef.current = true;
-      onReady?.();
-    }
-  }, [onReady]);
 
   // Update nodes when sceneGraph changes
   useEffect(() => {
@@ -88,11 +79,12 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = (props) => {
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (isDragging) {
-      // Canvas position is managed by parent CollaborativeCanvas
-      // This would need to be passed up via callback if needed
-      console.log('Canvas drag movement detected');
+      onCanvasPositionChange({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
     }
-  }, [isDragging, dragStart]);
+  }, [isDragging, dragStart, onCanvasPositionChange]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -100,10 +92,10 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = (props) => {
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
-    // Zoom is managed by parent CollaborativeCanvas
-    // This would need to be passed up via callback if needed
-    console.log('Wheel zoom detected:', e.deltaY > 0 ? 'zoom out' : 'zoom in');
-  }, []);
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    const newZoom = Math.min(Math.max(zoom * delta, 0.1), 8);
+    onZoomChange(newZoom);
+  }, [zoom, onZoomChange]);
 
   // Keyboard shortcuts
   useEffect(() => {
