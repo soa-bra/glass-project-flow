@@ -33,7 +33,7 @@ export default function StatusBar({
 
   return (
     <div
-      className={`absolute top-2 right-6 flex items-center gap-3 text-xs text-muted-foreground z-40 ${className}`}
+      className={`flex items-center gap-3 text-xs text-muted-foreground bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow-sm border ${className}`}
       data-test-id={dataTestId}
     >
       {boardId ? <span className="truncate max-w-[120px]">{boardId}</span> : null}

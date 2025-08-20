@@ -343,19 +343,21 @@ export default function CollaborativeCanvas({
   }, []);
 
   return (
-    <div ref={hostRef} className="relative w-full h-full flex flex-col">
-      {/* Overlay عند عدم وجود مستخدم وعدم الجاهزية */}
-      {!isAuthed && !sceneReady && (
-        <div className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center">
-          <div className="text-center space-y-3">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto" />
-            <p className="text-muted-foreground">جارٍ التحضير… وضع محلي مؤقت</p>
+    <div ref={hostRef} className="relative w-full h-full flex flex-col bg-white">
+      {/* Loading Overlay for Initial Setup */}
+      {(!boardId || !sceneGraph || !connectionManager || !yDoc || !isAuthed) && (
+        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-40">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+            <p className="text-sm text-muted-foreground">
+              {!isAuthed ? 'جاري إعداد الوضع المحلي...' : 'جاري تحضير اللوحة...'}
+            </p>
           </div>
         </div>
       )}
 
-      {/* Topbar - طبقة علوية ثابتة */}
-      <div className="relative z-30 flex-shrink-0">
+      {/* Topbar - Fixed at top with proper z-index */}
+      <div className="flex-shrink-0 z-30 relative">
         <WhiteboardTopbar
           selectedTool={selectedTool}
           onToolChange={handleToolChange}
@@ -372,10 +374,10 @@ export default function CollaborativeCanvas({
         />
       </div>
 
-      {/* Canvas Area - المنطقة المتبقية */}
-      <div className="relative flex-1 overflow-hidden" data-test-id="canvas-stage">
+      {/* Canvas Area - Takes remaining space */}
+      <div className="flex-1 relative bg-gray-50 overflow-hidden">
         <WhiteboardRoot
-          key={rev}  // يجبر إعادة تركيب المكوّن عند أي تغيير في المشهد
+          key={rev}
           sceneGraph={sceneGraph}
           connectionManager={connectionManager}
           yProvider={yProvider}
@@ -388,10 +390,12 @@ export default function CollaborativeCanvas({
         />
 
         <FallbackCanvas enabled={!sceneReady} />
-        
-        {/* Status Bar - داخل منطقة الكانفاس */}
+      </div>
+      
+      {/* Status Bar - Fixed position outside canvas area */}
+      <div className="absolute top-16 right-4 z-20">
         <StatusBar
-          fps={0}
+          fps={60}
           zoom={zoom}
           elementsCount={sceneGraph.count()}
           selectedCount={selectedElements.length}
@@ -402,10 +406,10 @@ export default function CollaborativeCanvas({
         />
       </div>
 
-      {/* Panels - طبقة عالية للألواح */}
+      {/* Smart Elements Panel - Modal overlay */}
       {showSmartPanel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="relative w-[600px] h-[500px] max-w-[90vw] max-h-[90vh]">
+        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+          <div className="relative w-[600px] h-[500px] max-w-[90vw] max-h-[90vh] bg-white rounded-lg shadow-xl">
             <SmartElementsPanel
               isOpen={showSmartPanel}
               onClose={() => setShowSmartPanel(false)}
@@ -416,16 +420,19 @@ export default function CollaborativeCanvas({
         </div>
       )}
 
+      {/* Properties Panel */}
       {showPropertiesPanel && selectedElements[0] && (
-        <PropertiesPanel
-          sceneGraph={sceneGraph}
-          selectedId={selectedElements[0]}
-          onPropertyChange={(id, patch) => {
-            sceneGraph.updateNode(id, patch);
-            setRev((v) => v + 1);
-          }}
-          onClose={() => setShowPropertiesPanel(false)}
-        />
+        <div className="absolute right-4 top-20 bottom-4 w-80 bg-white rounded-lg shadow-lg border p-4 z-25">
+          <PropertiesPanel
+            sceneGraph={sceneGraph}
+            selectedId={selectedElements[0]}
+            onPropertyChange={(id, patch) => {
+              sceneGraph.updateNode(id, patch);
+              setRev((v) => v + 1);
+            }}
+            onClose={() => setShowPropertiesPanel(false)}
+          />
+        </div>
       )}
     </div>
   );

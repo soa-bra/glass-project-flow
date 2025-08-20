@@ -16,7 +16,7 @@ export default function IntegratedPlanningCanvasCard({
   return (
     <AuthProvider>
       <div
-        className={`relative w-full h-full rounded-3xl overflow-hidden bg-white/90 backdrop-blur-sm ${className}`}
+        className={`relative w-full h-full overflow-hidden bg-white ${className}`}
         data-test-id={dataTestId}
       >
         <CollaborativeCanvas boardAlias={boardAlias} />
