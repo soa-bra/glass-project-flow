@@ -4,27 +4,25 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Wifi, WifiOff, Users, MousePointer, Zap } from 'lucide-react';
 
-interface StatusBarProps {
-  isConnected?: boolean;
-  isLocalMode?: boolean;
+export interface StatusBarProps {
   fps: number;
   zoom: number;
-  elementCount: number;
+  elementsCount: number;
   selectedCount: number;
   boardId?: string | null;
   'data-test-id'?: string;
 }
 
 const StatusBar: React.FC<StatusBarProps> = ({
-  isConnected = false,
-  isLocalMode = false,
   fps,
   zoom,
-  elementCount,
+  elementsCount,
   selectedCount,
   boardId,
   'data-test-id': testId
 }) => {
+  const isConnected = false; // Will be passed from parent later
+  const isLocalMode = false;
   const connectionStatus = isLocalMode ? 'local-ephemeral' : (isConnected ? 'connected' : 'disconnected');
   return (
     <div 
@@ -65,7 +63,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
         {/* Elements Count */}
         <div className="flex items-center gap-1">
           <MousePointer className="w-3 h-3 text-muted-foreground" />
-          <span>{elementCount} عنصر</span>
+          <span>{elementsCount} عنصر</span>
           {selectedCount > 0 && (
             <>
               <span className="text-muted-foreground">•</span>

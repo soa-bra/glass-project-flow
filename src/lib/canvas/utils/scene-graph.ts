@@ -15,13 +15,13 @@ export class SceneGraph {
   }
 
   // Add a node to the scene graph
-  addNode(node: CanvasNode): void {
+  addNode(node: CanvasNode, _opts?: any): void {
     this.nodes.set(node.id, node);
     this.isDirty = true;
   }
 
   // Update a node in the scene graph
-  updateNode(id: string, patch: Partial<CanvasNode>): CanvasNode | null {
+  updateNode(id: string, patch: Partial<CanvasNode>, _opts?: any): CanvasNode | null {
     const existingNode = this.nodes.get(id);
     if (!existingNode) return null;
 
@@ -39,7 +39,7 @@ export class SceneGraph {
   }
 
   // Remove a node from the scene graph
-  removeNode(id: string): boolean {
+  removeNode(id: string, _opts?: any): boolean {
     const removed = this.nodes.delete(id);
     if (removed) {
       this.isDirty = true;

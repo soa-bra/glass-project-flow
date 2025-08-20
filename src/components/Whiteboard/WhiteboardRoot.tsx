@@ -6,35 +6,46 @@ import { YSupabaseProvider } from '@/lib/yjs/y-supabase-provider';
 import { RootConnector } from '@/components/canvas/RootConnector';
 import { EnhancedSmartElementRenderer } from '@/components/smart-elements/enhanced-smart-element-renderer';
 
-interface WhiteboardRootProps {
+export interface WhiteboardRootProps {
   sceneGraph: SceneGraph;
   connectionManager: ConnectionManager;
   yProvider: YSupabaseProvider | null;
   selectedTool: string;
   selectedElements: string[];
-  onSelectionChange: (elements: string[]) => void;
+  onSelectionChange: (ids: string[]) => void;
   zoom: number;
   canvasPosition: { x: number; y: number };
   onReady?: () => void;
   'data-test-id'?: string;
 }
 
-const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
-  sceneGraph,
-  connectionManager,
-  yProvider,
-  selectedTool,
-  selectedElements,
-  onSelectionChange,
-  zoom,
-  canvasPosition,
-  onReady,
-  'data-test-id': testId
-}) => {
+const WhiteboardRoot: React.FC<WhiteboardRootProps> = (props) => {
+  const {
+    sceneGraph,
+    connectionManager,
+    yProvider,
+    selectedTool,
+    selectedElements,
+    onSelectionChange,
+    zoom,
+    canvasPosition,
+    onReady,
+    'data-test-id': testId
+  } = props;
+
   const canvasRef = useRef<HTMLDivElement>(null);
+  const readyRef = useRef(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [nodes, setNodes] = useState(sceneGraph.getAllNodes());
+
+  // Call onReady once after first render
+  useEffect(() => {
+    if (!readyRef.current) {
+      readyRef.current = true;
+      onReady?.();
+    }
+  }, [onReady]);
 
   // Update nodes when sceneGraph changes
   useEffect(() => {
@@ -45,17 +56,8 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
     // Set up periodic updates since SceneGraph doesn't have event listeners
     const interval = setInterval(updateNodes, 1000);
     
-    // Call onReady after first render
-    if (onReady) {
-      const timer = setTimeout(() => onReady(), 100);
-      return () => {
-        clearInterval(interval);
-        clearTimeout(timer);
-      };
-    }
-    
     return () => clearInterval(interval);
-  }, [sceneGraph, onReady]);
+  }, [sceneGraph]);
 
   // Handle mouse events
   const handleMouseDown = useCallback((e: React.MouseEvent) => {

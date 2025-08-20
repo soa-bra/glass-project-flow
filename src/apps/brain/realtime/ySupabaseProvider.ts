@@ -12,8 +12,16 @@ export class YSupabaseProvider {
   private boardId: string;
   private userId: string;
   private userInfo: UserInfo;
-  private connected: boolean = false;
+  private _connected: boolean = false;
   private channel: any = null;
+
+  public get connected(): boolean { 
+    return this._connected; 
+  }
+
+  public isConnected(): boolean { 
+    return this._connected; 
+  }
 
   public onConnectionChange?: (connected: boolean) => void;
   public onSync?: (isSynced: boolean) => void;
@@ -89,7 +97,7 @@ export class YSupabaseProvider {
           online_at: new Date().toISOString()
         });
 
-        this.connected = true;
+        this._connected = true;
         this.onConnectionChange?.(true);
         this.onSync?.(true);
         console.log('✅ Connected to realtime channel:', this.boardId);
@@ -98,7 +106,7 @@ export class YSupabaseProvider {
       }
     } catch (error) {
       console.error('❌ Realtime connection failed:', error);
-      this.connected = false;
+      this._connected = false;
       this.onConnectionChange?.(false);
       throw error;
     }
@@ -109,7 +117,7 @@ export class YSupabaseProvider {
       supabase.removeChannel(this.channel);
       this.channel = null;
     }
-    this.connected = false;
+    this._connected = false;
     this.onConnectionChange?.(false);
     console.log('🔌 Disconnected from realtime');
   }
@@ -121,7 +129,7 @@ export class YSupabaseProvider {
   }
 
   async createSnapshot(): Promise<void> {
-    if (!this.connected) {
+    if (!this._connected) {
       console.warn('Cannot save snapshot - not connected');
       return;
     }
@@ -178,10 +186,6 @@ export class YSupabaseProvider {
     } catch (error) {
       console.error('❌ Failed to load snapshot:', error);
     }
-  }
-
-  isConnected(): boolean {
-    return this.connected;
   }
 
   getPresenceState(): any {
