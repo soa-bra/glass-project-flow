@@ -343,10 +343,10 @@ export default function CollaborativeCanvas({
   }, []);
 
   return (
-    <div ref={hostRef} className="relative w-full h-full">
+    <div ref={hostRef} className="relative w-full h-full flex flex-col">
       {/* Overlay عند عدم وجود مستخدم وعدم الجاهزية */}
       {!isAuthed && !sceneReady && (
-        <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center">
+        <div className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center">
           <div className="text-center space-y-3">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto" />
             <p className="text-muted-foreground">جارٍ التحضير… وضع محلي مؤقت</p>
@@ -354,22 +354,26 @@ export default function CollaborativeCanvas({
         </div>
       )}
 
-      <WhiteboardTopbar
-        selectedTool={selectedTool}
-        onToolChange={handleToolChange}
-        onSmartToolClick={() => setShowSmartPanel(true)}
-        onConnectorClick={() => setSelectedTool('connector')}
-        onWF01Click={isAuthed ? handleWF01Generate : undefined}
-        onSaveClick={isAuthed ? handleSaveSnapshot : undefined}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-        onZoomReset={handleZoomReset}
-        zoom={zoom}
-        onGridToggle={() => {}}
-        data-test-id="btn-smart-tool"
-      />
+      {/* Topbar - طبقة علوية ثابتة */}
+      <div className="relative z-30 flex-shrink-0">
+        <WhiteboardTopbar
+          selectedTool={selectedTool}
+          onToolChange={handleToolChange}
+          onSmartToolClick={() => setShowSmartPanel(true)}
+          onConnectorClick={() => setSelectedTool('connector')}
+          onWF01Click={isAuthed ? handleWF01Generate : undefined}
+          onSaveClick={isAuthed ? handleSaveSnapshot : undefined}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onZoomReset={handleZoomReset}
+          zoom={zoom}
+          onGridToggle={() => {}}
+          data-test-id="btn-smart-tool"
+        />
+      </div>
 
-      <div className="absolute inset-0" data-test-id="canvas-stage">
+      {/* Canvas Area - المنطقة المتبقية */}
+      <div className="relative flex-1 overflow-hidden" data-test-id="canvas-stage">
         <WhiteboardRoot
           key={rev}  // يجبر إعادة تركيب المكوّن عند أي تغيير في المشهد
           sceneGraph={sceneGraph}
@@ -384,23 +388,33 @@ export default function CollaborativeCanvas({
         />
 
         <FallbackCanvas enabled={!sceneReady} />
+        
+        {/* Status Bar - داخل منطقة الكانفاس */}
+        <StatusBar
+          fps={0}
+          zoom={zoom}
+          elementsCount={sceneGraph.count()}
+          selectedCount={selectedElements.length}
+          boardId={boardId ?? `${boardAlias}-local`}
+          connected={yProvider?.connected ?? false}
+          isLocalMode={!yProvider}
+          data-test-id="status-realtime"
+        />
       </div>
 
-      <StatusBar
-        fps={0}
-        zoom={zoom}
-        elementsCount={sceneGraph.count()}
-        selectedCount={selectedElements.length}
-        boardId={boardId ?? `${boardAlias}-local`}
-        data-test-id="status-realtime"
-      />
-
-      <SmartElementsPanel
-        isOpen={showSmartPanel}
-        onClose={() => setShowSmartPanel(false)}
-        onElementSelect={handleSmartElementCreate}
-        data-test-id="modal-smart-panel"
-      />
+      {/* Panels - طبقة عالية للألواح */}
+      {showSmartPanel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="relative w-[600px] h-[500px] max-w-[90vw] max-h-[90vh]">
+            <SmartElementsPanel
+              isOpen={showSmartPanel}
+              onClose={() => setShowSmartPanel(false)}
+              onElementSelect={handleSmartElementCreate}
+              data-test-id="modal-smart-panel"
+            />
+          </div>
+        </div>
+      )}
 
       {showPropertiesPanel && selectedElements[0] && (
         <PropertiesPanel

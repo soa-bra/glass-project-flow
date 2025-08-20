@@ -17,14 +17,12 @@ const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({ isSidebarCollapse
 
   return (
     <div
-      className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-300 ${positionClasses}`}
+      className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-300 z-10 ${positionClasses}`}
       data-test-id="planning-workspace-fixed"
     >
-      <div className="h-full rounded-3xl overflow-hidden bg-white/90 backdrop-blur-sm">
-        <DirectionProvider>
-          <IntegratedPlanningCanvasCard />
-        </DirectionProvider>
-      </div>
+      <DirectionProvider>
+        <IntegratedPlanningCanvasCard />
+      </DirectionProvider>
     </div>
   );
 };
