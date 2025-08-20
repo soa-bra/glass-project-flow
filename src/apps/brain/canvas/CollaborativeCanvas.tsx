@@ -189,13 +189,28 @@ export default function CollaborativeCanvas({
     // Seed default sticky note if no content exists
     if (sceneGraph.count() === 0) {
       const center = getViewportCenter(viewport, { x: canvasPosition.x, y: canvasPosition.y, scale: zoom });
-      const stickyNode = smartElementsRegistry.createSmartElementNode('sticky-note', center, {
+      let stickyNode = smartElementsRegistry.createSmartElementNode('sticky', center, {
         content: 'تم التشغيل ✓ — كبّر وصغّر/اسحب. اضغط S لإضافة عنصر ذكي.',
         color: '#fef3c7'
       });
       
+      // احتياط: لو رجّع undefined (ما فيه ريجستري)، أنشئ Sticky يدويًا
+      if (!stickyNode) {
+        const id = 'sticky-' + Date.now();
+        stickyNode = {
+          id,
+          type: 'sticky',
+          transform: { position: center, rotation: 0, scale: { x: 1, y: 1 } },
+          size: { width: 260, height: 180 },
+          style: { fill: '#fef3c7', stroke: '#d1b892', strokeWidth: 1 },
+          content: 'تم التشغيل ✓ — كبّر وصغّر/اسحب. اضغط S لإضافة عنصر ذكي.',
+          color: '#fef3c7',
+          metadata: { seeded: true }
+        } as const;
+      }
+      
       if (stickyNode) {
-        sceneGraph.addNode(stickyNode);
+        sceneGraph.addNode(stickyNode as any);
         
         // Save to Supabase if connected
         if (yProvider?.isConnected()) {
