@@ -1,43 +1,56 @@
-// Connection and Link Types
+import { Point } from '../types';
 
 export interface ConnectionPoint {
   x: number;
   y: number;
   nodeId: string;
+  side: string;
+}
+
+export interface AnchorPoint {
+  id: string;
+  position: Point;
   side: 'top' | 'bottom' | 'left' | 'right';
+  nodeId: string;
+  active: boolean;
 }
 
 export interface Connection {
   id: string;
   fromPoint: ConnectionPoint;
   toPoint: ConnectionPoint;
-  path: ConnectionPath;
-  style: ConnectionStyle;
+  path: {
+    type: string;
+    points: Point[];
+    nodes?: any[];
+  };
+  style: {
+    stroke: string;
+    strokeWidth: number;
+    markerEnd?: string;
+    strokeDasharray?: string;
+  };
   title?: string;
   notes?: string;
-  metadata?: Record<string, any>;
 }
 
-export interface ConnectionPath {
-  type: 'orthogonal' | 'curved' | 'straight';
-  points: Array<{ x: number; y: number }>;
-  nodes?: Array<{ x: number; y: number; id: string }>; // Editable nodes
+export interface ConnectionState {
+  activeConnection: string | null;
+  pendingConnection: {
+    fromPoint?: ConnectionPoint;
+    tempPath: Point[];
+  } | null;
+  connections: Map<string, Connection>;
+  anchorPoints: Map<string, AnchorPoint[]>;
+  selectedConnectionId: string | null;
 }
 
-export interface ConnectionStyle {
-  stroke: string;
-  strokeWidth: number;
-  strokeDasharray?: string;
-  markerStart?: string;
-  markerEnd?: string;
-}
-
-export interface AnchorPoint {
-  id: string;
-  position: { x: number; y: number };
-  side: 'top' | 'bottom' | 'left' | 'right';
-  nodeId: string;
-  active: boolean;
+export interface ConnectionEvent {
+  type: string;
+  anchorId?: string;
+  connectionId?: string;
+  connection?: Connection;
+  data?: any;
 }
 
 export interface LinkData {
@@ -45,28 +58,7 @@ export interface LinkData {
   board_id: string;
   from_object_id: string;
   to_object_id: string;
-  style?: any; // JSON type from Supabase
-  label?: string | null;
+  label?: string;
+  style?: any;
   created_by: string;
-  created_at: string;
-}
-
-// Connection state management
-export interface ConnectionState {
-  activeConnection: Connection | null;
-  pendingConnection: {
-    fromPoint: ConnectionPoint | null;
-    tempPath: Array<{ x: number; y: number }>;
-  } | null;
-  connections: Map<string, Connection>;
-  anchorPoints: Map<string, AnchorPoint[]>; // nodeId -> anchor points
-  selectedConnectionId: string | null;
-}
-
-export interface ConnectionEvent {
-  type: 'connection-created' | 'connection-updated' | 'connection-deleted' | 'anchor-hover' | 'anchor-click';
-  connectionId?: string;
-  anchorId?: string;
-  connection?: Connection;
-  data?: any;
 }
