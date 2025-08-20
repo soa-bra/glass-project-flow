@@ -16,12 +16,41 @@ export class YSupabaseProvider {
   private channel: any = null;
 
   public onConnectionChange?: (connected: boolean) => void;
+  public onSync?: (isSynced: boolean) => void;
+  public onPresenceUpdate?: (users: any[]) => void;
 
   constructor(doc: Y.Doc, boardId: string, userId: string, userInfo: UserInfo) {
     this.doc = doc;
     this.boardId = boardId;
     this.userId = userId;
     this.userInfo = userInfo;
+  }
+
+  // Public getters for compatibility
+  get users(): any[] {
+    if (!this.channel) return [];
+    return Object.values(this.channel.presenceState() || {}).flat();
+  }
+
+  // Public methods for compatibility
+  updateCursor(cursor: any): void {
+    if (!this.channel || !this.connected) return;
+    
+    this.channel.track({
+      ...this.userInfo,
+      cursor,
+      lastSeen: Date.now()
+    });
+  }
+
+  updateSelection(selection: any): void {
+    if (!this.channel || !this.connected) return;
+    
+    this.channel.track({
+      ...this.userInfo,
+      selection,
+      lastSeen: Date.now()
+    });
   }
 
   async connect(): Promise<void> {
@@ -62,6 +91,7 @@ export class YSupabaseProvider {
 
         this.connected = true;
         this.onConnectionChange?.(true);
+        this.onSync?.(true);
         console.log('✅ Connected to realtime channel:', this.boardId);
       } else {
         throw new Error('Failed to subscribe to channel');

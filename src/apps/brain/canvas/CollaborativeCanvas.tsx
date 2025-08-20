@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState, useRef, useLayoutEffect } from
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth/auth-provider';
 import { useTelemetry } from '@/hooks/useTelemetry';
-import { YSupabaseProvider } from '@/lib/yjs/y-supabase-provider';
+import { YSupabaseProvider } from '@/apps/brain/realtime/ySupabaseProvider';
 import * as Y from 'yjs';
 import WhiteboardTopbar from '@/components/Whiteboard/WhiteboardTopbar';
 import WhiteboardRoot from '@/components/Whiteboard/WhiteboardRoot';
@@ -14,10 +14,9 @@ import { ConnectionManager } from '@/lib/canvas/controllers/connection-manager';
 import { useRootConnector } from '@/hooks/useRootConnector';
 import { useWF01Generator } from '@/hooks/useWF01Generator';
 import { SmartElementsPanel } from '@/components/smart-elements/smart-elements-panel';
-import { getViewportCenter, type SmartElementType } from './types';
+import { getViewportCenter } from '@/lib/canvas/types';
 import { smartElementsRegistry } from '@/lib/smart-elements/smart-elements-registry';
 import FallbackCanvas from '@/components/Whiteboard/FallbackCanvas';
-import { YSupabaseProvider as LocalYSupabaseProvider } from '@/apps/brain/realtime/ySupabaseProvider';
 
 interface CollaborativeCanvasProps {
   boardAlias?: string;
@@ -31,17 +30,14 @@ export default function CollaborativeCanvas({
   'data-test-id': testId
 }: CollaborativeCanvasProps) {
   const [boardId, setBoardId] = useState<string | null>(null);
-  const { user, hasPermission } = useAuth();
-  const { logCanvasOperation, logWF01Event, logCustomEvent } = useTelemetry({ boardId: boardId || boardAlias });
+  const { user } = useAuth();
+  const { logCanvasOperation, logCustomEvent } = useTelemetry({ boardId: boardId || boardAlias });
   
-  // Core canvas state
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isLocalMode, setIsLocalMode] = useState(false);
-  const [showGrid, setShowGrid] = useState(true);
+  // Canvas core systems
   const [sceneGraph] = useState(() => new SceneGraph());
   const [connectionManager] = useState(() => new ConnectionManager(sceneGraph, boardAlias));
   const [yDoc] = useState(() => new Y.Doc());
-  const [yProvider, setYProvider] = useState<LocalYSupabaseProvider | null>(null);
+  const [yProvider, setYProvider] = useState<YSupabaseProvider | null>(null);
   const [sceneReady, setSceneReady] = useState(false);
   
   // Canvas state
@@ -50,15 +46,14 @@ export default function CollaborativeCanvas({
   const [canvasPosition, setCanvasPosition] = useState({ x: 0, y: 0 });
   const [selectedTool, setSelectedTool] = useState('select');
   const [showSmartPanel, setShowSmartPanel] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
-  const [fps, setFps] = useState(0);
+  const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
   const [viewport, setViewport] = useState({ width: 1, height: 1, dpr: 1 });
-  const [canvasReady, setCanvasReady] = useState(false);
-  
-  // Refs
+
+  // Canvas refs and state
   const hostRef = useRef<HTMLDivElement>(null);
-  const resizeObserverRef = useRef<ResizeObserver | null>(null);
-  
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const resizeRef = useRef<ResizeObserver | null>(null);
+
   // Hooks
   const rootConnector = useRootConnector({
     sceneGraph,
@@ -78,8 +73,6 @@ export default function CollaborativeCanvas({
 
     const initializeBoard = async () => {
       try {
-        logCanvasOperation('canvas_init_start', {});
-        
         // Try to find board by alias first
         let { data: board, error: boardError } = await supabase
           .from('boards')
@@ -108,8 +101,6 @@ export default function CollaborativeCanvas({
           actualBoardId = newBoard.id;
         } else if (boardError) {
           console.warn('Board access failed, entering local mode:', boardError);
-          setIsLocalMode(true);
-          setIsInitialized(true);
           return;
         } else {
           actualBoardId = board.id;
@@ -118,13 +109,11 @@ export default function CollaborativeCanvas({
         setBoardId(actualBoardId);
 
         // Initialize Y.js provider with connection timeout
-        const provider = new LocalYSupabaseProvider(yDoc, actualBoardId, user.id, {
+        const provider = new YSupabaseProvider(yDoc, actualBoardId, user.id, {
           name: user.email?.split('@')[0] || 'User',
           color: '#' + Math.floor(Math.random()*16777215).toString(16)
         });
 
-        provider.onConnectionChange = setIsConnected;
-        
         // Try to connect with 3 second timeout
         const connectionPromise = provider.connect();
         const timeoutPromise = new Promise((_, reject) => 
@@ -136,19 +125,11 @@ export default function CollaborativeCanvas({
           setYProvider(provider);
         } catch (error) {
           console.warn('Realtime connection failed, entering local mode:', error);
-          setIsLocalMode(true);
           provider.disconnect();
         }
-
-        setIsInitialized(true);
-        logCanvasOperation('canvas_init_complete', {});
-        logCustomEvent('canvas_initialized', { boardId: actualBoardId });
         
       } catch (error) {
         console.error('Failed to initialize board:', error);
-        setIsLocalMode(true);
-        setIsInitialized(true);
-        logCustomEvent('canvas_init_error', { error: error.message });
       }
     };
 
@@ -157,265 +138,160 @@ export default function CollaborativeCanvas({
     return () => {
       yProvider?.disconnect();
     };
-  }, [user, boardAlias, logCanvasOperation, logCustomEvent]);
+  }, [user, boardAlias]);
 
-  // Resize observer and viewport setup
+  // Viewport measurement with ResizeObserver
   useLayoutEffect(() => {
     if (!hostRef.current) return;
     
     const el = hostRef.current;
-    const update = () => setViewport({
-      width: Math.max(1, el.clientWidth),
-      height: Math.max(1, el.clientHeight),
-      dpr: window.devicePixelRatio || 1
-    });
+    const update = () => {
+      setViewport({
+        width: Math.max(1, el.clientWidth),
+        height: Math.max(1, el.clientHeight), 
+        dpr: window.devicePixelRatio || 1
+      });
+    };
     
     update();
-    
     const ro = new ResizeObserver(update);
+    resizeRef.current = ro;
     ro.observe(el);
     
-    return () => ro.disconnect();
+    return () => {
+      try {
+        ro.disconnect();
+      } catch {}
+      resizeRef.current = null;
+    };
   }, []);
 
-  // Scene ready timeout - show fallback if WhiteboardRoot takes too long
-  useEffect(() => {
-    if (!isInitialized) return;
-
-    const timeout = setTimeout(() => {
-      if (!sceneReady) {
-        console.log('WhiteboardRoot taking too long, showing fallback');
-      }
-    }, 300);
-
-    // Simulate scene ready after initialization
-    const readyTimeout = setTimeout(() => {
-      setSceneReady(true);
-    }, 100);
-
-    return () => {
-      clearTimeout(timeout);
-      clearTimeout(readyTimeout);
-    };
-  }, [isInitialized, sceneReady]);
-
-  // FPS tracking
-  useEffect(() => {
-    let frameCount = 0;
-    let lastTime = performance.now();
+  // Canvas ready callback  
+  const handleCanvasReady = useCallback(() => {
+    setSceneReady(true);
     
-    const measureFPS = () => {
-      frameCount++;
-      const currentTime = performance.now();
+    // Seed default sticky note if no content exists
+    if (sceneGraph.count() === 0) {
+      const center = getViewportCenter(viewport, { x: canvasPosition.x, y: canvasPosition.y, scale: zoom });
+      const stickyNode = smartElementsRegistry.createSmartElementNode('sticky-note', center, {
+        content: 'تم التشغيل ✓ — كبّر وصغّر/اسحب. اضغط S لإضافة عنصر ذكي.',
+        color: '#fef3c7'
+      });
       
-      if (currentTime - lastTime >= 1000) {
-        setFps(Math.round(frameCount * 1000 / (currentTime - lastTime)));
-        frameCount = 0;
-        lastTime = currentTime;
+      if (stickyNode) {
+        sceneGraph.addNode(stickyNode);
+        
+        // Save to Supabase if connected
+        if (yProvider?.isConnected()) {
+          yProvider.createSnapshot().catch(console.warn);
+        }
       }
-      
-      requestAnimationFrame(measureFPS);
-    };
-    
-    if (isInitialized) {
-      requestAnimationFrame(measureFPS);
     }
-  }, [isInitialized]);
+  }, [sceneGraph, viewport, canvasPosition, zoom, yProvider]);
 
-  // Proof-of-life: Seed default sticky when ready and canvas is empty
+  // Keyboard shortcuts
   useEffect(() => {
-    if (!isInitialized || !canvasReady) return;
-
-    const seedDefaultSticky = async () => {
-      try {
-        // Check if canvas is empty
-        const nodes = sceneGraph.getAllNodes();
-        if (nodes.length === 0) {
-          // Check if there are any board_objects in remote mode
-          if (boardId && !isLocalMode) {
-            const { data: objects } = await supabase
-              .from('board_objects')
-              .select('id')
-              .eq('board_id', boardId)
-              .limit(1);
-            
-            if (objects && objects.length === 0) {
-              // Insert default sticky with proper structure
-              const defaultSticky = {
-                id: 'default-sticky-' + Date.now(),
-                type: 'sticky' as const,
-                transform: {
-                  position: { x: 0, y: 0 },
-                  rotation: 0,
-                  scale: { x: 1, y: 1 }
-                },
-                size: { width: 260, height: 180 },
-                style: { 
-                  fill: '#fef3c7', 
-                  stroke: '#92400e',
-                  strokeWidth: 2,
-                  opacity: 1 
-                },
-                content: 'تم التشغيل ✓ — كبّر وصغّر/اسحب. اضغط S لإضافة عنصر ذكي.',
-                color: '#92400e',
-                metadata: { seeded: true }
-              };
-              
-              sceneGraph.addNode(defaultSticky);
-              logCustomEvent('default_sticky_seeded', { boardId });
-            }
-          } else if (isLocalMode) {
-            // Local mode - add directly to sceneGraph
-            const defaultSticky = {
-              id: 'default-sticky-local-' + Date.now(),
-              type: 'sticky' as const,
-              transform: {
-                position: { x: 0, y: 0 },
-                rotation: 0,
-                scale: { x: 1, y: 1 }
-              },
-              size: { width: 260, height: 180 },
-              style: { 
-                fill: '#fef3c7', 
-                stroke: '#92400e',
-                strokeWidth: 2,
-                opacity: 1 
-              },
-              content: 'تم التشغيل ✓ — كبّر وصغّر/اسحب. اضغط S لإضافة عنصر ذكي.',
-              color: '#92400e',
-              metadata: { seeded: true, local: true }
-            };
-            
-            sceneGraph.addNode(defaultSticky);
-            logCustomEvent('default_sticky_seeded_local', {});
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        return; // Don't interfere with form inputs
+      }
+      
+      switch (event.key.toLowerCase()) {
+        case 's':
+          if (!event.ctrlKey && !event.metaKey) {
+            event.preventDefault();
+            setShowSmartPanel(prev => !prev);
           }
-        }
-      } catch (error) {
-        console.error('Failed to seed default sticky:', error);
+          break;
+        case '+':
+        case '=':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            handleZoomIn();
+          }
+          break;
+        case '-':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            handleZoomOut();
+          }
+          break;
+        case '0':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            handleZoomReset();
+          }
+          break;
       }
     };
 
-    seedDefaultSticky();
-  }, [isInitialized, canvasReady, boardId, isLocalMode, sceneGraph, logCustomEvent]);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
-  // Auto-save for non-local mode
-  useEffect(() => {
-    if (!isLocalMode && yProvider && isInitialized) {
-      const autoSave = setInterval(async () => {
-        try {
-          await yProvider.createSnapshot();
-          logCanvasOperation('canvas_auto_saved', { boardId });
-        } catch (error) {
-          console.error('Auto-save failed:', error);
-        }
-      }, 10000);
-
-      return () => clearInterval(autoSave);
-    }
-  }, [yProvider, isInitialized, boardId, isLocalMode, logCanvasOperation]);
-
-  // Tool handlers
+  // Event handlers
   const handleToolChange = useCallback((tool: string) => {
     setSelectedTool(tool);
     if (tool === 'smart') {
       setShowSmartPanel(true);
     }
-    logCanvasOperation('tool_selected', { tool });
-  }, [logCanvasOperation]);
-
-  const insertSmartElement = useCallback((params: { type: string; position?: { x: number; y: number } }) => {
-    const insertPosition = params.position || getViewportCenter({ 
-      x: canvasPosition.x, 
-      y: canvasPosition.y, 
-      zoom, 
-      width: viewport.width, 
-      height: viewport.height 
-    });
-    
-    const newNode = smartElementsRegistry.createSmartElementNode(params.type, insertPosition);
-    if (newNode && sceneGraph) {
-      sceneGraph.addNode(newNode);
-      logCustomEvent('smart_element_created', { elementType: params.type, position: insertPosition });
-    }
-  }, [sceneGraph, canvasPosition, zoom, viewport, logCustomEvent]);
-
-  const handleSmartElementCreate = useCallback((type: string, initialState?: any) => {
-    insertSmartElement({ type });
-    setShowSmartPanel(false);
-  }, [insertSmartElement]);
-
-  const handleCanvasReady = useCallback(() => {
-    setCanvasReady(true);
   }, []);
 
-  // Set canvas ready after initialization - WhiteboardRoot manages its own rendering
-  useEffect(() => {
-    if (isInitialized) {
-      // WhiteboardRoot is self-contained, set ready immediately
-      setCanvasReady(true);
+  const insertSmartElement = useCallback((elementData: { type: string; position: { x: number; y: number } }) => {
+    const node = smartElementsRegistry.createSmartElementNode(
+      elementData.type,
+      elementData.position
+    );
+    
+    if (node) {
+      sceneGraph.addNode(node);
+      setSelectedElements([node.id]);
     }
-  }, [isInitialized]);
+  }, [sceneGraph]);
+
+  const handleSmartElementCreate = useCallback((type: string) => {
+    const center = getViewportCenter(viewport, { x: canvasPosition.x, y: canvasPosition.y, scale: zoom });
+    insertSmartElement({ type, position: center });
+    setShowSmartPanel(false);
+  }, [viewport, canvasPosition, zoom, insertSmartElement]);
 
   const handleWF01Generate = useCallback(async () => {
     try {
-      logWF01Event('wf01_generation_started', { boardId });
       const result = await wf01Generator.generateProject();
-      
-      if (result.success) {
-        logWF01Event('wf01_generation_success', {
-          boardId,
-          mappedElements: result.statistics.mappedElements,
-          successRate: result.statistics.successRate
-        });
-      } else {
-        logWF01Event('wf01_generation_failed', {
-          boardId,
-          error: result.error
-        });
-      }
-      
       return result;
     } catch (error) {
-      logWF01Event('wf01_generation_error', { boardId, error: error.message });
       throw error;
     }
-  }, [wf01Generator, boardId, logWF01Event]);
+  }, [wf01Generator]);
 
   const handleSaveSnapshot = useCallback(async () => {
     if (!yProvider) return;
     
     try {
       await yProvider.createSnapshot();
-      logCanvasOperation('manual_save', { boardId });
     } catch (error) {
       console.error('Manual save failed:', error);
     }
-  }, [yProvider, boardId, logCanvasOperation]);
+  }, [yProvider]);
 
   const handleZoomIn = useCallback(() => {
     const newZoom = Math.min(zoom * 1.2, 8);
     setZoom(newZoom);
-    logCanvasOperation('zoom_in', { zoom: newZoom });
-  }, [zoom, logCanvasOperation]);
+  }, [zoom]);
 
   const handleZoomOut = useCallback(() => {
     const newZoom = Math.max(zoom / 1.2, 0.1);
     setZoom(newZoom);
-    logCanvasOperation('zoom_out', { zoom: newZoom });
-  }, [zoom, logCanvasOperation]);
+  }, [zoom]);
 
   const handleZoomReset = useCallback(() => {
     setZoom(1);
     setCanvasPosition({ x: 0, y: 0 });
-    logCanvasOperation('zoom_reset', {});
-  }, [logCanvasOperation]);
+  }, []);
 
-  if (!user || !isInitialized) {
+  if (!user) {
     return (
-      <div 
-        className={`flex items-center justify-center h-full ${className}`}
-        data-test-id="canvas-loading"
-      >
+      <div className="flex items-center justify-center h-full">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
           <p className="text-muted-foreground">جاري تحضير اللوحة...</p>
@@ -425,88 +301,61 @@ export default function CollaborativeCanvas({
   }
 
   return (
-    <div 
-      ref={hostRef}
-      className={`relative w-full h-full ${className}`}
-      data-test-id={testId}
-    >
-      {/* Top Toolbar */}
+    <div ref={hostRef} className="relative w-full h-full">
       <WhiteboardTopbar
         selectedTool={selectedTool}
         onToolChange={handleToolChange}
         onSmartToolClick={() => setShowSmartPanel(true)}
-        onConnectorClick={() => handleToolChange('connector')}
+        onConnectorClick={() => setSelectedTool('connector')}
         onWF01Click={handleWF01Generate}
         onSaveClick={handleSaveSnapshot}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onZoomReset={handleZoomReset}
         zoom={zoom}
-        showGrid={showGrid}
-        onGridToggle={() => setShowGrid(prev => !prev)}
-        data-test-id="canvas-topbar"
+        onGridToggle={() => {}}
+        data-test-id="btn-smart-tool"
       />
-
-      <div className="absolute inset-0 top-12 bottom-8">
-        <div className="absolute inset-0" data-test-id="canvas-stage">
-          <WhiteboardRoot
-            sceneGraph={sceneGraph}
-            connectionManager={connectionManager}
-            yProvider={yProvider as any}
-            selectedTool={selectedTool}
-            selectedElements={selectedElements}
-            onSelectionChange={setSelectedElements}
-            zoom={zoom}
-            onZoomChange={setZoom}
-            canvasPosition={canvasPosition}
-            onCanvasPositionChange={setCanvasPosition}
-          />
-          
-          {/* Fallback Canvas - Emergency Layer */}
-          <FallbackCanvas enabled={!canvasReady} />
-          
-          {/* Smart Elements Panel Overlay */}
-          {showSmartPanel && (
-            <div className="absolute inset-y-0 left-0 w-80 bg-background/95 backdrop-blur-sm border-r shadow-lg z-50">
-              <SmartElementsPanel
-                isOpen={showSmartPanel}
-                onClose={() => setShowSmartPanel(false)}
-                onElementSelect={(t) => { 
-                  insertSmartElement({ type: t, position: getViewportCenter() }); 
-                  setShowSmartPanel(false); 
-                }}
-                data-test-id="modal-smart-panel"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Properties Panel */}
-        {selectedElements.length > 0 && (
-          <div className="absolute right-0 top-0 bottom-0 w-80 bg-background/95 backdrop-blur-sm border-l">
-            <PropertiesPanel
-              selectedElements={selectedElements}
-              sceneGraph={sceneGraph}
-              onUpdate={(elementId, updates) => {
-                logCanvasOperation('element_updated', { elementId, updates });
-              }}
-              data-test-id="panel-properties"
-            />
-          </div>
-        )}
+      
+      <div className="absolute inset-0" data-test-id="canvas-stage">
+        <WhiteboardRoot
+          sceneGraph={sceneGraph}
+          connectionManager={connectionManager}
+          yProvider={yProvider}
+          selectedTool={selectedTool}
+          selectedElements={selectedElements}
+          onSelectionChange={setSelectedElements}
+          zoom={zoom}
+          canvasPosition={canvasPosition}
+          onReady={handleCanvasReady}
+        />
+        
+        <FallbackCanvas enabled={!sceneReady} />
       </div>
 
-      {/* Bottom Status Bar */}
       <StatusBar
-        isConnected={isConnected}
-        isLocalMode={isLocalMode}
-        fps={fps}
+        fps={0}
         zoom={zoom}
-        elementsCount={sceneGraph.getAllNodes().length}
+        elementCount={sceneGraph.count()}
         selectedCount={selectedElements.length}
         boardId={boardId}
-        data-test-id="status-bar"
+        data-test-id="status-realtime"
       />
+
+      <SmartElementsPanel
+        isOpen={showSmartPanel}
+        onClose={() => setShowSmartPanel(false)}
+        onElementSelect={handleSmartElementCreate}
+        data-test-id="modal-smart-panel"
+      />
+
+      {showPropertiesPanel && selectedElements[0] && (
+        <PropertiesPanel
+          sceneGraph={sceneGraph}
+          onClose={() => setShowPropertiesPanel(false)}
+          onPropertyChange={() => {}}
+        />
+      )}
     </div>
   );
 }

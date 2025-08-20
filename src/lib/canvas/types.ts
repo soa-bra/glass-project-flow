@@ -208,3 +208,18 @@ export interface CanvasSnapshot {
   camera: Camera;
   metadata?: Record<string, any>;
 }
+
+// Utility Functions
+export function getViewportCenter(
+  viewport: { width: number; height: number }, 
+  camera?: { x?: number; y?: number; scale?: number }
+): Point {
+  const scale = camera?.scale ?? 1;
+  const cx = ((camera?.x ?? 0) + viewport.width / 2) / scale;
+  const cy = ((camera?.y ?? 0) + viewport.height / 2) / scale;
+  return { x: Math.round(cx), y: Math.round(cy) };
+}
+
+// Additional types for enhanced SceneGraph API
+export type NodeId = string;
+export type NodeBounds = { x: number; y: number; width: number; height: number };

@@ -184,4 +184,25 @@ export class SceneGraph {
       sceneBounds: this.getSceneBounds()
     };
   }
+
+  // Enhanced API methods for better integration
+
+  // Get node bounds by ID (missing method)
+  getNodeBoundsById(id: string): { x: number; y: number; width: number; height: number } | null {
+    const node = this.nodes.get(id);
+    if (!node) return null;
+    return this.getNodeBounds(node);
+  }
+
+  // Count nodes (simple accessor)
+  count(): number {
+    return this.nodes.size;
+  }
+
+  // Render method (placeholder for compatibility)
+  render(): void {
+    // This method is implemented by the actual rendering layer
+    // SceneGraph is primarily for data management
+    this.updateQuadTreeIfNeeded();
+  }
 }
