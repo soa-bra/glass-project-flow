@@ -35,25 +35,11 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = (props) => {
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const readyRef = useRef(false);
-  const didReadyRef = useRef(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [nodes, setNodes] = useState(sceneGraph.getAllNodes());
 
-  // Call onReady once after first render frame
-  useEffect(() => {
-    if (didReadyRef.current) return;
-    // استدعِ onReady بعد أول فريم لضمان إن الـ stage اتجهّز
-    const raf = requestAnimationFrame(() => {
-      if (!didReadyRef.current) {
-        didReadyRef.current = true;
-        onReady?.();
-      }
-    });
-    return () => cancelAnimationFrame(raf);
-  }, [onReady]);
-
-  // Legacy onReady call (kept for compatibility)
+  // Call onReady once after first render
   useEffect(() => {
     if (!readyRef.current) {
       readyRef.current = true;
