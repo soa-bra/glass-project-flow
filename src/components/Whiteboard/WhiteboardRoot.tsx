@@ -15,6 +15,8 @@ interface WhiteboardRootProps {
   onSelectionChange: (elements: string[]) => void;
   zoom: number;
   canvasPosition: { x: number; y: number };
+  onCanvasMove?: (position: { x: number; y: number }) => void;
+  onZoomChange?: (zoom: number) => void;
   onReady?: () => void;
   'data-test-id'?: string;
 }
@@ -28,6 +30,8 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
   onSelectionChange,
   zoom,
   canvasPosition,
+  onCanvasMove,
+  onZoomChange,
   onReady,
   'data-test-id': testId
 }) => {
@@ -49,15 +53,17 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [nodes, setNodes] = useState(sceneGraph.getAllNodes());
 
-  // Update nodes when sceneGraph changes
+  // Update nodes when sceneGraph changes - Event-driven updates
   useEffect(() => {
     const updateNodes = () => {
       setNodes([...sceneGraph.getAllNodes()]);
     };
 
-    // Set up periodic updates since SceneGraph doesn't have event listeners
-    const interval = setInterval(updateNodes, 1000);
-    
+    // Initial update
+    updateNodes();
+
+    // Use less frequent periodic updates since SceneGraph doesn't have event listeners
+    const interval = setInterval(updateNodes, 2000);
     return () => clearInterval(interval);
   }, [sceneGraph]);
 
@@ -89,22 +95,27 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
   }, [selectedTool, canvasPosition, zoom, nodes, sceneGraph, onSelectionChange]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (isDragging) {
-      // Handle canvas panning - this would normally update parent state
-      console.log('Canvas drag:', { x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+    if (isDragging && onCanvasMove) {
+      const newPosition = { 
+        x: e.clientX - dragStart.x, 
+        y: e.clientY - dragStart.y 
+      };
+      onCanvasMove(newPosition);
     }
-  }, [isDragging, dragStart]);
+  }, [isDragging, dragStart, onCanvasMove]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (!onZoomChange) return;
+    
     e.preventDefault();
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
     const newZoom = Math.min(Math.max(zoom * delta, 0.1), 8);
-    console.log('Zoom change:', newZoom);
-  }, [zoom]);
+    onZoomChange(newZoom);
+  }, [zoom, onZoomChange]);
 
   // Keyboard shortcuts
   useEffect(() => {

@@ -62,7 +62,7 @@ const WhiteboardTopbar: React.FC<WhiteboardTopbarProps> = ({
 
   return (
     <div 
-      className="flex items-center gap-2 p-3 bg-background/95 backdrop-blur-sm border-b z-30 relative"
+      className="flex items-center gap-2 p-3 bg-background/95 backdrop-blur-sm border-b z-20 relative"
       data-test-id={testId}
     >
       {/* Selection Tools */}

@@ -17,7 +17,7 @@ const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({ isSidebarCollapse
 
   return (
     <div
-      className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-300 z-10 ${positionClasses}`}
+      className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-300 z-0 ${positionClasses}`}
       data-test-id="planning-workspace-fixed"
     >
       <DirectionProvider>

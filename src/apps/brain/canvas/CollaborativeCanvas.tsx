@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth/auth-provider';
 import { useTelemetry } from '@/hooks/useTelemetry';
 import { YSupabaseProvider } from '@/lib/yjs/y-supabase-provider';
+import { useDebouncedCallback } from '@/hooks/performance/useDebouncedCallback';
 import * as Y from 'yjs';
 import WhiteboardTopbar from '@/components/Whiteboard/WhiteboardTopbar';
 import WhiteboardRoot from '@/components/Whiteboard/WhiteboardRoot';
@@ -158,19 +159,29 @@ export default function CollaborativeCanvas({
     };
   }, [isAuthed, user, boardAlias]);
 
+  // Debounced viewport update for better performance
+  const debouncedViewportUpdate = useDebouncedCallback(
+    (width: number, height: number) => {
+      setViewport({
+        width: Math.max(1, width),
+        height: Math.max(1, height),
+        dpr: window.devicePixelRatio || 1
+      });
+    },
+    16, // ~60fps
+    []
+  );
+
   // Viewport measurement with ResizeObserver
   useLayoutEffect(() => {
     if (!hostRef.current) return;
 
     const el = hostRef.current;
     const update = () => {
-      setViewport({
-        width: Math.max(1, el.clientWidth),
-        height: Math.max(1, el.clientHeight),
-        dpr: window.devicePixelRatio || 1
-      });
+      debouncedViewportUpdate(el.clientWidth, el.clientHeight);
     };
 
+    // Initial update
     update();
     const ro = new ResizeObserver(update);
     resizeRef.current = ro;
@@ -182,7 +193,7 @@ export default function CollaborativeCanvas({
       } catch {}
       resizeRef.current = null;
     };
-  }, []);
+  }, [debouncedViewportUpdate]);
 
   // Helper: add node + bump revision
   const addNodeAndRender = useCallback((node: any) => {
@@ -342,11 +353,20 @@ export default function CollaborativeCanvas({
     setCanvasPosition({ x: 0, y: 0 });
   }, []);
 
+  // Canvas interaction handlers
+  const handleCanvasMove = useCallback((position: { x: number; y: number }) => {
+    setCanvasPosition(position);
+  }, []);
+
+  const handleCanvasZoom = useCallback((newZoom: number) => {
+    setZoom(newZoom);
+  }, []);
+
   return (
     <div ref={hostRef} className="relative w-full h-full flex flex-col bg-white">
       {/* Loading Overlay for Initial Setup */}
       {(!boardId || !sceneGraph || !connectionManager || !yDoc || !isAuthed) && (
-        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-40">
+        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-25">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
             <p className="text-sm text-muted-foreground">
@@ -357,7 +377,7 @@ export default function CollaborativeCanvas({
       )}
 
       {/* Topbar - Fixed at top with proper z-index */}
-      <div className="flex-shrink-0 z-30 relative">
+      <div className="flex-shrink-0 z-20 relative">
         <WhiteboardTopbar
           selectedTool={selectedTool}
           onToolChange={handleToolChange}
@@ -369,7 +389,10 @@ export default function CollaborativeCanvas({
           onZoomOut={handleZoomOut}
           onZoomReset={handleZoomReset}
           zoom={zoom}
-          onGridToggle={() => {}}
+          onGridToggle={() => {
+            // Toggle grid functionality can be implemented here
+            console.log('Grid toggle clicked');
+          }}
           data-test-id="btn-smart-tool"
         />
       </div>
@@ -386,6 +409,8 @@ export default function CollaborativeCanvas({
           onSelectionChange={setSelectedElements}
           zoom={zoom}
           canvasPosition={canvasPosition}
+          onCanvasMove={handleCanvasMove}
+          onZoomChange={handleCanvasZoom}
           onReady={handleCanvasReady}
         />
 
@@ -393,7 +418,7 @@ export default function CollaborativeCanvas({
       </div>
       
       {/* Status Bar - Fixed position outside canvas area */}
-      <div className="absolute top-16 right-4 z-20">
+      <div className="absolute top-16 right-4 z-15">
         <StatusBar
           fps={60}
           zoom={zoom}
@@ -408,7 +433,7 @@ export default function CollaborativeCanvas({
 
       {/* Smart Elements Panel - Modal overlay */}
       {showSmartPanel && (
-        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-30">
           <div className="relative w-[600px] h-[500px] max-w-[90vw] max-h-[90vh] bg-white rounded-lg shadow-xl">
             <SmartElementsPanel
               isOpen={showSmartPanel}
