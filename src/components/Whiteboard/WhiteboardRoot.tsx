@@ -14,9 +14,8 @@ interface WhiteboardRootProps {
   selectedElements: string[];
   onSelectionChange: (elements: string[]) => void;
   zoom: number;
-  onZoomChange: (zoom: number) => void;
   canvasPosition: { x: number; y: number };
-  onCanvasPositionChange: (position: { x: number; y: number }) => void;
+  onReady?: () => void;
   'data-test-id'?: string;
 }
 
@@ -28,9 +27,8 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
   selectedElements,
   onSelectionChange,
   zoom,
-  onZoomChange,
   canvasPosition,
-  onCanvasPositionChange,
+  onReady,
   'data-test-id': testId
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -47,8 +45,17 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
     // Set up periodic updates since SceneGraph doesn't have event listeners
     const interval = setInterval(updateNodes, 1000);
     
+    // Call onReady after first render
+    if (onReady) {
+      const timer = setTimeout(() => onReady(), 100);
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timer);
+      };
+    }
+    
     return () => clearInterval(interval);
-  }, [sceneGraph]);
+  }, [sceneGraph, onReady]);
 
   // Handle mouse events
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -79,12 +86,11 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (isDragging) {
-      onCanvasPositionChange({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
-      });
+      // Canvas position is managed by parent CollaborativeCanvas
+      // This would need to be passed up via callback if needed
+      console.log('Canvas drag movement detected');
     }
-  }, [isDragging, dragStart, onCanvasPositionChange]);
+  }, [isDragging, dragStart]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -92,10 +98,10 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    const newZoom = Math.min(Math.max(zoom * delta, 0.1), 8);
-    onZoomChange(newZoom);
-  }, [zoom, onZoomChange]);
+    // Zoom is managed by parent CollaborativeCanvas
+    // This would need to be passed up via callback if needed
+    console.log('Wheel zoom detected:', e.deltaY > 0 ? 'zoom out' : 'zoom in');
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {

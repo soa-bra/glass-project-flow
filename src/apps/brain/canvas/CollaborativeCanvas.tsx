@@ -334,6 +334,7 @@ export default function CollaborativeCanvas({
       </div>
 
       <StatusBar
+        isConnected={yProvider?.isConnected()}
         fps={0}
         zoom={zoom}
         elementCount={sceneGraph.count()}
@@ -351,9 +352,12 @@ export default function CollaborativeCanvas({
 
       {showPropertiesPanel && selectedElements[0] && (
         <PropertiesPanel
+          selectedElements={selectedElements}
           sceneGraph={sceneGraph}
+          onUpdate={(elementId, updates) => {
+            sceneGraph.updateNode(elementId, updates);
+          }}
           onClose={() => setShowPropertiesPanel(false)}
-          onPropertyChange={() => {}}
         />
       )}
     </div>

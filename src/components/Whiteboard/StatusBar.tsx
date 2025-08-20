@@ -5,22 +5,22 @@ import { Separator } from '@/components/ui/separator';
 import { Wifi, WifiOff, Users, MousePointer, Zap } from 'lucide-react';
 
 interface StatusBarProps {
-  isConnected: boolean;
+  isConnected?: boolean;
   isLocalMode?: boolean;
   fps: number;
   zoom: number;
-  elementsCount: number;
+  elementCount: number;
   selectedCount: number;
   boardId?: string | null;
   'data-test-id'?: string;
 }
 
 const StatusBar: React.FC<StatusBarProps> = ({
-  isConnected,
+  isConnected = false,
   isLocalMode = false,
   fps,
   zoom,
-  elementsCount,
+  elementCount,
   selectedCount,
   boardId,
   'data-test-id': testId
@@ -65,7 +65,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
         {/* Elements Count */}
         <div className="flex items-center gap-1">
           <MousePointer className="w-3 h-3 text-muted-foreground" />
-          <span>{elementsCount} عنصر</span>
+          <span>{elementCount} عنصر</span>
           {selectedCount > 0 && (
             <>
               <span className="text-muted-foreground">•</span>

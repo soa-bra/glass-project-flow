@@ -12,6 +12,7 @@ interface PropertiesPanelProps {
   selectedElements: string[];
   sceneGraph: SceneGraph;
   onUpdate: (elementId: string, updates: any) => void;
+  onClose?: () => void;
   'data-test-id'?: string;
 }
 
