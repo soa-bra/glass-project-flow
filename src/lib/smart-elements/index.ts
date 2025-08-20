@@ -13,9 +13,11 @@ export type {
 // Initialize all elements when module is imported
 import { registerBuiltInSmartElements } from './built-in-elements';
 import { registerAdvancedSmartElements } from './advanced-elements';
+import { registerSolidarityElements } from './solidarity-elements';
 
 // Auto-register all smart elements
 registerBuiltInSmartElements();
 registerAdvancedSmartElements();
+registerSolidarityElements();
 
-console.log('🧠 Smart Elements System initialized with advanced elements');
+console.log('🧠 Smart Elements System initialized with solidarity planning elements');
