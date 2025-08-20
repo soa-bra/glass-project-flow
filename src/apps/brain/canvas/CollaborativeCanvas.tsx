@@ -18,6 +18,7 @@ import { SmartElementsPanel } from '@/components/smart-elements/smart-elements-p
 import { getViewportCenter } from '@/lib/canvas/types';
 import { smartElementsRegistry } from '@/apps/brain/plugins/smart-elements/smart-elements-registry';
 import FallbackCanvas from '@/components/Whiteboard/FallbackCanvas';
+import InteractionOverlay from '@/components/Whiteboard/InteractionOverlay';
 
 interface CollaborativeCanvasProps {
   boardAlias?: string;
@@ -399,22 +400,46 @@ export default function CollaborativeCanvas({
 
       {/* Canvas Area - Takes remaining space */}
       <div className="flex-1 relative bg-gray-50 overflow-hidden">
-        <WhiteboardRoot
-          key={rev}
-          sceneGraph={sceneGraph}
-          connectionManager={connectionManager}
-          yProvider={yProvider}
-          selectedTool={selectedTool}
-          selectedElements={selectedElements}
-          onSelectionChange={setSelectedElements}
-          zoom={zoom}
-          canvasPosition={canvasPosition}
-          onCanvasMove={handleCanvasMove}
-          onZoomChange={handleCanvasZoom}
-          onReady={handleCanvasReady}
-        />
+        <div className="absolute inset-0" data-test-id="canvas-stage">
+          <WhiteboardRoot
+            key={rev}
+            sceneGraph={sceneGraph}
+            connectionManager={connectionManager}
+            yProvider={yProvider}
+            selectedTool={selectedTool}
+            selectedElements={selectedElements}
+            onSelectionChange={setSelectedElements}
+            zoom={zoom}
+            canvasPosition={canvasPosition}
+            onCanvasMove={handleCanvasMove}
+            onZoomChange={handleCanvasZoom}
+            onReady={handleCanvasReady}
+          />
 
-        <FallbackCanvas enabled={!sceneReady} />
+          {/* ✅ طبقة التفاعل */}
+          <InteractionOverlay
+            selectedTool={selectedTool}
+            sceneGraph={sceneGraph}
+            zoom={zoom}
+            canvasPosition={canvasPosition}
+            setCanvasPosition={setCanvasPosition}
+            setSelectedElements={setSelectedElements}
+            onCreateElement={(type, position) => {
+              // هذا يمرّ عبر نفس الدالة اللي تنشئ العناصر الذكية
+              if (type === 'sticky' || type === 'text') {
+                const node = smartElementsRegistry.createSmartElementNode(type, position);
+                if (node) {
+                  sceneGraph.addNode(node);
+                  setSelectedElements([node.id]);
+                  setRev(v => v + 1);
+                  if (yProvider?.connected) yProvider.createSnapshot().catch(console.warn);
+                }
+              }
+            }}
+          />
+
+          <FallbackCanvas enabled={!sceneReady} />
+        </div>
       </div>
       
       {/* Status Bar - Fixed position outside canvas area */}
