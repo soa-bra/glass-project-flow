@@ -42,6 +42,14 @@ export default function CollaborativeCanvas({
   const [yDoc] = useState(() => new Y.Doc());
   const [yProvider, setYProvider] = useState<YSupabaseProvider | null>(null);
   const [sceneReady, setSceneReady] = useState(false);
+
+  // Safety timeout to ensure scene ready
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setSceneReady((v) => v || true);
+    }, 1200); // 1.2 ثانية تكفي لرسم أول فريم/جريد
+    return () => clearTimeout(t);
+  }, []);
   
   // Canvas state
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
@@ -299,8 +307,8 @@ export default function CollaborativeCanvas({
 
   return (
     <div ref={hostRef} className="relative w-full h-full">
-      {/* Overlay عند عدم وجود مستخدم */}
-      {!isAuthed && (
+      {/* Overlay عند عدم وجود مستخدم وعدم الجاهزية */}
+      {!isAuthed && !sceneReady && (
         <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center">
           <div className="text-center space-y-3">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto" />
@@ -346,6 +354,8 @@ export default function CollaborativeCanvas({
         elementsCount={sceneGraph.count()}
         selectedCount={selectedElements.length}
         boardId={boardId ?? `${boardAlias}-local`}
+        connected={yProvider?.isConnected() ?? false}
+        isLocalMode={!isAuthed}
         data-test-id="status-realtime"
       />
 
