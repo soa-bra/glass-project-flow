@@ -26,11 +26,12 @@ interface WhiteboardTopbarProps {
   onToolChange: (tool: string) => void;
   onSmartToolClick: () => void;
   onConnectorClick: () => void;
-  onWF01Click: () => void;
-  onSaveClick: () => void;
+  onWF01Click?: () => void;
+  onSaveClick?: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onZoomReset: () => void;
+  onGridToggle?: () => void;
   zoom: number;
   'data-test-id'?: string;
 }

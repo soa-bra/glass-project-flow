@@ -9,56 +9,21 @@ import { SceneGraph } from '@/lib/canvas/utils/scene-graph';
 import { Palette, Settings, Lock, Unlock, Copy, Trash2 } from 'lucide-react';
 
 interface PropertiesPanelProps {
-  selectedElements: string[];
   sceneGraph: SceneGraph;
-  onUpdate: (elementId: string, updates: any) => void;
+  selectedId: string;
+  onPropertyChange: (id: string, patch: any) => void;
+  onClose: () => void;
   'data-test-id'?: string;
 }
 
 const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
-  selectedElements,
   sceneGraph,
-  onUpdate,
+  selectedId,
+  onPropertyChange,
+  onClose,
   'data-test-id': testId
 }) => {
-  const selectedNode = selectedElements.length === 1 
-    ? sceneGraph.getAllNodes().find(node => node.id === selectedElements[0])
-    : null;
-
-  if (selectedElements.length === 0) {
-    return (
-      <div className="p-4" data-test-id={testId}>
-        <p className="text-muted-foreground text-center">
-          لا توجد عناصر محددة
-        </p>
-      </div>
-    );
-  }
-
-  if (selectedElements.length > 1) {
-    return (
-      <Card className="m-4" data-test-id={testId}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings className="w-4 h-4" />
-            عناصر متعددة ({selectedElements.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline" size="sm">
-              <Copy className="w-4 h-4 mr-2" />
-              نسخ
-            </Button>
-            <Button variant="outline" size="sm">
-              <Trash2 className="w-4 h-4 mr-2" />
-              حذف
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const selectedNode = sceneGraph.getAllNodes().find(node => node.id === selectedId);
 
   if (!selectedNode) return null;
 
@@ -82,7 +47,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <Input
                   type="number"
                   value={selectedNode.transform.position.x}
-                  onChange={(e) => onUpdate(selectedNode.id, {
+                  onChange={(e) => onPropertyChange(selectedNode.id, {
                     transform: {
                       ...selectedNode.transform,
                       position: {
@@ -99,7 +64,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <Input
                   type="number"
                   value={selectedNode.transform.position.y}
-                  onChange={(e) => onUpdate(selectedNode.id, {
+                  onChange={(e) => onPropertyChange(selectedNode.id, {
                     transform: {
                       ...selectedNode.transform,
                       position: {
@@ -123,7 +88,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <Input
                   type="number"
                   value={selectedNode.size.width}
-                  onChange={(e) => onUpdate(selectedNode.id, {
+                  onChange={(e) => onPropertyChange(selectedNode.id, {
                     size: {
                       ...selectedNode.size,
                       width: parseInt(e.target.value) || 100
@@ -137,7 +102,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <Input
                   type="number"
                   value={selectedNode.size.height}
-                  onChange={(e) => onUpdate(selectedNode.id, {
+                  onChange={(e) => onPropertyChange(selectedNode.id, {
                     size: {
                       ...selectedNode.size,
                       height: parseInt(e.target.value) || 100
@@ -163,7 +128,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <Input
                 type="color"
                 value={selectedNode.style?.fill || '#ffffff'}
-                onChange={(e) => onUpdate(selectedNode.id, {
+                onChange={(e) => onPropertyChange(selectedNode.id, {
                   style: {
                     ...selectedNode.style,
                     fill: e.target.value
@@ -178,7 +143,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <Input
                 type="color"
                 value={selectedNode.style?.stroke || '#cccccc'}
-                onChange={(e) => onUpdate(selectedNode.id, {
+                onChange={(e) => onPropertyChange(selectedNode.id, {
                   style: {
                     ...selectedNode.style,
                     stroke: e.target.value
@@ -197,7 +162,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <Label className="text-xs font-medium">المحتوى</Label>
               <Input
                 value={(selectedNode as any).content || ''}
-                onChange={(e) => onUpdate(selectedNode.id, {
+                onChange={(e) => onPropertyChange(selectedNode.id, {
                   content: e.target.value
                 })}
                 placeholder="أدخل النص..."
@@ -215,7 +180,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => onUpdate(selectedNode.id, {
+                onClick={() => onPropertyChange(selectedNode.id, {
                   metadata: {
                     ...selectedNode.metadata,
                     locked: !selectedNode.metadata?.locked

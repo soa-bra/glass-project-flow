@@ -176,6 +176,11 @@ export class SceneGraph {
     this.isDirty = false;
   }
 
+  // Get node count
+  count(): number {
+    return this.nodes.size;
+  }
+
   // Get statistics
   getStats() {
     return {

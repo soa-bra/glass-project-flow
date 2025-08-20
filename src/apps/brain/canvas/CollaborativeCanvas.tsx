@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState, useRef, useLayoutEffect } from
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth/auth-provider';
 import { useTelemetry } from '@/hooks/useTelemetry';
-import { YSupabaseProvider } from '@/apps/brain/realtime/ySupabaseProvider';
+import { YSupabaseProvider } from '@/lib/yjs/y-supabase-provider';
 import * as Y from 'yjs';
 import WhiteboardTopbar from '@/components/Whiteboard/WhiteboardTopbar';
 import WhiteboardRoot from '@/components/Whiteboard/WhiteboardRoot';
@@ -234,7 +234,7 @@ export default function CollaborativeCanvas({
       logCanvasOperation?.('seed_sticky', { id: (stickyNode as any).id, boardId: boardId || boardAlias });
     } catch {}
 
-    if (yProvider?.isConnected()) {
+    if (yProvider?.connected) {
       yProvider.createSnapshot().catch(console.warn);
     }
   }, [sceneReady, sceneGraph, viewport, canvasPosition, zoom, yProvider, addNodeAndRender, logCanvasOperation, boardId, boardAlias]);

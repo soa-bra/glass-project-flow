@@ -208,3 +208,11 @@ export interface CanvasSnapshot {
   camera: Camera;
   metadata?: Record<string, any>;
 }
+
+// Utility functions
+export const getViewportCenter = (viewport: { width: number; height: number }, transform: { x: number; y: number; scale: number }): Point => {
+  return {
+    x: (viewport.width / 2 - transform.x) / transform.scale,
+    y: (viewport.height / 2 - transform.y) / transform.scale
+  };
+};

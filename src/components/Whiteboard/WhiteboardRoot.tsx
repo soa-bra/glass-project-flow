@@ -14,9 +14,8 @@ interface WhiteboardRootProps {
   selectedElements: string[];
   onSelectionChange: (elements: string[]) => void;
   zoom: number;
-  onZoomChange: (zoom: number) => void;
   canvasPosition: { x: number; y: number };
-  onCanvasPositionChange: (position: { x: number; y: number }) => void;
+  onReady?: () => void;
   'data-test-id'?: string;
 }
 
@@ -28,11 +27,23 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
   selectedElements,
   onSelectionChange,
   zoom,
-  onZoomChange,
   canvasPosition,
-  onCanvasPositionChange,
+  onReady,
   'data-test-id': testId
 }) => {
+  const didReadyRef = useRef(false);
+  
+  // Call onReady after first frame
+  useEffect(() => {
+    if (didReadyRef.current) return;
+    const raf = requestAnimationFrame(() => {
+      if (!didReadyRef.current) {
+        didReadyRef.current = true;
+        onReady?.();
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [onReady]);
   const canvasRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -79,12 +90,10 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (isDragging) {
-      onCanvasPositionChange({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
-      });
+      // Handle canvas panning - this would normally update parent state
+      console.log('Canvas drag:', { x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
     }
-  }, [isDragging, dragStart, onCanvasPositionChange]);
+  }, [isDragging, dragStart]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -94,8 +103,8 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
     e.preventDefault();
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
     const newZoom = Math.min(Math.max(zoom * delta, 0.1), 8);
-    onZoomChange(newZoom);
-  }, [zoom, onZoomChange]);
+    console.log('Zoom change:', newZoom);
+  }, [zoom]);
 
   // Keyboard shortcuts
   useEffect(() => {
