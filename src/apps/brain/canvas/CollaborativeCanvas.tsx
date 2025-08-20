@@ -33,6 +33,9 @@ export default function CollaborativeCanvas({
   const { user } = useAuth();
   const { logCanvasOperation, logCustomEvent } = useTelemetry({ boardId: boardId || boardAlias });
   
+  // Auth status flag
+  const isAuthed = !!user;
+  
   // Canvas core systems
   const [sceneGraph] = useState(() => new SceneGraph());
   const [connectionManager] = useState(() => new ConnectionManager(sceneGraph, boardAlias));
@@ -69,9 +72,14 @@ export default function CollaborativeCanvas({
 
   // Initialize board and Y.js provider
   useEffect(() => {
-    if (!user) return;
-
     const initializeBoard = async () => {
+      if (!isAuthed) {
+        // Local mode - no Supabase integration
+        setBoardId(`${boardAlias}-local`);
+        setYProvider(null);
+        return;
+      }
+
       try {
         // Try to find board by alias first
         let { data: board, error: boardError } = await supabase
@@ -138,7 +146,7 @@ export default function CollaborativeCanvas({
     return () => {
       yProvider?.disconnect();
     };
-  }, [user, boardAlias]);
+  }, [isAuthed, user, boardAlias]);
 
   // Viewport measurement with ResizeObserver
   useLayoutEffect(() => {
@@ -289,26 +297,25 @@ export default function CollaborativeCanvas({
     setCanvasPosition({ x: 0, y: 0 });
   }, []);
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
-          <p className="text-muted-foreground">جاري تحضير اللوحة...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div ref={hostRef} className="relative w-full h-full">
+      {/* Overlay عند عدم وجود مستخدم */}
+      {!isAuthed && (
+        <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center">
+          <div className="text-center space-y-3">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto" />
+            <p className="text-muted-foreground">جارٍ التحضير… وضع محلي مؤقت</p>
+          </div>
+        </div>
+      )}
+
       <WhiteboardTopbar
         selectedTool={selectedTool}
         onToolChange={handleToolChange}
         onSmartToolClick={() => setShowSmartPanel(true)}
         onConnectorClick={() => setSelectedTool('connector')}
-        onWF01Click={handleWF01Generate}
-        onSaveClick={handleSaveSnapshot}
+        onWF01Click={isAuthed ? handleWF01Generate : undefined}
+        onSaveClick={isAuthed ? handleSaveSnapshot : undefined}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onZoomReset={handleZoomReset}
@@ -338,7 +345,7 @@ export default function CollaborativeCanvas({
         zoom={zoom}
         elementsCount={sceneGraph.count()}
         selectedCount={selectedElements.length}
-        boardId={boardId}
+        boardId={boardId ?? `${boardAlias}-local`}
         data-test-id="status-realtime"
       />
 
