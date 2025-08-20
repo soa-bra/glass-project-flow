@@ -228,10 +228,16 @@ export default function CollaborativeCanvas({
 
     addNodeAndRender(stickyNode as any);
 
+    // Telemetry (إشارة زرع أولي)
+    try {
+      // @ts-ignore - لو الأنواع تختلف في مشروعك
+      logCanvasOperation?.('seed_sticky', { id: (stickyNode as any).id, boardId: boardId || boardAlias });
+    } catch {}
+
     if (yProvider?.isConnected()) {
       yProvider.createSnapshot().catch(console.warn);
     }
-  }, [sceneReady, sceneGraph, viewport, canvasPosition, zoom, yProvider, addNodeAndRender]);
+  }, [sceneReady, sceneGraph, viewport, canvasPosition, zoom, yProvider, addNodeAndRender, logCanvasOperation, boardId, boardAlias]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -286,8 +292,15 @@ export default function CollaborativeCanvas({
       elementData.type,
       elementData.position
     );
-    if (node) addNodeAndRender(node);
-  }, [addNodeAndRender]);
+    if (node) {
+      addNodeAndRender(node);
+      // Telemetry
+      try {
+        // @ts-ignore
+        logCanvasOperation?.('insert_element', { type: elementData.type, id: node.id });
+      } catch {}
+    }
+  }, [addNodeAndRender, logCanvasOperation]);
 
   const handleSmartElementCreate = useCallback((type: string) => {
     const center = getViewportCenter(viewport, { x: canvasPosition.x, y: canvasPosition.y, scale: zoom });
@@ -379,8 +392,6 @@ export default function CollaborativeCanvas({
         elementsCount={sceneGraph.count()}
         selectedCount={selectedElements.length}
         boardId={boardId ?? `${boardAlias}-local`}
-        connected={yProvider?.isConnected() ?? false}
-        isLocalMode={!isAuthed}
         data-test-id="status-realtime"
       />
 
