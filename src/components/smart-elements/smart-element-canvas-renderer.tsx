@@ -1,5 +1,5 @@
 import React from 'react';
-import { smartElementsRegistry, RenderContext } from '../../lib/smart-elements/smart-elements-registry';
+import { smartElementsRegistry, RenderContext } from '@/apps/brain/plugins/smart-elements/smart-elements-registry';
 import { CanvasNode } from '../../lib/canvas/types';
 
 interface SmartElementCanvasRendererProps {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { SmartElementCanvasRenderer } from './smart-element-canvas-renderer';
 import { DragAndDropProvider, useDraggable, useDropZone } from './drag-and-drop-provider';
 import { CanvasNode } from '../../lib/canvas/types';
-import { smartElementsRegistry } from '../../lib/smart-elements/smart-elements-registry';
+import { smartElementsRegistry } from '@/apps/brain/plugins/smart-elements/smart-elements-registry';
 
 interface EnhancedSmartElementRendererProps {
   node: CanvasNode;

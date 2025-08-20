@@ -1,5 +1,5 @@
 import * as Y from 'yjs';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 export interface PresenceUser {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { SceneGraph } from '../lib/canvas/utils/scene-graph';
 import { ConnectionManager } from '../lib/canvas/controllers/connection-manager';
 

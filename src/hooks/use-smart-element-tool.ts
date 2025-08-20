@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { smartElementsRegistry } from '../lib/smart-elements/smart-elements-registry';
+import { smartElementsRegistry } from '@/apps/brain/plugins/smart-elements/smart-elements-registry';
 
 export interface SmartElementToolState {
   isActive: boolean;

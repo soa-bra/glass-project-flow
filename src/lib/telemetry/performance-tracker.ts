@@ -1,5 +1,5 @@
 // Performance Telemetry Tracker
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export interface PerformanceMetrics {
   fps: number;

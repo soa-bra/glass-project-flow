@@ -1,9 +1,9 @@
 // Authentication & Permissions Tests
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 // Mock supabase
-vi.mock('@/integrations/supabase/client', () => ({
+vi.mock('@/lib/supabase/client', () => ({
   supabase: {
     auth: {
       signIn: vi.fn(),
@@ -39,6 +39,9 @@ describe('Authentication & Permission System', () => {
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: 'host',
         error: null,
+        count: null,
+        status: 200,
+        statusText: 'OK'
       });
 
       const result = await supabase.rpc('get_user_board_role', {
@@ -60,6 +63,9 @@ describe('Authentication & Permission System', () => {
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: true,
         error: null,
+        count: null,
+        status: 200,
+        statusText: 'OK'
       });
 
       // Test editor can access editing functions
@@ -79,6 +85,9 @@ describe('Authentication & Permission System', () => {
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: false,
         error: null,
+        count: null,
+        status: 200,
+        statusText: 'OK'
       });
 
       // Test viewer cannot access editor functions
@@ -98,6 +107,9 @@ describe('Authentication & Permission System', () => {
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: null,
         error: null,
+        count: null,
+        status: 200,
+        statusText: 'OK'
       });
 
       const result = await supabase.rpc('get_user_board_role', {
@@ -255,6 +267,9 @@ describe('Authentication & Permission System', () => {
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: false,
         error: null,
+        count: null,
+        status: 200,
+        statusText: 'OK'
       });
 
       const result = await supabase.rpc('user_has_board_role', {

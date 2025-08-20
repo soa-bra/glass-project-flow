@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { SmartElementCanvasIntegration } from '../lib/smart-elements/canvas-integration';
+import { supabase } from '@/lib/supabase/client';
+import { SmartElementCanvasIntegration } from '@/apps/brain/plugins/smart-elements/canvas-integration';
 
 interface RealtimeSmartElementsProps {
   canvasIntegration: SmartElementCanvasIntegration;

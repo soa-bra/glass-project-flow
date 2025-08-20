@@ -1,6 +1,6 @@
 // Collaborative Canvas - Main Integration Component
 import React, { useCallback, useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/auth/auth-provider';
 import { useTelemetry } from '@/hooks/useTelemetry';
 import { YSupabaseProvider } from '@/lib/yjs/y-supabase-provider';
@@ -16,7 +16,7 @@ import { useRootConnector } from '@/hooks/useRootConnector';
 import { useWF01Generator } from '@/hooks/useWF01Generator';
 import { SmartElementsPanel } from '@/components/smart-elements/smart-elements-panel';
 import { getViewportCenter } from '@/lib/canvas/types';
-import { smartElementsRegistry } from '@/lib/smart-elements/smart-elements-registry';
+import { smartElementsRegistry } from '@/apps/brain/plugins/smart-elements/smart-elements-registry';
 import FallbackCanvas from '@/components/Whiteboard/FallbackCanvas';
 
 interface CollaborativeCanvasProps {

@@ -1,7 +1,7 @@
 // Internal Metrics Dashboard
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth/auth-provider';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';

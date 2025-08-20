@@ -1,8 +1,8 @@
 // Integration between Smart Elements and Canvas System
-import { CanvasState } from '../../../lib/canvas/canvas-state';
-import { InfiniteCanvasEngine } from '../../../lib/canvas/canvas-engine';
+import { CanvasState } from '../../../../lib/canvas/canvas-state';
+import { InfiniteCanvasEngine } from '../../../../lib/canvas/canvas-engine';
 import { smartElementsRegistry } from './smart-elements-registry';
-import { CanvasNode } from '../../../lib/canvas/types';
+import { CanvasNode } from '../../../../lib/canvas/types';
 
 export class SmartElementCanvasIntegration {
   private canvasState: CanvasState;

@@ -101,7 +101,7 @@ export function useRootConnector({
 
   const deleteConnection = useCallback(async (id: string) => {
     try {
-      const { supabase } = await import('@/integrations/supabase/client');
+      const { supabase } = await import('@/lib/supabase/client');
       const { error } = await supabase
         .from('links')
         .delete()
@@ -125,7 +125,7 @@ export function useRootConnector({
 
   const updateConnection = useCallback(async (id: string, updates: Partial<Connection>) => {
     try {
-      const { supabase } = await import('@/integrations/supabase/client');
+      const { supabase } = await import('@/lib/supabase/client');
       const { error } = await supabase
         .from('links')
         .update({

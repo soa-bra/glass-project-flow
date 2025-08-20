@@ -1,7 +1,7 @@
 import { ConnectionState, Connection, ConnectionPoint, AnchorPoint, ConnectionEvent, LinkData } from '../types/connection';
 import { CanvasNode, Point, Bounds } from '../types';
 import { SceneGraph } from '../utils/scene-graph';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export class ConnectionManager {
   private state: ConnectionState;

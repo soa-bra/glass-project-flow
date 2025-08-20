@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { smartElementsRegistry, SmartElementDefinition } from '../../lib/smart-elements/smart-elements-registry';
+import { smartElementsRegistry, SmartElementDefinition } from '@/apps/brain/plugins/smart-elements/smart-elements-registry';
 import { SmartElementSettingsForm } from './smart-element-settings-form';
 import { useDirection } from '../../contexts/direction-context';
 import { DirectionalIcon } from '../ui/directional-icon';

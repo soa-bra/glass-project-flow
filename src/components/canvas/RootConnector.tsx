@@ -207,4 +207,4 @@ export function RootConnector({
 }
 
 // Export the supabase client for the component
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase/client';
