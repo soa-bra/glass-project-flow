@@ -195,11 +195,20 @@ const WhiteboardRoot: React.FC<WhiteboardRootProps> = ({
             >
               {node.metadata?.smartElementType ? (
                 <EnhancedSmartElementRenderer
-                  node={node}
-                  isSelected={selectedElements.includes(node.id)}
-                  onUpdate={(nodeId, updates) => {
-                    sceneGraph.updateNode(nodeId, updates);
+                  nodes={[node]}
+                  selectedIds={selectedElements}
+                  onNodeSelect={(id, multiSelect) => {
+                    if (multiSelect) {
+                      const newSelection = selectedElements.includes(id)
+                        ? selectedElements.filter(sid => sid !== id)
+                        : [...selectedElements, id];
+                      onSelectionChange(newSelection);
+                    } else {
+                      onSelectionChange([id]);
+                    }
                   }}
+                  zoom={zoom}
+                  canvasPosition={canvasPosition}
                 />
               ) : (
                 <div
