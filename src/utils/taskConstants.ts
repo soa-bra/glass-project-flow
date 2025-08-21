@@ -9,7 +9,7 @@ export const TASK_STATUS_COLORS = {
 } as const;
 
 export const TASK_STATUS_TEXT = {
-  completed: 'مكتملة',
+  completed: 'منجزة',
   'in-progress': 'قيد التنفيذ',
   todo: 'لم تبدأ',
   stopped: 'متوقفة',
@@ -25,10 +25,10 @@ export const PRIORITY_COLORS = {
 } as const;
 
 export const PRIORITY_TEXT = {
-  low: 'منخفضة',
-  medium: 'متوسطة',
-  high: 'عالية',
-  urgent: 'عاجلة'
+  low: 'غير مهم وغير عاجل',
+  medium: 'غير مهم وعاجل',
+  high: 'مهم وغير عاجل',
+  urgent: 'مهم وعاجل'
 } as const;
 
 // أنواع TypeScript للثوابت
