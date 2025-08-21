@@ -3,3 +3,6 @@
 
 // Settings Hooks  
 export { useAutosave } from '../components/SettingsPanel/hooks/useAutosave';
+
+// Toast Hook
+export { useToast, toast } from './use-toast';
