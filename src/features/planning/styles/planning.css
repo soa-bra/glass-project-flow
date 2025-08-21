@@ -13,3 +13,4 @@
 .ctx{ position:fixed; background:#fff; border:1px solid var(--line); border-radius:8px; padding:6px; box-shadow:0 4px 16px rgba(0,0,0,.12); z-index:50; min-width:160px }
 button.danger{ color:#b91c1c }
 .sep{ width:1px; height:20px; background:var(--line) }
+.planning-canvas { background-color: #fff; background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 16px 16px; }

@@ -1,23 +1,4 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "noImplicitAny": false,
-    "noUnusedParameters": false,
-    "skipLibCheck": true,
-    "allowJs": true,
-    "noUnusedLocals": false,
-    "strictNullChecks": false
-  }
-}
-{
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
@@ -25,13 +6,13 @@
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "paths": { "@/*": ["*"] },
+    "paths": {
+      "@/*": ["*"]
+    },
     "types": ["vite/client", "vitest", "@playwright/test"],
     "strict": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["src", "scripts", "tools", "docs", "adr", "vitest.config.ts"]
+  "include": ["src", "scripts", "tools", "docs", "adr"]
 }
