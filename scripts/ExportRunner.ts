@@ -40,7 +40,7 @@ const generateReports = async () => {
     const doc = new jsPDF();
     doc.text("تقرير العقود والفواتير", 10, 10);
     let y = 20;
-    combinedData.forEach((item, i) => {
+    combinedData.forEach((item: any, i: number) => {
       doc.text(`${i + 1}. عقد #${item.contractId} - قيمة: ${item.value}`, 10, y);
       y += 10;
       item.invoices.forEach((inv: any) => {
@@ -52,7 +52,7 @@ const generateReports = async () => {
 
     // --- Excel ---
     const rows: any[] = [];
-    combinedData.forEach(item => {
+    combinedData.forEach((item: any) => {
       item.invoices.forEach((inv: any) => {
         rows.push({
           ContractID: item.contractId,

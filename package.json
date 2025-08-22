@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@automerge/automerge": "^3.1.1",
     "@headlessui/react": "^2.2.4",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^3.9.0",
@@ -84,6 +85,7 @@
     "vaul": "^0.9.3",
     "vitest": "^3.2.4",
     "xlsx": "^0.18.5",
+    "yjs": "^13.6.27",
     "zod": "^3.23.8",
     "zustand": "^5.0.6"
   },

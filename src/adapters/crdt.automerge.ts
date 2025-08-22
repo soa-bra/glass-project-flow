@@ -8,7 +8,7 @@ export function createAutoDoc(){
 }
 
 export function applySnapshotAuto(doc: Doc, snap:{frames:any[];widgets:any[];connectors:any[]}) {
-  return A.change(doc, d=>{
+  return A.change(doc, (d: any) => {
     d.frames = snap.frames; d.widgets = snap.widgets; d.connectors = snap.connectors;
   });
 }
