@@ -1,4 +1,4 @@
-// src/features/planning/PlanningPanel.tsx
+
 'use client';
 import React from 'react';
 import TopToolbar from './components/topbar/TopToolbar';
@@ -14,36 +14,32 @@ import CollaborationPanel from './components/collaboration/CollaborationPanel';
 
 export default function PlanningPanel() {
   return (
-    <div style={{display:'grid', gridTemplateRows:'auto 1fr auto', height:'100%'}}>
+    <div className="h-full flex flex-col">
       <TopToolbar />
-      <div style={{
-        display:'grid',
-        gridTemplateColumns:'260px 1fr 320px',
-        gap:'0',
-        height:'100%',
-        position:'relative'
-      }}>
-        {/* Toolbox */}
-        <div style={{borderInlineEnd:'1px solid var(--line)', background:'var(--surface)'}}>
-          <Toolbox />
-          <CollaborationPanel />
+      <div className="flex flex-1 overflow-hidden">
+        {/* الأدوات الجانبية */}
+        <div className="w-64 border-r bg-gray-50 flex flex-col">
+          <div className="flex-1 overflow-auto">
+            <Toolbox />
+          </div>
           <SmartAssistantPanel />
         </div>
 
-        {/* Canvas */}
-        <div style={{position:'relative'}}>
+        {/* منطقة الرسم */}
+        <div className="flex-1 relative bg-gray-100">
           <CanvasSurface />
           <QuickToolbar />
           <ContextMenus />
           <MiniMap />
         </div>
 
-        {/* Inspector */}
-        <div style={{borderInlineStart:'1px solid var(--line)', background:'var(--surface)'}}>
+        {/* لوحة الخصائص */}
+        <div className="w-80 border-l bg-gray-50">
           <Inspector />
         </div>
       </div>
       <BottomBar />
+      <CollaborationPanel />
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React from 'react';
 import PlanningPanel from '../features/planning/PlanningPanel';
 
 interface PlanningWorkspaceProps {
@@ -10,10 +11,11 @@ const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
 }) => {
   return (
     <div className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-300 ${isSidebarCollapsed ? 'right-[calc(var(--sidebar-width-collapsed)+8px)] w-[calc(100vw-var(--sidebar-width-collapsed)-16px)]' : 'right-[calc(var(--sidebar-width-expanded)+8px)] w-[calc(100vw-var(--sidebar-width-expanded)-16px)]'}`}>
-      <div className="h-full backdrop-blur-sm rounded-3xl overflow-hidden bg-white">
+      <div className="h-full backdrop-blur-sm rounded-3xl overflow-hidden bg-white shadow-lg">
         <PlanningPanel />
       </div>
     </div>
   );
 };
+
 export default PlanningWorkspace;
