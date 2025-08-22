@@ -1,25 +1,14 @@
-// src/features/planning/components/inspector/Inspector.tsx
-'use client';
 import React from 'react';
-import SelectionPanel from './panels/SelectionPanel';
-import SmartPenPanel from './panels/SmartPenPanel';
-import TextPanel from './panels/TextPanel';
-import ShapesPanel from './panels/ShapesPanel';
-import FileUploadPanel from './panels/FileUploadPanel';
-import SmartElementsPanel from './panels/SmartElementsPanel';
-import FramePanel from './panels/FramePanel';
 
-export default function Inspector(){
+export default function Inspector() {
   return (
-    <div className="inspector">
-      <h3>الخصائص</h3>
-      <SelectionPanel />
-      <SmartPenPanel />
-      <TextPanel />
-      <ShapesPanel />
-      <FileUploadPanel />
-      <SmartElementsPanel />
-      <FramePanel />
+    <div className="p-4">
+      <h3 className="text-sm font-medium text-gray-600 mb-4">المفتش</h3>
+      <div className="space-y-4">
+        <div className="text-xs text-gray-500 text-center">
+          اختر عنصرًا لعرض خصائصه
+        </div>
+      </div>
     </div>
   );
 }

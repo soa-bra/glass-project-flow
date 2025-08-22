@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { useTools } from "@/src/features/planning/store/tools.store";
-import { usePanels } from "@/src/features/planning/store/panels.store";
+import { useTools } from "@/features/planning/store/tools.store";
+import { usePanels } from "@/features/planning/store/panels.store";
 
 const CommentTool: React.FC = () => {
   const { activeTool, setActiveTool } = useTools();

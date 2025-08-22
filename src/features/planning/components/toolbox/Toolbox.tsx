@@ -1,25 +1,42 @@
-// src/features/planning/components/toolbox/Toolbox.tsx
-'use client';
 import React from 'react';
-import { useTools } from '../../store/tools.store';
+import SelectionTool from './tools/SelectionTool';
+import PanTool from './tools/PanTool';
+import TextTool from './tools/TextTool';
+import CommentTool from './tools/CommentTool';
+import ZoomTool from './tools/ZoomTool';
+import ShapesTool from './tools/ShapesTool';
+import SmartElementTool from './tools/SmartElementTool';
 
-const Row = ({ id, label }:{id: ReturnType<typeof useTools>['tool'], label:string})=>{
-  const { tool, setTool } = useTools();
-  const active = tool===id;
-  return <button className={active?'active':''} onClick={()=>setTool(id)}>{label}</button>;
-};
+export default function Toolbox() {
+  const [activeCategory, setActiveCategory] = React.useState<string | null>(null);
 
-export default function Toolbox(){
   return (
-    <div className="toolbox" role="region" aria-label="Toolbox">
-      <Row id="select" label="تحديد (V)"/>
-      <Row id="pan" label="تحريك (Space/H)"/>
-      <Row id="rect" label="مستطيل (R)"/>
-      <Row id="ellipse" label="بيضاوي (O)"/>
-      <Row id="pen" label="قلم ذكي (P)"/>
-      <Row id="text" label="نص (T)"/>
-      <Row id="comment" label="تعليق (C)"/>
-      <Row id="zoom" label="تكبير/تصغير (Z)"/>
+    <div className="p-4 space-y-4">
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium text-gray-600">الأدوات</h3>
+        <div className="grid grid-cols-2 gap-2">
+          <SelectionTool />
+          <PanTool />
+          <TextTool />
+          <CommentTool />
+          <ShapesTool onCategoryChange={setActiveCategory} />
+          <SmartElementTool onCategoryChange={setActiveCategory} />
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium text-gray-600">التكبير</h3>
+        <ZoomTool />
+      </div>
+      
+      {activeCategory && (
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-gray-600">{activeCategory}</h3>
+          <div className="text-xs text-gray-500">
+            اختر أداة أعلاه لعرض الخيارات
+          </div>
+        </div>
+      )}
     </div>
   );
 }

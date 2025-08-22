@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useTools } from "@/src/features/planning/store/tools.store";
+import { useTools } from "@/features/planning/store/tools.store";
 
 const PanTool: React.FC = () => {
   const { activeTool, setActiveTool } = useTools();

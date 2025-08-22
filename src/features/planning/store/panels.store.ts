@@ -1,12 +1,15 @@
-// src/features/planning/store/panels.store.ts
-'use client';
 import { create } from 'zustand';
 
-type PanelsState = {
-  boardName: string;
-  setBoardName: (v:string)=>void;
-};
-export const usePanelsStore = create<PanelsState>((set)=>({
-  boardName: 'لوحة بلا عنوان',
-  setBoardName: (v)=>set({boardName:v})
+interface PanelsState {
+  openPanel: (panel: string) => void;
+  setCommentsOpen: (open: boolean) => void;
+}
+
+export const usePanels = create<PanelsState>((set) => ({
+  openPanel: (panel: string) => {
+    console.log('Opening panel:', panel);
+  },
+  setCommentsOpen: (open: boolean) => {
+    console.log('Comments open:', open);
+  },
 }));

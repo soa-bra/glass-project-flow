@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import ParticipantsTab from "./ParticipantsTab";
 import ChatTab from "./ChatTab";
 import AudioTab from "./AudioTab";
-import { useCollaboration } from "@/src/features/planning/hooks/useCollaboration";
+import { useCollaboration } from "@/features/planning/hooks/useCollaboration";
 
 const CollaborationPanel: React.FC = () => {
   const { open, toggleOpen } = useCollaboration();

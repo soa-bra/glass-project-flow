@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useZoomPan } from "@/src/features/planning/hooks/useZoomPan";
+import { useZoomPan } from "@/features/planning/hooks/useZoomPan";
 
 const ZoomTool: React.FC = () => {
   const { zoomIn, zoomOut, fitToScreen } = useZoomPan();

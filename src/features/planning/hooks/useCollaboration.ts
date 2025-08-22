@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 
 interface CollaborationState {
@@ -18,3 +17,5 @@ export const useCollaboration = create<CollaborationState>((set, get) => ({
   },
   lastInvite: null,
 }));
+
+export default useCollaboration;
