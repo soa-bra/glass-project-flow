@@ -47,15 +47,15 @@ export const CrmWidget: React.FC<CrmWidgetProps> = ({
       
       // Fetch CRM activities data
       const { data: activitiesData, error: activitiesError } = await supabase.rpc('get_widget_data', {
-        widget_type: 'crm_activities',
-        limit_count: 8
+        widget_type: 'crm_activities' as any,
+        limit_count: 8 as any
       }) as { data: any[] | null; error: any };
 
       if (activitiesError) throw activitiesError;
 
       // Fetch CRM stats
       const { data: statsData, error: statsError } = await supabase.rpc('get_widget_stats', {
-        widget_type: 'crm_activities'
+        widget_type: 'crm_activities' as any
       }) as { data: any; error: any };
 
       if (statsError) throw statsError;

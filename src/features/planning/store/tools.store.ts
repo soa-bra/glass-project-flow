@@ -98,6 +98,14 @@ const defaultTools: Record<ToolType, Tool> = {
     shortcut: 'F',
     panel: 'frame_panel',
     cursor: 'crosshair'
+  },
+  business_widgets: {
+    id: 'business_widgets',
+    name: 'ودجت الأعمال',
+    icon: 'bar-chart-3',
+    shortcut: 'W',
+    panel: 'business_widgets_panel',
+    cursor: 'crosshair'
   }
 };
 
@@ -178,6 +186,12 @@ const defaultToolOptions: Record<ToolType, any> = {
     border: true,
     borderColor: 'hsl(var(--border))',
     borderWidth: 1
+  },
+
+  business_widgets: {
+    selectedWidget: 'project_cards',
+    category: 'project_management',
+    dataSource: 'supabase'
   }
 };
 

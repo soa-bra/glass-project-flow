@@ -12,7 +12,8 @@ import {
   Type, 
   Square, 
   Grid3X3,
-  Frame
+  Frame,
+  BarChart3
 } from 'lucide-react';
 
 const toolIcons: Record<ToolType, React.ComponentType<any>> = {
@@ -25,7 +26,8 @@ const toolIcons: Record<ToolType, React.ComponentType<any>> = {
   text: Type,
   shapes: Square,
   smart_element: Grid3X3,
-  frame: Frame
+  frame: Frame,
+  business_widgets: BarChart3
 };
 
 export const Toolbox: React.FC = () => {

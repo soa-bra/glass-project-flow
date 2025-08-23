@@ -9,7 +9,8 @@ export type ToolType =
   | 'text'
   | 'shapes'
   | 'smart_element'
-  | 'frame';
+  | 'frame'
+  | 'business_widgets';
 
 export interface Tool {
   id: ToolType;

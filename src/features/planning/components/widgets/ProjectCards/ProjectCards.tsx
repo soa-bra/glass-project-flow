@@ -44,15 +44,15 @@ export const ProjectCards: React.FC<ProjectCardsProps> = ({
       
       // Fetch project cards data
       const { data: projectsData, error: projectsError } = await supabase.rpc('get_widget_data', {
-        widget_type: 'project_cards',
-        limit_count: 6
+        widget_type: 'project_cards' as any,
+        limit_count: 6 as any
       }) as { data: any[] | null; error: any };
 
       if (projectsError) throw projectsError;
 
       // Fetch project stats
       const { data: statsData, error: statsError } = await supabase.rpc('get_widget_stats', {
-        widget_type: 'project_cards'
+        widget_type: 'project_cards' as any
       }) as { data: any; error: any };
 
       if (statsError) throw statsError;

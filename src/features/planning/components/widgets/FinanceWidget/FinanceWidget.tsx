@@ -40,15 +40,15 @@ export const FinanceWidget: React.FC<FinanceWidgetProps> = ({
       
       // Fetch finance dashboard data
       const { data: financeResponseData, error: financeError } = await supabase.rpc('get_widget_data', {
-        widget_type: 'finance_dashboard',
-        limit_count: 8
+        widget_type: 'finance_dashboard' as any,
+        limit_count: 8 as any
       }) as { data: any[] | null; error: any };
 
       if (financeError) throw financeError;
 
       // Fetch finance stats
       const { data: statsData, error: statsError } = await supabase.rpc('get_widget_stats', {
-        widget_type: 'finance_dashboard'
+        widget_type: 'finance_dashboard' as any
       }) as { data: any; error: any };
 
       if (statsError) throw statsError;
