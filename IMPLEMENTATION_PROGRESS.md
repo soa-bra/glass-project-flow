@@ -16,8 +16,8 @@
 - [x] 1.1 إعداد الهيكل الأساسي
   - [x] إنشاء types/canvas.types.ts
   - [x] إنشاء types/tools.types.ts  
-  - [ ] إنشاء types/collaboration.types.ts
-  - [ ] إنشاء types/ai.types.ts
+  - [x] إنشاء types/collaboration.types.ts
+  - [x] إنشاء types/ai.types.ts
   - [x] إنشاء types/commands.types.ts
 - [x] 1.2 إعداد Store الأساسي
   - [x] إنشاء store/canvas.store.ts
