@@ -1,4 +1,55 @@
-// Collaboration Types for Planning Board
+// Real-time Collaboration Types
+export interface UserPresence {
+  userId: string;
+  displayName: string;
+  avatar?: string;
+  role: 'owner' | 'admin' | 'editor' | 'viewer' | 'member';
+  status: 'active' | 'idle' | 'away' | 'in_voice_chat' | 'screen_sharing';
+  lastSeen: number;
+  cursor: LiveCursor | null;
+  currentTool: string;
+  selectedElements: string[];
+}
+
+export interface LiveCursor {
+  userId: string;
+  position: { x: number; y: number } | null;
+  tool: string;
+  isSelecting: boolean;
+  action?: string | null;
+  timestamp: number;
+}
+
+export interface ChatMessage {
+  id: string;
+  content: string;
+  senderId: string;
+  senderName: string;
+  timestamp: number;
+  type: 'text' | 'system' | 'action';
+}
+
+export interface BoardChange {
+  id: string;
+  elementId: string;
+  updates: any;
+  userId: string;
+  timestamp: number;
+}
+
+export interface CollaborationState {
+  roomId: string | null;
+  currentUserId: string | null;
+  connectedUsers: Map<string, UserPresence>;
+  liveCursors: Map<string, LiveCursor>;
+  chatMessages: ChatMessage[];
+  isVoiceChatActive: boolean;
+  isScreenSharingActive: boolean;
+  pendingChanges: BoardChange[];
+  lastSyncTimestamp: number;
+}
+
+// Legacy types for backward compatibility
 export interface User {
   id: string;
   name: string;
@@ -35,17 +86,6 @@ export interface Presence {
   selection: string[];
   activeElement: string | null;
   lastSeen: number;
-}
-
-export interface ChatMessage {
-  id: string;
-  userId: string;
-  userName: string;
-  content: string;
-  timestamp: number;
-  type: 'text' | 'system';
-  mentions?: string[];
-  replyTo?: string;
 }
 
 export interface VoiceState {
@@ -165,18 +205,6 @@ export interface InviteLink {
   expiresAt?: number;
   isActive: boolean;
   settings: ShareSettings;
-}
-
-export interface CollaborationState {
-  session: SessionState | null;
-  participants: Participant[];
-  presences: Record<string, Presence>;
-  messages: ChatMessage[];
-  voiceStates: Record<string, VoiceState>;
-  elementLocks: Record<string, ElementLock>;
-  shareLinks: InviteLink[];
-  isConnected: boolean;
-  connectionStatus: 'connecting' | 'connected' | 'disconnected' | 'error';
 }
 
 export interface CollaborationConfig {

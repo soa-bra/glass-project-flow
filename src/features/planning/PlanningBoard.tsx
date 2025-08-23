@@ -6,6 +6,11 @@ import { CanvasSurface } from './components/canvas/CanvasSurface/CanvasSurface';
 import { BottomBar } from './components/shell/BottomBar/BottomBar';
 import { MiniMap } from './components/shell/MiniMap/MiniMap';
 import { AIAssistantPanel } from './components/ai/AIAssistantPanel/AIAssistantPanel';
+import { PresenceIndicators } from './components/collaboration/PresenceIndicators/PresenceIndicators';
+import { LiveCursors } from './components/collaboration/LiveCursors/LiveCursors';
+import { CollaborationChat } from './components/collaboration/CollaborationChat/CollaborationChat';
+import { CollaborationToolbar } from './components/collaboration/CollaborationToolbar/CollaborationToolbar';
+import { RealtimeSync } from './components/collaboration/RealtimeSync/RealtimeSync';
 
 interface PlanningBoardProps {
   isSidebarCollapsed: boolean;
@@ -38,6 +43,13 @@ export const PlanningBoard: React.FC<PlanningBoardProps> = ({
       
       {/* AI Assistant Panel */}
       <AIAssistantPanel />
+      
+      {/* Collaboration Components */}
+      <PresenceIndicators />
+      <LiveCursors />
+      <CollaborationChat />
+      <CollaborationToolbar />
+      <RealtimeSync />
     </div>
   );
 };
