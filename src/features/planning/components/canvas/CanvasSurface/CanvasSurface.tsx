@@ -1,79 +1,110 @@
 import React from 'react';
 import { useCanvasStore } from '../../../store/canvas.store';
 import { Grid } from '../Grid/Grid';
+import { SelectionTool } from '../../tools/SelectionTool/SelectionTool';
+import { PanTool } from '../../tools/PanTool/PanTool';
+import { ZoomTool } from '../../tools/ZoomTool/ZoomTool';
+import { SmartPenTool } from '../../tools/SmartPenTool/SmartPenTool';
 
 export const CanvasSurface: React.FC = () => {
-  const { 
-    zoom, 
-    pan, 
-    showGrid, 
-    elements, 
-    selectedElementIds 
-  } = useCanvasStore();
+  const { elements, zoom, pan, selectedElementIds } = useCanvasStore();
+
+  const renderElement = (element: any) => {
+    const isSelected = selectedElementIds.includes(element.id);
+    
+    switch (element.type) {
+      case 'shape':
+        return (
+          <g key={element.id}>
+            <rect
+              x={element.position.x}
+              y={element.position.y}
+              width={element.size.width}
+              height={element.size.height}
+              fill={element.style?.fill || 'transparent'}
+              stroke={element.style?.stroke || 'hsl(var(--border))'}
+              strokeWidth={element.style?.strokeWidth || 1}
+              rx={element.style?.cornerRadius || 0}
+            />
+            {isSelected && (
+              <rect
+                x={element.position.x - 2}
+                y={element.position.y - 2}
+                width={element.size.width + 4}
+                height={element.size.height + 4}
+                fill="none"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2 / zoom}
+                strokeDasharray={`${4 / zoom} ${2 / zoom}`}
+                rx={(element.style?.cornerRadius || 0) + 2}
+              />
+            )}
+          </g>
+        );
+      
+      case 'drawing':
+        return (
+          <g key={element.id}>
+            {element.data?.path && (
+              <path
+                d={element.data.path}
+                fill="none"
+                stroke={element.style?.color || 'hsl(var(--foreground))'}
+                strokeWidth={element.style?.strokeWidth || 2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeDasharray={
+                  element.style?.strokeStyle === 'dashed' ? `${8 / zoom} ${4 / zoom}` :
+                  element.style?.strokeStyle === 'dotted' ? `${2 / zoom} ${4 / zoom}` :
+                  undefined
+                }
+              />
+            )}
+            {isSelected && element.data?.points && (
+              <rect
+                x={element.position.x - 5}
+                y={element.position.y - 5}
+                width={element.size.width + 10}
+                height={element.size.height + 10}
+                fill="none"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2 / zoom}
+                strokeDasharray={`${4 / zoom} ${2 / zoom}`}
+              />
+            )}
+          </g>
+        );
+      
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-background">
-      {/* Canvas Container */}
+    <div className="absolute inset-0 overflow-hidden bg-background">
       <div 
-        className="absolute inset-0 origin-top-left"
+        className="relative w-full h-full"
         style={{
-          transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`
+          transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+          transformOrigin: '0 0'
         }}
       >
-        {/* Grid Layer */}
-        {showGrid && <Grid />}
+        <Grid />
         
-        {/* Elements Layer */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none">
-          {elements.map((element) => {
-            const isSelected = selectedElementIds.includes(element.id);
-            
-            return (
-              <g key={element.id}>
-                {/* Render based on element type */}
-                {element.type === 'rectangle' && (
-                  <rect
-                    x={element.position.x}
-                    y={element.position.y}
-                    width={element.size.width}
-                    height={element.size.height}
-                    fill={element.style.fill || 'hsl(var(--card))'}
-                    stroke={isSelected ? 'hsl(var(--primary))' : (element.style.stroke || 'hsl(var(--border))')}
-                    strokeWidth={isSelected ? 2 : (element.style.strokeWidth || 1)}
-                    rx={element.style.cornerRadius || 0}
-                    className="pointer-events-auto cursor-pointer"
-                  />
-                )}
-                
-                {element.type === 'text' && (
-                  <text
-                    x={element.position.x}
-                    y={element.position.y + 16}
-                    fill={element.style.color || 'hsl(var(--foreground))'}
-                    fontSize={element.style.fontSize || 14}
-                    fontFamily={element.style.fontFamily || 'IBM Plex Sans Arabic'}
-                    className="pointer-events-auto cursor-pointer select-none"
-                  >
-                    {element.data?.text || 'نص'}
-                  </text>
-                )}
-              </g>
-            );
-          })}
+        {/* Canvas Elements */}
+        <svg className="absolute inset-0 w-full h-full overflow-visible pointer-events-none">
+          {elements
+            .filter(el => el.visible !== false)
+            .map(element => renderElement(element))
+          }
         </svg>
-        
-        {/* Selection Handles */}
-        {selectedElementIds.length > 0 && (
-          <div className="absolute pointer-events-none">
-            {/* Selection handles will be implemented in Phase 2 */}
-          </div>
-        )}
       </div>
       
-      {/* Canvas Info Overlay */}
-      <div className="absolute bottom-4 left-4 text-xs text-muted-foreground bg-card/80 backdrop-blur-sm px-2 py-1 rounded">
-        التكبير: {Math.round(zoom * 100)}% | العناصر: {elements.length}
-      </div>
+      {/* Interactive Tools Layer */}
+      <SelectionTool />
+      <PanTool />
+      <ZoomTool />
+      <SmartPenTool />
     </div>
   );
 };
