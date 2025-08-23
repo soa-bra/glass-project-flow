@@ -5,6 +5,7 @@ import { Inspector } from './components/shell/Inspector/Inspector';
 import { CanvasSurface } from './components/canvas/CanvasSurface/CanvasSurface';
 import { BottomBar } from './components/shell/BottomBar/BottomBar';
 import { MiniMap } from './components/shell/MiniMap/MiniMap';
+import { AIAssistantPanel } from './components/ai/AIAssistantPanel/AIAssistantPanel';
 
 interface PlanningBoardProps {
   isSidebarCollapsed: boolean;
@@ -34,6 +35,9 @@ export const PlanningBoard: React.FC<PlanningBoardProps> = ({
       
       {/* الشريط السفلي */}
       <BottomBar />
+      
+      {/* AI Assistant Panel */}
+      <AIAssistantPanel />
     </div>
   );
 };

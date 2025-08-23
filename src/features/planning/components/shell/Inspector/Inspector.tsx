@@ -5,6 +5,7 @@ import { SelectionPanel } from '../../panels/SelectionPanel/SelectionPanel';
 import { SmartPenPanel } from '../../panels/SmartPenPanel/SmartPenPanel';
 import { ZoomPanel } from '../../panels/ZoomPanel/ZoomPanel';
 import { SmartElementsPanel } from '../../smartElements/SmartElementsPanel/SmartElementsPanel';
+import { AIAssistantPanel } from '../../ai/AIAssistantPanel/AIAssistantPanel';
 
 export const Inspector: React.FC = () => {
   const { activeTool } = useToolsStore();

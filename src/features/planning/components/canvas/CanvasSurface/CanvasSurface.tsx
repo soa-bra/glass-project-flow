@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCanvasStore } from '../../../store/canvas.store';
+import { useAIStore } from '../../../store/ai.store';
 import { Grid } from '../Grid/Grid';
 import { SelectionTool } from '../../tools/SelectionTool/SelectionTool';
 import { PanTool } from '../../tools/PanTool/PanTool';
@@ -12,6 +13,7 @@ import { Timeline } from '../../smartElements/Timeline/Timeline';
 
 export const CanvasSurface: React.FC = () => {
   const { elements, zoom, pan, selectedElementIds, updateElement } = useCanvasStore();
+  const { toggleAssistant } = useAIStore();
 
   const renderElement = (element: any) => {
     const isSelected = selectedElementIds.includes(element.id);
@@ -183,6 +185,15 @@ export const CanvasSurface: React.FC = () => {
       <PanTool />
       <ZoomTool />
       <SmartPenTool />
+      
+      {/* AI Assistant Toggle Button */}
+      <button
+        onClick={toggleAssistant}
+        className="absolute top-4 left-4 w-12 h-12 bg-accent-blue/90 backdrop-blur-sm text-white rounded-full flex items-center justify-center shadow-lg hover:bg-accent-blue transition-colors z-10"
+        title="المساعد الذكي"
+      >
+        <span className="text-xl">🤖</span>
+      </button>
     </div>
   );
 };
