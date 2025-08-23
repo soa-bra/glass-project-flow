@@ -11,6 +11,34 @@ import SmartElementsPanel from "./SmartElementsPanel";
 import RootLinkPanel from "./RootLinkPanel";
 import SmartAssistantPanel from "./SmartAssistantPanel";
 import CollaborationPanel from "./CollaborationPanel";
+          style={{
+            flex: 1,
+            overflow: "auto",
+            background: "#ffffffd9",
+            backdropFilter: "blur(8px)",
+            border: "1px solid #e5e7eb",
+            borderRadius: 12,
+            padding: 12,
+          }}
+        >
+          {inspector}
+        </div>
+        <SmartAssistantPanel />
+        <CollaborationPanel />
+      </div>
+    </div>
+  );
+}
+
+export default function PlanningPanel() {
+  return (
+    <ToolProvider>
+      <InnerPanel />
+    </ToolProvider>
+  );
+}
+
+=======
 import { LiveCursorsOverlay } from "./LiveCursorsOverlay";
 import { ToolProvider, useTooling } from "./ToolState";
 

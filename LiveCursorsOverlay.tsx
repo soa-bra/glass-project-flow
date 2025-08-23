@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { useOthers, useUpdateMyPresence } from "@liveblocks/react";
-// Utility to consistently color live cursors by connection id
-import { connectionIdToColor } from "@/utils";
 
 type Camera = { x: number; y: number };
 

@@ -5,9 +5,6 @@ interface PlanningWorkspaceProps {
   isSidebarCollapsed: boolean;
 }
 
-const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
-  isSidebarCollapsed,
-}) => {
   return (
     <div
       className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-300 ${
