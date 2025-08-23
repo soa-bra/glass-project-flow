@@ -10,6 +10,10 @@ import { ThinkingBoard } from '../../smartElements/ThinkingBoard/ThinkingBoard';
 import { KanbanBoard } from '../../smartElements/KanbanBoard/KanbanBoard';
 import { VotingSystem } from '../../smartElements/VotingSystem/VotingSystem';
 import { Timeline } from '../../smartElements/Timeline/Timeline';
+import { ProjectCards } from '../../widgets/ProjectCards/ProjectCards';
+import { FinanceWidget } from '../../widgets/FinanceWidget/FinanceWidget';
+import { CrmWidget } from '../../widgets/CrmWidget/CrmWidget';
+import { CsrWidget } from '../../widgets/CsrWidget/CsrWidget';
 
 export const CanvasSurface: React.FC = () => {
   const { elements, zoom, pan, selectedElementIds, updateElement } = useCanvasStore();
@@ -89,6 +93,69 @@ export const CanvasSurface: React.FC = () => {
     }
   };
 
+  const renderBusinessWidget = (element: any, isSelected: boolean) => {
+    const commonProps = {
+      element,
+      isSelected,
+      onUpdate: (updates: any) => updateElement(element.id, updates)
+    };
+
+    const style = {
+      position: 'absolute' as const,
+      left: element.position.x,
+      top: element.position.y,
+      width: element.size.width,
+      height: element.size.height,
+      pointerEvents: 'auto' as const
+    };
+
+    switch (element.data?.widgetType) {
+      case 'project_cards':
+        return (
+          <div key={element.id} style={style}>
+            <ProjectCards {...commonProps} />
+          </div>
+        );
+        
+      case 'finance_widget':
+        return (
+          <div key={element.id} style={style}>
+            <FinanceWidget {...commonProps} />
+          </div>
+        );
+        
+      case 'crm_widget':
+        return (
+          <div key={element.id} style={style}>
+            <CrmWidget {...commonProps} />
+          </div>
+        );
+        
+      case 'csr_widget':
+        return (
+          <div key={element.id} style={style}>
+            <CsrWidget {...commonProps} />
+          </div>
+        );
+      
+      default:
+        return (
+          <div 
+            key={element.id} 
+            style={style}
+            className={`bg-card border-2 border-dashed border-muted-foreground/50 rounded-lg p-4 ${
+              isSelected ? 'border-primary' : ''
+            }`}
+          >
+            <div className="text-center text-muted-foreground">
+              <div className="text-sm font-medium">ودجت أعمال</div>
+              <div className="text-xs">{element.data?.widgetType || 'نوع غير معروف'}</div>
+            </div>
+          </div>
+        );
+    }
+  };
+
   const renderSmartElement = (element: any, isSelected: boolean) => {
     const commonProps = {
       element,
@@ -134,21 +201,24 @@ export const CanvasSurface: React.FC = () => {
           </div>
         );
       
-      default:
-        return (
-          <div 
-            key={element.id} 
-            style={style}
-            className={`bg-card border-2 border-dashed border-muted-foreground/50 rounded-lg p-4 ${
-              isSelected ? 'border-primary' : ''
-            }`}
-          >
-            <div className="text-center text-muted-foreground">
-              <div className="text-sm font-medium">عنصر ذكي</div>
-              <div className="text-xs">{element.data?.smartType || 'نوع غير معروف'}</div>
+        case 'business_widget':
+          return renderBusinessWidget(element, isSelected);
+        
+        default:
+          return (
+            <div 
+              key={element.id} 
+              style={style}
+              className={`bg-card border-2 border-dashed border-muted-foreground/50 rounded-lg p-4 ${
+                isSelected ? 'border-primary' : ''
+              }`}
+            >
+              <div className="text-center text-muted-foreground">
+                <div className="text-sm font-medium">عنصر ذكي</div>
+                <div className="text-xs">{element.data?.smartType || 'نوع غير معروف'}</div>
+              </div>
             </div>
-          </div>
-        );
+          );
     }
   };
 
@@ -166,7 +236,7 @@ export const CanvasSurface: React.FC = () => {
         {/* Canvas Elements (SVG) */}
         <svg className="absolute inset-0 w-full h-full overflow-visible pointer-events-none">
           {elements
-            .filter(el => el.visible !== false && el.type !== 'smart_element')
+            .filter(el => el.visible !== false && el.type !== 'smart_element' && el.type !== 'business_widget')
             .map(element => renderElement(element))
           }
         </svg>
@@ -174,8 +244,8 @@ export const CanvasSurface: React.FC = () => {
         {/* Smart Elements (HTML) */}
         <div className="absolute inset-0 pointer-events-none">
           {elements
-            .filter(el => el.visible !== false && el.type === 'smart_element')
-            .map(element => renderElement(element))
+            .filter(el => el.visible !== false && (el.type === 'smart_element' || el.type === 'business_widget'))
+            .map(element => element.type === 'business_widget' ? renderBusinessWidget(element, selectedElementIds.includes(element.id)) : renderSmartElement(element, selectedElementIds.includes(element.id)))
           }
         </div>
       </div>
