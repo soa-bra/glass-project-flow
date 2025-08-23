@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from "react";
-import type { ToolId, GridSettings } from "./panels";
+import type { ToolId, GridSettings } from "../types/panels";
 
 type ToolCtx = {
   activeTool: ToolId;

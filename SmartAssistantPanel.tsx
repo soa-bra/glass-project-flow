@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSelf, useStorage, useMutation } from "@liveblocks/react/suspense";
-import type { ChatMessage, AssistCommandPayload } from "./panels";
+import type { ChatMessage, AssistCommandPayload } from "../types/panels";
 import { LiveList, LiveObject } from "@liveblocks/client";
 
 function Bubble({ mine, name, text, ts }: { mine: boolean; name: string; text: string; ts: number }) {
