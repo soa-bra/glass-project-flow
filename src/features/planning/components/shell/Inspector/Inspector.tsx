@@ -4,6 +4,7 @@ import { ToolPanelContainer } from '@/components/custom/ToolPanelContainer';
 import { SelectionPanel } from '../../panels/SelectionPanel/SelectionPanel';
 import { SmartPenPanel } from '../../panels/SmartPenPanel/SmartPenPanel';
 import { ZoomPanel } from '../../panels/ZoomPanel/ZoomPanel';
+import { SmartElementsPanel } from '../../smartElements/SmartElementsPanel/SmartElementsPanel';
 
 export const Inspector: React.FC = () => {
   const { activeTool } = useToolsStore();
@@ -16,6 +17,8 @@ export const Inspector: React.FC = () => {
         return <SmartPenPanel />;
       case 'zoom':
         return <ZoomPanel />;
+      case 'smart_element':
+        return <SmartElementsPanel />;
       case 'pan':
         return (
           <ToolPanelContainer title="تحريك العرض">

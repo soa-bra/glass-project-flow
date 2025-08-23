@@ -5,14 +5,21 @@ import { SelectionTool } from '../../tools/SelectionTool/SelectionTool';
 import { PanTool } from '../../tools/PanTool/PanTool';
 import { ZoomTool } from '../../tools/ZoomTool/ZoomTool';
 import { SmartPenTool } from '../../tools/SmartPenTool/SmartPenTool';
+import { ThinkingBoard } from '../../smartElements/ThinkingBoard/ThinkingBoard';
+import { KanbanBoard } from '../../smartElements/KanbanBoard/KanbanBoard';
+import { VotingSystem } from '../../smartElements/VotingSystem/VotingSystem';
+import { Timeline } from '../../smartElements/Timeline/Timeline';
 
 export const CanvasSurface: React.FC = () => {
-  const { elements, zoom, pan, selectedElementIds } = useCanvasStore();
+  const { elements, zoom, pan, selectedElementIds, updateElement } = useCanvasStore();
 
   const renderElement = (element: any) => {
     const isSelected = selectedElementIds.includes(element.id);
     
     switch (element.type) {
+      case 'smart_element':
+        return renderSmartElement(element, isSelected);
+      
       case 'shape':
         return (
           <g key={element.id}>
@@ -80,6 +87,69 @@ export const CanvasSurface: React.FC = () => {
     }
   };
 
+  const renderSmartElement = (element: any, isSelected: boolean) => {
+    const commonProps = {
+      element,
+      isSelected,
+      onUpdate: (updates: any) => updateElement(element.id, updates)
+    };
+
+    const style = {
+      position: 'absolute' as const,
+      left: element.position.x,
+      top: element.position.y,
+      width: element.size.width,
+      height: element.size.height,
+      pointerEvents: 'auto' as const
+    };
+
+    switch (element.data?.smartType) {
+      case 'thinking_board':
+        return (
+          <div key={element.id} style={style}>
+            <ThinkingBoard {...commonProps} />
+          </div>
+        );
+      
+      case 'kanban_board':
+        return (
+          <div key={element.id} style={style}>
+            <KanbanBoard {...commonProps} />
+          </div>
+        );
+      
+      case 'voting':
+        return (
+          <div key={element.id} style={style}>
+            <VotingSystem {...commonProps} />
+          </div>
+        );
+      
+      case 'timeline':
+        return (
+          <div key={element.id} style={style}>
+            <Timeline {...commonProps} />
+          </div>
+        );
+      
+      default:
+        return (
+          <div 
+            key={element.id} 
+            style={style}
+            className={`bg-card border-2 border-dashed border-muted-foreground/50 rounded-lg p-4 ${
+              isSelected ? 'border-primary' : ''
+            }`}
+          >
+            <div className="text-center text-muted-foreground">
+              <div className="text-sm font-medium">عنصر ذكي</div>
+              <div className="text-xs">{element.data?.smartType || 'نوع غير معروف'}</div>
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
     <div className="absolute inset-0 overflow-hidden bg-background">
       <div 
@@ -91,13 +161,21 @@ export const CanvasSurface: React.FC = () => {
       >
         <Grid />
         
-        {/* Canvas Elements */}
+        {/* Canvas Elements (SVG) */}
         <svg className="absolute inset-0 w-full h-full overflow-visible pointer-events-none">
           {elements
-            .filter(el => el.visible !== false)
+            .filter(el => el.visible !== false && el.type !== 'smart_element')
             .map(element => renderElement(element))
           }
         </svg>
+        
+        {/* Smart Elements (HTML) */}
+        <div className="absolute inset-0 pointer-events-none">
+          {elements
+            .filter(el => el.visible !== false && el.type === 'smart_element')
+            .map(element => renderElement(element))
+          }
+        </div>
       </div>
       
       {/* Interactive Tools Layer */}
