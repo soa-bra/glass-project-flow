@@ -1,12 +1,6 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { useOthers, useUpdateMyPresence } from "@liveblocks/react";
 
-// Simple color helper for demo purposes
-function connectionIdToColor(id: number) {
-  const palette = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#6366f1", "#ec4899"];
-  return palette[id % palette.length];
-}
-
 type Camera = { x: number; y: number };
 
 function Cursor({ x, y, label, color }: { x: number; y: number; label?: string; color: string }) {
