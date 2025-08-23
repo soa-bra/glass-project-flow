@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { useOthers, useUpdateMyPresence } from "@liveblocks/react";
-import { connectionIdToColor } from "./cursorColors";
 
 type Camera = { x: number; y: number };
 
