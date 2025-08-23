@@ -76,7 +76,7 @@ export class OutboxRelay {
           { status: 'pending' },
           {
             status: 'failed',
-            retryCount: { lt: 5 },
+            retryCount: { lt: prisma.eventOutbox.maxRetries },
             nextRetryAt: { lte: new Date() }
           }
         ]
@@ -166,15 +166,14 @@ export class OutboxRelay {
 
   private async handleEventFailure(event: any, error: any): Promise<void> {
     const newRetryCount = event.retryCount + 1;
-    const maxRetries = 5;
-    const isMaxRetriesReached = newRetryCount >= maxRetries;
+    const isMaxRetriesReached = newRetryCount >= event.maxRetries;
 
     logger.error({
       msg: 'Outbox event processing failed',
       eventId: event.id,
       eventName: event.eventName,
       retryCount: newRetryCount,
-      maxRetries,
+      maxRetries: event.maxRetries,
       isMaxRetriesReached,
       error: error instanceof Error ? error.message : 'Unknown error',
     });
@@ -279,3 +278,4 @@ if (require.main === module) {
   });
 }
 
+export { OutboxRelay };

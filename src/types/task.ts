@@ -41,7 +41,7 @@ export const mapToTaskCardProps = (task: UnifiedTask) => {
 
   // Map status to display
   const statusMap = {
-    completed: 'منجزة',
+    completed: 'مكتملة',
     'in-progress': 'قيد التنفيذ', 
     todo: 'لم تبدأ',
     stopped: 'متوقفة',

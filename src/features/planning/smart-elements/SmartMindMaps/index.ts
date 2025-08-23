@@ -1,1 +1,0 @@
-export { SmartMindMaps } from "./SmartMindMaps";

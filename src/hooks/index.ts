@@ -4,5 +4,13 @@
 // Settings Hooks  
 export { useAutosave } from '../components/SettingsPanel/hooks/useAutosave';
 
-// Toast Hook
-export { useToast, toast } from './use-toast';
+// Types
+export type { CanvasElement, ElementStyle } from '../types/canvas';
+export type { 
+  CanvasElementActions, 
+  CanvasHelpers, 
+  ToolConfig,
+  StylePreset,
+  TextStyle,
+  BorderStyle 
+} from '../types/enhanced-canvas';

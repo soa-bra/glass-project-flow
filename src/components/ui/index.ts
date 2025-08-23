@@ -35,7 +35,6 @@ export { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, Me
 export { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from './navigation-menu';
 export { ResizableHandle, ResizablePanel, ResizablePanelGroup } from './resizable';
 export { Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from './toast';
-export { Toaster } from './toaster';
 export { Toggle } from './toggle';
 export { ToggleGroup, ToggleGroupItem } from './toggle-group';
 export { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerPortal, DrawerTitle, DrawerTrigger } from './drawer';

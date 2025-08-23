@@ -1,1 +1,0 @@
-export { ThinkingBoard } from "./ThinkingBoard";

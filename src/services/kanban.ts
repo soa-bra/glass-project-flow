@@ -19,7 +19,7 @@ const mockBoard: KanbanBoard = {
     { id: 'col-2', status: 'todo', title: 'للتنفيذ', order: 1, tasks: [] },
     { id: 'col-3', status: 'in_progress', title: 'قيد التنفيذ', order: 2, tasks: [] },
     { id: 'col-4', status: 'in_review', title: 'قيد المراجعة', order: 3, tasks: [] },
-    { id: 'col-5', status: 'done', title: 'منجزة', order: 4, tasks: [] }
+    { id: 'col-5', status: 'done', title: 'مكتمل', order: 4, tasks: [] }
   ],
   wipLimits: [
     { id: 'wip-1', boardId: 'board-1', status: 'in_progress', limit: 3, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
