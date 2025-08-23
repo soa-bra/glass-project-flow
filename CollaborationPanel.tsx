@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useOthers, useSelf, useStorage, useMutation } from "@liveblocks/react/suspense";
 import { LiveList, LiveObject } from "@liveblocks/client";
-import type { ChatMessage } from "../types/panels";
+import type { ChatMessage } from "./panels";
 
 type Tab = "people" | "chat" | "audio";
 
