@@ -42,7 +42,7 @@ export const CanvasSurface: React.FC = () => {
           transform={`translate(${viewport.x}, ${viewport.y}) scale(${viewport.zoom})`}
         >
           <Grid />
-          <ElementsLayer />
+          <ElementsLayer elements={[]} />
           <SnapGuides vertical={snapGuides.vertical} horizontal={snapGuides.horizontal} />
           <SelectionLayer />
           <PresenceLayer />
