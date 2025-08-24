@@ -49,16 +49,16 @@ export const CsrWidget: React.FC<CsrWidgetProps> = ({
       setLoading(true);
       
       // Fetch CSR requests data
-      const { data: requestsData, error: requestsError } = await supabase.rpc('get_widget_data', {
-        widget_type: 'csr_requests' as any,
-        limit_count: 8 as any
+      const { data: requestsData, error: requestsError } = await supabase.rpc('get_widget_data' as any, {
+        widget_type: 'csr_requests',
+        limit_count: 8
       }) as { data: any[] | null; error: any };
 
       if (requestsError) throw requestsError;
 
       // Fetch CSR stats
-      const { data: statsData, error: statsError } = await supabase.rpc('get_widget_stats', {
-        widget_type: 'csr_requests' as any
+      const { data: statsData, error: statsError } = await supabase.rpc('get_widget_stats' as any, {
+        widget_type: 'csr_requests'
       }) as { data: any; error: any };
 
       if (statsError) throw statsError;
