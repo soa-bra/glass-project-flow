@@ -66,7 +66,7 @@ export const ProjectProgressBar: React.FC<ProjectProgressBarProps> = ({
   };
   return <div style={{
     background: 'transparent'
-  }} className="relative w-full flex flex-row-reverse items-center font-arabic pt-0 pb-0 my-0 mx-0 py-[16px] px-[10px]">
+  }} className="relative w-full flex flex-row-reverse items-center font-arabic pt-0 pb-0 my-0 py-0 mx-0 px-0">
 
       {/* شريط الشرائح */}
       <div ref={barRef} className="relative flex items-center justify-start flex-row-reverse gap-[3px] w-[80%] h-[25px]">
