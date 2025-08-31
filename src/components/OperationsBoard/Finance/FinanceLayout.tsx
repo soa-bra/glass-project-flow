@@ -4,7 +4,6 @@ import { BudgetVsActualChart } from './BudgetVsActualChart';
 import { CashFlowForecast } from './CashFlowForecast';
 import { ExportButton } from './ExportButton';
 import { FinanceData } from '../FinanceTab';
-
 interface FinanceLayoutProps {
   data: FinanceData;
 }
@@ -15,9 +14,7 @@ interface FinanceLayoutProps {
 export const FinanceLayout: React.FC<FinanceLayoutProps> = ({
   data
 }) => {
-  
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       {/* قسم المؤشرات المالية الرئيسية */}
       <div className="mb-6">
         <FinancialKPICards kpis={data.kpis} />
@@ -32,12 +29,11 @@ export const FinanceLayout: React.FC<FinanceLayoutProps> = ({
       </div>
       
       {/* أدوات التصدير والتحليل */}
-      <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+      <div className="flex justify-between items-center pt-4 border-t border-gray-100 mx-[30px]">
         <div className="text-sm font-normal text-gray-600">
           دقة التنبؤات: {data.forecastAccuracy}%
         </div>
         <ExportButton />
       </div>
-    </div>
-  );
+    </div>;
 };
