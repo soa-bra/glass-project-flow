@@ -44,8 +44,23 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white/90 backdrop-blur-md rounded-3xl p-8 w-full max-w-md border border-white/20 shadow-2xl">
+    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+         style={{ 
+           background: 'rgba(255,255,255,0.30)',
+           backdropFilter: 'blur(18px)',
+           WebkitBackdropFilter: 'blur(18px)' 
+         }}>
+      <div className="w-full max-w-md font-arabic transition-all duration-500 ease-out"
+           style={{
+             background: 'rgba(255,255,255,0.4)',
+             backdropFilter: 'blur(20px)',
+             WebkitBackdropFilter: 'blur(20px)',
+             border: '1px solid rgba(255,255,255,0.2)',
+             borderRadius: '24px',
+             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+             zIndex: 9999,
+             padding: '2rem'
+           }}>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-black">إضافة مصروف جديد</h2>
           <button
