@@ -184,7 +184,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
             {/* شريط تقدم المراحل */}
             <Reveal delay={0.3}>
-              <div className="flex-shrink-10 my-0 px-0 mx-[15px]">
+              <div className="flex-shrink-0 my-0 px-0 mx-[0px]">
                 <ProjectProgressBar progress={project.progress || 0} stages={[{
                 label: 'التحضير'
               }, {
