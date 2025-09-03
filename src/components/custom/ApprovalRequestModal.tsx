@@ -62,13 +62,14 @@ export const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
     onClose();
   };
   if (!isOpen) return null;
-  return <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+  return (
+    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4"
                    style={{ 
                      background: 'rgba(255,255,255,0.30)',
                      backdropFilter: 'blur(18px)',
                      WebkitBackdropFilter: 'blur(18px)' 
                    }}>
-      <div className="max-w-4xl p-0 overflow-hidden font-arabic transition-all duration-500 ease-out max-h-[90vh] overflow-y-auto"
+      <div className="w-full max-w-md overflow-y-auto font-arabic"
            style={{
              background: 'rgba(255,255,255,0.4)',
              backdropFilter: 'blur(20px)',
@@ -76,7 +77,14 @@ export const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
              border: '1px solid rgba(255,255,255,0.2)',
              borderRadius: '24px',
              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-             zIndex: 9999
+             zIndex: 9999,
+             transformOrigin: 'top center',
+             position: 'fixed',
+             top: '50%',
+             left: '50%',
+             transform: 'translate(-50%, -50%)',
+             height: 'auto',
+             maxHeight: '90vh'
            }}>
         <div className="flex items-center justify-between mb-6 p-6">
           <h2 className="text-xl font-bold text-black">طلب موافقة على تعديل ميزانية المشروع</h2>
@@ -138,5 +146,6 @@ export const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
           </button>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };

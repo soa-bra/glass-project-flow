@@ -50,7 +50,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
            backdropFilter: 'blur(18px)',
            WebkitBackdropFilter: 'blur(18px)' 
          }}>
-      <div className="max-w-4xl p-0 overflow-hidden font-arabic transition-all duration-500 ease-out"
+      <div className="w-full max-w-md overflow-y-auto font-arabic"
            style={{
              background: 'rgba(255,255,255,0.4)',
              backdropFilter: 'blur(20px)',
@@ -58,7 +58,14 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
              border: '1px solid rgba(255,255,255,0.2)',
              borderRadius: '24px',
              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-             zIndex: 9999
+             zIndex: 9999,
+             transformOrigin: 'top center',
+             position: 'fixed',
+             top: '50%',
+             left: '50%',
+             transform: 'translate(-50%, -50%)',
+             height: 'auto',
+             maxHeight: '90vh'
            }}>
         <div className="flex justify-between items-center mb-6 p-6">
           <h2 className="text-xl font-bold text-black">إضافة مصروف جديد</h2>

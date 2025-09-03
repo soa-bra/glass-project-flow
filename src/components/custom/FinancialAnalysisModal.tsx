@@ -49,7 +49,7 @@ export const FinancialAnalysisModal: React.FC<FinancialAnalysisModalProps> = ({
            backdropFilter: 'blur(18px)',
            WebkitBackdropFilter: 'blur(18px)' 
          }}>
-      <div className="max-w-4xl p-0 overflow-hidden font-arabic transition-all duration-500 ease-out max-h-[90vh]"
+      <div className="w-full max-w-4xl overflow-y-auto font-arabic"
            style={{
              background: 'rgba(255,255,255,0.4)',
              backdropFilter: 'blur(20px)',
@@ -57,7 +57,14 @@ export const FinancialAnalysisModal: React.FC<FinancialAnalysisModalProps> = ({
              border: '1px solid rgba(255,255,255,0.2)',
              borderRadius: '24px',
              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-             zIndex: 9999
+             zIndex: 9999,
+             transformOrigin: 'top center',
+             position: 'fixed',
+             top: '50%',
+             left: '50%',
+             transform: 'translate(-50%, -50%)',
+             height: 'auto',
+             maxHeight: '90vh'
            }}>
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-black/10">
