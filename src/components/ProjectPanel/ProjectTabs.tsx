@@ -220,7 +220,7 @@ export const FinancialTab = ({
             </button>
           </div>
           <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
-            <h4 className="font-bold text-black mb-3 text-base">طلب موافقة مالية</h4>
+            <h4 className="font-bold text-black mb-3 text-base">طلب موافقة على تعديل الميزانية المشروع</h4>
             <p className="text-xs text-black/70 mb-3">تقديم طلب موافقة على تعديل الميزانية</p>
             <button onClick={() => setIsApprovalRequestOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               طلب موافقة
