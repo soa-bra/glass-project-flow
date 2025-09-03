@@ -101,7 +101,7 @@ export const FinancialTab = ({
   const expensePercentage = Math.round(financialData.totalExpenses / financialData.totalBudget * 100);
   const expectedProfit = remainingBudget - financialData.totalBudget * 0.1; // Assuming 10% operational costs
 
-  return <div className="space-y-2">
+  return <div className="space-y-4">
       {/* حالة الميزانية */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-3">
