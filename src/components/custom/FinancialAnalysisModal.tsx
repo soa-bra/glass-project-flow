@@ -49,7 +49,7 @@ export const FinancialAnalysisModal: React.FC<FinancialAnalysisModalProps> = ({
            backdropFilter: 'blur(18px)',
            WebkitBackdropFilter: 'blur(18px)' 
          }}>
-      <div className="w-full max-w-4xl max-h-[90vh] overflow-hidden font-arabic transition-all duration-500 ease-out"
+      <div className="max-w-4xl p-0 overflow-hidden font-arabic transition-all duration-500 ease-out max-h-[90vh]"
            style={{
              background: 'rgba(255,255,255,0.4)',
              backdropFilter: 'blur(20px)',
@@ -67,9 +67,9 @@ export const FinancialAnalysisModal: React.FC<FinancialAnalysisModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-black/5 rounded-full transition-colors"
+            className="rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition justify-self-end"
           >
-            <X className="w-5 h-5 text-black" />
+            <X className="w-4 h-4 text-black" />
           </button>
         </div>
 
@@ -158,11 +158,11 @@ export const FinancialAnalysisModal: React.FC<FinancialAnalysisModalProps> = ({
         <div className="flex justify-end gap-3 p-6 border-t border-black/10">
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-white/50 backdrop-blur-sm border border-black/20 text-black rounded-full text-sm hover:bg-white/70 transition-colors"
+            className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
           >
             إغلاق
           </button>
-          <button className="px-6 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+          <button className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
             تصدير التقرير
           </button>
         </div>

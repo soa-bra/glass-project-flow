@@ -68,7 +68,7 @@ export const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
                      backdropFilter: 'blur(18px)',
                      WebkitBackdropFilter: 'blur(18px)' 
                    }}>
-      <div className="w-full max-w-md max-h-[90vh] overflow-y-auto font-arabic transition-all duration-500 ease-out"
+      <div className="max-w-4xl p-0 overflow-hidden font-arabic transition-all duration-500 ease-out max-h-[90vh] overflow-y-auto"
            style={{
              background: 'rgba(255,255,255,0.4)',
              backdropFilter: 'blur(20px)',
@@ -76,24 +76,23 @@ export const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
              border: '1px solid rgba(255,255,255,0.2)',
              borderRadius: '24px',
              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-             zIndex: 9999,
-             padding: '2rem'
+             zIndex: 9999
            }}>
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 p-6">
           <h2 className="text-xl font-bold text-black">طلب موافقة على تعديل ميزانية المشروع</h2>
-          <button onClick={handleClose} className="p-2 hover:bg-black/5 rounded-full transition-colors">
-            <X size={20} className="text-black" />
+          <button onClick={handleClose} className="rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition justify-self-end">
+            <X size={16} className="text-black" />
           </button>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 px-6">
           {/* الميزانية المطلوبة */}
           <div>
             <label className="block text-sm font-bold text-black mb-2">
               <DollarSign size={16} className="inline mr-2" />
               الميزانية المطلوبة *
             </label>
-            <input type="number" value={requiredBudget} onChange={e => setRequiredBudget(e.target.value)} placeholder="أدخل المبلغ بالريال السعودي" className={`w-full px-4 py-3 bg-transparent border rounded-full text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-black/20 ${errors.requiredBudget ? 'border-red-500' : 'border-black/20'}`} />
+            <input type="number" value={requiredBudget} onChange={e => setRequiredBudget(e.target.value)} placeholder="أدخل المبلغ بالريال السعودي" className={`w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none ${errors.requiredBudget ? 'border-red-500' : 'border-black/20'}`} />
             {errors.requiredBudget && <p className="text-red-500 text-xs mt-1">{errors.requiredBudget}</p>}
           </div>
 
@@ -103,7 +102,7 @@ export const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
               <FileText size={16} className="inline mr-2" />
               مبررات الطلب *
             </label>
-            <textarea value={justification} onChange={e => setJustification(e.target.value)} placeholder="اكتب مبررات طلب الميزانية الإضافية..." rows={4} className={`w-full px-4 py-3 bg-transparent border rounded-2xl text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-black/20 resize-none ${errors.justification ? 'border-red-500' : 'border-black/20'}`} />
+            <textarea value={justification} onChange={e => setJustification(e.target.value)} placeholder="اكتب مبررات طلب الميزانية الإضافية..." rows={4} className={`w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none resize-none ${errors.justification ? 'border-red-500' : 'border-black/20'}`} />
             {errors.justification && <p className="text-red-500 text-xs mt-1">{errors.justification}</p>}
           </div>
 
@@ -130,11 +129,11 @@ export const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
         </div>
 
         {/* الأزرار */}
-        <div className="flex gap-3 mt-8">
-          <button onClick={handleClose} className="flex-1 px-4 py-3 bg-transparent border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+        <div className="flex gap-3 mt-8 p-6">
+          <button onClick={handleClose} className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors">
             إلغاء
           </button>
-          <button onClick={handleSave} className="flex-1 px-4 py-3 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+          <button onClick={handleSave} className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
             إرسال الطلب
           </button>
         </div>

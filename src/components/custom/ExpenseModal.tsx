@@ -50,7 +50,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
            backdropFilter: 'blur(18px)',
            WebkitBackdropFilter: 'blur(18px)' 
          }}>
-      <div className="w-full max-w-md font-arabic transition-all duration-500 ease-out"
+      <div className="max-w-4xl p-0 overflow-hidden font-arabic transition-all duration-500 ease-out"
            style={{
              background: 'rgba(255,255,255,0.4)',
              backdropFilter: 'blur(20px)',
@@ -58,20 +58,19 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
              border: '1px solid rgba(255,255,255,0.2)',
              borderRadius: '24px',
              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-             zIndex: 9999,
-             padding: '2rem'
+             zIndex: 9999
            }}>
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 p-6">
           <h2 className="text-xl font-bold text-black">إضافة مصروف جديد</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-black/5 transition-colors"
+            className="rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition justify-self-end"
           >
-            <X size={20} className="text-black" />
+            <X size={16} className="text-black" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 p-6">
           <div>
             <label className="block text-sm font-medium text-black mb-2">
               الفئة
@@ -79,7 +78,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
             <select
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full px-4 py-3 rounded-full border border-black/10 bg-white/50 text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-black/20"
+              className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
             >
               {categories.map((category) => (
                 <option key={category} value={category}>
@@ -99,7 +98,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
               step="0.01"
               value={formData.amount || ''}
               onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
-              className="w-full px-4 py-3 rounded-full border border-black/10 bg-white/50 text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-black/20"
+              className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
               placeholder="أدخل المبلغ"
               required
             />
@@ -113,7 +112,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
               type="text"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-3 rounded-full border border-black/10 bg-white/50 text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-black/20"
+              className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
               placeholder="وصف المصروف"
               required
             />
@@ -127,7 +126,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
               type="date"
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              className="w-full px-4 py-3 rounded-full border border-black/10 bg-white/50 text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-black/20"
+              className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
               required
             />
           </div>
@@ -136,13 +135,13 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 rounded-full border border-black/20 text-black hover:bg-black/5 transition-colors"
+              className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
             >
               إلغاء
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-3 rounded-full bg-black text-white hover:bg-black/80 transition-colors"
+              className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
               حفظ المصروف
             </button>
