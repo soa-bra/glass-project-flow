@@ -162,15 +162,15 @@ export const FinancialAnalysisModal: React.FC<FinancialAnalysisModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-6 border-t border-black/10">
+        <div className="flex justify-start gap-3 p-6 border-t border-black/10">
+          <button className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
+            تصدير التقرير
+          </button>
           <button
             onClick={onClose}
             className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
           >
             إغلاق
-          </button>
-          <button className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
-            تصدير التقرير
           </button>
         </div>
       </div>

@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, CalendarIcon } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { ar } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 interface ExpenseModalProps {
   isOpen: boolean;
@@ -82,17 +89,28 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
             <label className="block text-sm font-medium text-black mb-2">
               الفئة
             </label>
-            <select
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
-            >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+            <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+              <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                <SelectValue placeholder="اختر الفئة" />
+              </SelectTrigger>
+              <SelectContent 
+                className="z-[10000] text-[#0B0F12] font-arabic"
+                style={{
+                  background: 'rgba(255,255,255,0.4)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '24px',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
@@ -129,13 +147,33 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
             <label className="block text-sm font-medium text-black mb-2">
               التاريخ
             </label>
-            <input
-              type="date"
-              value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
-              required
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none justify-start text-left font-normal",
+                    !formData.date && "text-black/50"
+                  )}
+                >
+                  <CalendarIcon className="ml-2 h-4 w-4" />
+                  {formData.date ? (
+                    format(new Date(formData.date), "PPP", { locale: ar })
+                  ) : (
+                    <span>اختر التاريخ</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                <Calendar 
+                  mode="single" 
+                  selected={formData.date ? new Date(formData.date) : undefined} 
+                  onSelect={(date) => setFormData({ ...formData, date: date ? format(date, 'yyyy-MM-dd') : '' })} 
+                  initialFocus 
+                  className="p-3 pointer-events-auto" 
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="flex gap-3 pt-4">

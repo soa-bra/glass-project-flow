@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Upload, DollarSign, FileText } from 'lucide-react';
+import { X, Upload, DollarSign, FileText, Trash2 } from 'lucide-react';
 interface ApprovalRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -120,19 +120,43 @@ export const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
               <Upload size={16} className="inline mr-2" />
               المرفقات (اختياري)
             </label>
-            <div className="border border-dashed border-black/20 rounded-2xl p-4 text-center">
-              <input type="file" multiple onChange={handleFileChange} className="hidden" id="file-upload" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
+            <div className="border-2 border-dashed border-black/20 rounded-3xl p-8 text-center hover:border-black/40 transition-colors cursor-pointer">
+              <input 
+                type="file" 
+                multiple 
+                onChange={handleFileChange} 
+                className="hidden" 
+                id="file-upload" 
+                accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+              />
               <label htmlFor="file-upload" className="cursor-pointer">
-                <Upload size={24} className="mx-auto mb-2 text-black/50" />
-                <p className="text-sm text-black/70">انقر لرفع الملفات</p>
-                <p className="text-xs text-black/50 mt-1">PDF, DOC, PNG, JPG</p>
+                <Upload className="w-12 h-12 text-black/50 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-black mb-2">
+                  اسحب الملفات هنا أو انقر للتصفح
+                </h3>
+                <p className="text-sm text-black/70">
+                  يمكنك إرفاق مستندات داعمة مثل عروض الأسعار أو الفواتير
+                </p>
               </label>
             </div>
-            {attachments.length > 0 && <div className="mt-2 space-y-1">
-                {attachments.map((file, index) => <div key={index} className="text-xs text-black/70 bg-black/5 px-2 py-1 rounded-full">
-                    {file.name}
-                  </div>)}
-              </div>}
+            {attachments.length > 0 && (
+              <div className="mt-4 space-y-2">
+                {attachments.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-white/30 rounded-2xl border border-black/10">
+                    <span className="text-sm font-medium text-black font-arabic">{file.name}</span>
+                    <button
+                      onClick={() => {
+                        const newAttachments = attachments.filter((_, i) => i !== index);
+                        setAttachments(newAttachments);
+                      }}
+                      className="w-6 h-6 bg-transparent hover:bg-red-500/10 hover:text-red-500 text-red-500 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
