@@ -50,7 +50,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
            backdropFilter: 'blur(18px)',
            WebkitBackdropFilter: 'blur(18px)' 
          }}>
-      <div className="w-full max-w-md overflow-y-auto font-arabic"
+      <div className="w-full max-w-4xl overflow-y-auto font-arabic"
            style={{
              background: 'rgba(255,255,255,0.4)',
              backdropFilter: 'blur(20px)',
