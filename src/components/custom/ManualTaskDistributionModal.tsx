@@ -301,7 +301,7 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
               <h3 className="text-lg font-semibold text-black mb-4">المهام وإعادة التوزيع</h3>
               <div className="space-y-3">
                 {tasks.map(task => (
-                  <div key={task.id} className="bg-white/50 rounded-2xl border border-black/10 p-4">
+                  <div key={task.id} className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none min-h-[100px]">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
