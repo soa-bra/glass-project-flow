@@ -12,6 +12,7 @@ interface ClientData {
   address: string;
   avatar?: string;
   contractStatus: 'active' | 'pending' | 'expired';
+  entityType?: 'individual' | 'government' | 'semi_government' | 'commercial' | 'charity';
   joinDate: string;
   totalProjects: number;
   sentiment?: number;
@@ -55,7 +56,43 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
         };
     }
   };
+
+  const getEntityTypeConfig = (type?: string) => {
+    switch (type) {
+      case 'individual':
+        return {
+          color: 'bg-blue-100 text-blue-800',
+          text: 'فرد'
+        };
+      case 'government':
+        return {
+          color: 'bg-purple-100 text-purple-800',
+          text: 'مؤسسة حكومية'
+        };
+      case 'semi_government':
+        return {
+          color: 'bg-indigo-100 text-indigo-800',
+          text: 'مؤسسة شبه حكومية'
+        };
+      case 'commercial':
+        return {
+          color: 'bg-orange-100 text-orange-800',
+          text: 'مؤسسة تجارية'
+        };
+      case 'charity':
+        return {
+          color: 'bg-pink-100 text-pink-800',
+          text: 'مؤسسة خيرية'
+        };
+      default:
+        return {
+          color: 'bg-gray-100 text-gray-800',
+          text: 'غير محدد'
+        };
+    }
+  };
   const statusConfig = getContractStatusConfig(client.contractStatus);
+  const entityTypeConfig = getEntityTypeConfig(client.entityType);
   return <div className="space-y-4">
       {/* بيانات العميل الأساسية */}
       <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0] relative">
@@ -84,10 +121,25 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
             </div>
           
             <div className="space-y-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <BaseBadge variant="secondary" className={`${statusConfig.color.split(' ')[0]} text-black`}>
                   {statusConfig.text}
                 </BaseBadge>
+                <BaseBadge variant="secondary" className={`${entityTypeConfig.color.split(' ')[0]} text-black`}>
+                  {entityTypeConfig.text}
+                </BaseBadge>
+              </div>
+
+              {/* معلومات إضافية */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <MapPin className="w-4 h-4" />
+                  <span>{client.address}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Calendar className="w-4 h-4" />
+                  <span>انضم في: {client.joinDate}</span>
+                </div>
               </div>
               
               {/* بيانات ممثل الكيان */}
@@ -117,18 +169,6 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
                     <Phone className="w-4 h-4" />
                     <span>{client.companyContact?.phone || client.phone}</span>
                   </div>
-                </div>
-              </div>
-
-              {/* معلومات إضافية */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <MapPin className="w-4 h-4" />
-                  <span>{client.address}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Calendar className="w-4 h-4" />
-                  <span>انضم في: {client.joinDate}</span>
                 </div>
               </div>
             </div>
