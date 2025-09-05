@@ -96,12 +96,20 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
               <SelectContent 
                 className="z-[10000] text-[#0B0F12] font-arabic"
                 style={{
-                  background: 'rgba(255,255,255,0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: '24px',
-                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            background: 'rgba(255,255,255,0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '24px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            zIndex: 9999,
+            transformOrigin: 'top center',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            height: 'auto',
+            maxHeight: '90vh',
                 }}
               >
                 {categories.map((category) => (
