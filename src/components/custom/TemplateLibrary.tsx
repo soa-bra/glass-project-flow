@@ -56,7 +56,13 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       <div className="flex items-center gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input type="text" placeholder="البحث عن القوالب..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="h-8 bg-[#FfFFFF] border border-black/80 rounded-full" />
+          <Input 
+            type="text" 
+            placeholder="البحث عن القوالب..." 
+            value={searchTerm} 
+            onChange={e => setSearchTerm(e.target.value)} 
+            className="h-8 bg-[#FFFFFF] border border-black/80 rounded-full pr-10" 
+          />
         </div>
         <button onClick={() => setShowUploadModal(true)} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
           <Plus size={16} />
