@@ -51,12 +51,12 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       newTemplates.forEach(template => onTemplateAdded(template));
     }
   };
-  return <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10">
+  return <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
       {/* شريط البحث وأيقونة الرفع */}
       <div className="flex items-center gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input type="text" placeholder="البحث عن القوالب..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="h-8 bg-[#F2FFFF] border border-black/80 rounded-full" />
+          <Input type="text" placeholder="البحث عن القوالب..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="h-8 bg-[#FfFFFF] border border-black/80 rounded-full" />
         </div>
         <button onClick={() => setShowUploadModal(true)} className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95">
           <Plus size={16} />
@@ -65,7 +65,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 
       {/* القوالب */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-        {filteredItems.map(template => <div key={template.id} className="bg-[#F2FFFF] rounded-3xl p-4 border border-black/10">
+        {filteredItems.map(template => <div key={template.id} className="bg-[#ffFFFF] rounded-3xl p-4 border border-black/10">
             <div className="flex items-start gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between mb-2">
