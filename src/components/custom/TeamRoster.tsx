@@ -131,7 +131,7 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({ data = [], onRemoveMembe
       </div>
 
       <ScrollArea className="h-[500px]">
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
           {teamData.map((member) => {
             const availabilityConfig = getAvailabilityConfig(member.availability);
             
