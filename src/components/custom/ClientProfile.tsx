@@ -158,7 +158,7 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
               </div>
 
               {/* بيانات الكيان */}
-              <div className="bg-blue-50 rounded-lg p-3">
+              <div className="bg-gray-50 rounded-lg p-3">
                 <h4 className="text-sm font-semibold text-gray-800 mb-2">بيانات التواصل - الكيان</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   <div className="flex items-center gap-2 text-gray-600">
