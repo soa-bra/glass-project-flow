@@ -89,6 +89,13 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
               <span>انضم في: {client.joinDate}</span>
             </div>
           </div>
+          
+          {/* زر عرض الملف */}
+          <div className="pt-4 mt-2 border-t border-gray-100">
+            <Button size="sm" className="w-full gap-1 px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+              عرض الملف
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -108,21 +115,6 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
           <p className="text-2xl font-bold text-primary">4.8</p>
           <p className="text-xs text-gray-600">التقييم العام</p>
         </div>
-      </div>
-
-      {/* أزرار التفاعل */}
-      <div className="flex gap-2">
-        <Button size="sm" className="flex-1 gap-1 w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
-          <Phone className="w-4 h-4" />
-          اتصال
-        </Button>
-        <Button size="sm" variant="outline" className="flex-1 gap-1 w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
-          <Mail className="w-4 h-4" />
-          إيميل
-        </Button>
-        <Button size="sm" variant="outline" className="flex-1 gap-1 w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
-          عرض الملف
-        </Button>
       </div>
     </div>;
 };
