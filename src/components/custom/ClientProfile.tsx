@@ -69,9 +69,8 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
           <div className="flex-1 space-y-3">
             <div className="text-right">
               <h3 className="font-bold text-lg">{client.name}</h3>
-              <p className="text-sm text-gray-600 flex items-center gap-1">
-                <Building className="w-4 h-4" />
-                {client.company}
+              <p className="text-sm text-gray-600">
+                ممثل الكيان
               </p>
             </div>
           
