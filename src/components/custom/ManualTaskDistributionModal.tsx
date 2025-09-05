@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, User, CheckCircle, Clock, AlertCircle, Brain, ArrowRight } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface TeamMember {
   id: string;
@@ -315,14 +316,28 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
                         {/* Manual Assignment Dropdown */}
                         <div className="mb-2">
                           <label className="block text-xs text-black/70 mb-1">إعادة إسناد إلى:</label>
-                          <select value={task.currentAssignee || ''} onChange={e => handleTaskAssigneeChange(task.id, e.target.value)} className="w-full px-3 py-2 rounded-2xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none text-sm">
-                            <option value="">اختر عضو الفريق...</option>
-                            {teamMembers.map(member => (
-                              <option key={member.id} value={member.id}>
-                                {member.name} - {member.role}
-                              </option>
-                            ))}
-                          </select>
+                          <Select value={task.currentAssignee || ''} onValueChange={(value) => handleTaskAssigneeChange(task.id, value)}>
+                            <SelectTrigger className="w-full px-3 py-2 rounded-2xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none text-sm">
+                              <SelectValue placeholder="اختر عضو الفريق..." />
+                            </SelectTrigger>
+                            <SelectContent 
+                              className="z-[10000] text-[#0B0F12] font-arabic"
+                              style={{
+                                background: 'rgba(255,255,255,0.4)',
+                                backdropFilter: 'blur(20px)',
+                                WebkitBackdropFilter: 'blur(20px)',
+                                border: '1px solid rgba(255,255,255,0.2)',
+                                borderRadius: '24px',
+                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                              }}
+                            >
+                              {teamMembers.map(member => (
+                                <SelectItem key={member.id} value={member.id}>
+                                  {member.name} - {member.role}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
 
                         <div className="flex items-center justify-between text-sm">

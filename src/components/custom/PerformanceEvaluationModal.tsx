@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Users, User, TrendingUp, TrendingDown, Brain, Target, Star, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 interface TeamMember {
   id: string;
   name: string;
@@ -270,12 +271,28 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                 <label className="block text-sm font-semibold text-black mb-3">
                   اختيار عضو الفريق للتقييم الفردي
                 </label>
-                <select value={selectedMemberId} onChange={e => setSelectedMemberId(e.target.value)} className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
-                  <option value="">اختر عضو الفريق...</option>
-                  {teamMembers.map(member => <option key={member.id} value={member.id}>
-                      {member.name} - {member.role}
-                    </option>)}
-                </select>
+                <Select value={selectedMemberId} onValueChange={setSelectedMemberId}>
+                  <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                    <SelectValue placeholder="اختر عضو الفريق..." />
+                  </SelectTrigger>
+                  <SelectContent 
+                    className="z-[10000] text-[#0B0F12] font-arabic"
+                    style={{
+                      background: 'rgba(255,255,255,0.4)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      borderRadius: '24px',
+                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                    }}
+                  >
+                    {teamMembers.map(member => (
+                      <SelectItem key={member.id} value={member.id}>
+                        {member.name} - {member.role}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {selectedMember && <div className="space-y-6">
