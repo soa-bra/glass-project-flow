@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -7,9 +8,17 @@ import { Users, Search, Plus, Filter, Mail, Phone, MapPin, Star, Calendar, Trend
 import { mockCustomers } from './data';
 
 export const CustomersTab: React.FC = () => {
+  const { navigationState } = useNavigation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+
+  // Set selected customer from navigation state when component mounts or navigation changes
+  useEffect(() => {
+    if (navigationState.selectedCustomer) {
+      setSelectedCustomer(navigationState.selectedCustomer);
+    }
+  }, [navigationState.selectedCustomer]);
 
   const filteredCustomers = mockCustomers.filter(customer => {
     const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

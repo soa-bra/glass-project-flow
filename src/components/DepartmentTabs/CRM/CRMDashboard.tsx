@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
 import { OverviewTab } from './OverviewTab';
@@ -9,7 +10,15 @@ import { AnalyticsTab } from './AnalyticsTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
 export const CRMDashboard: React.FC = () => {
+  const { navigationState } = useNavigation();
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Switch to customers tab when navigating with a selected customer
+  useEffect(() => {
+    if (navigationState.selectedCustomer) {
+      setActiveTab('customers');
+    }
+  }, [navigationState.selectedCustomer]);
   const tabItems = [{
     value: 'overview',
     label: 'نظرة عامة'

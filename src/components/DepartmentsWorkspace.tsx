@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@/contexts/NavigationContext';
 import DepartmentsSidebar from './DepartmentsSidebar';
 import DepartmentPanel from './DepartmentPanel';
 
@@ -7,8 +8,11 @@ interface DepartmentsWorkspaceProps {
 }
 
 const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCollapsed }) => {
-  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
+  const { navigationState, setSelectedDepartment } = useNavigation();
   const [isDepartmentsSidebarCollapsed, setIsDepartmentsSidebarCollapsed] = useState(false);
+
+  // Use navigation state for selected department
+  const selectedDepartment = navigationState.selectedDepartment;
 
   return (
     <>

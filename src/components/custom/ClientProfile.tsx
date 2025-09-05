@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { Phone, Mail, MapPin, Building, Calendar, User } from 'lucide-react';
+import { useNavigation } from '@/contexts/NavigationContext';
 interface ClientData {
   id: string;
   name: string;
@@ -32,6 +33,7 @@ interface ClientProfileProps {
 export const ClientProfile: React.FC<ClientProfileProps> = ({
   client
 }) => {
+  const { navigateToCustomerDetails } = useNavigation();
   const getContractStatusConfig = (status: string) => {
     switch (status) {
       case 'active':
@@ -98,7 +100,11 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
       <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0] relative">
         {/* زر عرض الملف في الزاوية العليا */}
         <div className="absolute top-4 left-4">
-          <Button size="sm" className="gap-1 px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+          <Button 
+            size="sm" 
+            className="gap-1 px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors"
+            onClick={() => navigateToCustomerDetails(client.id)}
+          >
             عرض الملف
           </Button>
         </div>
