@@ -444,7 +444,7 @@ export const TeamTab = ({
             <span className="text-sm font-medium text-black">أعضاء نشطين</span>
           </div>
         </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-centerborder border-[#DADCE0]">
+        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
           <h4 className="text-lg font-semibold text-black mb-2">معدل الأداء العام</h4>
           <p className="text-2xl font-bold text-black mb-1">91%</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
