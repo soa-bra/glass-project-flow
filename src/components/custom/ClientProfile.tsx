@@ -49,29 +49,39 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
   const statusConfig = getContractStatusConfig(client.contractStatus);
   return <div className="space-y-4">
       {/* بيانات العميل الأساسية */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0] ">
-        <Avatar className="w-16 h-16">
-          <AvatarImage src={client.avatar} alt={client.name} />
-          <AvatarFallback className="bg-primary/10 text-primary">
-            <User className="w-8 h-8" />
-          </AvatarFallback>
-        </Avatar>
-        
-        <div className="flex-1 text-right space-y-2">
-          <div className="right-15 flex items-center justify-between- my-0 px-[14px] mx-[228px]">
-            <BaseBadge variant="secondary" className={statusConfig.color}>
-              {statusConfig.text}
-            </BaseBadge>
-            <div className="px-0 mx-[90px]">
-              <h3 className="font-bold text-lg mx-0">{client.name}</h3>
-              <p className="text-sm text-gray-600 gap-1">
+      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0] relative">
+        {/* زر عرض الملف في الزاوية العليا */}
+        <div className="absolute top-4 left-4">
+          <Button size="sm" className="gap-1 px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            عرض الملف
+          </Button>
+        </div>
+
+        {/* معلومات العميل الرئيسية */}
+        <div className="flex flex-col items-center text-center space-y-4 pt-2">
+          <Avatar className="w-16 h-16">
+            <AvatarImage src={client.avatar} alt={client.name} />
+            <AvatarFallback className="bg-primary/10 text-primary">
+              <User className="w-8 h-8" />
+            </AvatarFallback>
+          </Avatar>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-center gap-3">
+              <BaseBadge variant="secondary" className={statusConfig.color}>
+                {statusConfig.text}
+              </BaseBadge>
+            </div>
+            <div>
+              <h3 className="font-bold text-lg">{client.name}</h3>
+              <p className="text-sm text-gray-600 flex items-center justify-center gap-1">
                 <Building className="w-4 h-4" />
                 {client.company}
               </p>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm w-full">
             <div className="flex items-center gap-2 text-gray-600">
               <Mail className="w-4 h-4" />
               <span>{client.email}</span>
@@ -88,13 +98,6 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
               <Calendar className="w-4 h-4" />
               <span>انضم في: {client.joinDate}</span>
             </div>
-          </div>
-          
-          {/* زر عرض الملف */}
-          <div className="pt-4 mt-2 border-t border-gray-100">
-            <Button size="sm" className="w-full gap-1 px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
-              عرض الملف
-            </Button>
           </div>
         </div>
       </div>
