@@ -58,45 +58,45 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
         </div>
 
         {/* معلومات العميل الرئيسية */}
-        <div className="flex flex-col items-center text-center space-y-4 pt-2">
-          <Avatar className="w-16 h-16">
+        <div className="flex items-start gap-4 pt-2">
+          <Avatar className="w-16 h-16 flex-shrink-0">
             <AvatarImage src={client.avatar} alt={client.name} />
             <AvatarFallback className="bg-primary/10 text-primary">
               <User className="w-8 h-8" />
             </AvatarFallback>
           </Avatar>
           
-          <div className="space-y-2">
-            <div className="flex items-center justify-center gap-3">
+          <div className="flex-1 space-y-3">
+            <div className="flex items-center gap-3">
               <BaseBadge variant="secondary" className={statusConfig.color}>
                 {statusConfig.text}
               </BaseBadge>
             </div>
-            <div>
+            <div className="text-right">
               <h3 className="font-bold text-lg">{client.name}</h3>
-              <p className="text-sm text-gray-600 flex items-center justify-center gap-1">
+              <p className="text-sm text-gray-600 flex items-center gap-1">
                 <Building className="w-4 h-4" />
                 {client.company}
               </p>
             </div>
-          </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm w-full">
-            <div className="flex items-center gap-2 text-gray-600">
-              <Mail className="w-4 h-4" />
-              <span>{client.email}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <Phone className="w-4 h-4" />
-              <span>{client.phone}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <MapPin className="w-4 h-4" />
-              <span>{client.address}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <Calendar className="w-4 h-4" />
-              <span>انضم في: {client.joinDate}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <div className="flex items-center gap-2 text-gray-600">
+                <Mail className="w-4 h-4" />
+                <span>{client.email}</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <Phone className="w-4 h-4" />
+                <span>{client.phone}</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <MapPin className="w-4 h-4" />
+                <span>{client.address}</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <Calendar className="w-4 h-4" />
+                <span>انضم في: {client.joinDate}</span>
+              </div>
             </div>
           </div>
         </div>
