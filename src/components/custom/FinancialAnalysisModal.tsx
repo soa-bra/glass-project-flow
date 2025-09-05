@@ -51,7 +51,7 @@ export const FinancialAnalysisModal: React.FC<FinancialAnalysisModalProps> = ({
          }}>
       <div className="w-full max-w-4xl overflow-y-auto font-arabic"
            style={{
-             background: 'rgba(255,255,255,0.4)',
+             background: 'rgba(255,255,255,0.3)',
              backdropFilter: 'blur(20px)',
              WebkitBackdropFilter: 'blur(20px)',
              border: '1px solid rgba(255,255,255,0.2)',
