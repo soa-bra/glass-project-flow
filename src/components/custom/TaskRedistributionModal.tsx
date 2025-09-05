@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, User, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface TeamMember {
   id: string;
@@ -194,20 +195,26 @@ export const TaskRedistributionModal: React.FC<TaskRedistributionModalProps> = (
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-black/10 w-full max-w-4xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-black/10">
-          <h2 className="text-xl font-bold text-black">إعادة توزيع المهام بالذكاء الاصطناعي</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-black/5 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5 text-black" />
-          </button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={() => {}}>
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto p-0 font-arabic" style={{
+        background: 'rgba(255,255,255,0.3)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.2)',
+        borderRadius: '24px'
+      }}>
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition z-10"
+        >
+          <X size={18} className="text-black" />
+        </button>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+        <DialogHeader className="px-6 pt-6 pb-2">
+          <DialogTitle className="text-xl font-bold text-black font-arabic">إعادة توزيع المهام بالذكاء الاصطناعي</DialogTitle>
+        </DialogHeader>
+
+        <div className="px-6 pb-6 overflow-y-auto max-h-[calc(90vh-200px)]">
           {/* Team Members Overview */}
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-black mb-4">أعضاء الفريق والحمولة الحالية</h3>
@@ -305,22 +312,22 @@ export const TaskRedistributionModal: React.FC<TaskRedistributionModalProps> = (
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-6 border-t border-black/10">
+        <div className="flex justify-end gap-3 px-6 pb-6 pt-4 border-t border-black/10">
           <button
             onClick={onClose}
-            className="px-6 py-3 bg-white/50 border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors"
+            className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
           >
             إلغاء
           </button>
           <button
             onClick={handleAIRedistribution}
             disabled={isRedistributing}
-            className="px-6 py-3 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isRedistributing ? 'جاري التوزيع بالذكاء الاصطناعي...' : 'توزيع المهام بالذكاء الاصطناعي'}
           </button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { X, User, CheckCircle, Clock, AlertCircle, Brain, ArrowRight } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
 interface TeamMember {
   id: string;
   name: string;
@@ -10,6 +12,7 @@ interface TeamMember {
   maxCapacity: number;
   avatar?: string;
 }
+
 interface Task {
   id: string;
   title: string;
@@ -20,6 +23,7 @@ interface Task {
   currentAssignee?: string;
   status: 'pending' | 'in-progress' | 'completed';
 }
+
 interface ManualTaskDistributionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,6 +32,7 @@ interface ManualTaskDistributionModalProps {
     assigneeId: string;
   }[]) => void;
 }
+
 export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalProps> = ({
   isOpen,
   onClose,
@@ -69,6 +74,7 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
     currentWorkload: 15,
     maxCapacity: 35
   }]);
+
   const [tasks, setTasks] = useState<Task[]>([{
     id: '1',
     title: 'تطوير واجهة المستخدم الرئيسية',
@@ -115,12 +121,14 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
     currentAssignee: '1',
     status: 'pending'
   }]);
+
   const handleTaskAssigneeChange = (taskId: string, newAssigneeId: string) => {
     setTasks(prevTasks => prevTasks.map(task => task.id === taskId ? {
       ...task,
       currentAssignee: newAssigneeId
     } : task));
   };
+
   const handleSmartDistribution = async () => {
     setIsSmartDistributing(true);
 
@@ -152,6 +160,7 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
     setTasks(redistributedTasks);
     setIsSmartDistributing(false);
   };
+
   const handleSave = () => {
     const redistributedTasks = tasks.map(task => ({
       taskId: task.id,
@@ -159,10 +168,12 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
     }));
     onSave(redistributedTasks);
   };
+
   const getAssigneeName = (assigneeId?: string) => {
     const member = teamMembers.find(m => m.id === assigneeId);
     return member ? member.name : 'غير محدد';
   };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
@@ -175,6 +186,7 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
         return 'bg-gray-100 text-gray-800';
     }
   };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
@@ -198,18 +210,30 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
       assignedTasks: assignedTasks.length
     };
   });
-  if (!isOpen) return null;
-  return <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-black/10 w-full max-w-6xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-black/10">
-          <h2 className="text-xl font-bold text-black">اعادة توزيع المهام على الفريق </h2>
-          <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full transition-colors">
-            <X className="w-5 h-5 text-black" />
-          </button>
-        </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+  if (!isOpen) return null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={() => {}}>
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0 font-arabic" style={{
+        background: 'rgba(255,255,255,0.3)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.2)',
+        borderRadius: '24px'
+      }}>
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition z-10"
+        >
+          <X size={18} className="text-black" />
+        </button>
+
+        <DialogHeader className="px-6 pt-6 pb-2">
+          <DialogTitle className="text-xl font-bold text-black font-arabic">اعادة توزيع المهام على الفريق</DialogTitle>
+        </DialogHeader>
+
+        <div className="px-6 pb-6 overflow-y-auto max-h-[calc(90vh-200px)]">
           {/* Smart Distribution Section */}
           <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl border border-black/10 p-4 mb-6">
             <div className="flex items-center justify-between">
@@ -239,7 +263,8 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
             <div>
               <h3 className="text-lg font-semibold text-black mb-4">أعضاء الفريق والحمولة</h3>
               <div className="space-y-3">
-                {memberWorkloads.map(member => <div key={member.id} className="bg-white/50 rounded-2xl border border-black/10 p-4">
+                {memberWorkloads.map(member => (
+                  <div key={member.id} className="bg-white/50 rounded-2xl border border-black/10 p-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="bg-black/10 rounded-full p-2">
                         <User className="w-4 h-4 text-black" />
@@ -255,15 +280,18 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
                     </div>
                     <div className="w-full bg-black/10 rounded-full h-2 mb-2">
                       <div className="bg-black h-2 rounded-full transition-all duration-300" style={{
-                    width: `${Math.min(member.assignedHours / member.maxCapacity * 100, 100)}%`
-                  }} />
+                        width: `${Math.min(member.assignedHours / member.maxCapacity * 100, 100)}%`
+                      }} />
                     </div>
                     <div className="flex flex-wrap gap-1">
-                      {member.skills.slice(0, 3).map(skill => <span key={skill} className="bg-black/10 px-2 py-1 rounded-full text-xs text-black">
+                      {member.skills.slice(0, 3).map(skill => (
+                        <span key={skill} className="bg-black/10 px-2 py-1 rounded-full text-xs text-black">
                           {skill}
-                        </span>)}
+                        </span>
+                      ))}
                     </div>
-                  </div>)}
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -271,7 +299,8 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
             <div>
               <h3 className="text-lg font-semibold text-black mb-4">المهام وإعادة التوزيع</h3>
               <div className="space-y-3">
-                {tasks.map(task => <div key={task.id} className="bg-white/50 rounded-2xl border border-black/10 p-4">
+                {tasks.map(task => (
+                  <div key={task.id} className="bg-white/50 rounded-2xl border border-black/10 p-4">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
@@ -286,11 +315,13 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
                         {/* Manual Assignment Dropdown */}
                         <div className="mb-2">
                           <label className="block text-xs text-black/70 mb-1">إعادة إسناد إلى:</label>
-                          <select value={task.currentAssignee || ''} onChange={e => handleTaskAssigneeChange(task.id, e.target.value)} className="w-full p-2 bg-white/50 border border-black/20 rounded-xl text-sm text-black focus:outline-none focus:ring-2 focus:ring-black/20">
+                          <select value={task.currentAssignee || ''} onChange={e => handleTaskAssigneeChange(task.id, e.target.value)} className="w-full px-3 py-2 rounded-2xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none text-sm">
                             <option value="">اختر عضو الفريق...</option>
-                            {teamMembers.map(member => <option key={member.id} value={member.id}>
+                            {teamMembers.map(member => (
+                              <option key={member.id} value={member.id}>
                                 {member.name} - {member.role}
-                              </option>)}
+                              </option>
+                            ))}
                           </select>
                         </div>
 
@@ -304,11 +335,14 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-1">
-                      {task.requiredSkills.map(skill => <span key={skill} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                      {task.requiredSkills.map(skill => (
+                        <span key={skill} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
                           {skill}
-                        </span>)}
+                        </span>
+                      ))}
                     </div>
-                  </div>)}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -334,14 +368,15 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-6 border-t border-black/10">
-          <button onClick={onClose} className="px-6 py-3 bg-white/50 border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+        <div className="flex justify-end gap-3 px-6 pb-6 pt-4 border-t border-black/10">
+          <button onClick={onClose} className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors">
             إلغاء
           </button>
-          <button onClick={handleSave} className="px-6 py-3 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+          <button onClick={handleSave} className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors">
             حفظ التوزيع الجديد
           </button>
         </div>
-      </div>
-    </div>;
+      </DialogContent>
+    </Dialog>
+  );
 };

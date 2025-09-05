@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, User, Check, Sparkles } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface AvailableMember {
   id: string;
@@ -225,30 +226,38 @@ export const AddTeamMemberModal: React.FC<AddTeamMemberModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-black/10 w-full max-w-3xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-black/10">
-          <h2 className="text-xl font-bold text-black">إضافة عضو جديد للمشروع</h2>
-          <div className="flex gap-2">
-            <button
-              onClick={handleAISuggestion}
-              disabled={isLoadingAI}
-              className="flex items-center gap-2 px-4 py-2 bg-[#96d8d0] text-black rounded-full text-sm hover:bg-[#84c5bd] transition-colors disabled:opacity-50"
-            >
-              <Sparkles className="w-4 h-4" />
-              {isLoadingAI ? 'جاري التحليل...' : 'اقتراح العضو الأنسب'}
-            </button>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-black/5 rounded-full transition-colors"
-            >
-              <X className="w-5 h-5 text-black" />
-            </button>
-          </div>
-        </div>
+    <Dialog open={isOpen} onOpenChange={() => {}}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0 font-arabic" style={{
+        background: 'rgba(255,255,255,0.3)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.2)',
+        borderRadius: '24px'
+      }}>
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition z-10"
+        >
+          <X size={18} className="text-black" />
+        </button>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)] space-y-6">
+        <DialogHeader className="px-6 pt-6 pb-2">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-xl font-bold text-black font-arabic">إضافة عضو جديد للمشروع</DialogTitle>
+            <div className="flex gap-2">
+              <button
+                onClick={handleAISuggestion}
+                disabled={isLoadingAI}
+                className="flex items-center gap-2 px-4 py-2 bg-[#96d8d0] text-black rounded-full text-sm hover:bg-[#84c5bd] transition-colors disabled:opacity-50"
+              >
+                <Sparkles className="w-4 h-4" />
+                {isLoadingAI ? 'جاري التحليل...' : 'اقتراح العضو الأنسب'}
+              </button>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <div className="px-6 pb-6 overflow-y-auto max-h-[calc(90vh-200px)] space-y-6">
           {/* اقتراح الذكاء الاصطناعي */}
           {aiSuggestion && (
             <div className="bg-[#96d8d0]/20 border border-[#96d8d0] rounded-2xl p-4">
@@ -270,7 +279,7 @@ export const AddTeamMemberModal: React.FC<AddTeamMemberModalProps> = ({
             <select
               value={selectedMemberId}
               onChange={(e) => setSelectedMemberId(e.target.value)}
-              className="w-full p-4 bg-white/50 border border-black/20 rounded-2xl text-black focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black/30"
+              className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none"
             >
               <option value="">اختر عضو الفريق...</option>
               {availableMembers.map(member => (
@@ -360,22 +369,22 @@ export const AddTeamMemberModal: React.FC<AddTeamMemberModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-6 border-t border-black/10">
+        <div className="flex justify-end gap-3 px-6 pb-6 pt-4 border-t border-black/10">
           <button
             onClick={onClose}
-            className="px-6 py-3 bg-white/50 border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors"
+            className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
           >
             إلغاء
           </button>
           <button
             onClick={handleSave}
             disabled={!selectedMemberId || selectedTaskIds.length === 0}
-            className="px-6 py-3 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
             إضافة العضو وإسناد المهام
           </button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
