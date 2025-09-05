@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { X, Users, User, TrendingUp, TrendingDown, Brain, Target, Star, AlertTriangle, CheckCircle } from 'lucide-react';
-
 interface TeamMember {
   id: string;
   name: string;
@@ -15,12 +14,10 @@ interface TeamMember {
   recentProjects: number;
   qualityScore: number;
 }
-
 interface PerformanceEvaluationModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
 export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProps> = ({
   isOpen,
   onClose
@@ -30,72 +27,65 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Mock team data
-  const teamMembers: TeamMember[] = [
-    {
-      id: '1',
-      name: 'أحمد محمد',
-      role: 'مطور رئيسي',
-      productivity: 88,
-      tasksCompleted: 24,
-      totalTasks: 28,
-      hoursLogged: 156,
-      targetHours: 160,
-      strengths: ['البرمجة المتقدمة', 'حل المشاكل', 'القيادة'],
-      weaknesses: ['التوثيق', 'إدارة الوقت'],
-      recentProjects: 3,
-      qualityScore: 92
-    },
-    {
-      id: '2',
-      name: 'فاطمة علي',
-      role: 'مصممة واجهات',
-      productivity: 95,
-      tasksCompleted: 18,
-      totalTasks: 19,
-      hoursLogged: 152,
-      targetHours: 150,
-      strengths: ['التصميم الإبداعي', 'تجربة المستخدم', 'الاهتمام بالتفاصيل'],
-      weaknesses: ['البرمجة التقنية'],
-      recentProjects: 4,
-      qualityScore: 96
-    },
-    {
-      id: '3',
-      name: 'محمد خالد',
-      role: 'محلل أنظمة',
-      productivity: 75,
-      tasksCompleted: 15,
-      totalTasks: 20,
-      hoursLogged: 140,
-      targetHours: 160,
-      strengths: ['التحليل المنطقي', 'قواعد البيانات'],
-      weaknesses: ['التواصل', 'السرعة في التنفيذ'],
-      recentProjects: 2,
-      qualityScore: 85
-    },
-    {
-      id: '4',
-      name: 'نورا سعد',
-      role: 'مختبرة جودة',
-      productivity: 82,
-      tasksCompleted: 22,
-      totalTasks: 25,
-      hoursLogged: 145,
-      targetHours: 150,
-      strengths: ['دقة الاختبار', 'اكتشاف الأخطاء'],
-      weaknesses: ['الأتمتة', 'البرمجة'],
-      recentProjects: 3,
-      qualityScore: 89
-    }
-  ];
-
+  const teamMembers: TeamMember[] = [{
+    id: '1',
+    name: 'أحمد محمد',
+    role: 'مطور رئيسي',
+    productivity: 88,
+    tasksCompleted: 24,
+    totalTasks: 28,
+    hoursLogged: 156,
+    targetHours: 160,
+    strengths: ['البرمجة المتقدمة', 'حل المشاكل', 'القيادة'],
+    weaknesses: ['التوثيق', 'إدارة الوقت'],
+    recentProjects: 3,
+    qualityScore: 92
+  }, {
+    id: '2',
+    name: 'فاطمة علي',
+    role: 'مصممة واجهات',
+    productivity: 95,
+    tasksCompleted: 18,
+    totalTasks: 19,
+    hoursLogged: 152,
+    targetHours: 150,
+    strengths: ['التصميم الإبداعي', 'تجربة المستخدم', 'الاهتمام بالتفاصيل'],
+    weaknesses: ['البرمجة التقنية'],
+    recentProjects: 4,
+    qualityScore: 96
+  }, {
+    id: '3',
+    name: 'محمد خالد',
+    role: 'محلل أنظمة',
+    productivity: 75,
+    tasksCompleted: 15,
+    totalTasks: 20,
+    hoursLogged: 140,
+    targetHours: 160,
+    strengths: ['التحليل المنطقي', 'قواعد البيانات'],
+    weaknesses: ['التواصل', 'السرعة في التنفيذ'],
+    recentProjects: 2,
+    qualityScore: 85
+  }, {
+    id: '4',
+    name: 'نورا سعد',
+    role: 'مختبرة جودة',
+    productivity: 82,
+    tasksCompleted: 22,
+    totalTasks: 25,
+    hoursLogged: 145,
+    targetHours: 150,
+    strengths: ['دقة الاختبار', 'اكتشاف الأخطاء'],
+    weaknesses: ['الأتمتة', 'البرمجة'],
+    recentProjects: 3,
+    qualityScore: 89
+  }];
   const handleAIAnalysis = async () => {
     setIsAnalyzing(true);
     // Simulate AI processing time
     await new Promise(resolve => setTimeout(resolve, 3000));
     setIsAnalyzing(false);
   };
-
   const teamStats = {
     avgProductivity: Math.round(teamMembers.reduce((sum, member) => sum + member.productivity, 0) / teamMembers.length),
     totalTasksCompleted: teamMembers.reduce((sum, member) => sum + member.tasksCompleted, 0),
@@ -103,61 +93,38 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
     avgQualityScore: Math.round(teamMembers.reduce((sum, member) => sum + member.qualityScore, 0) / teamMembers.length),
     totalHours: teamMembers.reduce((sum, member) => sum + member.hoursLogged, 0)
   };
-
   const selectedMember = teamMembers.find(m => m.id === selectedMemberId);
-
   const getPerformanceColor = (score: number) => {
     if (score >= 90) return 'text-green-600';
     if (score >= 80) return 'text-blue-600';
     if (score >= 70) return 'text-yellow-600';
     return 'text-red-600';
   };
-
   const getPerformanceIcon = (score: number) => {
     if (score >= 90) return <TrendingUp className="w-4 h-4 text-green-600" />;
     if (score >= 70) return <Target className="w-4 h-4 text-blue-600" />;
     return <TrendingDown className="w-4 h-4 text-red-600" />;
   };
-
   if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 glass-backdrop flex items-center justify-center z-50 p-4">
+  return <div className="fixed inset-0 glass-backdrop flex items-center justify-center z-50 p-4">
       <div className="glass-modal rounded-3xl w-full max-w-5xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-black/10">
           <h2 className="text-xl font-bold text-black">تقييم الأداء بالذكاء الاصطناعي</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-black/5 rounded-full transition-colors"
-          >
+          <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full transition-colors">
             <X className="w-5 h-5 text-black" />
           </button>
         </div>
 
         {/* Tabs */}
         <div className="flex border-b border-black/10">
-          <button
-            onClick={() => setActiveTab('team')}
-            className={`flex-1 p-4 text-sm font-medium transition-colors ${
-              activeTab === 'team'
-                ? 'bg-black/5 text-black border-b-2 border-black'
-                : 'text-black/70 hover:text-black hover:bg-black/5'
-            }`}
-          >
+          <button onClick={() => setActiveTab('team')} className={`flex-1 p-4 text-sm font-medium transition-colors ${activeTab === 'team' ? 'bg-black/5 text-black border-b-2 border-black' : 'text-black/70 hover:text-black hover:bg-black/5'}`}>
             <div className="flex items-center justify-center gap-2">
               <Users className="w-4 h-4" />
               تقييم الفريق
             </div>
           </button>
-          <button
-            onClick={() => setActiveTab('individual')}
-            className={`flex-1 p-4 text-sm font-medium transition-colors ${
-              activeTab === 'individual'
-                ? 'bg-black/5 text-black border-b-2 border-black'
-                : 'text-black/70 hover:text-black hover:bg-black/5'
-            }`}
-          >
+          <button onClick={() => setActiveTab('individual')} className={`flex-1 p-4 text-sm font-medium transition-colors ${activeTab === 'individual' ? 'bg-black/5 text-black border-b-2 border-black' : 'text-black/70 hover:text-black hover:bg-black/5'}`}>
             <div className="flex items-center justify-center gap-2">
               <User className="w-4 h-4" />
               تقييم فردي
@@ -166,8 +133,7 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
         </div>
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-300px)]">
-          {activeTab === 'team' ? (
-            <div className="space-y-6">
+          {activeTab === 'team' ? <div className="space-y-6">
               {/* AI Analysis Section */}
               <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl border border-black/10 p-4">
                 <div className="flex items-center justify-between mb-4">
@@ -176,27 +142,21 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                       <Brain className="w-5 h-5 text-purple-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-black">تحليل الذكاء الاصطناعي للفريق</h3>
+                      <h3 className="text-lg font-semibold text-black">تحليل الذكاء الاصطناعي لاداء الفريق</h3>
                       <p className="text-sm text-black/70">تحليل شامل لأداء الفريق وتقديم توصيات للتطوير</p>
                     </div>
                   </div>
-                  <button
-                    onClick={handleAIAnalysis}
-                    disabled={isAnalyzing}
-                    className="px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors disabled:opacity-50"
-                  >
+                  <button onClick={handleAIAnalysis} disabled={isAnalyzing} className="px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors disabled:opacity-50">
                     {isAnalyzing ? 'جاري التحليل...' : 'بدء التحليل'}
                   </button>
                 </div>
 
-                {isAnalyzing && (
-                  <div className="flex items-center justify-center py-8">
+                {isAnalyzing && <div className="flex items-center justify-center py-8">
                     <div className="text-center">
                       <div className="w-8 h-8 border-2 border-black/30 border-t-black rounded-full animate-spin mx-auto mb-2"></div>
                       <p className="text-sm text-black/70">يتم تحليل أداء الفريق...</p>
                     </div>
-                  </div>
-                )}
+                  </div>}
               </div>
 
               {/* Team Performance Overview */}
@@ -209,7 +169,7 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                   </div>
                 </div>
                 <div className="bg-white/50 rounded-2xl border border-black/10 p-4 text-center">
-                  <div className="text-2xl font-bold text-black mb-1">{Math.round((teamStats.totalTasksCompleted / teamStats.totalTasks) * 100)}%</div>
+                  <div className="text-2xl font-bold text-black mb-1">{Math.round(teamStats.totalTasksCompleted / teamStats.totalTasks * 100)}%</div>
                   <div className="text-sm text-black/70">معدل إنجاز المهام</div>
                   <div className="text-xs text-black/50 mt-1">{teamStats.totalTasksCompleted}/{teamStats.totalTasks}</div>
                 </div>
@@ -293,30 +253,21 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                   </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="space-y-6">
+            </div> : <div className="space-y-6">
               {/* Member Selection */}
               <div>
                 <label className="block text-sm font-semibold text-black mb-3">
                   اختيار عضو الفريق للتقييم الفردي
                 </label>
-                <select
-                  value={selectedMemberId}
-                  onChange={(e) => setSelectedMemberId(e.target.value)}
-                  className="w-full p-4 bg-white/50 border border-black/20 rounded-2xl text-black focus:outline-none focus:ring-2 focus:ring-black/20"
-                >
+                <select value={selectedMemberId} onChange={e => setSelectedMemberId(e.target.value)} className="w-full p-4 bg-white/50 border border-black/20 rounded-2xl text-black focus:outline-none focus:ring-2 focus:ring-black/20">
                   <option value="">اختر عضو الفريق...</option>
-                  {teamMembers.map(member => (
-                    <option key={member.id} value={member.id}>
+                  {teamMembers.map(member => <option key={member.id} value={member.id}>
                       {member.name} - {member.role}
-                    </option>
-                  ))}
+                    </option>)}
                 </select>
               </div>
 
-              {selectedMember && (
-                <div className="space-y-6">
+              {selectedMember && <div className="space-y-6">
                   {/* Individual Performance Overview */}
                   <div className="bg-white/50 rounded-2xl border border-black/10 p-4">
                     <div className="flex items-center gap-3 mb-4">
@@ -338,7 +289,7 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                       </div>
                       <div className="text-center p-3 bg-transparent border border-black/10 rounded-xl">
                         <div className="text-2xl font-bold text-black mb-1">
-                          {Math.round((selectedMember.tasksCompleted / selectedMember.totalTasks) * 100)}%
+                          {Math.round(selectedMember.tasksCompleted / selectedMember.totalTasks * 100)}%
                         </div>
                         <div className="text-sm text-black/70">معدل الإنجاز</div>
                       </div>
@@ -363,11 +314,9 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                         <h3 className="text-lg font-semibold text-black">نقاط القوة</h3>
                       </div>
                       <div className="space-y-2">
-                        {selectedMember.strengths.map((strength, index) => (
-                          <div key={index} className="bg-green-50 border border-green-200 rounded-xl p-3">
+                        {selectedMember.strengths.map((strength, index) => <div key={index} className="bg-green-50 border border-green-200 rounded-xl p-3">
                             <div className="font-medium text-black">{strength}</div>
-                          </div>
-                        ))}
+                          </div>)}
                       </div>
                     </div>
 
@@ -377,11 +326,9 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                         <h3 className="text-lg font-semibold text-black">نقاط التحسين</h3>
                       </div>
                       <div className="space-y-2">
-                        {selectedMember.weaknesses.map((weakness, index) => (
-                          <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+                        {selectedMember.weaknesses.map((weakness, index) => <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
                             <div className="font-medium text-black">{weakness}</div>
-                          </div>
-                        ))}
+                          </div>)}
                       </div>
                     </div>
                   </div>
@@ -404,34 +351,24 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
+                </div>}
 
-              {!selectedMember && (
-                <div className="text-center py-12">
+              {!selectedMember && <div className="text-center py-12">
                   <User className="w-12 h-12 text-black/30 mx-auto mb-4" />
                   <p className="text-black/70">اختر عضو فريق لعرض التقييم الفردي</p>
-                </div>
-              )}
-            </div>
-          )}
+                </div>}
+            </div>}
         </div>
 
         {/* Footer */}
         <div className="flex justify-end gap-3 p-6 border-t border-black/10">
-          <button
-            onClick={onClose}
-            className="px-6 py-3 bg-white/50 border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors"
-          >
+          <button onClick={onClose} className="px-6 py-3 bg-white/50 border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
             إغلاق
           </button>
-          <button
-            className="px-6 py-3 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors"
-          >
+          <button className="px-6 py-3 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
             تصدير التقرير
           </button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
