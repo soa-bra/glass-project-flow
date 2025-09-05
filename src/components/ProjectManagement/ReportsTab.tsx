@@ -1,60 +1,52 @@
 import React from 'react';
 import { Download, Eye, FileText, BarChart3, PieChart, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
 interface ReportsTabProps {
   project: any;
 }
-
-export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
-  const mockReports = [
-    { 
-      id: '1', 
-      name: 'تقرير سير المشروع الشهري', 
-      type: 'progress', 
-      generatedDate: '2024-01-25',
-      size: '2.1 MB',
-      format: 'PDF',
-      status: 'ready'
-    },
-    { 
-      id: '2', 
-      name: 'تحليل الأداء المالي', 
-      type: 'financial', 
-      generatedDate: '2024-01-24',
-      size: '1.8 MB',
-      format: 'Excel',
-      status: 'ready'
-    },
-    { 
-      id: '3', 
-      name: 'تقرير كفاءة الفريق', 
-      type: 'team', 
-      generatedDate: '2024-01-23',
-      size: '1.5 MB',
-      format: 'PDF',
-      status: 'ready'
-    },
-    { 
-      id: '4', 
-      name: 'تقييم رضا العميل', 
-      type: 'client', 
-      generatedDate: '2024-01-22',
-      size: '1.2 MB',
-      format: 'PDF',
-      status: 'ready'
-    }
-  ];
-
+export const ReportsTab: React.FC<ReportsTabProps> = ({
+  project
+}) => {
+  const mockReports = [{
+    id: '1',
+    name: 'تقرير سير المشروع الشهري',
+    type: 'progress',
+    generatedDate: '2024-01-25',
+    size: '2.1 MB',
+    format: 'PDF',
+    status: 'ready'
+  }, {
+    id: '2',
+    name: 'تحليل الأداء المالي',
+    type: 'financial',
+    generatedDate: '2024-01-24',
+    size: '1.8 MB',
+    format: 'Excel',
+    status: 'ready'
+  }, {
+    id: '3',
+    name: 'تقرير كفاءة الفريق',
+    type: 'team',
+    generatedDate: '2024-01-23',
+    size: '1.5 MB',
+    format: 'PDF',
+    status: 'ready'
+  }, {
+    id: '4',
+    name: 'تقييم رضا العميل',
+    type: 'client',
+    generatedDate: '2024-01-22',
+    size: '1.2 MB',
+    format: 'PDF',
+    status: 'ready'
+  }];
   const reportStats = {
     totalReports: 15,
     thisMonth: 4,
     avgGenTime: '2.3',
     exportCount: 28
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       {/* حالة التقارير */}
       <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-3">
@@ -103,31 +95,31 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
         <h3 className="text-lg font-semibold text-black mb-6">أنواع التقارير المتاحة</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <BarChart3 className="w-8 h-8 mx-auto mb-2 text-black" />
+            <BarChart3 className="w-5 h-5  mx-auto mb-2 text-black" />
             <h4 className="text-sm font-bold text-black mb-2">تقارير التقدم</h4>
             <div className="bg-[#f1b5b9] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">5 تقارير</span>
+              <span className="text-xs font-normal text-black">5 تقارير</span>
             </div>
           </div>
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <PieChart className="w-8 h-8 mx-auto mb-2 text-black" />
+            <PieChart className="w-5 h-5  mx-auto mb-2 text-black" />
             <h4 className="text-sm font-bold text-black mb-2">التقارير المالية</h4>
             <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">4 تقارير</span>
+              <span className="text-xs font-normal text-black">4 تقارير</span>
             </div>
           </div>
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <TrendingUp className="w-8 h-8 mx-auto mb-2 text-black" />
+            <TrendingUp className="w-5 h-5 mx-auto mb-2 text-black" />
             <h4 className="text-sm font-bold text-black mb-2">تقارير الفريق</h4>
             <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">3 تقارير</span>
+              <span className="text-xs font-normal text-black">3 تقارير</span>
             </div>
           </div>
           <div className="text-center p-4 bg-transparent border border-black/10 rounded-3xl">
-            <FileText className="w-8 h-8 mx-auto mb-2 text-black" />
+            <FileText className="w-5 h-5 mx-auto mb-2 text-black" />
             <h4 className="text-sm font-bold text-black mb-2">تقارير العملاء</h4>
             <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
-              <span className="text-xs font-normal text-gray-400">3 تقارير</span>
+              <span className="text-xs font-normal text-black">3 تقارير</span>
             </div>
           </div>
         </div>
@@ -142,8 +134,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
           </Button>
         </div>
         <div className="space-y-3">
-          {mockReports.map((report) => (
-            <div key={report.id} className="bg-transparent border border-black/10 rounded-3xl p-4 flex items-center justify-between">
+          {mockReports.map(report => <div key={report.id} className="bg-transparent border border-black/10 rounded-3xl p-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="p-2 bg-white/20 rounded-full">
                   <FileText className="w-5 h-5 text-black" />
@@ -170,8 +161,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
                   <span className="text-xs font-medium text-black">جاهز</span>
                 </div>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
       </div>
 
@@ -221,6 +211,5 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
