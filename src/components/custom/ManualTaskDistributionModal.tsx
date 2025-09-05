@@ -265,7 +265,7 @@ export const ManualTaskDistributionModal: React.FC<ManualTaskDistributionModalPr
               <h3 className="text-lg font-semibold text-black mb-4">أعضاء الفريق والحمولة</h3>
               <div className="space-y-3">
                 {memberWorkloads.map(member => (
-                  <div key={member.id} className="bg-white/50 rounded-2xl border border-black/10 p-4">
+                  <div key={member.id} className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none min-h-[100px]">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="bg-black/10 rounded-full p-2">
                         <User className="w-4 h-4 text-black" />
