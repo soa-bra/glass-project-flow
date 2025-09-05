@@ -77,7 +77,7 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
           
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-3 mb-2">
-                <BaseBadge variant="secondary" className="bg-gray-100 text-black">
+                <BaseBadge variant="secondary" className={`${statusConfig.color.split(' ')[0]} text-black`}>
                   {statusConfig.text}
                 </BaseBadge>
               </div>
