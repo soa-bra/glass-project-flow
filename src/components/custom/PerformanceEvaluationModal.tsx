@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Users, User, TrendingUp, TrendingDown, Brain, Target, Star, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 interface TeamMember {
   id: string;
   name: string;
@@ -24,7 +25,7 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
   isOpen,
   onClose
 }) => {
-  const [activeTab, setActiveTab] = useState<'team' | 'individual'>('team');
+  const [activeTab, setActiveTab] = useState<string>('team');
   const [selectedMemberId, setSelectedMemberId] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -129,19 +130,16 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
         </DialogHeader>
 
         {/* Tabs */}
-        <div className="flex border-b border-black/10">
-          <button onClick={() => setActiveTab('team')} className={`flex-1 p-4 text-sm font-medium transition-colors ${activeTab === 'team' ? 'bg-black/5 text-black border-b-2 border-black' : 'text-black/70 hover:text-black hover:bg-black/5'}`}>
-            <div className="flex items-center justify-center gap-2">
-              <Users className="w-4 h-4" />
-              تقييم الفريق
-            </div>
-          </button>
-          <button onClick={() => setActiveTab('individual')} className={`flex-1 p-4 text-sm font-medium transition-colors ${activeTab === 'individual' ? 'bg-black/5 text-black border-b-2 border-black' : 'text-black/70 hover:text-black hover:bg-black/5'}`}>
-            <div className="flex items-center justify-center gap-2">
-              <User className="w-4 h-4" />
-              تقييم فردي
-            </div>
-          </button>
+        <div className="px-6">
+          <AnimatedTabs
+            tabs={[
+              { value: 'team', label: 'تقييم الفريق' },
+              { value: 'individual', label: 'تقييم فردي' }
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            className="font-arabic"
+          />
         </div>
 
         <div className="px-6 pb-6 overflow-y-auto max-h-[calc(90vh-300px)]">
