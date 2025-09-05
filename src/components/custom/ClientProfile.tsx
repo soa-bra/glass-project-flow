@@ -15,6 +15,15 @@ interface ClientData {
   joinDate: string;
   totalProjects: number;
   sentiment?: number;
+  representative?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  companyContact?: {
+    email: string;
+    phone: string;
+  };
 }
 interface ClientProfileProps {
   client: ClientData;
@@ -70,31 +79,57 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
             <div className="text-right">
               <h3 className="font-bold text-lg">{client.name}</h3>
               <p className="text-sm text-gray-600">
-                ممثل الكيان
+                ممثل الكيان: {client.representative?.name || 'غير محدد'}
               </p>
             </div>
           
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-              <div className="flex items-center gap-3 mb-2">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
                 <BaseBadge variant="secondary" className={`${statusConfig.color.split(' ')[0]} text-black`}>
                   {statusConfig.text}
                 </BaseBadge>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <Mail className="w-4 h-4" />
-                <span>{client.email}</span>
+              
+              {/* بيانات ممثل الكيان */}
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h4 className="text-sm font-semibold text-gray-800 mb-2">بيانات التواصل - ممثل الكيان</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Mail className="w-4 h-4" />
+                    <span>{client.representative?.email || 'غير محدد'}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Phone className="w-4 h-4" />
+                    <span>{client.representative?.phone || 'غير محدد'}</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <Phone className="w-4 h-4" />
-                <span>{client.phone}</span>
+
+              {/* بيانات الكيان */}
+              <div className="bg-blue-50 rounded-lg p-3">
+                <h4 className="text-sm font-semibold text-gray-800 mb-2">بيانات التواصل - الكيان</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Mail className="w-4 h-4" />
+                    <span>{client.companyContact?.email || client.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Phone className="w-4 h-4" />
+                    <span>{client.companyContact?.phone || client.phone}</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <MapPin className="w-4 h-4" />
-                <span>{client.address}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <Calendar className="w-4 h-4" />
-                <span>انضم في: {client.joinDate}</span>
+
+              {/* معلومات إضافية */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <MapPin className="w-4 h-4" />
+                  <span>{client.address}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Calendar className="w-4 h-4" />
+                  <span>انضم في: {client.joinDate}</span>
+                </div>
               </div>
             </div>
           </div>
