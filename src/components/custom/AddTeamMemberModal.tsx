@@ -333,9 +333,7 @@ export const AddTeamMemberModal: React.FC<AddTeamMemberModalProps> = ({
               {projectTasks.map(task => (
                 <div 
                   key={task.id}
-                  className={`bg-white/50 rounded-2xl border border-black/10 p-4 cursor-pointer transition-all ${
-                    selectedTaskIds.includes(task.id) ? 'ring-2 ring-black/20 bg-black/5' : 'hover:bg-black/5'
-                  }`}
+                  className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none min-h-[100px] cursor-pointer"
                   onClick={() => handleTaskToggle(task.id)}
                 >
                   <div className="flex items-start gap-3">
