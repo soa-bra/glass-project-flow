@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { X, Users, User, TrendingUp, TrendingDown, Brain, Target, Star, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 interface TeamMember {
   id: string;
   name: string;
@@ -22,7 +25,7 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
   isOpen,
   onClose
 }) => {
-  const [activeTab, setActiveTab] = useState<'team' | 'individual'>('team');
+  const [activeTab, setActiveTab] = useState<string>('team');
   const [selectedMemberId, setSelectedMemberId] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -106,33 +109,40 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
     return <TrendingDown className="w-4 h-4 text-red-600" />;
   };
   if (!isOpen) return null;
-  return <div className="fixed inset-0 glass-backdrop flex items-center justify-center z-50 p-4">
-      <div className="glass-modal rounded-3xl w-full max-w-5xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-black/10">
-          <h2 className="text-xl font-bold text-black">تقييم الأداء بالذكاء الاصطناعي</h2>
-          <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full transition-colors">
-            <X className="w-5 h-5 text-black" />
-          </button>
-        </div>
+  return (
+    <Dialog open={isOpen} onOpenChange={() => {}}>
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto p-0 font-arabic" style={{
+        background: 'rgba(255,255,255,0.3)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.2)',
+        borderRadius: '24px'
+      }}>
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition z-10"
+        >
+          <X size={18} className="text-black" />
+        </button>
+
+        <DialogHeader className="px-6 pt-6 pb-2">
+          <DialogTitle className="text-xl font-bold text-black font-arabic">تقييم الأداء بالذكاء الاصطناعي</DialogTitle>
+        </DialogHeader>
 
         {/* Tabs */}
-        <div className="flex border-b border-black/10">
-          <button onClick={() => setActiveTab('team')} className={`flex-1 p-4 text-sm font-medium transition-colors ${activeTab === 'team' ? 'bg-black/5 text-black border-b-2 border-black' : 'text-black/70 hover:text-black hover:bg-black/5'}`}>
-            <div className="flex items-center justify-center gap-2">
-              <Users className="w-4 h-4" />
-              تقييم الفريق
-            </div>
-          </button>
-          <button onClick={() => setActiveTab('individual')} className={`flex-1 p-4 text-sm font-medium transition-colors ${activeTab === 'individual' ? 'bg-black/5 text-black border-b-2 border-black' : 'text-black/70 hover:text-black hover:bg-black/5'}`}>
-            <div className="flex items-center justify-center gap-2">
-              <User className="w-4 h-4" />
-              تقييم فردي
-            </div>
-          </button>
+        <div className="px-6">
+          <AnimatedTabs
+            tabs={[
+              { value: 'team', label: 'تقييم الفريق' },
+              { value: 'individual', label: 'تقييم فردي' }
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            className="font-arabic"
+          />
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-300px)]">
+        <div className="px-6 pb-6 overflow-y-auto max-h-[calc(90vh-300px)]">
           {activeTab === 'team' ? <div className="space-y-6">
               {/* AI Analysis Section */}
               <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl border border-black/10 p-4">
@@ -142,7 +152,7 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                       <Brain className="w-5 h-5 text-purple-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-black">تحليل الذكاء الاصطناعي للفريق</h3>
+                      <h3 className="text-lg font-semibold text-black">تحليل الذكاء الاصطناعي لاداء الفريق</h3>
                       <p className="text-sm text-black/70">تحليل شامل لأداء الفريق وتقديم توصيات للتطوير</p>
                     </div>
                   </div>
@@ -151,7 +161,7 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                   </button>
                 </div>
 
-                {isAnalyzing && <div className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic transition-colors rounded-3xl">
+                {isAnalyzing && <div className="flex items-center justify-center py-8">
                     <div className="text-center">
                       <div className="w-8 h-8 border-2 border-black/30 border-t-black rounded-full animate-spin mx-auto mb-2"></div>
                       <p className="text-sm text-black/70">يتم تحليل أداء الفريق...</p>
@@ -169,18 +179,18 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                   </div>
                 </div>
                 <div className="bg-white/50 rounded-2xl border border-black/10 p-4 text-center">
-                  <div className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic transition-colors rounded-3xl">{Math.round(teamStats.totalTasksCompleted / teamStats.totalTasks * 100)}%</div>
+                  <div className="text-2xl font-bold text-black mb-1">{Math.round(teamStats.totalTasksCompleted / teamStats.totalTasks * 100)}%</div>
                   <div className="text-sm text-black/70">معدل إنجاز المهام</div>
                   <div className="text-xs text-black/50 mt-1">{teamStats.totalTasksCompleted}/{teamStats.totalTasks}</div>
                 </div>
-                <div className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic transition-colors rounded-3xl">
+                <div className="bg-white/50 rounded-2xl border border-black/10 p-4 text-center">
                   <div className="text-2xl font-bold text-black mb-1">{teamStats.avgQualityScore}%</div>
                   <div className="text-sm text-black/70">جودة العمل</div>
                   <div className="flex justify-center mt-2">
                     <Star className="w-4 h-4 text-yellow-500" />
                   </div>
                 </div>
-                <div className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic transition-colors rounded-3xl">
+                <div className="bg-white/50 rounded-2xl border border-black/10 p-4 text-center">
                   <div className="text-2xl font-bold text-black mb-1">{teamStats.totalHours}h</div>
                   <div className="text-sm text-black/70">إجمالي الساعات</div>
                   <div className="text-xs text-black/50 mt-1">هذا الشهر</div>
@@ -190,11 +200,11 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
               {/* Team Strengths & Weaknesses */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-white/50 rounded-2xl border border-black/10 p-4">
-                  <div className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic transition-colors rounded-3xl">
+                  <div className="flex items-center gap-2 mb-4">
                     <CheckCircle className="w-5 h-5 text-green-600" />
                     <h3 className="text-lg font-semibold text-black">نقاط القوة</h3>
                   </div>
-                  <div className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic transition-colors rounded-3xl">
+                  <div className="space-y-2">
                     <div className="bg-green-50 border border-green-200 rounded-xl p-3">
                       <h4 className="font-medium text-black mb-1">التعاون والعمل الجماعي</h4>
                       <p className="text-sm text-black/70">الفريق يظهر تعاوناً ممتازاً في المشاريع المشتركة</p>
@@ -203,7 +213,7 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                       <h4 className="font-medium text-black mb-1">جودة التنفيذ العالية</h4>
                       <p className="text-sm text-black/70">معدل جودة العمل يتجاوز المعايير المطلوبة</p>
                     </div>
-                    <div className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic transition-colors rounded-3xl">
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-3">
                       <h4 className="font-medium text-black mb-1">التنوع في المهارات</h4>
                       <p className="text-sm text-black/70">تنوع مهارات الأعضاء يغطي جميع جوانب المشروع</p>
                     </div>
@@ -211,12 +221,12 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                 </div>
 
                 <div className="bg-white/50 rounded-2xl border border-black/10 p-4">
-                  <div className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic transition-colors rounded-3xl">
+                  <div className="flex items-center gap-2 mb-4">
                     <AlertTriangle className="w-5 h-5 text-yellow-600" />
                     <h3 className="text-lg font-semibold text-black">مجالات التحسين</h3>
                   </div>
                   <div className="space-y-2">
-                    <div className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 text-black font-medium font-arabic transition-colors rounded-3xl">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
                       <h4 className="font-medium text-black mb-1">إدارة الوقت</h4>
                       <p className="text-sm text-black/70">يحتاج الفريق لتحسين التخطيط الزمني للمهام</p>
                     </div>
@@ -259,12 +269,28 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
                 <label className="block text-sm font-semibold text-black mb-3">
                   اختيار عضو الفريق للتقييم الفردي
                 </label>
-                <select value={selectedMemberId} onChange={e => setSelectedMemberId(e.target.value)} className="w-full p-4 bg-white/50 border border-black/20 rounded-2xl text-black focus:outline-none focus:ring-2 focus:ring-black/20">
-                  <option value="">اختر عضو الفريق...</option>
-                  {teamMembers.map(member => <option key={member.id} value={member.id}>
-                      {member.name} - {member.role}
-                    </option>)}
-                </select>
+                <Select value={selectedMemberId} onValueChange={setSelectedMemberId}>
+                  <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                    <SelectValue placeholder="اختر عضو الفريق..." />
+                  </SelectTrigger>
+                  <SelectContent 
+                    className="z-[10000] text-[#0B0F12] font-arabic"
+                    style={{
+                      background: 'rgba(255,255,255,0.4)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      borderRadius: '24px',
+                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                    }}
+                  >
+                    {teamMembers.map(member => (
+                      <SelectItem key={member.id} value={member.id}>
+                        {member.name} - {member.role}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {selectedMember && <div className="space-y-6">
@@ -361,14 +387,15 @@ export const PerformanceEvaluationModal: React.FC<PerformanceEvaluationModalProp
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-6 border-t border-black/10">
-          <button onClick={onClose} className="px-6 py-3 bg-white/50 border border-black/20 text-black rounded-full text-sm hover:bg-black/5 transition-colors">
+        <div className="flex justify-end gap-3 px-6 pb-6 pt-4 border-t border-black/10">
+          <button onClick={onClose} className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors">
             إغلاق
           </button>
-          <button className="px-6 py-3 bg-black text-white rounded-full text-sm hover:bg-black/80 transition-colors">
+          <button className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors">
             تصدير التقرير
           </button>
         </div>
-      </div>
-    </div>;
+      </DialogContent>
+    </Dialog>
+  );
 };
