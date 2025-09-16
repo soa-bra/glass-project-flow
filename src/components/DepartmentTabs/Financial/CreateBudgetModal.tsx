@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { 
   FileText, 
@@ -364,43 +365,74 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-black font-arabic">نوع الميزانية *</label>
-                  <select
-                    value={formData.budgetType}
-                    onChange={(e) => handleInputChange('budgetType', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic"
-                  >
-                    <option value="">اختر نوع الميزانية</option>
-                    {budgetTypes.map(type => (
-                      <option key={type.value} value={type.value}>{type.label}</option>
-                    ))}
-                  </select>
+                  <Select value={formData.budgetType} onValueChange={(value) => handleInputChange('budgetType', value)}>
+                    <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic">
+                      <SelectValue placeholder="اختر نوع الميزانية" />
+                    </SelectTrigger>
+                    <SelectContent 
+                      className="text-[#0B0F12] font-arabic"
+                      style={{
+                        background: 'rgba(255,255,255,0.4)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        borderRadius: '24px',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                      }}
+                    >
+                      {budgetTypes.map(type => (
+                        <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-black font-arabic">القسم *</label>
-                  <select
-                    value={formData.department}
-                    onChange={(e) => handleInputChange('department', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic"
-                  >
-                    <option value="">اختر القسم</option>
-                    {departments.map(dept => (
-                      <option key={dept.value} value={dept.value}>{dept.label}</option>
-                    ))}
-                  </select>
+                  <Select value={formData.department} onValueChange={(value) => handleInputChange('department', value)}>
+                    <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic">
+                      <SelectValue placeholder="اختر القسم" />
+                    </SelectTrigger>
+                    <SelectContent 
+                      className="text-[#0B0F12] font-arabic"
+                      style={{
+                        background: 'rgba(255,255,255,0.4)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        borderRadius: '24px',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                      }}
+                    >
+                      {departments.map(dept => (
+                        <SelectItem key={dept.value} value={dept.value}>{dept.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-black font-arabic">العملة</label>
-                  <select
-                    value={formData.currency}
-                    onChange={(e) => handleInputChange('currency', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic"
-                  >
-                    {currencies.map(currency => (
-                      <option key={currency.value} value={currency.value}>{currency.label}</option>
-                    ))}
-                  </select>
+                  <Select value={formData.currency} onValueChange={(value) => handleInputChange('currency', value)}>
+                    <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic">
+                      <SelectValue placeholder="اختر العملة" />
+                    </SelectTrigger>
+                    <SelectContent 
+                      className="text-[#0B0F12] font-arabic"
+                      style={{
+                        background: 'rgba(255,255,255,0.4)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        borderRadius: '24px',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                      }}
+                    >
+                      {currencies.map(currency => (
+                        <SelectItem key={currency.value} value={currency.value}>{currency.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
