@@ -5,7 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileText, X, Plus, Sparkles, Loader2 } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { FileText, X, Plus, Sparkles, Loader2, CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { ar } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
 interface AccountingEntry {
@@ -417,23 +421,65 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                     <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                       تاريخ البداية *
                     </Label>
-                    <Input
-                      type="date"
-                      value={formData.startDate || formData.date}
-                      onChange={(e) => handleInputChange('startDate', e.target.value)}
-                      className="bg-white/30 border-black/20 rounded-3xl focus:border-black text-black font-arabic px-4 py-3"
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none justify-start text-left font-normal",
+                            !(formData.startDate || formData.date) && "text-black/50"
+                          )}
+                        >
+                          <CalendarIcon className="ml-2 h-4 w-4" />
+                          {(formData.startDate || formData.date) ? (
+                            format(new Date(formData.startDate || formData.date), "PPP", { locale: ar })
+                          ) : (
+                            <span>اختر تاريخ البداية</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                        <Calendar 
+                          mode="single" 
+                          selected={(formData.startDate || formData.date) ? new Date(formData.startDate || formData.date) : undefined} 
+                          onSelect={(date) => handleInputChange('startDate', date ? format(date, 'yyyy-MM-dd') : '')} 
+                          initialFocus 
+                          className="p-3 pointer-events-auto" 
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div>
                     <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                       تاريخ النهاية
                     </Label>
-                    <Input
-                      type="date"
-                      value={formData.endDate || ''}
-                      onChange={(e) => handleInputChange('endDate', e.target.value)}
-                      className="bg-white/30 border-black/20 rounded-3xl focus:border-black text-black font-arabic px-4 py-3"
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none justify-start text-left font-normal",
+                            !formData.endDate && "text-black/50"
+                          )}
+                        >
+                          <CalendarIcon className="ml-2 h-4 w-4" />
+                          {formData.endDate ? (
+                            format(new Date(formData.endDate), "PPP", { locale: ar })
+                          ) : (
+                            <span>اختر تاريخ النهاية</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                        <Calendar 
+                          mode="single" 
+                          selected={formData.endDate ? new Date(formData.endDate) : undefined} 
+                          onSelect={(date) => handleInputChange('endDate', date ? format(date, 'yyyy-MM-dd') : '')} 
+                          initialFocus 
+                          className="p-3 pointer-events-auto" 
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </>
@@ -484,12 +530,33 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                 <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                   التاريخ *
                 </Label>
-                <Input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => handleInputChange('date', e.target.value)}
-                  className="bg-white/30 border-black/20 rounded-3xl focus:border-black text-black font-arabic px-4 py-3"
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none justify-start text-left font-normal",
+                        !formData.date && "text-black/50"
+                      )}
+                    >
+                      <CalendarIcon className="ml-2 h-4 w-4" />
+                      {formData.date ? (
+                        format(new Date(formData.date), "PPP", { locale: ar })
+                      ) : (
+                        <span>اختر التاريخ</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                    <Calendar 
+                      mode="single" 
+                      selected={formData.date ? new Date(formData.date) : undefined} 
+                      onSelect={(date) => handleInputChange('date', date ? format(date, 'yyyy-MM-dd') : '')} 
+                      initialFocus 
+                      className="p-3 pointer-events-auto" 
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 
