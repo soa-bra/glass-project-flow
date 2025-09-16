@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FileText, X, Plus, Sparkles, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -281,18 +282,28 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                 <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                   الفئة *
                 </Label>
-                <select
-                  value={formData.category}
-                  onChange={(e) => handleInputChange('category', e.target.value)}
-                  className="w-full bg-white/30 border border-black/20 rounded-3xl focus:border-black text-black px-4 py-3 font-arabic"
-                >
-                  <option value="">اختر الفئة</option>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
+                <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                  <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                    <SelectValue placeholder="اختر الفئة" />
+                  </SelectTrigger>
+                  <SelectContent 
+                    className="z-[10000] text-[#0B0F12] font-arabic"
+                    style={{
+                      background: 'rgba(255,255,255,0.4)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      borderRadius: '24px',
+                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                    }}
+                  >
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -315,40 +326,60 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                 <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                   ربط بميزانية معتمدة *
                 </Label>
-                <select
-                  value={formData.linkedBudgetId || ''}
-                  onChange={(e) => handleInputChange('linkedBudgetId', e.target.value)}
-                  className="w-full bg-white/30 border border-black/20 rounded-3xl focus:border-black text-black px-4 py-3 font-arabic"
-                >
-                  <option value="">اختر الميزانية المرتبطة</option>
-                  {approvedBudgets.map((budget) => (
-                    <option key={budget.id} value={budget.id}>
-                      {budget.name} - متبقي: {budget.remaining.toLocaleString()} ريال
-                    </option>
-                  ))}
-                </select>
+                <Select value={formData.linkedBudgetId || ''} onValueChange={(value) => handleInputChange('linkedBudgetId', value)}>
+                  <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                    <SelectValue placeholder="اختر الميزانية المرتبطة" />
+                  </SelectTrigger>
+                  <SelectContent 
+                    className="z-[10000] text-[#0B0F12] font-arabic"
+                    style={{
+                      background: 'rgba(255,255,255,0.4)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      borderRadius: '24px',
+                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                    }}
+                  >
+                    {approvedBudgets.map((budget) => (
+                      <SelectItem key={budget.id} value={budget.id}>
+                        {budget.name} - متبقي: {budget.remaining.toLocaleString()} ريال
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             )}
 
             {/* خانة التكرار للنفقات الدورية */}
             {isExpenseType && formData.type === 'periodic_expense' && (
-              <div>
-                <Label className="text-sm font-bold text-black font-arabic mb-3 block">
-                  تكرار النفقة *
-                </Label>
-                <select
-                  value={formData.frequency || ''}
-                  onChange={(e) => handleInputChange('frequency', e.target.value)}
-                  className="w-full bg-white/30 border border-black/20 rounded-3xl focus:border-black text-black px-4 py-3 font-arabic"
-                >
-                  <option value="">اختر تكرار النفقة</option>
-                  {frequencies.map((freq) => (
-                    <option key={freq.value} value={freq.value}>
-                      {freq.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                <div>
+                  <Label className="text-sm font-bold text-black font-arabic mb-3 block">
+                    تكرار النفقة *
+                  </Label>
+                  <Select value={formData.frequency || ''} onValueChange={(value) => handleInputChange('frequency', value)}>
+                    <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                      <SelectValue placeholder="اختر تكرار النفقة" />
+                    </SelectTrigger>
+                    <SelectContent 
+                      className="z-[10000] text-[#0B0F12] font-arabic"
+                      style={{
+                        background: 'rgba(255,255,255,0.4)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        borderRadius: '24px',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                      }}
+                    >
+                      {frequencies.map((freq) => (
+                        <SelectItem key={freq.value} value={freq.value}>
+                          {freq.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
             )}
 
             {/* حقول خاصة بالإيرادات المتكررة */}
@@ -359,18 +390,28 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                     <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                       التكرار *
                     </Label>
-                    <select
-                      value={formData.frequency || ''}
-                      onChange={(e) => handleInputChange('frequency', e.target.value)}
-                      className="w-full bg-white/30 border border-black/20 rounded-3xl focus:border-black text-black px-4 py-3 font-arabic"
-                    >
-                      <option value="">اختر التكرار</option>
-                      {frequencies.map((freq) => (
-                        <option key={freq.value} value={freq.value}>
-                          {freq.label}
-                        </option>
-                      ))}
-                    </select>
+                    <Select value={formData.frequency || ''} onValueChange={(value) => handleInputChange('frequency', value)}>
+                      <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                        <SelectValue placeholder="اختر التكرار" />
+                      </SelectTrigger>
+                      <SelectContent 
+                        className="z-[10000] text-[#0B0F12] font-arabic"
+                        style={{
+                          background: 'rgba(255,255,255,0.4)',
+                          backdropFilter: 'blur(20px)',
+                          WebkitBackdropFilter: 'blur(20px)',
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          borderRadius: '24px',
+                          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                        }}
+                      >
+                        {frequencies.map((freq) => (
+                          <SelectItem key={freq.value} value={freq.value}>
+                            {freq.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label className="text-sm font-bold text-black font-arabic mb-3 block">
