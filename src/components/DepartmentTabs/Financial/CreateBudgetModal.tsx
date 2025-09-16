@@ -378,6 +378,7 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
                         border: '1px solid rgba(255,255,255,0.2)',
                         borderRadius: '24px',
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                        zIndex: 10000,
                       }}
                     >
                       {budgetTypes.map(type => (
@@ -402,6 +403,7 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
                         border: '1px solid rgba(255,255,255,0.2)',
                         borderRadius: '24px',
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                        zIndex: 10000,
                       }}
                     >
                       {departments.map(dept => (
@@ -426,6 +428,7 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
                         border: '1px solid rgba(255,255,255,0.2)',
                         borderRadius: '24px',
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                        zIndex: 10000,
                       }}
                     >
                       {currencies.map(currency => (
