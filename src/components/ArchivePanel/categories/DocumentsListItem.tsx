@@ -2,7 +2,7 @@
 import React from 'react';
 import { Download, Eye } from 'lucide-react';
 import { BaseArchiveItem } from '@/components/shared/BaseArchiveItem';
-import { BaseActionButton } from '@/components/ui/BaseActionButton';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { SPACING } from '@/components/shared/design-system/constants';
 
 interface Document {
