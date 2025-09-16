@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, FileText, TrendingUp, TrendingDown } from 'lucide-react';
+import { Upload, FileText, TrendingUp, TrendingDown, Receipt } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
 import { BaseCard } from '@/components/shared/BaseCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
@@ -35,13 +35,10 @@ export const TransactionsTab: React.FC = () => {
         <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
           <h3 className={buildTitleClasses()}>النفقات والإيرادات</h3>
           <div className="flex gap-3">
-            <BaseActionButton variant="outline" icon={<Upload className="w-4 h-4" />}>
-              رفع مستند
-            </BaseActionButton>
             <BaseActionButton 
               variant="primary" 
               onClick={() => setIsAccountingEntryModalOpen(true)}
-              icon={<FileText className="w-4 h-4 rounded-[40px] bg-[#ffffff] border-[#DADCE0] " />}
+              icon={<Receipt className="w-4 h-4" />}
             >
               إضافة قيد
             </BaseActionButton>
