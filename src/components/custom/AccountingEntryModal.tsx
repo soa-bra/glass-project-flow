@@ -203,15 +203,14 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className={cn(
-          "max-w-3xl max-h-[90vh] p-0 overflow-hidden",
-          "bg-white/40 backdrop-blur-[20px]",
-          "border border-white/20 rounded-[24px]",
-          "shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.1)]"
-        )}
+        className="max-w-3xl max-h-[90vh] p-0 overflow-hidden font-arabic"
         style={{
+          background: 'rgba(255,255,255,0.4)',
           backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)'
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '24px',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)'
         }}
       >
         {/* Header */}
@@ -229,14 +228,12 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
               </p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-transparent hover:bg-black/5 text-black"
+            className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition z-10"
           >
-            <X className="w-4 h-4" />
-          </Button>
+            <X className="w-4 h-4 text-black" />
+          </button>
         </DialogHeader>
 
         {/* Content */}
@@ -574,20 +571,22 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 pt-0">
-          <Button
-            variant="ghost"
-            onClick={onClose}
-            className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic"
-          >
-            إلغاء
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic"
-          >
-            حفظ القيد
-          </Button>
+        <div className="flex-shrink-0 px-8 pb-8">
+          <div className="flex gap-4 justify-start pt-6 border-t border-white/20">
+            <button
+              onClick={handleSubmit}
+              className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              حفظ القيد
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
+            >
+              إلغاء
+            </button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
