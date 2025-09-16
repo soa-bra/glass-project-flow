@@ -3,6 +3,7 @@ import { Database, Calculator } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
 import { BaseCard } from '@/components/shared/BaseCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
 import { Reveal } from '@/components/shared/motion';
 import { cn } from '@/lib/utils';
@@ -58,20 +59,28 @@ export const SettingsTab: React.FC = () => {
               <label htmlFor="account-type" className={cn(TYPOGRAPHY.SMALL, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
                 نوع الحساب
               </label>
-              <select className={cn(
-                'w-full px-4 py-2 bg-transparent rounded-lg',
-                COLORS.BORDER_COLOR,
-                TYPOGRAPHY.SMALL,
-                COLORS.PRIMARY_TEXT,
-                'focus:outline-none focus:ring-2 focus:ring-blue-500'
-              )}>
-                <option value="">اختر نوع الحساب</option>
-                <option value="asset">أصول</option>
-                <option value="liability">خصوم</option>
-                <option value="equity">حقوق الملكية</option>
-                <option value="revenue">إيرادات</option>
-                <option value="expense">مصروفات</option>
-              </select>
+              <Select>
+                <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                  <SelectValue placeholder="اختر نوع الحساب" />
+                </SelectTrigger>
+                <SelectContent 
+                  className="z-[10000] text-[#0B0F12] font-arabic"
+                  style={{
+                    background: 'rgba(255,255,255,0.4)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '24px',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                  }}
+                >
+                  <SelectItem value="asset">أصول</SelectItem>
+                  <SelectItem value="liability">خصوم</SelectItem>
+                  <SelectItem value="equity">حقوق الملكية</SelectItem>
+                  <SelectItem value="revenue">إيرادات</SelectItem>
+                  <SelectItem value="expense">مصروفات</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <BaseActionButton variant="primary">إضافة حساب</BaseActionButton>
           </div>
@@ -119,18 +128,26 @@ export const SettingsTab: React.FC = () => {
               <label htmlFor="currency" className={cn(TYPOGRAPHY.SMALL, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
                 العملة الأساسية
               </label>
-              <select className={cn(
-                'w-full px-4 py-2 bg-transparent rounded-lg',
-                COLORS.BORDER_COLOR,
-                TYPOGRAPHY.SMALL,
-                COLORS.PRIMARY_TEXT,
-                'focus:outline-none focus:ring-2 focus:ring-blue-500'
-              )}>
-                <option value="">اختر العملة</option>
-                <option value="SAR">ريال سعودي (SAR)</option>
-                <option value="USD">دولار أمريكي (USD)</option>
-                <option value="EUR">يورو (EUR)</option>
-              </select>
+              <Select>
+                <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                  <SelectValue placeholder="اختر العملة" />
+                </SelectTrigger>
+                <SelectContent 
+                  className="z-[10000] text-[#0B0F12] font-arabic"
+                  style={{
+                    background: 'rgba(255,255,255,0.4)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '24px',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                  }}
+                >
+                  <SelectItem value="SAR">ريال سعودي (SAR)</SelectItem>
+                  <SelectItem value="USD">دولار أمريكي (USD)</SelectItem>
+                  <SelectItem value="EUR">يورو (EUR)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <BaseActionButton variant="primary">حفظ الإعدادات</BaseActionButton>
           </div>
