@@ -62,10 +62,6 @@ export const InvoicesTab: React.FC = () => {
                       <h4 className={cn(TYPOGRAPHY.BODY, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
                         {invoice.id}
                       </h4>
-                      <div className="flex items-center gap-1 text-xs text-gray-500">
-                        <CreditCard className="w-3 h-3" />
-                        <span>{invoice.paymentNumber}</span>
-                      </div>
                     </div>
                     <button 
                       onClick={() => handleClientClick(invoice.client)}
