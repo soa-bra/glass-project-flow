@@ -92,37 +92,48 @@ export const InvoicesTab: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <div className="text-left space-y-2">
-                  <div className="space-y-1">
-                    <p className={cn(TYPOGRAPHY.SMALL, 'text-gray-500')}>إجمالي المبلغ:</p>
-                    <p className={cn(TYPOGRAPHY.BODY, 'font-bold', COLORS.PRIMARY_TEXT)}>
-                      {formatCurrency(invoice.totalAmount)}
-                    </p>
+                <div className="text-left space-y-3">
+                  {/* المبالغ الرئيسية */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <p className={cn(TYPOGRAPHY.SMALL, 'text-gray-500')}>إجمالي المبلغ:</p>
+                      <p className={cn(TYPOGRAPHY.BODY, 'font-bold', COLORS.PRIMARY_TEXT)}>
+                        {formatCurrency(invoice.totalAmount)}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className={cn(TYPOGRAPHY.SMALL, 'text-gray-500')}>مبلغ الدفعة:</p>
+                      <p className={cn(TYPOGRAPHY.SMALL, 'font-semibold', COLORS.PRIMARY_TEXT)}>
+                        {formatCurrency(invoice.paymentAmount)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <p className={cn(TYPOGRAPHY.SMALL, 'text-gray-500')}>مبلغ الدفعة:</p>
-                    <p className={cn(TYPOGRAPHY.SMALL, 'font-semibold', COLORS.PRIMARY_TEXT)}>
-                      {formatCurrency(invoice.paymentAmount)}
-                    </p>
+                  
+                  {/* معلومات الدفع */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <p className={cn(TYPOGRAPHY.SMALL, 'text-gray-500')}>رقم الدفعة:</p>
+                      <p className={cn(TYPOGRAPHY.SMALL, 'font-medium')}>
+                        {invoice.paymentNumber} / {invoice.totalPayments}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className={cn(TYPOGRAPHY.SMALL, 'text-gray-500')}>نسبة الدفع:</p>
+                      <p className={cn(TYPOGRAPHY.SMALL, 'font-medium', 'text-green-600')}>
+                        {invoice.paymentPercentage.toFixed(1)}%
+                      </p>
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <p className={cn(TYPOGRAPHY.SMALL, 'text-gray-500')}>رقم الدفعة:</p>
-                    <p className={cn(TYPOGRAPHY.SMALL, 'font-medium')}>
-                      {invoice.paymentNumber} / {invoice.totalPayments}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className={cn(TYPOGRAPHY.SMALL, 'text-gray-500')}>نسبة الدفع:</p>
-                    <p className={cn(TYPOGRAPHY.SMALL, 'font-medium', 'text-green-600')}>
-                      {invoice.paymentPercentage.toFixed(1)}%
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 mt-3">
+                  
+                  {/* الحالة والإجراءات */}
+                  <div className="flex items-center justify-between">
                     <BaseBadge variant={getInvoiceStatusVariant(invoice.status)} size="sm">
                       {getStatusText(invoice.status)}
                     </BaseBadge>
-                    <BaseActionButton variant="edit" size="sm" icon={<Edit className="w-4 h-4" />} />
-                    <BaseActionButton variant="download" size="sm" icon={<Download className="w-4 h-4" />} />
+                    <div className="flex items-center gap-2">
+                      <BaseActionButton variant="edit" size="sm" icon={<Edit className="w-4 h-4" />} />
+                      <BaseActionButton variant="download" size="sm" icon={<Download className="w-4 h-4" />} />
+                    </div>
                   </div>
                 </div>
               </div>
