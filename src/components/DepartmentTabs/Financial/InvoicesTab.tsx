@@ -10,9 +10,11 @@ import { cn } from '@/lib/utils';
 import { mockInvoices } from './data';
 import { formatCurrency, getStatusText } from './utils';
 import { ClientInfoBox, getClientData } from './ClientInfoBox';
+import { CreateInvoiceModal } from './CreateInvoiceModal';
 
 export const InvoicesTab: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const getInvoiceStatusVariant = (status: string) => {
     switch (status) {
@@ -38,7 +40,11 @@ export const InvoicesTab: React.FC = () => {
       <Reveal>
         <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
           <h3 className={buildTitleClasses()}>الفواتير والمدفوعات</h3>
-          <BaseActionButton variant="primary" icon={<Receipt className="w-4 h-4" />}>
+          <BaseActionButton 
+            variant="primary" 
+            icon={<Receipt className="w-4 h-4" />}
+            onClick={() => setIsCreateModalOpen(true)}
+          >
             إنشاء فاتورة
           </BaseActionButton>
         </div>
@@ -146,6 +152,15 @@ export const InvoicesTab: React.FC = () => {
           />
         </Reveal>
       )}
+
+      <CreateInvoiceModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onInvoiceCreated={() => {
+          // يمكن إضافة logic لتحديث قائمة الفواتير هنا
+          console.log('Invoice created successfully');
+        }}
+      />
     </BaseTabContent>
   );
 };
