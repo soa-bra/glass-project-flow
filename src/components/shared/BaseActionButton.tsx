@@ -52,11 +52,20 @@ export const BaseActionButton: React.FC<BaseActionButtonProps> = ({
   const renderIcon = () => {
     if (!icon) return null;
     
+    // Check if icon is a React element that was already rendered
+    if (React.isValidElement(icon)) {
+      return React.cloneElement(icon as React.ReactElement, {
+        className: iconSizes[size]
+      });
+    }
+    
+    // Check if icon is a component function (Lucide icons)
     if (typeof icon === 'function') {
       const IconComponent = icon as LucideIcon;
       return <IconComponent className={iconSizes[size]} />;
     }
     
+    // For any other case, try to render as JSX
     return <span className={`flex-shrink-0 ${iconSizes[size]}`}>{icon}</span>;
   };
 
