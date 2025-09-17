@@ -45,7 +45,7 @@ export const InvoicesTab: React.FC = () => {
       </Reveal>
 
       <BaseCard title="جدول الفواتير">
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-4">
           {mockInvoices.map(invoice => (
             <Reveal key={invoice.id} delay={0.1}>
               <div className={cn(
