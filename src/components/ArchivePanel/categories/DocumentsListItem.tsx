@@ -32,12 +32,12 @@ export const DocumentsListItem: React.FC<DocumentsListItemProps> = ({ document }
       
       <div className="absolute left-4 top-4 flex flex-col gap-2">
         <BaseActionButton
-          icon={Eye}
+          icon={<Eye className="w-4 h-4" />}
           variant="view"
           size="sm"
         />
         <BaseActionButton
-          icon={Download}
+          icon={<Download className="w-4 h-4" />}
           variant="download"
           size="sm"
         />

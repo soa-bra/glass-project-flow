@@ -121,8 +121,8 @@ export const InvoicesTab: React.FC = () => {
                     <BaseBadge variant={getInvoiceStatusVariant(invoice.status)} size="sm">
                       {getStatusText(invoice.status)}
                     </BaseBadge>
-                    <BaseActionButton variant="edit" size="sm" icon={Edit} />
-                    <BaseActionButton variant="download" size="sm" icon={Download} />
+                    <BaseActionButton variant="edit" size="sm" icon={<Edit className="w-4 h-4" />} />
+                    <BaseActionButton variant="download" size="sm" icon={<Download className="w-4 h-4" />} />
                   </div>
                 </div>
               </div>
