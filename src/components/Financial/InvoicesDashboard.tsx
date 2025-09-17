@@ -29,7 +29,9 @@ import {
   AlertTriangle,
   Eye,
   Send,
-  Ban
+  Ban,
+  Edit,
+  Download
 } from 'lucide-react';
 
 const statusLabels: Record<InvoiceStatus, string> = {
@@ -404,7 +406,10 @@ export const InvoicesDashboard: React.FC = () => {
               <TableRow>
                 <TableHead>رقم الفاتورة</TableHead>
                 <TableHead>العميل</TableHead>
-                <TableHead>المبلغ</TableHead>
+                <TableHead>إجمالي المبلغ</TableHead>
+                <TableHead>مبلغ الدفعة</TableHead>
+                <TableHead>رقم الدفعة</TableHead>
+                <TableHead>نسبة الدفع</TableHead>
                 <TableHead>تاريخ الاستحقاق</TableHead>
                 <TableHead>الحالة</TableHead>
                 <TableHead>الإجراءات</TableHead>
@@ -415,7 +420,20 @@ export const InvoicesDashboard: React.FC = () => {
                 <TableRow key={invoice.id}>
                   <TableCell className="font-medium">{invoice.number}</TableCell>
                   <TableCell>{invoice.account?.name || `عميل ${invoice.accountId}`}</TableCell>
-                  <TableCell>{invoice.total.toLocaleString('ar-SA')} ر.س</TableCell>
+                  <TableCell className="font-semibold">{invoice.total.toLocaleString('ar-SA')} ر.س</TableCell>
+                  <TableCell className="text-green-600 font-medium">
+                    {(invoice.total * 0.3).toLocaleString('ar-SA')} ر.س
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm">
+                      1 / 3
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-md text-sm font-medium">
+                      33.3%
+                    </span>
+                  </TableCell>
                   <TableCell>
                     {invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString('ar-SA') : '-'}
                   </TableCell>
@@ -426,7 +444,7 @@ export const InvoicesDashboard: React.FC = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                       {invoice.status === 'draft' && (
                         <Button 
                           size="sm" 
@@ -447,6 +465,12 @@ export const InvoicesDashboard: React.FC = () => {
                       )}
                       <Button size="sm" variant="ghost">
                         <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost">
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost">
+                        <Download className="w-4 h-4" />
                       </Button>
                     </div>
                   </TableCell>

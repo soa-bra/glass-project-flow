@@ -45,12 +45,15 @@ export interface Transaction {
 export interface Invoice {
   id: string;
   client: string;
-  amount: number;
+  totalAmount: number;
+  paymentAmount: number;
+  paymentNumber: number;
+  totalPayments: number;
+  paymentPercentage: number;
   status: string;
   dueDate: string;
   projectName: string;
   projectId: string;
-  paymentNumber: string;
 }
 
 export interface ExpenseCategory {
