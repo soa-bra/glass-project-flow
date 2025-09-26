@@ -1,7 +1,4 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import type { ReactNode } from "react"
+import * as React from "react"
 
 import type {
   ToastActionElement,
@@ -13,8 +10,8 @@ const TOAST_REMOVE_DELAY = 1000000
 
 type ToasterToast = ToastProps & {
   id: string
-  title?: ReactNode
-  description?: ReactNode
+  title?: React.ReactNode
+  description?: React.ReactNode
   action?: ToastActionElement
 }
 
@@ -172,22 +169,17 @@ function toast({ ...props }: Toast) {
 }
 
 function useToast() {
-  const [state, setState] = useState<State>(() => memoryState)
+  const [state, setState] = React.useState<State>(memoryState)
 
-  useEffect(() => {
-    const listener = (newState: State) => {
-      setState(newState)
-    }
-    
-    listeners.push(listener)
-    
+  React.useEffect(() => {
+    listeners.push(setState)
     return () => {
-      const index = listeners.indexOf(listener)
+      const index = listeners.indexOf(setState)
       if (index > -1) {
         listeners.splice(index, 1)
       }
     }
-  }, [])
+  }, [state])
 
   return {
     ...state,
