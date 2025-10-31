@@ -7,7 +7,6 @@ import InfiniteCanvas from './InfiniteCanvas';
 import CanvasToolbar from './CanvasToolbar';
 import BottomToolbar from './BottomToolbar';
 import RightSidePanel from './RightSidePanel';
-import { AIAssistantButton } from './AIAssistantButton';
 import NavigationBar from './NavigationBar';
 import FloatingEditBar from './FloatingEditBar';
 import Minimap from './Minimap';
@@ -49,9 +48,6 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       
       {/* Bottom Toolbar */}
       <BottomToolbar />
-      
-      {/* AI Assistant Button */}
-      <AIAssistantButton />
       
       {/* Navigation Bar */}
       <NavigationBar />

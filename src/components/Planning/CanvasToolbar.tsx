@@ -12,7 +12,8 @@ import {
   Share2,
   Settings,
   File,
-  Layers
+  Layers,
+  Sparkles
 } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { usePlanningStore } from '@/stores/planningStore';
@@ -21,6 +22,7 @@ import { SharePopover } from './popovers/SharePopover';
 import { CanvasPropertiesPopover } from './popovers/CanvasPropertiesPopover';
 import { FileMenuPopover } from './popovers/FileMenuPopover';
 import { LayersMenuPopover } from './popovers/LayersMenuPopover';
+import { AIAssistantPopover } from './AIAssistantPopover';
 
 const CanvasToolbar: React.FC = () => {
   const {
@@ -45,6 +47,7 @@ const CanvasToolbar: React.FC = () => {
   const [isPropertiesOpen, setIsPropertiesOpen] = useState(false);
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
   const [isLayersOpen, setIsLayersOpen] = useState(false);
+  const [isAIOpen, setIsAIOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [boardName, setBoardName] = useState(currentBoard?.name || 'لوحة جديدة');
   
@@ -155,6 +158,20 @@ const CanvasToolbar: React.FC = () => {
             <span className="text-[13px] font-medium text-sb-ink">الطبقات</span>
           </button>
           <LayersMenuPopover isOpen={isLayersOpen} onClose={() => setIsLayersOpen(false)} />
+        </div>
+        
+        {/* AI Assistant */}
+        <div className="relative">
+          <AIAssistantPopover isOpen={isAIOpen} onOpenChange={setIsAIOpen}>
+            <button
+              onClick={() => setIsAIOpen(!isAIOpen)}
+              className="flex items-center gap-2 px-3 py-2 bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white rounded-lg hover:opacity-90 transition-opacity"
+              title="مساعد الذكاء الصناعي (Cmd/Ctrl+K)"
+            >
+              <Sparkles size={18} className="animate-pulse" />
+              <span className="text-[13px] font-medium">AI</span>
+            </button>
+          </AIAssistantPopover>
         </div>
         
         {/* Canvas Properties */}
