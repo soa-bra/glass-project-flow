@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { 
   MousePointer2, 
   Pen, 
@@ -64,54 +64,23 @@ const tools: Tool[] = [
 
 const BottomToolbar: React.FC = () => {
   const { activeTool, setActiveTool } = useCanvasStore();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const activeToolRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (container && activeTool) {
-      const activeElement = activeToolRef.current;
-      if (activeElement) {
-        const { offsetLeft, offsetWidth } = activeElement;
-        const clipLeft = offsetLeft;
-        const clipRight = offsetLeft + offsetWidth;
-        
-        container.style.clipPath = `inset(0 ${
-          100 - (clipRight / container.offsetWidth) * 100
-        }% 0 ${(clipLeft / container.offsetWidth) * 100}% round 20px)`;
-      }
-    }
-  }, [activeTool]);
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-      <div className="relative bg-white border border-[hsl(var(--ink))] flex w-fit items-center rounded-full py-1.5 px-1.5">
-        {/* Animation Layer */}
-        <div
-          ref={containerRef}
-          className="absolute z-10 w-full overflow-hidden [clip-path:inset(0px_75%_0px_0%_round_20px)] [transition:clip-path_0.25s_ease]"
-        >
-          {tools.map((tool) => (
-            <button
-              key={tool.id}
-              ref={activeTool === tool.id ? activeToolRef : null}
-              className="flex h-9 items-center gap-2 rounded-full bg-[hsl(var(--ink))] px-4 py-2 text-[13px] font-medium text-white whitespace-nowrap"
-              tabIndex={-1}
-              aria-hidden="true"
-            >
-              <span className="flex-shrink-0">{tool.icon}</span>
-              {tool.name}
-            </button>
-          ))}
-        </div>
-
-        {/* Interactive Layer */}
+      <div className="bg-white border border-[hsl(var(--ink))] flex w-fit items-center gap-1 rounded-full py-1.5 px-1.5">
         {tools.map((tool) => (
           <button
             key={tool.id}
             onClick={() => setActiveTool(tool.id)}
             title={`${tool.name} (${tool.shortcut})`}
-            className="group relative flex h-9 items-center gap-2 cursor-pointer rounded-full px-4 py-2 text-[13px] font-medium text-[hsl(var(--ink-60))] whitespace-nowrap transition-colors hover:text-[hsl(var(--ink))]"
+            className={`
+              group relative flex h-9 items-center gap-2 cursor-pointer rounded-full px-4 py-2 text-[13px] font-medium whitespace-nowrap transition-all duration-200
+              ${
+                activeTool === tool.id
+                  ? 'bg-[hsl(var(--ink))] text-white'
+                  : 'text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))]'
+              }
+            `}
           >
             <span className="flex-shrink-0">{tool.icon}</span>
             {tool.name}
