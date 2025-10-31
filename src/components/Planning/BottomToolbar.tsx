@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { 
   MousePointer2, 
   Pen, 
@@ -64,48 +64,79 @@ const tools: Tool[] = [
 
 const BottomToolbar: React.FC = () => {
   const { activeTool, setActiveTool } = useCanvasStore();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const activeToolRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (container && activeTool) {
+      const activeElement = activeToolRef.current;
+
+      if (activeElement) {
+        const { offsetLeft, offsetWidth } = activeElement;
+
+        const clipLeft = offsetLeft + 16;
+        const clipRight = offsetLeft + offsetWidth + 16;
+
+        container.style.clipPath = `inset(0 ${Number(
+          100 - (clipRight / container.offsetWidth) * 100,
+        ).toFixed()}% 0 ${Number(
+          (clipLeft / container.offsetWidth) * 100,
+        ).toFixed()}% round 17px)`;
+      }
+    }
+  }, [activeTool]);
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-      <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
-        {tools.map((tool) => (
-          <button
-            key={tool.id}
-            onClick={() => setActiveTool(tool.id)}
-            title={`${tool.name} (${tool.shortcut})`}
-            className={`
-              group relative inline-flex items-center justify-center gap-2 
-              whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium 
-              transition-all
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
-              disabled:pointer-events-none disabled:opacity-50
-              ${
-                activeTool === tool.id
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'hover:bg-background/50'
-              }
-            `}
-          >
-            <span className="flex-shrink-0">{tool.icon}</span>
-            <span className="whitespace-nowrap">
-              {tool.name}
-            </span>
-            
-            {/* Keyboard Shortcut Hint */}
-            <span 
-              className={`
-                absolute -top-8 left-1/2 -translate-x-1/2
-                opacity-0 group-hover:opacity-100 pointer-events-none
-                transition-opacity duration-200
-                bg-popover text-popover-foreground text-[11px] font-medium
-                px-2 py-1 rounded-md whitespace-nowrap
-                shadow-md border
-              `}
-            >
-              {tool.shortcut}
-            </span>
-          </button>
-        ))}
+      <div className="relative bg-white border border-black flex w-fit items-center rounded-full py-2 px-4">
+        {/* Animation Layer */}
+        <div
+          ref={containerRef}
+          className="absolute z-10 w-full overflow-hidden [clip-path:inset(0px_75%_0px_0%_round_17px)] [transition:clip-path_0.25s_ease]"
+        >
+          <div className="relative flex w-full justify-center bg-black">
+            {tools.map((tool) => (
+              <button
+                key={tool.id}
+                onClick={() => setActiveTool(tool.id)}
+                className="flex h-8 items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-white whitespace-nowrap"
+                tabIndex={-1}
+              >
+                <span className="flex-shrink-0">{tool.icon}</span>
+                <span>{tool.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Interactive Layer */}
+        <div className="relative flex w-full justify-center">
+          {tools.map((tool) => {
+            const isActive = activeTool === tool.id;
+
+            return (
+              <button
+                key={tool.id}
+                ref={isActive ? activeToolRef : null}
+                onClick={() => setActiveTool(tool.id)}
+                title={`${tool.name} (${tool.shortcut})`}
+                className="group relative flex h-8 items-center gap-2 cursor-pointer rounded-full px-3 py-2 text-sm font-medium text-gray-700 whitespace-nowrap"
+              >
+                <span className="flex-shrink-0">{tool.icon}</span>
+                <span>{tool.name}</span>
+                
+                {/* Keyboard Shortcut Hint */}
+                <span 
+                  className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 bg-black text-white text-[11px] font-medium px-2 py-1 rounded-md whitespace-nowrap shadow-md"
+                >
+                  {tool.shortcut}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
