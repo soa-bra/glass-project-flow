@@ -1,6 +1,8 @@
 import React, { useRef, useCallback, useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
+import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
+import type { CanvasSmartElement } from '@/types/canvas-elements';
 
 interface CanvasElementProps {
   element: CanvasElementType;
@@ -120,6 +122,13 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       
       {element.type === 'shape' && (
         <div className="w-full h-full bg-[hsl(var(--panel))] rounded-lg" />
+      )}
+      
+      {element.type === 'smart' && (
+        <SmartElementRenderer 
+          element={element as CanvasSmartElement}
+          onUpdate={(data) => updateElement(element.id, { data })}
+        />
       )}
       
       {/* Selection Handles (shown only when selected) */}

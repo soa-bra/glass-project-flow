@@ -66,11 +66,20 @@ export interface CanvasStickyElement extends CanvasElementBase {
   color?: string;
 }
 
+export interface CanvasSmartElement extends CanvasElementBase {
+  type: 'smart';
+  smartType: 'thinking_board' | 'kanban' | 'voting' | 'brainstorming' | 'timeline' 
+    | 'decisions_matrix' | 'gantt' | 'interactive_sheet' | 'mind_map' 
+    | 'project_card' | 'finance_card' | 'csr_card' | 'crm_card' | 'root_connector';
+  data: any;
+}
+
 export type CanvasElementType = 
   | CanvasTextElement 
   | CanvasShapeElement 
   | CanvasImageElement 
   | CanvasStickyElement 
+  | CanvasSmartElement
   | CanvasElementBase;
 
 export interface CanvasEventHandlers {
