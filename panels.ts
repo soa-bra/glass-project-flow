@@ -1,14 +1,11 @@
 export type ToolId =
   | "selection_tool"
   | "smart_pen"
-  | "zoom_tool"
-  | "pan_tool"
+  | "frame_tool"
   | "file_uploader"
-  | "comment_tool"
   | "text_tool"
   | "shapes_tool"
-  | "smart_element_tool"
-  | "root_link_tool";
+  | "smart_element_tool";
 
 export type GridType = "dots" | "grid" | "isometric" | "hex";
 

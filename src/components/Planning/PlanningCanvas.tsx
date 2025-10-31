@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { usePlanningStore } from '@/stores/planningStore';
 import type { CanvasBoard } from '@/types/planning';
+import type { ToolId } from '../../../panels';
 import InfiniteCanvas from './InfiniteCanvas';
 import LayersPanel from './LayersPanel';
 import CanvasToolbar from './CanvasToolbar';
+import BottomToolbar from './BottomToolbar';
+import RightSidePanel from './RightSidePanel';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;
@@ -12,6 +15,7 @@ interface PlanningCanvasProps {
 
 const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const { setCurrentBoard } = usePlanningStore();
+  const [activeTool, setActiveTool] = useState<ToolId>('selection_tool');
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -29,16 +33,22 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       {/* Toolbar */}
       <CanvasToolbar />
       
-      {/* Main Canvas Area with Layers Panel */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* Main Canvas Area with Panels */}
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Infinite Canvas */}
         <div className="flex-1">
           <InfiniteCanvas boardId={board.id} />
         </div>
         
-        {/* Layers Panel */}
+        {/* Layers Panel (Left) */}
         <LayersPanel />
+        
+        {/* Tool Settings Panel (Right) */}
+        <RightSidePanel activeTool={activeTool} />
       </div>
+      
+      {/* Bottom Toolbar */}
+      <BottomToolbar activeTool={activeTool} onToolChange={setActiveTool} />
     </div>
   );
 };
