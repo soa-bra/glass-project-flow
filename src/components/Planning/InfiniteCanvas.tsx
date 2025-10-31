@@ -5,6 +5,7 @@ import DrawingPreview from './DrawingPreview';
 import SelectionBox from './SelectionBox';
 import InstructionsOverlay from './InstructionsOverlay';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { screenToCanvasCoordinates } from '@/utils/canvasCoordinates';
 import { toast } from 'sonner';
 
@@ -38,6 +39,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
   } = useCanvasStore();
   
   const { handleCanvasMouseDown, handleCanvasMouseMove, handleCanvasMouseUp } = useToolInteraction(containerRef);
+  
+  // Enable keyboard shortcuts
+  useKeyboardShortcuts();
   
   // Pan State
   const isPanningRef = useRef(false);

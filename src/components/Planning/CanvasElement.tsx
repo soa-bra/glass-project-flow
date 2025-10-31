@@ -2,6 +2,7 @@ import React, { useRef, useCallback, useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
+import { ResizeHandle } from './ResizeHandle';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 
 interface CanvasElementProps {
@@ -34,6 +35,12 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     if (isLocked) return;
     
     e.stopPropagation();
+    
+    // Handle resize handles
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('resize-handle')) {
+      return; // Let resize logic handle this
+    }
     
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
     onSelect(multiSelect);
@@ -203,10 +210,14 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       {/* Selection Handles (shown only when selected) */}
       {isSelected && !isLocked && (
         <>
-          <div className="absolute -top-1 -left-1 w-3 h-3 bg-[hsl(var(--accent-green))] rounded-full cursor-nwse-resize" />
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-[hsl(var(--accent-green))] rounded-full cursor-nesw-resize" />
-          <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-[hsl(var(--accent-green))] rounded-full cursor-nesw-resize" />
-          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-[hsl(var(--accent-green))] rounded-full cursor-nwse-resize" />
+          <ResizeHandle position="nw" elementId={element.id} />
+          <ResizeHandle position="ne" elementId={element.id} />
+          <ResizeHandle position="sw" elementId={element.id} />
+          <ResizeHandle position="se" elementId={element.id} />
+          <ResizeHandle position="n" elementId={element.id} />
+          <ResizeHandle position="s" elementId={element.id} />
+          <ResizeHandle position="w" elementId={element.id} />
+          <ResizeHandle position="e" elementId={element.id} />
         </>
       )}
     </div>

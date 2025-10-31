@@ -1,6 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import type { ToolId } from '../../../panels';
+import { useCanvasStore } from '@/stores/canvasStore';
 import SelectionPanel from './panels/SelectionPanel';
 import SmartPenPanel from './panels/SmartPenPanel';
 import FramePanel from './panels/FramePanel';
@@ -8,6 +9,7 @@ import FileUploadPanel from './panels/FileUploadPanel';
 import TextPanel from './panels/TextPanel';
 import ShapesPanel from './panels/ShapesPanel';
 import SmartElementsPanel from './panels/SmartElementsPanel';
+import { ElementPropertiesPanel } from './panels/ElementPropertiesPanel';
 
 interface RightSidePanelProps {
   activeTool: ToolId;
@@ -25,7 +27,14 @@ const panelTitles: Record<ToolId, string> = {
 };
 
 const RightSidePanel: React.FC<RightSidePanelProps> = ({ activeTool, onClose }) => {
+  const { selectedElementIds } = useCanvasStore();
+  
   const renderPanel = () => {
+    // Show element properties when elements are selected with selection tool
+    if (activeTool === 'selection_tool' && selectedElementIds.length > 0) {
+      return <ElementPropertiesPanel />;
+    }
+    
     switch (activeTool) {
       case 'selection_tool':
         return <SelectionPanel />;
