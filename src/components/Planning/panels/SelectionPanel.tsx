@@ -22,8 +22,16 @@ import { toast } from 'sonner';
 const SelectionPanel: React.FC = () => {
   const { 
     selectedElementIds, 
+    elements,
     deleteElements,
-    duplicateElement,
+    copyElements,
+    pasteElements,
+    cutElements,
+    groupElements,
+    ungroupElements,
+    alignElements,
+    lockElements,
+    unlockElements,
     clearSelection 
   } = useCanvasStore();
 
@@ -32,18 +40,18 @@ const SelectionPanel: React.FC = () => {
 
   const handleCut = () => {
     if (!hasSelection) return;
-    // TODO: Implement cut
+    cutElements(selectedElementIds);
     toast.success('تم القص');
   };
 
   const handleCopy = () => {
     if (!hasSelection) return;
-    // TODO: Implement copy
+    copyElements(selectedElementIds);
     toast.success('تم النسخ');
   };
 
   const handlePaste = () => {
-    // TODO: Implement paste
+    pasteElements();
     toast.success('تم اللصق');
   };
 
@@ -55,26 +63,34 @@ const SelectionPanel: React.FC = () => {
 
   const handleGroup = () => {
     if (!hasMultipleSelection) return;
-    // TODO: Implement grouping
+    groupElements(selectedElementIds);
     toast.success('تم التجميع');
   };
 
   const handleUngroup = () => {
     if (!hasSelection) return;
-    // TODO: Implement ungrouping
+    const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));
+    const groupIds = [...new Set(selectedElements.map(el => el.metadata?.groupId).filter(Boolean))];
+    groupIds.forEach(groupId => ungroupElements(groupId as string));
     toast.success('تم فك التجميع');
   };
 
   const handleLock = () => {
     if (!hasSelection) return;
-    // TODO: Implement locking
+    lockElements(selectedElementIds);
     toast.success('تم القفل');
   };
 
   const handleUnlock = () => {
     if (!hasSelection) return;
-    // TODO: Implement unlocking
+    unlockElements(selectedElementIds);
     toast.success('تم فتح القفل');
+  };
+
+  const handleAlign = (alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => {
+    if (!hasMultipleSelection) return;
+    alignElements(selectedElementIds, alignment);
+    toast.success('تمت المحاذاة');
   };
 
   return (
@@ -205,6 +221,7 @@ const SelectionPanel: React.FC = () => {
         </h4>
         <div className="grid grid-cols-3 gap-2">
           <button
+            onClick={() => handleAlign('right')}
             disabled={!hasMultipleSelection}
             className="flex flex-col items-center gap-1 px-2 py-2 bg-[hsl(var(--panel))] rounded-[10px] hover:bg-[rgba(217,231,237,0.8)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
@@ -213,6 +230,7 @@ const SelectionPanel: React.FC = () => {
           </button>
 
           <button
+            onClick={() => handleAlign('center')}
             disabled={!hasMultipleSelection}
             className="flex flex-col items-center gap-1 px-2 py-2 bg-[hsl(var(--panel))] rounded-[10px] hover:bg-[rgba(217,231,237,0.8)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
@@ -221,6 +239,7 @@ const SelectionPanel: React.FC = () => {
           </button>
 
           <button
+            onClick={() => handleAlign('left')}
             disabled={!hasMultipleSelection}
             className="flex flex-col items-center gap-1 px-2 py-2 bg-[hsl(var(--panel))] rounded-[10px] hover:bg-[rgba(217,231,237,0.8)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
@@ -229,6 +248,7 @@ const SelectionPanel: React.FC = () => {
           </button>
 
           <button
+            onClick={() => handleAlign('middle')}
             disabled={!hasMultipleSelection}
             className="flex flex-col items-center gap-1 px-2 py-2 bg-[hsl(var(--panel))] rounded-[10px] hover:bg-[rgba(217,231,237,0.8)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >

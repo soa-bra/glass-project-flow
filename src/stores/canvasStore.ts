@@ -39,6 +39,7 @@ interface CanvasState {
   // Elements State
   elements: CanvasElement[];
   selectedElementIds: string[];
+  clipboard: CanvasElement[];
   
   // Tool System
   activeTool: ToolId;
@@ -46,6 +47,7 @@ interface CanvasState {
   isDrawing: boolean;
   drawStartPoint: { x: number; y: number } | null;
   tempElement: CanvasElement | null;
+  selectedSmartElement: string | null;
   
   // Layers State
   layers: LayerInfo[];
@@ -122,6 +124,7 @@ interface CanvasState {
   setIsDrawing: (drawing: boolean) => void;
   setDrawStartPoint: (point: { x: number; y: number } | null) => void;
   setTempElement: (element: CanvasElement | null) => void;
+  setSelectedSmartElement: (elementType: string | null) => void;
   
   // Advanced Operations
   copyElements: (elementIds: string[]) => void;
@@ -130,12 +133,15 @@ interface CanvasState {
   groupElements: (elementIds: string[]) => void;
   ungroupElements: (groupId: string) => void;
   alignElements: (elementIds: string[], alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
+  lockElements: (elementIds: string[]) => void;
+  unlockElements: (elementIds: string[]) => void;
 }
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
   // Initial State
   elements: [],
   selectedElementIds: [],
+  clipboard: [],
   
   // Tool System Initial State
   activeTool: 'selection_tool',
@@ -163,6 +169,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   isDrawing: false,
   drawStartPoint: null,
   tempElement: null,
+  selectedSmartElement: null,
   
   layers: [
     {
@@ -617,7 +624,29 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       
       get().updateElement(el.id, { position: newPosition });
     });
-    
-    get().pushHistory();
+  },
+  
+  setSelectedSmartElement: (elementType) => {
+    set({ selectedSmartElement: elementType });
+  },
+  
+  lockElements: (elementIds) => {
+    set(state => ({
+      elements: state.elements.map(el => 
+        elementIds.includes(el.id) 
+          ? { ...el, locked: true } 
+          : el
+      )
+    }));
+  },
+  
+  unlockElements: (elementIds) => {
+    set(state => ({
+      elements: state.elements.map(el => 
+        elementIds.includes(el.id) 
+          ? { ...el, locked: false } 
+          : el
+      )
+    }));
   }
 }));

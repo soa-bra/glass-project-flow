@@ -1,7 +1,8 @@
-import React, { useRef, useCallback, useEffect, useMemo } from 'react';
+import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import CanvasElement from './CanvasElement';
 import DrawingPreview from './DrawingPreview';
+import SelectionBox from './SelectionBox';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 
 interface InfiniteCanvasProps {
@@ -38,6 +39,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
   // Pan State
   const isPanningRef = useRef(false);
   const lastPanPositionRef = useRef({ x: 0, y: 0 });
+  
+  // Selection Box State
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [selectionStart, setSelectionStart] = useState<{ x: number; y: number } | null>(null);
+  const [selectionCurrent, setSelectionCurrent] = useState<{ x: number; y: number } | null>(null);
   
   // Viewport bounds for virtualization
   const viewportBounds = useMemo(() => ({
@@ -141,16 +147,24 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         containerRef.current.style.cursor = 'grabbing';
       }
       e.preventDefault();
+    } else if (e.button === 0 && activeTool === 'selection_tool' && e.target === canvasRef.current) {
+      // Selection Box with selection tool on empty space
+      if (!e.shiftKey) {
+        clearSelection();
+      }
+      setIsSelecting(true);
+      setSelectionStart({ x: e.clientX, y: e.clientY });
+      setSelectionCurrent({ x: e.clientX, y: e.clientY });
     } else if (e.button === 0 && activeTool !== 'selection_tool') {
       // تفويض للأداة النشطة
       handleCanvasMouseDown(e);
-    } else if (e.button === 0 && e.target === canvasRef.current) {
+    } else if (e.button === 0 && e.target === canvasRef.current && !e.shiftKey) {
       // Left click on empty space = Clear selection
       clearSelection();
     }
   }, [activeTool, handleCanvasMouseDown, clearSelection]);
   
-  // Handle Mouse Move (Pan or Drawing)
+  // Handle Mouse Move (Pan or Drawing or Selection)
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (isPanningRef.current) {
       const deltaX = e.clientX - lastPanPositionRef.current.x;
@@ -162,19 +176,59 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       );
       
       lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
+    } else if (isSelecting) {
+      setSelectionCurrent({ x: e.clientX, y: e.clientY });
     } else {
       handleCanvasMouseMove(e);
     }
-  }, [viewport, setPan, handleCanvasMouseMove]);
+  }, [viewport, setPan, handleCanvasMouseMove, isSelecting]);
   
-  // Handle Mouse Up (Stop Pan or Drawing)
+  // Handle Mouse Up (Stop Pan or Drawing or Selection)
   const handleMouseUp = useCallback(() => {
     isPanningRef.current = false;
     if (containerRef.current) {
       containerRef.current.style.cursor = 'default';
     }
+    
+    // Handle Selection Box completion
+    if (isSelecting && selectionStart && selectionCurrent) {
+      const minX = Math.min(selectionStart.x, selectionCurrent.x);
+      const maxX = Math.max(selectionStart.x, selectionCurrent.x);
+      const minY = Math.min(selectionStart.y, selectionCurrent.y);
+      const maxY = Math.max(selectionStart.y, selectionCurrent.y);
+      
+      // Find elements within selection box
+      const selectedIds: string[] = [];
+      elements.forEach(el => {
+        const elScreenPos = {
+          x: el.position.x * viewport.zoom + viewport.pan.x,
+          y: el.position.y * viewport.zoom + viewport.pan.y,
+          width: el.size.width * viewport.zoom,
+          height: el.size.height * viewport.zoom
+        };
+        
+        // Check if element intersects with selection box
+        if (
+          elScreenPos.x < maxX &&
+          elScreenPos.x + elScreenPos.width > minX &&
+          elScreenPos.y < maxY &&
+          elScreenPos.y + elScreenPos.height > minY
+        ) {
+          selectedIds.push(el.id);
+        }
+      });
+      
+      if (selectedIds.length > 0) {
+        useCanvasStore.getState().selectElements(selectedIds);
+      }
+      
+      setIsSelecting(false);
+      setSelectionStart(null);
+      setSelectionCurrent(null);
+    }
+    
     handleCanvasMouseUp();
-  }, [handleCanvasMouseUp]);
+  }, [handleCanvasMouseUp, isSelecting, selectionStart, selectionCurrent, elements, viewport]);
   
   // Keyboard Shortcuts
   useEffect(() => {
@@ -298,6 +352,16 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         {/* Drawing Preview */}
         {tempElement && <DrawingPreview element={tempElement} />}
       </div>
+      
+      {/* Selection Box */}
+      {isSelecting && selectionStart && selectionCurrent && (
+        <SelectionBox
+          startX={selectionStart.x}
+          startY={selectionStart.y}
+          currentX={selectionCurrent.x}
+          currentY={selectionCurrent.y}
+        />
+      )}
       
       {/* Zoom Indicator */}
       <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-[10px] px-3 py-2 shadow-[0_4px_12px_rgba(0,0,0,0.1)] text-[12px] font-medium text-[hsl(var(--ink))]">

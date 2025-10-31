@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { nanoid } from 'nanoid';
+import { toast } from 'sonner';
 
 interface SmartElement {
   id: string;
@@ -116,22 +116,12 @@ const smartElements: SmartElement[] = [
 ];
 
 export default function SmartElementsPanel() {
-  const { addElement, selectedElementIds } = useCanvasStore();
-  const [selectedSmartElement, setSelectedSmartElement] = useState<string | null>(null);
+  const { addElement, selectedElementIds, setSelectedSmartElement, selectedSmartElement } = useCanvasStore();
 
   const handleAddElement = (element: SmartElement) => {
-    const newElement = {
-      id: nanoid(),
-      type: 'smart' as const,
-      smartType: element.smartType,
-      position: { x: 100, y: 100 },
-      size: { width: 400, height: 300 },
-      data: element.defaultData,
-      layerId: 'default',
-    };
-    
-    addElement(newElement);
-    setSelectedSmartElement(element.id);
+    // تعيين العنصر الذكي المختار وتفعيل أداة العناصر الذكية
+    setSelectedSmartElement(element.smartType);
+    toast.success(`تم اختيار ${element.name}. انقر على الكانفاس لإضافته.`);
   };
 
   return (

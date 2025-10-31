@@ -188,7 +188,68 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
    * أداة العناصر الذكية: إنشاء عنصر ذكي
    */
   const handleSmartElementClick = (point: { x: number; y: number }) => {
-    toast.info('اختر عنصراً ذكياً من اللوحة الجانبية');
+    const { selectedSmartElement } = useCanvasStore.getState();
+    
+    if (!selectedSmartElement) {
+      toast.info('اختر عنصراً ذكياً من اللوحة الجانبية أولاً');
+      return;
+    }
+
+    // أحجام افتراضية للعناصر الذكية
+    const defaultSizes: Record<string, { width: number; height: number }> = {
+      'thinking_board': { width: 400, height: 300 },
+      'kanban': { width: 600, height: 400 },
+      'voting': { width: 350, height: 250 },
+      'brainstorming': { width: 400, height: 300 },
+      'timeline': { width: 700, height: 200 },
+      'decisions_matrix': { width: 500, height: 400 },
+      'gantt': { width: 800, height: 400 },
+      'interactive_sheet': { width: 600, height: 400 },
+      'mind_map': { width: 500, height: 400 },
+      'project_card': { width: 320, height: 180 },
+      'finance_card': { width: 300, height: 200 },
+      'csr_card': { width: 300, height: 200 },
+      'crm_card': { width: 300, height: 200 },
+      'root_connector': { width: 400, height: 100 }
+    };
+
+    // بيانات افتراضية للعناصر الذكية
+    const defaultData: Record<string, any> = {
+      'thinking_board': { items: [], tags: [] },
+      'kanban': { 
+        columns: [
+          { id: '1', title: 'قيد الانتظار', cards: [] },
+          { id: '2', title: 'قيد التنفيذ', cards: [] },
+          { id: '3', title: 'مكتمل', cards: [] }
+        ] 
+      },
+      'voting': { question: 'سؤال التصويت', options: [], totalVotes: 0 },
+      'brainstorming': { mode: 'collaborative', ideas: [] },
+      'timeline': { unit: 'month', items: [] },
+      'decisions_matrix': { criteria: [], options: [] },
+      'gantt': { tasks: [], dependencies: [] },
+      'interactive_sheet': { rows: 10, cols: 10, cells: {} },
+      'mind_map': { root: { id: '1', label: 'العنوان', children: [] } },
+      'project_card': { title: 'مشروع جديد', status: 'active', progress: 0 },
+      'finance_card': { budget: 0, spent: 0, currency: 'SAR' },
+      'csr_card': { initiative: 'مبادرة جديدة', impact: [] },
+      'crm_card': { client: 'عميل جديد', interactions: [] },
+      'root_connector': { title: 'رابط', description: '', start: null, end: null }
+    };
+
+    const smartElement = {
+      type: 'smart' as const,
+      smartType: selectedSmartElement,
+      position: point,
+      size: defaultSizes[selectedSmartElement] || { width: 400, height: 300 },
+      data: defaultData[selectedSmartElement] || {}
+    };
+    
+    addElement(smartElement);
+    toast.success('تم إضافة العنصر الذكي');
+    
+    // إعادة تعيين العنصر المختار
+    useCanvasStore.getState().setSelectedSmartElement(null);
   };
 
   return {
