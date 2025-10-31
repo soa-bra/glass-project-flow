@@ -13,7 +13,7 @@ export type ToolId =
 
 export type ShapeType = 'rectangle' | 'circle' | 'triangle' | 'line' | 'star' | 'hexagon';
 
-interface ToolSettings {
+export interface ToolSettings {
   shapes: {
     fillColor: string;
     strokeColor: string;
@@ -32,6 +32,14 @@ interface ToolSettings {
     strokeWidth: number;
     color: string;
     style: 'solid' | 'dashed' | 'dotted';
+  };
+  frame: {
+    backgroundColor: string;
+    opacity: number;
+    strokeWidth: number;
+    strokeColor: string;
+    title: string;
+    frameStyle: 'rectangle' | 'rounded' | 'circle';
   };
 }
 
@@ -164,6 +172,14 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       strokeWidth: 2,
       color: '#000000',
       style: 'solid'
+    },
+    frame: {
+      backgroundColor: '#d9e7ed',
+      opacity: 0.3,
+      strokeWidth: 2,
+      strokeColor: '#0B0F12',
+      title: '',
+      frameStyle: 'rectangle'
     }
   },
   isDrawing: false,

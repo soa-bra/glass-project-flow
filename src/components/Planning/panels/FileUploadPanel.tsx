@@ -1,18 +1,22 @@
-import React, { useState, useCallback } from 'react';
-import { Upload, File, X, Image, FileText, Sparkles } from 'lucide-react';
+import React, { useState, useCallback, useRef } from 'react';
+import { Upload, X, Image, FileText } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCanvasStore } from '@/stores/canvasStore';
 
 interface UploadedFile {
   id: string;
   name: string;
   size: number;
   type: string;
+  file: File;
   preview?: string;
 }
 
-const FileUploadPanel: React.FC = () => {
+export default function FileUploadPanel() {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { addElement, setActiveTool } = useCanvasStore();
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -44,6 +48,7 @@ const FileUploadPanel: React.FC = () => {
       name: file.name,
       size: file.size,
       type: file.type,
+      file,
       preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined
     }));
 
@@ -52,6 +57,10 @@ const FileUploadPanel: React.FC = () => {
   };
 
   const removeFile = (id: string) => {
+    const file = files.find(f => f.id === id);
+    if (file?.preview) {
+      URL.revokeObjectURL(file.preview);
+    }
     setFiles(prev => prev.filter(f => f.id !== id));
   };
 
@@ -61,194 +70,177 @@ const FileUploadPanel: React.FC = () => {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
-  const insertFile = (fileId: string, smart: boolean = false) => {
+  const insertFile = (fileId: string) => {
     const file = files.find(f => f.id === fileId);
     if (!file) return;
 
-    if (smart) {
-      toast.success(`تم الإدراج الذكي: ${file.name}`);
-      // TODO: Implement smart insert with AI analysis
+    if (file.type.startsWith('image/')) {
+      // إدراج كصورة
+      const imageUrl = URL.createObjectURL(file.file);
+      addElement({
+        type: 'image',
+        position: { x: 100, y: 100 },
+        size: { width: 300, height: 200 },
+        src: imageUrl,
+        alt: file.name
+      });
+      toast.success(`تم إدراج الصورة: ${file.name}`);
     } else {
-      toast.success(`تم إدراج: ${file.name}`);
-      // TODO: Implement normal insert
+      // إدراج كملف
+      addElement({
+        type: 'file',
+        position: { x: 100, y: 100 },
+        size: { width: 250, height: 120 },
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        fileUrl: URL.createObjectURL(file.file)
+      });
+      toast.success(`تم إدراج الملف: ${file.name}`);
     }
+
+    // إزالة الملف بعد الإدراج
+    removeFile(fileId);
+  };
+
+  const handleActivateUploader = () => {
+    setActiveTool('file_uploader');
+    toast.info('انقر على الكانفاس أو اسحب ملفاً عليه لإدراجه');
   };
 
   return (
-    <div className="space-y-6">
-      {/* Drop Zone */}
-      <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={`
-          relative border-2 border-dashed rounded-[18px] p-8 text-center transition-colors
-          ${isDragging 
-            ? 'border-[hsl(var(--accent-green))] bg-[rgba(61,190,139,0.05)]' 
-            : 'border-[#DADCE0] bg-[hsl(var(--panel))]'
-          }
-        `}
-      >
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center">
-            <Upload size={28} className="text-[hsl(var(--ink-60))]" />
-          </div>
-          <div>
-            <p className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-1">
-              اسحب الملفات هنا
-            </p>
-            <p className="text-[11px] text-[hsl(var(--ink-60))]">
-              أو انقر لاختيار الملفات
-            </p>
-          </div>
-          
-          <input
-            type="file"
-            multiple
-            onChange={handleFileInput}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
-        </div>
-      </div>
-
-      {/* Uploaded Files List */}
-      {files.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))]">
-              الملفات المرفوعة ({files.length})
-            </h4>
-            <button
-              onClick={() => setFiles([])}
-              className="text-[11px] text-[hsl(var(--accent-red))] hover:underline"
-            >
-              مسح الكل
-            </button>
-          </div>
-
-          <div className="space-y-2 max-h-[400px] overflow-y-auto">
-            {files.map((file) => (
-              <div
-                key={file.id}
-                className="group bg-[hsl(var(--panel))] rounded-[10px] p-3 hover:bg-[rgba(217,231,237,0.8)] transition-colors"
-              >
-                <div className="flex items-start gap-3">
-                  {/* Preview or Icon */}
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-white flex items-center justify-center">
-                    {file.preview ? (
-                      <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
-                    ) : file.type.startsWith('image/') ? (
-                      <Image size={20} className="text-[hsl(var(--ink-60))]" />
-                    ) : (
-                      <FileText size={20} className="text-[hsl(var(--ink-60))]" />
-                    )}
-                  </div>
-
-                  {/* File Info */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-medium text-[hsl(var(--ink))] truncate">
-                      {file.name}
-                    </p>
-                    <p className="text-[10px] text-[hsl(var(--ink-60))] mt-0.5">
-                      {formatFileSize(file.size)}
-                    </p>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-1.5 mt-2">
-                      <button
-                        onClick={() => insertFile(file.id, false)}
-                        className="text-[10px] font-medium text-[hsl(var(--accent-green))] hover:underline"
-                      >
-                        إدراج
-                      </button>
-                      <span className="text-[10px] text-[hsl(var(--ink-30))]">•</span>
-                      <button
-                        onClick={() => insertFile(file.id, true)}
-                        className="flex items-center gap-1 text-[10px] font-medium text-[hsl(var(--accent-blue))] hover:underline"
-                      >
-                        <Sparkles size={10} />
-                        إدراج ذكي
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Remove Button */}
-                  <button
-                    onClick={() => removeFile(file.id)}
-                    className="flex-shrink-0 p-1 opacity-0 group-hover:opacity-100 hover:bg-red-50 rounded transition-all"
-                  >
-                    <X size={16} className="text-[hsl(var(--accent-red))]" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Upload Options */}
+    <div className="space-y-4">
       <div>
         <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
-          خيارات الإدراج
+          رفع الملفات
         </h4>
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="insert-mode" defaultChecked className="w-4 h-4" />
-            <span className="text-[12px] text-[hsl(var(--ink))]">
-              إدراج مباشر (كصورة أو مرفق)
-            </span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="insert-mode" className="w-4 h-4" />
-            <span className="text-[12px] text-[hsl(var(--ink))]">
-              ربط بمكوّن موجود
-            </span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="insert-mode" className="w-4 h-4" />
-            <div>
-              <span className="text-[12px] text-[hsl(var(--ink))] flex items-center gap-1">
-                <Sparkles size={12} />
-                إدراج ذكي (تحليل بالذكاء الصناعي)
-              </span>
-              <span className="text-[10px] text-[hsl(var(--ink-60))]">
-                يحلل الملف ويحوله إلى عناصر ذكية
-              </span>
+
+        {/* Drop Zone */}
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+          className={`
+            relative border-2 border-dashed rounded-[18px] p-6 text-center transition-colors cursor-pointer
+            ${isDragging 
+              ? 'border-[hsl(var(--accent-green))] bg-[rgba(61,190,139,0.05)]' 
+              : 'border-[#DADCE0] bg-[hsl(var(--panel))] hover:bg-[rgba(217,231,237,0.8)]'
+            }
+          `}
+        >
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
+              <Upload size={24} className="text-[hsl(var(--ink-60))]" />
             </div>
-          </label>
+            <div>
+              <p className="text-[12px] font-semibold text-[hsl(var(--ink))] mb-0.5">
+                اسحب الملفات هنا
+              </p>
+              <p className="text-[10px] text-[hsl(var(--ink-60))]">
+                أو انقر لاختيار الملفات
+              </p>
+            </div>
+            
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={handleFileInput}
+              className="hidden"
+              accept="image/*,.pdf,.doc,.docx,.txt,.csv,.json"
+            />
+          </div>
         </div>
+
+        {/* Uploaded Files List */}
+        {files.length > 0 && (
+          <div className="mt-4">
+            <div className="flex items-center justify-between mb-2">
+              <h5 className="text-[12px] font-semibold text-[hsl(var(--ink))]">
+                الملفات ({files.length})
+              </h5>
+              <button
+                onClick={() => {
+                  files.forEach(f => f.preview && URL.revokeObjectURL(f.preview));
+                  setFiles([]);
+                }}
+                className="text-[10px] text-[hsl(var(--accent-red))] hover:underline"
+              >
+                مسح الكل
+              </button>
+            </div>
+
+            <div className="space-y-2 max-h-[300px] overflow-y-auto">
+              {files.map((file) => (
+                <div
+                  key={file.id}
+                  className="group bg-[hsl(var(--panel))] rounded-lg p-2 hover:bg-[rgba(217,231,237,0.8)] transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    {/* Preview or Icon */}
+                    <div className="flex-shrink-0 w-10 h-10 rounded overflow-hidden bg-white flex items-center justify-center">
+                      {file.preview ? (
+                        <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
+                      ) : file.type.startsWith('image/') ? (
+                        <Image size={16} className="text-[hsl(var(--ink-60))]" />
+                      ) : (
+                        <FileText size={16} className="text-[hsl(var(--ink-60))]" />
+                      )}
+                    </div>
+
+                    {/* File Info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-medium text-[hsl(var(--ink))] truncate">
+                        {file.name}
+                      </p>
+                      <p className="text-[9px] text-[hsl(var(--ink-60))]">
+                        {formatFileSize(file.size)}
+                      </p>
+                    </div>
+
+                    {/* Insert Button */}
+                    <button
+                      onClick={() => insertFile(file.id)}
+                      className="flex-shrink-0 px-2 py-1 bg-[hsl(var(--accent-green))] text-white text-[10px] font-medium rounded hover:bg-[hsl(var(--accent-green))]/90 transition-colors"
+                    >
+                      إدراج
+                    </button>
+
+                    {/* Remove Button */}
+                    <button
+                      onClick={() => removeFile(file.id)}
+                      className="flex-shrink-0 p-1 opacity-0 group-hover:opacity-100 hover:bg-red-50 rounded transition-all"
+                    >
+                      <X size={14} className="text-[hsl(var(--accent-red))]" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Activate Button */}
+        <button
+          onClick={handleActivateUploader}
+          className="w-full mt-4 py-2.5 bg-[hsl(var(--accent-blue))] hover:bg-[hsl(var(--accent-blue))]/90 text-white rounded-lg transition-colors text-[13px] font-medium"
+        >
+          تفعيل أداة رفع الملفات
+        </button>
       </div>
 
-      {/* Supported Formats */}
+      {/* Info */}
       <div className="pt-4 border-t border-[#DADCE0]">
-        <h4 className="text-[12px] font-semibold text-[hsl(var(--ink-60))] mb-2">
+        <h5 className="text-[12px] font-semibold text-[hsl(var(--ink-60))] mb-2">
           الصيغ المدعومة
-        </h4>
+        </h5>
         <p className="text-[10px] text-[hsl(var(--ink-60))] leading-relaxed">
           الصور: JPG, PNG, GIF, SVG, WebP<br />
-          المستندات: PDF, DOC, DOCX, XLS, XLSX<br />
+          المستندات: PDF, DOC, DOCX<br />
           ملفات أخرى: TXT, CSV, JSON
         </p>
       </div>
-
-      {/* Keyboard Shortcuts */}
-      <div className="pt-4 border-t border-[#DADCE0]">
-        <h4 className="text-[12px] font-semibold text-[hsl(var(--ink-60))] mb-2">
-          اختصارات الكيبورد
-        </h4>
-        <div className="space-y-1.5 text-[11px] text-[hsl(var(--ink-60))]">
-          <div className="flex justify-between">
-            <span>إدراج عادي</span>
-            <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">Enter</code>
-          </div>
-          <div className="flex justify-between">
-            <span>إدراج ذكي</span>
-            <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">Shift+Enter</code>
-          </div>
-        </div>
-      </div>
     </div>
   );
-};
-
-export default FileUploadPanel;
+}

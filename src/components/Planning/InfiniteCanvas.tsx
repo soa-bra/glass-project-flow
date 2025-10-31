@@ -5,6 +5,8 @@ import DrawingPreview from './DrawingPreview';
 import SelectionBox from './SelectionBox';
 import InstructionsOverlay from './InstructionsOverlay';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
+import { screenToCanvasCoordinates } from '@/utils/canvasCoordinates';
+import { toast } from 'sonner';
 
 interface InfiniteCanvasProps {
   boardId: string;
@@ -156,7 +158,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       setIsSelecting(true);
       setSelectionStart({ x: e.clientX, y: e.clientY });
       setSelectionCurrent({ x: e.clientX, y: e.clientY });
-    } else if (e.button === 0 && activeTool !== 'selection_tool') {
+    } else if (e.button === 0 && (activeTool === 'file_uploader' || activeTool === 'frame_tool' || activeTool === 'smart_pen' || activeTool === 'shapes_tool' || activeTool === 'text_tool' || activeTool === 'smart_element_tool')) {
       // تفويض للأداة النشطة
       handleCanvasMouseDown(e);
     } else if (e.button === 0 && e.target === canvasRef.current && !e.shiftKey) {
@@ -336,6 +338,51 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     return () => container.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
   
+  // Handle file drop on canvas
+  const handleFileDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    
+    if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
+    
+    const file = e.dataTransfer.files[0];
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    if (!containerRect) return;
+
+    const canvasPoint = screenToCanvasCoordinates(
+      e.clientX,
+      e.clientY,
+      viewport,
+      containerRect
+    );
+
+    if (file.type.startsWith('image/')) {
+      const imageUrl = URL.createObjectURL(file);
+      useCanvasStore.getState().addElement({
+        type: 'image',
+        position: canvasPoint,
+        size: { width: 300, height: 200 },
+        src: imageUrl,
+        alt: file.name
+      });
+      toast.success(`تم إدراج الصورة: ${file.name}`);
+    } else {
+      useCanvasStore.getState().addElement({
+        type: 'file',
+        position: canvasPoint,
+        size: { width: 250, height: 120 },
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        fileUrl: URL.createObjectURL(file)
+      });
+      toast.success(`تم إدراج الملف: ${file.name}`);
+    }
+  }, [viewport]);
+  
+  const handleFileDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+  }, []);
+  
   // تحديد نوع المؤشر حسب الأداة النشطة
   const getCursorStyle = () => {
     switch (activeTool) {
@@ -364,6 +411,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onDrop={handleFileDrop}
+      onDragOver={handleFileDragOver}
       style={{ 
         backgroundColor: settings.background,
         cursor: getCursorStyle()

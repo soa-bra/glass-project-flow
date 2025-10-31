@@ -120,8 +120,53 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         </div>
       )}
       
+      {element.type === 'image' && element.src && (
+        <img
+          src={element.src}
+          alt={element.alt || 'صورة'}
+          className="w-full h-full object-cover rounded-lg"
+        />
+      )}
+      
       {element.type === 'shape' && (
         <div className="w-full h-full bg-[hsl(var(--panel))] rounded-lg" />
+      )}
+      
+      {element.type === 'frame' && (
+        <div className="relative w-full h-full">
+          {element.title && (
+            <div className="absolute -top-6 left-2 px-2 py-1 bg-white rounded text-[11px] font-semibold text-[hsl(var(--ink))] shadow-sm">
+              {element.title}
+            </div>
+          )}
+          <div className="w-full h-full opacity-20 flex items-center justify-center text-[hsl(var(--ink-60))] text-[10px]">
+            إطار
+          </div>
+        </div>
+      )}
+      
+      {element.type === 'file' && (
+        <div className="flex flex-col items-center justify-center gap-2 p-4">
+          <div className="w-12 h-12 rounded-lg bg-[hsl(var(--panel))] flex items-center justify-center">
+            {element.fileType?.startsWith('image/') ? (
+              <span className="text-2xl">🖼️</span>
+            ) : element.fileType?.includes('pdf') ? (
+              <span className="text-2xl">📄</span>
+            ) : (
+              <span className="text-2xl">📁</span>
+            )}
+          </div>
+          <div className="text-center">
+            <p className="text-[11px] font-medium text-[hsl(var(--ink))] truncate max-w-[180px]">
+              {element.fileName}
+            </p>
+            {element.fileSize && (
+              <p className="text-[9px] text-[hsl(var(--ink-60))]">
+                {(element.fileSize / 1024).toFixed(1)} KB
+              </p>
+            )}
+          </div>
+        </div>
       )}
       
       {element.type === 'pen_path' && element.data?.path && (

@@ -74,12 +74,32 @@ export interface CanvasSmartElement extends CanvasElementBase {
   data: any;
 }
 
+export interface CanvasFrameElement extends CanvasElementBase {
+  type: 'frame';
+  title?: string;
+  childrenIds?: string[];
+  frameStyle?: 'rectangle' | 'rounded' | 'circle';
+  strokeWidth?: number;
+  strokeColor?: string;
+}
+
+export interface CanvasFileElement extends CanvasElementBase {
+  type: 'file';
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  fileUrl?: string;
+  thumbnailUrl?: string;
+}
+
 export type CanvasElementType = 
   | CanvasTextElement 
   | CanvasShapeElement 
   | CanvasImageElement 
   | CanvasStickyElement 
   | CanvasSmartElement
+  | CanvasFrameElement
+  | CanvasFileElement
   | CanvasElementBase;
 
 export interface CanvasEventHandlers {

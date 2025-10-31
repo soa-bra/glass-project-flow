@@ -13,6 +13,7 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     isDrawing,
     drawStartPoint,
     tempElement,
+    elements,
     setIsDrawing,
     setDrawStartPoint,
     setTempElement,
@@ -69,6 +70,15 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         handleSmartPenStart(snappedPoint);
         break;
 
+      case 'frame_tool':
+        handleFrameToolStart(snappedPoint);
+        break;
+      
+      case 'file_uploader':
+        // يتم التعامل معه عبر FileUploadPanel
+        toast.info('استخدم لوحة رفع الملفات أو اسحب ملفاً على الكانفاس');
+        break;
+
       case 'smart_element_tool':
         handleSmartElementClick(snappedPoint);
         break;
@@ -114,6 +124,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         handleSmartPenMove(snappedPoint);
         break;
 
+      case 'frame_tool':
+        handleFrameToolMove(snappedPoint);
+        break;
+
       default:
         break;
     }
@@ -127,6 +141,35 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       // تحويل العنصر المؤقت إلى عنصر دائم
       const finalElement = { ...tempElement };
       delete (finalElement as any).id;
+      
+      // للإطارات، نحتاج لتحديد العناصر الموجودة داخله
+      if (finalElement.type === 'frame') {
+        const frameRect = {
+          x: finalElement.position.x,
+          y: finalElement.position.y,
+          width: finalElement.size.width,
+          height: finalElement.size.height
+        };
+        
+        // البحث عن العناصر التي تقع داخل الإطار
+        const childrenIds = elements
+          .filter(el => {
+            const elCenter = {
+              x: el.position.x + el.size.width / 2,
+              y: el.position.y + el.size.height / 2
+            };
+            return (
+              elCenter.x >= frameRect.x &&
+              elCenter.x <= frameRect.x + frameRect.width &&
+              elCenter.y >= frameRect.y &&
+              elCenter.y <= frameRect.y + frameRect.height
+            );
+          })
+          .map(el => el.id);
+        
+        finalElement.childrenIds = childrenIds;
+      }
+      
       addElement(finalElement);
       toast.success('تم إضافة العنصر');
     }
@@ -141,7 +184,7 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     setTempElement(null);
     setPenPoints([]);
     setIsSmartMode(false);
-  }, [isDrawing, tempElement, activeTool, penPoints, addElement, setIsDrawing, setDrawStartPoint, setTempElement]);
+  }, [isDrawing, tempElement, activeTool, penPoints, elements, addElement, setIsDrawing, setDrawStartPoint, setTempElement]);
 
   /**
    * أداة النص: إنشاء صندوق نص عند النقر
@@ -332,6 +375,50 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       }
     });
     toast.success('تم إضافة الرسم');
+  };
+
+  /**
+   * أداة الإطار: بدء رسم إطار
+   */
+  const handleFrameToolStart = (point: { x: number; y: number }) => {
+    setIsDrawing(true);
+    setDrawStartPoint(point);
+
+    const initialElement = {
+      id: 'temp',
+      type: 'frame' as const,
+      position: point,
+      size: { width: 0, height: 0 },
+      title: toolSettings.frame.title || 'إطار جديد',
+      frameStyle: toolSettings.frame.frameStyle,
+      style: {
+        backgroundColor: toolSettings.frame.backgroundColor,
+        opacity: toolSettings.frame.opacity,
+        border: `${toolSettings.frame.strokeWidth}px solid ${toolSettings.frame.strokeColor}`,
+        borderRadius: toolSettings.frame.frameStyle === 'circle' ? 9999 : toolSettings.frame.frameStyle === 'rounded' ? 18 : 8
+      },
+      childrenIds: []
+    };
+
+    setTempElement(initialElement as any);
+  };
+
+  /**
+   * أداة الإطار: تحديث حجم الإطار أثناء السحب
+   */
+  const handleFrameToolMove = (currentPoint: { x: number; y: number }) => {
+    if (!drawStartPoint || !tempElement) return;
+
+    const width = Math.abs(currentPoint.x - drawStartPoint.x);
+    const height = Math.abs(currentPoint.y - drawStartPoint.y);
+    const x = Math.min(currentPoint.x, drawStartPoint.x);
+    const y = Math.min(currentPoint.y, drawStartPoint.y);
+
+    setTempElement({
+      ...tempElement,
+      position: { x, y },
+      size: { width, height }
+    });
   };
 
   /**
