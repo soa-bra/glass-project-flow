@@ -1,6 +1,8 @@
 import React, { useRef, useCallback, useEffect, useMemo } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import CanvasElement from './CanvasElement';
+import DrawingPreview from './DrawingPreview';
+import { useToolInteraction } from '@/hooks/useToolInteraction';
 
 interface InfiniteCanvasProps {
   boardId: string;
@@ -16,14 +18,22 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     settings,
     selectedElementIds,
     layers,
+    activeTool,
+    tempElement,
     setPan,
     setZoom,
     clearSelection,
     selectElement,
     undo,
     redo,
-    toggleGrid
+    toggleGrid,
+    deleteElements,
+    copyElements,
+    pasteElements,
+    cutElements
   } = useCanvasStore();
+  
+  const { handleCanvasMouseDown, handleCanvasMouseMove, handleCanvasMouseUp } = useToolInteraction(containerRef);
   
   // Pan State
   const isPanningRef = useRef(false);
@@ -131,13 +141,16 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         containerRef.current.style.cursor = 'grabbing';
       }
       e.preventDefault();
+    } else if (e.button === 0 && activeTool !== 'selection_tool') {
+      // تفويض للأداة النشطة
+      handleCanvasMouseDown(e);
     } else if (e.button === 0 && e.target === canvasRef.current) {
       // Left click on empty space = Clear selection
       clearSelection();
     }
-  }, [clearSelection]);
+  }, [activeTool, handleCanvasMouseDown, clearSelection]);
   
-  // Handle Mouse Move (Pan)
+  // Handle Mouse Move (Pan or Drawing)
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (isPanningRef.current) {
       const deltaX = e.clientX - lastPanPositionRef.current.x;
@@ -149,16 +162,19 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       );
       
       lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
+    } else {
+      handleCanvasMouseMove(e);
     }
-  }, [viewport, setPan]);
+  }, [viewport, setPan, handleCanvasMouseMove]);
   
-  // Handle Mouse Up (Stop Pan)
+  // Handle Mouse Up (Stop Pan or Drawing)
   const handleMouseUp = useCallback(() => {
     isPanningRef.current = false;
     if (containerRef.current) {
       containerRef.current.style.cursor = 'default';
     }
-  }, []);
+    handleCanvasMouseUp();
+  }, [handleCanvasMouseUp]);
   
   // Keyboard Shortcuts
   useEffect(() => {
@@ -187,16 +203,44 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         redo();
       }
       
+      // Copy/Paste/Cut
+      if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+        e.preventDefault();
+        copyElements(selectedElementIds);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+        e.preventDefault();
+        pasteElements();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'x') {
+        e.preventDefault();
+        cutElements(selectedElementIds);
+      }
+      
+      // Delete
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedElementIds.length > 0) {
+          e.preventDefault();
+          deleteElements(selectedElementIds);
+        }
+      }
+      
       // Grid toggle
       if (e.key === 'g' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         toggleGrid();
       }
+      
+      // Escape - Clear selection
+      if (e.key === 'Escape') {
+        clearSelection();
+        useCanvasStore.getState().setActiveTool('selection_tool');
+      }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo, toggleGrid]);
+  }, [undo, redo, toggleGrid, selectedElementIds, copyElements, pasteElements, cutElements, deleteElements, clearSelection]);
   
   // Wheel event listener
   useEffect(() => {
@@ -250,6 +294,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
             snapToGrid={settings.snapToGrid ? snapToGrid : undefined}
           />
         ))}
+        
+        {/* Drawing Preview */}
+        {tempElement && <DrawingPreview element={tempElement} />}
       </div>
       
       {/* Zoom Indicator */}

@@ -1,88 +1,53 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Circle, Square, Triangle, Hexagon, Star, Heart } from 'lucide-react';
+import { useCanvasStore, type ShapeType } from '@/stores/canvasStore';
+import { toast } from 'sonner';
 
 const ShapesPanel: React.FC = () => {
-  const [shapeCategory, setShapeCategory] = useState<'basic' | 'artistic' | 'icons' | 'sticky'>('basic');
-  const [fillColor, setFillColor] = useState('#3DBE8B');
-  const [strokeColor, setStrokeColor] = useState('#0B0F12');
-  const [strokeWidth, setStrokeWidth] = useState(2);
-  const [opacity, setOpacity] = useState(1);
+  const { toolSettings, updateToolSettings, setActiveTool } = useCanvasStore();
+  const { fillColor, strokeColor, strokeWidth, opacity, shapeType } = toolSettings.shapes;
 
-  const basicShapes = [
-    { icon: <Square size={24} />, name: 'مربع' },
-    { icon: <Circle size={24} />, name: 'دائرة' },
-    { icon: <Triangle size={24} />, name: 'مثلث' },
-    { icon: <Hexagon size={24} />, name: 'سداسي' },
-    { icon: <Star size={24} />, name: 'نجمة' },
-    { icon: <Heart size={24} />, name: 'قلب' },
+  const basicShapes: Array<{ icon: React.ReactNode; name: string; type: ShapeType }> = [
+    { icon: <Square size={24} />, name: 'مستطيل', type: 'rectangle' },
+    { icon: <Circle size={24} />, name: 'دائرة', type: 'circle' },
+    { icon: <Triangle size={24} />, name: 'مثلث', type: 'triangle' },
+    { icon: <Hexagon size={24} />, name: 'سداسي', type: 'hexagon' },
+    { icon: <Star size={24} />, name: 'نجمة', type: 'star' },
+    { icon: <Heart size={24} />, name: 'قلب', type: 'star' },
   ];
+
+  const handleShapeSelect = (type: ShapeType, name: string) => {
+    updateToolSettings('shapes', { shapeType: type });
+    setActiveTool('shapes_tool');
+    toast.success(`تم اختيار ${name} - انقر واسحب على الكانفاس`);
+  };
 
   return (
     <div className="space-y-6">
-      {/* Shape Categories */}
-      <div>
-        <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
-          فئة الأشكال
-        </h4>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={() => setShapeCategory('basic')}
-            className={`px-3 py-2.5 rounded-[10px] text-[11px] font-medium transition-colors ${
-              shapeCategory === 'basic'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
-            }`}
-          >
-            أساسية
-          </button>
-          <button
-            onClick={() => setShapeCategory('artistic')}
-            className={`px-3 py-2.5 rounded-[10px] text-[11px] font-medium transition-colors ${
-              shapeCategory === 'artistic'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
-            }`}
-          >
-            فنية
-          </button>
-          <button
-            onClick={() => setShapeCategory('icons')}
-            className={`px-3 py-2.5 rounded-[10px] text-[11px] font-medium transition-colors ${
-              shapeCategory === 'icons'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
-            }`}
-          >
-            أيقونات
-          </button>
-          <button
-            onClick={() => setShapeCategory('sticky')}
-            className={`px-3 py-2.5 rounded-[10px] text-[11px] font-medium transition-colors ${
-              shapeCategory === 'sticky'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
-            }`}
-          >
-            ستيكي نوت
-          </button>
-        </div>
-      </div>
-
       {/* Shapes Grid */}
       <div>
         <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
           اختر شكل
         </h4>
         <div className="grid grid-cols-3 gap-2">
-          {basicShapes.map((shape, index) => (
+          {basicShapes.map((shape) => (
             <button
-              key={index}
-              className="group flex flex-col items-center gap-2 p-4 bg-[hsl(var(--panel))] hover:bg-[hsl(var(--accent-green))] hover:text-white rounded-[10px] transition-all"
+              key={shape.type}
+              onClick={() => handleShapeSelect(shape.type, shape.name)}
+              className={`group flex flex-col items-center gap-2 p-4 rounded-[10px] transition-all ${
+                shapeType === shape.type
+                  ? 'bg-[hsl(var(--accent-green))] text-white'
+                  : 'bg-[hsl(var(--panel))] hover:bg-[rgba(217,231,237,0.8)]'
+              }`}
             >
-              <span className="text-[hsl(var(--ink))] group-hover:text-white transition-colors">
+              <span className={`transition-colors ${
+                shapeType === shape.type ? 'text-white' : 'text-[hsl(var(--ink))]'
+              }`}>
                 {shape.icon}
               </span>
-              <span className="text-[10px] font-medium text-[hsl(var(--ink))] group-hover:text-white transition-colors">
+              <span className={`text-[10px] font-medium transition-colors ${
+                shapeType === shape.type ? 'text-white' : 'text-[hsl(var(--ink))]'
+              }`}>
                 {shape.name}
               </span>
             </button>
@@ -99,14 +64,14 @@ const ShapesPanel: React.FC = () => {
           <input
             type="color"
             value={fillColor}
-            onChange={(e) => setFillColor(e.target.value)}
+            onChange={(e) => updateToolSettings('shapes', { fillColor: e.target.value })}
             className="w-12 h-12 rounded-[10px] cursor-pointer border-2 border-[#DADCE0]"
           />
           <div className="flex-1">
             <input
               type="text"
               value={fillColor}
-              onChange={(e) => setFillColor(e.target.value)}
+              onChange={(e) => updateToolSettings('shapes', { fillColor: e.target.value })}
               className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors"
               placeholder="#3DBE8B"
             />
@@ -118,7 +83,7 @@ const ShapesPanel: React.FC = () => {
           {['#3DBE8B', '#F6C445', '#E5564D', '#3DA8F5', '#9333EA', '#0B0F12'].map((c) => (
             <button
               key={c}
-              onClick={() => setFillColor(c)}
+              onClick={() => updateToolSettings('shapes', { fillColor: c })}
               style={{ backgroundColor: c }}
               className={`w-full h-8 rounded-lg border-2 transition-all ${
                 fillColor === c ? 'border-[hsl(var(--ink))] scale-105' : 'border-[#DADCE0]'
@@ -137,14 +102,14 @@ const ShapesPanel: React.FC = () => {
           <input
             type="color"
             value={strokeColor}
-            onChange={(e) => setStrokeColor(e.target.value)}
+            onChange={(e) => updateToolSettings('shapes', { strokeColor: e.target.value })}
             className="w-12 h-12 rounded-[10px] cursor-pointer border-2 border-[#DADCE0]"
           />
           <div className="flex-1">
             <input
               type="text"
               value={strokeColor}
-              onChange={(e) => setStrokeColor(e.target.value)}
+              onChange={(e) => updateToolSettings('shapes', { strokeColor: e.target.value })}
               className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors"
               placeholder="#0B0F12"
             />
@@ -167,7 +132,7 @@ const ShapesPanel: React.FC = () => {
           min={0}
           max={12}
           value={strokeWidth}
-          onChange={(e) => setStrokeWidth(Number(e.target.value))}
+          onChange={(e) => updateToolSettings('shapes', { strokeWidth: Number(e.target.value) })}
           className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
             [&::-webkit-slider-thumb]:appearance-none
             [&::-webkit-slider-thumb]:w-4
@@ -194,7 +159,7 @@ const ShapesPanel: React.FC = () => {
           max={1}
           step={0.05}
           value={opacity}
-          onChange={(e) => setOpacity(Number(e.target.value))}
+          onChange={(e) => updateToolSettings('shapes', { opacity: Number(e.target.value) })}
           className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
             [&::-webkit-slider-thumb]:appearance-none
             [&::-webkit-slider-thumb]:w-4
@@ -232,8 +197,8 @@ const ShapesPanel: React.FC = () => {
             <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">Alt</code>
           </div>
           <div className="flex justify-between">
-            <span>إدراج</span>
-            <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">Enter</code>
+            <span>تفعيل الأداة</span>
+            <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">R</code>
           </div>
         </div>
       </div>

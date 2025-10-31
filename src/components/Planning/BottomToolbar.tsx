@@ -8,7 +8,7 @@ import {
   Star, 
   Lightbulb 
 } from 'lucide-react';
-import type { ToolId } from '../../../panels';
+import { useCanvasStore, type ToolId } from '@/stores/canvasStore';
 
 interface Tool {
   id: ToolId;
@@ -62,19 +62,16 @@ const tools: Tool[] = [
   },
 ];
 
-interface BottomToolbarProps {
-  activeTool: ToolId;
-  onToolChange: (toolId: ToolId) => void;
-}
+const BottomToolbar: React.FC = () => {
+  const { activeTool, setActiveTool } = useCanvasStore();
 
-const BottomToolbar: React.FC<BottomToolbarProps> = ({ activeTool, onToolChange }) => {
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
       <div className="bg-white/90 backdrop-blur-[18px] rounded-[18px] border border-[#DADCE0] shadow-[0_1px_1px_rgba(0,0,0,0.04),0_12px_28px_rgba(0,0,0,0.10)] px-2 py-2 flex items-center gap-1">
         {tools.map((tool) => (
           <button
             key={tool.id}
-            onClick={() => onToolChange(tool.id)}
+            onClick={() => setActiveTool(tool.id)}
             title={`${tool.name} (${tool.shortcut})`}
             className={`
               group relative flex items-center gap-2 px-4 py-2.5 rounded-[10px] 

@@ -2,10 +2,50 @@ import { create } from 'zustand';
 import { nanoid } from 'nanoid';
 import type { CanvasElement, LayerInfo, CanvasSettings } from '@/types/canvas';
 
+export type ToolId =
+  | "selection_tool"
+  | "smart_pen"
+  | "frame_tool"
+  | "file_uploader"
+  | "text_tool"
+  | "shapes_tool"
+  | "smart_element_tool";
+
+export type ShapeType = 'rectangle' | 'circle' | 'triangle' | 'line' | 'star' | 'hexagon';
+
+interface ToolSettings {
+  shapes: {
+    fillColor: string;
+    strokeColor: string;
+    strokeWidth: number;
+    opacity: number;
+    shapeType: ShapeType;
+  };
+  text: {
+    fontSize: number;
+    fontFamily: string;
+    color: string;
+    alignment: 'left' | 'center' | 'right';
+    fontWeight: string;
+  };
+  pen: {
+    strokeWidth: number;
+    color: string;
+    style: 'solid' | 'dashed' | 'dotted';
+  };
+}
+
 interface CanvasState {
   // Elements State
   elements: CanvasElement[];
   selectedElementIds: string[];
+  
+  // Tool System
+  activeTool: ToolId;
+  toolSettings: ToolSettings;
+  isDrawing: boolean;
+  drawStartPoint: { x: number; y: number } | null;
+  tempElement: CanvasElement | null;
   
   // Layers State
   layers: LayerInfo[];
@@ -75,12 +115,55 @@ interface CanvasState {
   toggleFullscreen: () => void;
   toggleMinimap: () => void;
   setZoomPercentage: (percentage: number) => void;
+  
+  // Tool Actions
+  setActiveTool: (tool: ToolId) => void;
+  updateToolSettings: (tool: keyof ToolSettings, settings: Partial<ToolSettings[keyof ToolSettings]>) => void;
+  setIsDrawing: (drawing: boolean) => void;
+  setDrawStartPoint: (point: { x: number; y: number } | null) => void;
+  setTempElement: (element: CanvasElement | null) => void;
+  
+  // Advanced Operations
+  copyElements: (elementIds: string[]) => void;
+  pasteElements: () => void;
+  cutElements: (elementIds: string[]) => void;
+  groupElements: (elementIds: string[]) => void;
+  ungroupElements: (groupId: string) => void;
+  alignElements: (elementIds: string[], alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
 }
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
   // Initial State
   elements: [],
   selectedElementIds: [],
+  
+  // Tool System Initial State
+  activeTool: 'selection_tool',
+  toolSettings: {
+    shapes: {
+      fillColor: '#f28e2a',
+      strokeColor: '#000000',
+      strokeWidth: 1,
+      opacity: 1,
+      shapeType: 'rectangle'
+    },
+    text: {
+      fontSize: 16,
+      fontFamily: 'IBM Plex Sans Arabic',
+      color: '#111827',
+      alignment: 'right',
+      fontWeight: 'normal'
+    },
+    pen: {
+      strokeWidth: 2,
+      color: '#000000',
+      style: 'solid'
+    }
+  },
+  isDrawing: false,
+  drawStartPoint: null,
+  tempElement: null,
+  
   layers: [
     {
       id: 'default',
@@ -422,5 +505,119 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   
   setZoomPercentage: (percentage) => {
     get().setZoom(percentage / 100);
+  },
+  
+  // Tool Actions Implementation
+  setActiveTool: (tool) => {
+    set({ activeTool: tool, isDrawing: false, drawStartPoint: null, tempElement: null });
+  },
+  
+  updateToolSettings: (tool, settings) => {
+    set(state => ({
+      toolSettings: {
+        ...state.toolSettings,
+        [tool]: {
+          ...state.toolSettings[tool],
+          ...settings
+        }
+      }
+    }));
+  },
+  
+  setIsDrawing: (drawing) => set({ isDrawing: drawing }),
+  
+  setDrawStartPoint: (point) => set({ drawStartPoint: point }),
+  
+  setTempElement: (element) => set({ tempElement: element }),
+  
+  // Advanced Operations
+  copyElements: (elementIds) => {
+    const elements = get().elements.filter(el => elementIds.includes(el.id));
+    const clipboard = elements.map(el => ({ ...el }));
+    (window as any).__canvasClipboard = clipboard;
+  },
+  
+  pasteElements: () => {
+    const clipboard = (window as any).__canvasClipboard || [];
+    clipboard.forEach((el: CanvasElement) => {
+      const copy = { ...el };
+      delete (copy as any).id;
+      copy.position = { x: copy.position.x + 20, y: copy.position.y + 20 };
+      get().addElement(copy);
+    });
+  },
+  
+  cutElements: (elementIds) => {
+    get().copyElements(elementIds);
+    get().deleteElements(elementIds);
+  },
+  
+  groupElements: (elementIds) => {
+    const groupId = nanoid();
+    set(state => ({
+      elements: state.elements.map(el => 
+        elementIds.includes(el.id) 
+          ? { ...el, metadata: { ...el.metadata, groupId } } 
+          : el
+      )
+    }));
+  },
+  
+  ungroupElements: (groupId) => {
+    set(state => ({
+      elements: state.elements.map(el => {
+        if (el.metadata?.groupId === groupId) {
+          const { groupId: _, ...restMetadata } = el.metadata;
+          return { ...el, metadata: restMetadata };
+        }
+        return el;
+      })
+    }));
+  },
+  
+  alignElements: (elementIds, alignment) => {
+    const elements = get().elements.filter(el => elementIds.includes(el.id));
+    if (elements.length === 0) return;
+    
+    const bounds = {
+      minX: Math.min(...elements.map(el => el.position.x)),
+      minY: Math.min(...elements.map(el => el.position.y)),
+      maxX: Math.max(...elements.map(el => el.position.x + el.size.width)),
+      maxY: Math.max(...elements.map(el => el.position.y + el.size.height)),
+      centerX: 0,
+      centerY: 0
+    };
+    
+    bounds.centerX = bounds.minX + (bounds.maxX - bounds.minX) / 2;
+    bounds.centerY = bounds.minY + (bounds.maxY - bounds.minY) / 2;
+    
+    elements.forEach(el => {
+      let newPosition = { ...el.position };
+      
+      switch(alignment) {
+        case 'left':
+          newPosition.x = bounds.minX;
+          break;
+        case 'center':
+          newPosition.x = bounds.centerX - el.size.width / 2;
+          break;
+        case 'right':
+          newPosition.x = bounds.maxX - el.size.width;
+          break;
+        case 'top':
+          newPosition.y = bounds.minY;
+          break;
+        case 'middle':
+          newPosition.y = bounds.centerY - el.size.height / 2;
+          break;
+        case 'bottom':
+          newPosition.y = bounds.maxY - el.size.height;
+          break;
+      }
+      
+      get().updateElement(el.id, { position: newPosition });
+    });
+    
+    get().pushHistory();
   }
 }));

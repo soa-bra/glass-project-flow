@@ -52,7 +52,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       </div>
       
       {/* Bottom Toolbar */}
-      <BottomToolbar activeTool={activeTool} onToolChange={setActiveTool} />
+      <BottomToolbar />
       
       {/* AI Assistant Button */}
       <AIAssistantButton />
