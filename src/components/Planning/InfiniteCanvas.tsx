@@ -3,6 +3,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import CanvasElement from './CanvasElement';
 import DrawingPreview from './DrawingPreview';
 import SelectionBox from './SelectionBox';
+import InstructionsOverlay from './InstructionsOverlay';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 
 interface InfiniteCanvasProps {
@@ -285,6 +286,36 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         toggleGrid();
       }
       
+      // Tool shortcuts
+      if (e.key === 'v' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        useCanvasStore.getState().setActiveTool('selection_tool');
+      }
+      if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        useCanvasStore.getState().setActiveTool('text_tool');
+      }
+      if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        useCanvasStore.getState().setActiveTool('shapes_tool');
+      }
+      if (e.key === 'p' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        useCanvasStore.getState().setActiveTool('smart_pen');
+      }
+      if (e.key === 'f' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        useCanvasStore.getState().setActiveTool('frame_tool');
+      }
+      if (e.key === 'u' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        useCanvasStore.getState().setActiveTool('file_uploader');
+      }
+      if (e.key === 's' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        useCanvasStore.getState().setActiveTool('smart_element_tool');
+      }
+      
       // Escape - Clear selection
       if (e.key === 'Escape') {
         clearSelection();
@@ -305,6 +336,26 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     return () => container.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
   
+  // تحديد نوع المؤشر حسب الأداة النشطة
+  const getCursorStyle = () => {
+    switch (activeTool) {
+      case 'text_tool':
+        return 'text';
+      case 'smart_pen':
+        return 'crosshair';
+      case 'shapes_tool':
+        return 'crosshair';
+      case 'frame_tool':
+        return 'crosshair';
+      case 'file_uploader':
+        return 'copy';
+      case 'smart_element_tool':
+        return 'crosshair';
+      default:
+        return 'default';
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -313,7 +364,10 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      style={{ backgroundColor: settings.background }}
+      style={{ 
+        backgroundColor: settings.background,
+        cursor: getCursorStyle()
+      }}
     >
       {/* Canvas Container */}
       <div
@@ -374,6 +428,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         <div>التحريك: عجلة الماوس أو Alt + سحب</div>
         <div>الشبكة: اضغط G</div>
       </div>
+      
+      {/* Dynamic Instructions Overlay */}
+      <InstructionsOverlay />
     </div>
   );
 };

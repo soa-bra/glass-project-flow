@@ -124,6 +124,30 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         <div className="w-full h-full bg-[hsl(var(--panel))] rounded-lg" />
       )}
       
+      {element.type === 'pen_path' && element.data?.path && (
+        <svg
+          className="w-full h-full"
+          viewBox={`0 0 ${element.size.width} ${element.size.height}`}
+          style={{ overflow: 'visible' }}
+        >
+          <path
+            d={element.data.path}
+            stroke={element.data.strokeColor || '#000000'}
+            strokeWidth={element.data.strokeWidth || 2}
+            strokeDasharray={
+              element.data.strokeStyle === 'dashed' 
+                ? '5,5' 
+                : element.data.strokeStyle === 'dotted' 
+                ? '2,2' 
+                : undefined
+            }
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )}
+      
       {element.type === 'smart' && (
         <SmartElementRenderer 
           element={element as CanvasSmartElement}
