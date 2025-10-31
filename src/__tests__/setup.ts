@@ -40,3 +40,7 @@ global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
 } as any;
+
+// Mock requestAnimationFrame
+global.requestAnimationFrame = vi.fn((cb) => setTimeout(cb, 16)) as any;
+global.cancelAnimationFrame = vi.fn((id) => clearTimeout(id)) as any;
