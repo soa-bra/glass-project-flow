@@ -67,24 +67,27 @@ const BottomToolbar: React.FC = () => {
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-      <div className="bg-white/90 backdrop-blur-[18px] rounded-[18px] border border-[#DADCE0] shadow-[0_1px_1px_rgba(0,0,0,0.04),0_12px_28px_rgba(0,0,0,0.10)] px-2 py-2 flex items-center gap-1">
+      <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
         {tools.map((tool) => (
           <button
             key={tool.id}
             onClick={() => setActiveTool(tool.id)}
             title={`${tool.name} (${tool.shortcut})`}
             className={`
-              group relative flex items-center gap-2 px-4 py-2.5 rounded-[10px] 
-              transition-all duration-200
+              group relative inline-flex items-center justify-center gap-2 
+              whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium 
+              transition-all
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+              disabled:pointer-events-none disabled:opacity-50
               ${
                 activeTool === tool.id
-                  ? 'bg-[hsl(var(--accent-green))] text-white shadow-sm'
-                  : 'hover:bg-[hsl(var(--panel))] text-[hsl(var(--ink))]'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'hover:bg-background/50'
               }
             `}
           >
             <span className="flex-shrink-0">{tool.icon}</span>
-            <span className="text-[13px] font-medium whitespace-nowrap">
+            <span className="whitespace-nowrap">
               {tool.name}
             </span>
             
@@ -94,9 +97,9 @@ const BottomToolbar: React.FC = () => {
                 absolute -top-8 left-1/2 -translate-x-1/2
                 opacity-0 group-hover:opacity-100 pointer-events-none
                 transition-opacity duration-200
-                bg-[hsl(var(--ink))] text-white text-[11px] font-medium
-                px-2 py-1 rounded-[6px] whitespace-nowrap
-                shadow-[0_8px_24px_rgba(0,0,0,0.24)]
+                bg-popover text-popover-foreground text-[11px] font-medium
+                px-2 py-1 rounded-md whitespace-nowrap
+                shadow-md border
               `}
             >
               {tool.shortcut}
