@@ -4,7 +4,6 @@ import { usePlanningStore } from '@/stores/planningStore';
 import type { CanvasBoard } from '@/types/planning';
 import type { ToolId } from '../../../panels';
 import InfiniteCanvas from './InfiniteCanvas';
-import LayersPanel from './LayersPanel';
 import CanvasToolbar from './CanvasToolbar';
 import BottomToolbar from './BottomToolbar';
 import RightSidePanel from './RightSidePanel';
@@ -43,9 +42,6 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         <div className="flex-1">
           <InfiniteCanvas boardId={board.id} />
         </div>
-        
-        {/* Layers Panel (Left) */}
-        <LayersPanel />
         
         {/* Tool Settings Panel (Right) */}
         <RightSidePanel activeTool={activeTool} />

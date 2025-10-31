@@ -11,7 +11,8 @@ import {
   Clock,
   Share2,
   Settings,
-  File
+  File,
+  Layers
 } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { usePlanningStore } from '@/stores/planningStore';
@@ -19,6 +20,7 @@ import { HistoryPopover } from './popovers/HistoryPopover';
 import { SharePopover } from './popovers/SharePopover';
 import { CanvasPropertiesPopover } from './popovers/CanvasPropertiesPopover';
 import { FileMenuPopover } from './popovers/FileMenuPopover';
+import { LayersMenuPopover } from './popovers/LayersMenuPopover';
 
 const CanvasToolbar: React.FC = () => {
   const {
@@ -42,6 +44,7 @@ const CanvasToolbar: React.FC = () => {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isPropertiesOpen, setIsPropertiesOpen] = useState(false);
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
+  const [isLayersOpen, setIsLayersOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [boardName, setBoardName] = useState(currentBoard?.name || 'لوحة جديدة');
   
@@ -139,6 +142,19 @@ const CanvasToolbar: React.FC = () => {
             <span className="text-[13px] font-medium text-sb-ink">مشاركة</span>
           </button>
           <SharePopover isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} />
+        </div>
+        
+        {/* Layers */}
+        <div className="relative">
+          <button
+            onClick={() => setIsLayersOpen(!isLayersOpen)}
+            className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors"
+            title="الطبقات"
+          >
+            <Layers size={18} className="text-sb-ink" />
+            <span className="text-[13px] font-medium text-sb-ink">الطبقات</span>
+          </button>
+          <LayersMenuPopover isOpen={isLayersOpen} onClose={() => setIsLayersOpen(false)} />
         </div>
         
         {/* Canvas Properties */}
