@@ -35,7 +35,7 @@ export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClos
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div className="absolute top-full left-0 mt-2 min-w-[16rem] max-w-[calc(100vw-2rem)] sm:w-64 bg-white rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border py-2 z-50 max-h-[80vh] overflow-y-auto">
+      <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border py-2 z-[9999] max-h-[calc(100vh-200px)] overflow-y-auto">
         {/* New */}
         <button
           onClick={handleNewBoard}
