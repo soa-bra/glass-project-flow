@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { usePlanningStore } from '@/stores/planningStore';
+import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasBoard } from '@/types/planning';
-import type { ToolId } from '../../../panels';
 import InfiniteCanvas from './InfiniteCanvas';
 import CanvasToolbar from './CanvasToolbar';
 import BottomToolbar from './BottomToolbar';
@@ -18,7 +18,7 @@ interface PlanningCanvasProps {
 
 const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const { setCurrentBoard } = usePlanningStore();
-  const [activeTool, setActiveTool] = useState<ToolId>('selection_tool');
+  const { activeTool } = useCanvasStore();
 
   return (
     <div className="h-full flex flex-col bg-white">
