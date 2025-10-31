@@ -9,6 +9,9 @@ import CanvasToolbar from './CanvasToolbar';
 import BottomToolbar from './BottomToolbar';
 import RightSidePanel from './RightSidePanel';
 import { AIAssistantButton } from './AIAssistantButton';
+import NavigationBar from './NavigationBar';
+import FloatingEditBar from './FloatingEditBar';
+import Minimap from './Minimap';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;
@@ -53,6 +56,15 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       
       {/* AI Assistant Button */}
       <AIAssistantButton />
+      
+      {/* Navigation Bar */}
+      <NavigationBar />
+      
+      {/* Floating Edit Bar */}
+      <FloatingEditBar />
+      
+      {/* Minimap */}
+      <Minimap />
     </div>
   );
 };

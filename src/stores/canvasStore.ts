@@ -20,6 +20,11 @@ interface CanvasState {
   // Settings
   settings: CanvasSettings;
   
+  // View Modes
+  isPanMode: boolean;
+  isFullscreen: boolean;
+  showMinimap: boolean;
+  
   // History
   history: {
     past: CanvasElement[][];
@@ -64,6 +69,12 @@ interface CanvasState {
   updateSettings: (settings: Partial<CanvasSettings>) => void;
   toggleGrid: () => void;
   toggleSnapToGrid: () => void;
+  
+  // View Mode Actions
+  togglePanMode: () => void;
+  toggleFullscreen: () => void;
+  toggleMinimap: () => void;
+  setZoomPercentage: (percentage: number) => void;
 }
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
@@ -93,6 +104,9 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     background: '#FFFFFF',
     theme: 'light'
   },
+  isPanMode: false,
+  isFullscreen: false,
+  showMinimap: false,
   history: {
     past: [],
     future: []
@@ -389,5 +403,24 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     set(state => ({
       settings: { ...state.settings, snapToGrid: !state.settings.snapToGrid }
     }));
+  },
+  
+  // View Mode Actions
+  togglePanMode: () => set(state => ({ isPanMode: !state.isPanMode })),
+  
+  toggleFullscreen: () => {
+    const state = get();
+    if (!state.isFullscreen) {
+      document.documentElement.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+    set({ isFullscreen: !state.isFullscreen });
+  },
+  
+  toggleMinimap: () => set(state => ({ showMinimap: !state.showMinimap })),
+  
+  setZoomPercentage: (percentage) => {
+    get().setZoom(percentage / 100);
   }
 }));
