@@ -8,6 +8,7 @@ import LayersPanel from './LayersPanel';
 import CanvasToolbar from './CanvasToolbar';
 import BottomToolbar from './BottomToolbar';
 import RightSidePanel from './RightSidePanel';
+import { AIAssistantButton } from './AIAssistantButton';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;
@@ -49,6 +50,9 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       
       {/* Bottom Toolbar */}
       <BottomToolbar activeTool={activeTool} onToolChange={setActiveTool} />
+      
+      {/* AI Assistant Button */}
+      <AIAssistantButton />
     </div>
   );
 };
