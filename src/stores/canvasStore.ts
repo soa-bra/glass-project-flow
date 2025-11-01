@@ -1,9 +1,6 @@
 import { create } from 'zustand';
 import { nanoid } from 'nanoid';
 import type { CanvasElement, LayerInfo, CanvasSettings } from '@/types/canvas';
-import { movingAverage, rdp, filterClosePoints, calculateBBox, type PenPoint } from '@/lib/geometry/simplify';
-import { applySmart, type SmartTransformResult } from '@/lib/smart/apply';
-import { toast } from 'sonner';
 
 export type ToolId =
   | "selection_tool"
@@ -15,25 +12,6 @@ export type ToolId =
   | "smart_element_tool";
 
 export type ShapeType = 'rectangle' | 'circle' | 'triangle' | 'line' | 'star' | 'hexagon';
-export type LineStyle = 'solid' | 'dashed' | 'dotted' | 'double';
-
-export interface PenStroke {
-  id: string;
-  points: PenPoint[];
-  color: string;
-  width: number;
-  style: LineStyle;
-  isClosed?: boolean;
-  simplified?: boolean;
-  bbox?: { x: number; y: number; w: number; h: number };
-}
-
-export interface PenSettings {
-  width: number;
-  color: string;
-  style: LineStyle;
-  smartMode: boolean;
-}
 
 export interface ToolSettings {
   shapes: {
@@ -49,6 +27,11 @@ export interface ToolSettings {
     color: string;
     alignment: 'left' | 'center' | 'right';
     fontWeight: string;
+  };
+  pen: {
+    strokeWidth: number;
+    color: string;
+    style: 'solid' | 'dashed' | 'dotted';
   };
   frame: {
     backgroundColor: string;
@@ -73,11 +56,6 @@ interface CanvasState {
   drawStartPoint: { x: number; y: number } | null;
   tempElement: CanvasElement | null;
   selectedSmartElement: string | null;
-  
-  // Pen State
-  pen: PenSettings;
-  strokes: Record<string, PenStroke>;
-  currentStrokeId: string | null;
   
   // Layers State
   layers: LayerInfo[];
@@ -156,13 +134,6 @@ interface CanvasState {
   setTempElement: (element: CanvasElement | null) => void;
   setSelectedSmartElement: (elementType: string | null) => void;
   
-  // Pen Actions
-  setPen: (partial: Partial<PenSettings>) => void;
-  beginStroke: (p: PenPoint) => string;
-  appendPoint: (p: PenPoint) => void;
-  endStroke: (useSmartMode?: boolean) => void;
-  clearPendingStroke: () => void;
-  
   // Advanced Operations
   copyElements: (elementIds: string[]) => void;
   pasteElements: () => void;
@@ -202,6 +173,11 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       alignment: 'right',
       fontWeight: 'normal'
     },
+    pen: {
+      strokeWidth: 2,
+      color: '#000000',
+      style: 'solid'
+    },
     frame: {
       backgroundColor: '#d9e7ed',
       opacity: 0.3,
@@ -215,16 +191,6 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   drawStartPoint: null,
   tempElement: null,
   selectedSmartElement: null,
-  
-  // Pen Initial State
-  pen: {
-    width: 2,
-    color: '#000000',
-    style: 'solid',
-    smartMode: false
-  },
-  strokes: {},
-  currentStrokeId: null,
   
   layers: [
     {
@@ -830,141 +796,5 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       })
     }));
     get().pushHistory();
-  },
-  
-  // Pen Actions Implementation
-  setPen: (partial) => {
-    set(state => ({
-      pen: { ...state.pen, ...partial }
-    }));
-  },
-  
-  beginStroke: (p) => {
-    const id = nanoid();
-    const { pen } = get();
-    
-    set(state => {
-      const newStroke: PenStroke = {
-        id,
-        points: [p],
-        color: pen.color,
-        width: pen.width,
-        style: pen.style,
-        bbox: { x: p.x, y: p.y, w: 0, h: 0 }
-      };
-      
-      return {
-        strokes: { ...state.strokes, [id]: newStroke },
-        currentStrokeId: id
-      };
-    });
-    
-    return id;
-  },
-  
-  appendPoint: (p) => {
-    set(state => {
-      const id = state.currentStrokeId;
-      if (!id || !state.strokes[id]) return state;
-      
-      const stroke = state.strokes[id];
-      const lastPoint = stroke.points[stroke.points.length - 1];
-      
-      // تصفية النقاط المتقاربة جداً
-      const distance = Math.hypot(p.x - lastPoint.x, p.y - lastPoint.y);
-      if (distance < 0.5) return state;
-      
-      const updatedPoints = [...stroke.points, p];
-      
-      return {
-        strokes: {
-          ...state.strokes,
-          [id]: {
-            ...stroke,
-            points: updatedPoints
-          }
-        }
-      };
-    });
-  },
-  
-  endStroke: (useSmartMode = false) => {
-    const state = get();
-    const id = state.currentStrokeId;
-    
-    if (!id || !state.strokes[id]) {
-      set({ currentStrokeId: null });
-      return;
-    }
-    
-    const stroke = state.strokes[id];
-    
-    // تطبيق التنعيم والتبسيط
-    let pts = stroke.points;
-    pts = filterClosePoints(pts, 0.5);
-    pts = movingAverage(pts, 2);
-    pts = rdp(pts, 1.1);
-    
-    const bbox = calculateBBox(pts);
-    
-    const finalStroke: PenStroke = {
-      ...stroke,
-      points: pts,
-      simplified: true,
-      bbox
-    };
-    
-    // حفظ المسار المبسط
-    set(state => ({
-      strokes: {
-        ...state.strokes,
-        [id]: finalStroke
-      },
-      currentStrokeId: null
-    }));
-    
-    // تطبيق الوضع الذكي إن كان مفعلاً
-    if (useSmartMode && pts.length >= 3) {
-      const result = applySmart(finalStroke, state.elements);
-      
-      if (result.action !== 'none') {
-        // حذف المسار بعد التحويل الذكي
-        set(state => {
-          const { [id]: removed, ...remainingStrokes } = state.strokes;
-          return { strokes: remainingStrokes };
-        });
-        
-        // تطبيق النتيجة
-        if (result.action === 'delete_elements' && result.deleteIds) {
-          result.deleteIds.forEach(elId => get().deleteElement(elId));
-          toast.success(`تم حذف ${result.deleteIds.length} عنصر`);
-        } else if (result.elements && result.elements.length > 0) {
-          result.elements.forEach(el => get().addElement(el as any));
-          
-          const actionNames: Record<string, string> = {
-            'create_shape': 'تم إنشاء شكل',
-            'create_connector': 'تم إنشاء موصل',
-            'create_frame': 'تم إنشاء إطار'
-          };
-          toast.success(actionNames[result.action] || 'تم التحويل الذكي');
-        }
-        
-        get().pushHistory();
-      }
-      // ✅ المسارات تبقى دائمة إلا عند التحويل الذكي الناجح
-    }
-  },
-  
-  clearPendingStroke: () => {
-    const id = get().currentStrokeId;
-    if (id) {
-      set(state => {
-        const { [id]: removed, ...remainingStrokes } = state.strokes;
-        return {
-          strokes: remainingStrokes,
-          currentStrokeId: null
-        };
-      });
-    }
   }
 }));

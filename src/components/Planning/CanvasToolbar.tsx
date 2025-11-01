@@ -75,7 +75,7 @@ const CanvasToolbar: React.FC = () => {
   };
   
   return (
-    <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-sb-border" style={{ cursor: 'default' }}>
+    <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-sb-border">
       {/* Left: File Menu & Board Info */}
       <div className="flex items-center gap-4">
         {/* File Menu */}

@@ -5,8 +5,6 @@ import DrawingPreview from './DrawingPreview';
 import SelectionBox from './SelectionBox';
 import InstructionsOverlay from './InstructionsOverlay';
 import { BoundingBox } from './BoundingBox';
-import StrokesLayer from './StrokesLayer';
-import PenInputLayer from './PenInputLayer';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { screenToCanvasCoordinates } from '@/utils/canvasCoordinates';
@@ -27,7 +25,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     layers,
     activeTool,
     tempElement,
-    strokes,
     setPan,
     setZoom,
     clearSelection,
@@ -505,7 +502,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   };
   return <div ref={containerRef} className="relative w-full h-full overflow-hidden" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onDrop={handleFileDrop} onDragOver={handleFileDragOver} style={{
     backgroundColor: settings.background,
-    cursor: activeTool === 'smart_pen' ? 'crosshair' : getCursorStyle()
+    cursor: getCursorStyle()
   }}>
       {/* Canvas Container */}
       <div ref={canvasRef} className="absolute inset-0 origin-top-left" style={{
@@ -522,9 +519,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
             {gridLines.map((lineStyle, index) => <div key={index} style={lineStyle} />)}
           </div>}
         
-        {/* Pen Strokes Layer */}
-        <StrokesLayer strokes={Object.values(strokes)} viewport={viewport} />
-        
         {/* Canvas Elements */}
         {visibleElements.map(element => <CanvasElement key={element.id} element={element} isSelected={selectedElementIds.includes(element.id)} onSelect={multiSelect => selectElement(element.id, multiSelect)} snapToGrid={settings.snapToGrid ? snapToGrid : undefined} />)}
         
@@ -534,9 +528,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         {/* Drawing Preview */}
         {tempElement && <DrawingPreview element={tempElement} />}
       </div>
-      
-      {/* Pen Input Layer (above canvas) */}
-      <PenInputLayer active={activeTool === 'smart_pen'} viewport={viewport} />
       
       {/* Selection Box */}
       {isSelecting && selectionStart && selectionCurrent && <SelectionBox startX={selectionStart.x} startY={selectionStart.y} currentX={selectionCurrent.x} currentY={selectionCurrent.y} />}
