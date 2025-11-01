@@ -18,7 +18,7 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
   
   return (
     <div
-      className="absolute pointer-events-none border-2 border-[hsl(var(--accent-blue))] bg-[hsla(var(--accent-blue),0.1)] rounded"
+      className="absolute pointer-events-none border border-[hsl(var(--ink),0.25)] bg-[hsl(var(--ink),0.03)] rounded"
       style={{
         left: `${x}px`,
         top: `${y}px`,
