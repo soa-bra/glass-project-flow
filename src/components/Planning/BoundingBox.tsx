@@ -10,42 +10,22 @@ export const BoundingBox: React.FC = () => {
   const [isRotating, setIsRotating] = useState(false);
   const dragStart = useRef({ x: 0, y: 0 });
   
-  // حساب حدود الإطار المحيط
+  // حساب حدود الإطار المحيط بشكل آمن
   const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));
   
-  // ✅ Return الشرطي بعد كل الـ Hooks
-  if (selectedElements.length === 0) return null;
-  
-  const bounds = {
+  const bounds = selectedElements.length > 0 ? {
     minX: Math.min(...selectedElements.map(e => e.position.x)),
     minY: Math.min(...selectedElements.map(e => e.position.y)),
     maxX: Math.max(...selectedElements.map(e => e.position.x + e.size.width)),
     maxY: Math.max(...selectedElements.map(e => e.position.y + e.size.height))
-  };
+  } : { minX: 0, minY: 0, maxX: 0, maxY: 0 };
   
   const width = bounds.maxX - bounds.minX;
   const height = bounds.maxY - bounds.minY;
   const centerX = bounds.minX + width / 2;
   const centerY = bounds.minY + height / 2;
   
-  const handleDragStart = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsDragging(true);
-    dragStart.current = { x: e.clientX, y: e.clientY };
-  };
-  
-  const handleResizeStart = (e: React.MouseEvent, corner: string) => {
-    e.stopPropagation();
-    setIsResizing(corner);
-    dragStart.current = { x: e.clientX, y: e.clientY };
-  };
-  
-  const handleRotateStart = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsRotating(true);
-    dragStart.current = { x: e.clientX, y: e.clientY };
-  };
-  
+  // ✅ useEffect قبل أي return شرطي
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
@@ -105,6 +85,28 @@ export const BoundingBox: React.FC = () => {
       };
     }
   }, [isDragging, isResizing, isRotating, viewport, moveElements, resizeElements, rotateElements, selectedElementIds, width, height, centerX, centerY]);
+  
+  // معالجات الأحداث
+  const handleDragStart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX, y: e.clientY };
+  };
+  
+  const handleResizeStart = (e: React.MouseEvent, corner: string) => {
+    e.stopPropagation();
+    setIsResizing(corner);
+    dragStart.current = { x: e.clientX, y: e.clientY };
+  };
+  
+  const handleRotateStart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsRotating(true);
+    dragStart.current = { x: e.clientX, y: e.clientY };
+  };
+  
+  // ✅ Return الشرطي في النهاية بعد كل الـ Hooks
+  if (selectedElements.length === 0) return null;
   
   return (
     <div
