@@ -30,7 +30,7 @@ export default function Dock({ items, className }: DockProps) {
         animate={{ y: [0, -2, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         className={cn(
-          "flex items-end gap-4 px-4 py-3 rounded-[999px]",
+          "flex items-end gap-4 px-4 py-3 rounded-full",
           "border border-[hsl(var(--border))] bg-background/70 backdrop-blur-2xl shadow-lg"
         )}
         style={{
@@ -59,9 +59,10 @@ export default function Dock({ items, className }: DockProps) {
                       variant="ghost"
                       size="icon"
                       className={cn(
-                        "rounded-2xl relative",
+                        "rounded-full relative",
                         "transition-colors",
-                        isHovered && "shadow-lg shadow-[hsl(var(--ink))]/20"
+                        isHovered && !isActive && "bg-[hsl(var(--ink-30))]",
+                        isActive && "bg-[hsl(var(--ink))]"
                       )}
                       onClick={() => {
                         item.onClick?.()
@@ -70,28 +71,10 @@ export default function Dock({ items, className }: DockProps) {
                       <item.icon
                         className={cn(
                           "h-6 w-6 transition-colors",
-                          isActive ? "text-[hsl(var(--ink))]" : "text-[hsl(var(--ink-60))]"
+                          isActive ? "text-white" : "text-[hsl(var(--ink-60))]"
                         )}
                       />
-                      {/* Glowing ring effect */}
-                      {isHovered && (
-                        <motion.span
-                          layoutId="glow"
-                          className="absolute inset-0 rounded-2xl border border-[hsl(var(--ink))]/40"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                        />
-                      )}
                     </Button>
-
-                    {/* Active indicator */}
-                    {isActive && (
-                      <motion.div
-                        layoutId="dot"
-                        className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--ink))] mt-1"
-                      />
-                    )}
                   </motion.div>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="text-xs bg-[hsl(var(--ink))] text-white border-[hsl(var(--ink))]">
