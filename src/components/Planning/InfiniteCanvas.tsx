@@ -172,14 +172,20 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         clearSelection();
       }
       setIsSelecting(true);
+      
+      // حساب الإحداثيات النسبية للـ container
+      const containerRect = containerRef.current?.getBoundingClientRect();
+      const relativeX = e.clientX - (containerRect?.left || 0);
+      const relativeY = e.clientY - (containerRect?.top || 0);
+      
       setSelectionStart({
-        x: e.clientX,
-        y: e.clientY,
+        x: relativeX,
+        y: relativeY,
         shiftKey: e.shiftKey
       } as any);
       setSelectionCurrent({
-        x: e.clientX,
-        y: e.clientY
+        x: relativeX,
+        y: relativeY
       });
     } else if (e.button === 0 && (activeTool === 'file_uploader' || activeTool === 'frame_tool' || activeTool === 'smart_pen' || activeTool === 'shapes_tool' || activeTool === 'text_tool' || activeTool === 'smart_element_tool')) {
       // تفويض للأداة النشطة
@@ -201,9 +207,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         y: e.clientY
       };
     } else if (isSelecting) {
+      // حساب الإحداثيات النسبية للـ container
+      const containerRect = containerRef.current?.getBoundingClientRect();
+      const relativeX = e.clientX - (containerRect?.left || 0);
+      const relativeY = e.clientY - (containerRect?.top || 0);
+      
       setSelectionCurrent({
-        x: e.clientX,
-        y: e.clientY
+        x: relativeX,
+        y: relativeY
       });
     } else {
       handleCanvasMouseMove(e);
@@ -234,8 +245,10 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         }
       } else {
         // Find elements within selection box
+        // الآن الإحداثيات نسبية للـ container، لذلك نحتاج تحويلها لإحداثيات الكانفاس
         const selectedIds: string[] = [];
         elements.forEach(el => {
+          // تحويل موضع العنصر من إحداثيات الكانفاس إلى إحداثيات الشاشة
           const elScreenPos = {
             x: el.position.x * viewport.zoom + viewport.pan.x,
             y: el.position.y * viewport.zoom + viewport.pan.y,
