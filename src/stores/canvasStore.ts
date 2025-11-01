@@ -41,6 +41,14 @@ export interface PenSettings {
   smartMode: boolean;
 }
 
+// Frame Element Type
+export interface FrameElement extends CanvasElement {
+  type: 'frame';
+  children: string[]; // معرّفات العناصر المجمّعة
+  title?: string;
+  frameStyle?: 'rectangle' | 'rounded' | 'circle';
+}
+
 export interface ToolSettings {
   shapes: {
     fillColor: string;
@@ -170,6 +178,15 @@ interface CanvasState {
   endStroke: () => void;
   clearPendingStroke: () => void;
   clearAllStrokes: () => void;
+  
+  // Frame Management Functions
+  addChildToFrame: (frameId: string, childId: string) => void;
+  removeChildFromFrame: (frameId: string, childId: string) => void;
+  getFrameChildren: (frameId: string) => CanvasElement[];
+  assignElementsToFrame: (frameId: string) => void;
+  moveFrame: (frameId: string, dx: number, dy: number) => void;
+  resizeFrame: (frameId: string, newBounds: { x: number; y: number; width: number; height: number }) => void;
+  ungroupFrame: (frameId: string) => void;
   
   // Advanced Operations
   copyElements: (elementIds: string[]) => void;
@@ -714,6 +731,165 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   
   clearAllStrokes: () => {
     set({ strokes: {}, currentStrokeId: undefined });
+  },
+  
+  // Frame Management Functions Implementation
+  addChildToFrame: (frameId, childId) => {
+    set(state => ({
+      elements: state.elements.map(el => {
+        if (el.id === frameId && el.type === 'frame') {
+          const children = (el as any).children || [];
+          if (!children.includes(childId)) {
+            return { ...el, children: [...children, childId] };
+          }
+        }
+        return el;
+      })
+    }));
+  },
+
+  removeChildFromFrame: (frameId, childId) => {
+    set(state => ({
+      elements: state.elements.map(el => {
+        if (el.id === frameId && el.type === 'frame') {
+          const children = (el as any).children || [];
+          return { ...el, children: children.filter((id: string) => id !== childId) };
+        }
+        return el;
+      })
+    }));
+  },
+
+  getFrameChildren: (frameId) => {
+    const state = get();
+    const frame = state.elements.find(el => el.id === frameId && el.type === 'frame');
+    if (!frame) return [];
+    const childIds = (frame as any).children || [];
+    return state.elements.filter(el => childIds.includes(el.id));
+  },
+
+  assignElementsToFrame: (frameId) => {
+    const state = get();
+    const frame = state.elements.find(el => el.id === frameId && el.type === 'frame');
+    if (!frame) return;
+    
+    const frameRect = {
+      x: frame.position.x,
+      y: frame.position.y,
+      width: frame.size.width,
+      height: frame.size.height
+    };
+    
+    const childrenIds: string[] = [];
+    
+    state.elements.forEach(el => {
+      if (el.id === frameId || el.type === 'frame') return;
+      
+      const elCenterX = el.position.x + el.size.width / 2;
+      const elCenterY = el.position.y + el.size.height / 2;
+      
+      const isInside = (
+        elCenterX >= frameRect.x &&
+        elCenterX <= frameRect.x + frameRect.width &&
+        elCenterY >= frameRect.y &&
+        elCenterY <= frameRect.y + frameRect.height
+      );
+      
+      if (isInside) {
+        childrenIds.push(el.id);
+      }
+    });
+    
+    set(state => ({
+      elements: state.elements.map(el =>
+        el.id === frameId ? { ...el, children: childrenIds } : el
+      )
+    }));
+  },
+
+  moveFrame: (frameId, dx, dy) => {
+    const state = get();
+    const frame = state.elements.find(el => el.id === frameId);
+    if (!frame || frame.type !== 'frame') return;
+    
+    const childIds = (frame as any).children || [];
+    
+    set(state => ({
+      elements: state.elements.map(el => {
+        if (el.id === frameId || childIds.includes(el.id)) {
+          return {
+            ...el,
+            position: {
+              x: el.position.x + dx,
+              y: el.position.y + dy
+            }
+          };
+        }
+        return el;
+      })
+    }));
+    
+    get().pushHistory();
+  },
+
+  resizeFrame: (frameId, newBounds) => {
+    const state = get();
+    const frame = state.elements.find(el => el.id === frameId);
+    if (!frame || frame.type !== 'frame') return;
+    
+    const oldBounds = {
+      x: frame.position.x,
+      y: frame.position.y,
+      width: frame.size.width,
+      height: frame.size.height
+    };
+    
+    const scaleX = newBounds.width / oldBounds.width;
+    const scaleY = newBounds.height / oldBounds.height;
+    
+    const childIds = (frame as any).children || [];
+    
+    set(state => ({
+      elements: state.elements.map(el => {
+        if (el.id === frameId) {
+          return {
+            ...el,
+            position: { x: newBounds.x, y: newBounds.y },
+            size: { width: newBounds.width, height: newBounds.height }
+          };
+        }
+        
+        if (childIds.includes(el.id)) {
+          const relativeX = el.position.x - oldBounds.x;
+          const relativeY = el.position.y - oldBounds.y;
+          
+          return {
+            ...el,
+            position: {
+              x: newBounds.x + relativeX * scaleX,
+              y: newBounds.y + relativeY * scaleY
+            },
+            size: {
+              width: el.size.width * scaleX,
+              height: el.size.height * scaleY
+            }
+          };
+        }
+        
+        return el;
+      })
+    }));
+    
+    get().pushHistory();
+  },
+
+  ungroupFrame: (frameId) => {
+    set(state => ({
+      elements: state.elements.map(el =>
+        el.id === frameId ? { ...el, children: [] } : el
+      )
+    }));
+    get().pushHistory();
   },
   
   // Advanced Operations
