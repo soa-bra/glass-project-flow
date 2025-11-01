@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import {
   Tooltip,
   TooltipContent,
@@ -45,36 +44,30 @@ export default function Dock({ items, className }: DockProps) {
             return (
               <Tooltip key={item.label}>
                 <TooltipTrigger asChild>
-                  <motion.div
+                  <motion.button
                     onMouseEnter={() => setHovered(i)}
                     onMouseLeave={() => setHovered(null)}
                     animate={{
                       scale: isHovered ? 1.1 : 1,
                     }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className="relative flex flex-col items-center"
+                    onClick={() => {
+                      item.onClick?.()
+                    }}
+                    className={cn(
+                      "h-10 w-10 rounded-full flex items-center justify-center",
+                      "transition-colors duration-200",
+                      isActive && "bg-[hsl(var(--ink))]",
+                      isHovered && !isActive && "bg-[hsl(var(--ink-30))]"
+                    )}
                   >
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                    <item.icon
                       className={cn(
-                        "rounded-full relative",
-                        "transition-colors",
-                        isHovered && !isActive && "bg-[hsl(var(--ink-30))]",
-                        isActive && "bg-[hsl(var(--ink))]"
+                        "h-6 w-6 transition-colors",
+                        isActive ? "text-white" : "text-[hsl(var(--ink-60))]"
                       )}
-                      onClick={() => {
-                        item.onClick?.()
-                      }}
-                    >
-                      <item.icon
-                        className={cn(
-                          "h-6 w-6 transition-colors",
-                          isActive ? "text-white" : "text-[hsl(var(--ink-60))]"
-                        )}
-                      />
-                    </Button>
-                  </motion.div>
+                    />
+                  </motion.button>
                 </TooltipTrigger>
                 <TooltipContent 
                   side="top" 
