@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { RectangleHorizontal, Square, Circle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -12,9 +12,12 @@ export default function FramePanel() {
     ? elements.find(el => el.id === selectedElementIds[0] && el.type === 'frame')
     : null;
 
-  const frameChildren = selectedFrame 
-    ? elements.filter(el => (selectedFrame as any).children?.includes(el.id))
-    : [];
+  const frameChildren = useMemo(
+    () => selectedFrame 
+      ? elements.filter(el => (selectedFrame as any).children?.includes(el.id))
+      : [],
+    [selectedFrame, elements]
+  );
 
   const handleUngroup = () => {
     if (selectedFrame) {

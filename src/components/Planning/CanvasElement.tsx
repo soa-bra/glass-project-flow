@@ -150,15 +150,27 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       )}
       
       {element.type === 'frame' && (
-        <div className="relative w-full h-full">
-          {element.title && (
-            <div className="absolute -top-6 left-2 px-2 py-1 bg-white rounded text-[11px] font-semibold text-[hsl(var(--ink))] shadow-sm">
-              {element.title}
+        <div className="relative w-full h-full pointer-events-none">
+          {/* عنوان الإطار */}
+          {(element as any).title && (
+            <div className="absolute top-2 right-2 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[11px] font-medium text-[hsl(var(--ink))] shadow-sm border border-[hsl(var(--border))]">
+              {(element as any).title}
             </div>
           )}
-          <div className="w-full h-full opacity-20 flex items-center justify-center text-[hsl(var(--ink-60))] text-[10px]">
-            إطار
-          </div>
+          
+          {/* عدد العناصر المجمّعة */}
+          {(element as any).children && (element as any).children.length > 0 && (
+            <div className="absolute bottom-2 left-2 px-2 py-1 bg-[hsl(var(--ink))]/90 backdrop-blur-sm text-white rounded-lg text-[10px] font-medium shadow-sm">
+              {(element as any).children.length} عنصر
+            </div>
+          )}
+          
+          {/* أيقونة الإطار في المنتصف */}
+          {(!(element as any).children || (element as any).children.length === 0) && (
+            <div className="absolute inset-0 flex items-center justify-center text-[hsl(var(--ink-30))] text-[11px]">
+              إطار فارغ
+            </div>
+          )}
         </div>
       )}
       

@@ -64,7 +64,7 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         break;
 
       case 'frame_tool':
-        handleFrameToolStart(snappedPoint);
+        // ✨ يتم التعامل معه الآن عبر FrameInputLayer
         break;
       
       case 'file_uploader':
@@ -118,7 +118,7 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         break;
 
       case 'frame_tool':
-        handleFrameToolMove(snappedPoint);
+        // ✨ يتم التعامل معه الآن عبر FrameInputLayer
         break;
 
       default:
@@ -135,34 +135,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       const finalElement = { ...tempElement };
       delete (finalElement as any).id;
       
-      // للإطارات، نحتاج لتحديد العناصر الموجودة داخله
-      if (finalElement.type === 'frame') {
-        const frameRect = {
-          x: finalElement.position.x,
-          y: finalElement.position.y,
-          width: finalElement.size.width,
-          height: finalElement.size.height
-        };
-        
-        // البحث عن العناصر التي تقع داخل الإطار
-        const childrenIds = elements
-          .filter(el => {
-            const elCenter = {
-              x: el.position.x + el.size.width / 2,
-              y: el.position.y + el.size.height / 2
-            };
-            return (
-              elCenter.x >= frameRect.x &&
-              elCenter.x <= frameRect.x + frameRect.width &&
-              elCenter.y >= frameRect.y &&
-              elCenter.y <= frameRect.y + frameRect.height
-            );
-          })
-          .map(el => el.id);
-        
-        finalElement.childrenIds = childrenIds;
-      }
-      
       addElement(finalElement);
       toast.success('تم إضافة العنصر');
     }
@@ -170,7 +142,7 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     setIsDrawing(false);
     setDrawStartPoint(null);
     setTempElement(null);
-  }, [isDrawing, tempElement, activeTool, elements, addElement, setIsDrawing, setDrawStartPoint, setTempElement]);
+  }, [isDrawing, tempElement, addElement, setIsDrawing, setDrawStartPoint, setTempElement]);
 
   /**
    * أداة النص: إنشاء صندوق نص عند النقر
@@ -222,50 +194,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
    * أداة الأشكال: تحديث حجم الشكل أثناء السحب
    */
   const handleShapesToolMove = (currentPoint: { x: number; y: number }) => {
-    if (!drawStartPoint || !tempElement) return;
-
-    const width = Math.abs(currentPoint.x - drawStartPoint.x);
-    const height = Math.abs(currentPoint.y - drawStartPoint.y);
-    const x = Math.min(currentPoint.x, drawStartPoint.x);
-    const y = Math.min(currentPoint.y, drawStartPoint.y);
-
-    setTempElement({
-      ...tempElement,
-      position: { x, y },
-      size: { width, height }
-    });
-  };
-
-  /**
-   * أداة الإطار: بدء رسم إطار
-   */
-  const handleFrameToolStart = (point: { x: number; y: number }) => {
-    setIsDrawing(true);
-    setDrawStartPoint(point);
-
-    const initialElement = {
-      id: 'temp',
-      type: 'frame' as const,
-      position: point,
-      size: { width: 0, height: 0 },
-      title: toolSettings.frame.title || 'إطار جديد',
-      frameStyle: toolSettings.frame.frameStyle,
-      style: {
-        backgroundColor: toolSettings.frame.backgroundColor,
-        opacity: toolSettings.frame.opacity,
-        border: `${toolSettings.frame.strokeWidth}px solid ${toolSettings.frame.strokeColor}`,
-        borderRadius: toolSettings.frame.frameStyle === 'circle' ? 9999 : toolSettings.frame.frameStyle === 'rounded' ? 18 : 8
-      },
-      childrenIds: []
-    };
-
-    setTempElement(initialElement as any);
-  };
-
-  /**
-   * أداة الإطار: تحديث حجم الإطار أثناء السحب
-   */
-  const handleFrameToolMove = (currentPoint: { x: number; y: number }) => {
     if (!drawStartPoint || !tempElement) return;
 
     const width = Math.abs(currentPoint.x - drawStartPoint.x);
