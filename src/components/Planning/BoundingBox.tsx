@@ -3,10 +3,17 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import { RotateCw } from 'lucide-react';
 
 export const BoundingBox: React.FC = () => {
+  // ✅ جميع الـ Hooks أولاً (قبل أي return)
   const { selectedElementIds, elements, viewport, moveElements, resizeElements, rotateElements } = useCanvasStore();
+  const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState<string | null>(null);
+  const [isRotating, setIsRotating] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0 });
   
   // حساب حدود الإطار المحيط
   const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));
+  
+  // ✅ Return الشرطي بعد كل الـ Hooks
   if (selectedElements.length === 0) return null;
   
   const bounds = {
@@ -20,12 +27,6 @@ export const BoundingBox: React.FC = () => {
   const height = bounds.maxY - bounds.minY;
   const centerX = bounds.minX + width / 2;
   const centerY = bounds.minY + height / 2;
-  
-  // معالجات السحب للتحريك
-  const [isDragging, setIsDragging] = useState(false);
-  const [isResizing, setIsResizing] = useState<string | null>(null);
-  const [isRotating, setIsRotating] = useState(false);
-  const dragStart = useRef({ x: 0, y: 0 });
   
   const handleDragStart = (e: React.MouseEvent) => {
     e.stopPropagation();
