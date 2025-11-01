@@ -3,7 +3,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 
 export const BoundingBox: React.FC = () => {
   // ✅ جميع الـ Hooks أولاً (قبل أي return)
-  const { selectedElementIds, elements, viewport, moveElements, resizeElements, duplicateElement } = useCanvasStore();
+  const { selectedElementIds, elements, viewport, moveElements, resizeElements, duplicateElement, moveFrame, resizeFrame } = useCanvasStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<string | null>(null);
   const dragStart = useRef({ x: 0, y: 0 });
@@ -69,7 +69,16 @@ export const BoundingBox: React.FC = () => {
         }
         
         if (deltaX !== 0 || deltaY !== 0) {
-          moveElements(selectedElementIds, deltaX, deltaY);
+          // ✨ تحقق إذا كان الإطار
+          const isFrame = selectedElements.length === 1 && selectedElements[0].type === 'frame';
+          
+          if (isFrame) {
+            const frameId = selectedElements[0].id;
+            moveFrame(frameId, deltaX, deltaY);
+          } else {
+            moveElements(selectedElementIds, deltaX, deltaY);
+          }
+          
           dragStart.current = { x: e.clientX, y: e.clientY };
         }
       } else if (isResizing) {
@@ -94,7 +103,27 @@ export const BoundingBox: React.FC = () => {
         }
         
         if (scaleX !== 1 || scaleY !== 1) {
-          resizeElements(selectedElementIds, scaleX, scaleY, origin);
+          // ✨ تحقق إذا كان الإطار
+          const isFrame = selectedElements.length === 1 && selectedElements[0].type === 'frame';
+          
+          if (isFrame) {
+            const frameId = selectedElements[0].id;
+            const newBounds = {
+              x: bounds.minX,
+              y: bounds.minY,
+              width: width * scaleX,
+              height: height * scaleY
+            };
+            
+            // تطبيق المنشأ الصحيح
+            newBounds.x = origin.x - (origin.x - bounds.minX) * scaleX;
+            newBounds.y = origin.y - (origin.y - bounds.minY) * scaleY;
+            
+            resizeFrame(frameId, newBounds);
+          } else {
+            resizeElements(selectedElementIds, scaleX, scaleY, origin);
+          }
+          
           dragStart.current = { x: e.clientX, y: e.clientY };
         }
       }
