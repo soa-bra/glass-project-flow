@@ -3,10 +3,12 @@ import { useCanvasStore } from '@/stores/canvasStore';
 
 export const BoundingBox: React.FC = () => {
   // ✅ جميع الـ Hooks أولاً (قبل أي return)
-  const { selectedElementIds, elements, viewport, moveElements, resizeElements } = useCanvasStore();
+  const { selectedElementIds, elements, viewport, moveElements, resizeElements, duplicateElement } = useCanvasStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<string | null>(null);
   const dragStart = useRef({ x: 0, y: 0 });
+  const initialMousePos = useRef({ x: 0, y: 0 });
+  const hasDuplicated = useRef(false);
   
   // حساب حدود الإطار المحيط بشكل آمن
   const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));
@@ -42,10 +44,32 @@ export const BoundingBox: React.FC = () => {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
-        const dx = (e.clientX - dragStart.current.x) / viewport.zoom;
-        const dy = (e.clientY - dragStart.current.y) / viewport.zoom;
-        if (dx !== 0 || dy !== 0) {
-          moveElements(selectedElementIds, dx, dy);
+        // تكرار العناصر عند Cmd/Ctrl+Drag (مرة واحدة فقط)
+        if ((e.metaKey || e.ctrlKey) && !hasDuplicated.current) {
+          selectedElementIds.forEach(id => duplicateElement(id));
+          hasDuplicated.current = true;
+        }
+        
+        const rawDeltaX = e.clientX - dragStart.current.x;
+        const rawDeltaY = e.clientY - dragStart.current.y;
+        
+        let deltaX = rawDeltaX / viewport.zoom;
+        let deltaY = rawDeltaY / viewport.zoom;
+        
+        // تقييد الحركة بمحور واحد مع Shift
+        if (e.shiftKey) {
+          const absX = Math.abs(rawDeltaX);
+          const absY = Math.abs(rawDeltaY);
+          
+          if (absX > absY) {
+            deltaY = 0; // الحركة أفقية فقط
+          } else {
+            deltaX = 0; // الحركة عمودية فقط
+          }
+        }
+        
+        if (deltaX !== 0 || deltaY !== 0) {
+          moveElements(selectedElementIds, deltaX, deltaY);
           dragStart.current = { x: e.clientX, y: e.clientY };
         }
       } else if (isResizing) {
@@ -79,6 +103,7 @@ export const BoundingBox: React.FC = () => {
     const handleMouseUp = () => {
       setIsDragging(false);
       setIsResizing(null);
+      hasDuplicated.current = false;
     };
     
     if (isDragging || isResizing) {

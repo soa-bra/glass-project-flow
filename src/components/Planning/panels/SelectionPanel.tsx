@@ -110,6 +110,16 @@ const SelectionPanel: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header with selection count */}
+      <div className="flex items-center justify-between pb-3 border-b border-[#DADCE0]">
+        <h3 className="text-sm font-semibold text-[hsl(var(--ink))]">لوحة التحديد</h3>
+        {hasSelection && (
+          <span className="text-xs font-medium text-[hsl(var(--ink-60))] bg-[hsl(var(--accent-blue))]/10 px-2.5 py-1 rounded-full">
+            {selectedElementIds.length} {selectedElementIds.length === 1 ? 'عنصر' : 'عناصر'}
+          </span>
+        )}
+      </div>
+      
       {/* Element Properties - show when elements are selected */}
       {hasSelection && (
         <div className="pb-6 border-b border-[#DADCE0]">

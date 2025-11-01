@@ -29,13 +29,17 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     setZoom,
     clearSelection,
     selectElement,
+    selectElements,
     undo,
     redo,
     toggleGrid,
     deleteElements,
     copyElements,
     pasteElements,
-    cutElements
+    cutElements,
+    moveElements,
+    groupElements,
+    ungroupElements
   } = useCanvasStore();
   const {
     handleCanvasMouseDown,
@@ -295,11 +299,67 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         if (selectedElementIds.length > 0) {
           e.preventDefault();
           deleteElements(selectedElementIds);
+          toast.success('تم حذف العناصر المحددة');
+        }
+      }
+      
+      // Arrow Keys Movement (1px normal, 10px with Shift)
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+        if (selectedElementIds.length === 0) return;
+        e.preventDefault();
+        
+        let deltaX = 0;
+        let deltaY = 0;
+        const step = e.shiftKey ? 10 : 1;
+        
+        switch (e.key) {
+          case 'ArrowLeft': deltaX = -step; break;
+          case 'ArrowRight': deltaX = step; break;
+          case 'ArrowUp': deltaY = -step; break;
+          case 'ArrowDown': deltaY = step; break;
+        }
+        
+        moveElements(selectedElementIds, deltaX, deltaY);
+      }
+      
+      // Select All (Ctrl+A)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+        e.preventDefault();
+        const allElementIds = elements.map(el => el.id);
+        selectElements(allElementIds);
+        if (allElementIds.length > 0) {
+          toast.success(`تم تحديد ${allElementIds.length} عنصر`);
+        }
+      }
+      
+      // Group (Ctrl+G) - must be before grid toggle
+      if ((e.ctrlKey || e.metaKey) && e.key === 'g' && !e.shiftKey) {
+        e.preventDefault();
+        if (selectedElementIds.length > 1) {
+          groupElements(selectedElementIds);
+          toast.success(`تم تجميع ${selectedElementIds.length} عنصر`);
+        }
+      }
+      
+      // Ungroup (Ctrl+Shift+G)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'G') {
+        e.preventDefault();
+        const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));
+        const groupIds = [...new Set(selectedElements
+          .map(el => el.metadata?.groupId)
+          .filter(Boolean))];
+        
+        groupIds.forEach(groupId => {
+          if (groupId) ungroupElements(groupId);
+        });
+        
+        if (groupIds.length > 0) {
+          toast.success('تم فك التجميع');
         }
       }
 
-      // Grid toggle
-      if (e.key === 'g' && !e.ctrlKey && !e.metaKey) {
+      // Grid toggle (only 'g' without modifiers)
+      if (e.key === 'g' && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
         e.preventDefault();
         toggleGrid();
       }

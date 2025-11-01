@@ -561,12 +561,13 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   // Advanced Operations
   copyElements: (elementIds) => {
     const elements = get().elements.filter(el => elementIds.includes(el.id));
-    const clipboard = elements.map(el => ({ ...el }));
-    (window as any).__canvasClipboard = clipboard;
+    set({ clipboard: elements.map(el => ({ ...el })) });
   },
   
   pasteElements: () => {
-    const clipboard = (window as any).__canvasClipboard || [];
+    const clipboard = get().clipboard;
+    if (clipboard.length === 0) return;
+    
     clipboard.forEach((el: CanvasElement) => {
       const copy = { ...el };
       delete (copy as any).id;
