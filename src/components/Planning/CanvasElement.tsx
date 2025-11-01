@@ -95,6 +95,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   return (
     <div
       ref={elementRef}
+      data-canvas-element="true"
       onMouseDown={handleMouseDown}
       className={`absolute select-none ${isLocked ? 'cursor-not-allowed' : 'cursor-move'}`}
       style={{
