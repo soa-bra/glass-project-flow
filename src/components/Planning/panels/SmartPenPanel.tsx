@@ -1,21 +1,21 @@
 import React from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { Minus, MoreHorizontal } from 'lucide-react';
+import { Minus, MoreHorizontal, Sparkles, Trash2 } from 'lucide-react';
 
 export default function SmartPenPanel() {
-  const { toolSettings, updateToolSettings, setActiveTool } = useCanvasStore();
+  const { toolSettings, updateToolSettings, setActiveTool, setPenSettings, toggleSmartMode, clearAllStrokes } = useCanvasStore();
   const penSettings = toolSettings.pen;
 
   const handleStrokeWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateToolSettings('pen', { strokeWidth: parseInt(e.target.value) });
+    setPenSettings({ strokeWidth: parseInt(e.target.value) });
   };
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateToolSettings('pen', { color: e.target.value });
+    setPenSettings({ color: e.target.value });
   };
 
-  const handleStyleChange = (style: 'solid' | 'dashed' | 'dotted') => {
-    updateToolSettings('pen', { style });
+  const handleStyleChange = (style: 'solid' | 'dashed' | 'dotted' | 'double') => {
+    setPenSettings({ style });
   };
 
   const handleActivatePen = () => {
@@ -70,7 +70,7 @@ export default function SmartPenPanel() {
           <label className="text-[12px] text-[hsl(var(--ink-60))] mb-2 block">
             نمط الخط
           </label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 mb-2">
             <button
               onClick={() => handleStyleChange('solid')}
               className={`flex items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors ${
@@ -106,15 +106,61 @@ export default function SmartPenPanel() {
               <span className="text-[16px] leading-none">···</span>
               <span className="text-[11px]">نقطي</span>
             </button>
+
+            <button
+              onClick={() => handleStyleChange('double')}
+              className={`flex items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+                penSettings.style === 'double'
+                  ? 'bg-[hsl(var(--ink))] text-white'
+                  : 'bg-[hsl(var(--panel))] hover:bg-[rgba(217,231,237,0.8)]'
+              }`}
+            >
+              <span className="text-[14px] font-bold leading-none">=</span>
+              <span className="text-[11px]">مزدوج</span>
+            </button>
           </div>
+        </div>
+
+        {/* الوضع الذكي */}
+        <div className="mb-4 p-3 bg-[hsl(var(--panel))] rounded-lg">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Sparkles size={14} className="text-[hsl(var(--accent-blue))]" />
+              <label className="text-[12px] font-medium text-[hsl(var(--ink))]">
+                الوضع الذكي
+              </label>
+            </div>
+            <button
+              onClick={toggleSmartMode}
+              className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
+                penSettings.smartMode
+                  ? 'bg-[hsl(var(--accent-green))] text-white'
+                  : 'bg-white border border-[hsl(var(--border))] text-[hsl(var(--ink-60))]'
+              }`}
+            >
+              {penSettings.smartMode ? 'مُفعّل' : 'معطّل'}
+            </button>
+          </div>
+          <p className="text-[10px] text-[hsl(var(--ink-60))] leading-relaxed">
+            يحوّل الرسومات اليدوية إلى أشكال منتظمة تلقائياً
+          </p>
         </div>
 
         {/* زر تفعيل القلم */}
         <button
           onClick={handleActivatePen}
-          className="w-full py-2.5 bg-[hsl(var(--accent-blue))] hover:bg-[hsl(var(--accent-blue))]/90 text-white rounded-lg transition-colors text-[13px] font-medium"
+          className="w-full py-2.5 bg-[hsl(var(--accent-blue))] hover:bg-[hsl(var(--accent-blue))]/90 text-white rounded-lg transition-colors text-[13px] font-medium mb-2"
         >
           تفعيل القلم الذكي
+        </button>
+
+        {/* زر مسح المسارات */}
+        <button
+          onClick={clearAllStrokes}
+          className="w-full py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors text-[12px] font-medium flex items-center justify-center gap-2"
+        >
+          <Trash2 size={14} />
+          مسح جميع المسارات
         </button>
       </div>
 
@@ -125,8 +171,9 @@ export default function SmartPenPanel() {
         </h5>
         <ul className="space-y-1.5 text-[11px] text-[hsl(var(--ink-60))]">
           <li>• اسحب الماوس للرسم الحر</li>
-          <li>• اضغط Alt للتحويل التلقائي للأشكال</li>
+          <li>• فعّل الوضع الذكي للتحويل التلقائي للأشكال</li>
           <li>• ارسم دائرة أو مربع وسيتم تحويله تلقائياً</li>
+          <li>• جرّب الأنماط المختلفة للخطوط</li>
         </ul>
       </div>
     </div>

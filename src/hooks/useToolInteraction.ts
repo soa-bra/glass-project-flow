@@ -23,8 +23,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
   } = useCanvasStore();
 
   const isDraggingRef = useRef(false);
-  const [penPoints, setPenPoints] = useState<Point[]>([]);
-  const [isSmartMode, setIsSmartMode] = useState(false);
 
   /**
    * معالج بدء النقر على الكانفاس
@@ -52,11 +50,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       settings.snapToGrid
     );
 
-    // تحديد الوضع الذكي للقلم (Alt key)
-    if (activeTool === 'smart_pen' && e.altKey) {
-      setIsSmartMode(true);
-    }
-
     switch (activeTool) {
       case 'text_tool':
         handleTextToolClick(snappedPoint);
@@ -67,7 +60,7 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         break;
 
       case 'smart_pen':
-        handleSmartPenStart(snappedPoint);
+        // يتم التعامل معه عبر PenInputLayer
         break;
 
       case 'frame_tool':
@@ -121,7 +114,7 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         break;
 
       case 'smart_pen':
-        handleSmartPenMove(snappedPoint);
+        // يتم التعامل معه عبر PenInputLayer
         break;
 
       case 'frame_tool':
@@ -174,17 +167,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       toast.success('تم إضافة العنصر');
     }
 
-    // معالجة القلم الذكي
-    if (activeTool === 'smart_pen' && penPoints.length > 0) {
-      handleSmartPenEnd();
-    }
-
     setIsDrawing(false);
     setDrawStartPoint(null);
     setTempElement(null);
-    setPenPoints([]);
-    setIsSmartMode(false);
-  }, [isDrawing, tempElement, activeTool, penPoints, elements, addElement, setIsDrawing, setDrawStartPoint, setTempElement]);
+  }, [isDrawing, tempElement, activeTool, elements, addElement, setIsDrawing, setDrawStartPoint, setTempElement]);
 
   /**
    * أداة النص: إنشاء صندوق نص عند النقر
@@ -248,133 +234,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       position: { x, y },
       size: { width, height }
     });
-  };
-
-  /**
-   * القلم الذكي: بدء الرسم
-   */
-  const handleSmartPenStart = (point: { x: number; y: number }) => {
-    setIsDrawing(true);
-    setPenPoints([point]);
-  };
-
-  /**
-   * القلم الذكي: إضافة نقاط أثناء الرسم
-   */
-  const handleSmartPenMove = (point: { x: number; y: number }) => {
-    if (!isDrawing) return;
-    setPenPoints(prev => [...prev, point]);
-  };
-
-  /**
-   * القلم الذكي: إنهاء الرسم
-   */
-  const handleSmartPenEnd = () => {
-    if (penPoints.length < 3) {
-      toast.error('المسار قصير جداً');
-      return;
-    }
-
-    // تبسيط المسار
-    const simplified = simplifyPath(penPoints, 3);
-
-    if (isSmartMode) {
-      // الوضع الذكي: التعرف على الشكل
-      const recognized = recognizeShape(simplified);
-      
-      if (recognized.type === 'circle') {
-        // إنشاء دائرة منتظمة
-        addElement({
-          type: 'shape',
-          position: { 
-            x: recognized.center.x - recognized.radius, 
-            y: recognized.center.y - recognized.radius 
-          },
-          size: { width: recognized.radius * 2, height: recognized.radius * 2 },
-          shapeType: 'circle',
-          style: {
-            backgroundColor: 'transparent',
-            borderRadius: 9999,
-            opacity: toolSettings.pen.color === '#000000' ? 0.8 : 1
-          },
-          strokeColor: toolSettings.pen.color,
-          strokeWidth: toolSettings.pen.strokeWidth
-        });
-        toast.success('تم التعرف على دائرة');
-      } else if (recognized.type === 'rectangle') {
-        // إنشاء مستطيل منتظم
-        addElement({
-          type: 'shape',
-          position: { x: recognized.x, y: recognized.y },
-          size: { width: recognized.width, height: recognized.height },
-          shapeType: 'rectangle',
-          style: {
-            backgroundColor: 'transparent',
-            borderRadius: 8,
-            opacity: toolSettings.pen.color === '#000000' ? 0.8 : 1
-          },
-          strokeColor: toolSettings.pen.color,
-          strokeWidth: toolSettings.pen.strokeWidth
-        });
-        toast.success('تم التعرف على مستطيل');
-      } else if (recognized.type === 'line') {
-        // إنشاء خط مستقيم
-        const width = Math.abs(recognized.end.x - recognized.start.x);
-        const height = Math.abs(recognized.end.y - recognized.start.y);
-        const minX = Math.min(recognized.start.x, recognized.end.x);
-        const minY = Math.min(recognized.start.y, recognized.end.y);
-        
-        addElement({
-          type: 'shape',
-          position: { x: minX, y: minY },
-          size: { width: Math.max(width, toolSettings.pen.strokeWidth), height: Math.max(height, toolSettings.pen.strokeWidth) },
-          shapeType: 'line',
-          style: {
-            backgroundColor: toolSettings.pen.color,
-            borderRadius: 0,
-            opacity: 1
-          },
-          strokeColor: toolSettings.pen.color,
-          strokeWidth: toolSettings.pen.strokeWidth
-        });
-        toast.success('تم التعرف على خط');
-      } else {
-        // لم يتم التعرف - رسم المسار الحر
-        createFreeDrawPath(simplified);
-      }
-    } else {
-      // الرسم الحر العادي
-      createFreeDrawPath(simplified);
-    }
-  };
-
-  /**
-   * إنشاء مسار رسم حر
-   */
-  const createFreeDrawPath = (points: Point[]) => {
-    const minX = Math.min(...points.map(p => p.x));
-    const maxX = Math.max(...points.map(p => p.x));
-    const minY = Math.min(...points.map(p => p.y));
-    const maxY = Math.max(...points.map(p => p.y));
-
-    // تحويل النقاط إلى SVG path
-    const svgPath = pointsToSVGPath(points.map(p => ({
-      x: p.x - minX,
-      y: p.y - minY
-    })));
-
-    addElement({
-      type: 'pen_path',
-      position: { x: minX, y: minY },
-      size: { width: maxX - minX, height: maxY - minY },
-      data: {
-        path: svgPath,
-        strokeColor: toolSettings.pen.color,
-        strokeWidth: toolSettings.pen.strokeWidth,
-        strokeStyle: toolSettings.pen.style
-      }
-    });
-    toast.success('تم إضافة الرسم');
   };
 
   /**
