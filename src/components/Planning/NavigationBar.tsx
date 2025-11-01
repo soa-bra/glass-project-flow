@@ -35,6 +35,57 @@ const NavigationBar: React.FC = () => {
     <div className="fixed bottom-6 right-6 z-40 bg-white rounded-[18px] p-3 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_12px_28px_rgba(0,0,0,0.10)] border border-sb-border">
       {/* First Row */}
       <div className="flex items-center gap-2 mb-2">
+        {/* Fit to Screen */}
+        <button
+          onClick={zoomToFit}
+          className="p-1.5 hover:bg-sb-panel-bg rounded-lg transition-colors"
+          title="احتواء الكل (Ctrl + 0)"
+        >
+          <Maximize size={14} className="text-sb-ink" />
+        </button>
+        
+        {/* Pan Mode */}
+        <button
+          onClick={togglePanMode}
+          className={`p-1.5 rounded-lg transition-colors ${
+            isPanMode 
+              ? 'bg-sb-panel-bg text-sb-ink' 
+              : 'hover:bg-sb-panel-bg text-sb-ink-40'
+          }`}
+          title="وضع التنقل (H أو Space)"
+        >
+          <Hand size={14} />
+        </button>
+        
+        {/* Minimap */}
+        <button
+          onClick={toggleMinimap}
+          className={`p-1.5 rounded-lg transition-colors ${
+            showMinimap 
+              ? 'bg-sb-panel-bg text-sb-ink' 
+              : 'hover:bg-sb-panel-bg text-sb-ink-40'
+          }`}
+          title="الخريطة المصغرة"
+        >
+          <MapIcon size={14} />
+        </button>
+        
+        {/* Fullscreen */}
+        <button
+          onClick={toggleFullscreen}
+          className={`p-1.5 rounded-lg transition-colors ${
+            isFullscreen 
+              ? 'bg-sb-panel-bg text-sb-ink' 
+              : 'hover:bg-sb-panel-bg text-sb-ink-40'
+          }`}
+          title="ملء الشاشة (F11)"
+        >
+          <Maximize2 size={14} />
+        </button>
+      </div>
+      
+      {/* Second Row */}
+      <div className="flex items-center gap-2">
         {/* Zoom Out */}
         <button
           onClick={zoomOut}
@@ -105,57 +156,6 @@ const NavigationBar: React.FC = () => {
             </>
           )}
         </div>
-      </div>
-      
-      {/* Second Row */}
-      <div className="flex items-center gap-2">
-        {/* Fit to Screen */}
-        <button
-          onClick={zoomToFit}
-          className="p-1.5 hover:bg-sb-panel-bg rounded-lg transition-colors"
-          title="احتواء الكل (Ctrl + 0)"
-        >
-          <Maximize size={14} className="text-sb-ink" />
-        </button>
-        
-        {/* Pan Mode */}
-        <button
-          onClick={togglePanMode}
-          className={`p-1.5 rounded-lg transition-colors ${
-            isPanMode 
-              ? 'bg-sb-panel-bg text-sb-ink' 
-              : 'hover:bg-sb-panel-bg text-sb-ink-40'
-          }`}
-          title="وضع التنقل (H أو Space)"
-        >
-          <Hand size={14} />
-        </button>
-        
-        {/* Minimap */}
-        <button
-          onClick={toggleMinimap}
-          className={`p-1.5 rounded-lg transition-colors ${
-            showMinimap 
-              ? 'bg-sb-panel-bg text-sb-ink' 
-              : 'hover:bg-sb-panel-bg text-sb-ink-40'
-          }`}
-          title="الخريطة المصغرة"
-        >
-          <MapIcon size={14} />
-        </button>
-        
-        {/* Fullscreen */}
-        <button
-          onClick={toggleFullscreen}
-          className={`p-1.5 rounded-lg transition-colors ${
-            isFullscreen 
-              ? 'bg-sb-panel-bg text-sb-ink' 
-              : 'hover:bg-sb-panel-bg text-sb-ink-40'
-          }`}
-          title="ملء الشاشة (F11)"
-        >
-          <Maximize2 size={14} />
-        </button>
       </div>
     </div>
   );
