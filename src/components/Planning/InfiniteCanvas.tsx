@@ -4,6 +4,7 @@ import CanvasElement from './CanvasElement';
 import DrawingPreview from './DrawingPreview';
 import SelectionBox from './SelectionBox';
 import InstructionsOverlay from './InstructionsOverlay';
+import StrokesLayer from './StrokesLayer';
 import { BoundingBox } from './BoundingBox';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -518,6 +519,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       }}>
             {gridLines.map((lineStyle, index) => <div key={index} style={lineStyle} />)}
           </div>}
+        
+        {/* Pen Strokes Layer */}
+        <StrokesLayer />
         
         {/* Canvas Elements */}
         {visibleElements.map(element => <CanvasElement key={element.id} element={element} isSelected={selectedElementIds.includes(element.id)} onSelect={multiSelect => selectElement(element.id, multiSelect)} snapToGrid={settings.snapToGrid ? snapToGrid : undefined} />)}
