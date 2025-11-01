@@ -436,9 +436,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       {isSelecting && selectionStart && selectionCurrent && <SelectionBox startX={selectionStart.x} startY={selectionStart.y} currentX={selectionCurrent.x} currentY={selectionCurrent.y} />}
       
       {/* Zoom Indicator */}
-      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-[10px] px-3 py-2 shadow-[0_4px_12px_rgba(0,0,0,0.1)] text-[12px] font-medium text-[hsl(var(--ink))]">
-        {Math.round(viewport.zoom * 100)}%
-      </div>
+      
       
       {/* Instructions */}
       
