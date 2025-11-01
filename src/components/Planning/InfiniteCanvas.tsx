@@ -6,6 +6,7 @@ import SelectionBox from './SelectionBox';
 import InstructionsOverlay from './InstructionsOverlay';
 import StrokesLayer from './StrokesLayer';
 import PenInputLayer from './PenInputLayer';
+import FrameInputLayer from './FrameInputLayer';
 import { BoundingBox } from './BoundingBox';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -541,6 +542,12 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       <PenInputLayer 
         containerRef={containerRef} 
         active={activeTool === 'smart_pen'} 
+      />
+      
+      {/* Frame Input Layer */}
+      <FrameInputLayer 
+        containerRef={containerRef} 
+        active={activeTool === 'frame_tool'} 
       />
       
       {/* Zoom Indicator */}
