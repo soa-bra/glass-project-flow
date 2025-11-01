@@ -143,6 +143,11 @@ interface CanvasState {
   alignElements: (elementIds: string[], alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
   lockElements: (elementIds: string[]) => void;
   unlockElements: (elementIds: string[]) => void;
+  moveElements: (elementIds: string[], deltaX: number, deltaY: number) => void;
+  resizeElements: (elementIds: string[], scaleX: number, scaleY: number, origin: { x: number; y: number }) => void;
+  rotateElements: (elementIds: string[], angle: number, origin: { x: number; y: number }) => void;
+  flipHorizontally: (elementIds: string[]) => void;
+  flipVertically: (elementIds: string[]) => void;
 }
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
@@ -664,5 +669,131 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
           : el
       )
     }));
+  },
+  
+  moveElements: (elementIds, deltaX, deltaY) => {
+    set(state => ({
+      elements: state.elements.map(el =>
+        elementIds.includes(el.id) && !el.locked
+          ? {
+              ...el,
+              position: {
+                x: el.position.x + deltaX,
+                y: el.position.y + deltaY
+              }
+            }
+          : el
+      )
+    }));
+    get().pushHistory();
+  },
+
+  resizeElements: (elementIds, scaleX, scaleY, origin) => {
+    set(state => ({
+      elements: state.elements.map(el => {
+        if (!elementIds.includes(el.id) || el.locked) return el;
+        
+        const relX = el.position.x - origin.x;
+        const relY = el.position.y - origin.y;
+        
+        return {
+          ...el,
+          position: {
+            x: origin.x + relX * scaleX,
+            y: origin.y + relY * scaleY
+          },
+          size: {
+            width: el.size.width * scaleX,
+            height: el.size.height * scaleY
+          }
+        };
+      })
+    }));
+    get().pushHistory();
+  },
+
+  rotateElements: (elementIds, angle, origin) => {
+    const rad = (angle * Math.PI) / 180;
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    
+    set(state => ({
+      elements: state.elements.map(el => {
+        if (!elementIds.includes(el.id) || el.locked) return el;
+        
+        const relX = el.position.x - origin.x;
+        const relY = el.position.y - origin.y;
+        
+        return {
+          ...el,
+          position: {
+            x: origin.x + relX * cos - relY * sin,
+            y: origin.y + relX * sin + relY * cos
+          },
+          rotation: (typeof el.rotation === 'number' ? el.rotation : 0) + angle
+        };
+      })
+    }));
+    get().pushHistory();
+  },
+
+  flipHorizontally: (elementIds) => {
+    const elements = get().elements.filter(el => elementIds.includes(el.id));
+    if (elements.length === 0) return;
+    
+    const bounds = {
+      minX: Math.min(...elements.map(e => e.position.x)),
+      maxX: Math.max(...elements.map(e => e.position.x + e.size.width))
+    };
+    const centerX = (bounds.minX + bounds.maxX) / 2;
+    
+    set(state => ({
+      elements: state.elements.map(el => {
+        if (!elementIds.includes(el.id) || el.locked) return el;
+        const distFromCenter = el.position.x + el.size.width / 2 - centerX;
+        return {
+          ...el,
+          position: {
+            ...el.position,
+            x: centerX - distFromCenter - el.size.width / 2
+          },
+          style: {
+            ...el.style,
+            transform: `scaleX(-1) ${el.style?.transform || ''}`
+          }
+        };
+      })
+    }));
+    get().pushHistory();
+  },
+
+  flipVertically: (elementIds) => {
+    const elements = get().elements.filter(el => elementIds.includes(el.id));
+    if (elements.length === 0) return;
+    
+    const bounds = {
+      minY: Math.min(...elements.map(e => e.position.y)),
+      maxY: Math.max(...elements.map(e => e.position.y + e.size.height))
+    };
+    const centerY = (bounds.minY + bounds.maxY) / 2;
+    
+    set(state => ({
+      elements: state.elements.map(el => {
+        if (!elementIds.includes(el.id) || el.locked) return el;
+        const distFromCenter = el.position.y + el.size.height / 2 - centerY;
+        return {
+          ...el,
+          position: {
+            ...el.position,
+            y: centerY - distFromCenter - el.size.height / 2
+          },
+          style: {
+            ...el.style,
+            transform: `scaleY(-1) ${el.style?.transform || ''}`
+          }
+        };
+      })
+    }));
+    get().pushHistory();
   }
 }));

@@ -16,7 +16,8 @@ export const useKeyboardShortcuts = () => {
     duplicateElement,
     alignElements,
     lockElements,
-    unlockElements
+    unlockElements,
+    moveElements
   } = useCanvasStore();
 
   useEffect(() => {
@@ -163,6 +164,31 @@ export const useKeyboardShortcuts = () => {
         unlockElements(selectedElementIds);
       }
 
+      // Arrow keys for precise movement
+      if (selectedElementIds.length > 0 && !e.ctrlKey && !e.metaKey) {
+        let dx = 0;
+        let dy = 0;
+        const step = e.shiftKey ? 10 : 1;
+        
+        if (e.key === 'ArrowLeft') {
+          dx = -step;
+          e.preventDefault();
+        } else if (e.key === 'ArrowRight') {
+          dx = step;
+          e.preventDefault();
+        } else if (e.key === 'ArrowUp') {
+          dy = -step;
+          e.preventDefault();
+        } else if (e.key === 'ArrowDown') {
+          dy = step;
+          e.preventDefault();
+        }
+        
+        if (dx !== 0 || dy !== 0) {
+          moveElements(selectedElementIds, dx, dy);
+        }
+      }
+
       // Escape to deselect
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -186,6 +212,7 @@ export const useKeyboardShortcuts = () => {
     duplicateElement,
     alignElements,
     lockElements,
-    unlockElements
+    unlockElements,
+    moveElements
   ]);
 };

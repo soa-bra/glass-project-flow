@@ -4,6 +4,7 @@ import CanvasElement from './CanvasElement';
 import DrawingPreview from './DrawingPreview';
 import SelectionBox from './SelectionBox';
 import InstructionsOverlay from './InstructionsOverlay';
+import { BoundingBox } from './BoundingBox';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { screenToCanvasCoordinates } from '@/utils/canvasCoordinates';
@@ -167,8 +168,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       setIsSelecting(true);
       setSelectionStart({
         x: e.clientX,
-        y: e.clientY
-      });
+        y: e.clientY,
+        shiftKey: e.shiftKey
+      } as any);
       setSelectionCurrent({
         x: e.clientX,
         y: e.clientY
@@ -231,8 +233,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           selectedIds.push(el.id);
         }
       });
+      
       if (selectedIds.length > 0) {
-        useCanvasStore.getState().selectElements(selectedIds);
+        const currentSelection = useCanvasStore.getState().selectedElementIds;
+        const finalSelection = (selectionStart as any).shiftKey 
+          ? [...new Set([...currentSelection, ...selectedIds])]
+          : selectedIds;
+        
+        useCanvasStore.getState().selectElements(finalSelection);
       }
       setIsSelecting(false);
       setSelectionStart(null);
@@ -427,6 +435,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         
         {/* Canvas Elements */}
         {visibleElements.map(element => <CanvasElement key={element.id} element={element} isSelected={selectedElementIds.includes(element.id)} onSelect={multiSelect => selectElement(element.id, multiSelect)} snapToGrid={settings.snapToGrid ? snapToGrid : undefined} />)}
+        
+        {/* BoundingBox for selected elements */}
+        <BoundingBox />
         
         {/* Drawing Preview */}
         {tempElement && <DrawingPreview element={tempElement} />}

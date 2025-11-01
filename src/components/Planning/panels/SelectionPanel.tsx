@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { toast } from 'sonner';
+import { ElementPropertiesPanel } from './ElementPropertiesPanel';
 
 const SelectionPanel: React.FC = () => {
   const { 
@@ -32,6 +33,8 @@ const SelectionPanel: React.FC = () => {
     alignElements,
     lockElements,
     unlockElements,
+    flipHorizontally,
+    flipVertically,
     clearSelection 
   } = useCanvasStore();
 
@@ -93,8 +96,27 @@ const SelectionPanel: React.FC = () => {
     toast.success('تمت المحاذاة');
   };
 
+  const handleFlipHorizontal = () => {
+    if (!hasSelection) return;
+    flipHorizontally(selectedElementIds);
+    toast.success('تم العكس الأفقي');
+  };
+
+  const handleFlipVertical = () => {
+    if (!hasSelection) return;
+    flipVertically(selectedElementIds);
+    toast.success('تم العكس العمودي');
+  };
+
   return (
     <div className="space-y-6">
+      {/* Element Properties - show when elements are selected */}
+      {hasSelection && (
+        <div className="pb-6 border-b border-[#DADCE0]">
+          <ElementPropertiesPanel />
+        </div>
+      )}
+
       {/* Quick Actions */}
       <div>
         <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
@@ -197,6 +219,7 @@ const SelectionPanel: React.FC = () => {
         </h4>
         <div className="grid grid-cols-2 gap-2">
           <button
+            onClick={handleFlipHorizontal}
             disabled={!hasSelection}
             className="flex items-center gap-2 px-3 py-2 bg-[hsl(var(--panel))] rounded-[10px] hover:bg-[rgba(217,231,237,0.8)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
@@ -205,6 +228,7 @@ const SelectionPanel: React.FC = () => {
           </button>
 
           <button
+            onClick={handleFlipVertical}
             disabled={!hasSelection}
             className="flex items-center gap-2 px-3 py-2 bg-[hsl(var(--panel))] rounded-[10px] hover:bg-[rgba(217,231,237,0.8)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
