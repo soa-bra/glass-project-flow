@@ -43,6 +43,15 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     }
     
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
+    
+    // إذا كان Shift مضغوطاً والعنصر محدد بالفعل، قم بإلغاء تحديده
+    if (multiSelect && isSelected) {
+      const currentSelection = useCanvasStore.getState().selectedElementIds;
+      const newSelection = currentSelection.filter(id => id !== element.id);
+      useCanvasStore.getState().selectElements(newSelection);
+      return; // لا تبدأ السحب
+    }
+    
     onSelect(multiSelect);
     
     isDraggingRef.current = true;
@@ -52,7 +61,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       elementX: element.position.x,
       elementY: element.position.y
     };
-  }, [element, onSelect, isLocked]);
+  }, [element, onSelect, isLocked, isSelected]);
   
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDraggingRef.current || isLocked) return;

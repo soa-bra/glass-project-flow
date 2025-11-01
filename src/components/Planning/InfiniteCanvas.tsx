@@ -164,7 +164,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         containerRef.current.style.cursor = 'grabbing';
       }
       e.preventDefault();
-    } else if (e.button === 0 && activeTool === 'selection_tool' && e.target === canvasRef.current) {
+    } else if (e.button === 0 && activeTool === 'selection_tool' && 
+               !(e.target as HTMLElement).closest('[data-canvas-element="true"]') &&
+               !(e.target as HTMLElement).closest('.bounding-box')) {
       // Selection Box with selection tool on empty space
       if (!e.shiftKey) {
         clearSelection();
@@ -182,8 +184,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     } else if (e.button === 0 && (activeTool === 'file_uploader' || activeTool === 'frame_tool' || activeTool === 'smart_pen' || activeTool === 'shapes_tool' || activeTool === 'text_tool' || activeTool === 'smart_element_tool')) {
       // تفويض للأداة النشطة
       handleCanvasMouseDown(e);
-    } else if (e.button === 0 && e.target === canvasRef.current && !e.shiftKey) {
-      // Left click on empty space = Clear selection
+    } else if (e.button === 0 && !(e.target as HTMLElement).closest('[data-canvas-element="true"]') && !(e.target as HTMLElement).closest('.bounding-box')) {
+      // Left click on empty space = Always clear selection
       clearSelection();
     }
   }, [activeTool, handleCanvasMouseDown, clearSelection]);
@@ -222,30 +224,41 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       const minY = Math.min(selectionStart.y, selectionCurrent.y);
       const maxY = Math.max(selectionStart.y, selectionCurrent.y);
 
-      // Find elements within selection box
-      const selectedIds: string[] = [];
-      elements.forEach(el => {
-        const elScreenPos = {
-          x: el.position.x * viewport.zoom + viewport.pan.x,
-          y: el.position.y * viewport.zoom + viewport.pan.y,
-          width: el.size.width * viewport.zoom,
-          height: el.size.height * viewport.zoom
-        };
+      const boxWidth = maxX - minX;
+      const boxHeight = maxY - minY;
 
-        // Check if element intersects with selection box
-        if (elScreenPos.x < maxX && elScreenPos.x + elScreenPos.width > minX && elScreenPos.y < maxY && elScreenPos.y + elScreenPos.height > minY) {
-          selectedIds.push(el.id);
+      // إذا كان الصندوق صغيراً جداً (< 5px)، اعتباره نقرة وليس تحديد
+      if (boxWidth < 5 && boxHeight < 5) {
+        if (!(selectionStart as any).shiftKey) {
+          clearSelection();
         }
-      });
-      
-      if (selectedIds.length > 0) {
-        const currentSelection = useCanvasStore.getState().selectedElementIds;
-        const finalSelection = (selectionStart as any).shiftKey 
-          ? [...new Set([...currentSelection, ...selectedIds])]
-          : selectedIds;
+      } else {
+        // Find elements within selection box
+        const selectedIds: string[] = [];
+        elements.forEach(el => {
+          const elScreenPos = {
+            x: el.position.x * viewport.zoom + viewport.pan.x,
+            y: el.position.y * viewport.zoom + viewport.pan.y,
+            width: el.size.width * viewport.zoom,
+            height: el.size.height * viewport.zoom
+          };
+
+          // Check if element intersects with selection box
+          if (elScreenPos.x < maxX && elScreenPos.x + elScreenPos.width > minX && elScreenPos.y < maxY && elScreenPos.y + elScreenPos.height > minY) {
+            selectedIds.push(el.id);
+          }
+        });
         
-        useCanvasStore.getState().selectElements(finalSelection);
+        if (selectedIds.length > 0) {
+          const currentSelection = useCanvasStore.getState().selectedElementIds;
+          const finalSelection = (selectionStart as any).shiftKey 
+            ? [...new Set([...currentSelection, ...selectedIds])]
+            : selectedIds;
+          
+          useCanvasStore.getState().selectElements(finalSelection);
+        }
       }
+      
       setIsSelecting(false);
       setSelectionStart(null);
       setSelectionCurrent(null);
