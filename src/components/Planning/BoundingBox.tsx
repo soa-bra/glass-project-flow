@@ -10,11 +10,6 @@ export const BoundingBox: React.FC = () => {
   const initialMousePos = useRef({ x: 0, y: 0 });
   const hasDuplicated = useRef(false);
   
-  // لا تعرض BoundingBox إلا مع أداة التحديد
-  if (activeTool !== 'selection_tool' || selectedElementIds.length === 0) {
-    return null;
-  }
-  
   // حساب حدود الإطار المحيط بشكل آمن
   const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));
   
@@ -164,7 +159,9 @@ export const BoundingBox: React.FC = () => {
   };
   
   // ✅ Return الشرطي في النهاية بعد كل الـ Hooks
-  if (selectedElements.length === 0) return null;
+  if (activeTool !== 'selection_tool' || selectedElements.length === 0) {
+    return null;
+  }
   
   return (
     <div
