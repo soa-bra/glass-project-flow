@@ -10,13 +10,15 @@ interface CanvasElementProps {
   isSelected: boolean;
   onSelect: (multiSelect: boolean) => void;
   snapToGrid?: (x: number, y: number) => { x: number; y: number };
+  activeTool: string;
 }
 
 const CanvasElement: React.FC<CanvasElementProps> = ({
   element,
   isSelected,
   onSelect,
-  snapToGrid
+  snapToGrid,
+  activeTool
 }) => {
   const { updateElement, viewport } = useCanvasStore();
   const elementRef = useRef<HTMLDivElement>(null);
@@ -42,6 +44,11 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       return; // Let resize logic handle this
     }
     
+    // السماح بالتحديد فقط مع أداة التحديد
+    if (activeTool !== 'selection_tool') {
+      return;
+    }
+    
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
     
     // إذا كان Shift مضغوطاً والعنصر محدد بالفعل، قم بإلغاء تحديده
@@ -61,7 +68,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       elementX: element.position.x,
       elementY: element.position.y
     };
-  }, [element, onSelect, isLocked, isSelected]);
+  }, [element, onSelect, isLocked, isSelected, activeTool]);
   
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDraggingRef.current || isLocked) return;
@@ -106,7 +113,13 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       ref={elementRef}
       data-canvas-element="true"
       onMouseDown={handleMouseDown}
-      className={`absolute select-none ${isLocked ? 'cursor-not-allowed' : 'cursor-move'}`}
+      className={`absolute select-none ${
+        isLocked 
+          ? 'cursor-not-allowed' 
+          : activeTool === 'selection_tool' 
+            ? 'cursor-move' 
+            : 'cursor-default'
+      }`}
       style={{
         left: element.position.x,
         top: element.position.y,

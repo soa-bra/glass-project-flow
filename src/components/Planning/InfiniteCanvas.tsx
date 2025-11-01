@@ -526,7 +526,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         <StrokesLayer />
         
         {/* Canvas Elements */}
-        {visibleElements.map(element => <CanvasElement key={element.id} element={element} isSelected={selectedElementIds.includes(element.id)} onSelect={multiSelect => selectElement(element.id, multiSelect)} snapToGrid={settings.snapToGrid ? snapToGrid : undefined} />)}
+        {visibleElements.map(element => <CanvasElement key={element.id} element={element} isSelected={selectedElementIds.includes(element.id)} onSelect={multiSelect => selectElement(element.id, multiSelect)} snapToGrid={settings.snapToGrid ? snapToGrid : undefined} activeTool={activeTool} />)}
         
         {/* BoundingBox for selected elements */}
         <BoundingBox />

@@ -3,12 +3,17 @@ import { useCanvasStore } from '@/stores/canvasStore';
 
 export const BoundingBox: React.FC = () => {
   // ✅ جميع الـ Hooks أولاً (قبل أي return)
-  const { selectedElementIds, elements, viewport, moveElements, resizeElements, duplicateElement, moveFrame, resizeFrame } = useCanvasStore();
+  const { selectedElementIds, elements, viewport, moveElements, resizeElements, duplicateElement, moveFrame, resizeFrame, activeTool } = useCanvasStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<string | null>(null);
   const dragStart = useRef({ x: 0, y: 0 });
   const initialMousePos = useRef({ x: 0, y: 0 });
   const hasDuplicated = useRef(false);
+  
+  // لا تعرض BoundingBox إلا مع أداة التحديد
+  if (activeTool !== 'selection_tool' || selectedElementIds.length === 0) {
+    return null;
+  }
   
   // حساب حدود الإطار المحيط بشكل آمن
   const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));
