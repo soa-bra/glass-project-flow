@@ -508,6 +508,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   }}>
       {/* Canvas Container */}
       <div ref={canvasRef} className="absolute inset-0 origin-top-left" style={{
+        cursor: activeTool === 'smart_pen' ? 'crosshair' : getCursorStyle(),
       transform: `translate(${viewport.pan.x}px, ${viewport.pan.y}px) scale(${viewport.zoom})`,
       transition: isPanningRef.current ? 'none' : 'transform 0.1s ease-out'
     }}>
