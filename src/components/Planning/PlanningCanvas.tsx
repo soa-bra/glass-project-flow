@@ -85,10 +85,9 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsShareOpen(!isShareOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[hsl(var(--ink))] text-white rounded-full transition-opacity hover:opacity-90"
+              className="flex items-center gap-2 px-4 py-1.5 bg-[hsl(var(--ink))] text-white rounded-full transition-opacity hover:opacity-90"
               title="المشاركين"
             >
-              <Share2 size={16} />
               <span className="text-[12px] font-medium">المشاركين</span>
             </button>
             <SharePopover isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} />
@@ -99,11 +98,11 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
             <AIAssistantPopover isOpen={isAIOpen} onOpenChange={setIsAIOpen}>
               <button
                 onClick={() => setIsAIOpen(!isAIOpen)}
-                className="flex items-center gap-2 px-3 py-2 bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white rounded-lg hover:opacity-90 transition-opacity"
+                className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white rounded-full hover:opacity-90 transition-opacity"
                 title="مساعد الذكاء الصناعي"
               >
                 <Sparkles size={18} className="animate-pulse" />
-                <span className="text-[13px] font-medium">AI</span>
+                <span className="text-[12px] font-medium">AI</span>
               </button>
             </AIAssistantPopover>
           </div>
@@ -181,9 +180,9 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
         </div>
         
         {/* Left Section: Save Button */}
-        <button className="flex items-center gap-2 px-4 py-2 bg-[#3DBE8B] text-white rounded-[10px] hover:opacity-90 transition-opacity">
+        <button className="flex items-center gap-2 px-4 py-1.5 bg-[#3DBE8B] text-white rounded-full hover:opacity-90 transition-opacity">
           <Save size={16} />
-          <span className="text-[13px] font-medium">حفظ</span>
+          <span className="text-[12px] font-medium">حفظ</span>
         </button>
       </div>
       
