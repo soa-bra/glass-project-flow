@@ -10,24 +10,22 @@ import RightSidePanel from './RightSidePanel';
 import NavigationBar from './NavigationBar';
 import FloatingEditBar from './FloatingEditBar';
 import Minimap from './Minimap';
-
 interface PlanningCanvasProps {
   board: CanvasBoard;
 }
-
-const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
-  const { setCurrentBoard } = usePlanningStore();
-  const { activeTool } = useCanvasStore();
-
-  return (
-    <div className="h-full flex flex-col bg-white">
+const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
+  board
+}) => {
+  const {
+    setCurrentBoard
+  } = usePlanningStore();
+  const {
+    activeTool
+  } = useCanvasStore();
+  return <div className="h-full flex flex-col bg-white">
       {/* Header with Back Button */}
       <div className="flex items-center gap-4 px-6 py-4 border-b border-[hsl(var(--border))]">
-        <button
-          onClick={() => setCurrentBoard(null)}
-          className="p-2 hover:bg-[hsl(var(--panel))] rounded-full transition-colors"
-          title="العودة إلى القائمة"
-        >
+        <button onClick={() => setCurrentBoard(null)} className="p-2 hover:bg-[hsl(var(--panel))] rounded-full transition-colors" title="العودة إلى القائمة">
           <ArrowRight size={20} className="text-[hsl(var(--ink))]" />
         </button>
       </div>
@@ -56,9 +54,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       <FloatingEditBar />
       
       {/* Minimap */}
-      <Minimap />
-    </div>
-  );
+      <Minimap className="my-[16px]" />
+    </div>;
 };
-
 export default PlanningCanvas;
