@@ -165,6 +165,15 @@ const PenInputLayer: React.FC<PenInputLayerProps> = ({ active, viewport }) => {
     };
   }, [active, handlePointerDown, handlePointerMove, handlePointerUp]);
   
+  // تنظيف الحالة عند تعطيل الأداة
+  useEffect(() => {
+    if (!active && drawingRef.current) {
+      drawingRef.current = false;
+      firstPointRef.current = null;
+      clearPendingStroke();
+    }
+  }, [active, clearPendingStroke]);
+  
   if (!active) return null;
   
   return (

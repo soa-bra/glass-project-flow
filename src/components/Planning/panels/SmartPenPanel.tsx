@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { Minus, MoreHorizontal } from 'lucide-react';
+import { Minus, MoreHorizontal, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function SmartPenPanel() {
   const { pen, setPen, setActiveTool } = useCanvasStore();
@@ -141,6 +142,18 @@ export default function SmartPenPanel() {
           className="w-full py-2.5 bg-[hsl(var(--accent-blue))] hover:bg-[hsl(var(--accent-blue))]/90 text-white rounded-lg transition-colors text-[13px] font-medium"
         >
           تفعيل القلم الذكي
+        </button>
+        
+        {/* زر مسح المسارات */}
+        <button
+          onClick={() => {
+            useCanvasStore.setState({ strokes: {} });
+            toast.success('تم مسح جميع المسارات');
+          }}
+          className="w-full mt-2 py-2.5 bg-[hsl(var(--accent-red))]/10 hover:bg-[hsl(var(--accent-red))]/20 text-[hsl(var(--accent-red))] rounded-lg transition-colors text-[13px] font-medium flex items-center justify-center gap-2"
+        >
+          <Trash2 size={16} />
+          مسح جميع المسارات
         </button>
       </div>
 

@@ -950,23 +950,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         }
         
         get().pushHistory();
-      } else {
-        // إذا لم يتم التعرف على شكل ذكي، احذف المسار بعد 2 ثانية
-        setTimeout(() => {
-          set(state => {
-            const { [id]: removed, ...remainingStrokes } = state.strokes;
-            return { strokes: remainingStrokes };
-          });
-        }, 2000);
       }
-    } else {
-      // في الوضع العادي، احذف المسار بعد فترة
-      setTimeout(() => {
-        set(state => {
-          const { [id]: removed, ...remainingStrokes } = state.strokes;
-          return { strokes: remainingStrokes };
-        });
-      }, 3000);
+      // ✅ المسارات تبقى دائمة إلا عند التحويل الذكي الناجح
     }
   },
   
