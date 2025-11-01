@@ -31,18 +31,33 @@ const PenInputLayer: React.FC<PenInputLayerProps> = ({ active, viewport }) => {
     if (!overlayRef.current) return { x: 0, y: 0 };
     
     const rect = overlayRef.current.getBoundingClientRect();
-    const screenX = clientX - rect.left;
-    const screenY = clientY - rect.top;
     
+    // حساب الموقع النسبي داخل الـ overlay
+    const relativeX = clientX - rect.left;
+    const relativeY = clientY - rect.top;
+    
+    // تطبيق التحويل العكسي: إزالة pan أولاً ثم القسمة على zoom
     return {
-      x: (screenX - viewport.pan.x) / viewport.zoom,
-      y: (screenY - viewport.pan.y) / viewport.zoom
+      x: (relativeX - viewport.pan.x) / viewport.zoom,
+      y: (relativeY - viewport.pan.y) / viewport.zoom
     };
   }, [viewport]);
   
   // بدء الرسم
   const handlePointerDown = useCallback((e: PointerEvent) => {
-    if (!active || e.button !== 0) return;
+    // تجاهل النقرات على عناصر الواجهة
+    const target = e.target as HTMLElement;
+    if (
+      !active || 
+      e.button !== 0 ||
+      target.tagName === 'BUTTON' ||
+      target.tagName === 'INPUT' ||
+      target.tagName === 'SELECT' ||
+      target.closest('button') ||
+      target.closest('[role="button"]') ||
+      target.closest('nav') ||
+      target.closest('aside')
+    ) return;
     
     e.preventDefault();
     e.stopPropagation();

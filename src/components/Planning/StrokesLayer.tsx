@@ -13,18 +13,12 @@ interface StrokesLayerProps {
 }
 
 const StrokesLayer: React.FC<StrokesLayerProps> = ({ strokes, viewport }) => {
-  // تحويل نقطة من إحداثيات الكانفاس إلى إحداثيات الشاشة
-  const toScreen = (p: PenPoint) => ({
-    x: p.x * viewport.zoom + viewport.pan.x,
-    y: p.y * viewport.zoom + viewport.pan.y
-  });
-  
   // تحويل مسار إلى SVG path
+  // ملاحظة: لا نحتاج لتحويل الإحداثيات لأن الـ container الأب يقوم بذلك عبر transform
   const pointsToPath = (points: PenPoint[]): string => {
     if (points.length === 0) return '';
     
-    const screenPoints = points.map(toScreen);
-    const commands = screenPoints.map((p, i) => 
+    const commands = points.map((p, i) => 
       i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`
     );
     
@@ -54,7 +48,8 @@ const StrokesLayer: React.FC<StrokesLayerProps> = ({ strokes, viewport }) => {
       {strokes.map(stroke => {
         const d = pointsToPath(stroke.points);
         const dashArray = getStrokeDashArray(stroke.style);
-        const scaledWidth = stroke.width * viewport.zoom;
+        // العرض الأصلي بدون ضرب في zoom لأن الـ transform يتولى ذلك
+        const strokeWidth = stroke.width;
         
         return (
           <g key={stroke.id}>
@@ -63,7 +58,7 @@ const StrokesLayer: React.FC<StrokesLayerProps> = ({ strokes, viewport }) => {
               <path
                 d={d}
                 stroke={stroke.color}
-                strokeWidth={scaledWidth * 1.8}
+                strokeWidth={strokeWidth * 1.8}
                 fill="none"
                 opacity={0.5}
                 strokeLinecap="round"
@@ -75,7 +70,7 @@ const StrokesLayer: React.FC<StrokesLayerProps> = ({ strokes, viewport }) => {
             <path
               d={d}
               stroke={stroke.color}
-              strokeWidth={scaledWidth}
+              strokeWidth={strokeWidth}
               fill="none"
               strokeDasharray={dashArray}
               strokeLinecap="round"
