@@ -44,21 +44,21 @@ export default function Dock({ items, className }: DockProps) {
             return (
               <Tooltip key={item.label}>
                 <TooltipTrigger asChild>
-                  <motion.button
+                  <button
                     onMouseEnter={() => setHovered(i)}
                     onMouseLeave={() => setHovered(null)}
-                    animate={{
-                      scale: isHovered ? 1.1 : 1,
-                    }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     onClick={() => {
                       item.onClick?.()
                     }}
+                    style={{
+                      transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+                      transition: 'transform 0.2s ease-out, background-color 0.2s'
+                    }}
                     className={cn(
                       "h-10 w-10 rounded-full flex items-center justify-center",
-                      "transition-colors duration-200",
                       isActive && "bg-[hsl(var(--ink))]",
-                      isHovered && !isActive && "bg-[hsl(var(--ink-30))]"
+                      isHovered && !isActive && "bg-[hsl(var(--ink-30))]",
+                      !isActive && !isHovered && "bg-transparent"
                     )}
                   >
                     <item.icon
@@ -67,7 +67,7 @@ export default function Dock({ items, className }: DockProps) {
                         isActive ? "text-white" : "text-[hsl(var(--ink-60))]"
                       )}
                     />
-                  </motion.button>
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent 
                   side="top" 
