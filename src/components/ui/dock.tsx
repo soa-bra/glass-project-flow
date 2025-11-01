@@ -55,7 +55,7 @@ export default function Dock({ items, className }: DockProps) {
                       transition: 'transform 0.2s ease-out, background-color 0.2s'
                     }}
                     className={cn(
-                      "h-10 w-10 rounded-full flex items-center justify-center",
+                      "h-10 w-10 rounded-full flex items-center justify-center transition-colors",
                       isActive && "bg-[hsl(var(--ink))]",
                       isHovered && !isActive && "bg-[hsl(var(--ink-30))]",
                       !isActive && !isHovered && "bg-transparent"

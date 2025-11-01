@@ -10,6 +10,13 @@
 
 @layer base {
   :root {
+    /* SoaBra Design Tokens - Primary Ink Colors */
+    --ink: 11 15 18;
+    --ink-80: 11 15 18 / 0.80;
+    --ink-60: 11 15 18 / 0.60;
+    --ink-30: 11 15 18 / 0.30;
+    --border: 218 220 224;
+    
     /* SoaBra UI Guidelines v1.2.6 - Design Tokens */
     --sb-ink: #000000;
     --sb-ink-70: rgba(0,0,0,0.7);
