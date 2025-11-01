@@ -295,10 +295,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
           style: {
             backgroundColor: 'transparent',
             borderRadius: 9999,
-            opacity: toolSettings.pen.color === '#000000' ? 0.8 : 1
+            opacity: useCanvasStore.getState().pen.color === '#000000' ? 0.8 : 1
           },
-          strokeColor: toolSettings.pen.color,
-          strokeWidth: toolSettings.pen.strokeWidth
+          strokeColor: useCanvasStore.getState().pen.color,
+          strokeWidth: useCanvasStore.getState().pen.width
         });
         toast.success('تم التعرف على دائرة');
       } else if (recognized.type === 'rectangle') {
@@ -311,10 +311,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
           style: {
             backgroundColor: 'transparent',
             borderRadius: 8,
-            opacity: toolSettings.pen.color === '#000000' ? 0.8 : 1
+            opacity: useCanvasStore.getState().pen.color === '#000000' ? 0.8 : 1
           },
-          strokeColor: toolSettings.pen.color,
-          strokeWidth: toolSettings.pen.strokeWidth
+          strokeColor: useCanvasStore.getState().pen.color,
+          strokeWidth: useCanvasStore.getState().pen.width
         });
         toast.success('تم التعرف على مستطيل');
       } else if (recognized.type === 'line') {
@@ -327,15 +327,15 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         addElement({
           type: 'shape',
           position: { x: minX, y: minY },
-          size: { width: Math.max(width, toolSettings.pen.strokeWidth), height: Math.max(height, toolSettings.pen.strokeWidth) },
+          size: { width: Math.max(width, useCanvasStore.getState().pen.width), height: Math.max(height, useCanvasStore.getState().pen.width) },
           shapeType: 'line',
           style: {
-            backgroundColor: toolSettings.pen.color,
+            backgroundColor: useCanvasStore.getState().pen.color,
             borderRadius: 0,
             opacity: 1
           },
-          strokeColor: toolSettings.pen.color,
-          strokeWidth: toolSettings.pen.strokeWidth
+          strokeColor: useCanvasStore.getState().pen.color,
+          strokeWidth: useCanvasStore.getState().pen.width
         });
         toast.success('تم التعرف على خط');
       } else {
@@ -369,9 +369,9 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       size: { width: maxX - minX, height: maxY - minY },
       data: {
         path: svgPath,
-        strokeColor: toolSettings.pen.color,
-        strokeWidth: toolSettings.pen.strokeWidth,
-        strokeStyle: toolSettings.pen.style
+        strokeColor: useCanvasStore.getState().pen.color,
+        strokeWidth: useCanvasStore.getState().pen.width,
+        strokeStyle: useCanvasStore.getState().pen.style
       }
     });
     toast.success('تم إضافة الرسم');
