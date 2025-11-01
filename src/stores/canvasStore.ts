@@ -13,6 +13,34 @@ export type ToolId =
 
 export type ShapeType = 'rectangle' | 'circle' | 'triangle' | 'line' | 'star' | 'hexagon';
 
+// Pen Tool Types
+export type LineStyle = 'solid' | 'dashed' | 'dotted' | 'double';
+
+export interface PenPoint {
+  x: number;
+  y: number;
+  pressure?: number; // للأجهزة التي تدعم حساسية الضغط
+  t: number; // timestamp للرسوم المتحركة
+}
+
+export interface PenStroke {
+  id: string;
+  points: PenPoint[];
+  color: string;
+  width: number;
+  style: LineStyle;
+  isClosed?: boolean;
+  simplified?: boolean;
+  bbox?: { x: number; y: number; w: number; h: number };
+}
+
+export interface PenSettings {
+  strokeWidth: number;
+  color: string;
+  style: LineStyle;
+  smartMode: boolean;
+}
+
 export interface ToolSettings {
   shapes: {
     fillColor: string;
@@ -28,11 +56,7 @@ export interface ToolSettings {
     alignment: 'left' | 'center' | 'right';
     fontWeight: string;
   };
-  pen: {
-    strokeWidth: number;
-    color: string;
-    style: 'solid' | 'dashed' | 'dotted';
-  };
+  pen: PenSettings;
   frame: {
     backgroundColor: string;
     opacity: number;
@@ -56,6 +80,10 @@ interface CanvasState {
   drawStartPoint: { x: number; y: number } | null;
   tempElement: CanvasElement | null;
   selectedSmartElement: string | null;
+  
+  // Pen Strokes State
+  strokes: Record<string, PenStroke>;
+  currentStrokeId?: string;
   
   // Layers State
   layers: LayerInfo[];
@@ -134,6 +162,15 @@ interface CanvasState {
   setTempElement: (element: CanvasElement | null) => void;
   setSelectedSmartElement: (elementType: string | null) => void;
   
+  // Pen Actions
+  setPenSettings: (partial: Partial<PenSettings>) => void;
+  toggleSmartMode: () => void;
+  beginStroke: (x: number, y: number, pressure?: number) => string;
+  appendPoint: (x: number, y: number, pressure?: number) => void;
+  endStroke: () => void;
+  clearPendingStroke: () => void;
+  clearAllStrokes: () => void;
+  
   // Advanced Operations
   copyElements: (elementIds: string[]) => void;
   pasteElements: () => void;
@@ -175,8 +212,9 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     },
     pen: {
       strokeWidth: 2,
-      color: '#000000',
-      style: 'solid'
+      color: '#111111',
+      style: 'solid',
+      smartMode: false
     },
     frame: {
       backgroundColor: '#d9e7ed',
@@ -191,6 +229,10 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   drawStartPoint: null,
   tempElement: null,
   selectedSmartElement: null,
+  
+  // Pen Strokes Initial State
+  strokes: {},
+  currentStrokeId: undefined,
   
   layers: [
     {
@@ -557,6 +599,122 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   setDrawStartPoint: (point) => set({ drawStartPoint: point }),
   
   setTempElement: (element) => set({ tempElement: element }),
+  
+  // Pen Actions Implementation
+  setPenSettings: (partial) => {
+    set(state => ({
+      toolSettings: {
+        ...state.toolSettings,
+        pen: { ...state.toolSettings.pen, ...partial }
+      }
+    }));
+  },
+  
+  toggleSmartMode: () => {
+    set(state => ({
+      toolSettings: {
+        ...state.toolSettings,
+        pen: { ...state.toolSettings.pen, smartMode: !state.toolSettings.pen.smartMode }
+      }
+    }));
+  },
+  
+  beginStroke: (x, y, pressure = 1) => {
+    const id = nanoid();
+    const { toolSettings } = get();
+    const now = Date.now();
+    
+    set(state => ({
+      strokes: {
+        ...state.strokes,
+        [id]: {
+          id,
+          points: [{ x, y, pressure, t: now }],
+          color: toolSettings.pen.color,
+          width: toolSettings.pen.strokeWidth,
+          style: toolSettings.pen.style,
+          isClosed: false,
+          simplified: false
+        }
+      },
+      currentStrokeId: id
+    }));
+    
+    return id;
+  },
+  
+  appendPoint: (x, y, pressure = 1) => {
+    const { currentStrokeId } = get();
+    if (!currentStrokeId) return;
+    
+    const now = Date.now();
+    set(state => {
+      const stroke = state.strokes[currentStrokeId];
+      if (!stroke) return state;
+      
+      return {
+        strokes: {
+          ...state.strokes,
+          [currentStrokeId]: {
+            ...stroke,
+            points: [...stroke.points, { x, y, pressure, t: now }]
+          }
+        }
+      };
+    });
+  },
+  
+  endStroke: () => {
+    const { currentStrokeId, strokes } = get();
+    if (!currentStrokeId) return;
+    
+    const stroke = strokes[currentStrokeId];
+    if (stroke && stroke.points.length >= 2) {
+      // حساب bounding box للمسار
+      const xs = stroke.points.map(p => p.x);
+      const ys = stroke.points.map(p => p.y);
+      const bbox = {
+        x: Math.min(...xs),
+        y: Math.min(...ys),
+        w: Math.max(...xs) - Math.min(...xs),
+        h: Math.max(...ys) - Math.min(...ys)
+      };
+      
+      set(state => ({
+        strokes: {
+          ...state.strokes,
+          [currentStrokeId]: { ...stroke, bbox }
+        },
+        currentStrokeId: undefined
+      }));
+    } else {
+      // إذا كان المسار قصيراً جداً، نحذفه
+      set(state => {
+        const { [currentStrokeId]: _, ...remainingStrokes } = state.strokes;
+        return {
+          strokes: remainingStrokes,
+          currentStrokeId: undefined
+        };
+      });
+    }
+  },
+  
+  clearPendingStroke: () => {
+    const { currentStrokeId } = get();
+    if (!currentStrokeId) return;
+    
+    set(state => {
+      const { [currentStrokeId]: _, ...remainingStrokes } = state.strokes;
+      return {
+        strokes: remainingStrokes,
+        currentStrokeId: undefined
+      };
+    });
+  },
+  
+  clearAllStrokes: () => {
+    set({ strokes: {}, currentStrokeId: undefined });
+  },
   
   // Advanced Operations
   copyElements: (elementIds) => {
