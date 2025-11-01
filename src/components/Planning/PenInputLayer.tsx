@@ -197,6 +197,7 @@ const PenInputLayer: React.FC<PenInputLayerProps> = ({ active, viewport }) => {
       className="absolute inset-0 touch-none"
       style={{
         zIndex: 100,
+        cursor: 'crosshair',
         pointerEvents: 'auto'
       }}
     />
