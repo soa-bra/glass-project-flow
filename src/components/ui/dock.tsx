@@ -49,8 +49,7 @@ export default function Dock({ items, className }: DockProps) {
                     onMouseEnter={() => setHovered(i)}
                     onMouseLeave={() => setHovered(null)}
                     animate={{
-                      scale: isHovered ? 1.2 : 1,
-                      rotate: isHovered ? -5 : 0,
+                      scale: isHovered ? 1.1 : 1,
                     }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     className="relative flex flex-col items-center"
@@ -77,7 +76,11 @@ export default function Dock({ items, className }: DockProps) {
                     </Button>
                   </motion.div>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="text-xs bg-[hsl(var(--ink))] text-white border-[hsl(var(--ink))]">
+                <TooltipContent 
+                  side="top" 
+                  sideOffset={8}
+                  className="text-xs bg-[hsl(var(--ink))] text-white border-[hsl(var(--ink))] rounded-[10px] px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.24)]"
+                >
                   {item.label}
                 </TooltipContent>
               </Tooltip>
