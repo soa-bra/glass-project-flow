@@ -54,7 +54,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
       <FloatingEditBar />
       
       {/* Minimap */}
-      <Minimap className="my-[16px]" />
+      <Minimap />
     </div>;
 };
 export default PlanningCanvas;
