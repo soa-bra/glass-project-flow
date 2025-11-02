@@ -353,19 +353,29 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
   
   // Selection Actions
-  selectElement: (elementId, multiSelect = false) => {
-    set(state => {
-      if (multiSelect) {
-        const isSelected = state.selectedElementIds.includes(elementId);
-        return {
-          selectedElementIds: isSelected
-            ? state.selectedElementIds.filter(id => id !== elementId)
-            : [...state.selectedElementIds, elementId]
-        };
-      }
-      return { selectedElementIds: [elementId] };
-    });
-  },
+    selectElement: (elementId, multiSelect = false) => {
+      set(state => {
+        const element = state.elements.find(el => el.id === elementId);
+        
+        // إذا كان العنصر إطاراً، أضف أطفاله إلى التحديد تلقائياً
+        let idsToSelect = [elementId];
+        if (element?.type === 'frame' && (element as any).children) {
+          const childIds = (element as any).children || [];
+          idsToSelect = [elementId, ...childIds];
+        }
+        
+        if (multiSelect) {
+          const isSelected = state.selectedElementIds.includes(elementId);
+          return {
+            selectedElementIds: isSelected
+              ? state.selectedElementIds.filter(id => !idsToSelect.includes(id))
+              : [...state.selectedElementIds, ...idsToSelect]
+          };
+        }
+        
+        return { selectedElementIds: idsToSelect };
+      });
+    },
   
   selectElements: (elementIds) => {
     set({ selectedElementIds: elementIds });
