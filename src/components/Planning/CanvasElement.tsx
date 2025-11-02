@@ -52,19 +52,6 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       return;
     }
     
-    // تحقق إذا كان العنصر طفلاً لإطار محدد
-    const state = useCanvasStore.getState();
-    const parentFrame = state.elements.find(frame => 
-      frame.type === 'frame' &&
-      state.selectedElementIds.includes(frame.id) &&
-      (frame as any).children?.includes(element.id)
-    );
-    
-    // إذا كان الإطار الأب محدداً، لا تسمح بتحديد الطفل منفصلاً (إلا مع Shift)
-    if (parentFrame && !e.shiftKey) {
-      return;
-    }
-    
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
     
     // إذا كان Shift مضغوطاً والعنصر محدد بالفعل، قم بإلغاء تحديده

@@ -13,17 +13,6 @@ export const BoundingBox: React.FC = () => {
   // حساب حدود الإطار المحيط بشكل آمن
   const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));
   
-  // إذا كان الإطار محدداً، لا تعرض الأطفال ضمن العدد
-  const displayedElementsCount = selectedElements.filter(el => {
-    // إذا كان العنصر طفلاً لإطار محدد، لا تحسبه
-    const parentFrame = elements.find(frame => 
-      frame.type === 'frame' && 
-      selectedElementIds.includes(frame.id) &&
-      (frame as any).children?.includes(el.id)
-    );
-    return !parentFrame || el.type === 'frame';
-  }).length;
-  
   const bounds = selectedElements.length > 0 ? {
     minX: Math.min(...selectedElements.map(e => e.position.x)),
     minY: Math.min(...selectedElements.map(e => e.position.y)),
@@ -80,15 +69,13 @@ export const BoundingBox: React.FC = () => {
         }
         
         if (deltaX !== 0 || deltaY !== 0) {
-          // تحقق من الإطارات المحددة
-          const selectedFrames = selectedElements.filter(el => el.type === 'frame');
+          // ✨ تحقق إذا كان الإطار
+          const isFrame = selectedElements.length === 1 && selectedElements[0].type === 'frame';
           
-          if (selectedFrames.length === 1) {
-            // حالة: إطار واحد محدد (مع أو بدون أطفال)
-            const frameId = selectedFrames[0].id;
+          if (isFrame) {
+            const frameId = selectedElements[0].id;
             moveFrame(frameId, deltaX, deltaY);
           } else {
-            // حركة عادية لعناصر متعددة
             moveElements(selectedElementIds, deltaX, deltaY);
           }
           
@@ -237,10 +224,6 @@ export const BoundingBox: React.FC = () => {
         borderRadius: '4px'
       }}
     >
-      {/* عداد العناصر المحددة */}
-      <div className="absolute top-[-32px] left-0 px-2 py-1 bg-[hsl(var(--ink))] text-white text-xs rounded">
-        {displayedElementsCount} عنصر محدد
-      </div>
       {/* مقابض تغيير الحجم في الزوايا */}
       <div 
         className="absolute -top-2 -left-2 pointer-events-auto cursor-nwse-resize group"

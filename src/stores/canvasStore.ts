@@ -353,33 +353,19 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
   
   // Selection Actions
-    selectElement: (elementId, multiSelect = false) => {
-      set(state => {
-        const element = state.elements.find(el => el.id === elementId);
-        
-        // إذا كان العنصر إطاراً، أضف أطفاله إلى التحديد تلقائياً
-        let idsToSelect = [elementId];
-        if (element?.type === 'frame') {
-          // قراءة children من الـ state مباشرة
-          const childIds = (element as any).children || [];
-          idsToSelect = [elementId, ...childIds];
-          
-          // تشخيص
-          console.log('🎯 Frame selected:', elementId, 'Children:', childIds);
-        }
-        
-        if (multiSelect) {
-          const isSelected = state.selectedElementIds.includes(elementId);
-          return {
-            selectedElementIds: isSelected
-              ? state.selectedElementIds.filter(id => !idsToSelect.includes(id))
-              : [...state.selectedElementIds, ...idsToSelect]
-          };
-        }
-        
-        return { selectedElementIds: idsToSelect };
-      });
-    },
+  selectElement: (elementId, multiSelect = false) => {
+    set(state => {
+      if (multiSelect) {
+        const isSelected = state.selectedElementIds.includes(elementId);
+        return {
+          selectedElementIds: isSelected
+            ? state.selectedElementIds.filter(id => id !== elementId)
+            : [...state.selectedElementIds, elementId]
+        };
+      }
+      return { selectedElementIds: [elementId] };
+    });
+  },
   
   selectElements: (elementIds) => {
     set({ selectedElementIds: elementIds });
@@ -808,9 +794,6 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       }
     });
     
-    // تشخيص
-    console.log('🔗 Assigning children to frame:', frameId, 'Children found:', childrenIds);
-    
     set(state => ({
       elements: state.elements.map(el =>
         el.id === frameId ? { ...el, children: childrenIds } : el
@@ -824,9 +807,6 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     if (!frame || frame.type !== 'frame') return;
     
     const childIds = (frame as any).children || [];
-    
-    // تشخيص
-    console.log('📦 Moving frame:', frameId, 'Children:', childIds, 'Delta:', { dx, dy });
     
     set(state => ({
       elements: state.elements.map(el => {
