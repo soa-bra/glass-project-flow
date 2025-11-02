@@ -13,6 +13,22 @@ export const BoundingBox: React.FC = () => {
   // حساب حدود الإطار المحيط بشكل آمن
   const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));
   
+  // حساب عدد العناصر الفعلية (بدون تكرار الأطفال)
+  const displayCount = React.useMemo(() => {
+    const frames = selectedElements.filter(el => el.type === 'frame');
+    
+    // إذا كان هناك إطار محدد، لا تحسب أطفاله مرتين
+    if (frames.length > 0) {
+      const childIds = frames.flatMap(f => (f as any).children || []);
+      const nonChildElements = selectedElements.filter(
+        el => !childIds.includes(el.id)
+      );
+      return nonChildElements.length;
+    }
+    
+    return selectedElements.length;
+  }, [selectedElements]);
+  
   const bounds = selectedElements.length > 0 ? {
     minX: Math.min(...selectedElements.map(e => e.position.x)),
     minY: Math.min(...selectedElements.map(e => e.position.y)),

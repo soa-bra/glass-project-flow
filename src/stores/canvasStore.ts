@@ -794,6 +794,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       }
     });
     
+    console.log('🔗 Assigning children to frame:', frameId, 'Children found:', childrenIds);
+    
     set(state => ({
       elements: state.elements.map(el =>
         el.id === frameId ? { ...el, children: childrenIds } : el
@@ -807,6 +809,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     if (!frame || frame.type !== 'frame') return;
     
     const childIds = (frame as any).children || [];
+    
+    console.log('📦 Moving frame:', frameId, 'Children:', childIds, 'Delta:', { dx, dy });
     
     set(state => ({
       elements: state.elements.map(el => {
