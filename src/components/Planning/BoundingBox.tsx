@@ -130,6 +130,55 @@ export const BoundingBox: React.FC = () => {
     };
     
     const handleMouseUp = () => {
+      // ✨ عند إفلات العناصر، تحقق من وجودها داخل إطار
+      if (isDragging && selectedElements.length > 0) {
+        const frames = elements.filter(el => el.type === 'frame');
+        const { addChildToFrame, removeChildFromFrame } = useCanvasStore.getState();
+        
+        selectedElements.forEach(selectedEl => {
+          let targetFrameId: string | null = null;
+          
+          // البحث عن إطار يحتوي العنصر بالكامل
+          for (const frame of frames) {
+            const frameRect = {
+              x: frame.position.x,
+              y: frame.position.y,
+              width: frame.size.width,
+              height: frame.size.height
+            };
+            
+            const isInside = (
+              selectedEl.position.x >= frameRect.x &&
+              selectedEl.position.y >= frameRect.y &&
+              selectedEl.position.x + selectedEl.size.width <= frameRect.x + frameRect.width &&
+              selectedEl.position.y + selectedEl.size.height <= frameRect.y + frameRect.height
+            );
+            
+            if (isInside) {
+              targetFrameId = frame.id;
+              break; // أول إطار يحتوي العنصر
+            }
+          }
+          
+          // إزالة من جميع الإطارات القديمة
+          frames.forEach(frame => {
+            const children = (frame as any).children || [];
+            if (children.includes(selectedEl.id) && frame.id !== targetFrameId) {
+              removeChildFromFrame(frame.id, selectedEl.id);
+            }
+          });
+          
+          // إضافة للإطار الجديد
+          if (targetFrameId) {
+            const frame = frames.find(f => f.id === targetFrameId);
+            const children = (frame as any)?.children || [];
+            if (!children.includes(selectedEl.id)) {
+              addChildToFrame(targetFrameId, selectedEl.id);
+            }
+          }
+        });
+      }
+      
       setIsDragging(false);
       setIsResizing(null);
       hasDuplicated.current = false;

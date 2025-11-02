@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect } from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
@@ -20,10 +20,13 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   snapToGrid,
   activeTool
 }) => {
-  const { updateElement, viewport } = useCanvasStore();
+  const { updateElement, viewport, updateFrameTitle } = useCanvasStore();
   const elementRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
+  const titleInputRef = useRef<HTMLInputElement>(null);
   
   // Check if element's layer is visible and unlocked
   const layers = useCanvasStore(state => state.layers);
@@ -94,6 +97,36 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   const handleMouseUp = useCallback(() => {
     isDraggingRef.current = false;
   }, []);
+
+  const handleTitleDoubleClick = useCallback((e: React.MouseEvent) => {
+    if (element.type === 'frame' && !isLocked) {
+      e.stopPropagation();
+      setIsEditingTitle(true);
+      setEditedTitle((element as any).title || '');
+    }
+  }, [element, isLocked]);
+
+  const handleTitleSave = useCallback(() => {
+    if (element.type === 'frame') {
+      updateFrameTitle(element.id, editedTitle);
+      setIsEditingTitle(false);
+    }
+  }, [element, editedTitle, updateFrameTitle]);
+
+  const handleTitleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleTitleSave();
+    } else if (e.key === 'Escape') {
+      setIsEditingTitle(false);
+    }
+  }, [handleTitleSave]);
+
+  useEffect(() => {
+    if (isEditingTitle && titleInputRef.current) {
+      titleInputRef.current.focus();
+      titleInputRef.current.select();
+    }
+  }, [isEditingTitle]);
   
   // Add global mouse listeners when dragging
   useEffect(() => {
@@ -165,9 +198,26 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       {element.type === 'frame' && (
         <div className="relative w-full h-full pointer-events-none">
           {/* عنوان الإطار */}
-          {(element as any).title && (
-            <div className="absolute top-2 right-2 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[11px] font-medium text-[hsl(var(--ink))] shadow-sm border border-[hsl(var(--border))]">
-              {(element as any).title}
+          {((element as any).title || isEditingTitle) && (
+            <div 
+              className="absolute top-2 right-2 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[11px] font-medium text-[hsl(var(--ink))] shadow-sm border border-[hsl(var(--border))] pointer-events-auto"
+              onDoubleClick={handleTitleDoubleClick}
+            >
+              {isEditingTitle ? (
+                <input
+                  ref={titleInputRef}
+                  type="text"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  onBlur={handleTitleSave}
+                  onKeyDown={handleTitleKeyDown}
+                  className="outline-none bg-transparent min-w-[80px] text-[11px]"
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <span className="cursor-text">{(element as any).title}</span>
+              )}
             </div>
           )}
           

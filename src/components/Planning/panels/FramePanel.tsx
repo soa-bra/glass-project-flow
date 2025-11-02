@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { RectangleHorizontal, Square, Circle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function FramePanel() {
@@ -30,20 +29,8 @@ export default function FramePanel() {
     updateToolSettings('frame', { title: e.target.value });
   };
 
-  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateToolSettings('frame', { backgroundColor: e.target.value });
-  };
-
-  const handleOpacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateToolSettings('frame', { opacity: parseFloat(e.target.value) });
-  };
-
   const handleStrokeWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateToolSettings('frame', { strokeWidth: parseInt(e.target.value) });
-  };
-
-  const handleStyleChange = (style: 'rectangle' | 'rounded' | 'circle') => {
-    updateToolSettings('frame', { frameStyle: style });
   };
 
   const handleActivateFrame = () => {
@@ -100,85 +87,6 @@ export default function FramePanel() {
             onChange={handleTitleChange}
             placeholder="إطار جديد"
             className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors"
-          />
-        </div>
-
-        {/* Frame Style */}
-        <div className="mb-4">
-          <label className="text-[12px] text-[hsl(var(--ink-60))] mb-2 block">
-            نمط الإطار
-          </label>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              onClick={() => handleStyleChange('rectangle')}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                frameSettings.frameStyle === 'rectangle'
-                  ? 'bg-[hsl(var(--ink))] text-white'
-                  : 'bg-[hsl(var(--panel))] hover:bg-[rgba(217,231,237,0.8)]'
-              }`}
-            >
-              <RectangleHorizontal size={20} />
-              <span className="text-[10px]">مستطيل</span>
-            </button>
-            <button
-              onClick={() => handleStyleChange('rounded')}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                frameSettings.frameStyle === 'rounded'
-                  ? 'bg-[hsl(var(--ink))] text-white'
-                  : 'bg-[hsl(var(--panel))] hover:bg-[rgba(217,231,237,0.8)]'
-              }`}
-            >
-              <Square size={20} />
-              <span className="text-[10px]">دائري</span>
-            </button>
-            <button
-              onClick={() => handleStyleChange('circle')}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                frameSettings.frameStyle === 'circle'
-                  ? 'bg-[hsl(var(--ink))] text-white'
-                  : 'bg-[hsl(var(--panel))] hover:bg-[rgba(217,231,237,0.8)]'
-              }`}
-            >
-              <Circle size={20} />
-              <span className="text-[10px]">بيضاوي</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Background Color */}
-        <div className="mb-4">
-          <label className="text-[12px] text-[hsl(var(--ink-60))] mb-2 block">
-            لون الخلفية
-          </label>
-          <div className="flex gap-2 items-center">
-            <input
-              type="color"
-              value={frameSettings.backgroundColor}
-              onChange={handleColorChange}
-              className="w-12 h-10 rounded-lg border border-[hsl(var(--border))] cursor-pointer"
-            />
-            <input
-              type="text"
-              value={frameSettings.backgroundColor}
-              onChange={handleColorChange}
-              className="flex-1 px-3 py-2 bg-[hsl(var(--panel))] rounded-lg text-[12px] font-mono"
-            />
-          </div>
-        </div>
-
-        {/* Opacity */}
-        <div className="mb-4">
-          <label className="text-[12px] text-[hsl(var(--ink-60))] mb-2 block">
-            شفافية الخلفية: {Math.round(frameSettings.opacity * 100)}%
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={frameSettings.opacity}
-            onChange={handleOpacityChange}
-            className="w-full accent-[hsl(var(--ink))]"
           />
         </div>
 

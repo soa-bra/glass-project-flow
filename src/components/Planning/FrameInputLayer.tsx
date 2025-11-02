@@ -113,14 +113,10 @@ export default function FrameInputLayer({ containerRef, active }: Props) {
         position: point,
         size: { width: 0, height: 0 },
         title: toolSettings.frame.title || 'إطار جديد',
-        frameStyle: toolSettings.frame.frameStyle,
         style: {
-          backgroundColor: toolSettings.frame.backgroundColor,
-          opacity: toolSettings.frame.opacity,
+          backgroundColor: 'transparent',
           border: `${toolSettings.frame.strokeWidth}px solid ${toolSettings.frame.strokeColor}`,
-          borderRadius: 
-            toolSettings.frame.frameStyle === 'circle' ? '9999px' :
-            toolSettings.frame.frameStyle === 'rounded' ? '18px' : '8px'
+          borderRadius: '8px'
         },
         children: []
       };

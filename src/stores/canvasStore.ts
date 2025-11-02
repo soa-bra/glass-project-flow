@@ -66,12 +66,9 @@ export interface ToolSettings {
   };
   pen: PenSettings;
   frame: {
-    backgroundColor: string;
-    opacity: number;
     strokeWidth: number;
     strokeColor: string;
     title: string;
-    frameStyle: 'rectangle' | 'rounded' | 'circle';
   };
 }
 
@@ -187,6 +184,7 @@ interface CanvasState {
   moveFrame: (frameId: string, dx: number, dy: number) => void;
   resizeFrame: (frameId: string, newBounds: { x: number; y: number; width: number; height: number }) => void;
   ungroupFrame: (frameId: string) => void;
+  updateFrameTitle: (frameId: string, newTitle: string) => void;
   
   // Advanced Operations
   copyElements: (elementIds: string[]) => void;
@@ -234,12 +232,9 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       smartMode: false
     },
     frame: {
-      backgroundColor: '#d9e7ed',
-      opacity: 0.3,
       strokeWidth: 2,
       strokeColor: '#0B0F12',
-      title: '',
-      frameStyle: 'rectangle'
+      title: ''
     }
   },
   isDrawing: false,
@@ -783,19 +778,18 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     const childrenIds: string[] = [];
     
     state.elements.forEach(el => {
-      if (el.id === frameId || el.type === 'frame') return;
+      // تجاهل الإطار نفسه فقط، السماح بتداخل الإطارات
+      if (el.id === frameId) return;
       
-      const elCenterX = el.position.x + el.size.width / 2;
-      const elCenterY = el.position.y + el.size.height / 2;
-      
-      const isInside = (
-        elCenterX >= frameRect.x &&
-        elCenterX <= frameRect.x + frameRect.width &&
-        elCenterY >= frameRect.y &&
-        elCenterY <= frameRect.y + frameRect.height
+      // فحص كامل الإطار المحيط بالعنصر بدلاً من المركز فقط
+      const isFullyInside = (
+        el.position.x >= frameRect.x &&
+        el.position.y >= frameRect.y &&
+        el.position.x + el.size.width <= frameRect.x + frameRect.width &&
+        el.position.y + el.size.height <= frameRect.y + frameRect.height
       );
       
-      if (isInside) {
+      if (isFullyInside) {
         childrenIds.push(el.id);
       }
     });
@@ -887,6 +881,17 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     set(state => ({
       elements: state.elements.map(el =>
         el.id === frameId ? { ...el, children: [] } : el
+      )
+    }));
+    get().pushHistory();
+  },
+
+  updateFrameTitle: (frameId, newTitle) => {
+    set(state => ({
+      elements: state.elements.map(el =>
+        el.id === frameId && el.type === 'frame'
+          ? { ...el, title: newTitle }
+          : el
       )
     }));
     get().pushHistory();
