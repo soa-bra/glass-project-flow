@@ -160,28 +160,30 @@ export default function FrameInputLayer({ containerRef, active }: Props) {
         
         addElement(finalElement);
         
-        // تجميع العناصر داخل الإطار تلقائياً
-        setTimeout(() => {
-          const elements = useCanvasStore.getState().elements;
-          const newFrameId = elements
-            .filter(el => el.type === 'frame')
-            .sort((a, b) => {
-              const aTime = (a as any).createdAt || 0;
-              const bTime = (b as any).createdAt || 0;
-              return bTime - aTime;
-            })[0]?.id;
+        // تجميع العناصر داخل الإطار تلقائياً (فوري بدون setTimeout)
+        const elements = useCanvasStore.getState().elements;
+        const newFrameId = elements
+          .filter(el => el.type === 'frame')
+          .sort((a, b) => {
+            const aTime = (a as any).createdAt || 0;
+            const bTime = (b as any).createdAt || 0;
+            return bTime - aTime;
+          })[0]?.id;
+        
+        if (newFrameId) {
+          assignElementsToFrame(newFrameId);
           
-          if (newFrameId) {
-            assignElementsToFrame(newFrameId);
-            const frame = elements.find(el => el.id === newFrameId) as any;
-            const childrenCount = frame?.children?.length || 0;
-            if (childrenCount > 0) {
-              toast.success(`تم إنشاء الإطار وتجميع ${childrenCount} عنصر`);
-            } else {
-              toast.success('تم إنشاء الإطار');
-            }
+          // قراءة العدد بعد التحديث مباشرة
+          const updatedElements = useCanvasStore.getState().elements;
+          const frame = updatedElements.find(el => el.id === newFrameId) as any;
+          const childrenCount = frame?.children?.length || 0;
+          
+          if (childrenCount > 0) {
+            toast.success(`تم إنشاء الإطار وتجميع ${childrenCount} عنصر`);
+          } else {
+            toast.success('تم إنشاء الإطار');
           }
-        }, 50);
+        }
       }
       
       drawingRef.current = false;
