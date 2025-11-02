@@ -357,12 +357,17 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     set(state => {
       if (multiSelect) {
         const isSelected = state.selectedElementIds.includes(elementId);
+        const newSelection = isSelected
+          ? state.selectedElementIds.filter(id => id !== elementId)
+          : [...state.selectedElementIds, elementId];
+        
+        // إزالة التكرارات باستخدام Set
         return {
-          selectedElementIds: isSelected
-            ? state.selectedElementIds.filter(id => id !== elementId)
-            : [...state.selectedElementIds, elementId]
+          selectedElementIds: Array.from(new Set(newSelection))
         };
       }
+      
+      // عند تحديد إطار منفرد، نحدد الإطار فقط (ليس الأطفال)
       return { selectedElementIds: [elementId] };
     });
   },
@@ -1016,20 +1021,49 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
   
   moveElements: (elementIds, deltaX, deltaY) => {
-    set(state => ({
-      elements: state.elements.map(el =>
-        elementIds.includes(el.id) && !el.locked
-          ? {
-              ...el,
-              position: {
-                x: el.position.x + deltaX,
-                y: el.position.y + deltaY
+    // إزالة التكرارات باستخدام Set
+    const uniqueIds = Array.from(new Set(elementIds));
+    
+    // التحقق من وجود إطارات في التحديد
+    const state = get();
+    const frameIds: string[] = [];
+    const nonFrameIds: string[] = [];
+    
+    uniqueIds.forEach(id => {
+      const el = state.elements.find(e => e.id === id);
+      if (el?.type === 'frame') {
+        frameIds.push(id);
+      } else if (el && !el.locked) {
+        nonFrameIds.push(id);
+      }
+    });
+    
+    // تحريك الإطارات باستخدام moveFrame (لتحريك الأطفال معها)
+    frameIds.forEach(frameId => {
+      get().moveFrame(frameId, deltaX, deltaY);
+    });
+    
+    // تحريك العناصر العادية
+    if (nonFrameIds.length > 0) {
+      set(state => ({
+        elements: state.elements.map(el =>
+          nonFrameIds.includes(el.id)
+            ? {
+                ...el,
+                position: {
+                  x: el.position.x + deltaX,
+                  y: el.position.y + deltaY
+                }
               }
-            }
-          : el
-      )
-    }));
-    get().pushHistory();
+            : el
+        )
+      }));
+    }
+    
+    // pushHistory مرة واحدة فقط في النهاية
+    if (frameIds.length === 0 && nonFrameIds.length > 0) {
+      get().pushHistory();
+    }
   },
 
   resizeElements: (elementIds, scaleX, scaleY, origin) => {

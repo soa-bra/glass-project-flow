@@ -3,7 +3,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 
 export const BoundingBox: React.FC = () => {
   // ✅ جميع الـ Hooks أولاً (قبل أي return)
-  const { selectedElementIds, elements, viewport, moveElements, resizeElements, duplicateElement, moveFrame, resizeFrame, activeTool } = useCanvasStore();
+  const { selectedElementIds, elements, viewport, moveElements, resizeElements, duplicateElement, resizeFrame, activeTool } = useCanvasStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<string | null>(null);
   const dragStart = useRef({ x: 0, y: 0 });
@@ -85,15 +85,8 @@ export const BoundingBox: React.FC = () => {
         }
         
         if (deltaX !== 0 || deltaY !== 0) {
-          // ✨ تحقق إذا كان الإطار
-          const isFrame = selectedElements.length === 1 && selectedElements[0].type === 'frame';
-          
-          if (isFrame) {
-            const frameId = selectedElements[0].id;
-            moveFrame(frameId, deltaX, deltaY);
-          } else {
-            moveElements(selectedElementIds, deltaX, deltaY);
-          }
+          // استدعاء moveElements مباشرة - ستتعامل تلقائياً مع الإطارات
+          moveElements(selectedElementIds, deltaX, deltaY);
           
           dragStart.current = { x: e.clientX, y: e.clientY };
         }
