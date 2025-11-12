@@ -148,21 +148,29 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
    * أداة النص: إنشاء صندوق نص عند النقر
    */
   const handleTextToolClick = (point: { x: number; y: number }) => {
-    const textElement = {
+    const { addText, startEditingText } = useCanvasStore.getState();
+    
+    const textData = {
       type: 'text' as const,
+      textType: 'line' as const,
       position: point,
       size: { width: 200, height: 50 },
-      content: 'اكتب هنا...',
-      style: {
-        fontSize: toolSettings.text.fontSize,
-        color: toolSettings.text.color,
-        fontFamily: toolSettings.text.fontFamily,
-        fontWeight: toolSettings.text.fontWeight
-      }
+      content: '',
+      fontSize: toolSettings.text.fontSize,
+      color: toolSettings.text.color,
+      fontFamily: toolSettings.text.fontFamily,
+      fontWeight: toolSettings.text.fontWeight,
+      alignment: toolSettings.text.alignment
     };
 
-    addElement(textElement);
-    toast.success('تم إضافة نص جديد');
+    const newId = addText(textData);
+    
+    // بدء التحرير فوراً
+    setTimeout(() => {
+      startEditingText(newId);
+    }, 50);
+    
+    toast.success('انقر وابدأ الكتابة');
   };
 
   /**

@@ -3,6 +3,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
 import { ResizeHandle } from './ResizeHandle';
+import { TextEditor } from './TextEditor';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 
 interface CanvasElementProps {
@@ -20,13 +21,16 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   snapToGrid,
   activeTool
 }) => {
-  const { updateElement, viewport, updateFrameTitle } = useCanvasStore();
+  const { updateElement, viewport, updateFrameTitle, editingTextId, startEditingText, stopEditingText, updateTextContent } = useCanvasStore();
   const elementRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const titleInputRef = useRef<HTMLInputElement>(null);
+  
+  // Check if this text element is being edited
+  const isEditingThisText = element.type === 'text' && editingTextId === element.id;
   
   // Check if element's layer is visible and unlocked
   const layers = useCanvasStore(state => state.layers);
@@ -64,6 +68,11 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     
     onSelect(multiSelect);
     
+    // لا تبدأ السحب إذا كان في وضع التحرير للنص
+    if (isEditingThisText) {
+      return;
+    }
+    
     isDraggingRef.current = true;
     dragStartRef.current = {
       x: e.clientX,
@@ -71,7 +80,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       elementX: element.position.x,
       elementY: element.position.y
     };
-  }, [element, onSelect, isLocked, isSelected, activeTool]);
+  }, [element, onSelect, isLocked, isSelected, activeTool, isEditingThisText]);
   
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDraggingRef.current || isLocked) return;
@@ -105,6 +114,13 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       setEditedTitle((element as any).title || '');
     }
   }, [element, isLocked]);
+  
+  const handleTextDoubleClick = useCallback((e: React.MouseEvent) => {
+    if (element.type === 'text' && !isLocked) {
+      e.stopPropagation();
+      startEditingText(element.id);
+    }
+  }, [element, isLocked, startEditingText]);
 
   const handleTitleSave = useCallback(() => {
     if (element.type === 'frame') {
@@ -172,8 +188,37 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     >
       {/* Element Content */}
       {element.type === 'text' && (
-        <div className="text-[14px] text-[hsl(var(--ink))]">
-          {element.content || 'نص جديد'}
+        <div 
+          className="w-full h-full cursor-text"
+          onDoubleClick={handleTextDoubleClick}
+        >
+          {isEditingThisText ? (
+            <TextEditor
+              element={element}
+              onUpdate={(content) => updateTextContent(element.id, content)}
+              onClose={() => stopEditingText(element.id)}
+            />
+          ) : (
+            <div
+              style={{
+                fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
+                fontSize: `${element.style?.fontSize || 14}px`,
+                fontWeight: element.style?.fontWeight || 'normal',
+                fontStyle: element.style?.fontStyle || 'normal',
+                textDecoration: element.style?.textDecoration || 'none',
+                color: element.style?.color || '#0B0F12',
+                textAlign: (element.style?.textAlign as any) || 'right',
+                whiteSpace: element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
+                wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
+                overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
+                width: '100%',
+                height: '100%',
+                padding: '8px'
+              }}
+            >
+              {element.content || 'انقر مرتين للكتابة...'}
+            </div>
+          )}
         </div>
       )}
       

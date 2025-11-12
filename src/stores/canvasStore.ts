@@ -49,6 +49,25 @@ export interface FrameElement extends CanvasElement {
   frameStyle?: 'rectangle' | 'rounded' | 'circle';
 }
 
+// Text Element Type
+export interface TextElement extends CanvasElement {
+  type: 'text';
+  textType?: 'line' | 'box' | 'attached';
+  content?: string;
+  fontFamily?: string;
+  fontWeight?: string;
+  fontSize?: number;
+  color?: string;
+  alignment?: 'left' | 'center' | 'right';
+  fontStyle?: 'normal' | 'italic';
+  textDecoration?: 'none' | 'underline';
+  attachedTo?: string;
+  relativePosition?: { x: number; y: number };
+}
+
+// Export CanvasElement for external use
+export type { CanvasElement };
+
 export interface ToolSettings {
   shapes: {
     fillColor: string;
@@ -167,6 +186,14 @@ interface CanvasState {
   setTempElement: (element: CanvasElement | null) => void;
   setSelectedSmartElement: (elementType: string | null) => void;
   
+  // Text Management
+  editingTextId: string | null;
+  addText: (textData: Partial<TextElement>) => string;
+  updateTextContent: (elementId: string, content: string) => void;
+  updateTextStyle: (elementId: string, style: Partial<Record<string, any>>) => void;
+  startEditingText: (elementId: string) => void;
+  stopEditingText: (elementId: string) => void;
+  
   // Pen Actions
   setPenSettings: (partial: Partial<PenSettings>) => void;
   toggleSmartMode: () => void;
@@ -241,6 +268,9 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   drawStartPoint: null,
   tempElement: null,
   selectedSmartElement: null,
+  
+  // Text Management State
+  editingTextId: null,
   
   // Pen Strokes Initial State
   strokes: {},
@@ -616,6 +646,79 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   setDrawStartPoint: (point) => set({ drawStartPoint: point }),
   
   setTempElement: (element) => set({ tempElement: element }),
+  
+  // Text Management Implementation
+  addText: (textData) => {
+    const id = nanoid();
+    const newTextElement: CanvasElement = {
+      id,
+      type: 'text',
+      position: textData.position || { x: 100, y: 100 },
+      size: textData.size || { width: 200, height: 50 },
+      content: textData.content || '',
+      style: {
+        fontSize: textData.fontSize || get().toolSettings.text.fontSize,
+        color: textData.color || get().toolSettings.text.color,
+        fontFamily: textData.fontFamily || get().toolSettings.text.fontFamily,
+        fontWeight: textData.fontWeight || get().toolSettings.text.fontWeight,
+        textAlign: textData.alignment || get().toolSettings.text.alignment,
+        fontStyle: textData.fontStyle || 'normal',
+        textDecoration: textData.textDecoration || 'none'
+      },
+      data: {
+        textType: textData.textType || 'line',
+        attachedTo: textData.attachedTo,
+        relativePosition: textData.relativePosition
+      },
+      layerId: get().activeLayerId || 'default',
+      visible: true,
+      locked: false
+    };
+    
+    set(state => {
+      const updatedLayers = state.layers.map(layer =>
+        layer.id === newTextElement.layerId
+          ? { ...layer, elements: [...layer.elements, newTextElement.id] }
+          : layer
+      );
+      
+      return {
+        elements: [...state.elements, newTextElement],
+        layers: updatedLayers
+      };
+    });
+    
+    get().pushHistory();
+    return id;
+  },
+  
+  updateTextContent: (elementId, content) => {
+    set(state => ({
+      elements: state.elements.map(el =>
+        el.id === elementId ? { ...el, content } : el
+      )
+    }));
+    get().pushHistory();
+  },
+  
+  updateTextStyle: (elementId, style) => {
+    set(state => ({
+      elements: state.elements.map(el =>
+        el.id === elementId
+          ? { ...el, style: { ...el.style, ...style } }
+          : el
+      )
+    }));
+    get().pushHistory();
+  },
+  
+  startEditingText: (elementId) => {
+    set({ editingTextId: elementId });
+  },
+  
+  stopEditingText: () => {
+    set({ editingTextId: null });
+  },
   
   // Pen Actions Implementation
   setPenSettings: (partial) => {
