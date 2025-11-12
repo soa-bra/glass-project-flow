@@ -23,6 +23,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
   } = useCanvasStore();
 
   const isDraggingRef = useRef(false);
+  
+  // Text tool dragging state
+  const [isDraggingText, setIsDraggingText] = useState(false);
+  const [textBoxStart, setTextBoxStart] = useState<{x: number, y: number} | null>(null);
 
   /**
    * معالج بدء النقر على الكانفاس
@@ -52,7 +56,8 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
 
     switch (activeTool) {
       case 'text_tool':
-        handleTextToolClick(snappedPoint);
+        // بدء سحب محتمل لمربع نص
+        handleTextToolDragStart(snappedPoint);
         break;
 
       case 'shapes_tool':
@@ -109,6 +114,13 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     );
 
     switch (activeTool) {
+      case 'text_tool':
+        // تحديث مربع النص المؤقت أثناء السحب
+        if (isDraggingText) {
+          handleTextToolDragMove(snappedPoint);
+        }
+        break;
+        
       case 'shapes_tool':
         handleShapesToolMove(snappedPoint);
         break;
@@ -130,6 +142,12 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
    * معالج رفع زر الماوس (إنهاء الرسم)
    */
   const handleCanvasMouseUp = useCallback(() => {
+    // التعامل مع نهاية سحب أداة النص
+    if (activeTool === 'text_tool' && isDraggingText) {
+      handleTextToolDragEnd();
+      return;
+    }
+    
     if (isDrawing && tempElement) {
       // تحويل العنصر المؤقت إلى عنصر دائم
       const finalElement = { ...tempElement };
@@ -142,35 +160,109 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     setIsDrawing(false);
     setDrawStartPoint(null);
     setTempElement(null);
-  }, [isDrawing, tempElement, addElement, setIsDrawing, setDrawStartPoint, setTempElement]);
+  }, [isDrawing, tempElement, addElement, setIsDrawing, setDrawStartPoint, setTempElement, activeTool, isDraggingText]);
 
   /**
-   * أداة النص: إنشاء صندوق نص عند النقر
+   * أداة النص: بدء سحب محتمل
    */
-  const handleTextToolClick = (point: { x: number; y: number }) => {
+  const handleTextToolDragStart = (point: { x: number; y: number }) => {
+    setIsDraggingText(true);
+    setTextBoxStart(point);
+    setIsDrawing(true);
+    setDrawStartPoint(point);
+  };
+  
+  /**
+   * أداة النص: تحديث مربع النص المؤقت أثناء السحب
+   */
+  const handleTextToolDragMove = (currentPoint: { x: number; y: number }) => {
+    if (!textBoxStart) return;
+    
+    const width = Math.abs(currentPoint.x - textBoxStart.x);
+    const height = Math.abs(currentPoint.y - textBoxStart.y);
+    const x = Math.min(currentPoint.x, textBoxStart.x);
+    const y = Math.min(currentPoint.y, textBoxStart.y);
+    
+    // عرض مستطيل مؤقت - الحد الأدنى للحجم 50x30
+    if (width > 5 || height > 5) {
+      setTempElement({
+        id: 'temp-textbox',
+        type: 'text',
+        position: { x, y },
+        size: { width: Math.max(width, 50), height: Math.max(height, 30) },
+        style: { 
+          border: '2px dashed #3DBE8B',
+          backgroundColor: 'rgba(61, 190, 139, 0.05)'
+        },
+        content: '',
+        data: { textType: 'box' }
+      } as any);
+    }
+  };
+  
+  /**
+   * أداة النص: إنهاء السحب وإنشاء النص النهائي
+   */
+  const handleTextToolDragEnd = () => {
+    if (!textBoxStart) return;
+    
     const { addText, startEditingText } = useCanvasStore.getState();
     
-    const textData = {
-      type: 'text' as const,
-      textType: 'line' as const,
-      position: point,
-      size: { width: 200, height: 50 },
-      content: '',
-      fontSize: toolSettings.text.fontSize,
-      color: toolSettings.text.color,
-      fontFamily: toolSettings.text.fontFamily,
-      fontWeight: toolSettings.text.fontWeight,
-      alignment: toolSettings.text.alignment
-    };
+    // إذا كان السحب صغيراً جداً (نقرة بسيطة)، أنشئ سطر نص
+    if (tempElement && (tempElement.size.width < 20 && tempElement.size.height < 20)) {
+      const textData = {
+        type: 'text' as const,
+        textType: 'line' as const,
+        position: textBoxStart,
+        size: { width: 200, height: 50 },
+        content: '',
+        fontSize: toolSettings.text.fontSize,
+        color: toolSettings.text.color,
+        fontFamily: toolSettings.text.fontFamily,
+        fontWeight: toolSettings.text.fontWeight,
+        alignment: toolSettings.text.alignment
+      };
 
-    const newId = addText(textData);
+      const newId = addText(textData);
+      
+      // بدء التحرير فوراً
+      setTimeout(() => {
+        startEditingText(newId);
+      }, 50);
+      
+      toast.success('انقر وابدأ الكتابة');
+    } 
+    // إذا كان هناك سحب، أنشئ مربع نص
+    else if (tempElement) {
+      const textBoxElement = {
+        type: 'text' as const,
+        textType: 'box' as const,
+        position: tempElement.position,
+        size: tempElement.size,
+        content: '',
+        fontSize: toolSettings.text.fontSize,
+        color: toolSettings.text.color,
+        fontFamily: toolSettings.text.fontFamily,
+        fontWeight: toolSettings.text.fontWeight,
+        alignment: toolSettings.text.alignment
+      };
+      
+      const newId = addText(textBoxElement);
+      
+      // بدء التحرير
+      setTimeout(() => {
+        startEditingText(newId);
+      }, 50);
+      
+      toast.success('تم إنشاء مربع نص - ابدأ الكتابة');
+    }
     
-    // بدء التحرير فوراً
-    setTimeout(() => {
-      startEditingText(newId);
-    }, 50);
-    
-    toast.success('انقر وابدأ الكتابة');
+    // إعادة تعيين الحالة
+    setIsDraggingText(false);
+    setTextBoxStart(null);
+    setTempElement(null);
+    setIsDrawing(false);
+    setDrawStartPoint(null);
   };
 
   /**
