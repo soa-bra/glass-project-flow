@@ -56,48 +56,8 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
 
     switch (activeTool) {
       case 'text_tool':
-        // التحقق من وجود عنصر تحت النقر (للنص المرتبط)
-        const clickedElement = elements.find(el => {
-          if (el.type === 'text') return false; // تجاهل العناصر النصية
-          
-          const inBounds = (
-            snappedPoint.x >= el.position.x &&
-            snappedPoint.x <= el.position.x + el.size.width &&
-            snappedPoint.y >= el.position.y &&
-            snappedPoint.y <= el.position.y + el.size.height
-          );
-          return inBounds;
-        });
-        
-        if (clickedElement) {
-          // إنشاء نص مرتبط
-          const relativeX = snappedPoint.x - clickedElement.position.x;
-          const relativeY = snappedPoint.y - clickedElement.position.y;
-          
-          const { addText, startEditingText } = useCanvasStore.getState();
-          
-          const attachedText = {
-            type: 'text' as const,
-            textType: 'attached' as const,
-            position: snappedPoint,
-            size: { width: 150, height: 40 },
-            content: '',
-            fontSize: toolSettings.text.fontSize,
-            color: toolSettings.text.color,
-            fontFamily: toolSettings.text.fontFamily,
-            fontWeight: toolSettings.text.fontWeight,
-            alignment: toolSettings.text.alignment,
-            attachedTo: clickedElement.id,
-            relativePosition: { x: relativeX, y: relativeY }
-          };
-          
-          const newId = addText(attachedText);
-          setTimeout(() => startEditingText(newId), 50);
-          toast.success('تم إضافة نص مرتبط - سيتحرك مع العنصر');
-        } else {
-          // بدء سحب محتمل لمربع نص عادي
-          handleTextToolDragStart(snappedPoint);
-        }
+        // بدء سحب محتمل لمربع نص
+        handleTextToolDragStart(snappedPoint);
         break;
 
       case 'shapes_tool':

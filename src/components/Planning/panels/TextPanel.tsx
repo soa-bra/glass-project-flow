@@ -48,42 +48,6 @@ const TextPanel: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* نوع النص */}
-      <div>
-        <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-2 block">
-          نوع النص
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          <button
-            onClick={() => {
-              toast.info('انقر على الكانفاس لإضافة سطر نص');
-            }}
-            className="px-3 py-2 rounded-[10px] text-[11px] font-medium bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[hsl(var(--accent-green))] hover:text-white transition-colors"
-          >
-            سطر نص
-          </button>
-          <button
-            onClick={() => {
-              toast.info('انقر واسحب لإنشاء مربع نص');
-            }}
-            className="px-3 py-2 rounded-[10px] text-[11px] font-medium bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[hsl(var(--accent-green))] hover:text-white transition-colors"
-          >
-            مربع نص
-          </button>
-          <button
-            onClick={() => {
-              toast.info('انقر داخل عنصر لإضافة نص مرتبط');
-            }}
-            className="px-3 py-2 rounded-[10px] text-[11px] font-medium bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[hsl(var(--accent-green))] hover:text-white transition-colors"
-          >
-            نص مرتبط
-          </button>
-        </div>
-        <p className="text-[10px] text-[hsl(var(--ink-60))] mt-2 text-center">
-          💡 نقرة = سطر | نقر+سحب = مربع | نقر داخل عنصر = مرتبط
-        </p>
-      </div>
-
       {/* Font Family */}
       <div>
         <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-2 block">
