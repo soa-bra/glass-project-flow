@@ -338,11 +338,36 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
   
   updateElement: (elementId, updates) => {
-    set(state => ({
-      elements: state.elements.map(el =>
+    set(state => {
+      // تحديث العنصر الأصلي
+      const updatedElements = state.elements.map(el =>
         el.id === elementId ? { ...el, ...updates } : el
-      )
-    }));
+      );
+      
+      // تحديث النصوص المرتبطة إذا تغير الموضع
+      if (updates.position) {
+        const attachedTexts = updatedElements.filter(
+          el => el.type === 'text' && el.data?.attachedTo === elementId
+        );
+        
+        attachedTexts.forEach(text => {
+          if (text.data?.relativePosition) {
+            const newX = updates.position!.x + text.data.relativePosition.x;
+            const newY = updates.position!.y + text.data.relativePosition.y;
+            
+            const idx = updatedElements.findIndex(e => e.id === text.id);
+            if (idx !== -1) {
+              updatedElements[idx] = {
+                ...updatedElements[idx],
+                position: { x: newX, y: newY }
+              };
+            }
+          }
+        });
+      }
+      
+      return { elements: updatedElements };
+    });
   },
   
   deleteElement: (elementId) => {

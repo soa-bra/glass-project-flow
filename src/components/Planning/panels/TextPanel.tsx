@@ -4,7 +4,41 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import { toast } from 'sonner';
 
 const TextPanel: React.FC = () => {
-  const { toolSettings, updateToolSettings, setActiveTool } = useCanvasStore();
+  const { 
+    toolSettings, 
+    updateToolSettings, 
+    setActiveTool,
+    selectedElementIds,
+    elements,
+    updateTextStyle 
+  } = useCanvasStore();
+  
+  // الحصول على العنصر النصي المحدد (إن وجد)
+  const selectedTextElement = React.useMemo(() => {
+    if (selectedElementIds.length === 1) {
+      const el = elements.find(e => e.id === selectedElementIds[0]);
+      if (el?.type === 'text') return el;
+    }
+    return null;
+  }, [selectedElementIds, elements]);
+  
+  // استخدام قيم العنصر المحدد أو الإعدادات الافتراضية
+  const currentFontSize = selectedTextElement?.style?.fontSize || toolSettings.text.fontSize;
+  const currentFontFamily = selectedTextElement?.style?.fontFamily || toolSettings.text.fontFamily;
+  const currentFontWeight = selectedTextElement?.style?.fontWeight || toolSettings.text.fontWeight;
+  const currentColor = selectedTextElement?.style?.color || toolSettings.text.color;
+  const currentAlignment = (selectedTextElement?.style?.textAlign as 'left' | 'center' | 'right') || toolSettings.text.alignment;
+  
+  const handleSettingChange = (setting: string, value: any) => {
+    if (selectedTextElement) {
+      // تحديث العنصر المحدد
+      updateTextStyle(selectedTextElement.id, { [setting]: value });
+    } else {
+      // تحديث الإعدادات الافتراضية
+      updateToolSettings('text', { [setting]: value } as any);
+    }
+  };
+  
   const { fontSize, fontWeight, color, alignment, fontFamily } = toolSettings.text;
 
   const handleActivateTextTool = () => {
@@ -20,8 +54,8 @@ const TextPanel: React.FC = () => {
           نوع الخط
         </label>
         <select 
-          value={fontFamily}
-          onChange={(e) => updateToolSettings('text', { fontFamily: e.target.value })}
+          value={currentFontFamily}
+          onChange={(e) => handleSettingChange('fontFamily', e.target.value)}
           className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors bg-white"
         >
           <option value="IBM Plex Sans Arabic">IBM Plex Sans Arabic</option>
@@ -45,9 +79,9 @@ const TextPanel: React.FC = () => {
           ].map((weight) => (
             <button
               key={weight.value}
-              onClick={() => updateToolSettings('text', { fontWeight: weight.value })}
+              onClick={() => handleSettingChange('fontWeight', weight.value)}
               className={`px-3 py-2 rounded-[10px] text-[11px] font-medium transition-colors ${
-                fontWeight === weight.value
+                currentFontWeight === weight.value
                   ? 'bg-[hsl(var(--accent-green))] text-white'
                   : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
               }`}
@@ -66,15 +100,15 @@ const TextPanel: React.FC = () => {
             حجم الخط
           </label>
           <span className="text-[12px] text-[hsl(var(--ink-60))]">
-            {fontSize}px
+            {currentFontSize}px
           </span>
         </div>
         <input
           type="range"
           min={8}
           max={72}
-          value={fontSize}
-          onChange={(e) => updateToolSettings('text', { fontSize: Number(e.target.value) })}
+          value={currentFontSize}
+          onChange={(e) => handleSettingChange('fontSize', Number(e.target.value))}
           className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
             [&::-webkit-slider-thumb]:appearance-none
             [&::-webkit-slider-thumb]:w-4
@@ -89,9 +123,9 @@ const TextPanel: React.FC = () => {
           {[12, 14, 16, 20, 24, 32, 40].map((size) => (
             <button
               key={size}
-              onClick={() => updateToolSettings('text', { fontSize: size })}
+              onClick={() => handleSettingChange('fontSize', size)}
               className={`px-2 py-1 text-[10px] rounded transition-colors ${
-                fontSize === size
+                currentFontSize === size
                   ? 'bg-[hsl(var(--accent-green))] text-white'
                   : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
               }`}
@@ -109,9 +143,9 @@ const TextPanel: React.FC = () => {
         </label>
         <div className="grid grid-cols-3 gap-2">
           <button
-            onClick={() => updateToolSettings('text', { alignment: 'right' })}
+            onClick={() => handleSettingChange('textAlign', 'right')}
             className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
-              alignment === 'right'
+              currentAlignment === 'right'
                 ? 'bg-[hsl(var(--accent-green))] text-white'
                 : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
             }`}
@@ -120,9 +154,9 @@ const TextPanel: React.FC = () => {
             <span className="text-[11px] font-medium">يمين</span>
           </button>
           <button
-            onClick={() => updateToolSettings('text', { alignment: 'center' })}
+            onClick={() => handleSettingChange('textAlign', 'center')}
             className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
-              alignment === 'center'
+              currentAlignment === 'center'
                 ? 'bg-[hsl(var(--accent-green))] text-white'
                 : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
             }`}
@@ -131,9 +165,9 @@ const TextPanel: React.FC = () => {
             <span className="text-[11px] font-medium">وسط</span>
           </button>
           <button
-            onClick={() => updateToolSettings('text', { alignment: 'left' })}
+            onClick={() => handleSettingChange('textAlign', 'left')}
             className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
-              alignment === 'left'
+              currentAlignment === 'left'
                 ? 'bg-[hsl(var(--accent-green))] text-white'
                 : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
             }`}
@@ -152,15 +186,15 @@ const TextPanel: React.FC = () => {
         <div className="flex items-center gap-3">
           <input
             type="color"
-            value={color}
-            onChange={(e) => updateToolSettings('text', { color: e.target.value })}
+            value={currentColor}
+            onChange={(e) => handleSettingChange('color', e.target.value)}
             className="w-12 h-12 rounded-[10px] cursor-pointer border-2 border-[#DADCE0]"
           />
           <div className="flex-1">
             <input
               type="text"
-              value={color}
-              onChange={(e) => updateToolSettings('text', { color: e.target.value })}
+              value={currentColor}
+              onChange={(e) => handleSettingChange('color', e.target.value)}
               className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors"
               placeholder="#0B0F12"
             />
@@ -172,10 +206,10 @@ const TextPanel: React.FC = () => {
           {['#0B0F12', '#3DBE8B', '#F6C445', '#E5564D', '#3DA8F5', '#9333EA'].map((c) => (
             <button
               key={c}
-              onClick={() => updateToolSettings('text', { color: c })}
+              onClick={() => handleSettingChange('color', c)}
               style={{ backgroundColor: c }}
               className={`w-full h-8 rounded-lg border-2 transition-all ${
-                color === c ? 'border-[hsl(var(--ink))] scale-105' : 'border-[#DADCE0]'
+                currentColor === c ? 'border-[hsl(var(--ink))] scale-105' : 'border-[#DADCE0]'
               }`}
             />
           ))}
@@ -187,8 +221,14 @@ const TextPanel: React.FC = () => {
         onClick={handleActivateTextTool}
         className="w-full py-3 bg-[hsl(var(--accent-green))] text-white rounded-[10px] hover:opacity-90 transition-opacity text-[13px] font-semibold"
       >
-        تفعيل أداة النص
+        {selectedTextElement ? 'تحديث النص المحدد' : 'تفعيل أداة النص'}
       </button>
+      
+      {selectedTextElement && (
+        <div className="text-[11px] text-[hsl(var(--ink-60))] text-center">
+          تحديث نص محدد - التغييرات تُطبق فوراً
+        </div>
+      )}
 
       {/* Keyboard Shortcuts */}
       <div className="pt-4 border-t border-[#DADCE0]">

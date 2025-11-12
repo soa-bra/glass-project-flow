@@ -1,9 +1,13 @@
 import { useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { toast } from 'sonner';
 
 export const useKeyboardShortcuts = () => {
   const {
     selectedElementIds,
+    activeTool,
+    setActiveTool,
+    editingTextId,
     undo,
     redo,
     deleteElements,
@@ -22,9 +26,12 @@ export const useKeyboardShortcuts = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // تجاهل إذا كان في وضع تحرير النص
+      if (editingTextId) return;
+      
       // Ignore shortcuts when typing in inputs
       const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
         return;
       }
 
@@ -94,31 +101,38 @@ export const useKeyboardShortcuts = () => {
       // Tool shortcuts
       if (e.key === 'v' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
-        useCanvasStore.getState().setActiveTool('selection_tool');
+        setActiveTool('selection_tool');
+        toast.info('أداة التحديد');
       }
       if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
-        useCanvasStore.getState().setActiveTool('text_tool');
+        setActiveTool('text_tool');
+        toast.info('أداة النص - انقر لإضافة نص');
       }
       if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
-        useCanvasStore.getState().setActiveTool('shapes_tool');
+        setActiveTool('shapes_tool');
+        toast.info('أداة الأشكال');
       }
       if (e.key === 'p' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
-        useCanvasStore.getState().setActiveTool('smart_pen');
+        setActiveTool('smart_pen');
+        toast.info('القلم الذكي');
       }
       if (e.key === 'f' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
-        useCanvasStore.getState().setActiveTool('frame_tool');
+        setActiveTool('frame_tool');
+        toast.info('أداة الإطار');
       }
       if (e.key === 'u' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
-        useCanvasStore.getState().setActiveTool('file_uploader');
+        setActiveTool('file_uploader');
+        toast.info('رفع الملفات');
       }
       if (e.key === 's' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
-        useCanvasStore.getState().setActiveTool('smart_element_tool');
+        setActiveTool('smart_element_tool');
+        toast.info('العناصر الذكية');
       }
 
       // Group/Ungroup (Ctrl+G / Ctrl+Shift+G)
@@ -200,6 +214,9 @@ export const useKeyboardShortcuts = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
     selectedElementIds,
+    activeTool,
+    setActiveTool,
+    editingTextId,
     undo,
     redo,
     deleteElements,
