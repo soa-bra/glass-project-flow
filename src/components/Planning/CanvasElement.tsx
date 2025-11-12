@@ -188,37 +188,61 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     >
       {/* Element Content */}
       {element.type === 'text' && (
-        <div 
-          className="w-full h-full cursor-text"
-          onDoubleClick={handleTextDoubleClick}
-        >
-          {isEditingThisText ? (
-            <TextEditor
-              element={element}
-              onUpdate={(content) => updateTextContent(element.id, content)}
-              onClose={() => stopEditingText(element.id)}
-            />
-          ) : (
-            <div
-              style={{
-                fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
-                fontSize: `${element.style?.fontSize || 14}px`,
-                fontWeight: element.style?.fontWeight || 'normal',
-                fontStyle: element.style?.fontStyle || 'normal',
-                textDecoration: element.style?.textDecoration || 'none',
-                color: element.style?.color || '#0B0F12',
-                textAlign: (element.style?.textAlign as any) || 'right',
-                whiteSpace: element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
-                wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
-                overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
-                width: '100%',
-                height: '100%',
-                padding: '8px'
-              }}
+        <div className="relative w-full h-full">
+          {/* مؤشر للنص المرتبط */}
+          {element.data?.textType === 'attached' && element.data?.attachedTo && (
+            <div 
+              className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-[hsl(var(--accent-green))] flex items-center justify-center shadow-sm z-10"
+              title={`مرتبط بعنصر ${element.data.attachedTo}`}
             >
-              {element.content || 'انقر مرتين للكتابة...'}
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="white" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                className="w-3 h-3"
+              >
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
             </div>
           )}
+          
+          <div 
+            className="w-full h-full cursor-text"
+            onDoubleClick={handleTextDoubleClick}
+          >
+            {isEditingThisText ? (
+              <TextEditor
+                element={element}
+                onUpdate={(content) => updateTextContent(element.id, content)}
+                onClose={() => stopEditingText(element.id)}
+              />
+            ) : (
+              <div
+                style={{
+                  fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
+                  fontSize: `${element.style?.fontSize || 14}px`,
+                  fontWeight: element.style?.fontWeight || 'normal',
+                  fontStyle: element.style?.fontStyle || 'normal',
+                  textDecoration: element.style?.textDecoration || 'none',
+                  color: element.style?.color || '#0B0F12',
+                  textAlign: (element.style?.textAlign as any) || 'right',
+                  whiteSpace: element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
+                  wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
+                  overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
+                  width: '100%',
+                  height: '100%',
+                  padding: '8px'
+                }}
+              >
+                {element.content || 'انقر مرتين للكتابة...'}
+              </div>
+            )}
+          </div>
         </div>
       )}
       
