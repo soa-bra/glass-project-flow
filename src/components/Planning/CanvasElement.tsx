@@ -224,9 +224,10 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
                 height: '100%',
                 padding: '8px'
               }}
-            >
-              {element.content || 'انقر مرتين للكتابة...'}
-            </div>
+              dangerouslySetInnerHTML={{ 
+                __html: element.content || 'انقر مرتين للكتابة...' 
+              }}
+            />
           )}
         </div>
       )}
