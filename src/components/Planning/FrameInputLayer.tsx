@@ -81,6 +81,12 @@ export default function FrameInputLayer({ containerRef, active }: Props) {
     if (!active) return;
     
     const handleKeyDown = (e: KeyboardEvent) => {
+      // ✅ فحص typingMode أولاً - منع جميع الاختصارات أثناء الكتابة
+      const typingMode = useCanvasStore.getState().typingMode;
+      if (typingMode) {
+        return; // لا تُنفّذ أي شيء أثناء الكتابة
+      }
+      
       if (e.key === 'Shift') keysRef.current.shift = true;
       if (e.key === 'Alt') keysRef.current.alt = true;
     };
