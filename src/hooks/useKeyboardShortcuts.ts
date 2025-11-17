@@ -25,54 +25,45 @@ export const useKeyboardShortcuts = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // قراءة القيمة الحالية من الـ store مباشرة
-      const editingTextId = useCanvasStore.getState().editingTextId;
-      
-      // ✅ فحص editingTextId أولاً - هذا هو مصدر الحقيقة
-      if (editingTextId) {
-        // السماح فقط بهذه الاختصارات أثناء تحرير النص:
-        // 1. Escape (للخروج من التحرير)
-        // 2. Enter (لحفظ النص)
-        // 3. Ctrl+B, Ctrl+I, Ctrl+U (تنسيق النص)
-        // 4. Ctrl+A (تحديد الكل في النص)
-        // 5. Ctrl+Z, Ctrl+Shift+Z (Undo/Redo في النص نفسه)
-        
-        const allowedKeys = ['Escape', 'Enter'];
-        const allowedWithCtrl = ['b', 'i', 'u', 'a', 'z'];
-        
-        if (allowedKeys.includes(e.key)) {
-          return; // السماح بالمرور
-        }
-        
-        if ((e.ctrlKey || e.metaKey) && allowedWithCtrl.includes(e.key.toLowerCase())) {
-          return; // السماح بالمرور
-        }
-        
-        // السماح بالأحرف العادية للكتابة
-        if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) {
-          return; // أحرف عادية للكتابة
-        }
-        
-        // السماح بمفاتيح التحكم الأساسية
-        const controlKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Tab'];
-        if (controlKeys.includes(e.key)) {
-          return; // السماح بالمرور
-        }
-        
-        // منع أي اختصار آخر (مثل G للشبكة، أو أي اختصار أداة)
-        e.preventDefault();
-        e.stopPropagation();
-        return;
-      }
-      
-      // ✅ فحص isTyping (للحقول الأخرى مثل INPUT/TEXTAREA)
+      // ✅ الفحص الأول والأهم: هل المستخدم يكتب في أي حقل؟
       const target = e.target as HTMLElement;
-      const isTyping = target.tagName === 'INPUT' || 
-                       target.tagName === 'TEXTAREA' || 
-                       target.isContentEditable ||
-                       target.getAttribute('contenteditable') === 'true';
+      
+      // فحص شامل يغطي جميع الحالات بما فيها parent elements
+      const isTyping = 
+        target.tagName === 'INPUT' || 
+        target.tagName === 'TEXTAREA' || 
+        target.isContentEditable ||
+        target.getAttribute('contenteditable') === 'true' ||
+        target.closest('[contenteditable="true"]') !== null;
       
       if (isTyping) {
+        // السماح فقط باختصارات تحرير النص الأساسية
+        const allowedWithCtrl = ['b', 'i', 'u', 'a', 'z', 'c', 'v', 'x'];
+        
+        if ((e.ctrlKey || e.metaKey) && allowedWithCtrl.includes(e.key.toLowerCase())) {
+          return; // اختصارات تحرير النص مسموحة
+        }
+        
+        // السماح بـ Escape و Enter
+        if (e.key === 'Escape' || e.key === 'Enter') {
+          return;
+        }
+        
+        // السماح بمفاتيح التنقل والحذف
+        const controlKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 
+                            'ArrowUp', 'ArrowDown', 'Home', 'End', 'Tab'];
+        if (controlKeys.includes(e.key)) {
+          return;
+        }
+        
+        // السماح بجميع الأحرف العادية (للكتابة)
+        if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) {
+          return; // ✅ أحرف عادية للكتابة
+        }
+        
+        // منع أي اختصار آخر (مثل g, v, u, s, إلخ) بشكل صريح
+        e.preventDefault();
+        e.stopPropagation();
         return;
       }
 
@@ -139,38 +130,38 @@ export const useKeyboardShortcuts = () => {
         toggleGrid();
       }
 
-      // Tool shortcuts - تعطيل عند تحرير النص
-      if (e.key === 'v' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      // Tool shortcuts
+      if (e.key === 'v' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('selection_tool');
         toast.info('أداة التحديد');
       }
-      if (e.key === 't' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('text_tool');
         toast.info('أداة النص - انقر لإضافة نص');
       }
-      if (e.key === 'r' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('shapes_tool');
         toast.info('أداة الأشكال');
       }
-      if (e.key === 'p' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 'p' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('smart_pen');
         toast.info('القلم الذكي');
       }
-      if (e.key === 'f' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 'f' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('frame_tool');
         toast.info('أداة الإطار');
       }
-      if (e.key === 'u' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 'u' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('file_uploader');
         toast.info('رفع الملفات');
       }
-      if (e.key === 's' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 's' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('smart_element_tool');
         toast.info('العناصر الذكية');
