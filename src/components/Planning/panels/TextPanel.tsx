@@ -225,8 +225,8 @@ const TextPanel: React.FC = () => {
             onClick={() => handleSettingChange('textAlign', 'right')}
             className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
               currentAlignment === 'right'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
             }`}
           >
             <AlignRight size={16} />
@@ -236,8 +236,8 @@ const TextPanel: React.FC = () => {
             onClick={() => handleSettingChange('textAlign', 'center')}
             className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
               currentAlignment === 'center'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
             }`}
           >
             <AlignCenter size={16} />
@@ -247,8 +247,8 @@ const TextPanel: React.FC = () => {
             onClick={() => handleSettingChange('textAlign', 'left')}
             className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
               currentAlignment === 'left'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
             }`}
           >
             <AlignLeft size={16} />
