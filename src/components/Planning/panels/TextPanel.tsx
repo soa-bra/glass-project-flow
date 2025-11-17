@@ -63,7 +63,7 @@ const TextPanel: React.FC = () => {
       if (editingElement) {
         updateTextStyle(editingElement.id, { textAlign: value });
       } else {
-        updateToolSettings('text', { textAlign: value } as any);
+        updateToolSettings('text', { alignment: value } as any);
       }
       return;
     }
