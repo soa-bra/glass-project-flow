@@ -161,44 +161,41 @@ const TextPanel: React.FC = () => {
 
       {/* Font Size */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-[13px] font-semibold text-[hsl(var(--ink))]">
-            حجم الخط
-          </label>
-          <span className="text-[12px] text-[hsl(var(--ink-60))]">
-            {currentFontSize}px
-          </span>
-        </div>
-        <input
-          type="range"
-          min={8}
-          max={72}
-          value={currentFontSize}
-          onChange={(e) => handleSettingChange('fontSize', Number(e.target.value))}
-          className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
-            [&::-webkit-slider-thumb]:appearance-none
-            [&::-webkit-slider-thumb]:w-4
-            [&::-webkit-slider-thumb]:h-4
-            [&::-webkit-slider-thumb]:rounded-full
-            [&::-webkit-slider-thumb]:bg-[hsl(var(--accent-green))]
-            [&::-webkit-slider-thumb]:cursor-pointer"
-        />
-        
-        {/* Size Presets */}
-        <div className="flex items-center gap-2 mt-3">
-          {[12, 14, 16, 20, 24, 32, 40].map((size) => (
-            <button
-              key={size}
-              onClick={() => handleSettingChange('fontSize', size)}
-              className={`px-2 py-1 text-[10px] rounded transition-colors ${
-                currentFontSize === size
-                  ? 'bg-[hsl(var(--accent-green))] text-white'
-                  : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
-              }`}
-            >
-              {size}
-            </button>
-          ))}
+        <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-2 block">
+          حجم الخط
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <select 
+            value={currentFontSize}
+            onChange={(e) => handleSettingChange('fontSize', Number(e.target.value))}
+            className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors bg-white"
+          >
+            <option value={8}>8px</option>
+            <option value={10}>10px</option>
+            <option value={12}>12px</option>
+            <option value={14}>14px</option>
+            <option value={16}>16px</option>
+            <option value={18}>18px</option>
+            <option value={20}>20px</option>
+            <option value={24}>24px</option>
+            <option value={28}>28px</option>
+            <option value={32}>32px</option>
+            <option value={36}>36px</option>
+            <option value={40}>40px</option>
+            <option value={48}>48px</option>
+            <option value={56}>56px</option>
+            <option value={64}>64px</option>
+            <option value={72}>72px</option>
+          </select>
+          <input
+            type="number"
+            min={8}
+            max={72}
+            value={currentFontSize}
+            onChange={(e) => handleSettingChange('fontSize', Number(e.target.value))}
+            className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors"
+            placeholder="حجم مخصص"
+          />
         </div>
       </div>
 
