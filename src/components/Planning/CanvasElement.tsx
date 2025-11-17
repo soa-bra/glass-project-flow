@@ -118,6 +118,11 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   const handleTextDoubleClick = useCallback((e: React.MouseEvent) => {
     if (element.type === 'text' && !isLocked) {
       e.stopPropagation();
+      
+      // تفعيل أداة النص عند بدء التحرير
+      const { setActiveTool } = useCanvasStore.getState();
+      setActiveTool('text_tool');
+      
       startEditingText(element.id);
     }
   }, [element, isLocked, startEditingText]);
