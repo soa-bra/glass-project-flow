@@ -692,7 +692,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         fontWeight: textData.fontWeight || get().toolSettings.text.fontWeight,
         textAlign: textData.alignment || get().toolSettings.text.alignment,
         fontStyle: textData.fontStyle || 'normal',
-        textDecoration: textData.textDecoration || 'none'
+        textDecoration: textData.textDecoration || 'none',
+        backgroundColor: textData.textType === 'box' ? '#FFFFFF' : 'transparent'
       },
       data: {
         textType: textData.textType || 'line',
