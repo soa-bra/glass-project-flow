@@ -29,14 +29,9 @@ export const useKeyboardShortcuts = () => {
       // تجاهل إذا كان في وضع تحرير النص
       if (editingTextId) return;
       
-      // Ignore shortcuts when typing in inputs or contentEditable elements
+      // Ignore shortcuts when typing in inputs
       const target = e.target as HTMLElement;
-      const isTyping = target.tagName === 'INPUT' || 
-                       target.tagName === 'TEXTAREA' || 
-                       target.isContentEditable ||
-                       target.getAttribute('contenteditable') === 'true';
-      
-      if (isTyping) {
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
         return;
       }
 
