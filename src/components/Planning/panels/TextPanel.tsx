@@ -53,8 +53,19 @@ const TextPanel: React.FC = () => {
         value,
         hasEditor: !!currentEditor,
         hasSelection: !!selectedText,
-        isInEditor: isSelectionInEditor
+        isInEditor: isSelectionInEditor,
+        editingElement: !!editingElement
       });
+    }
+    
+    // المحاذاة تطبق دائماً على العنصر كله
+    if (setting === 'textAlign') {
+      if (editingElement) {
+        updateTextStyle(editingElement.id, { textAlign: value });
+      } else {
+        updateToolSettings('text', { textAlign: value } as any);
+      }
+      return;
     }
     
     if (isSelectionInEditor) {
@@ -80,11 +91,6 @@ const TextPanel: React.FC = () => {
         currentEditor.applyFormat('bold');
       } else if (setting === 'color') {
         currentEditor.applyFormat('foreColor', value);
-      } else if (setting === 'textAlign') {
-        // المحاذاة لا تطبق على النص المظلل، بل على العنصر كله
-        if (editingElement) {
-          updateTextStyle(editingElement.id, { textAlign: value });
-        }
       }
       return;
     }
