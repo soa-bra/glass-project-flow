@@ -1,6 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import type { ToolId } from '../../../panels';
+import { useCanvasStore } from '@/stores/canvasStore';
 import SelectionPanel from './panels/SelectionPanel';
 import SmartPenPanel from './panels/SmartPenPanel';
 import FramePanel from './panels/FramePanel';
@@ -25,7 +26,16 @@ const panelTitles: Record<ToolId, string> = {
 };
 
 const RightSidePanel: React.FC<RightSidePanelProps> = ({ activeTool, onClose }) => {
+  // الحصول على حالة التحرير
+  const editingTextId = useCanvasStore(state => state.editingTextId);
+  
   const renderPanel = () => {
+    // أولوية لعرض TextPanel إذا كان هناك نص قيد التحرير
+    if (editingTextId) {
+      return <TextPanel />;
+    }
+    
+    // الاستمرار بالمنطق الطبيعي
     switch (activeTool) {
       case 'selection_tool':
         return <SelectionPanel />;
@@ -45,13 +55,18 @@ const RightSidePanel: React.FC<RightSidePanelProps> = ({ activeTool, onClose }) 
         return null;
     }
   };
+  
+  // تحديث العنوان ديناميكياً
+  const panelTitle = editingTextId 
+    ? 'النص' 
+    : panelTitles[activeTool];
 
   return (
     <div className="w-[320px] h-full bg-white border-l border-[#DADCE0] flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-[#DADCE0]">
         <h3 className="text-[16px] font-semibold text-[hsl(var(--ink))]">
-          {panelTitles[activeTool]}
+          {panelTitle}
         </h3>
         {onClose && (
           <button
