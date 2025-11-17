@@ -189,7 +189,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
           : (element.style?.backgroundColor || 'transparent'),
         boxShadow: isSelected 
           ? '0 0 0 2px rgba(61, 190, 139, 0.2)'
-          : '0 2px 8px rgba(0, 0, 0, 0.1)',
+          : (element.data?.textType === 'box' ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none'),
         opacity: isLocked ? 0.6 : 1,
         pointerEvents: isLocked ? 'none' : 'auto',
         ...element.style
