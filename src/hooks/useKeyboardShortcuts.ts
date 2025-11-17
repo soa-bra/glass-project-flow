@@ -25,45 +25,38 @@ export const useKeyboardShortcuts = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // ✅ الفحص الأول والأهم: هل المستخدم يكتب في أي حقل؟
-      const target = e.target as HTMLElement;
+      // ✅ الفحص الأول والأهم: هل المستخدم في وضع الكتابة؟
+      const typingMode = useCanvasStore.getState().typingMode;
       
-      // فحص شامل يغطي جميع الحالات بما فيها parent elements
-      const isTyping = 
-        target.tagName === 'INPUT' || 
-        target.tagName === 'TEXTAREA' || 
-        target.isContentEditable ||
-        target.getAttribute('contenteditable') === 'true' ||
-        target.closest('[contenteditable="true"]') !== null;
-      
-      if (isTyping) {
-        // السماح فقط باختصارات تحرير النص الأساسية
-        const allowedWithCtrl = ['b', 'i', 'u', 'a', 'z', 'c', 'v', 'x'];
-        
-        if ((e.ctrlKey || e.metaKey) && allowedWithCtrl.includes(e.key.toLowerCase())) {
-          return; // اختصارات تحرير النص مسموحة
+      if (typingMode) {
+        // السماح فقط بالأحرف العادية واختصارات النص
+        if (!e.ctrlKey && !e.metaKey && e.key.length === 1) {
+          return; // ✅ السماح بالكتابة العادية
+        }
+
+        const allowedCtrl = ['a', 'b', 'i', 'u', 'z', 'v', 'c', 'x'];
+        if ((e.ctrlKey || e.metaKey) && allowedCtrl.includes(e.key.toLowerCase())) {
+          return; // ✅ اختصارات تحرير النص
         }
         
-        // السماح بـ Escape و Enter
-        if (e.key === 'Escape' || e.key === 'Enter') {
-          return;
-        }
-        
-        // السماح بمفاتيح التنقل والحذف
+        // السماح بمفاتيح التنقل
         const controlKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 
-                            'ArrowUp', 'ArrowDown', 'Home', 'End', 'Tab'];
+                            'ArrowUp', 'ArrowDown', 'Home', 'End', 'Tab', 'Escape', 'Enter'];
         if (controlKeys.includes(e.key)) {
           return;
         }
-        
-        // السماح بجميع الأحرف العادية (للكتابة)
-        if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) {
-          return; // ✅ أحرف عادية للكتابة
-        }
-        
-        // منع أي اختصار آخر (مثل g, v, u, s, إلخ) بشكل صريح
+
+        // ✅ منع أي اختصار أداة
         e.preventDefault();
         e.stopPropagation();
+        return;
+      }
+      
+      // ✅ فحص إضافي للحقول العادية (INPUT/TEXTAREA)
+      const target = e.target as HTMLElement;
+      const isTypingInInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+      
+      if (isTypingInInput) {
         return;
       }
 

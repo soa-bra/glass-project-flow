@@ -11,9 +11,11 @@ interface TextEditorProps {
 export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClose }) => {
   const [content, setContent] = useState(element.content || '');
   const editorRef = useRef<HTMLDivElement>(null);
-  const { updateTextStyle } = useCanvasStore();
+  const { updateTextStyle, startTyping, stopTyping } = useCanvasStore();
   
   useEffect(() => {
+    startTyping(); // ✅ تفعيل وضع الكتابة
+    
     // Focus on mount
     if (editorRef.current) {
       editorRef.current.focus();
@@ -28,7 +30,11 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         selection?.addRange(range);
       }
     }
-  }, []);
+    
+    return () => {
+      stopTyping(); // ✅ إيقاف وضع الكتابة عند unmount
+    };
+  }, [startTyping, stopTyping]);
   
   const applyFormat = (command: string, value?: string) => {
     document.execCommand(command, false, value);
@@ -122,6 +128,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       onKeyDown={handleKeyDown}
       onBlur={() => {
         onUpdate(content);
+        stopTyping(); // ✅ إيقاف عند blur أيضاً
         onClose();
       }}
       style={{

@@ -188,11 +188,14 @@ interface CanvasState {
   
   // Text Management
   editingTextId: string | null;
+  typingMode: boolean;
   addText: (textData: Partial<TextElement>) => string;
   updateTextContent: (elementId: string, content: string) => void;
   updateTextStyle: (elementId: string, style: Partial<Record<string, any>>) => void;
   startEditingText: (elementId: string) => void;
-  stopEditingText: (elementId: string) => void;
+  stopEditingText: (elementId?: string) => void;
+  startTyping: () => void;
+  stopTyping: () => void;
   
   // Pen Actions
   setPenSettings: (partial: Partial<PenSettings>) => void;
@@ -271,6 +274,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   
   // Text Management State
   editingTextId: null,
+  typingMode: false,
   
   // Pen Strokes Initial State
   strokes: {},
@@ -738,11 +742,19 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
   
   startEditingText: (elementId) => {
-    set({ editingTextId: elementId });
+    set({ editingTextId: elementId, typingMode: true });
   },
   
   stopEditingText: () => {
-    set({ editingTextId: null });
+    set({ editingTextId: null, typingMode: false });
+  },
+  
+  startTyping: () => {
+    set({ typingMode: true });
+  },
+  
+  stopTyping: () => {
+    set({ typingMode: false });
   },
   
   // Pen Actions Implementation
