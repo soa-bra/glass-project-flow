@@ -7,7 +7,6 @@ export const useKeyboardShortcuts = () => {
     selectedElementIds,
     activeTool,
     setActiveTool,
-    editingTextId,
     undo,
     redo,
     deleteElements,
@@ -26,6 +25,9 @@ export const useKeyboardShortcuts = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // قراءة القيمة الحالية من الـ store مباشرة
+      const editingTextId = useCanvasStore.getState().editingTextId;
+      
       // تجاهل إذا كان في وضع تحرير النص
       if (editingTextId) return;
       
@@ -221,7 +223,6 @@ export const useKeyboardShortcuts = () => {
     selectedElementIds,
     activeTool,
     setActiveTool,
-    editingTextId,
     undo,
     redo,
     deleteElements,
