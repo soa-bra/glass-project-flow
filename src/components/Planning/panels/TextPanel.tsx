@@ -164,39 +164,34 @@ const TextPanel: React.FC = () => {
         <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-2 block">
           حجم الخط
         </label>
-        <div className="grid grid-cols-2 gap-2">
-          <select 
-            value={currentFontSize}
-            onChange={(e) => handleSettingChange('fontSize', Number(e.target.value))}
-            className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors bg-white"
-          >
-            <option value={8}>8px</option>
-            <option value={10}>10px</option>
-            <option value={12}>12px</option>
-            <option value={14}>14px</option>
-            <option value={16}>16px</option>
-            <option value={18}>18px</option>
-            <option value={20}>20px</option>
-            <option value={24}>24px</option>
-            <option value={28}>28px</option>
-            <option value={32}>32px</option>
-            <option value={36}>36px</option>
-            <option value={40}>40px</option>
-            <option value={48}>48px</option>
-            <option value={56}>56px</option>
-            <option value={64}>64px</option>
-            <option value={72}>72px</option>
-          </select>
-          <input
-            type="number"
-            min={8}
-            max={72}
-            value={currentFontSize}
-            onChange={(e) => handleSettingChange('fontSize', Number(e.target.value))}
-            className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors"
-            placeholder="حجم مخصص"
-          />
-        </div>
+        <input
+          type="number"
+          list="font-sizes"
+          min={8}
+          max={200}
+          value={currentFontSize}
+          onChange={(e) => handleSettingChange('fontSize', Number(e.target.value))}
+          className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors bg-white"
+          placeholder="اختر أو اكتب حجم الخط"
+        />
+        <datalist id="font-sizes">
+          <option value="8" />
+          <option value="10" />
+          <option value="12" />
+          <option value="14" />
+          <option value="16" />
+          <option value="18" />
+          <option value="20" />
+          <option value="24" />
+          <option value="28" />
+          <option value="32" />
+          <option value="36" />
+          <option value="40" />
+          <option value="48" />
+          <option value="56" />
+          <option value="64" />
+          <option value="72" />
+        </datalist>
       </div>
 
       {/* Text Alignment */}
