@@ -30,29 +30,8 @@ const TextPanel: React.FC = () => {
   const currentAlignment = (selectedTextElement?.style?.textAlign as 'left' | 'center' | 'right') || toolSettings.text.alignment;
   
   const handleSettingChange = (setting: string, value: any) => {
-    // إذا كان هناك نص مظلل في المحرر النشط، نطبق التنسيق عليه
-    const applyFormatting = (window as any).applyTextFormatting;
-    if (applyFormatting && selectedTextElement) {
-      // تطبيق التنسيق على النص المظلل
-      if (setting === 'fontFamily') {
-        applyFormatting('fontName', value);
-      } else if (setting === 'fontSize') {
-        // تحويل الحجم من px إلى HTML font size (1-7)
-        const htmlSize = Math.min(7, Math.max(1, Math.floor(value / 6)));
-        applyFormatting('fontSize', htmlSize.toString());
-      } else if (setting === 'fontWeight') {
-        if (value === '700' || value === 'bold') {
-          applyFormatting('bold');
-        }
-      } else if (setting === 'color') {
-        applyFormatting('foreColor', value);
-      } else if (setting === 'textAlign') {
-        if (value === 'right') applyFormatting('justifyRight');
-        else if (value === 'center') applyFormatting('justifyCenter');
-        else if (value === 'left') applyFormatting('justifyLeft');
-      }
-    } else if (selectedTextElement) {
-      // تحديث العنصر المحدد (إذا لم يكن هناك نص مظلل)
+    if (selectedTextElement) {
+      // تحديث العنصر المحدد
       updateTextStyle(selectedTextElement.id, { [setting]: value });
     } else {
       // تحديث الإعدادات الافتراضية
