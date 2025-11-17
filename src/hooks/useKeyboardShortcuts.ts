@@ -28,9 +28,6 @@ export const useKeyboardShortcuts = () => {
       // قراءة القيمة الحالية من الـ store مباشرة
       const editingTextId = useCanvasStore.getState().editingTextId;
       
-      // تجاهل إذا كان في وضع تحرير النص
-      if (editingTextId) return;
-      
       // Ignore shortcuts when typing in inputs or contentEditable elements
       const target = e.target as HTMLElement;
       const isTyping = target.tagName === 'INPUT' || 
@@ -105,38 +102,38 @@ export const useKeyboardShortcuts = () => {
         toggleGrid();
       }
 
-      // Tool shortcuts
-      if (e.key === 'v' && !e.ctrlKey && !e.metaKey) {
+      // Tool shortcuts - تعطيل عند تحرير النص
+      if (e.key === 'v' && !e.ctrlKey && !e.metaKey && !editingTextId) {
         e.preventDefault();
         setActiveTool('selection_tool');
         toast.info('أداة التحديد');
       }
-      if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
+      if (e.key === 't' && !e.ctrlKey && !e.metaKey && !editingTextId) {
         e.preventDefault();
         setActiveTool('text_tool');
         toast.info('أداة النص - انقر لإضافة نص');
       }
-      if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
+      if (e.key === 'r' && !e.ctrlKey && !e.metaKey && !editingTextId) {
         e.preventDefault();
         setActiveTool('shapes_tool');
         toast.info('أداة الأشكال');
       }
-      if (e.key === 'p' && !e.ctrlKey && !e.metaKey) {
+      if (e.key === 'p' && !e.ctrlKey && !e.metaKey && !editingTextId) {
         e.preventDefault();
         setActiveTool('smart_pen');
         toast.info('القلم الذكي');
       }
-      if (e.key === 'f' && !e.ctrlKey && !e.metaKey) {
+      if (e.key === 'f' && !e.ctrlKey && !e.metaKey && !editingTextId) {
         e.preventDefault();
         setActiveTool('frame_tool');
         toast.info('أداة الإطار');
       }
-      if (e.key === 'u' && !e.ctrlKey && !e.metaKey) {
+      if (e.key === 'u' && !e.ctrlKey && !e.metaKey && !editingTextId) {
         e.preventDefault();
         setActiveTool('file_uploader');
         toast.info('رفع الملفات');
       }
-      if (e.key === 's' && !e.ctrlKey && !e.metaKey) {
+      if (e.key === 's' && !e.ctrlKey && !e.metaKey && !editingTextId) {
         e.preventDefault();
         setActiveTool('smart_element_tool');
         toast.info('العناصر الذكية');
