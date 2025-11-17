@@ -42,7 +42,7 @@ const FloatingEditBar: React.FC = () => {
       x: minX, 
       y: minY - 80 // 80px above
     });
-  }, [selectedElementIds, hasSelection]); // Fixed: use selectedElementIds instead of selectedElements
+  }, [selectedElements, hasSelection]);
   
   if (!hasSelection) return null;
   

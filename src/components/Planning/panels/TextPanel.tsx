@@ -31,9 +31,8 @@ const TextPanel: React.FC = () => {
   
   const handleSettingChange = (setting: string, value: any) => {
     if (selectedTextElement) {
-      // تحديث العنصر المحدد فوراً
+      // تحديث العنصر المحدد
       updateTextStyle(selectedTextElement.id, { [setting]: value });
-      toast.success('تم تحديث التنسيق');
     } else {
       // تحديث الإعدادات الافتراضية
       updateToolSettings('text', { [setting]: value } as any);
