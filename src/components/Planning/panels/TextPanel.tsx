@@ -10,7 +10,8 @@ const TextPanel: React.FC = () => {
     setActiveTool,
     selectedElementIds,
     elements,
-    updateTextStyle 
+    updateTextStyle,
+    editingTextId
   } = useCanvasStore();
   
   // الحصول على العنصر النصي المحدد (إن وجد)
@@ -21,6 +22,14 @@ const TextPanel: React.FC = () => {
     }
     return null;
   }, [selectedElementIds, elements]);
+  
+  // الحصول على النص قيد التحرير
+  const editingElement = React.useMemo(() => {
+    if (editingTextId) {
+      return elements.find(e => e.id === editingTextId);
+    }
+    return null;
+  }, [editingTextId, elements]);
   
   // استخدام قيم العنصر المحدد أو الإعدادات الافتراضية
   const currentFontSize = selectedTextElement?.style?.fontSize || toolSettings.text.fontSize;
@@ -35,12 +44,26 @@ const TextPanel: React.FC = () => {
     const selection = window.getSelection();
     const selectedText = selection?.toString();
     
-    // التحقق من أن التحديد موجود داخل المحرر النشط
-    const isSelectionInEditor = currentEditor && 
-                                 selectedText && 
-                                 selectedText.length > 0 &&
-                                 selection?.anchorNode &&
-                                 currentEditor.editorRef.contains(selection.anchorNode);
+    // تحسين: التحقق المتقدم من أن التحديد موجود داخل المحرر النشط
+    const isSelectionInEditor = !!(
+      currentEditor &&
+      selectedText &&
+      selectedText.length > 0 &&
+      selection?.anchorNode &&
+      currentEditor.editorRef &&
+      currentEditor.editorRef.contains(selection.anchorNode)
+    );
+    
+    // console.log للتشخيص في بيئة التطوير
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🎨 Text formatting:', {
+        setting,
+        value,
+        hasEditor: !!currentEditor,
+        hasSelection: !!selectedText,
+        isInEditor: isSelectionInEditor
+      });
+    }
     
     if (isSelectionInEditor) {
       // تطبيق التنسيق على النص المظلل فقط
@@ -92,6 +115,20 @@ const TextPanel: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* بانر توضيحي عند التحرير */}
+      {editingElement && (
+        <div className="p-3 bg-[hsl(var(--accent-green))]/10 border border-[hsl(var(--accent-green))]/30 rounded-[10px]">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-2 h-2 rounded-full bg-[hsl(var(--accent-green))] animate-pulse" />
+            <span className="text-[12px] font-semibold text-[hsl(var(--ink))]">
+              وضع التحرير نشط
+            </span>
+          </div>
+          <p className="text-[10px] text-[hsl(var(--ink-60))]">
+            ظلّل أي جزء من النص لتغيير تنسيقه
+          </p>
+        </div>
+      )}
       {/* Font Family */}
       <div>
         <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-2 block">
