@@ -56,8 +56,51 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
 
     switch (activeTool) {
       case 'text_tool':
-        // بدء سحب محتمل لمربع نص
-        handleTextToolDragStart(snappedPoint);
+        // 1️⃣ أولاً: التحقق من وجود عنصر تحت النقر
+        const clickedElement = elements.find(el => {
+          // تجاهل العناصر النصية والإطارات
+          if (el.type === 'text' || el.type === 'frame') return false;
+          
+          // التحقق من أن النقر داخل حدود العنصر
+          const inBounds = (
+            snappedPoint.x >= el.position.x &&
+            snappedPoint.x <= el.position.x + el.size.width &&
+            snappedPoint.y >= el.position.y &&
+            snappedPoint.y <= el.position.y + el.size.height
+          );
+          return inBounds;
+        });
+        
+        // 2️⃣ إذا وجدنا عنصر، أنشئ نص مرتبط
+        if (clickedElement) {
+          const relativeX = snappedPoint.x - clickedElement.position.x;
+          const relativeY = snappedPoint.y - clickedElement.position.y;
+          
+          const { addText, startEditingText } = useCanvasStore.getState();
+          
+          const attachedText = {
+            type: 'text' as const,
+            textType: 'attached' as const,
+            position: snappedPoint,
+            size: { width: 150, height: 40 },
+            content: '',
+            fontSize: toolSettings.text.fontSize,
+            color: toolSettings.text.color,
+            fontFamily: toolSettings.text.fontFamily,
+            fontWeight: toolSettings.text.fontWeight,
+            alignment: toolSettings.text.alignment,
+            attachedTo: clickedElement.id,
+            relativePosition: { x: relativeX, y: relativeY }
+          };
+          
+          const newId = addText(attachedText);
+          setTimeout(() => startEditingText(newId), 50);
+          toast.success('تم إضافة نص مرتبط - سيتحرك مع العنصر');
+        } 
+        // 3️⃣ وإلا، ابدأ السحب العادي
+        else {
+          handleTextToolDragStart(snappedPoint);
+        }
         break;
 
       case 'shapes_tool':
@@ -208,8 +251,13 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     
     const { addText, startEditingText } = useCanvasStore.getState();
     
-    // إذا كان السحب صغيراً جداً (نقرة بسيطة)، أنشئ سطر نص
-    if (tempElement && (tempElement.size.width < 20 && tempElement.size.height < 20)) {
+    // حساب المسافة الفعلية المسحوبة
+    const dragDistance = tempElement 
+      ? Math.max(tempElement.size.width, tempElement.size.height)
+      : 0;
+    
+    // إذا لم يكن هناك tempElement أو المسافة صغيرة جداً → سطر نص
+    if (!tempElement || dragDistance < 20) {
       const textData = {
         type: 'text' as const,
         textType: 'line' as const,
@@ -225,15 +273,14 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
 
       const newId = addText(textData);
       
-      // بدء التحرير فوراً
       setTimeout(() => {
         startEditingText(newId);
       }, 50);
       
       toast.success('انقر وابدأ الكتابة');
     } 
-    // إذا كان هناك سحب، أنشئ مربع نص
-    else if (tempElement) {
+    // إذا كان السحب كبير → مربع نص
+    else {
       const textBoxElement = {
         type: 'text' as const,
         textType: 'box' as const,
@@ -249,7 +296,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       
       const newId = addText(textBoxElement);
       
-      // بدء التحرير
       setTimeout(() => {
         startEditingText(newId);
       }, 50);
