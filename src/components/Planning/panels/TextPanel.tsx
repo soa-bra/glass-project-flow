@@ -13,6 +13,8 @@ const TextPanel: React.FC = () => {
     editingTextId
   } = useCanvasStore();
   
+  const [showFontSizes, setShowFontSizes] = React.useState(false);
+  
   // الحصول على النص قيد التحرير
   const editingElement = React.useMemo(() => {
     if (editingTextId) {
@@ -164,34 +166,53 @@ const TextPanel: React.FC = () => {
         <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-2 block">
           حجم الخط
         </label>
-        <input
-          type="number"
-          list="font-sizes"
-          min={8}
-          max={200}
-          value={currentFontSize}
-          onChange={(e) => handleSettingChange('fontSize', Number(e.target.value))}
-          className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors bg-white"
-          placeholder="اختر أو اكتب حجم الخط"
-        />
-        <datalist id="font-sizes">
-          <option value="8" />
-          <option value="10" />
-          <option value="12" />
-          <option value="14" />
-          <option value="16" />
-          <option value="18" />
-          <option value="20" />
-          <option value="24" />
-          <option value="28" />
-          <option value="32" />
-          <option value="36" />
-          <option value="40" />
-          <option value="48" />
-          <option value="56" />
-          <option value="64" />
-          <option value="72" />
-        </datalist>
+        <div className="relative">
+          <input
+            type="number"
+            min={8}
+            max={200}
+            value={currentFontSize}
+            onChange={(e) => handleSettingChange('fontSize', Number(e.target.value))}
+            onFocus={() => setShowFontSizes(true)}
+            className="w-full px-3 py-2 pl-8 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors bg-white"
+            placeholder="حجم الخط"
+          />
+          <button
+            type="button"
+            onClick={() => setShowFontSizes(!showFontSizes)}
+            className="absolute left-2 top-1/2 -translate-y-1/2 text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))] transition-colors"
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M2 4l4 4 4-4" />
+            </svg>
+          </button>
+          
+          {showFontSizes && (
+            <>
+              <div 
+                className="fixed inset-0 z-10" 
+                onClick={() => setShowFontSizes(false)}
+              />
+              <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-white border border-[#DADCE0] rounded-[10px] shadow-lg max-h-[200px] overflow-y-auto">
+                {[8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72].map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => {
+                      handleSettingChange('fontSize', size);
+                      setShowFontSizes(false);
+                    }}
+                    className={`w-full px-3 py-2 text-right text-[12px] hover:bg-[hsl(var(--panel))] transition-colors ${
+                      currentFontSize === size ? 'bg-[hsl(var(--accent-green))]/10 text-[hsl(var(--accent-green))] font-semibold' : 'text-[hsl(var(--ink))]'
+                    }`}
+                  >
+                    {size}px
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Text Alignment */}
