@@ -28,7 +28,44 @@ export const useKeyboardShortcuts = () => {
       // قراءة القيمة الحالية من الـ store مباشرة
       const editingTextId = useCanvasStore.getState().editingTextId;
       
-      // Ignore shortcuts when typing in inputs or contentEditable elements
+      // ✅ فحص editingTextId أولاً - هذا هو مصدر الحقيقة
+      if (editingTextId) {
+        // السماح فقط بهذه الاختصارات أثناء تحرير النص:
+        // 1. Escape (للخروج من التحرير)
+        // 2. Enter (لحفظ النص)
+        // 3. Ctrl+B, Ctrl+I, Ctrl+U (تنسيق النص)
+        // 4. Ctrl+A (تحديد الكل في النص)
+        // 5. Ctrl+Z, Ctrl+Shift+Z (Undo/Redo في النص نفسه)
+        
+        const allowedKeys = ['Escape', 'Enter'];
+        const allowedWithCtrl = ['b', 'i', 'u', 'a', 'z'];
+        
+        if (allowedKeys.includes(e.key)) {
+          return; // السماح بالمرور
+        }
+        
+        if ((e.ctrlKey || e.metaKey) && allowedWithCtrl.includes(e.key.toLowerCase())) {
+          return; // السماح بالمرور
+        }
+        
+        // السماح بالأحرف العادية للكتابة
+        if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) {
+          return; // أحرف عادية للكتابة
+        }
+        
+        // السماح بمفاتيح التحكم الأساسية
+        const controlKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Tab'];
+        if (controlKeys.includes(e.key)) {
+          return; // السماح بالمرور
+        }
+        
+        // منع أي اختصار آخر (مثل G للشبكة، أو أي اختصار أداة)
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      
+      // ✅ فحص isTyping (للحقول الأخرى مثل INPUT/TEXTAREA)
       const target = e.target as HTMLElement;
       const isTyping = target.tagName === 'INPUT' || 
                        target.tagName === 'TEXTAREA' || 
