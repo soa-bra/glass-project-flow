@@ -179,9 +179,11 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         top: element.position.y,
         width: element.size.width,
         height: element.size.height,
-        border: isSelected ? '2px solid hsl(var(--accent-green))' : '1px solid hsl(var(--border))',
-        borderRadius: '8px',
-        padding: '12px',
+        border: isSelected 
+          ? '2px solid hsl(var(--accent-green))' 
+          : (element.data?.textType === 'box' ? '1px solid hsl(var(--border))' : 'none'),
+        borderRadius: element.data?.textType === 'box' ? '8px' : '0',
+        padding: element.data?.textType === 'box' ? '12px' : '4px',
         backgroundColor: element.data?.textType === 'box' 
           ? (element.style?.backgroundColor || '#FFFFFF')
           : (element.style?.backgroundColor || 'transparent'),
