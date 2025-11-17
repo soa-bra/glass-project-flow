@@ -30,39 +30,55 @@ const TextPanel: React.FC = () => {
   const currentAlignment = (selectedTextElement?.style?.textAlign as 'left' | 'center' | 'right') || toolSettings.text.alignment;
   
   const handleSettingChange = (setting: string, value: any) => {
-    // إذا كان هناك نص مظلل داخل محرر النص، طبق التنسيق عليه
+    // أولاً: التحقق من وجود نص مظلل داخل محرر نص نشط
     const currentEditor = (window as any).__currentTextEditor;
-    if (currentEditor && window.getSelection()?.toString()) {
+    const selection = window.getSelection();
+    const selectedText = selection?.toString();
+    
+    // التحقق من أن التحديد موجود داخل المحرر النشط
+    const isSelectionInEditor = currentEditor && 
+                                 selectedText && 
+                                 selectedText.length > 0 &&
+                                 selection?.anchorNode &&
+                                 currentEditor.editorRef.contains(selection.anchorNode);
+    
+    if (isSelectionInEditor) {
+      // تطبيق التنسيق على النص المظلل فقط
       if (setting === 'fontFamily') {
         currentEditor.applyFormat('fontName', value);
       } else if (setting === 'fontSize') {
-        currentEditor.applyFormat('fontSize', '7'); // حجم نسبي، ثم نعدله
-        // تطبيق الحجم الفعلي عبر CSS
-        const selection = window.getSelection();
+        // تطبيق حجم الخط باستخدام span
         if (selection && selection.rangeCount > 0) {
           const range = selection.getRangeAt(0);
           const span = document.createElement('span');
           span.style.fontSize = `${value}px`;
           try {
             range.surroundContents(span);
+            // تحديث المحتوى
+            const newContent = currentEditor.editorRef.innerHTML;
+            currentEditor.applyFormat('insertHTML', newContent);
           } catch (e) {
-            // في حالة الفشل، استخدم execCommand
-            document.execCommand('fontSize', false, '7');
+            console.warn('Failed to apply fontSize with surroundContents', e);
           }
         }
       } else if (setting === 'fontWeight') {
         currentEditor.applyFormat('bold');
       } else if (setting === 'color') {
         currentEditor.applyFormat('foreColor', value);
+      } else if (setting === 'textAlign') {
+        // المحاذاة لا تطبق على النص المظلل، بل على العنصر كله
+        if (selectedTextElement) {
+          updateTextStyle(selectedTextElement.id, { textAlign: value });
+        }
       }
       return;
     }
     
+    // ثانياً: إذا كان هناك عنصر نصي محدد (بأداة التحديد)
     if (selectedTextElement) {
-      // تحديث العنصر المحدد
       updateTextStyle(selectedTextElement.id, { [setting]: value });
     } else {
-      // تحديث الإعدادات الافتراضية
+      // ثالثاً: تحديث الإعدادات الافتراضية
       updateToolSettings('text', { [setting]: value } as any);
     }
   };
