@@ -7,6 +7,7 @@ export const useKeyboardShortcuts = () => {
     selectedElementIds,
     activeTool,
     setActiveTool,
+    editingTextId,
     undo,
     redo,
     deleteElements,
@@ -25,8 +26,8 @@ export const useKeyboardShortcuts = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // قراءة القيمة الحالية من الـ store مباشرة
-      const editingTextId = useCanvasStore.getState().editingTextId;
+      // تجاهل إذا كان في وضع تحرير النص
+      if (editingTextId) return;
       
       // Ignore shortcuts when typing in inputs or contentEditable elements
       const target = e.target as HTMLElement;
@@ -102,38 +103,38 @@ export const useKeyboardShortcuts = () => {
         toggleGrid();
       }
 
-      // Tool shortcuts - تعطيل عند تحرير النص
-      if (e.key === 'v' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      // Tool shortcuts
+      if (e.key === 'v' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('selection_tool');
         toast.info('أداة التحديد');
       }
-      if (e.key === 't' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('text_tool');
         toast.info('أداة النص - انقر لإضافة نص');
       }
-      if (e.key === 'r' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('shapes_tool');
         toast.info('أداة الأشكال');
       }
-      if (e.key === 'p' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 'p' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('smart_pen');
         toast.info('القلم الذكي');
       }
-      if (e.key === 'f' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 'f' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('frame_tool');
         toast.info('أداة الإطار');
       }
-      if (e.key === 'u' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 'u' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('file_uploader');
         toast.info('رفع الملفات');
       }
-      if (e.key === 's' && !e.ctrlKey && !e.metaKey && !editingTextId) {
+      if (e.key === 's' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('smart_element_tool');
         toast.info('العناصر الذكية');
@@ -220,6 +221,7 @@ export const useKeyboardShortcuts = () => {
     selectedElementIds,
     activeTool,
     setActiveTool,
+    editingTextId,
     undo,
     redo,
     deleteElements,
