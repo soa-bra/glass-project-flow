@@ -13,9 +13,20 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   const editorRef = useRef<HTMLDivElement>(null);
   const { updateTextStyle } = useCanvasStore();
   
-  useEffect(() => {
-    // Focus on mount
+  // تطبيق التنسيق على النص المظلل
+  const applyFormatting = (command: string, value?: string) => {
+    document.execCommand(command, false, value);
     if (editorRef.current) {
+      const newContent = editorRef.current.innerHTML;
+      setContent(newContent);
+      onUpdate(newContent);
+    }
+  };
+  
+  useEffect(() => {
+    // Focus on mount وتحميل المحتوى
+    if (editorRef.current) {
+      editorRef.current.innerHTML = element.content || '';
       editorRef.current.focus();
       
       // ضع المؤشر في نهاية النص
@@ -34,7 +45,9 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     // Enter = حفظ (لنص السطر فقط، في مربع النص نسمح بأسطر متعددة)
     if (e.key === 'Enter' && !e.shiftKey && element.data?.textType === 'line') {
       e.preventDefault();
-      onUpdate(content);
+      if (editorRef.current) {
+        onUpdate(editorRef.current.innerHTML);
+      }
       onClose();
       return;
     }
@@ -52,30 +65,24 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       return;
     }
     
-    // Cmd/Ctrl+B = Bold
+    // Cmd/Ctrl+B = Bold على النص المظلل
     if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
       e.preventDefault();
-      const currentWeight = element.style?.fontWeight || 'normal';
-      const newWeight = currentWeight === '700' || currentWeight === 'bold' ? 'normal' : '700';
-      updateTextStyle(element.id, { fontWeight: newWeight });
+      applyFormatting('bold');
       return;
     }
     
-    // Cmd/Ctrl+I = Italic
+    // Cmd/Ctrl+I = Italic على النص المظلل
     if ((e.metaKey || e.ctrlKey) && e.key === 'i') {
       e.preventDefault();
-      const currentStyle = element.style?.fontStyle || 'normal';
-      const newStyle = currentStyle === 'italic' ? 'normal' : 'italic';
-      updateTextStyle(element.id, { fontStyle: newStyle });
+      applyFormatting('italic');
       return;
     }
     
-    // Cmd/Ctrl+U = Underline
+    // Cmd/Ctrl+U = Underline على النص المظلل
     if ((e.metaKey || e.ctrlKey) && e.key === 'u') {
       e.preventDefault();
-      const currentDecor = element.style?.textDecoration || 'none';
-      const newDecor = currentDecor === 'underline' ? 'none' : 'underline';
-      updateTextStyle(element.id, { textDecoration: newDecor });
+      applyFormatting('underline');
       return;
     }
     
@@ -93,26 +100,33 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     }
   };
   
+  // مشاركة دالة applyFormatting مع TextPanel عبر window
+  useEffect(() => {
+    (window as any).applyTextFormatting = applyFormatting;
+    return () => {
+      delete (window as any).applyTextFormatting;
+    };
+  }, []);
+
   return (
     <div
       ref={editorRef}
       contentEditable
       suppressContentEditableWarning
       onInput={(e) => {
-        const newContent = e.currentTarget.textContent || '';
+        const newContent = e.currentTarget.innerHTML;
         setContent(newContent);
       }}
       onKeyDown={handleKeyDown}
       onBlur={() => {
-        onUpdate(content);
+        if (editorRef.current) {
+          onUpdate(editorRef.current.innerHTML);
+        }
         onClose();
       }}
       style={{
         fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
         fontSize: `${element.style?.fontSize || 14}px`,
-        fontWeight: element.style?.fontWeight || 'normal',
-        fontStyle: element.style?.fontStyle || 'normal',
-        textDecoration: element.style?.textDecoration || 'none',
         color: element.style?.color || '#0B0F12',
         textAlign: (element.style?.textAlign as any) || 'right',
         width: '100%',
@@ -124,8 +138,6 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
         overflow: element.data?.textType === 'box' ? 'auto' : 'visible'
       }}
-    >
-      {content}
-    </div>
+    />
   );
 };
