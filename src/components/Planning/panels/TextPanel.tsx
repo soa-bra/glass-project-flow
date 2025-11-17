@@ -8,20 +8,10 @@ const TextPanel: React.FC = () => {
     toolSettings, 
     updateToolSettings, 
     setActiveTool,
-    selectedElementIds,
     elements,
     updateTextStyle,
     editingTextId
   } = useCanvasStore();
-  
-  // الحصول على العنصر النصي المحدد (إن وجد)
-  const selectedTextElement = React.useMemo(() => {
-    if (selectedElementIds.length === 1) {
-      const el = elements.find(e => e.id === selectedElementIds[0]);
-      if (el?.type === 'text') return el;
-    }
-    return null;
-  }, [selectedElementIds, elements]);
   
   // الحصول على النص قيد التحرير
   const editingElement = React.useMemo(() => {
@@ -31,12 +21,12 @@ const TextPanel: React.FC = () => {
     return null;
   }, [editingTextId, elements]);
   
-  // استخدام قيم العنصر المحدد أو الإعدادات الافتراضية
-  const currentFontSize = selectedTextElement?.style?.fontSize || toolSettings.text.fontSize;
-  const currentFontFamily = selectedTextElement?.style?.fontFamily || toolSettings.text.fontFamily;
-  const currentFontWeight = selectedTextElement?.style?.fontWeight || toolSettings.text.fontWeight;
-  const currentColor = selectedTextElement?.style?.color || toolSettings.text.color;
-  const currentAlignment = (selectedTextElement?.style?.textAlign as 'left' | 'center' | 'right') || toolSettings.text.alignment;
+  // استخدام قيم النص قيد التحرير أو الإعدادات الافتراضية
+  const currentFontSize = editingElement?.style?.fontSize || toolSettings.text.fontSize;
+  const currentFontFamily = editingElement?.style?.fontFamily || toolSettings.text.fontFamily;
+  const currentFontWeight = editingElement?.style?.fontWeight || toolSettings.text.fontWeight;
+  const currentColor = editingElement?.style?.color || toolSettings.text.color;
+  const currentAlignment = (editingElement?.style?.textAlign as 'left' | 'center' | 'right') || toolSettings.text.alignment;
   
   const handleSettingChange = (setting: string, value: any) => {
     // أولاً: التحقق من وجود نص مظلل داخل محرر نص نشط
@@ -90,20 +80,15 @@ const TextPanel: React.FC = () => {
         currentEditor.applyFormat('foreColor', value);
       } else if (setting === 'textAlign') {
         // المحاذاة لا تطبق على النص المظلل، بل على العنصر كله
-        if (selectedTextElement) {
-          updateTextStyle(selectedTextElement.id, { textAlign: value });
+        if (editingElement) {
+          updateTextStyle(editingElement.id, { textAlign: value });
         }
       }
       return;
     }
     
-    // ثانياً: إذا كان هناك عنصر نصي محدد (بأداة التحديد)
-    if (selectedTextElement) {
-      updateTextStyle(selectedTextElement.id, { [setting]: value });
-    } else {
-      // ثالثاً: تحديث الإعدادات الافتراضية
-      updateToolSettings('text', { [setting]: value } as any);
-    }
+    // إذا لم يكن هناك تحديد في المحرر، تحديث الإعدادات الافتراضية
+    updateToolSettings('text', { [setting]: value } as any);
   };
   
   const { fontSize, fontWeight, color, alignment, fontFamily } = toolSettings.text;
@@ -302,14 +287,8 @@ const TextPanel: React.FC = () => {
         onClick={handleActivateTextTool}
         className="w-full py-3 bg-[hsl(var(--accent-green))] text-white rounded-[10px] hover:opacity-90 transition-opacity text-[13px] font-semibold"
       >
-        {selectedTextElement ? 'تحديث النص المحدد' : 'تفعيل أداة النص'}
+        {editingElement ? 'حفظ التنسيق' : 'تفعيل أداة النص'}
       </button>
-      
-      {selectedTextElement && (
-        <div className="text-[11px] text-[hsl(var(--ink-60))] text-center">
-          تحديث نص محدد - التغييرات تُطبق فوراً
-        </div>
-      )}
 
       {/* Keyboard Shortcuts */}
       <div className="pt-4 border-t border-[#DADCE0]">
