@@ -30,6 +30,16 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     }
   }, []);
   
+  const applyFormat = (command: string, value?: string) => {
+    document.execCommand(command, false, value);
+    // حفظ المحتوى بعد التنسيق
+    if (editorRef.current) {
+      const newContent = editorRef.current.innerHTML;
+      setContent(newContent);
+      onUpdate(newContent);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Enter = حفظ (لنص السطر فقط، في مربع النص نسمح بأسطر متعددة)
     if (e.key === 'Enter' && !e.shiftKey && element.data?.textType === 'line') {
@@ -55,27 +65,21 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     // Cmd/Ctrl+B = Bold
     if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
       e.preventDefault();
-      const currentWeight = element.style?.fontWeight || 'normal';
-      const newWeight = currentWeight === '700' || currentWeight === 'bold' ? 'normal' : '700';
-      updateTextStyle(element.id, { fontWeight: newWeight });
+      applyFormat('bold');
       return;
     }
     
     // Cmd/Ctrl+I = Italic
     if ((e.metaKey || e.ctrlKey) && e.key === 'i') {
       e.preventDefault();
-      const currentStyle = element.style?.fontStyle || 'normal';
-      const newStyle = currentStyle === 'italic' ? 'normal' : 'italic';
-      updateTextStyle(element.id, { fontStyle: newStyle });
+      applyFormat('italic');
       return;
     }
     
     // Cmd/Ctrl+U = Underline
     if ((e.metaKey || e.ctrlKey) && e.key === 'u') {
       e.preventDefault();
-      const currentDecor = element.style?.textDecoration || 'none';
-      const newDecor = currentDecor === 'underline' ? 'none' : 'underline';
-      updateTextStyle(element.id, { textDecoration: newDecor });
+      applyFormat('underline');
       return;
     }
     
@@ -92,6 +96,19 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       return;
     }
   };
+
+  // تصدير دالة applyFormat للوصول إليها من TextPanel
+  useEffect(() => {
+    if (editorRef.current) {
+      (window as any).__currentTextEditor = {
+        applyFormat,
+        editorRef: editorRef.current
+      };
+    }
+    return () => {
+      (window as any).__currentTextEditor = null;
+    };
+  }, []);
   
   return (
     <div
@@ -99,7 +116,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       contentEditable
       suppressContentEditableWarning
       onInput={(e) => {
-        const newContent = e.currentTarget.textContent || '';
+        const newContent = e.currentTarget.innerHTML || '';
         setContent(newContent);
       }}
       onKeyDown={handleKeyDown}
@@ -124,8 +141,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
         overflow: element.data?.textType === 'box' ? 'auto' : 'visible'
       }}
-    >
-      {content}
-    </div>
+      dangerouslySetInnerHTML={{ __html: content }}
+    />
   );
 };

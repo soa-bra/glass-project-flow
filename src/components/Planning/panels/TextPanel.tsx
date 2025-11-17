@@ -30,6 +30,34 @@ const TextPanel: React.FC = () => {
   const currentAlignment = (selectedTextElement?.style?.textAlign as 'left' | 'center' | 'right') || toolSettings.text.alignment;
   
   const handleSettingChange = (setting: string, value: any) => {
+    // إذا كان هناك نص مظلل داخل محرر النص، طبق التنسيق عليه
+    const currentEditor = (window as any).__currentTextEditor;
+    if (currentEditor && window.getSelection()?.toString()) {
+      if (setting === 'fontFamily') {
+        currentEditor.applyFormat('fontName', value);
+      } else if (setting === 'fontSize') {
+        currentEditor.applyFormat('fontSize', '7'); // حجم نسبي، ثم نعدله
+        // تطبيق الحجم الفعلي عبر CSS
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          const span = document.createElement('span');
+          span.style.fontSize = `${value}px`;
+          try {
+            range.surroundContents(span);
+          } catch (e) {
+            // في حالة الفشل، استخدم execCommand
+            document.execCommand('fontSize', false, '7');
+          }
+        }
+      } else if (setting === 'fontWeight') {
+        currentEditor.applyFormat('bold');
+      } else if (setting === 'color') {
+        currentEditor.applyFormat('foreColor', value);
+      }
+      return;
+    }
+    
     if (selectedTextElement) {
       // تحديث العنصر المحدد
       updateTextStyle(selectedTextElement.id, { [setting]: value });
@@ -253,6 +281,9 @@ const TextPanel: React.FC = () => {
             <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">Cmd+U</code>
           </div>
         </div>
+        <p className="text-[10px] text-[hsl(var(--accent-green))] mt-2">
+          💡 ظلّل جزء من النص ثم غيّر تنسيقه من هنا
+        </p>
       </div>
     </div>
   );
