@@ -285,6 +285,12 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // ✅ فحص typingMode أولاً - منع جميع الاختصارات أثناء الكتابة
+      const typingMode = useCanvasStore.getState().typingMode;
+      if (typingMode) {
+        return; // لا تُنفّذ أي اختصار أداة أثناء الكتابة
+      }
+      
       // Zoom shortcuts
       if ((e.ctrlKey || e.metaKey) && (e.key === '=' || e.key === '+')) {
         e.preventDefault();
