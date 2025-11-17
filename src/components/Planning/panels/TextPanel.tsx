@@ -150,8 +150,8 @@ const TextPanel: React.FC = () => {
               onClick={() => handleSettingChange('fontWeight', weight.value)}
               className={`px-3 py-2 rounded-[10px] text-[11px] font-medium transition-colors ${
                 currentFontWeight === weight.value
-                  ? 'bg-[hsl(var(--accent-green))] text-white'
-                  : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
+                  ? 'bg-[hsl(var(--ink))] text-white'
+                  : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
               }`}
               style={{ fontWeight: weight.value }}
             >
