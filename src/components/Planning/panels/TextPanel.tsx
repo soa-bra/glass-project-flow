@@ -30,29 +30,8 @@ const TextPanel: React.FC = () => {
   const currentAlignment = (selectedTextElement?.style?.textAlign as 'left' | 'center' | 'right') || toolSettings.text.alignment;
   
   const handleSettingChange = (setting: string, value: any) => {
-    // إذا كان هناك نص مظلل في المحرر النشط، نطبق التنسيق عليه
-    const applyFormatting = (window as any).applyTextFormatting;
-    if (applyFormatting && selectedTextElement) {
-      // تطبيق التنسيق على النص المظلل
-      if (setting === 'fontFamily') {
-        applyFormatting('fontName', value);
-      } else if (setting === 'fontSize') {
-        // تحويل الحجم من px إلى HTML font size (1-7)
-        const htmlSize = Math.min(7, Math.max(1, Math.floor(value / 6)));
-        applyFormatting('fontSize', htmlSize.toString());
-      } else if (setting === 'fontWeight') {
-        if (value === '700' || value === 'bold') {
-          applyFormatting('bold');
-        }
-      } else if (setting === 'color') {
-        applyFormatting('foreColor', value);
-      } else if (setting === 'textAlign') {
-        if (value === 'right') applyFormatting('justifyRight');
-        else if (value === 'center') applyFormatting('justifyCenter');
-        else if (value === 'left') applyFormatting('justifyLeft');
-      }
-    } else if (selectedTextElement) {
-      // تحديث العنصر المحدد (إذا لم يكن هناك نص مظلل)
+    if (selectedTextElement) {
+      // تحديث العنصر المحدد
       updateTextStyle(selectedTextElement.id, { [setting]: value });
     } else {
       // تحديث الإعدادات الافتراضية
@@ -69,6 +48,36 @@ const TextPanel: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* نوع النص - UI إرشادي فقط */}
+      <div className="mb-4 p-3 bg-[hsl(var(--panel))] rounded-[10px]">
+        <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-2 block">
+          نوع النص
+        </label>
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={() => toast.info('انقر على الكانفاس لإضافة سطر نص')}
+            className="px-3 py-2 rounded-[10px] text-[11px] font-medium bg-white text-[hsl(var(--ink))] hover:bg-[hsl(var(--accent-green))] hover:text-white transition-colors"
+          >
+            سطر نص
+          </button>
+          <button
+            onClick={() => toast.info('انقر واسحب لإنشاء مربع نص')}
+            className="px-3 py-2 rounded-[10px] text-[11px] font-medium bg-white text-[hsl(var(--ink))] hover:bg-[hsl(var(--accent-green))] hover:text-white transition-colors"
+          >
+            مربع نص
+          </button>
+          <button
+            onClick={() => toast.info('انقر داخل عنصر لإضافة نص مرتبط')}
+            className="px-3 py-2 rounded-[10px] text-[11px] font-medium bg-white text-[hsl(var(--ink))] hover:bg-[hsl(var(--accent-green))] hover:text-white transition-colors"
+          >
+            نص مرتبط
+          </button>
+        </div>
+        <p className="text-[10px] text-[hsl(var(--ink-60))] mt-2">
+          💡 نقرة = سطر | نقر+سحب = مربع | نقر داخل عنصر = مرتبط
+        </p>
+      </div>
+
       {/* Font Family */}
       <div>
         <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-2 block">
