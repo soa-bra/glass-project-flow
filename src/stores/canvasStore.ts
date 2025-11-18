@@ -697,6 +697,12 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         textAlign: textData.alignment || get().toolSettings.text.alignment,
         fontStyle: textData.fontStyle || 'normal',
         textDecoration: textData.textDecoration || 'none',
+        direction: get().toolSettings.text.direction,
+        alignItems: get().toolSettings.text.verticalAlign === 'top' 
+          ? 'flex-start' 
+          : get().toolSettings.text.verticalAlign === 'bottom' 
+          ? 'flex-end' 
+          : 'center',
         backgroundColor: textData.textType === 'box' ? '#FFFFFF' : 'transparent'
       },
       data: {
