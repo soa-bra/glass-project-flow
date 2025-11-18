@@ -226,12 +226,16 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
                 textDecoration: element.style?.textDecoration || 'none',
                 color: element.style?.color || '#0B0F12',
                 textAlign: (element.style?.textAlign as any) || 'right',
+                direction: (element.style?.direction as any) || 'rtl',
                 whiteSpace: element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
                 wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
                 overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
                 width: '100%',
                 height: '100%',
-                padding: '8px'
+                padding: '8px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: element.style?.alignItems || 'flex-start'
               }}
               dangerouslySetInnerHTML={{ 
                 __html: element.content || 'انقر مرتين للكتابة...' 
