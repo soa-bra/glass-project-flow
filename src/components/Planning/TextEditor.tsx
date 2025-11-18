@@ -16,19 +16,24 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   useEffect(() => {
     startTyping(); // ✅ تفعيل وضع الكتابة
     
-    // Focus on mount
+    // Focus on mount with proper cursor positioning for RTL/LTR
     if (editorRef.current) {
-      editorRef.current.focus();
-      
-      // ضع المؤشر في نهاية النص
-      const range = document.createRange();
-      const selection = window.getSelection();
-      if (editorRef.current.childNodes.length > 0) {
-        range.selectNodeContents(editorRef.current);
-        range.collapse(false);
-        selection?.removeAllRanges();
-        selection?.addRange(range);
-      }
+      // تأخير بسيط لضمان تحميل المحتوى
+      setTimeout(() => {
+        editorRef.current?.focus();
+        
+        // وضع المؤشر في نهاية النص (يعمل مع RTL/LTR)
+        const range = document.createRange();
+        const selection = window.getSelection();
+        const lastChild = editorRef.current?.lastChild;
+        
+        if (lastChild) {
+          range.selectNodeContents(lastChild);
+          range.collapse(false); // false = نهاية النص
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        }
+      }, 10);
     }
     
     return () => {
@@ -152,7 +157,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         flexDirection: 'column',
         justifyContent: element.style?.alignItems || 'flex-start'
       }}
-      dangerouslySetInnerHTML={{ __html: content }}
-    />
+    >
+      {content ? <span dangerouslySetInnerHTML={{ __html: content }} /> : ''}
+    </div>
   );
 };
