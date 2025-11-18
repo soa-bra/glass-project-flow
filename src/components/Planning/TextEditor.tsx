@@ -139,6 +139,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         textDecoration: element.style?.textDecoration || 'none',
         color: element.style?.color || '#0B0F12',
         textAlign: (element.style?.textAlign as any) || 'right',
+        direction: (element.style?.direction as any) || 'rtl',
         width: '100%',
         height: '100%',
         outline: 'none',
@@ -146,7 +147,10 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         minHeight: '1em',
         whiteSpace: element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
         wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
-        overflow: element.data?.textType === 'box' ? 'auto' : 'visible'
+        overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: element.style?.alignItems || 'flex-start'
       }}
       dangerouslySetInnerHTML={{ __html: content }}
     />

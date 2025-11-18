@@ -82,6 +82,8 @@ export interface ToolSettings {
     color: string;
     alignment: 'left' | 'center' | 'right';
     fontWeight: string;
+    direction: 'rtl' | 'ltr';
+    verticalAlign: 'top' | 'middle' | 'bottom';
   };
   pen: PenSettings;
   frame: {
@@ -253,7 +255,9 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       fontFamily: 'IBM Plex Sans Arabic',
       color: '#111827',
       alignment: 'right',
-      fontWeight: 'normal'
+      fontWeight: 'normal',
+      direction: 'rtl',
+      verticalAlign: 'top'
     },
     pen: {
       strokeWidth: 2,

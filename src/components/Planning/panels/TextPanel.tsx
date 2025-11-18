@@ -1,5 +1,5 @@
 import React from 'react';
-import { Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline } from 'lucide-react';
+import { Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline, ArrowRightLeft, AlignVerticalJustifyStart, AlignVerticalJustifyCenter, AlignVerticalJustifyEnd } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { toast } from 'sonner';
 
@@ -29,6 +29,9 @@ const TextPanel: React.FC = () => {
   const currentFontWeight = editingElement?.style?.fontWeight || toolSettings.text.fontWeight;
   const currentColor = editingElement?.style?.color || toolSettings.text.color;
   const currentAlignment = (editingElement?.style?.textAlign as 'left' | 'center' | 'right') || toolSettings.text.alignment;
+  const currentDirection = (editingElement?.style?.direction as 'rtl' | 'ltr') || toolSettings.text.direction;
+  const currentVerticalAlign = (editingElement?.style?.alignItems as 'flex-start' | 'center' | 'flex-end') || 
+    (toolSettings.text.verticalAlign === 'top' ? 'flex-start' : toolSettings.text.verticalAlign === 'bottom' ? 'flex-end' : 'center');
   
   const handleSettingChange = (setting: string, value: any) => {
     // أولاً: التحقق من وجود نص مظلل داخل محرر نص نشط
@@ -58,12 +61,24 @@ const TextPanel: React.FC = () => {
       });
     }
     
-    // المحاذاة تطبق دائماً على العنصر كله
-    if (setting === 'textAlign') {
+    // المحاذاة واتجاه النص والمحاذاة الرأسية تطبق دائماً على العنصر كله
+    if (setting === 'textAlign' || setting === 'direction' || setting === 'verticalAlign') {
       if (editingElement) {
-        updateTextStyle(editingElement.id, { textAlign: value });
+        if (setting === 'verticalAlign') {
+          // تحويل القيمة إلى alignItems
+          const alignItems = value === 'top' ? 'flex-start' : value === 'bottom' ? 'flex-end' : 'center';
+          updateTextStyle(editingElement.id, { alignItems });
+        } else {
+          updateTextStyle(editingElement.id, { [setting]: value });
+        }
       } else {
-        updateToolSettings('text', { alignment: value } as any);
+        if (setting === 'textAlign') {
+          updateToolSettings('text', { alignment: value } as any);
+        } else if (setting === 'direction') {
+          updateToolSettings('text', { direction: value } as any);
+        } else if (setting === 'verticalAlign') {
+          updateToolSettings('text', { verticalAlign: value } as any);
+        }
       }
       return;
     }
@@ -259,6 +274,79 @@ const TextPanel: React.FC = () => {
           >
             <AlignLeft size={16} />
             <span className="text-[11px] font-medium">يسار</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Text Direction */}
+      <div>
+        <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block">
+          اتجاه النص
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => handleSettingChange('direction', 'rtl')}
+            className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
+              currentDirection === 'rtl'
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
+            }`}
+          >
+            <ArrowRightLeft size={16} className="rotate-0" />
+            <span className="text-[11px] font-medium">من اليمين لليسار</span>
+          </button>
+          <button
+            onClick={() => handleSettingChange('direction', 'ltr')}
+            className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
+              currentDirection === 'ltr'
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
+            }`}
+          >
+            <ArrowRightLeft size={16} className="rotate-180" />
+            <span className="text-[11px] font-medium">من اليسار لليمين</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Vertical Alignment */}
+      <div>
+        <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block">
+          المحاذاة الرأسية
+        </label>
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={() => handleSettingChange('verticalAlign', 'top')}
+            className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
+              currentVerticalAlign === 'flex-start'
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
+            }`}
+          >
+            <AlignVerticalJustifyStart size={16} />
+            <span className="text-[11px] font-medium">أعلى</span>
+          </button>
+          <button
+            onClick={() => handleSettingChange('verticalAlign', 'middle')}
+            className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
+              currentVerticalAlign === 'center'
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
+            }`}
+          >
+            <AlignVerticalJustifyCenter size={16} />
+            <span className="text-[11px] font-medium">وسط</span>
+          </button>
+          <button
+            onClick={() => handleSettingChange('verticalAlign', 'bottom')}
+            className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
+              currentVerticalAlign === 'flex-end'
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
+            }`}
+          >
+            <AlignVerticalJustifyEnd size={16} />
+            <span className="text-[11px] font-medium">أسفل</span>
           </button>
         </div>
       </div>
