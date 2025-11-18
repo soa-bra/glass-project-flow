@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Paintbrush, 
   Type, 
@@ -22,8 +22,11 @@ const FloatingEditBar: React.FC = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isAIOpen, setIsAIOpen] = useState(false);
   
-  // Get selected elements
-  const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));
+  // Get selected elements (memoized to prevent infinite re-renders)
+  const selectedElements = useMemo(
+    () => elements.filter(el => selectedElementIds.includes(el.id)),
+    [elements, selectedElementIds]
+  );
   const hasSelection = selectedElements.length > 0;
   const firstElement = selectedElements[0];
   
@@ -42,7 +45,7 @@ const FloatingEditBar: React.FC = () => {
       x: minX, 
       y: minY - 80 // 80px above
     });
-  }, [selectedElements, hasSelection]);
+  }, [selectedElementIds, hasSelection]);
   
   if (!hasSelection) return null;
   
