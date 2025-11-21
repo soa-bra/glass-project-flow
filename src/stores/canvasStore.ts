@@ -686,13 +686,26 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   addText: (textData) => {
     const id = nanoid();
     
-    // ✅ كشف تلقائي لاتجاه النص بناءً على المحتوى
-    const detectDirection = (text: string): 'rtl' | 'ltr' => {
-      if (!text) return get().toolSettings.text.direction;
+    // ✅ كشف تلقائي لاتجاه النص ومحاذاته بناءً على المحتوى
+    const detectDirection = (text: string): { direction: 'rtl' | 'ltr', textAlign: 'left' | 'center' | 'right' } => {
+      if (!text) {
+        return {
+          direction: get().toolSettings.text.direction,
+          textAlign: get().toolSettings.text.alignment
+        };
+      }
+      
       // كشف الأحرف العربية/عبرية/فارسية
       const rtlRegex = /[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/;
-      return rtlRegex.test(text) ? 'rtl' : 'ltr';
+      const isRTL = rtlRegex.test(text);
+      
+      return {
+        direction: isRTL ? 'rtl' : 'ltr',
+        textAlign: isRTL ? 'right' : 'left'  // ✅ محاذاة تلقائية مناسبة
+      };
     };
+    
+    const detectedStyle = detectDirection(textData.content || '');
     
     const newTextElement: CanvasElement = {
       id,
@@ -701,14 +714,14 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       size: textData.size || { width: 200, height: 50 },
       content: textData.content || '',
       style: {
-        fontSize: textData.fontSize || get().toolSettings.text.fontSize,
+        fontSize: textData.fontSize || get().toolSettings.text.fontSize || 16, // ✅ حجم افتراضي محسّن
         color: textData.color || get().toolSettings.text.color,
         fontFamily: textData.fontFamily || get().toolSettings.text.fontFamily,
         fontWeight: textData.fontWeight || get().toolSettings.text.fontWeight,
-        textAlign: textData.alignment || get().toolSettings.text.alignment,
+        textAlign: textData.alignment || detectedStyle.textAlign, // ✅ استخدام المحاذاة المكتشفة
         fontStyle: textData.fontStyle || 'normal',
         textDecoration: textData.textDecoration || 'none',
-        direction: textData.direction || detectDirection(textData.content || '') || get().toolSettings.text.direction,
+        direction: textData.direction || detectedStyle.direction, // ✅ استخدام الاتجاه المكتشف
         alignItems: get().toolSettings.text.verticalAlign === 'top' 
           ? 'flex-start' 
           : get().toolSettings.text.verticalAlign === 'bottom' 

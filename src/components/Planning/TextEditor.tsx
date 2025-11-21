@@ -22,24 +22,19 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       setTimeout(() => {
         editorRef.current?.focus();
         
-        // ✅ تحسين منطق وضع المؤشر ليدعم unicode-bidi
+        // ✅ منطق محسّن لوضع المؤشر في النهاية (يعمل مع RTL/LTR)
         const range = document.createRange();
         const selection = window.getSelection();
         
-        if (editorRef.current && editorRef.current.childNodes.length > 0) {
-          const lastNode = editorRef.current.childNodes[editorRef.current.childNodes.length - 1];
-          const lastTextNode = lastNode.nodeType === Node.TEXT_NODE 
-            ? lastNode 
-            : lastNode.lastChild || lastNode;
+        if (editorRef.current) {
+          // استخدام selectNodeContents لتحديد كل المحتوى ثم collapse إلى النهاية
+          range.selectNodeContents(editorRef.current);
+          range.collapse(false); // false = في النهاية
           
-          if (lastTextNode && lastTextNode.textContent) {
-            range.setStart(lastTextNode, lastTextNode.textContent.length);
-            range.collapse(true);
-            selection?.removeAllRanges();
-            selection?.addRange(range);
-          }
+          selection?.removeAllRanges();
+          selection?.addRange(range);
         }
-      }, 10);
+      }, 50); // ✅ زيادة التأخير من 10ms إلى 50ms لضمان تحميل المحتوى
     }
     
     return () => {
@@ -114,6 +109,29 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     }
   };
 
+  // ✅ تحديث فوري للـ style عند تغييره من TextPanel
+  useEffect(() => {
+    if (editorRef.current && element.style) {
+      const currentRef = editorRef.current;
+      
+      // تطبيق التغييرات الفورية على المحرر
+      currentRef.style.fontFamily = element.style.fontFamily || 'IBM Plex Sans Arabic';
+      currentRef.style.fontSize = `${element.style.fontSize || 16}px`;
+      currentRef.style.fontWeight = element.style.fontWeight || 'normal';
+      currentRef.style.color = element.style.color || '#0B0F12';
+      currentRef.style.textAlign = element.style.textAlign || 'right';
+      currentRef.style.direction = element.style.direction || 'rtl';
+      
+      // تحديث HTML attribute أيضاً
+      currentRef.setAttribute('dir', element.style.direction || 'rtl');
+      
+      // تطبيق المحاذاة الرأسية
+      if (element.style.alignItems) {
+        currentRef.style.alignItems = element.style.alignItems;
+      }
+    }
+  }, [element.style]);
+  
   // تصدير دالة applyFormat للوصول إليها من TextPanel
   useEffect(() => {
     if (editorRef.current) {
