@@ -83,6 +83,13 @@ const TextPanel: React.FC = () => {
       return;
     }
     
+    // ✅ إضافة: إذا كان هناك عنصر قيد التحرير، تحديث style مباشرة
+    if (editingElement && !isSelectionInEditor) {
+      // تطبيق على العنصر بالكامل
+      updateTextStyle(editingElement.id, { [setting]: value });
+      return;
+    }
+    
     if (isSelectionInEditor) {
       // تطبيق التنسيق على النص المظلل فقط
       if (setting === 'fontFamily') {
