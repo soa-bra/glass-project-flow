@@ -59,6 +59,8 @@ export interface TextElement extends CanvasElement {
   fontSize?: number;
   color?: string;
   alignment?: 'left' | 'center' | 'right';
+  direction?: 'rtl' | 'ltr'; // ✅ إضافة direction بشكل صريح
+  verticalAlign?: 'top' | 'middle' | 'bottom'; // ✅ إضافة verticalAlign
   fontStyle?: 'normal' | 'italic';
   textDecoration?: 'none' | 'underline';
   attachedTo?: string;
@@ -683,6 +685,15 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   // Text Management Implementation
   addText: (textData) => {
     const id = nanoid();
+    
+    // ✅ كشف تلقائي لاتجاه النص بناءً على المحتوى
+    const detectDirection = (text: string): 'rtl' | 'ltr' => {
+      if (!text) return get().toolSettings.text.direction;
+      // كشف الأحرف العربية/عبرية/فارسية
+      const rtlRegex = /[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/;
+      return rtlRegex.test(text) ? 'rtl' : 'ltr';
+    };
+    
     const newTextElement: CanvasElement = {
       id,
       type: 'text',
@@ -697,7 +708,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         textAlign: textData.alignment || get().toolSettings.text.alignment,
         fontStyle: textData.fontStyle || 'normal',
         textDecoration: textData.textDecoration || 'none',
-        direction: get().toolSettings.text.direction,
+        direction: textData.direction || detectDirection(textData.content || '') || get().toolSettings.text.direction,
         alignItems: get().toolSettings.text.verticalAlign === 'top' 
           ? 'flex-start' 
           : get().toolSettings.text.verticalAlign === 'bottom' 

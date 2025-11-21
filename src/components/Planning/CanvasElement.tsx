@@ -218,6 +218,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
             />
           ) : (
             <div
+              dir={element.style?.direction || 'rtl'} // ✅ إضافة HTML attribute
               style={{
                 fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
                 fontSize: `${element.style?.fontSize || 14}px`,
@@ -227,6 +228,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
                 color: element.style?.color || '#0B0F12',
                 textAlign: (element.style?.textAlign as any) || 'right',
                 direction: (element.style?.direction as any) || 'rtl',
+                unicodeBidi: 'plaintext', // ✅ إضافة unicode-bidi
                 whiteSpace: element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
                 wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
                 overflow: element.data?.textType === 'box' ? 'auto' : 'visible',

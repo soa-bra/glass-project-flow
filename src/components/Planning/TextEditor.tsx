@@ -22,16 +22,22 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       setTimeout(() => {
         editorRef.current?.focus();
         
-        // وضع المؤشر في نهاية النص (يعمل مع RTL/LTR)
+        // ✅ تحسين منطق وضع المؤشر ليدعم unicode-bidi
         const range = document.createRange();
         const selection = window.getSelection();
-        const lastChild = editorRef.current?.lastChild;
         
-        if (lastChild) {
-          range.selectNodeContents(lastChild);
-          range.collapse(false); // false = نهاية النص
-          selection?.removeAllRanges();
-          selection?.addRange(range);
+        if (editorRef.current && editorRef.current.childNodes.length > 0) {
+          const lastNode = editorRef.current.childNodes[editorRef.current.childNodes.length - 1];
+          const lastTextNode = lastNode.nodeType === Node.TEXT_NODE 
+            ? lastNode 
+            : lastNode.lastChild || lastNode;
+          
+          if (lastTextNode && lastTextNode.textContent) {
+            range.setStart(lastTextNode, lastTextNode.textContent.length);
+            range.collapse(true);
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+          }
         }
       }, 10);
     }
@@ -126,6 +132,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       ref={editorRef}
       contentEditable
       suppressContentEditableWarning
+      dir={element.style?.direction || 'rtl'} // ✅ إضافة HTML attribute
       onInput={(e) => {
         const newContent = e.currentTarget.innerHTML || '';
         setContent(newContent);
@@ -145,6 +152,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         color: element.style?.color || '#0B0F12',
         textAlign: (element.style?.textAlign as any) || 'right',
         direction: (element.style?.direction as any) || 'rtl',
+        unicodeBidi: 'plaintext', // ✅ إضافة unicode-bidi لدقة RTL
         width: '100%',
         height: '100%',
         outline: 'none',
