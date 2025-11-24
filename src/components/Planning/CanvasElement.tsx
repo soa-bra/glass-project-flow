@@ -218,17 +218,17 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
             />
           ) : (
             <div
-              dir={element.style?.direction || 'rtl'} // ✅ إضافة HTML attribute
+              dir={element.style?.direction || 'rtl'}
               style={{
                 fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
-                fontSize: `${element.style?.fontSize || 14}px`,
+                fontSize: `${element.style?.fontSize || 16}px`,
                 fontWeight: element.style?.fontWeight || 'normal',
                 fontStyle: element.style?.fontStyle || 'normal',
                 textDecoration: element.style?.textDecoration || 'none',
                 color: element.style?.color || '#0B0F12',
                 textAlign: (element.style?.textAlign as any) || 'right',
                 direction: (element.style?.direction as any) || 'rtl',
-                unicodeBidi: 'plaintext', // ✅ إضافة unicode-bidi
+                unicodeBidi: 'plaintext',
                 whiteSpace: element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
                 wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
                 overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
@@ -237,6 +237,9 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
                 padding: '8px',
                 display: 'flex',
                 flexDirection: 'column',
+                // ✅ إصلاح المحاذاة: alignItems للأفقي، justifyContent للرأسي
+                alignItems: element.style?.textAlign === 'center' ? 'center' : 
+                            element.style?.textAlign === 'left' ? 'flex-start' : 'flex-end',
                 justifyContent: element.style?.alignItems || 'flex-start'
               }}
               dangerouslySetInnerHTML={{ 

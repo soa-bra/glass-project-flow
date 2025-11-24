@@ -9,37 +9,44 @@ interface TextEditorProps {
 }
 
 export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClose }) => {
-  const [content, setContent] = useState(element.content || '');
   const editorRef = useRef<HTMLDivElement>(null);
   const { updateTextStyle, startTyping, stopTyping } = useCanvasStore();
   
+  // ✅ تعيين المحتوى الأولي مرة واحدة فقط
   useEffect(() => {
-    startTyping(); // ✅ تفعيل وضع الكتابة
+    if (editorRef.current && element.content) {
+      editorRef.current.innerHTML = element.content;
+    }
+  }, []); // ✅ مرة واحدة فقط عند mount
+  
+  // ✅ cursor positioning محسّن
+  useEffect(() => {
+    startTyping();
     
-    // Focus on mount with proper cursor positioning for RTL/LTR
     if (editorRef.current) {
-      // تأخير بسيط لضمان تحميل المحتوى
       setTimeout(() => {
-        editorRef.current?.focus();
+        const editor = editorRef.current;
+        if (!editor) return;
         
-        // ✅ منطق محسّن لوضع المؤشر في النهاية (يعمل مع RTL/LTR)
+        editor.focus();
+        
+        // ✅ إنشاء text node فارغ إذا لزم الأمر
+        if (editor.childNodes.length === 0) {
+          editor.appendChild(document.createTextNode(''));
+        }
+        
         const range = document.createRange();
         const selection = window.getSelection();
         
-        if (editorRef.current) {
-          // استخدام selectNodeContents لتحديد كل المحتوى ثم collapse إلى النهاية
-          range.selectNodeContents(editorRef.current);
-          range.collapse(false); // false = في النهاية
-          
-          selection?.removeAllRanges();
-          selection?.addRange(range);
-        }
-      }, 50); // ✅ زيادة التأخير من 10ms إلى 50ms لضمان تحميل المحتوى
+        // ✅ وضع المؤشر في النهاية
+        range.selectNodeContents(editor);
+        range.collapse(false);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }, 50);
     }
     
-    return () => {
-      stopTyping(); // ✅ إيقاف وضع الكتابة عند unmount
-    };
+    return () => stopTyping();
   }, [startTyping, stopTyping]);
   
   const applyFormat = (command: string, value?: string) => {
@@ -47,7 +54,6 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     // حفظ المحتوى بعد التنسيق
     if (editorRef.current) {
       const newContent = editorRef.current.innerHTML;
-      setContent(newContent);
       onUpdate(newContent);
     }
   };
@@ -56,7 +62,9 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     // Enter = حفظ (لنص السطر فقط، في مربع النص نسمح بأسطر متعددة)
     if (e.key === 'Enter' && !e.shiftKey && element.data?.textType === 'line') {
       e.preventDefault();
-      onUpdate(content);
+      if (editorRef.current) {
+        onUpdate(editorRef.current.innerHTML);
+      }
       onClose();
       return;
     }
@@ -112,25 +120,29 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   // ✅ تحديث فوري للـ style عند تغييره من TextPanel
   useEffect(() => {
     if (editorRef.current && element.style) {
-      const currentRef = editorRef.current;
+      const editor = editorRef.current;
       
-      // تطبيق التغييرات الفورية على المحرر
-      currentRef.style.fontFamily = element.style.fontFamily || 'IBM Plex Sans Arabic';
-      currentRef.style.fontSize = `${element.style.fontSize || 16}px`;
-      currentRef.style.fontWeight = element.style.fontWeight || 'normal';
-      currentRef.style.color = element.style.color || '#0B0F12';
-      currentRef.style.textAlign = element.style.textAlign || 'right';
-      currentRef.style.direction = element.style.direction || 'rtl';
+      // تطبيق الـ styles مباشرة
+      Object.assign(editor.style, {
+        fontFamily: element.style.fontFamily || 'IBM Plex Sans Arabic',
+        fontSize: `${element.style.fontSize || 16}px`,
+        fontWeight: element.style.fontWeight || 'normal',
+        color: element.style.color || '#0B0F12',
+        textAlign: element.style.textAlign || 'right',
+        direction: element.style.direction || 'rtl'
+      });
       
-      // تحديث HTML attribute أيضاً
-      currentRef.setAttribute('dir', element.style.direction || 'rtl');
+      // تحديث dir attribute
+      editor.setAttribute('dir', element.style.direction || 'rtl');
       
-      // تطبيق المحاذاة الرأسية
-      if (element.style.alignItems) {
-        currentRef.style.alignItems = element.style.alignItems;
-      }
+      // ✅ إعادة حساب المحاذاة الأفقية والرأسية
+      editor.style.alignItems = element.style.textAlign === 'center' ? 'center' : 
+                                 element.style.textAlign === 'left' ? 'flex-start' : 'flex-end';
+      editor.style.justifyContent = element.style.alignItems || 'flex-start';
     }
-  }, [element.style]);
+  }, [element.style?.fontFamily, element.style?.fontSize, element.style?.fontWeight, 
+      element.style?.color, element.style?.textAlign, element.style?.direction, 
+      element.style?.alignItems]);
   
   // تصدير دالة applyFormat للوصول إليها من TextPanel
   useEffect(() => {
@@ -150,10 +162,10 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       ref={editorRef}
       contentEditable
       suppressContentEditableWarning
-      dir={element.style?.direction || 'rtl'} // ✅ إضافة HTML attribute
+      dir={element.style?.direction || 'rtl'}
       onInput={(e) => {
         const newContent = e.currentTarget.innerHTML || '';
-        setContent(newContent);
+        onUpdate(newContent);
       }}
       onKeyDown={handleKeyDown}
       onBlur={(e) => {
@@ -162,7 +174,9 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         const isClickingPanel = relatedTarget?.closest('[data-text-panel]');
         
         if (!isClickingPanel) {
-          onUpdate(content);
+          if (editorRef.current) {
+            onUpdate(editorRef.current.innerHTML);
+          }
           stopTyping();
           onClose();
         }
@@ -187,10 +201,12 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
         display: 'flex',
         flexDirection: 'column',
+        // ✅ المحاذاة الأفقية بناءً على textAlign
+        alignItems: element.style?.textAlign === 'center' ? 'center' : 
+                    element.style?.textAlign === 'left' ? 'flex-start' : 'flex-end',
+        // ✅ المحاذاة الرأسية بناءً على alignItems
         justifyContent: element.style?.alignItems || 'flex-start'
       }}
-    >
-      {content ? <span dangerouslySetInnerHTML={{ __html: content }} /> : ''}
-    </div>
+    />
   );
 };

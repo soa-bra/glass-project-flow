@@ -68,6 +68,13 @@ const TextPanel: React.FC = () => {
           // تحويل القيمة إلى alignItems
           const alignItems = value === 'top' ? 'flex-start' : value === 'bottom' ? 'flex-end' : 'center';
           updateTextStyle(editingElement.id, { alignItems });
+        } else if (setting === 'direction') {
+          // ✅ عند تغيير الاتجاه، نحدّث المحاذاة تلقائياً
+          const newTextAlign = value === 'rtl' ? 'right' : 'left';
+          updateTextStyle(editingElement.id, { 
+            direction: value,
+            textAlign: newTextAlign
+          });
         } else {
           updateTextStyle(editingElement.id, { [setting]: value });
         }
@@ -75,7 +82,12 @@ const TextPanel: React.FC = () => {
         if (setting === 'textAlign') {
           updateToolSettings('text', { alignment: value } as any);
         } else if (setting === 'direction') {
-          updateToolSettings('text', { direction: value } as any);
+          // ✅ عند تغيير الاتجاه في الإعدادات، نحدّث المحاذاة
+          const newTextAlign = value === 'rtl' ? 'right' : 'left';
+          updateToolSettings('text', { 
+            direction: value,
+            alignment: newTextAlign
+          } as any);
         } else if (setting === 'verticalAlign') {
           updateToolSettings('text', { verticalAlign: value } as any);
         }
