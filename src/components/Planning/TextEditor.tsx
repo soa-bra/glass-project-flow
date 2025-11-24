@@ -156,10 +156,16 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         setContent(newContent);
       }}
       onKeyDown={handleKeyDown}
-      onBlur={() => {
-        onUpdate(content);
-        stopTyping(); // ✅ إيقاف عند blur أيضاً
-        onClose();
+      onBlur={(e) => {
+        // ✅ تحسين: فقط أغلق إذا كان blur خارج TextPanel
+        const relatedTarget = e.relatedTarget as HTMLElement;
+        const isClickingPanel = relatedTarget?.closest('[data-text-panel]');
+        
+        if (!isClickingPanel) {
+          onUpdate(content);
+          stopTyping();
+          onClose();
+        }
       }}
       style={{
         fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',

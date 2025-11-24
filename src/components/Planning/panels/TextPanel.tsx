@@ -129,7 +129,12 @@ const TextPanel: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div 
+      className="space-y-6"
+      data-text-panel // ✅ معرّف للتعرف على اللوحة
+      onMouseDown={(e) => e.stopPropagation()} // ✅ منع إيقاف التحرير
+      onClick={(e) => e.stopPropagation()} // ✅ منع إيقاف التحرير
+    >
       {/* بانر توضيحي عند التحرير */}
       {editingElement && (
         <div className="p-3 bg-[hsl(var(--accent-green))]/10 border border-[hsl(var(--accent-green))]/30 rounded-[10px]">
