@@ -1,5 +1,5 @@
 import React from 'react';
-import { Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline, ArrowRightLeft, AlignVerticalJustifyStart, AlignVerticalJustifyCenter, AlignVerticalJustifyEnd } from 'lucide-react';
+import { Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline, ArrowRightLeft, AlignVerticalJustifyStart, AlignVerticalJustifyCenter, AlignVerticalJustifyEnd, List, ListOrdered, RemoveFormatting } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { toast } from 'sonner';
 
@@ -410,6 +410,102 @@ const TextPanel: React.FC = () => {
               }`}
             />
           ))}
+        </div>
+      </div>
+
+      {/* Text Formatting */}
+      <div>
+        <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block">
+          التنسيقات
+        </label>
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              const editor = (window as any).__currentTextEditor;
+              if (editor?.applyFormat) {
+                editor.applyFormat('bold');
+              }
+            }}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200 rounded-[10px] transition-colors"
+            title="عريض (Ctrl+B)"
+          >
+            <Bold size={16} />
+            <span className="text-[11px] font-medium">عريض</span>
+          </button>
+          <button
+            onClick={() => {
+              const editor = (window as any).__currentTextEditor;
+              if (editor?.applyFormat) {
+                editor.applyFormat('italic');
+              }
+            }}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200 rounded-[10px] transition-colors"
+            title="مائل (Ctrl+I)"
+          >
+            <Italic size={16} />
+            <span className="text-[11px] font-medium">مائل</span>
+          </button>
+          <button
+            onClick={() => {
+              const editor = (window as any).__currentTextEditor;
+              if (editor?.applyFormat) {
+                editor.applyFormat('underline');
+              }
+            }}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200 rounded-[10px] transition-colors"
+            title="تحته خط (Ctrl+U)"
+          >
+            <Underline size={16} />
+            <span className="text-[11px] font-medium">خط</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Lists */}
+      <div>
+        <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block">
+          القوائم
+        </label>
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={() => {
+              const editor = (window as any).__currentTextEditor;
+              if (editor?.toggleList) {
+                editor.toggleList('ul');
+              }
+            }}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200 rounded-[10px] transition-colors"
+            title="قائمة نقطية"
+          >
+            <List size={16} />
+            <span className="text-[11px] font-medium">نقطية</span>
+          </button>
+          <button
+            onClick={() => {
+              const editor = (window as any).__currentTextEditor;
+              if (editor?.toggleList) {
+                editor.toggleList('ol');
+              }
+            }}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200 rounded-[10px] transition-colors"
+            title="قائمة مرقمة"
+          >
+            <ListOrdered size={16} />
+            <span className="text-[11px] font-medium">مرقمة</span>
+          </button>
+          <button
+            onClick={() => {
+              const editor = (window as any).__currentTextEditor;
+              if (editor?.removeFormatting) {
+                editor.removeFormatting();
+              }
+            }}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200 rounded-[10px] transition-colors"
+            title="إزالة التنسيق"
+          >
+            <RemoveFormatting size={16} />
+            <span className="text-[11px] font-medium">مسح</span>
+          </button>
         </div>
       </div>
 
