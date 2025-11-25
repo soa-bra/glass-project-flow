@@ -58,6 +58,18 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     }
   };
 
+  const toggleList = (listType: 'ul' | 'ol') => {
+    const command = listType === 'ul' ? 'insertUnorderedList' : 'insertOrderedList';
+    applyFormat(command);
+  };
+
+  const removeFormatting = () => {
+    applyFormat('removeFormat');
+    // إزالة القوائم أيضاً
+    applyFormat('insertUnorderedList'); // toggle off if active
+    applyFormat('insertOrderedList'); // toggle off if active
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Enter = حفظ (لنص السطر فقط، في مربع النص نسمح بأسطر متعددة)
     if (e.key === 'Enter' && !e.shiftKey && element.data?.textType === 'line') {
@@ -149,6 +161,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     if (editorRef.current) {
       (window as any).__currentTextEditor = {
         applyFormat,
+        toggleList,
+        removeFormatting,
         editorRef: editorRef.current
       };
     }
