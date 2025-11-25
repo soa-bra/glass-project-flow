@@ -50,7 +50,13 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   }, [startTyping, stopTyping]);
   
   const applyFormat = (command: string, value?: string) => {
+    // ✅ إعادة الـ focus للمحرر قبل تنفيذ الأمر
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+    
     document.execCommand(command, false, value);
+    
     // حفظ المحتوى بعد التنسيق
     if (editorRef.current) {
       const newContent = editorRef.current.innerHTML;
@@ -59,15 +65,43 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   };
 
   const toggleList = (listType: 'ul' | 'ol') => {
+    if (!editorRef.current) return;
+    
+    // ✅ إعادة الـ focus أولاً
+    editorRef.current.focus();
+    
     const command = listType === 'ul' ? 'insertUnorderedList' : 'insertOrderedList';
-    applyFormat(command);
+    document.execCommand(command, false);
+    
+    // تحديث المحتوى
+    onUpdate(editorRef.current.innerHTML);
   };
 
   const removeFormatting = () => {
-    applyFormat('removeFormat');
-    // إزالة القوائم أيضاً
-    applyFormat('insertUnorderedList'); // toggle off if active
-    applyFormat('insertOrderedList'); // toggle off if active
+    if (!editorRef.current) return;
+    
+    editorRef.current.focus();
+    
+    // إزالة التنسيقات العادية
+    document.execCommand('removeFormat', false);
+    
+    // ✅ التحقق من وجود قوائم قبل إزالتها
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const node = selection.anchorNode;
+      const parentList = node?.parentElement?.closest('ul, ol');
+      
+      if (parentList) {
+        const listType = parentList.tagName.toLowerCase();
+        if (listType === 'ul') {
+          document.execCommand('insertUnorderedList', false);
+        } else if (listType === 'ol') {
+          document.execCommand('insertOrderedList', false);
+        }
+      }
+    }
+    
+    onUpdate(editorRef.current.innerHTML);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -169,7 +203,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     return () => {
       (window as any).__currentTextEditor = null;
     };
-  }, []);
+  }); // ✅ بدون [] ليتم تحديثه في كل render
   
   return (
     <div

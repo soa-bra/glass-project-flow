@@ -420,6 +420,10 @@ const TextPanel: React.FC = () => {
         </label>
         <div className="flex gap-2">
           <button
+            onMouseDown={(e) => {
+              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.stopPropagation();
+            }}
             onClick={() => {
               const editor = (window as any).__currentTextEditor;
               if (editor?.applyFormat) {
@@ -433,6 +437,10 @@ const TextPanel: React.FC = () => {
             <span className="text-[11px] font-medium">عريض</span>
           </button>
           <button
+            onMouseDown={(e) => {
+              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.stopPropagation();
+            }}
             onClick={() => {
               const editor = (window as any).__currentTextEditor;
               if (editor?.applyFormat) {
@@ -446,6 +454,10 @@ const TextPanel: React.FC = () => {
             <span className="text-[11px] font-medium">مائل</span>
           </button>
           <button
+            onMouseDown={(e) => {
+              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.stopPropagation();
+            }}
             onClick={() => {
               const editor = (window as any).__currentTextEditor;
               if (editor?.applyFormat) {
@@ -468,6 +480,10 @@ const TextPanel: React.FC = () => {
         </label>
         <div className="grid grid-cols-3 gap-2">
           <button
+            onMouseDown={(e) => {
+              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.stopPropagation();
+            }}
             onClick={() => {
               const editor = (window as any).__currentTextEditor;
               if (editor?.toggleList) {
@@ -481,6 +497,10 @@ const TextPanel: React.FC = () => {
             <span className="text-[11px] font-medium">نقطية</span>
           </button>
           <button
+            onMouseDown={(e) => {
+              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.stopPropagation();
+            }}
             onClick={() => {
               const editor = (window as any).__currentTextEditor;
               if (editor?.toggleList) {
@@ -494,6 +514,10 @@ const TextPanel: React.FC = () => {
             <span className="text-[11px] font-medium">مرقمة</span>
           </button>
           <button
+            onMouseDown={(e) => {
+              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.stopPropagation();
+            }}
             onClick={() => {
               const editor = (window as any).__currentTextEditor;
               if (editor?.removeFormatting) {
