@@ -606,3 +606,31 @@
 }
 
 /* Essential utility classes for smooth transitions */
+
+/* ✅ دعم القوائم النقطية والمرقمة في contentEditable مع RTL */
+[contentEditable="true"] ul,
+[contentEditable="true"] ol {
+  direction: inherit;
+  padding-inline-start: 20px;
+  margin: 8px 0;
+  list-style-position: inside;
+}
+
+[contentEditable="true"] li {
+  margin-bottom: 4px;
+  direction: inherit;
+}
+
+/* تحسين عرض القوائم في نصوص RTL */
+[contentEditable="true"][dir="rtl"] ul,
+[contentEditable="true"][dir="rtl"] ol {
+  padding-inline-start: 0;
+  padding-inline-end: 20px;
+}
+
+/* تحسين عرض القوائم في نصوص LTR */
+[contentEditable="true"][dir="ltr"] ul,
+[contentEditable="true"][dir="ltr"] ol {
+  padding-inline-end: 0;
+  padding-inline-start: 20px;
+}
