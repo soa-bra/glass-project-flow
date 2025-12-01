@@ -14,6 +14,13 @@ const TextPanel: React.FC = () => {
   } = useCanvasStore();
   
   const [showFontSizes, setShowFontSizes] = React.useState(false);
+  const [activeFormats, setActiveFormats] = React.useState({
+    bold: false,
+    italic: false,
+    underline: false,
+    bulletList: false,
+    numberedList: false
+  });
   
   // الحصول على النص قيد التحرير
   const editingElement = React.useMemo(() => {
@@ -32,6 +39,38 @@ const TextPanel: React.FC = () => {
   const currentDirection = (editingElement?.style?.direction as 'rtl' | 'ltr') || toolSettings.text.direction;
   const currentVerticalAlign = (editingElement?.style?.alignItems as 'flex-start' | 'center' | 'flex-end') || 
     (toolSettings.text.verticalAlign === 'top' ? 'flex-start' : toolSettings.text.verticalAlign === 'bottom' ? 'flex-end' : 'center');
+  
+  // تتبع حالة التنسيقات النشطة
+  React.useEffect(() => {
+    const updateFormats = () => {
+      try {
+        const selection = window.getSelection();
+        if (!selection || !selection.rangeCount) return;
+        
+        const anchorNode = selection.anchorNode;
+        if (!anchorNode) return;
+        
+        // التحقق من التنسيقات النشطة
+        setActiveFormats({
+          bold: document.queryCommandState('bold'),
+          italic: document.queryCommandState('italic'),
+          underline: document.queryCommandState('underline'),
+          bulletList: !!anchorNode.parentElement?.closest('ul'),
+          numberedList: !!anchorNode.parentElement?.closest('ol')
+        });
+      } catch (e) {
+        // تجاهل الأخطاء
+      }
+    };
+    
+    // تحديث عند تغيير التحديد
+    document.addEventListener('selectionchange', updateFormats);
+    updateFormats();
+    
+    return () => {
+      document.removeEventListener('selectionchange', updateFormats);
+    };
+  }, [editingTextId]);
   
   const handleSettingChange = (setting: string, value: any) => {
     // أولاً: التحقق من وجود نص مظلل داخل محرر نص نشط
@@ -421,7 +460,7 @@ const TextPanel: React.FC = () => {
         <div className="flex gap-2">
           <button
             onMouseDown={(e) => {
-              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.preventDefault();
               e.stopPropagation();
             }}
             onClick={() => {
@@ -430,7 +469,11 @@ const TextPanel: React.FC = () => {
                 editor.applyFormat('bold');
               }
             }}
-            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200 rounded-[10px] transition-colors"
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
+              activeFormats.bold
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
+            }`}
             title="عريض (Ctrl+B)"
           >
             <Bold size={16} />
@@ -438,7 +481,7 @@ const TextPanel: React.FC = () => {
           </button>
           <button
             onMouseDown={(e) => {
-              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.preventDefault();
               e.stopPropagation();
             }}
             onClick={() => {
@@ -447,7 +490,11 @@ const TextPanel: React.FC = () => {
                 editor.applyFormat('italic');
               }
             }}
-            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200 rounded-[10px] transition-colors"
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
+              activeFormats.italic
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
+            }`}
             title="مائل (Ctrl+I)"
           >
             <Italic size={16} />
@@ -455,7 +502,7 @@ const TextPanel: React.FC = () => {
           </button>
           <button
             onMouseDown={(e) => {
-              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.preventDefault();
               e.stopPropagation();
             }}
             onClick={() => {
@@ -464,7 +511,11 @@ const TextPanel: React.FC = () => {
                 editor.applyFormat('underline');
               }
             }}
-            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200 rounded-[10px] transition-colors"
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
+              activeFormats.underline
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
+            }`}
             title="تحته خط (Ctrl+U)"
           >
             <Underline size={16} />
@@ -481,7 +532,7 @@ const TextPanel: React.FC = () => {
         <div className="grid grid-cols-3 gap-2">
           <button
             onMouseDown={(e) => {
-              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.preventDefault();
               e.stopPropagation();
             }}
             onClick={() => {
@@ -490,7 +541,11 @@ const TextPanel: React.FC = () => {
                 editor.toggleList('ul');
               }
             }}
-            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200 rounded-[10px] transition-colors"
+            className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
+              activeFormats.bulletList
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
+            }`}
             title="قائمة نقطية"
           >
             <List size={16} />
@@ -498,7 +553,7 @@ const TextPanel: React.FC = () => {
           </button>
           <button
             onMouseDown={(e) => {
-              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.preventDefault();
               e.stopPropagation();
             }}
             onClick={() => {
@@ -507,7 +562,11 @@ const TextPanel: React.FC = () => {
                 editor.toggleList('ol');
               }
             }}
-            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200 rounded-[10px] transition-colors"
+            className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-[10px] transition-colors ${
+              activeFormats.numberedList
+                ? 'bg-[hsl(var(--ink))] text-white'
+                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-gray-200'
+            }`}
             title="قائمة مرقمة"
           >
             <ListOrdered size={16} />
@@ -515,7 +574,7 @@ const TextPanel: React.FC = () => {
           </button>
           <button
             onMouseDown={(e) => {
-              e.preventDefault(); // ✅ منع فقدان الـ focus
+              e.preventDefault();
               e.stopPropagation();
             }}
             onClick={() => {
