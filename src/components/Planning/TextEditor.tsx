@@ -107,6 +107,15 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Enter = حفظ (لنص السطر فقط، في مربع النص نسمح بأسطر متعددة)
     if (e.key === 'Enter' && !e.shiftKey && element.data?.textType === 'line') {
+      // ✅ التحقق من وجود قائمة نشطة
+      const selection = window.getSelection();
+      const isInsideList = selection?.anchorNode?.parentElement?.closest('ul, ol');
+      
+      if (isInsideList) {
+        // السماح بالسلوك الافتراضي (إضافة عنصر جديد للقائمة)
+        return;
+      }
+      
       e.preventDefault();
       if (editorRef.current) {
         onUpdate(editorRef.current.innerHTML);
@@ -205,6 +214,9 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     };
   }); // ✅ بدون [] ليتم تحديثه في كل render
   
+  // ✅ التحقق من وجود قوائم في المحتوى
+  const hasLists = element.content?.includes('<ul>') || element.content?.includes('<ol>');
+  
   return (
     <div
       ref={editorRef}
@@ -238,22 +250,16 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         color: element.style?.color || '#0B0F12',
         textAlign: (element.style?.textAlign as any) || 'right',
         direction: (element.style?.direction as any) || 'rtl',
-        unicodeBidi: 'plaintext', // ✅ إضافة unicode-bidi لدقة RTL
+        unicodeBidi: 'plaintext',
         width: '100%',
         height: '100%',
         outline: 'none',
         padding: '8px',
         minHeight: '1em',
-        whiteSpace: element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
-        wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
-        overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
-        display: 'flex',
-        flexDirection: 'column',
-        // ✅ المحاذاة الأفقية بناءً على textAlign
-        alignItems: element.style?.textAlign === 'center' ? 'center' : 
-                    element.style?.textAlign === 'left' ? 'flex-start' : 'flex-end',
-        // ✅ المحاذاة الرأسية بناءً على alignItems
-        justifyContent: element.style?.alignItems || 'flex-start'
+        // ✅ السماح بأسطر متعددة عند وجود قوائم
+        whiteSpace: hasLists || element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
+        wordWrap: hasLists || element.data?.textType === 'box' ? 'break-word' : 'normal',
+        overflow: element.data?.textType === 'box' ? 'auto' : 'visible'
       }}
     />
   );

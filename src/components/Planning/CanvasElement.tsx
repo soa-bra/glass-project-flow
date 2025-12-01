@@ -229,18 +229,13 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
                 textAlign: (element.style?.textAlign as any) || 'right',
                 direction: (element.style?.direction as any) || 'rtl',
                 unicodeBidi: 'plaintext',
-                whiteSpace: element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
+                // ✅ السماح بأسطر متعددة عند وجود قوائم
+                whiteSpace: (element.content?.includes('<ul>') || element.content?.includes('<ol>') || element.data?.textType === 'box') ? 'pre-wrap' : 'nowrap',
                 wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
                 overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
                 width: '100%',
                 height: '100%',
-                padding: '8px',
-                display: 'flex',
-                flexDirection: 'column',
-                // ✅ إصلاح المحاذاة: alignItems للأفقي، justifyContent للرأسي
-                alignItems: element.style?.textAlign === 'center' ? 'center' : 
-                            element.style?.textAlign === 'left' ? 'flex-start' : 'flex-end',
-                justifyContent: element.style?.alignItems || 'flex-start'
+                padding: '8px'
               }}
               dangerouslySetInnerHTML={{ 
                 __html: element.content || 'انقر مرتين للكتابة...' 
