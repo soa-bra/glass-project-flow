@@ -23,7 +23,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       const rect = wrapperRef.current.getBoundingClientRect();
       setToolbarPosition({
         x: rect.left + rect.width / 2,
-        y: rect.top - 12, // 12px فوق العنصر
+        y: rect.top - 5, // 5px فوق العنصر
       });
       setShowToolbar(true);
     }
