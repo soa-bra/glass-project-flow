@@ -71,8 +71,8 @@ export default function Dock({ items, className }: DockProps) {
                 </TooltipTrigger>
                 <TooltipContent 
                   side="top" 
-                  sideOffset={8}
-                  className="text-xs bg-[hsl(var(--ink))] text-white border-none rounded-[10px] px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.24)]"
+                  sideOffset={12}
+                  className="text-xs bg-[hsl(var(--ink))] text-white border-0 rounded-[10px] px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.24)] [&>svg]:hidden"
                 >
                   {item.label}
                 </TooltipContent>
