@@ -462,7 +462,7 @@ export const FloatingToolbar = ({
           style={{
             left: position.x,
             top: position.y,
-            transform: 'translateX(-50%)',
+            transform: 'translate(-50%, -100%)',
           }}
           data-floating-toolbar
           onMouseDown={(e) => {
