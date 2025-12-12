@@ -450,26 +450,43 @@ export const FloatingToolbar = ({
     return () => document.removeEventListener('selectionchange', updateActiveFormats);
   }, []);
 
+  // حساب حدود السحب داخل الـ viewport
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  
+  const getDragConstraints = useCallback(() => {
+    const padding = 10;
+    const toolbarWidth = toolbarRef.current?.offsetWidth || 600;
+    const toolbarHeight = toolbarRef.current?.offsetHeight || 50;
+    
+    return {
+      left: -(position.x - toolbarWidth / 2 - padding),
+      right: window.innerWidth - position.x - toolbarWidth / 2 - padding,
+      top: -(position.y - toolbarHeight - padding),
+      bottom: window.innerHeight - position.y - padding,
+    };
+  }, [position.x, position.y]);
+
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
+          ref={toolbarRef}
           drag
           dragMomentum={false}
           dragElastic={0}
+          dragConstraints={getDragConstraints()}
           initial={{ opacity: 0, y: 10, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.95 }}
           transition={{ type: "spring", damping: 25, stiffness: 400 }}
           className="fixed z-[9999] bg-white rounded-xl shadow-lg border border-[hsl(var(--border))] flex items-center gap-0.5 p-1 cursor-grab active:cursor-grabbing"
           style={{
-            left: position.x,
-            top: position.y,
+            left: Math.max(320, Math.min(position.x, window.innerWidth - 320)),
+            top: Math.max(60, position.y),
             transform: 'translate(-50%, -100%)',
           }}
           data-floating-toolbar
           onMouseDown={(e) => {
-            // السماح بالسحب عند النقر على الـ container
             e.stopPropagation();
           }}
         >
