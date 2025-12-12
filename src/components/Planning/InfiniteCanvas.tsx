@@ -3,7 +3,6 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import CanvasElement from './CanvasElement';
 import DrawingPreview from './DrawingPreview';
 import SelectionBox from './SelectionBox';
-import InstructionsOverlay from './InstructionsOverlay';
 import StrokesLayer from './StrokesLayer';
 import PenInputLayer from './PenInputLayer';
 import FrameInputLayer from './FrameInputLayer';
@@ -559,11 +558,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       {/* Zoom Indicator */}
       
       
-      {/* Instructions */}
-      
-      
-      {/* Dynamic Instructions Overlay */}
-      <InstructionsOverlay />
     </div>;
 };
 export default InfiniteCanvas;
