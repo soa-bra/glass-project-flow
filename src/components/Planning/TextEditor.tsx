@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/stores/canvasStore';
+import { FloatingToolbar } from '@/components/ui/floating-toolbar';
+import { createPortal } from 'react-dom';
 
 interface TextEditorProps {
   element: CanvasElement;
@@ -10,7 +12,22 @@ interface TextEditorProps {
 
 export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClose }) => {
   const editorRef = useRef<HTMLDivElement>(null);
-  const { updateTextStyle, startTyping, stopTyping } = useCanvasStore();
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const { updateTextStyle, startTyping, stopTyping, updateElement } = useCanvasStore();
+  const [toolbarPosition, setToolbarPosition] = useState({ x: 0, y: 0 });
+  const [showToolbar, setShowToolbar] = useState(false);
+  
+  // حساب موضع الـ toolbar
+  const updateToolbarPosition = useCallback(() => {
+    if (wrapperRef.current) {
+      const rect = wrapperRef.current.getBoundingClientRect();
+      setToolbarPosition({
+        x: rect.left + rect.width / 2,
+        y: rect.top - 12, // 12px فوق العنصر
+      });
+      setShowToolbar(true);
+    }
+  }, []);
   
   // ✅ تعيين المحتوى الأولي مرة واحدة فقط
   useEffect(() => {
@@ -19,7 +36,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     }
   }, []); // ✅ مرة واحدة فقط عند mount
   
-  // ✅ cursor positioning محسّن
+  // ✅ cursor positioning محسّن + إظهار toolbar
   useEffect(() => {
     startTyping();
     
@@ -43,13 +60,16 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
         range.collapse(false);
         selection?.removeAllRanges();
         selection?.addRange(range);
+        
+        // إظهار الـ toolbar
+        updateToolbarPosition();
       }, 50);
     }
     
     return () => stopTyping();
-  }, [startTyping, stopTyping]);
+  }, [startTyping, stopTyping, updateToolbarPosition]);
   
-  const applyFormat = (command: string, value?: string) => {
+  const applyFormat = useCallback((command: string, value?: string) => {
     // ✅ إعادة الـ focus للمحرر قبل تنفيذ الأمر
     if (editorRef.current) {
       editorRef.current.focus();
@@ -62,9 +82,9 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       const newContent = editorRef.current.innerHTML;
       onUpdate(newContent);
     }
-  };
+  }, [onUpdate]);
 
-  const toggleList = (listType: 'ul' | 'ol') => {
+  const toggleList = useCallback((listType: 'ul' | 'ol') => {
     if (!editorRef.current) return;
     
     // ✅ إعادة الـ focus أولاً
@@ -75,9 +95,9 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     
     // تحديث المحتوى
     onUpdate(editorRef.current.innerHTML);
-  };
+  }, [onUpdate]);
 
-  const removeFormatting = () => {
+  const removeFormatting = useCallback(() => {
     if (!editorRef.current) return;
     
     editorRef.current.focus();
@@ -102,7 +122,21 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     }
     
     onUpdate(editorRef.current.innerHTML);
-  };
+  }, [onUpdate]);
+
+  const handleAlignChange = useCallback((align: 'left' | 'center' | 'right') => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+    
+    // تحديث الـ style في الـ store
+    updateElement(element.id, {
+      style: {
+        ...element.style,
+        textAlign: align,
+      }
+    });
+  }, [element.id, element.style, updateElement]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Enter = حفظ (لنص السطر فقط، في مربع النص نسمح بأسطر متعددة)
@@ -217,50 +251,75 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   // ✅ التحقق من وجود قوائم في المحتوى
   const hasLists = element.content?.includes('<ul>') || element.content?.includes('<ol>');
   
+  const currentAlign = (element.style?.textAlign as 'left' | 'center' | 'right') || 'right';
+  
   return (
-    <div
-      ref={editorRef}
-      contentEditable
-      suppressContentEditableWarning
-      dir={element.style?.direction || 'rtl'}
-      onInput={(e) => {
-        const newContent = e.currentTarget.innerHTML || '';
-        onUpdate(newContent);
-      }}
-      onKeyDown={handleKeyDown}
-      onBlur={(e) => {
-        // ✅ تحسين: فقط أغلق إذا كان blur خارج TextPanel
-        const relatedTarget = e.relatedTarget as HTMLElement;
-        const isClickingPanel = relatedTarget?.closest('[data-text-panel]');
-        
-        if (!isClickingPanel) {
-          if (editorRef.current) {
-            onUpdate(editorRef.current.innerHTML);
-          }
-          stopTyping();
-          onClose();
-        }
-      }}
-      style={{
-        fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
-        fontSize: `${element.style?.fontSize || 14}px`,
-        fontWeight: element.style?.fontWeight || 'normal',
-        fontStyle: element.style?.fontStyle || 'normal',
-        textDecoration: element.style?.textDecoration || 'none',
-        color: element.style?.color || '#0B0F12',
-        textAlign: (element.style?.textAlign as any) || 'right',
-        direction: (element.style?.direction as any) || 'rtl',
-        unicodeBidi: 'plaintext',
-        width: '100%',
-        height: '100%',
-        outline: 'none',
-        padding: '8px',
-        minHeight: '1em',
-        // ✅ السماح بأسطر متعددة عند وجود قوائم
-        whiteSpace: hasLists || element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
-        wordWrap: hasLists || element.data?.textType === 'box' ? 'break-word' : 'normal',
-        overflow: element.data?.textType === 'box' ? 'auto' : 'visible'
-      }}
-    />
+    <>
+      <div 
+        ref={wrapperRef}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <div
+          ref={editorRef}
+          contentEditable
+          suppressContentEditableWarning
+          dir={element.style?.direction || 'rtl'}
+          onInput={(e) => {
+            const newContent = e.currentTarget.innerHTML || '';
+            onUpdate(newContent);
+          }}
+          onKeyDown={handleKeyDown}
+          onBlur={(e) => {
+            // ✅ تحسين: فقط أغلق إذا كان blur خارج TextPanel أو FloatingToolbar
+            const relatedTarget = e.relatedTarget as HTMLElement;
+            const isClickingPanel = relatedTarget?.closest('[data-text-panel]');
+            const isClickingToolbar = relatedTarget?.closest('[data-floating-toolbar]');
+            
+            if (!isClickingPanel && !isClickingToolbar) {
+              if (editorRef.current) {
+                onUpdate(editorRef.current.innerHTML);
+              }
+              setShowToolbar(false);
+              stopTyping();
+              onClose();
+            }
+          }}
+          style={{
+            fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
+            fontSize: `${element.style?.fontSize || 14}px`,
+            fontWeight: element.style?.fontWeight || 'normal',
+            fontStyle: element.style?.fontStyle || 'normal',
+            textDecoration: element.style?.textDecoration || 'none',
+            color: element.style?.color || '#0B0F12',
+            textAlign: (element.style?.textAlign as any) || 'right',
+            direction: (element.style?.direction as any) || 'rtl',
+            unicodeBidi: 'plaintext',
+            width: '100%',
+            height: '100%',
+            outline: 'none',
+            padding: '8px',
+            minHeight: '1em',
+            // ✅ السماح بأسطر متعددة عند وجود قوائم
+            whiteSpace: hasLists || element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
+            wordWrap: hasLists || element.data?.textType === 'box' ? 'break-word' : 'normal',
+            overflow: element.data?.textType === 'box' ? 'auto' : 'visible'
+          }}
+        />
+      </div>
+      
+      {/* Floating Toolbar - rendered via portal */}
+      {createPortal(
+        <FloatingToolbar
+          position={toolbarPosition}
+          onApplyFormat={applyFormat}
+          onToggleList={toggleList}
+          onRemoveFormatting={removeFormatting}
+          onAlignChange={handleAlignChange}
+          currentAlign={currentAlign}
+          isVisible={showToolbar}
+        />,
+        document.body
+      )}
+    </>
   );
 };
