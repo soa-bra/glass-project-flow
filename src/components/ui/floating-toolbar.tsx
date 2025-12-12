@@ -450,9 +450,16 @@ export const FloatingToolbar = ({
     return () => document.removeEventListener('selectionchange', updateActiveFormats);
   }, []);
 
-  // مرجع لحاوية البار العائم وحدود السحب
+  // مرجع لحاوية البار العائم
   const toolbarRef = useRef<HTMLDivElement>(null);
-  const constraintsRef = useRef<HTMLDivElement>(null);
+  
+  // حدود السحب المحسوبة ديناميكياً
+  const [dragConstraints, setDragConstraints] = useState({
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  });
   
   // حساب الموضع الآمن داخل حدود النافذة
   const getSafePosition = useCallback(() => {
@@ -471,30 +478,38 @@ export const FloatingToolbar = ({
   }, [position.x, position.y]);
   
   const safePos = getSafePosition();
+  
+  // تحديث حدود السحب عند تغيير الموضع أو حجم النافذة
+  useEffect(() => {
+    const updateConstraints = () => {
+      const toolbarWidth = 640;
+      const toolbarHeight = 50;
+      const padding = 16;
+      
+      // حساب المسافة من الموضع الحالي إلى الحدود
+      setDragConstraints({
+        top: -(safePos.top - toolbarHeight - padding - 60),
+        left: -(safePos.left - toolbarWidth / 2 - padding),
+        right: window.innerWidth - safePos.left - toolbarWidth / 2 - padding,
+        bottom: window.innerHeight - safePos.top - 100,
+      });
+    };
+    
+    updateConstraints();
+    window.addEventListener('resize', updateConstraints);
+    return () => window.removeEventListener('resize', updateConstraints);
+  }, [safePos.left, safePos.top]);
 
   return (
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* حدود السحب - div مخفي يغطي الشاشة */}
-          <div
-            ref={constraintsRef}
-            className="fixed inset-0 pointer-events-none"
-            style={{
-              top: 60,
-              left: 16,
-              right: 16,
-              bottom: 100,
-              width: 'calc(100vw - 32px)',
-              height: 'calc(100vh - 160px)',
-            }}
-          />
           <motion.div
             ref={toolbarRef}
             drag
             dragMomentum={false}
             dragElastic={0}
-            dragConstraints={constraintsRef}
+            dragConstraints={dragConstraints}
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
