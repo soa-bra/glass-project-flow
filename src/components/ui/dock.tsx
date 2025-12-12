@@ -72,7 +72,7 @@ export default function Dock({ items, className }: DockProps) {
                 <TooltipContent 
                   side="top" 
                   sideOffset={8}
-                  className="text-xs bg-[hsl(var(--ink))] text-white border-[hsl(var(--ink))] rounded-[10px] px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.24)]"
+                  className="text-xs bg-[hsl(var(--ink))] text-white border-none rounded-[10px] px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.24)]"
                 >
                   {item.label}
                 </TooltipContent>
