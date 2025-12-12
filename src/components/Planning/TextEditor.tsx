@@ -138,6 +138,74 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     });
   }, [element.id, element.style, updateElement]);
 
+  const handleVerticalAlignChange = useCallback((align: 'flex-start' | 'center' | 'flex-end') => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+    
+    updateElement(element.id, {
+      style: {
+        ...element.style,
+        alignItems: align,
+      }
+    });
+  }, [element.id, element.style, updateElement]);
+
+  const handleDirectionChange = useCallback((direction: 'rtl' | 'ltr') => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+    
+    // تحديث الاتجاه والمحاذاة معاً
+    const newAlign = direction === 'rtl' ? 'right' : 'left';
+    updateElement(element.id, {
+      style: {
+        ...element.style,
+        direction,
+        textAlign: newAlign,
+      }
+    });
+  }, [element.id, element.style, updateElement]);
+
+  const handleFontFamilyChange = useCallback((fontFamily: string) => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+    
+    updateElement(element.id, {
+      style: {
+        ...element.style,
+        fontFamily,
+      }
+    });
+  }, [element.id, element.style, updateElement]);
+
+  const handleFontSizeChange = useCallback((fontSize: number) => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+    
+    updateElement(element.id, {
+      style: {
+        ...element.style,
+        fontSize,
+      }
+    });
+  }, [element.id, element.style, updateElement]);
+
+  const handleColorChange = useCallback((color: string) => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+    
+    updateElement(element.id, {
+      style: {
+        ...element.style,
+        color,
+      }
+    });
+  }, [element.id, element.style, updateElement]);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Enter = حفظ (لنص السطر فقط، في مربع النص نسمح بأسطر متعددة)
     if (e.key === 'Enter' && !e.shiftKey && element.data?.textType === 'line') {
@@ -315,7 +383,17 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
           onToggleList={toggleList}
           onRemoveFormatting={removeFormatting}
           onAlignChange={handleAlignChange}
+          onVerticalAlignChange={handleVerticalAlignChange}
+          onDirectionChange={handleDirectionChange}
+          onFontFamilyChange={handleFontFamilyChange}
+          onFontSizeChange={handleFontSizeChange}
+          onColorChange={handleColorChange}
           currentAlign={currentAlign}
+          currentVerticalAlign={(element.style?.alignItems as 'flex-start' | 'center' | 'flex-end') || 'flex-start'}
+          currentDirection={(element.style?.direction as 'rtl' | 'ltr') || 'rtl'}
+          currentFontFamily={element.style?.fontFamily || 'IBM Plex Sans Arabic'}
+          currentFontSize={element.style?.fontSize || 16}
+          currentColor={element.style?.color || '#0B0F12'}
           isVisible={showToolbar}
         />,
         document.body
