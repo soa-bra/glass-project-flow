@@ -450,59 +450,57 @@ export const FloatingToolbar = ({
     return () => document.removeEventListener('selectionchange', updateActiveFormats);
   }, []);
 
-  // مرجع لحاوية البار العائم وحدود السحب
-  const constraintsRef = useRef<HTMLDivElement>(null);
+  // ثوابت الحجم والحدود
+  const TOOLBAR_WIDTH = 640;
+  const TOOLBAR_HEIGHT = 50;
+  const PADDING = 16;
+  const TOP_OFFSET = 60;
+  const BOTTOM_OFFSET = 100;
   
-  // حساب الموضع الآمن داخل حدود النافذة
+  // حساب الموضع الآمن داخل حدود النافذة (بدون transform)
   const getSafePosition = useCallback(() => {
-    const toolbarWidth = 640;
-    const toolbarHeight = 50;
-    const padding = 16;
+    // حساب الحدود الآمنة
+    const minX = PADDING;
+    const maxX = window.innerWidth - TOOLBAR_WIDTH - PADDING;
+    const minY = TOP_OFFSET;
+    const maxY = window.innerHeight - TOOLBAR_HEIGHT - BOTTOM_OFFSET;
     
-    const minX = toolbarWidth / 2 + padding;
-    const maxX = window.innerWidth - toolbarWidth / 2 - padding;
-    const minY = toolbarHeight + padding + 60;
+    // حساب الموضع المركزي (x - نصف العرض)
+    const centeredX = position.x - TOOLBAR_WIDTH / 2;
     
     return {
-      left: Math.max(minX, Math.min(position.x, maxX)),
-      top: Math.max(minY, position.y),
+      left: Math.max(minX, Math.min(centeredX, maxX)),
+      top: Math.max(minY, Math.min(position.y, maxY)),
     };
   }, [position.x, position.y]);
   
   const safePos = getSafePosition();
+  
+  // حدود السحب كـ object مباشر
+  const dragBounds = {
+    left: PADDING,
+    top: TOP_OFFSET,
+    right: window.innerWidth - TOOLBAR_WIDTH - PADDING,
+    bottom: window.innerHeight - TOOLBAR_HEIGHT - BOTTOM_OFFSET,
+  };
 
   return (
     <AnimatePresence>
       {isVisible && (
-        <>
-          {/* حدود السحب - عنصر ثابت يغطي المنطقة المسموح بها */}
-          <div
-            ref={constraintsRef}
-            className="fixed pointer-events-none"
-            style={{
-              top: 60,
-              left: 16,
-              right: 16,
-              bottom: 100,
-              width: 'calc(100vw - 32px)',
-              height: 'calc(100vh - 160px)',
-            }}
-          />
-          <motion.div
-            drag
-            dragMomentum={false}
-            dragElastic={0}
-            dragConstraints={constraintsRef}
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ type: "spring", damping: 25, stiffness: 400 }}
-            className="fixed z-[9999] bg-white rounded-xl shadow-lg border border-[hsl(var(--border))] flex items-center gap-0.5 p-1 cursor-grab active:cursor-grabbing"
-            style={{
-              left: safePos.left,
-              top: safePos.top,
-              transform: 'translate(-50%, -100%)',
-            }}
+        <motion.div
+          drag
+          dragMomentum={false}
+          dragElastic={0}
+          dragConstraints={dragBounds}
+          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+          transition={{ type: "spring", damping: 25, stiffness: 400 }}
+          className="fixed z-[9999] bg-white rounded-xl shadow-lg border border-[hsl(var(--border))] flex items-center gap-0.5 p-1 cursor-grab active:cursor-grabbing"
+          style={{
+            left: safePos.left,
+            top: safePos.top,
+          }}
             data-floating-toolbar
             onMouseDown={(e) => {
               e.stopPropagation();
@@ -697,7 +695,6 @@ export const FloatingToolbar = ({
             hideTooltip={hideTooltip}
           />
           </motion.div>
-        </>
       )}
     </AnimatePresence>
   );

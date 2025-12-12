@@ -17,13 +17,16 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   const [toolbarPosition, setToolbarPosition] = useState({ x: 0, y: 0 });
   const [showToolbar, setShowToolbar] = useState(false);
   
-  // حساب موضع الـ toolbar
+  // حساب موضع الـ toolbar - مع هامش كافٍ فوق النص
   const updateToolbarPosition = useCallback(() => {
     if (wrapperRef.current) {
       const rect = wrapperRef.current.getBoundingClientRect();
+      const toolbarHeight = 50;
+      const margin = 16;
+      
       setToolbarPosition({
         x: rect.left + rect.width / 2,
-        y: rect.top - 5, // 5px فوق العنصر
+        y: rect.top - toolbarHeight - margin, // هامش كافٍ فوق النص
       });
       setShowToolbar(true);
     }
