@@ -454,11 +454,14 @@ export const FloatingToolbar = ({
     <AnimatePresence>
       {isVisible && (
         <motion.div
+          drag
+          dragMomentum={false}
+          dragElastic={0}
           initial={{ opacity: 0, y: 10, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.95 }}
           transition={{ type: "spring", damping: 25, stiffness: 400 }}
-          className="fixed z-[9999] bg-white rounded-xl shadow-lg border border-[hsl(var(--border))] flex items-center gap-0.5 p-1"
+          className="fixed z-[9999] bg-white rounded-xl shadow-lg border border-[hsl(var(--border))] flex items-center gap-0.5 p-1 cursor-grab active:cursor-grabbing"
           style={{
             left: position.x,
             top: position.y,
@@ -466,7 +469,7 @@ export const FloatingToolbar = ({
           }}
           data-floating-toolbar
           onMouseDown={(e) => {
-            e.preventDefault();
+            // السماح بالسحب عند النقر على الـ container
             e.stopPropagation();
           }}
         >
