@@ -39,6 +39,7 @@ export interface PenSettings {
   color: string;
   style: LineStyle;
   smartMode: boolean;
+  eraserMode: boolean;
 }
 
 // Frame Element Type
@@ -265,7 +266,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       strokeWidth: 2,
       color: '#111111',
       style: 'solid',
-      smartMode: false
+      smartMode: false,
+      eraserMode: false
     },
     frame: {
       strokeWidth: 2,
