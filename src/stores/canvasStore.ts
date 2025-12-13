@@ -210,6 +210,8 @@ interface CanvasState {
   endStroke: () => void;
   clearPendingStroke: () => void;
   clearAllStrokes: () => void;
+  removeStroke: (strokeId: string) => void;
+  eraseStrokeAtPoint: (x: number, y: number, radius?: number) => boolean;
   
   // Frame Management Functions
   addChildToFrame: (frameId: string, childId: string) => void;
@@ -908,6 +910,30 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   
   clearAllStrokes: () => {
     set({ strokes: {}, currentStrokeId: undefined });
+  },
+  
+  removeStroke: (strokeId: string) => {
+    set(state => {
+      const { [strokeId]: _, ...remainingStrokes } = state.strokes;
+      return { strokes: remainingStrokes };
+    });
+  },
+  
+  eraseStrokeAtPoint: (x: number, y: number, radius: number = 10) => {
+    const { strokes } = get();
+    
+    // البحث عن خط يتقاطع مع نقطة الممحاة
+    for (const [strokeId, stroke] of Object.entries(strokes)) {
+      for (const point of stroke.points) {
+        const distance = Math.sqrt(Math.pow(point.x - x, 2) + Math.pow(point.y - y, 2));
+        if (distance <= radius + stroke.width / 2) {
+          // وجدنا خط يتقاطع مع الممحاة - نحذفه
+          get().removeStroke(strokeId);
+          return true;
+        }
+      }
+    }
+    return false;
   },
   
   // Frame Management Functions Implementation
