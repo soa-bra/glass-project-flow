@@ -7,8 +7,17 @@ interface Props {
 }
 
 export default function PenInputLayer({ containerRef, active }: Props) {
-  const { viewport, beginStroke, appendPoint, endStroke, clearPendingStroke } = useCanvasStore();
+  const { 
+    viewport, 
+    beginStroke, 
+    appendPoint, 
+    endStroke, 
+    clearPendingStroke,
+    eraseStrokeAtPoint,
+    toolSettings 
+  } = useCanvasStore();
   const drawingRef = useRef(false);
+  const eraserMode = toolSettings.pen.eraserMode;
   
   const toCanvas = useCallback((clientX: number, clientY: number) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -33,7 +42,15 @@ export default function PenInputLayer({ containerRef, active }: Props) {
       }
       
       const { x, y } = toCanvas(e.clientX, e.clientY);
-      beginStroke(x, y, e.pressure);
+      
+      if (eraserMode) {
+        // وضع الممحاة - محاولة مسح الخط
+        eraseStrokeAtPoint(x, y, 15);
+      } else {
+        // وضع القلم - بدء رسم خط جديد
+        beginStroke(x, y, e.pressure);
+      }
+      
       drawingRef.current = true;
       e.preventDefault();
     };
@@ -41,13 +58,26 @@ export default function PenInputLayer({ containerRef, active }: Props) {
     const handlePointerMove = (e: PointerEvent) => {
       if (!drawingRef.current) return;
       const { x, y } = toCanvas(e.clientX, e.clientY);
-      appendPoint(x, y, e.pressure);
+      
+      if (eraserMode) {
+        // وضع الممحاة - استمرار المسح أثناء السحب
+        eraseStrokeAtPoint(x, y, 15);
+      } else {
+        // وضع القلم - إضافة نقطة للخط
+        appendPoint(x, y, e.pressure);
+      }
+      
       e.preventDefault();
     };
     
     const handlePointerUp = (e: PointerEvent) => {
       if (!drawingRef.current) return;
-      endStroke();
+      
+      if (!eraserMode) {
+        // وضع القلم فقط - إنهاء الخط
+        endStroke();
+      }
+      
       drawingRef.current = false;
     };
     
@@ -62,7 +92,7 @@ export default function PenInputLayer({ containerRef, active }: Props) {
       window.removeEventListener('pointerup', handlePointerUp);
       window.removeEventListener('pointercancel', handlePointerUp);
     };
-  }, [active, toCanvas, beginStroke, appendPoint, endStroke]);
+  }, [active, toCanvas, beginStroke, appendPoint, endStroke, eraserMode, eraseStrokeAtPoint]);
   
   // تنظيف عند تعطيل الأداة
   useEffect(() => {
