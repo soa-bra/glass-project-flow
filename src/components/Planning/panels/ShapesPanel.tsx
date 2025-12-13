@@ -1,19 +1,74 @@
-import React from 'react';
-import { Circle, Square, Triangle, Hexagon, Star, Heart } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+  Circle, Square, Triangle, Hexagon, Star, Heart, Diamond, Pentagon, Octagon,
+  Mail, Settings, User, Home, Phone, Calendar, Bell, Search, Camera, Folder,
+  ArrowRight, ArrowLeft, ArrowUp, ArrowDown, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft,
+  MoveRight, MoveLeft, CornerDownRight, CornerUpRight,
+  Shapes, StickyNote, FileText
+} from 'lucide-react';
 import { useCanvasStore, type ShapeType } from '@/stores/canvasStore';
 import { toast } from 'sonner';
+import { ColorPickerInput, InlineColorPicker } from '@/components/ui/color-picker';
+
+type TabType = 'shapes' | 'icons' | 'arrows' | 'sticky';
 
 const ShapesPanel: React.FC = () => {
   const { toolSettings, updateToolSettings, setActiveTool } = useCanvasStore();
   const { fillColor, strokeColor, strokeWidth, opacity, shapeType } = toolSettings.shapes;
+  const [activeTab, setActiveTab] = useState<TabType>('shapes');
+  const [stickyText, setStickyText] = useState('');
+  const [selectedStickyColor, setSelectedStickyColor] = useState('#FEF9C3');
 
-  const basicShapes: Array<{ icon: React.ReactNode; name: string; type: ShapeType }> = [
-    { icon: <Square size={24} />, name: 'مستطيل', type: 'rectangle' },
-    { icon: <Circle size={24} />, name: 'دائرة', type: 'circle' },
-    { icon: <Triangle size={24} />, name: 'مثلث', type: 'triangle' },
-    { icon: <Hexagon size={24} />, name: 'سداسي', type: 'hexagon' },
-    { icon: <Star size={24} />, name: 'نجمة', type: 'star' },
-    { icon: <Heart size={24} />, name: 'قلب', type: 'star' },
+  const tabs = [
+    { id: 'shapes' as TabType, label: 'أشكال هندسية', icon: <Shapes size={16} /> },
+    { id: 'icons' as TabType, label: 'مكتبة الأيقونات', icon: <Settings size={16} /> },
+    { id: 'arrows' as TabType, label: 'الأسهم', icon: <ArrowRight size={16} /> },
+    { id: 'sticky' as TabType, label: 'ستيكي نوت', icon: <StickyNote size={16} /> },
+  ];
+
+  const geometricShapes: Array<{ icon: React.ReactNode; name: string; type: ShapeType }> = [
+    { icon: <Square size={28} />, name: 'مربع', type: 'rectangle' },
+    { icon: <Circle size={28} />, name: 'دائرة', type: 'circle' },
+    { icon: <Triangle size={28} />, name: 'مثلث', type: 'triangle' },
+    { icon: <Hexagon size={28} />, name: 'سداسي', type: 'hexagon' },
+    { icon: <Pentagon size={28} />, name: 'خماسي', type: 'pentagon' as ShapeType },
+    { icon: <Octagon size={28} />, name: 'ثماني', type: 'octagon' as ShapeType },
+    { icon: <Diamond size={28} />, name: 'معين', type: 'diamond' as ShapeType },
+    { icon: <Star size={28} />, name: 'نجمة', type: 'star' },
+  ];
+
+  const icons = [
+    { icon: <Home size={28} />, name: 'منزل' },
+    { icon: <User size={28} />, name: 'مستخدم' },
+    { icon: <Settings size={28} />, name: 'إعدادات' },
+    { icon: <Mail size={28} />, name: 'بريد' },
+    { icon: <Phone size={28} />, name: 'هاتف' },
+    { icon: <Calendar size={28} />, name: 'تقويم' },
+    { icon: <Star size={28} />, name: 'نجمة' },
+    { icon: <Heart size={28} />, name: 'قلب' },
+    { icon: <Bell size={28} />, name: 'تنبيه' },
+    { icon: <Search size={28} />, name: 'بحث' },
+    { icon: <Camera size={28} />, name: 'كاميرا' },
+    { icon: <Folder size={28} />, name: 'مجلد' },
+  ];
+
+  const arrows = [
+    { icon: <ArrowRight size={28} />, name: 'يمين' },
+    { icon: <ArrowLeft size={28} />, name: 'يسار' },
+    { icon: <ArrowUp size={28} />, name: 'أعلى' },
+    { icon: <ArrowDown size={28} />, name: 'أسفل' },
+    { icon: <ArrowUpRight size={28} />, name: 'أعلى يمين' },
+    { icon: <ArrowDownRight size={28} />, name: 'أسفل يمين' },
+    { icon: <ArrowUpLeft size={28} />, name: 'أعلى يسار' },
+    { icon: <ArrowDownLeft size={28} />, name: 'أسفل يسار' },
+    { icon: <MoveRight size={28} />, name: 'نقل يمين' },
+    { icon: <MoveLeft size={28} />, name: 'نقل يسار' },
+    { icon: <CornerDownRight size={28} />, name: 'زاوية أسفل' },
+    { icon: <CornerUpRight size={28} />, name: 'زاوية أعلى' },
+  ];
+
+  const stickyColors = [
+    '#3B82F6', '#F87171', '#FBBF24', '#E9D5FF', '#BBF7D0', '#93C5FD', '#FBCFE8', '#FEF9C3'
   ];
 
   const handleShapeSelect = (type: ShapeType, name: string) => {
@@ -22,185 +77,248 @@ const ShapesPanel: React.FC = () => {
     toast.success(`تم اختيار ${name} - انقر واسحب على الكانفاس`);
   };
 
+  const handleIconSelect = (name: string) => {
+    setActiveTool('shapes_tool');
+    toast.success(`تم اختيار أيقونة ${name}`);
+  };
+
+  const handleArrowSelect = (name: string) => {
+    setActiveTool('shapes_tool');
+    toast.success(`تم اختيار سهم ${name}`);
+  };
+
+  const handleAddStickyNote = () => {
+    setActiveTool('shapes_tool');
+    toast.success('تم إضافة ستيكي نوت');
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Shapes Grid */}
-      <div>
-        <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
-          اختر شكل
-        </h4>
-        <div className="grid grid-cols-3 gap-2">
-          {basicShapes.map((shape) => (
-            <button
-              key={shape.type}
-              onClick={() => handleShapeSelect(shape.type, shape.name)}
-              className={`group flex flex-col items-center gap-2 p-4 rounded-[10px] transition-all ${
-                shapeType === shape.type
-                  ? 'bg-[hsl(var(--accent-green))] text-white'
-                  : 'bg-[hsl(var(--panel))] hover:bg-[rgba(217,231,237,0.8)]'
-              }`}
+    <div className="space-y-5" dir="rtl">
+      {/* Header */}
+      <div className="flex items-center justify-center gap-2 text-[hsl(var(--accent-blue))]">
+        <Shapes size={24} />
+        <h3 className="text-[16px] font-bold">أداة الأشكال</h3>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex bg-[hsl(var(--panel))] rounded-[12px] p-1">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 py-2.5 px-2 text-[11px] font-medium rounded-[10px] transition-all ${
+              activeTab === tab.id
+                ? 'bg-white text-[hsl(var(--accent-blue))] shadow-sm'
+                : 'text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))]'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'shapes' && (
+        <div className="space-y-5">
+          {/* Shapes Grid */}
+          <div className="grid grid-cols-4 gap-2">
+            {geometricShapes.map((shape) => (
+              <button
+                key={shape.type}
+                onClick={() => handleShapeSelect(shape.type, shape.name)}
+                className={`group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 transition-all ${
+                  shapeType === shape.type
+                    ? 'border-[hsl(var(--accent-blue))] bg-[hsl(var(--accent-blue))]/5'
+                    : 'border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-white'
+                }`}
+              >
+                <span className={`transition-colors ${
+                  shapeType === shape.type ? 'text-[hsl(var(--accent-blue))]' : 'text-[hsl(var(--ink-60))]'
+                }`}>
+                  {shape.icon}
+                </span>
+                <span className={`text-[9px] font-medium ${
+                  shapeType === shape.type ? 'text-[hsl(var(--accent-blue))]' : 'text-[hsl(var(--ink-60))]'
+                }`}>
+                  {shape.name}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Color Picker */}
+          <ColorPickerInput 
+            value={fillColor} 
+            onChange={(color) => updateToolSettings('shapes', { fillColor: color })}
+            label="اللون"
+          />
+
+          {/* Stroke Width */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[13px] font-semibold text-[hsl(var(--ink))]">
+                سمك الحواف
+              </label>
+              <span className="text-[12px] text-[hsl(var(--ink-60))]">
+                {strokeWidth}px
+              </span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={12}
+              value={strokeWidth}
+              onChange={(e) => updateToolSettings('shapes', { strokeWidth: Number(e.target.value) })}
+              className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
+                [&::-webkit-slider-thumb]:appearance-none
+                [&::-webkit-slider-thumb]:w-4
+                [&::-webkit-slider-thumb]:h-4
+                [&::-webkit-slider-thumb]:rounded-full
+                [&::-webkit-slider-thumb]:bg-[hsl(var(--accent-green))]
+                [&::-webkit-slider-thumb]:cursor-pointer"
+            />
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'icons' && (
+        <div className="space-y-5">
+          {/* Color Picker */}
+          <ColorPickerInput 
+            value={fillColor} 
+            onChange={(color) => updateToolSettings('shapes', { fillColor: color })}
+            label="اللون"
+          />
+
+          {/* Icons Grid */}
+          <div>
+            <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
+              مكتبة الأيقونات
+            </h4>
+            <div className="grid grid-cols-4 gap-2">
+              {icons.map((icon, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleIconSelect(icon.name)}
+                  className="group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-white transition-all"
+                >
+                  <span className="text-[hsl(var(--accent-blue))]">
+                    {icon.icon}
+                  </span>
+                  <span className="text-[9px] font-medium text-[hsl(var(--ink-60))]">
+                    {icon.name}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'arrows' && (
+        <div className="space-y-5">
+          {/* Color Picker */}
+          <ColorPickerInput 
+            value={fillColor} 
+            onChange={(color) => updateToolSettings('shapes', { fillColor: color })}
+            label="اللون"
+          />
+
+          {/* Arrows Grid */}
+          <div>
+            <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
+              الأسهم والاتجاهات
+            </h4>
+            <div className="grid grid-cols-4 gap-2">
+              {arrows.map((arrow, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleArrowSelect(arrow.name)}
+                  className="group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-white transition-all"
+                >
+                  <span className="text-[hsl(var(--ink-60))]">
+                    {arrow.icon}
+                  </span>
+                  <span className="text-[9px] font-medium text-[hsl(var(--ink-60))]">
+                    {arrow.name}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'sticky' && (
+        <div className="space-y-5">
+          <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] text-right">
+            ستيكي نوت
+          </h4>
+
+          {/* Sticky Color Selection */}
+          <div>
+            <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block text-right">
+              اللون
+            </label>
+            <InlineColorPicker
+              value={selectedStickyColor}
+              onChange={setSelectedStickyColor}
+              presets={stickyColors}
+            />
+          </div>
+
+          {/* Sticky Text Input */}
+          <div>
+            <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block text-right">
+              النص
+            </label>
+            <input
+              type="text"
+              value={stickyText}
+              onChange={(e) => setStickyText(e.target.value)}
+              placeholder="اكتب نص الستيكي نوت..."
+              className="w-full px-4 py-3 text-[13px] border border-[hsl(var(--border))] rounded-[12px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors text-right"
+              dir="rtl"
+            />
+          </div>
+
+          {/* Preview */}
+          <div>
+            <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block text-right">
+              معاينة:
+            </label>
+            <div 
+              className="w-full p-4 rounded-[12px] min-h-[80px] flex items-center justify-center"
+              style={{ backgroundColor: selectedStickyColor }}
             >
-              <span className={`transition-colors ${
-                shapeType === shape.type ? 'text-white' : 'text-[hsl(var(--ink))]'
-              }`}>
-                {shape.icon}
+              <span className="text-[14px] font-medium text-[hsl(var(--ink))]">
+                {stickyText || 'نص تجريبي'}
               </span>
-              <span className={`text-[10px] font-medium transition-colors ${
-                shapeType === shape.type ? 'text-white' : 'text-[hsl(var(--ink))]'
-              }`}>
-                {shape.name}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Fill Color */}
-      <div>
-        <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block">
-          لون التعبئة
-        </label>
-        <div className="flex items-center gap-3">
-          <input
-            type="color"
-            value={fillColor}
-            onChange={(e) => updateToolSettings('shapes', { fillColor: e.target.value })}
-            className="w-12 h-12 rounded-[10px] cursor-pointer border-2 border-[#DADCE0]"
-          />
-          <div className="flex-1">
-            <input
-              type="text"
-              value={fillColor}
-              onChange={(e) => updateToolSettings('shapes', { fillColor: e.target.value })}
-              className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors"
-              placeholder="#3DBE8B"
-            />
+            </div>
           </div>
-        </div>
 
-        {/* Color Presets */}
-        <div className="grid grid-cols-6 gap-2 mt-3">
-          {['#3DBE8B', '#F6C445', '#E5564D', '#3DA8F5', '#9333EA', '#0B0F12'].map((c) => (
-            <button
-              key={c}
-              onClick={() => updateToolSettings('shapes', { fillColor: c })}
-              style={{ backgroundColor: c }}
-              className={`w-full h-8 rounded-lg border-2 transition-all ${
-                fillColor === c ? 'border-[hsl(var(--ink))] scale-105' : 'border-[#DADCE0]'
-              }`}
-            />
-          ))}
+          {/* Add Button */}
+          <button
+            onClick={handleAddStickyNote}
+            className="w-full flex items-center justify-center gap-2 py-3 bg-[hsl(var(--ink-60))] text-white rounded-[12px] hover:bg-[hsl(var(--ink))] transition-colors"
+          >
+            <FileText size={18} />
+            <span className="text-[13px] font-medium">إضافة ستيكي نوت</span>
+          </button>
         </div>
-      </div>
+      )}
 
-      {/* Stroke Color */}
-      <div>
-        <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block">
-          لون الحواف
-        </label>
-        <div className="flex items-center gap-3">
-          <input
-            type="color"
-            value={strokeColor}
-            onChange={(e) => updateToolSettings('shapes', { strokeColor: e.target.value })}
-            className="w-12 h-12 rounded-[10px] cursor-pointer border-2 border-[#DADCE0]"
-          />
-          <div className="flex-1">
-            <input
-              type="text"
-              value={strokeColor}
-              onChange={(e) => updateToolSettings('shapes', { strokeColor: e.target.value })}
-              className="w-full px-3 py-2 text-[12px] border border-[#DADCE0] rounded-[10px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors"
-              placeholder="#0B0F12"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Stroke Width */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-[13px] font-semibold text-[hsl(var(--ink))]">
-            سمك الحواف
-          </label>
-          <span className="text-[12px] text-[hsl(var(--ink-60))]">
-            {strokeWidth}px
-          </span>
-        </div>
-        <input
-          type="range"
-          min={0}
-          max={12}
-          value={strokeWidth}
-          onChange={(e) => updateToolSettings('shapes', { strokeWidth: Number(e.target.value) })}
-          className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
-            [&::-webkit-slider-thumb]:appearance-none
-            [&::-webkit-slider-thumb]:w-4
-            [&::-webkit-slider-thumb]:h-4
-            [&::-webkit-slider-thumb]:rounded-full
-            [&::-webkit-slider-thumb]:bg-[hsl(var(--accent-green))]
-            [&::-webkit-slider-thumb]:cursor-pointer"
-        />
-      </div>
-
-      {/* Opacity */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-[13px] font-semibold text-[hsl(var(--ink))]">
-            الشفافية
-          </label>
-          <span className="text-[12px] text-[hsl(var(--ink-60))]">
-            {Math.round(opacity * 100)}%
-          </span>
-        </div>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.05}
-          value={opacity}
-          onChange={(e) => updateToolSettings('shapes', { opacity: Number(e.target.value) })}
-          className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
-            [&::-webkit-slider-thumb]:appearance-none
-            [&::-webkit-slider-thumb]:w-4
-            [&::-webkit-slider-thumb]:h-4
-            [&::-webkit-slider-thumb]:rounded-full
-            [&::-webkit-slider-thumb]:bg-[hsl(var(--accent-green))]
-            [&::-webkit-slider-thumb]:cursor-pointer"
-        />
-
-        {/* Preview */}
-        <div className="mt-3 flex justify-center">
-          <div 
-            className="w-24 h-24 rounded-[10px]" 
-            style={{ 
-              backgroundColor: fillColor,
-              border: `${strokeWidth}px solid ${strokeColor}`,
-              opacity: opacity
-            }} 
-          />
-        </div>
-      </div>
-
-      {/* Keyboard Shortcuts */}
-      <div className="pt-4 border-t border-[#DADCE0]">
-        <h4 className="text-[12px] font-semibold text-[hsl(var(--ink-60))] mb-2">
-          اختصارات الكيبورد
-        </h4>
-        <div className="space-y-1.5 text-[11px] text-[hsl(var(--ink-60))]">
-          <div className="flex justify-between">
-            <span>نسبة متساوية</span>
-            <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">Shift</code>
-          </div>
-          <div className="flex justify-between">
-            <span>من المركز</span>
-            <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">Alt</code>
-          </div>
-          <div className="flex justify-between">
-            <span>تفعيل الأداة</span>
-            <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">R</code>
-          </div>
-        </div>
+      {/* Tips */}
+      <div className="bg-[hsl(var(--accent-blue))]/5 rounded-[12px] p-4 space-y-2">
+        <p className="text-[12px] text-[hsl(var(--accent-blue))] text-center">
+          🎨 اختر الألوان المناسبة لتصميمك
+        </p>
+        <p className="text-[12px] text-[hsl(var(--accent-blue))] text-center">
+          📐 الأشكال قابلة لتغيير الحجم
+        </p>
+        <p className="text-[12px] text-[hsl(var(--accent-blue))] text-center">
+          📝 ستيكي نوت مفيدة للملاحظات السريعة
+        </p>
       </div>
     </div>
   );
