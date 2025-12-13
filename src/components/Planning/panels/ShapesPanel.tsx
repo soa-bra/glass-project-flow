@@ -263,6 +263,7 @@ const ShapesPanel: React.FC = () => {
             <InlineColorPicker
               value={selectedStickyColor}
               onChange={setSelectedStickyColor}
+              presets={stickyColors}
             />
           </div>
 
