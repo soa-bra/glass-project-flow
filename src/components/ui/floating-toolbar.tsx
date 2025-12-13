@@ -451,7 +451,7 @@ export const FloatingToolbar = ({
   }, []);
 
   // ثوابت الحجم والحدود
-  const TOOLBAR_WIDTH = 720;
+  const TOOLBAR_WIDTH = 820;
   const TOOLBAR_HEIGHT = 50;
   const PADDING = 16;
   const TOP_OFFSET = 60;
