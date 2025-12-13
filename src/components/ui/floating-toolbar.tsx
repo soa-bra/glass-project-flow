@@ -488,8 +488,8 @@ export const FloatingToolbar = ({
               position: 'fixed',
               top: TOP_OFFSET,
               left: PADDING,
-              width: window.innerWidth - PADDING * 2 - TOOLBAR_WIDTH,
-              height: window.innerHeight - TOP_OFFSET - BOTTOM_OFFSET - TOOLBAR_HEIGHT,
+              width: window.innerWidth - PADDING * 2,
+              height: window.innerHeight - TOP_OFFSET - BOTTOM_OFFSET,
               pointerEvents: 'none',
               zIndex: 9998,
             }}
