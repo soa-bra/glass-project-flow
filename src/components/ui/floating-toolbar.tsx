@@ -17,6 +17,7 @@ import {
   RemoveFormatting,
   ChevronDown,
   Pilcrow,
+  Sparkles,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 
@@ -424,6 +425,7 @@ export const FloatingToolbar = ({
 }: FloatingToolbarProps) => {
   const [tooltip, setTooltip] = useState<string | null>(null);
   const [activeFormats, setActiveFormats] = useState<Record<string, boolean>>({});
+  const [isAIOpen, setIsAIOpen] = useState(false);
 
   const showTooltip = useCallback((label: string) => setTooltip(label), []);
   const hideTooltip = useCallback(() => setTooltip(null), []);
@@ -451,7 +453,7 @@ export const FloatingToolbar = ({
   }, []);
 
   // ثوابت الحجم والحدود
-  const TOOLBAR_WIDTH = 820;
+  const TOOLBAR_WIDTH = 900;
   const TOOLBAR_HEIGHT = 50;
   const PADDING = 16;
   const TOP_OFFSET = 60;
@@ -712,6 +714,61 @@ export const FloatingToolbar = ({
             showTooltip={showTooltip}
             hideTooltip={hideTooltip}
           />
+
+          {/* Divider */}
+          <div className="w-px h-6 bg-[hsl(var(--border))] mx-1" />
+
+          {/* AI Button */}
+          <div className="relative">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsAIOpen(!isAIOpen);
+              }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              className="flex items-center gap-2 px-3 py-2 bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white rounded-lg hover:opacity-90 transition-opacity"
+              title="ذكاء صناعي للنص"
+            >
+              <Sparkles size={14} />
+              <span className="text-[12px] font-medium">AI</span>
+            </button>
+            
+            {isAIOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setIsAIOpen(false)}
+                />
+                <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-3 z-50">
+                  <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
+                    اقتراحات ذكية للنص
+                  </h4>
+                  
+                  <div className="space-y-2">
+                    <button className="w-full px-3 py-2 text-right text-[12px] hover:bg-[hsl(var(--panel-bg))] rounded-lg transition-colors">
+                      تحسين النص
+                    </button>
+                    <button className="w-full px-3 py-2 text-right text-[12px] hover:bg-[hsl(var(--panel-bg))] rounded-lg transition-colors">
+                      اقتراح صياغة بديلة
+                    </button>
+                    <button className="w-full px-3 py-2 text-right text-[12px] hover:bg-[hsl(var(--panel-bg))] rounded-lg transition-colors">
+                      تصحيح إملائي
+                    </button>
+                    <button className="w-full px-3 py-2 text-right text-[12px] hover:bg-[hsl(var(--panel-bg))] rounded-lg transition-colors">
+                      ترجمة النص
+                    </button>
+                    <button className="w-full px-3 py-2 text-right text-[12px] hover:bg-[hsl(var(--panel-bg))] rounded-lg transition-colors">
+                      تلخيص النص
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
