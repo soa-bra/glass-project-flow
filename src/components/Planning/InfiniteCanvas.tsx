@@ -11,6 +11,7 @@ import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { screenToCanvasCoordinates } from '@/utils/canvasCoordinates';
 import { toast } from 'sonner';
+import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
 interface InfiniteCanvasProps {
   boardId: string;
 }
@@ -555,8 +556,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         active={activeTool === 'frame_tool'} 
       />
       
-      {/* Zoom Indicator */}
-      
+      {/* Pen Floating Toolbar */}
+      <PenFloatingToolbar
+        position={{ x: window.innerWidth / 2, y: 80 }}
+        isVisible={activeTool === 'smart_pen'}
+      />
       
     </div>;
 };
