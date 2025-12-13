@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { Portal } from "@ark-ui/react/portal";
 import { ColorPicker, parseColor } from "@ark-ui/react/color-picker";
 import { PipetteIcon } from "lucide-react";
@@ -99,52 +100,166 @@ export function ColorPickerInput({ value, onChange, label }: ColorPickerInputPro
   );
 }
 
+// Storage key for recent colors
+const RECENT_COLORS_KEY = 'soabra-recent-colors';
+
+// Get recent colors from localStorage
+function getRecentColors(): string[] {
+  try {
+    const stored = localStorage.getItem(RECENT_COLORS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+// Save color to recent colors
+function saveRecentColor(color: string) {
+  try {
+    const recent = getRecentColors();
+    // Remove if exists, add to front, limit to 6
+    const filtered = recent.filter(c => c.toLowerCase() !== color.toLowerCase());
+    const updated = [color, ...filtered].slice(0, 6);
+    localStorage.setItem(RECENT_COLORS_KEY, JSON.stringify(updated));
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
 interface InlineColorPickerProps {
   value: string;
   onChange: (color: string) => void;
-  presets?: string[];
 }
 
-export function InlineColorPicker({ value, onChange, presets }: InlineColorPickerProps) {
-  const defaultPresets = [
-    "#3B82F6",
-    "#F87171", 
-    "#FBBF24",
-    "#E9D5FF",
-    "#BBF7D0",
-    "#93C5FD",
-    "#FBCFE8",
-    "#FEF9C3",
+export function InlineColorPicker({ value, onChange }: InlineColorPickerProps) {
+  const [recentColors, setRecentColors] = React.useState<string[]>([]);
+
+  // Load recent colors on mount
+  React.useEffect(() => {
+    setRecentColors(getRecentColors());
+  }, []);
+
+  // Row 1: Basic colors (transparent, black, white, gray)
+  const basicColors = [
+    { color: "transparent", label: "شفاف" },
+    { color: "#0B0F12", label: "أسود" },
+    { color: "#FFFFFF", label: "أبيض" },
+    { color: "#9CA3AF", label: "رمادي" },
   ];
 
-  const colorPresets = presets || defaultPresets;
+  // Row 2: SoaBra brand colors from design tokens
+  const brandColors = [
+    "#3DBE8B", // accent green
+    "#F6C445", // accent yellow
+    "#E5564D", // accent red
+    "#3DA8F5", // accent blue
+    "#d9e7ed", // panel
+    "#DADCE0", // border
+  ];
 
   const handleColorChange = (details: { valueAsString: string }) => {
-    onChange(details.valueAsString);
+    const newColor = details.valueAsString;
+    onChange(newColor);
+    // Save to recent colors
+    if (newColor !== "transparent") {
+      saveRecentColor(newColor);
+      setRecentColors(getRecentColors());
+    }
+  };
+
+  const handleDirectColorClick = (color: string) => {
+    onChange(color);
+    if (color !== "transparent") {
+      saveRecentColor(color);
+      setRecentColors(getRecentColors());
+    }
   };
 
   return (
     <ColorPicker.Root 
-      value={parseColor(value)} 
+      value={parseColor(value === "transparent" ? "#FFFFFF" : value)} 
       onValueChange={handleColorChange}
       inline
     >
-      <ColorPicker.Content className="space-y-4" dir="rtl">
-        {/* Color Swatches */}
-        <ColorPicker.SwatchGroup className="flex flex-wrap gap-2 justify-end">
-          {colorPresets.map((color) => (
-            <ColorPicker.SwatchTrigger key={color} value={color}>
-              <ColorPicker.Swatch
-                value={color}
-                className="w-10 h-10 rounded-[10px] border-2 border-[hsl(var(--border))] cursor-pointer hover:scale-105 transition-transform"
+      <ColorPicker.Content className="space-y-3" dir="rtl">
+        {/* Row 1: Basic Colors */}
+        <div className="space-y-1.5">
+          <span className="text-[11px] text-[hsl(var(--ink-60))] font-medium">الألوان الأساسية</span>
+          <div className="flex gap-2 justify-end">
+            {basicColors.map(({ color, label }) => (
+              <button
+                key={color}
+                onClick={() => handleDirectColorClick(color)}
+                className={`w-9 h-9 rounded-[8px] border-2 cursor-pointer hover:scale-105 transition-transform relative ${
+                  value === color ? 'border-[hsl(var(--ink))]' : 'border-[hsl(var(--border))]'
+                }`}
+                style={{ 
+                  backgroundColor: color === "transparent" ? "transparent" : color,
+                }}
+                title={label}
               >
-                <ColorPicker.SwatchIndicator className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
-                  ✓
-                </ColorPicker.SwatchIndicator>
-              </ColorPicker.Swatch>
-            </ColorPicker.SwatchTrigger>
-          ))}
-        </ColorPicker.SwatchGroup>
+                {color === "transparent" && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-full h-[2px] bg-[hsl(var(--accent-red))] rotate-45 absolute" />
+                  </div>
+                )}
+                {value === color && color !== "transparent" && (
+                  <span className={`absolute inset-0 flex items-center justify-center text-xs font-bold ${
+                    color === "#FFFFFF" || color === "#9CA3AF" ? 'text-[hsl(var(--ink))]' : 'text-white'
+                  }`}>✓</span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 2: Brand Colors */}
+        <div className="space-y-1.5">
+          <span className="text-[11px] text-[hsl(var(--ink-60))] font-medium">ألوان سوبرا</span>
+          <div className="flex gap-2 justify-end">
+            {brandColors.map((color) => (
+              <button
+                key={color}
+                onClick={() => handleDirectColorClick(color)}
+                className={`w-9 h-9 rounded-[8px] border-2 cursor-pointer hover:scale-105 transition-transform ${
+                  value.toLowerCase() === color.toLowerCase() ? 'border-[hsl(var(--ink))]' : 'border-[hsl(var(--border))]'
+                }`}
+                style={{ backgroundColor: color }}
+              >
+                {value.toLowerCase() === color.toLowerCase() && (
+                  <span className={`flex items-center justify-center text-xs font-bold ${
+                    color === "#d9e7ed" || color === "#DADCE0" || color === "#F6C445" ? 'text-[hsl(var(--ink))]' : 'text-white'
+                  }`}>✓</span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 3: Recent Colors */}
+        <div className="space-y-1.5">
+          <span className="text-[11px] text-[hsl(var(--ink-60))] font-medium">الألوان الأخيرة</span>
+          <div className="flex gap-2 justify-end min-h-[36px]">
+            {recentColors.length > 0 ? (
+              recentColors.map((color, index) => (
+                <button
+                  key={`${color}-${index}`}
+                  onClick={() => handleDirectColorClick(color)}
+                  className={`w-9 h-9 rounded-[8px] border-2 cursor-pointer hover:scale-105 transition-transform ${
+                    value.toLowerCase() === color.toLowerCase() ? 'border-[hsl(var(--ink))]' : 'border-[hsl(var(--border))]'
+                  }`}
+                  style={{ backgroundColor: color }}
+                >
+                  {value.toLowerCase() === color.toLowerCase() && (
+                    <span className="flex items-center justify-center text-xs font-bold text-white">✓</span>
+                  )}
+                </button>
+              ))
+            ) : (
+              <span className="text-[10px] text-[hsl(var(--ink-30))] italic">لا توجد ألوان حديثة</span>
+            )}
+          </div>
+        </div>
       </ColorPicker.Content>
       <ColorPicker.HiddenInput />
     </ColorPicker.Root>
