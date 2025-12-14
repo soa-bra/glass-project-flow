@@ -164,72 +164,63 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
                 </div>
 
                 {/* Row 1: Utility Colors */}
-                <div className="space-y-2">
-                  <h4 className="text-xs font-medium text-muted-foreground">ألوان أساسية</h4>
-                  <div className="flex gap-2">
-                    {UTILITY_COLORS.map(({ color, label }) => (
-                      <button
-                        key={color}
-                        type="button"
-                        title={label}
-                        onClick={() => handlePresetClick(color)}
-                        className="w-8 h-8 rounded-md border border-border cursor-pointer hover:scale-110 transition-transform relative overflow-hidden"
-                        style={{
-                          backgroundColor: color === "transparent" ? undefined : color,
-                        }}
-                      >
-                        {color === "transparent" && (
-                          <div
-                            className="absolute inset-0"
-                            style={{
-                              backgroundImage:
-                                "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
-                              backgroundSize: "8px 8px",
-                              backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0px",
-                            }}
-                          />
-                        )}
-                      </button>
-                    ))}
-                  </div>
+                <div className="flex justify-center gap-3">
+                  {UTILITY_COLORS.map(({ color, label }) => (
+                    <button
+                      key={color}
+                      type="button"
+                      title={label}
+                      onClick={() => handlePresetClick(color)}
+                      className="w-9 h-9 rounded-full cursor-pointer hover:scale-110 transition-transform relative overflow-hidden"
+                      style={{
+                        backgroundColor: color === "transparent" ? undefined : color,
+                      }}
+                    >
+                      {color === "transparent" && (
+                        <div
+                          className="absolute inset-0 rounded-full"
+                          style={{
+                            backgroundImage:
+                              "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
+                            backgroundSize: "8px 8px",
+                            backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0px",
+                          }}
+                        />
+                      )}
+                    </button>
+                  ))}
                 </div>
 
                 {/* Row 2: Supra Brand Colors */}
-                <div className="space-y-2">
-                  <h4 className="text-xs font-medium text-muted-foreground">ألوان سوبرا</h4>
-                  <div className="flex gap-2">
-                    {SUPRA_COLORS.map(({ color, label }) => (
+                <div className="flex justify-center gap-3">
+                  {SUPRA_COLORS.map(({ color, label }) => (
+                    <button
+                      key={color}
+                      type="button"
+                      title={label}
+                      onClick={() => handlePresetClick(color)}
+                      className="w-9 h-9 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                      style={{
+                        backgroundColor: color,
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {/* Row 3: Recent Colors */}
+                {recentColors.length > 0 && (
+                  <div className="flex justify-center gap-3">
+                    {recentColors.map((color, index) => (
                       <button
-                        key={color}
+                        key={`${color}-${index}`}
                         type="button"
-                        title={label}
                         onClick={() => handlePresetClick(color)}
-                        className="w-8 h-8 rounded-md border border-border cursor-pointer hover:scale-110 transition-transform"
+                        className="w-9 h-9 rounded-full cursor-pointer hover:scale-110 transition-transform"
                         style={{
                           backgroundColor: color,
                         }}
                       />
                     ))}
-                  </div>
-                </div>
-
-                {/* Row 3: Recent Colors */}
-                {recentColors.length > 0 && (
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-medium text-muted-foreground">الألوان الأخيرة</h4>
-                    <div className="flex gap-2">
-                      {recentColors.map((color, index) => (
-                        <button
-                          key={`${color}-${index}`}
-                          type="button"
-                          onClick={() => handlePresetClick(color)}
-                          className="w-8 h-8 rounded-md border border-border cursor-pointer hover:scale-110 transition-transform"
-                          style={{
-                            backgroundColor: color,
-                          }}
-                        />
-                      ))}
-                    </div>
                   </div>
                 )}
               </ColorPicker.Content>
