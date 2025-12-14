@@ -108,9 +108,23 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
                 className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </ColorPicker.Control>
-            <ColorPicker.Trigger className="w-12 h-10 rounded-md border-2 border-border overflow-hidden cursor-pointer hover:border-muted-foreground transition-colors">
-              <ColorPicker.TransparencyGrid className="w-full h-full [--size:8px] opacity-50" />
-              <ColorPicker.ValueSwatch className="w-full h-full" />
+            <ColorPicker.Trigger className="w-12 h-10 rounded-md border-2 border-border overflow-hidden cursor-pointer hover:border-muted-foreground transition-colors relative">
+              {value === "transparent" ? (
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
+                    backgroundSize: "8px 8px",
+                    backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0px",
+                  }}
+                />
+              ) : (
+                <>
+                  <ColorPicker.TransparencyGrid className="w-full h-full [--size:8px] opacity-50" />
+                  <ColorPicker.ValueSwatch className="w-full h-full" />
+                </>
+              )}
             </ColorPicker.Trigger>
           </div>
 
