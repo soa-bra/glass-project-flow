@@ -1,24 +1,8 @@
 "use client";
 import { Portal } from "@ark-ui/react/portal";
 import { ColorPicker, parseColor } from "@ark-ui/react/color-picker";
-import { PipetteIcon } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
-
-// Utility colors (Row 1)
-const UTILITY_COLORS = [
-  { color: 'transparent', label: 'شفاف' },
-  { color: '#000000', label: 'أسود' },
-  { color: '#FFFFFF', label: 'أبيض' },
-  { color: '#808080', label: 'رمادي' },
-];
-
-// Supra brand colors from design tokens (Row 2)
-const SUPRA_COLORS = [
-  { color: '#3DBE8B', label: 'أخضر' },
-  { color: '#F6C445', label: 'أصفر' },
-  { color: '#E5564D', label: 'أحمر' },
-  { color: '#3DA8F5', label: 'أزرق' },
-];
 
 const RECENT_COLORS_KEY = 'supra-recent-colors';
 const MAX_RECENT_COLORS = 6;
@@ -54,29 +38,12 @@ interface ColorPickerInputProps {
 }
 
 export function ColorPickerInput({ value = '#000000', onChange, className }: ColorPickerInputProps) {
-  const [recentColors, setRecentColors] = useState<string[]>([]);
-
-  useEffect(() => {
-    setRecentColors(getRecentColors());
-  }, []);
-
   const handleValueChange = (details: { value: any; valueAsString: string }) => {
     const hex = details.valueAsString;
     if (onChange) {
       onChange(hex);
     }
     addRecentColor(hex);
-    setRecentColors(getRecentColors());
-  };
-
-  const handlePresetClick = (color: string) => {
-    if (onChange) {
-      onChange(color);
-    }
-    if (color !== 'transparent') {
-      addRecentColor(color);
-      setRecentColors(getRecentColors());
-    }
   };
 
   const safeValue = value && value !== 'transparent' ? value : '#000000';
@@ -105,117 +72,59 @@ export function ColorPickerInput({ value = '#000000', onChange, className }: Col
           {/* Color Picker Content */}
           <Portal>
             <ColorPicker.Positioner>
-              <ColorPicker.Content className="bg-background border border-border rounded-lg p-4 shadow-lg space-y-4 z-50 w-80">
+              <ColorPicker.Content className="bg-white rounded-2xl p-3 shadow-[0_8px_30px_rgba(0,0,0,0.12)] z-50 w-64 overflow-hidden">
                 {/* Color Area */}
-                <ColorPicker.Area className="w-full h-36 rounded-md overflow-hidden relative">
+                <ColorPicker.Area className="w-full h-40 rounded-xl overflow-hidden relative mb-3">
                   <ColorPicker.AreaBackground className="w-full h-full" />
-                  <ColorPicker.AreaThumb className="absolute w-3 h-3 bg-white border-2 border-black rounded-full shadow-sm -translate-x-1/2 -translate-y-1/2" />
+                  <ColorPicker.AreaThumb className="absolute w-4 h-4 bg-transparent border-2 border-white rounded-full shadow-[0_0_0_1px_rgba(0,0,0,0.2)] -translate-x-1/2 -translate-y-1/2" />
                 </ColorPicker.Area>
 
-                {/* Eye Dropper and Sliders */}
-                <div className="flex items-center gap-3">
-                  <ColorPicker.EyeDropperTrigger className="p-2 text-muted-foreground hover:text-foreground border border-border rounded-md hover:bg-muted transition-colors">
-                    <PipetteIcon className="w-4 h-4" />
-                  </ColorPicker.EyeDropperTrigger>
+                {/* Sliders */}
+                <div className="space-y-2 mb-3">
+                  {/* Hue Slider */}
+                  <ColorPicker.ChannelSlider
+                    channel="hue"
+                    className="relative w-full h-3 rounded-full overflow-hidden"
+                  >
+                    <ColorPicker.ChannelSliderTrack className="w-full h-full rounded-full" style={{
+                      background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)'
+                    }} />
+                    <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-4 h-4 bg-white border-2 border-white rounded-full shadow-[0_1px_4px_rgba(0,0,0,0.3)] -translate-y-1/2 -translate-x-1/2" />
+                  </ColorPicker.ChannelSlider>
 
-                  <div className="flex-1 space-y-2">
-                    {/* Hue Slider */}
-                    <ColorPicker.ChannelSlider
-                      channel="hue"
-                      className="relative w-full h-3 rounded-full overflow-hidden"
-                    >
-                      <ColorPicker.ChannelSliderTrack className="w-full h-full bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-cyan-500 via-blue-500 via-purple-500 to-red-500" />
-                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-3 h-3 bg-white border-2 border-black rounded-full shadow-sm -translate-y-1/2 -translate-x-1/2" />
-                    </ColorPicker.ChannelSlider>
-
-                    {/* Alpha Slider */}
-                    <ColorPicker.ChannelSlider
-                      channel="alpha"
-                      className="relative w-full h-3 rounded-full overflow-hidden"
-                    >
-                      <ColorPicker.TransparencyGrid className="w-full h-full [--size:8px]" />
-                      <ColorPicker.ChannelSliderTrack className="w-full h-full" />
-                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-3 h-3 bg-white border-2 border-black rounded-full shadow-sm -translate-y-1/2 -translate-x-1/2" />
-                    </ColorPicker.ChannelSlider>
-                  </div>
+                  {/* Alpha Slider */}
+                  <ColorPicker.ChannelSlider
+                    channel="alpha"
+                    className="relative w-full h-3 rounded-full overflow-hidden"
+                  >
+                    <ColorPicker.TransparencyGrid className="w-full h-full [--size:6px] rounded-full" />
+                    <ColorPicker.ChannelSliderTrack className="w-full h-full rounded-full" />
+                    <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-4 h-4 bg-white border-2 border-white rounded-full shadow-[0_1px_4px_rgba(0,0,0,0.3)] -translate-y-1/2 -translate-x-1/2" />
+                  </ColorPicker.ChannelSlider>
                 </div>
 
-                {/* Input Fields */}
-                <div className="flex gap-2">
+                {/* Input Fields Row */}
+                <div className="flex items-center gap-2">
+                  {/* Format Selector */}
+                  <ColorPicker.FormatSelect className="flex items-center gap-1 px-2 py-1.5 text-xs font-medium text-foreground bg-muted rounded-md cursor-pointer hover:bg-muted/80 transition-colors">
+                    <ColorPicker.FormatTrigger className="flex items-center gap-1">
+                      <span>Hex</span>
+                      <ChevronDown className="w-3 h-3" />
+                    </ColorPicker.FormatTrigger>
+                  </ColorPicker.FormatSelect>
+
+                  {/* Hex Input */}
                   <ColorPicker.ChannelInput
                     channel="hex"
-                    className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="flex-1 px-2 py-1.5 text-xs font-medium text-center border-0 bg-muted rounded-md text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                   />
+
+                  {/* Alpha Input */}
                   <ColorPicker.ChannelInput
                     channel="alpha"
-                    className="w-16 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-14 px-2 py-1.5 text-xs font-medium text-center border-0 bg-muted rounded-md text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                   />
                 </div>
-
-                {/* Row 1: Utility Colors */}
-                <div className="space-y-2">
-                  <h4 className="text-xs font-medium text-muted-foreground">ألوان أساسية</h4>
-                  <div className="flex gap-2">
-                    {UTILITY_COLORS.map(({ color, label }) => (
-                      <button
-                        key={color}
-                        type="button"
-                        title={label}
-                        onClick={() => handlePresetClick(color)}
-                        className="w-8 h-8 rounded-md border border-border cursor-pointer hover:scale-110 transition-transform relative overflow-hidden"
-                        style={{ 
-                          backgroundColor: color === 'transparent' ? undefined : color,
-                        }}
-                      >
-                        {color === 'transparent' && (
-                          <div 
-                            className="absolute inset-0"
-                            style={{
-                              backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
-                              backgroundSize: '8px 8px',
-                              backgroundPosition: '0 0, 0 4px, 4px -4px, -4px 0px'
-                            }}
-                          />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Row 2: Supra Brand Colors */}
-                <div className="space-y-2">
-                  <h4 className="text-xs font-medium text-muted-foreground">ألوان سوبرا</h4>
-                  <div className="flex gap-2">
-                    {SUPRA_COLORS.map(({ color, label }) => (
-                      <button
-                        key={color}
-                        type="button"
-                        title={label}
-                        onClick={() => handlePresetClick(color)}
-                        className="w-8 h-8 rounded-md border border-border cursor-pointer hover:scale-110 transition-transform"
-                        style={{ backgroundColor: color }}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Row 3: Recent Colors */}
-                {recentColors.length > 0 && (
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-medium text-muted-foreground">الألوان الأخيرة</h4>
-                    <div className="flex gap-2">
-                      {recentColors.map((color, index) => (
-                        <button
-                          key={`${color}-${index}`}
-                          type="button"
-                          onClick={() => handlePresetClick(color)}
-                          className="w-8 h-8 rounded-md border border-border cursor-pointer hover:scale-110 transition-transform"
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
               </ColorPicker.Content>
             </ColorPicker.Positioner>
           </Portal>
@@ -225,6 +134,22 @@ export function ColorPickerInput({ value = '#000000', onChange, className }: Col
     </div>
   );
 }
+
+// Utility colors (Row 1)
+const UTILITY_COLORS = [
+  { color: 'transparent', label: 'شفاف' },
+  { color: '#000000', label: 'أسود' },
+  { color: '#FFFFFF', label: 'أبيض' },
+  { color: '#808080', label: 'رمادي' },
+];
+
+// Supra brand colors from design tokens (Row 2)
+const SUPRA_COLORS = [
+  { color: '#3DBE8B', label: 'أخضر' },
+  { color: '#F6C445', label: 'أصفر' },
+  { color: '#E5564D', label: 'أحمر' },
+  { color: '#3DA8F5', label: 'أزرق' },
+];
 
 // Inline version for simple use cases (like sticky notes)
 export function InlineColorPicker({ value, onChange, className }: ColorPickerInputProps) {
