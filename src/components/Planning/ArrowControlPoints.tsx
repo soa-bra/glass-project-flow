@@ -99,7 +99,15 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     };
   };
 
-  const arrowData: ArrowData = element.data?.arrowData || getDefaultArrowData();
+  // ✅ دائماً استخدم getDefaultArrowData() إذا كانت arrowData غير صالحة أو نقاطها صفرية
+  const storedArrowData = element.data?.arrowData;
+  const isArrowDataValid = storedArrowData && 
+    storedArrowData.startPoint && 
+    storedArrowData.endPoint &&
+    (storedArrowData.startPoint.x !== storedArrowData.endPoint.x || 
+     storedArrowData.startPoint.y !== storedArrowData.endPoint.y);
+  
+  const arrowData: ArrowData = isArrowDataValid ? storedArrowData : getDefaultArrowData();
 
   // حساب موقع النقطة الوسطى (دائماً في منتصف الخط الفعلي للسهم)
   const getMiddlePoint = (): ArrowPoint => {
