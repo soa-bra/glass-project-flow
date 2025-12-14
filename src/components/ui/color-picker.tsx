@@ -164,7 +164,7 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
                 </div>
 
                 {/* Row 1: Utility Colors */}
-                <div className="flex justify-center gap-2">
+                <div className="flex justify-start gap-2">
                   {UTILITY_COLORS.map(({ color, label }) => {
                     const isSelected = value?.toLowerCase() === color.toLowerCase();
                     return (
@@ -199,7 +199,7 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
                 </div>
 
                 {/* Row 2: Supra Brand Colors */}
-                <div className="flex justify-center gap-2">
+                <div className="flex justify-start gap-2">
                   {SUPRA_COLORS.map(({ color, label }) => {
                     const isSelected = value?.toLowerCase() === color.toLowerCase();
                     return (
@@ -224,7 +224,7 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
 
                 {/* Row 3: Recent Colors */}
                 {recentColors.length > 0 && (
-                  <div className="flex justify-center gap-2">
+                  <div className="flex justify-start gap-2">
                     {recentColors.map((color, index) => {
                       const isSelected = value?.toLowerCase() === color.toLowerCase();
                       return (
