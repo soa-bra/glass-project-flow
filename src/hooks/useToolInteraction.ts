@@ -65,9 +65,6 @@ const createArrowData = (width: number, height: number, shapeType: string): Arro
   }
 
   return {
-    points: [startPoint, endPoint],
-    startBinding: null,
-    endBinding: null,
     startPoint,
     middlePoint: null,
     endPoint,

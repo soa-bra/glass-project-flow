@@ -431,9 +431,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
           if (!arrowData) return false;
           return (
             arrowData.startConnection?.elementId === elementId ||
-            arrowData.endConnection?.elementId === elementId ||
-            arrowData.startBinding?.elementId === elementId ||
-            arrowData.endBinding?.elementId === elementId
+            arrowData.endConnection?.elementId === elementId
           );
         });
         
@@ -443,39 +441,27 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
           const arrowData = { ...arrow.data.arrowData };
           
           // تحديث نقطة البداية إذا كانت متصلة
-          const startConnected = arrowData.startConnection?.elementId === elementId ||
-                                 arrowData.startBinding?.elementId === elementId;
-          if (startConnected) {
-            const anchor = arrowData.startConnection?.anchorPoint || 
-                          arrowData.startBinding?.anchor || 'center';
-            const anchorPos = getAnchorPositionForElement(updatedElement, anchor);
-            const newPoint = {
+          if (arrowData.startConnection?.elementId === elementId) {
+            const anchorPos = getAnchorPositionForElement(
+              updatedElement,
+              arrowData.startConnection.anchorPoint
+            );
+            arrowData.startPoint = {
               x: anchorPos.x - arrow.position.x,
               y: anchorPos.y - arrow.position.y
             };
-            arrowData.startPoint = newPoint;
-            // تحديث مصفوفة النقاط أيضاً
-            if (arrowData.points && arrowData.points.length >= 1) {
-              arrowData.points[0] = newPoint;
-            }
           }
           
           // تحديث نقطة النهاية إذا كانت متصلة
-          const endConnected = arrowData.endConnection?.elementId === elementId ||
-                               arrowData.endBinding?.elementId === elementId;
-          if (endConnected) {
-            const anchor = arrowData.endConnection?.anchorPoint || 
-                          arrowData.endBinding?.anchor || 'center';
-            const anchorPos = getAnchorPositionForElement(updatedElement, anchor);
-            const newPoint = {
+          if (arrowData.endConnection?.elementId === elementId) {
+            const anchorPos = getAnchorPositionForElement(
+              updatedElement,
+              arrowData.endConnection.anchorPoint
+            );
+            arrowData.endPoint = {
               x: anchorPos.x - arrow.position.x,
               y: anchorPos.y - arrow.position.y
             };
-            arrowData.endPoint = newPoint;
-            // تحديث مصفوفة النقاط أيضاً
-            if (arrowData.points && arrowData.points.length >= 2) {
-              arrowData.points[arrowData.points.length - 1] = newPoint;
-            }
           }
           
           const idx = updatedElements.findIndex(e => e.id === arrow.id);
