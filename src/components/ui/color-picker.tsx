@@ -71,6 +71,7 @@ interface ColorPickerInputProps {
   value?: string;
   onChange?: (value: string) => void;
   className?: string;
+  label?: string;
 }
 export function ColorPickerInput({ value = "#000000", onChange, className }: ColorPickerInputProps) {
   const [recentColors, setRecentColors] = useState<string[]>([]);

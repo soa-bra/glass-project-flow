@@ -153,29 +153,43 @@ const ShapesPanel: React.FC = () => {
             label="اللون"
           />
 
-          {/* Stroke Width */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-[13px] font-semibold text-[hsl(var(--ink))]">
-                سمك الحواف
-              </label>
-              <span className="text-[12px] text-[hsl(var(--ink-60))]">
-                {strokeWidth}px
-              </span>
+          {/* Borders Section */}
+          <div className="space-y-4">
+            <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))]">
+              الحواف
+            </h4>
+
+            {/* Stroke Width */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[12px] text-[hsl(var(--ink-60))]">
+                  سمك الحواف
+                </label>
+                <span className="text-[12px] text-[hsl(var(--ink-60))]">
+                  {strokeWidth}px
+                </span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={12}
+                value={strokeWidth}
+                onChange={(e) => updateToolSettings('shapes', { strokeWidth: Number(e.target.value) })}
+                className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
+                  [&::-webkit-slider-thumb]:appearance-none
+                  [&::-webkit-slider-thumb]:w-4
+                  [&::-webkit-slider-thumb]:h-4
+                  [&::-webkit-slider-thumb]:rounded-full
+                  [&::-webkit-slider-thumb]:bg-[hsl(var(--accent-green))]
+                  [&::-webkit-slider-thumb]:cursor-pointer"
+              />
             </div>
-            <input
-              type="range"
-              min={0}
-              max={12}
-              value={strokeWidth}
-              onChange={(e) => updateToolSettings('shapes', { strokeWidth: Number(e.target.value) })}
-              className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
-                [&::-webkit-slider-thumb]:appearance-none
-                [&::-webkit-slider-thumb]:w-4
-                [&::-webkit-slider-thumb]:h-4
-                [&::-webkit-slider-thumb]:rounded-full
-                [&::-webkit-slider-thumb]:bg-[hsl(var(--accent-green))]
-                [&::-webkit-slider-thumb]:cursor-pointer"
+
+            {/* Stroke Color */}
+            <ColorPickerInput 
+              value={strokeColor} 
+              onChange={(color) => updateToolSettings('shapes', { strokeColor: color })}
+              label="لون الحواف"
             />
           </div>
         </div>
@@ -260,11 +274,23 @@ const ShapesPanel: React.FC = () => {
             <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block text-right">
               اللون
             </label>
-            <InlineColorPicker
-              value={selectedStickyColor}
-              onChange={setSelectedStickyColor}
-              presets={stickyColors}
-            />
+            <div className="flex flex-wrap gap-2">
+              {stickyColors.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setSelectedStickyColor(color)}
+                  className={`w-7 h-7 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center`}
+                  style={{
+                    backgroundColor: color,
+                    border: "2px solid #F0F0F0",
+                  }}
+                >
+                  {selectedStickyColor === color && (
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#F0F0F0" }} />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Sticky Text Input */}
