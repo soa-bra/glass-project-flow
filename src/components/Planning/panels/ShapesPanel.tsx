@@ -284,6 +284,52 @@ const ShapesPanel: React.FC = () => {
             label="اللون"
           />
 
+          {/* Stroke Width Control */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[12px] text-[hsl(var(--ink-60))]">
+                سمك السهم
+              </label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={strokeWidth}
+                  onChange={(e) => updateToolSettings('shapes', { strokeWidth: Math.max(1, Math.min(10, Number(e.target.value))) })}
+                  className="w-12 px-2 py-1 text-[12px] border border-[hsl(var(--border))] rounded-[8px] bg-white text-[hsl(var(--ink))] text-center focus:outline-none focus:border-[hsl(var(--accent-blue))] transition-colors"
+                />
+                <span className="text-[11px] text-[hsl(var(--ink-60))]">px</span>
+              </div>
+            </div>
+            <div className="relative h-6 flex items-center">
+              <input
+                type="range"
+                min={1}
+                max={10}
+                value={strokeWidth}
+                onChange={(e) => updateToolSettings('shapes', { strokeWidth: Number(e.target.value) })}
+                className="w-full h-2 bg-[#E3E8F0] rounded-full appearance-none cursor-pointer
+                  [&::-webkit-slider-thumb]:appearance-none
+                  [&::-webkit-slider-thumb]:w-4
+                  [&::-webkit-slider-thumb]:h-4
+                  [&::-webkit-slider-thumb]:rounded-full
+                  [&::-webkit-slider-thumb]:bg-white
+                  [&::-webkit-slider-thumb]:border
+                  [&::-webkit-slider-thumb]:border-[#D1D5DB]
+                  [&::-webkit-slider-thumb]:cursor-pointer
+                  [&::-webkit-slider-thumb]:shadow-md
+                  [&::-moz-range-thumb]:w-4
+                  [&::-moz-range-thumb]:h-4
+                  [&::-moz-range-thumb]:rounded-full
+                  [&::-moz-range-thumb]:bg-white
+                  [&::-moz-range-thumb]:border
+                  [&::-moz-range-thumb]:border-[#D1D5DB]
+                  [&::-moz-range-thumb]:cursor-pointer"
+              />
+            </div>
+          </div>
+
           {/* Arrows Grid */}
           <div>
             <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
