@@ -124,27 +124,41 @@ export const ColorPicker = ({
     }
   }, []);
 
-  // Update color when controlled value changes
+  // Track if this is initial mount or controlled update to avoid infinite loops
+  const isControlledUpdate = useRef(false);
+  const prevValueRef = useRef(value);
+
+  // Update color when controlled value changes from outside
   useEffect(() => {
-    if (value) {
+    if (value && value !== prevValueRef.current) {
+      isControlledUpdate.current = true;
       const values = getColorValues(value);
       setHue(values.hue);
       setSaturation(values.saturation);
       setLightness(values.lightness);
       setAlpha(values.alpha);
+      prevValueRef.current = value;
     }
   }, [value]);
 
-  // Notify parent of changes
+  // Notify parent of changes (only when user interacts, not on controlled updates)
   useEffect(() => {
+    if (isControlledUpdate.current) {
+      isControlledUpdate.current = false;
+      return;
+    }
+    
     if (onChange) {
       try {
         const color = Color.hsl(hue, saturation, lightness).alpha(alpha / 100);
         const hex = alpha < 100 
           ? color.hexa() 
           : color.hex();
-        onChange(hex);
-        addRecentColor(hex);
+        
+        if (hex !== prevValueRef.current) {
+          prevValueRef.current = hex;
+          onChange(hex);
+        }
       } catch {
         // Ignore invalid colors
       }
