@@ -250,7 +250,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   toolSettings: {
     shapes: {
       fillColor: '#f28e2a',
-      strokeColor: '#000000',
+      strokeColor: 'transparent',
       strokeWidth: 1,
       opacity: 1,
       shapeType: 'rectangle'
