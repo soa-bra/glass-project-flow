@@ -1,5 +1,6 @@
 import React from 'react';
 import type { CanvasElement } from '@/types/canvas';
+import { ShapeRenderer } from './ShapeRenderer';
 
 interface DrawingPreviewProps {
   element: CanvasElement | null;
@@ -16,17 +17,18 @@ const DrawingPreview: React.FC<DrawingPreviewProps> = ({ element }) => {
     switch (element.type) {
       case 'shape':
         return (
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              backgroundColor: element.style?.backgroundColor || '#f28e2a',
-              border: `${(element as any).strokeWidth || 1}px solid ${(element as any).strokeColor || '#000'}`,
-              borderRadius: element.style?.borderRadius || 8,
-              opacity: 0.7,
-              pointerEvents: 'none'
-            }}
-          />
+          <div style={{ opacity: 0.7, pointerEvents: 'none' }}>
+            <ShapeRenderer
+              shapeType={(element as any).shapeType || 'rectangle'}
+              width={element.size.width}
+              height={element.size.height}
+              fillColor={element.style?.backgroundColor || '#3DBE8B'}
+              strokeColor={(element as any).strokeColor || '#000000'}
+              strokeWidth={(element as any).strokeWidth || 2}
+              opacity={element.style?.opacity || 1}
+              borderRadius={element.style?.borderRadius || 0}
+            />
+          </div>
         );
 
       case 'text':

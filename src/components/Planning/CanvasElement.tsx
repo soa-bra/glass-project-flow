@@ -4,6 +4,7 @@ import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
 import { ResizeHandle } from './ResizeHandle';
 import { TextEditor } from './TextEditor';
+import { ShapeRenderer } from './ShapeRenderer';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 
 interface CanvasElementProps {
@@ -260,7 +261,16 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       )}
       
       {element.type === 'shape' && (
-        <div className="w-full h-full bg-[hsl(var(--panel))] rounded-lg" />
+        <ShapeRenderer
+          shapeType={element.shapeType || element.data?.shapeType || 'rectangle'}
+          width={element.size.width}
+          height={element.size.height}
+          fillColor={element.style?.backgroundColor || element.data?.fillColor || '#3DBE8B'}
+          strokeColor={element.strokeColor || element.data?.strokeColor || '#000000'}
+          strokeWidth={element.strokeWidth || element.data?.strokeWidth || 2}
+          opacity={element.style?.opacity || 1}
+          borderRadius={element.style?.borderRadius || 0}
+        />
       )}
       
       {element.type === 'frame' && (
