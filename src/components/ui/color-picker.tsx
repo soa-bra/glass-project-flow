@@ -141,14 +141,14 @@ export function ColorPickerInput({ value = '#000000', onChange, className }: Col
                 </div>
 
                 {/* Input Fields */}
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <ColorPicker.ChannelInput
                     channel="hex"
-                    className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="flex-1 px-5 py-3 text-base text-center border border-border rounded-full bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   />
                   <ColorPicker.ChannelInput
                     channel="alpha"
-                    className="w-16 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-24 px-5 py-3 text-base text-center border border-border rounded-full bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   />
                 </div>
 
