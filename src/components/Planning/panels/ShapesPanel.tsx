@@ -161,39 +161,36 @@ const ShapesPanel: React.FC = () => {
 
             {/* Stroke Width */}
             <div>
-              <label className="text-[12px] text-[hsl(var(--ink-60))] mb-2 block">
-                سمك الحواف
-              </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  min={0}
-                  max={50}
-                  value={strokeWidth}
-                  onChange={(e) => updateToolSettings('shapes', { strokeWidth: Math.max(0, Number(e.target.value)) })}
-                  className="w-full px-3 py-2 text-[13px] border border-[hsl(var(--border))] rounded-[10px] bg-white text-[hsl(var(--ink))] focus:outline-none focus:border-[hsl(var(--accent-blue))] transition-colors text-right pr-8"
-                  dir="rtl"
-                />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[12px] text-[hsl(var(--ink-60))]">px</span>
-                <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                  <select
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[12px] text-[hsl(var(--ink-60))]">
+                  سمك الحواف
+                </label>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="number"
+                    min={0}
+                    max={50}
                     value={strokeWidth}
-                    onChange={(e) => updateToolSettings('shapes', { strokeWidth: Number(e.target.value) })}
-                    className="appearance-none bg-transparent text-[hsl(var(--ink-60))] cursor-pointer focus:outline-none text-[12px] pr-1"
-                  >
-                    <option value={0}>0</option>
-                    <option value={1}>1</option>
-                    <option value={2}>2</option>
-                    <option value={3}>3</option>
-                    <option value={4}>4</option>
-                    <option value={5}>5</option>
-                    <option value={6}>6</option>
-                    <option value={8}>8</option>
-                    <option value={10}>10</option>
-                    <option value={12}>12</option>
-                  </select>
+                    onChange={(e) => updateToolSettings('shapes', { strokeWidth: Math.max(0, Number(e.target.value)) })}
+                    className="w-12 px-2 py-1 text-[12px] border border-[hsl(var(--border))] rounded-[8px] bg-white text-[hsl(var(--ink))] text-center focus:outline-none focus:border-[hsl(var(--accent-blue))] transition-colors"
+                  />
+                  <span className="text-[11px] text-[hsl(var(--ink-60))]">px</span>
                 </div>
               </div>
+              <input
+                type="range"
+                min={0}
+                max={20}
+                value={strokeWidth}
+                onChange={(e) => updateToolSettings('shapes', { strokeWidth: Number(e.target.value) })}
+                className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
+                  [&::-webkit-slider-thumb]:appearance-none
+                  [&::-webkit-slider-thumb]:w-4
+                  [&::-webkit-slider-thumb]:h-4
+                  [&::-webkit-slider-thumb]:rounded-full
+                  [&::-webkit-slider-thumb]:bg-[hsl(var(--accent-green))]
+                  [&::-webkit-slider-thumb]:cursor-pointer"
+              />
             </div>
 
             {/* Stroke Color */}
