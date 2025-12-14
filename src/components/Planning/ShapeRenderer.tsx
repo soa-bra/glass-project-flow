@@ -1,5 +1,6 @@
 import React from 'react';
 import { icons } from 'lucide-react';
+import type { ArrowData, ArrowPoint } from '@/types/arrow-connections';
 
 interface ShapeRendererProps {
   shapeType: string;
@@ -12,7 +13,35 @@ interface ShapeRendererProps {
   borderRadius?: number;
   iconName?: string;
   stickyText?: string;
+  arrowData?: ArrowData; // بيانات السهم المتقدمة
 }
+
+/**
+ * رسم رأس السهم بشكل V
+ */
+const renderArrowHead = (
+  tipX: number, 
+  tipY: number, 
+  angle: number, 
+  headSize: number = 12
+): string => {
+  const angle1 = angle + Math.PI * 0.8;
+  const angle2 = angle - Math.PI * 0.8;
+  
+  const x1 = tipX + headSize * Math.cos(angle1);
+  const y1 = tipY + headSize * Math.sin(angle1);
+  const x2 = tipX + headSize * Math.cos(angle2);
+  const y2 = tipY + headSize * Math.sin(angle2);
+  
+  return `${x1},${y1} ${tipX},${tipY} ${x2},${y2}`;
+};
+
+/**
+ * حساب زاوية الخط بين نقطتين
+ */
+const calculateAngle = (from: ArrowPoint, to: ArrowPoint): number => {
+  return Math.atan2(to.y - from.y, to.x - from.x);
+};
 
 /**
  * مكون لرسم الأشكال الهندسية المختلفة باستخدام SVG
@@ -27,7 +56,8 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
   opacity = 1,
   borderRadius = 0,
   iconName,
-  stickyText
+  stickyText,
+  arrowData
 }) => {
   // ضمان أحجام موجبة
   const w = Math.max(width, 1);
@@ -37,6 +67,41 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
   // لون السهم: استخدم fillColor إذا كان strokeColor شفاف
   const arrowStroke = strokeColor && strokeColor !== 'transparent' ? strokeColor : fillColor;
 
+  /**
+   * رسم سهم متعرج (elbow arrow)
+   */
+  const renderElbowArrow = (data: ArrowData) => {
+    const start = data.startPoint;
+    const middle = data.middlePoint || { x: w / 2, y: h / 2 };
+    const end = data.endPoint;
+    const headSize = 12;
+
+    // نقاط المسار المتعرج
+    const midPoint1 = { x: middle.x, y: start.y };
+    const midPoint2 = { x: middle.x, y: end.y };
+
+    // حساب زاوية رأس السهم
+    const endAngle = calculateAngle(midPoint2, end);
+    const startAngle = calculateAngle(midPoint1, start);
+
+    // مسار السهم المتعرج
+    const pathD = `M ${start.x} ${start.y} L ${midPoint1.x} ${midPoint1.y} L ${midPoint2.x} ${midPoint2.y} L ${end.x} ${end.y}`;
+
+    return (
+      <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+        <path d={pathD} />
+        {/* رأس السهم في النهاية */}
+        {(data.headDirection === 'end' || data.headDirection === 'both') && (
+          <polyline points={renderArrowHead(end.x, end.y, endAngle, headSize)} />
+        )}
+        {/* رأس السهم في البداية */}
+        {(data.headDirection === 'start' || data.headDirection === 'both') && (
+          <polyline points={renderArrowHead(start.x, start.y, startAngle + Math.PI, headSize)} />
+        )}
+      </g>
+    );
+  };
+
   const renderShape = () => {
     const commonProps = {
       fill: fillColor,
@@ -44,6 +109,11 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
       strokeWidth: strokeWidth,
       opacity: opacity
     };
+
+    // إذا كان هناك بيانات سهم متقدمة وكان السهم متعرجاً
+    if (arrowData && arrowData.arrowType === 'elbow' && arrowData.middlePoint) {
+      return renderElbowArrow(arrowData);
+    }
 
     switch (shapeType) {
       case 'rectangle':

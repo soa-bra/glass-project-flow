@@ -3,6 +3,25 @@ import { useCanvasStore, type ToolId, type ShapeType } from '@/stores/canvasStor
 import { screenToCanvasCoordinates, snapToGrid as applySnapToGrid } from '@/utils/canvasCoordinates';
 import { recognizeShape, pointsToSVGPath, simplifyPath, type Point } from '@/utils/shapeRecognition';
 import { toast } from 'sonner';
+import type { ArrowData } from '@/types/arrow-connections';
+
+// التحقق إذا كان الشكل سهماً
+const isArrowShape = (shapeType: string): boolean => {
+  return shapeType.startsWith('arrow_');
+};
+
+// إنشاء بيانات السهم الافتراضية
+const createArrowData = (width: number, height: number, shapeType: string): ArrowData => {
+  return {
+    startPoint: { x: 0, y: height / 2 },
+    middlePoint: null,
+    endPoint: { x: width, y: height / 2 },
+    startConnection: null,
+    endConnection: null,
+    arrowType: 'straight',
+    headDirection: 'end'
+  };
+};
 
 export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>) => {
   const {
@@ -322,7 +341,7 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     setIsDrawing(true);
     setDrawStartPoint(point);
 
-    const initialElement = {
+    const initialElement: any = {
       id: 'temp',
       type: 'shape' as const,
       position: point,
@@ -336,10 +355,16 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         opacity: opacity
       },
       strokeColor: strokeColor,
-      strokeWidth: strokeWidth
+      strokeWidth: strokeWidth,
+      data: {}
     };
 
-    setTempElement(initialElement as any);
+    // إذا كان الشكل سهماً، أضف بيانات السهم
+    if (isArrowShape(shapeType)) {
+      initialElement.data.arrowData = createArrowData(0, 0, shapeType);
+    }
+
+    setTempElement(initialElement);
   };
 
   /**
@@ -353,10 +378,17 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     const x = Math.min(currentPoint.x, drawStartPoint.x);
     const y = Math.min(currentPoint.y, drawStartPoint.y);
 
+    // تحديث بيانات السهم إذا كان الشكل سهماً
+    let updatedData = { ...tempElement.data };
+    if (tempElement.shapeType && isArrowShape(tempElement.shapeType)) {
+      updatedData.arrowData = createArrowData(width, height, tempElement.shapeType);
+    }
+
     setTempElement({
       ...tempElement,
       position: { x, y },
-      size: { width, height }
+      size: { width, height },
+      data: updatedData
     });
   };
 
