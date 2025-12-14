@@ -1,6 +1,41 @@
 import { create } from 'zustand';
 import { nanoid } from 'nanoid';
 import type { CanvasElement, LayerInfo, CanvasSettings } from '@/types/canvas';
+import type { ArrowConnection } from '@/types/arrow-connections';
+
+/**
+ * حساب موقع نقطة الارتكاز على عنصر
+ */
+const getAnchorPositionForElement = (
+  element: { position: { x: number; y: number }; size: { width: number; height: number } },
+  anchor: ArrowConnection['anchorPoint']
+): { x: number; y: number } => {
+  const { x, y } = element.position;
+  const { width, height } = element.size;
+  
+  switch (anchor) {
+    case 'center':
+      return { x: x + width / 2, y: y + height / 2 };
+    case 'top':
+      return { x: x + width / 2, y };
+    case 'bottom':
+      return { x: x + width / 2, y: y + height };
+    case 'left':
+      return { x, y: y + height / 2 };
+    case 'right':
+      return { x: x + width, y: y + height / 2 };
+    case 'top-left':
+      return { x, y };
+    case 'top-right':
+      return { x: x + width, y };
+    case 'bottom-left':
+      return { x, y: y + height };
+    case 'bottom-right':
+      return { x: x + width, y: y + height };
+    default:
+      return { x: x + width / 2, y: y + height / 2 };
+  }
+};
 
 export type ToolId =
   | "selection_tool"
@@ -361,9 +396,12 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   updateElement: (elementId, updates) => {
     set(state => {
       // تحديث العنصر الأصلي
-      const updatedElements = state.elements.map(el =>
+      let updatedElements = state.elements.map(el =>
         el.id === elementId ? { ...el, ...updates } : el
       );
+      
+      // الحصول على العنصر المحدث
+      const updatedElement = updatedElements.find(el => el.id === elementId);
       
       // تحديث النصوص المرتبطة إذا تغير الموضع
       if (updates.position) {
@@ -383,6 +421,55 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
                 position: { x: newX, y: newY }
               };
             }
+          }
+        });
+        
+        // تحديث الأسهم المتصلة بهذا العنصر
+        const connectedArrows = updatedElements.filter(el => {
+          if (el.type !== 'shape') return false;
+          const arrowData = el.data?.arrowData;
+          if (!arrowData) return false;
+          return (
+            arrowData.startConnection?.elementId === elementId ||
+            arrowData.endConnection?.elementId === elementId
+          );
+        });
+        
+        connectedArrows.forEach(arrow => {
+          if (!updatedElement) return;
+          
+          const arrowData = { ...arrow.data.arrowData };
+          
+          // تحديث نقطة البداية إذا كانت متصلة
+          if (arrowData.startConnection?.elementId === elementId) {
+            const anchorPos = getAnchorPositionForElement(
+              updatedElement,
+              arrowData.startConnection.anchorPoint
+            );
+            arrowData.startPoint = {
+              x: anchorPos.x - arrow.position.x,
+              y: anchorPos.y - arrow.position.y
+            };
+          }
+          
+          // تحديث نقطة النهاية إذا كانت متصلة
+          if (arrowData.endConnection?.elementId === elementId) {
+            const anchorPos = getAnchorPositionForElement(
+              updatedElement,
+              arrowData.endConnection.anchorPoint
+            );
+            arrowData.endPoint = {
+              x: anchorPos.x - arrow.position.x,
+              y: anchorPos.y - arrow.position.y
+            };
+          }
+          
+          const idx = updatedElements.findIndex(e => e.id === arrow.id);
+          if (idx !== -1) {
+            updatedElements[idx] = {
+              ...updatedElements[idx],
+              data: { ...updatedElements[idx].data, arrowData }
+            };
           }
         });
       }

@@ -5,7 +5,14 @@ import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
 import { ResizeHandle } from './ResizeHandle';
 import { TextEditor } from './TextEditor';
 import { ShapeRenderer } from './ShapeRenderer';
+import { ArrowControlPoints } from './ArrowControlPoints';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
+
+// التحقق إذا كان العنصر سهماً
+const isArrowShape = (shapeType: string | undefined): boolean => {
+  if (!shapeType) return false;
+  return shapeType.startsWith('arrow_');
+};
 
 interface CanvasElementProps {
   element: CanvasElementType;
@@ -274,6 +281,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
           borderRadius={element.style?.borderRadius || 0}
           iconName={element.iconName || element.data?.iconName}
           stickyText={element.stickyText || element.data?.stickyText}
+          arrowData={element.data?.arrowData}
         />
       )}
       
@@ -377,14 +385,25 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       {/* Selection Handles (shown only when selected) */}
       {isSelected && !isLocked && (
         <>
-          <ResizeHandle position="nw" elementId={element.id} />
-          <ResizeHandle position="ne" elementId={element.id} />
-          <ResizeHandle position="sw" elementId={element.id} />
-          <ResizeHandle position="se" elementId={element.id} />
-          <ResizeHandle position="n" elementId={element.id} />
-          <ResizeHandle position="s" elementId={element.id} />
-          <ResizeHandle position="w" elementId={element.id} />
-          <ResizeHandle position="e" elementId={element.id} />
+          {/* نقاط تحكم خاصة للأسهم */}
+          {element.type === 'shape' && isArrowShape(element.shapeType || element.data?.shapeType) ? (
+            <ArrowControlPoints 
+              element={element} 
+              viewport={viewport}
+            />
+          ) : (
+            /* مقابض تغيير الحجم العادية للعناصر الأخرى */
+            <>
+              <ResizeHandle position="nw" elementId={element.id} />
+              <ResizeHandle position="ne" elementId={element.id} />
+              <ResizeHandle position="sw" elementId={element.id} />
+              <ResizeHandle position="se" elementId={element.id} />
+              <ResizeHandle position="n" elementId={element.id} />
+              <ResizeHandle position="s" elementId={element.id} />
+              <ResizeHandle position="w" elementId={element.id} />
+              <ResizeHandle position="e" elementId={element.id} />
+            </>
+          )}
         </>
       )}
     </div>
