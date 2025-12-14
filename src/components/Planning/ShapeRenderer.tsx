@@ -1,4 +1,5 @@
 import React from 'react';
+import { icons } from 'lucide-react';
 
 interface ShapeRendererProps {
   shapeType: string;
@@ -9,6 +10,8 @@ interface ShapeRendererProps {
   strokeWidth: number;
   opacity?: number;
   borderRadius?: number;
+  iconName?: string;
+  stickyText?: string;
 }
 
 /**
@@ -22,7 +25,9 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
   strokeColor,
   strokeWidth,
   opacity = 1,
-  borderRadius = 0
+  borderRadius = 0,
+  iconName,
+  stickyText
 }) => {
   // ضمان أحجام موجبة
   const w = Math.max(width, 1);
@@ -102,6 +107,79 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
       case 'arrow_down':
         const arrowDownPath = `M ${w * 0.3} ${padding} L ${w * 0.3} ${h * 0.6} L ${padding} ${h * 0.6} L ${w / 2} ${h - padding} L ${w - padding} ${h * 0.6} L ${w * 0.7} ${h * 0.6} L ${w * 0.7} ${padding} Z`;
         return <path d={arrowDownPath} {...commonProps} />;
+
+      case 'arrow_up_right':
+        const arrowUpRightPath = `M ${padding} ${h - padding} L ${w - padding} ${padding} M ${w * 0.5} ${padding} L ${w - padding} ${padding} L ${w - padding} ${h * 0.5}`;
+        return <path d={arrowUpRightPath} {...commonProps} fill="none" />;
+
+      case 'arrow_down_right':
+        const arrowDownRightPath = `M ${padding} ${padding} L ${w - padding} ${h - padding} M ${w * 0.5} ${h - padding} L ${w - padding} ${h - padding} L ${w - padding} ${h * 0.5}`;
+        return <path d={arrowDownRightPath} {...commonProps} fill="none" />;
+
+      case 'arrow_up_left':
+        const arrowUpLeftPath = `M ${w - padding} ${h - padding} L ${padding} ${padding} M ${w * 0.5} ${padding} L ${padding} ${padding} L ${padding} ${h * 0.5}`;
+        return <path d={arrowUpLeftPath} {...commonProps} fill="none" />;
+
+      case 'arrow_down_left':
+        const arrowDownLeftPath = `M ${w - padding} ${padding} L ${padding} ${h - padding} M ${w * 0.5} ${h - padding} L ${padding} ${h - padding} L ${padding} ${h * 0.5}`;
+        return <path d={arrowDownLeftPath} {...commonProps} fill="none" />;
+
+      case 'icon':
+        // رسم الأيقونات باستخدام Lucide
+        const IconComponent = iconName ? icons[iconName as keyof typeof icons] : null;
+        if (!IconComponent) {
+          return <rect x={padding} y={padding} width={w - strokeWidth} height={h - strokeWidth} rx={8} {...commonProps} />;
+        }
+        return (
+          <foreignObject x={0} y={0} width={w} height={h}>
+            <div style={{ 
+              width: '100%', 
+              height: '100%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center'
+            }}>
+              <IconComponent 
+                size={Math.min(w, h) * 0.7} 
+                color={fillColor === 'transparent' ? strokeColor : fillColor} 
+                strokeWidth={strokeWidth || 2}
+              />
+            </div>
+          </foreignObject>
+        );
+
+      case 'sticky':
+        // رسم ستيكي نوت
+        return (
+          <g>
+            <rect
+              x={padding}
+              y={padding}
+              width={w - strokeWidth}
+              height={h - strokeWidth}
+              rx={8}
+              fill={fillColor || '#F6C445'}
+              stroke={strokeColor}
+              strokeWidth={strokeWidth}
+              opacity={opacity}
+            />
+            <foreignObject x={12} y={12} width={w - 24} height={h - 24}>
+              <div style={{ 
+                fontSize: Math.max(12, Math.min(w, h) * 0.12), 
+                color: '#0B0F12',
+                textAlign: 'center',
+                wordBreak: 'break-word',
+                fontFamily: 'IBM Plex Sans Arabic, sans-serif',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%'
+              }}>
+                {stickyText || 'ملاحظة'}
+              </div>
+            </foreignObject>
+          </g>
+        );
 
       default:
         // الشكل الافتراضي: مستطيل
