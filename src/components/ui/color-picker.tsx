@@ -131,7 +131,7 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
 
                   <div className="flex-1 space-y-3 pr-[14px] pb-0 mb-0 mt-0 pl-[6px] pt-0">
                     {/* Hue Slider */}
-                    <ColorPicker.ChannelSlider channel="hue" className="relative w-full h-5 flex items-center">
+                    <ColorPicker.ChannelSlider channel="hue" className="relative w-full h-2 flex items-center">
                       <ColorPicker.ChannelSliderTrack
                         className="w-full h-2 rounded-full"
                         style={{
