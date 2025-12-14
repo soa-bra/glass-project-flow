@@ -139,14 +139,14 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
                             "linear-gradient(to right, #00FF00, #00FFFF, #0066FF, #0000FF, #6600FF, #FF00FF, #FF0066, #FF0000)",
                         }}
                       />
-                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-4 h-5 bg-current rounded-full -translate-y-1/2 -translate-x-1/2 border-[3px] border-white shadow-[0_2px_8px_rgba(0,0,0,0.3)]" />
+                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-2 h-5 bg-current rounded-full -translate-y-1/2 -translate-x-1/2 border-[3px] border-white shadow-[0_2px_8px_rgba(0,0,0,0.3)]" />
                     </ColorPicker.ChannelSlider>
 
                     {/* Alpha Slider */}
-                    <ColorPicker.ChannelSlider channel="alpha" className="relative w-full h-5 flex items-center">
+                    <ColorPicker.ChannelSlider channel="alpha" className="relative w-full h-2 flex items-center">
                       <ColorPicker.TransparencyGrid className="w-full h-2 rounded-full [--size:8px]" />
                       <ColorPicker.ChannelSliderTrack className="w-full h-2 rounded-full" />
-                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-4 h-5 bg-current rounded-full -translate-y-1/2 -translate-x-1/2 border-[3px] border-white shadow-[0_2px_8px_rgba(0,0,0,0.3)]" />
+                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-2 h-5 bg-current rounded-full -translate-y-1/2 -translate-x-1/2 border-[3px] border-white shadow-[0_2px_8px_rgba(0,0,0,0.3)]" />
                     </ColorPicker.ChannelSlider>
                   </div>
                 </div>
