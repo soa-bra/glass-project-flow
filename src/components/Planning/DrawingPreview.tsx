@@ -27,6 +27,8 @@ const DrawingPreview: React.FC<DrawingPreviewProps> = ({ element }) => {
               strokeWidth={(element as any).strokeWidth || 2}
               opacity={element.style?.opacity || 1}
               borderRadius={element.style?.borderRadius || 0}
+              iconName={(element as any).iconName}
+              stickyText={(element as any).stickyText}
             />
           </div>
         );

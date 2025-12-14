@@ -315,6 +315,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
    * أداة الأشكال: بدء رسم شكل
    */
   const handleShapesToolStart = (point: { x: number; y: number }) => {
+    // ✅ قراءة أحدث القيم من الـ store مباشرة لضمان تحديث الخصائص فوراً
+    const { toolSettings: currentSettings } = useCanvasStore.getState();
+    const { shapeType, fillColor, strokeColor, strokeWidth, opacity, iconName, stickyText } = currentSettings.shapes;
+    
     setIsDrawing(true);
     setDrawStartPoint(point);
 
@@ -323,14 +327,16 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       type: 'shape' as const,
       position: point,
       size: { width: 0, height: 0 },
-      shapeType: toolSettings.shapes.shapeType,
+      shapeType: shapeType,
+      iconName: iconName,
+      stickyText: stickyText,
       style: {
-        backgroundColor: toolSettings.shapes.fillColor,
-        borderRadius: toolSettings.shapes.shapeType === 'circle' ? 9999 : 8,
-        opacity: toolSettings.shapes.opacity
+        backgroundColor: fillColor,
+        borderRadius: shapeType === 'circle' ? 9999 : 8,
+        opacity: opacity
       },
-      strokeColor: toolSettings.shapes.strokeColor,
-      strokeWidth: toolSettings.shapes.strokeWidth
+      strokeColor: strokeColor,
+      strokeWidth: strokeWidth
     };
 
     setTempElement(initialElement as any);

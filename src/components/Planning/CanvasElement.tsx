@@ -272,6 +272,8 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
           strokeWidth={element.strokeWidth || element.data?.strokeWidth || 2}
           opacity={element.style?.opacity || 1}
           borderRadius={element.style?.borderRadius || 0}
+          iconName={element.iconName || element.data?.iconName}
+          stickyText={element.stickyText || element.data?.stickyText}
         />
       )}
       
