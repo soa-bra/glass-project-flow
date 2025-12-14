@@ -173,9 +173,10 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
                         type="button"
                         title={label}
                         onClick={() => handlePresetClick(color)}
-                        className="w-7 h-7 rounded-full cursor-pointer hover:scale-110 transition-transform relative overflow-hidden border border-border/50 flex items-center justify-center"
+                        className="w-7 h-7 rounded-full cursor-pointer hover:scale-110 transition-transform relative overflow-hidden flex items-center justify-center"
                         style={{
                           backgroundColor: color === "transparent" ? undefined : color,
+                          border: "2px solid #F0F0F0",
                         }}
                       >
                         {color === "transparent" && (
@@ -190,7 +191,7 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
                           />
                         )}
                         {isSelected && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-white border border-border/30 z-10" />
+                          <div className="w-2 h-2 rounded-full z-10" style={{ backgroundColor: "#F0F0F0" }} />
                         )}
                       </button>
                     );
@@ -207,13 +208,14 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
                         type="button"
                         title={label}
                         onClick={() => handlePresetClick(color)}
-                        className="w-7 h-7 rounded-full cursor-pointer hover:scale-110 transition-transform border border-border/50 flex items-center justify-center"
+                        className="w-7 h-7 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
                         style={{
                           backgroundColor: color,
+                          border: "2px solid #F0F0F0",
                         }}
                       >
                         {isSelected && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-white border border-border/30" />
+                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#F0F0F0" }} />
                         )}
                       </button>
                     );
@@ -230,13 +232,14 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
                           key={`${color}-${index}`}
                           type="button"
                           onClick={() => handlePresetClick(color)}
-                          className="w-7 h-7 rounded-full cursor-pointer hover:scale-110 transition-transform border border-border/50 flex items-center justify-center"
+                          className="w-7 h-7 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
                           style={{
                             backgroundColor: color,
+                            border: "2px solid #F0F0F0",
                           }}
                         >
                           {isSelected && (
-                            <div className="w-2.5 h-2.5 rounded-full bg-white border border-border/30" />
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#F0F0F0" }} />
                           )}
                         </button>
                       );
