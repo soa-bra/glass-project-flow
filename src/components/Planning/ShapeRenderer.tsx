@@ -68,24 +68,44 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
   const arrowStroke = strokeColor && strokeColor !== 'transparent' ? strokeColor : fillColor;
 
   /**
-   * رسم سهم متعرج (elbow arrow)
+   * رسم سهم متعرج (elbow/orthogonal arrow)
    */
   const renderElbowArrow = (data: ArrowData) => {
-    const start = data.startPoint;
-    const middle = data.middlePoint || { x: w / 2, y: h / 2 };
-    const end = data.endPoint;
     const headSize = 12;
-
-    // نقاط المسار المتعرج
-    const midPoint1 = { x: middle.x, y: start.y };
-    const midPoint2 = { x: middle.x, y: end.y };
-
-    // حساب زاوية رأس السهم
-    const endAngle = calculateAngle(midPoint2, end);
-    const startAngle = calculateAngle(midPoint1, start);
-
-    // مسار السهم المتعرج
-    const pathD = `M ${start.x} ${start.y} L ${midPoint1.x} ${midPoint1.y} L ${midPoint2.x} ${midPoint2.y} L ${end.x} ${end.y}`;
+    
+    // استخدام مصفوفة النقاط إذا كانت موجودة، وإلا استخدم النقاط القديمة
+    let pathPoints: ArrowPoint[];
+    
+    if (data.points && data.points.length >= 2) {
+      pathPoints = data.points;
+    } else {
+      const start = data.startPoint;
+      const middle = data.middlePoint || { x: w / 2, y: h / 2 };
+      const end = data.endPoint;
+      
+      // نقاط المسار المتعرج
+      pathPoints = [
+        start,
+        { x: middle.x, y: start.y },
+        { x: middle.x, y: end.y },
+        end
+      ];
+    }
+    
+    // بناء مسار SVG
+    let pathD = `M ${pathPoints[0].x} ${pathPoints[0].y}`;
+    for (let i = 1; i < pathPoints.length; i++) {
+      pathD += ` L ${pathPoints[i].x} ${pathPoints[i].y}`;
+    }
+    
+    // حساب زوايا رؤوس الأسهم
+    const start = pathPoints[0];
+    const end = pathPoints[pathPoints.length - 1];
+    const beforeEnd = pathPoints[pathPoints.length - 2] || start;
+    const afterStart = pathPoints[1] || end;
+    
+    const endAngle = calculateAngle(beforeEnd, end);
+    const startAngle = calculateAngle(afterStart, start);
 
     return (
       <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -111,7 +131,8 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
     };
 
     // إذا كان هناك بيانات سهم متقدمة وكان السهم متعرجاً
-    if (arrowData && arrowData.arrowType === 'elbow' && arrowData.middlePoint) {
+    if (arrowData && (arrowData.arrowType === 'elbow' || arrowData.arrowType === 'orthogonal') && 
+        (arrowData.middlePoint || (arrowData.points && arrowData.points.length > 2))) {
       return renderElbowArrow(arrowData);
     }
 

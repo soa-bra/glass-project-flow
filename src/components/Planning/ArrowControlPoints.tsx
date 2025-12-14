@@ -1,22 +1,36 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { 
   ArrowPoint, 
   ArrowData, 
   ElementAnchor,
-  ArrowControlDragState 
+  ArrowBinding
 } from '@/types/arrow-connections';
-import { findNearestAnchor, getAnchorPosition } from '@/types/arrow-connections';
+import { 
+  findNearestAnchor, 
+  getArrowHandles, 
+  updateArrowPoint,
+  createDefaultArrowData,
+  ARROW_CONSTANTS
+} from '@/types/arrow-connections';
 
 interface ArrowControlPointsProps {
   element: CanvasElement;
   viewport: { zoom: number; pan: { x: number; y: number } };
 }
 
+interface DragState {
+  isDragging: boolean;
+  handleIndex: number | null;      // فهرس النقطة (0 = start, آخر = end, وسط = middle)
+  startPosition: ArrowPoint | null;
+  initialMousePos: { x: number; y: number } | null;
+  nearestAnchor: ElementAnchor | null;
+}
+
 /**
- * مكون نقاط التحكم للأسهم
- * يعرض 3 نقاط: بداية، وسط، نهاية
+ * مكون نقاط التحكم للأسهم المتقدم
+ * يدعم: المسارات المتعرجة (Orthogonal) + الالتصاق بالعناصر
  */
 export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
   element,
@@ -24,206 +38,178 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
 }) => {
   const { elements, updateElement } = useCanvasStore();
   
-  const [dragState, setDragState] = useState<ArrowControlDragState & { initialMousePos?: { x: number; y: number } | null }>({
+  const [dragState, setDragState] = useState<DragState>({
     isDragging: false,
-    controlPoint: null,
+    handleIndex: null,
     startPosition: null,
-    nearestAnchor: null,
-    initialMousePos: null
+    initialMousePos: null,
+    nearestAnchor: null
   });
 
-  // الحصول على بيانات السهم أو إنشاء بيانات افتراضية بناءً على نوع السهم
-  const getDefaultArrowData = (): ArrowData => {
+  // الحصول على بيانات السهم أو إنشاء بيانات افتراضية
+  const arrowData = useMemo((): ArrowData => {
+    const stored = element.data?.arrowData;
+    
+    // التحقق من صلاحية البيانات
+    if (stored && stored.points && stored.points.length >= 2) {
+      return stored;
+    }
+    
+    // إنشاء بيانات افتراضية بناءً على نوع السهم
     const { width, height } = element.size;
     const shapeType = element.shapeType || element.data?.shapeType || 'arrow_right';
     
-    let startPoint: { x: number; y: number };
-    let endPoint: { x: number; y: number };
-    let headDirection: 'start' | 'end' | 'both' = 'end';
-
+    let startX = 0, startY = height / 2, endX = width, endY = height / 2;
+    let headDirection: ArrowData['headDirection'] = 'end';
+    
     switch (shapeType) {
-      case 'arrow_right':
-        startPoint = { x: 0, y: height / 2 };
-        endPoint = { x: width, y: height / 2 };
-        break;
       case 'arrow_left':
-        startPoint = { x: width, y: height / 2 };
-        endPoint = { x: 0, y: height / 2 };
+        startX = width; endX = 0;
         break;
       case 'arrow_up':
-        startPoint = { x: width / 2, y: height };
-        endPoint = { x: width / 2, y: 0 };
+        startX = width / 2; startY = height;
+        endX = width / 2; endY = 0;
         break;
       case 'arrow_down':
-        startPoint = { x: width / 2, y: 0 };
-        endPoint = { x: width / 2, y: height };
+        startX = width / 2; startY = 0;
+        endX = width / 2; endY = height;
         break;
       case 'arrow_up_right':
-        startPoint = { x: 0, y: height };
-        endPoint = { x: width, y: 0 };
+        startX = 0; startY = height;
+        endX = width; endY = 0;
         break;
       case 'arrow_down_right':
-        startPoint = { x: 0, y: 0 };
-        endPoint = { x: width, y: height };
+        startX = 0; startY = 0;
+        endX = width; endY = height;
         break;
       case 'arrow_up_left':
-        startPoint = { x: width, y: height };
-        endPoint = { x: 0, y: 0 };
+        startX = width; startY = height;
+        endX = 0; endY = 0;
         break;
       case 'arrow_down_left':
-        startPoint = { x: width, y: 0 };
-        endPoint = { x: 0, y: height };
+        startX = width; startY = 0;
+        endX = 0; endY = height;
         break;
       case 'arrow_double_horizontal':
-        startPoint = { x: 0, y: height / 2 };
-        endPoint = { x: width, y: height / 2 };
-        headDirection = 'both';
-        break;
       case 'arrow_double_vertical':
-        startPoint = { x: width / 2, y: 0 };
-        endPoint = { x: width / 2, y: height };
         headDirection = 'both';
+        if (shapeType === 'arrow_double_vertical') {
+          startX = width / 2; startY = 0;
+          endX = width / 2; endY = height;
+        }
         break;
-      default:
-        startPoint = { x: 0, y: height / 2 };
-        endPoint = { x: width, y: height / 2 };
     }
+    
+    return createDefaultArrowData(startX, startY, endX, endY, headDirection);
+  }, [element.data?.arrowData, element.size, element.shapeType]);
 
-    return {
-      startPoint,
-      middlePoint: null,
-      endPoint,
-      startConnection: null,
-      endConnection: null,
-      arrowType: 'straight',
-      headDirection
-    };
-  };
+  // الحصول على نقاط التحكم
+  const handles = useMemo(() => getArrowHandles(arrowData), [arrowData]);
 
-  // ✅ دائماً استخدم getDefaultArrowData() إذا كانت arrowData غير صالحة أو نقاطها صفرية
-  const storedArrowData = element.data?.arrowData;
-  const isArrowDataValid = storedArrowData && 
-    storedArrowData.startPoint && 
-    storedArrowData.endPoint &&
-    (storedArrowData.startPoint.x !== storedArrowData.endPoint.x || 
-     storedArrowData.startPoint.y !== storedArrowData.endPoint.y);
-  
-  const arrowData: ArrowData = isArrowDataValid ? storedArrowData : getDefaultArrowData();
-
-  // حساب موقع النقطة الوسطى (دائماً في منتصف الخط الفعلي للسهم)
-  const getMiddlePoint = (): ArrowPoint => {
-    if (arrowData.middlePoint) {
-      return arrowData.middlePoint;
-    }
-    // النقطة الوسطى على الخط بين البداية والنهاية
-    return {
-      x: (arrowData.startPoint.x + arrowData.endPoint.x) / 2,
-      y: (arrowData.startPoint.y + arrowData.endPoint.y) / 2
-    };
-  };
-
-  // العناصر الأخرى (غير السهم الحالي) للبحث عن نقاط الاتصال
-  const otherElements = elements.filter(el => 
-    el.id !== element.id && 
-    el.type !== 'arrow' && 
-    !el.type?.startsWith('arrow_')
+  // العناصر الأخرى للبحث عن نقاط الاتصال
+  const otherElements = useMemo(() => 
+    elements.filter(el => 
+      el.id !== element.id && 
+      el.type !== 'arrow' && 
+      !el.type?.startsWith('arrow_') &&
+      !(el.shapeType?.startsWith('arrow_'))
+    ),
+    [elements, element.id]
   );
 
   // بدء السحب
   const handleMouseDown = useCallback((
     e: React.MouseEvent,
-    controlPoint: 'start' | 'middle' | 'end'
+    handleIndex: number
   ) => {
     e.stopPropagation();
     e.preventDefault();
 
-    const point = controlPoint === 'start' 
-      ? arrowData.startPoint 
-      : controlPoint === 'end' 
-        ? arrowData.endPoint 
-        : getMiddlePoint();
+    const point = handles[handleIndex];
+    if (!point) return;
 
-    // ✅ حفظ موقع الماوس الأولي وموقع النقطة الأصلي
     setDragState({
       isDragging: true,
-      controlPoint,
+      handleIndex,
       startPosition: { ...point },
-      nearestAnchor: null,
-      initialMousePos: { x: e.clientX, y: e.clientY }
+      initialMousePos: { x: e.clientX, y: e.clientY },
+      nearestAnchor: null
     });
-  }, [arrowData]);
+  }, [handles]);
 
   // معالجة السحب
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!dragState.isDragging || !dragState.controlPoint || !dragState.initialMousePos || !dragState.startPosition) return;
+    if (!dragState.isDragging || dragState.handleIndex === null || 
+        !dragState.initialMousePos || !dragState.startPosition) return;
 
-    // ✅ حساب الفرق بين موقع الماوس الحالي والأولي (مع مراعاة الزوم)
+    // حساب الفرق بين موقع الماوس الحالي والأولي
     const deltaX = (e.clientX - dragState.initialMousePos.x) / viewport.zoom;
     const deltaY = (e.clientY - dragState.initialMousePos.y) / viewport.zoom;
 
-    // ✅ إضافة الفرق إلى موقع النقطة الأصلي
+    // موقع النقطة الجديد
     const newPoint: ArrowPoint = { 
       x: dragState.startPosition.x + deltaX, 
       y: dragState.startPosition.y + deltaY 
     };
 
-    // البحث عن أقرب نقطة ارتكاز للإلتصاق
-    const absolutePoint = { x: e.clientX, y: e.clientY };
-    const nearestAnchor = dragState.controlPoint !== 'middle' 
-      ? findNearestAnchor(
-          { 
-            x: (e.clientX - viewport.pan.x) / viewport.zoom, 
-            y: (e.clientY - viewport.pan.y) / viewport.zoom 
-          }, 
-          otherElements,
-          30 / viewport.zoom
-        )
-      : null;
+    const isStartOrEnd = dragState.handleIndex === 0 || 
+                         dragState.handleIndex === handles.length - 1;
+
+    // البحث عن أقرب نقطة ارتكاز للإلتصاق (فقط للأطراف)
+    let nearestAnchor: ElementAnchor | null = null;
+    let binding: ArrowBinding | null = null;
+
+    if (isStartOrEnd) {
+      const canvasPoint = { 
+        x: (e.clientX - viewport.pan.x) / viewport.zoom, 
+        y: (e.clientY - viewport.pan.y) / viewport.zoom 
+      };
+      
+      nearestAnchor = findNearestAnchor(
+        canvasPoint, 
+        otherElements,
+        ARROW_CONSTANTS.SNAP_DISTANCE / viewport.zoom
+      );
+
+      if (nearestAnchor) {
+        binding = {
+          elementId: nearestAnchor.elementId,
+          anchor: nearestAnchor.anchorPoint
+        };
+      }
+    }
 
     setDragState(prev => ({ ...prev, nearestAnchor }));
 
-    // تحديث بيانات السهم
-    const newArrowData = { ...arrowData };
+    // تحديد الموقع النهائي (مع الالتصاق إذا وُجد)
+    const finalPoint = nearestAnchor 
+      ? { 
+          x: nearestAnchor.position.x - element.position.x, 
+          y: nearestAnchor.position.y - element.position.y 
+        }
+      : newPoint;
 
-    if (dragState.controlPoint === 'start') {
-      newArrowData.startPoint = nearestAnchor 
-        ? { 
-            x: nearestAnchor.position.x - element.position.x, 
-            y: nearestAnchor.position.y - element.position.y 
-          }
-        : newPoint;
-      newArrowData.startConnection = nearestAnchor 
-        ? { elementId: nearestAnchor.elementId, anchorPoint: nearestAnchor.anchorPoint, offset: { x: 0, y: 0 } }
-        : null;
-    } else if (dragState.controlPoint === 'end') {
-      newArrowData.endPoint = nearestAnchor 
-        ? { 
-            x: nearestAnchor.position.x - element.position.x, 
-            y: nearestAnchor.position.y - element.position.y 
-          }
-        : newPoint;
-      newArrowData.endConnection = nearestAnchor 
-        ? { elementId: nearestAnchor.elementId, anchorPoint: nearestAnchor.anchorPoint, offset: { x: 0, y: 0 } }
-        : null;
-    } else if (dragState.controlPoint === 'middle') {
-      // تحريك النقطة الوسطى يحول السهم إلى سهم متعرج
-      newArrowData.middlePoint = newPoint;
-      newArrowData.arrowType = 'elbow';
-    }
+    // تحديث بيانات السهم
+    const newArrowData = updateArrowPoint(
+      arrowData,
+      dragState.handleIndex,
+      finalPoint,
+      binding
+    );
 
     updateElement(element.id, {
       data: { ...element.data, arrowData: newArrowData }
     });
-  }, [dragState, viewport, element, arrowData, otherElements, updateElement]);
+  }, [dragState, viewport, element, arrowData, handles, otherElements, updateElement]);
 
   // إنهاء السحب
   const handleMouseUp = useCallback(() => {
     setDragState({
       isDragging: false,
-      controlPoint: null,
+      handleIndex: null,
       startPosition: null,
-      nearestAnchor: null,
-      initialMousePos: null
+      initialMousePos: null,
+      nearestAnchor: null
     });
   }, []);
 
@@ -239,37 +225,60 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     }
   }, [dragState.isDragging, handleMouseMove, handleMouseUp]);
 
-  // نمط نقطة التحكم (مطابق لـ ResizeHandle)
-  const controlPointStyle = (isConnected: boolean) => ({
-    width: 8,
-    height: 8,
-    borderRadius: '50%',
-    backgroundColor: isConnected ? 'hsl(var(--accent-green))' : '#FFFFFF',
-    border: '1px solid #000000',
-    cursor: 'grab',
-    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.15)',
-    zIndex: 1000
-  });
+  // نمط نقطة التحكم
+  const getHandleStyle = (index: number) => {
+    const isStart = index === 0;
+    const isEnd = index === handles.length - 1;
+    const isConnected = isStart 
+      ? !!arrowData.startBinding || !!arrowData.startConnection
+      : isEnd 
+        ? !!arrowData.endBinding || !!arrowData.endConnection
+        : false;
+    const isMiddle = !isStart && !isEnd;
+    const isOrthogonal = arrowData.arrowType === 'orthogonal';
 
-  // نمط النقطة الوسطى (مطابق للنقاط الأخرى)
-  const middlePointStyle = {
-    width: 8,
-    height: 8,
-    borderRadius: '50%',
-    backgroundColor: arrowData.arrowType === 'elbow' ? 'hsl(var(--accent-green))' : '#FFFFFF',
-    border: '1px solid #000000',
-    cursor: 'grab',
-    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.15)',
-    zIndex: 1000
+    return {
+      width: isMiddle ? 6 : 8,
+      height: isMiddle ? 6 : 8,
+      borderRadius: '50%',
+      backgroundColor: isConnected 
+        ? 'hsl(var(--accent-green))' 
+        : isMiddle && isOrthogonal
+          ? 'hsl(var(--accent-blue))'
+          : '#FFFFFF',
+      border: `1.5px solid ${isMiddle ? 'hsl(var(--accent-blue))' : '#000000'}`,
+      cursor: 'grab',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
+      zIndex: 1000,
+      transition: 'transform 0.1s ease'
+    };
   };
 
-  const startPos = arrowData.startPoint;
-  const middlePos = getMiddlePoint();
-  const endPos = arrowData.endPoint;
+  // رسم المسار بين النقاط
+  const renderPath = () => {
+    if (handles.length < 2) return null;
+
+    let pathD = `M ${handles[0].x} ${handles[0].y}`;
+    
+    for (let i = 1; i < handles.length; i++) {
+      pathD += ` L ${handles[i].x} ${handles[i].y}`;
+    }
+
+    return (
+      <path
+        d={pathD}
+        stroke="hsl(var(--accent-blue))"
+        strokeWidth={1.5}
+        strokeDasharray="4,4"
+        fill="none"
+        opacity={0.6}
+      />
+    );
+  };
 
   return (
     <>
-      {/* خط الاتصال بين النقاط (للتصور) */}
+      {/* خط الاتصال بين النقاط */}
       <svg
         style={{
           position: 'absolute',
@@ -281,76 +290,73 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           overflow: 'visible'
         }}
       >
-        {/* خط توضيحي للمسار */}
-        {arrowData.arrowType === 'elbow' && arrowData.middlePoint && (
-          <path
-            d={`M ${startPos.x} ${startPos.y} L ${middlePos.x} ${startPos.y} L ${middlePos.x} ${endPos.y} L ${endPos.x} ${endPos.y}`}
-            stroke="hsl(var(--accent-blue))"
-            strokeWidth={1}
-            strokeDasharray="4,4"
-            fill="none"
-            opacity={0.5}
-          />
-        )}
+        {renderPath()}
       </svg>
 
-      {/* نقطة البداية */}
-      <div
-        className="absolute"
-        style={{
-          left: startPos.x - 4,
-          top: startPos.y - 4,
-          ...controlPointStyle(!!arrowData.startConnection)
-        }}
-        onMouseDown={(e) => handleMouseDown(e, 'start')}
-        title="نقطة البداية - اسحب للاتصال بعنصر"
-      />
+      {/* نقاط التحكم */}
+      {handles.map((point, index) => {
+        const isStart = index === 0;
+        const isEnd = index === handles.length - 1;
+        
+        let title = 'نقطة وسطى - اسحب لتعديل المسار';
+        if (isStart) title = 'نقطة البداية - اسحب للاتصال بعنصر';
+        if (isEnd) title = 'نقطة النهاية - اسحب للاتصال بعنصر';
 
-      {/* نقطة الوسط */}
-      <div
-        className="absolute"
-        style={{
-          left: middlePos.x - 4,
-          top: middlePos.y - 4,
-          ...middlePointStyle
-        }}
-        onMouseDown={(e) => handleMouseDown(e, 'middle')}
-        title="النقطة الوسطى - اسحب لإنشاء سهم متعرج"
-      />
+        const style = getHandleStyle(index);
+        const offset = (isStart || isEnd) ? 4 : 3;
 
-      {/* نقطة النهاية */}
-      <div
-        className="absolute"
-        style={{
-          left: endPos.x - 4,
-          top: endPos.y - 4,
-          ...controlPointStyle(!!arrowData.endConnection)
-        }}
-        onMouseDown={(e) => handleMouseDown(e, 'end')}
-        title="نقطة النهاية - اسحب للاتصال بعنصر"
-      />
+        return (
+          <div
+            key={`handle-${index}`}
+            className="absolute hover:scale-125"
+            style={{
+              left: point.x - offset,
+              top: point.y - offset,
+              ...style
+            }}
+            onMouseDown={(e) => handleMouseDown(e, index)}
+            title={title}
+          />
+        );
+      })}
 
       {/* مؤشر الالتصاق */}
       {dragState.nearestAnchor && (
         <div
           className="fixed pointer-events-none"
           style={{
-            left: dragState.nearestAnchor.position.x * viewport.zoom + viewport.pan.x - 10,
-            top: dragState.nearestAnchor.position.y * viewport.zoom + viewport.pan.y - 10,
-            width: 20,
-            height: 20,
+            left: dragState.nearestAnchor.position.x * viewport.zoom + viewport.pan.x - 12,
+            top: dragState.nearestAnchor.position.y * viewport.zoom + viewport.pan.y - 12,
+            width: 24,
+            height: 24,
             borderRadius: '50%',
             border: '3px solid hsl(var(--accent-green))',
-            backgroundColor: 'rgba(61, 190, 139, 0.2)',
-            animation: 'pulse 0.5s ease-in-out infinite'
+            backgroundColor: 'rgba(61, 190, 139, 0.25)',
+            animation: 'pulse 0.6s ease-in-out infinite'
           }}
         />
+      )}
+
+      {/* مؤشر الالتصاق على العنصر المستهدف */}
+      {dragState.nearestAnchor && (
+        <div
+          className="fixed pointer-events-none text-xs font-medium px-2 py-1 rounded-full"
+          style={{
+            left: dragState.nearestAnchor.position.x * viewport.zoom + viewport.pan.x + 16,
+            top: dragState.nearestAnchor.position.y * viewport.zoom + viewport.pan.y - 10,
+            backgroundColor: 'hsl(var(--accent-green))',
+            color: '#FFFFFF',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+          }}
+        >
+          التصاق
+        </div>
       )}
 
       <style>{`
         @keyframes pulse {
           0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.2); opacity: 0.7; }
+          50% { transform: scale(1.15); opacity: 0.8; }
         }
       `}</style>
     </>
