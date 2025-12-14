@@ -124,6 +124,34 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const arrowDownLeftPath = `M ${w - padding} ${padding} L ${padding} ${h - padding} M ${w * 0.5} ${h - padding} L ${padding} ${h - padding} L ${padding} ${h * 0.5}`;
         return <path d={arrowDownLeftPath} {...commonProps} fill="none" />;
 
+      case 'arrow_double_horizontal':
+        // سهم أفقي برأسين
+        const doubleHorizPath = `
+          M ${padding} ${h / 2} L ${w * 0.25} ${h * 0.25} L ${w * 0.25} ${h * 0.4} L ${w * 0.75} ${h * 0.4} L ${w * 0.75} ${h * 0.25} L ${w - padding} ${h / 2} L ${w * 0.75} ${h * 0.75} L ${w * 0.75} ${h * 0.6} L ${w * 0.25} ${h * 0.6} L ${w * 0.25} ${h * 0.75} Z
+        `;
+        return <path d={doubleHorizPath} {...commonProps} />;
+
+      case 'arrow_double_vertical':
+        // سهم عمودي برأسين
+        const doubleVertPath = `
+          M ${w / 2} ${padding} L ${w * 0.75} ${h * 0.25} L ${w * 0.6} ${h * 0.25} L ${w * 0.6} ${h * 0.75} L ${w * 0.75} ${h * 0.75} L ${w / 2} ${h - padding} L ${w * 0.25} ${h * 0.75} L ${w * 0.4} ${h * 0.75} L ${w * 0.4} ${h * 0.25} L ${w * 0.25} ${h * 0.25} Z
+        `;
+        return <path d={doubleVertPath} {...commonProps} />;
+
+      case 'arrow_four_way':
+        // سهم بأربعة اتجاهات
+        const fourWayPath = `
+          M ${w / 2} ${padding} L ${w * 0.65} ${h * 0.2} L ${w * 0.55} ${h * 0.2} L ${w * 0.55} ${h * 0.45} L ${w * 0.8} ${h * 0.45} L ${w * 0.8} ${h * 0.35} L ${w - padding} ${h / 2} L ${w * 0.8} ${h * 0.65} L ${w * 0.8} ${h * 0.55} L ${w * 0.55} ${h * 0.55} L ${w * 0.55} ${h * 0.8} L ${w * 0.65} ${h * 0.8} L ${w / 2} ${h - padding} L ${w * 0.35} ${h * 0.8} L ${w * 0.45} ${h * 0.8} L ${w * 0.45} ${h * 0.55} L ${w * 0.2} ${h * 0.55} L ${w * 0.2} ${h * 0.65} L ${padding} ${h / 2} L ${w * 0.2} ${h * 0.35} L ${w * 0.2} ${h * 0.45} L ${w * 0.45} ${h * 0.45} L ${w * 0.45} ${h * 0.2} L ${w * 0.35} ${h * 0.2} Z
+        `;
+        return <path d={fourWayPath} {...commonProps} />;
+
+      case 'arrow_double_diagonal':
+        // سهم قطري برأسين
+        const doubleDiagPath = `
+          M ${padding} ${h - padding} L ${w * 0.15} ${h * 0.65} L ${w * 0.25} ${h * 0.75} L ${w * 0.75} ${h * 0.25} L ${w * 0.65} ${h * 0.15} L ${w - padding} ${padding} L ${w * 0.85} ${h * 0.35} L ${w * 0.75} ${h * 0.25} L ${w * 0.25} ${h * 0.75} L ${w * 0.35} ${h * 0.85} Z
+        `;
+        return <path d={doubleDiagPath} {...commonProps} />;
+
       case 'icon':
         // رسم الأيقونات باستخدام Lucide
         const IconComponent = iconName ? icons[iconName as keyof typeof icons] : null;
