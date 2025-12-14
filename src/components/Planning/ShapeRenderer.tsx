@@ -92,65 +92,140 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const starPoints = generateStarPoints(5, w, h, padding);
         return <polygon points={starPoints} {...commonProps} />;
 
-      case 'arrow_right':
-        const arrowPath = `M ${padding} ${h * 0.3} L ${w * 0.6} ${h * 0.3} L ${w * 0.6} ${padding} L ${w - padding} ${h / 2} L ${w * 0.6} ${h - padding} L ${w * 0.6} ${h * 0.7} L ${padding} ${h * 0.7} Z`;
-        return <path d={arrowPath} {...commonProps} />;
+      case 'arrow_right': {
+        const headSize = 12;
+        const lineY = h / 2;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={padding} y1={lineY} x2={w - padding} y2={lineY} />
+            <polyline points={`${w - padding - headSize},${lineY - headSize} ${w - padding},${lineY} ${w - padding - headSize},${lineY + headSize}`} />
+          </g>
+        );
+      }
 
-      case 'arrow_left':
-        const arrowLeftPath = `M ${w - padding} ${h * 0.3} L ${w * 0.4} ${h * 0.3} L ${w * 0.4} ${padding} L ${padding} ${h / 2} L ${w * 0.4} ${h - padding} L ${w * 0.4} ${h * 0.7} L ${w - padding} ${h * 0.7} Z`;
-        return <path d={arrowLeftPath} {...commonProps} />;
+      case 'arrow_left': {
+        const headSize = 12;
+        const lineY = h / 2;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={w - padding} y1={lineY} x2={padding} y2={lineY} />
+            <polyline points={`${padding + headSize},${lineY - headSize} ${padding},${lineY} ${padding + headSize},${lineY + headSize}`} />
+          </g>
+        );
+      }
 
-      case 'arrow_up':
-        const arrowUpPath = `M ${w * 0.3} ${h - padding} L ${w * 0.3} ${h * 0.4} L ${padding} ${h * 0.4} L ${w / 2} ${padding} L ${w - padding} ${h * 0.4} L ${w * 0.7} ${h * 0.4} L ${w * 0.7} ${h - padding} Z`;
-        return <path d={arrowUpPath} {...commonProps} />;
+      case 'arrow_up': {
+        const headSize = 12;
+        const lineX = w / 2;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={lineX} y1={h - padding} x2={lineX} y2={padding} />
+            <polyline points={`${lineX - headSize},${padding + headSize} ${lineX},${padding} ${lineX + headSize},${padding + headSize}`} />
+          </g>
+        );
+      }
 
-      case 'arrow_down':
-        const arrowDownPath = `M ${w * 0.3} ${padding} L ${w * 0.3} ${h * 0.6} L ${padding} ${h * 0.6} L ${w / 2} ${h - padding} L ${w - padding} ${h * 0.6} L ${w * 0.7} ${h * 0.6} L ${w * 0.7} ${padding} Z`;
-        return <path d={arrowDownPath} {...commonProps} />;
+      case 'arrow_down': {
+        const headSize = 12;
+        const lineX = w / 2;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={lineX} y1={padding} x2={lineX} y2={h - padding} />
+            <polyline points={`${lineX - headSize},${h - padding - headSize} ${lineX},${h - padding} ${lineX + headSize},${h - padding - headSize}`} />
+          </g>
+        );
+      }
 
-      case 'arrow_up_right':
-        const arrowUpRightPath = `M ${padding} ${h - padding} L ${w - padding} ${padding} M ${w * 0.5} ${padding} L ${w - padding} ${padding} L ${w - padding} ${h * 0.5}`;
-        return <path d={arrowUpRightPath} {...commonProps} fill="none" />;
+      case 'arrow_up_right': {
+        const headSize = 12;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={padding} y1={h - padding} x2={w - padding} y2={padding} />
+            <polyline points={`${w - padding - headSize},${padding} ${w - padding},${padding} ${w - padding},${padding + headSize}`} />
+          </g>
+        );
+      }
 
-      case 'arrow_down_right':
-        const arrowDownRightPath = `M ${padding} ${padding} L ${w - padding} ${h - padding} M ${w * 0.5} ${h - padding} L ${w - padding} ${h - padding} L ${w - padding} ${h * 0.5}`;
-        return <path d={arrowDownRightPath} {...commonProps} fill="none" />;
+      case 'arrow_down_right': {
+        const headSize = 12;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={padding} y1={padding} x2={w - padding} y2={h - padding} />
+            <polyline points={`${w - padding - headSize},${h - padding} ${w - padding},${h - padding} ${w - padding},${h - padding - headSize}`} />
+          </g>
+        );
+      }
 
-      case 'arrow_up_left':
-        const arrowUpLeftPath = `M ${w - padding} ${h - padding} L ${padding} ${padding} M ${w * 0.5} ${padding} L ${padding} ${padding} L ${padding} ${h * 0.5}`;
-        return <path d={arrowUpLeftPath} {...commonProps} fill="none" />;
+      case 'arrow_up_left': {
+        const headSize = 12;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={w - padding} y1={h - padding} x2={padding} y2={padding} />
+            <polyline points={`${padding + headSize},${padding} ${padding},${padding} ${padding},${padding + headSize}`} />
+          </g>
+        );
+      }
 
-      case 'arrow_down_left':
-        const arrowDownLeftPath = `M ${w - padding} ${padding} L ${padding} ${h - padding} M ${w * 0.5} ${h - padding} L ${padding} ${h - padding} L ${padding} ${h * 0.5}`;
-        return <path d={arrowDownLeftPath} {...commonProps} fill="none" />;
+      case 'arrow_down_left': {
+        const headSize = 12;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={w - padding} y1={padding} x2={padding} y2={h - padding} />
+            <polyline points={`${padding + headSize},${h - padding} ${padding},${h - padding} ${padding},${h - padding - headSize}`} />
+          </g>
+        );
+      }
 
-      case 'arrow_double_horizontal':
-        // سهم أفقي برأسين
-        const doubleHorizPath = `
-          M ${padding} ${h / 2} L ${w * 0.25} ${h * 0.25} L ${w * 0.25} ${h * 0.4} L ${w * 0.75} ${h * 0.4} L ${w * 0.75} ${h * 0.25} L ${w - padding} ${h / 2} L ${w * 0.75} ${h * 0.75} L ${w * 0.75} ${h * 0.6} L ${w * 0.25} ${h * 0.6} L ${w * 0.25} ${h * 0.75} Z
-        `;
-        return <path d={doubleHorizPath} {...commonProps} />;
+      case 'arrow_double_horizontal': {
+        const headSize = 12;
+        const lineY = h / 2;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={padding} y1={lineY} x2={w - padding} y2={lineY} />
+            <polyline points={`${padding + headSize},${lineY - headSize} ${padding},${lineY} ${padding + headSize},${lineY + headSize}`} />
+            <polyline points={`${w - padding - headSize},${lineY - headSize} ${w - padding},${lineY} ${w - padding - headSize},${lineY + headSize}`} />
+          </g>
+        );
+      }
 
-      case 'arrow_double_vertical':
-        // سهم عمودي برأسين
-        const doubleVertPath = `
-          M ${w / 2} ${padding} L ${w * 0.75} ${h * 0.25} L ${w * 0.6} ${h * 0.25} L ${w * 0.6} ${h * 0.75} L ${w * 0.75} ${h * 0.75} L ${w / 2} ${h - padding} L ${w * 0.25} ${h * 0.75} L ${w * 0.4} ${h * 0.75} L ${w * 0.4} ${h * 0.25} L ${w * 0.25} ${h * 0.25} Z
-        `;
-        return <path d={doubleVertPath} {...commonProps} />;
+      case 'arrow_double_vertical': {
+        const headSize = 12;
+        const lineX = w / 2;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={lineX} y1={padding} x2={lineX} y2={h - padding} />
+            <polyline points={`${lineX - headSize},${padding + headSize} ${lineX},${padding} ${lineX + headSize},${padding + headSize}`} />
+            <polyline points={`${lineX - headSize},${h - padding - headSize} ${lineX},${h - padding} ${lineX + headSize},${h - padding - headSize}`} />
+          </g>
+        );
+      }
 
-      case 'arrow_four_way':
-        // سهم بأربعة اتجاهات
-        const fourWayPath = `
-          M ${w / 2} ${padding} L ${w * 0.65} ${h * 0.2} L ${w * 0.55} ${h * 0.2} L ${w * 0.55} ${h * 0.45} L ${w * 0.8} ${h * 0.45} L ${w * 0.8} ${h * 0.35} L ${w - padding} ${h / 2} L ${w * 0.8} ${h * 0.65} L ${w * 0.8} ${h * 0.55} L ${w * 0.55} ${h * 0.55} L ${w * 0.55} ${h * 0.8} L ${w * 0.65} ${h * 0.8} L ${w / 2} ${h - padding} L ${w * 0.35} ${h * 0.8} L ${w * 0.45} ${h * 0.8} L ${w * 0.45} ${h * 0.55} L ${w * 0.2} ${h * 0.55} L ${w * 0.2} ${h * 0.65} L ${padding} ${h / 2} L ${w * 0.2} ${h * 0.35} L ${w * 0.2} ${h * 0.45} L ${w * 0.45} ${h * 0.45} L ${w * 0.45} ${h * 0.2} L ${w * 0.35} ${h * 0.2} Z
-        `;
-        return <path d={fourWayPath} {...commonProps} />;
+      case 'arrow_four_way': {
+        const headSize = 10;
+        const cx = w / 2;
+        const cy = h / 2;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={padding} y1={cy} x2={w - padding} y2={cy} />
+            <line x1={cx} y1={padding} x2={cx} y2={h - padding} />
+            <polyline points={`${padding + headSize},${cy - headSize} ${padding},${cy} ${padding + headSize},${cy + headSize}`} />
+            <polyline points={`${w - padding - headSize},${cy - headSize} ${w - padding},${cy} ${w - padding - headSize},${cy + headSize}`} />
+            <polyline points={`${cx - headSize},${padding + headSize} ${cx},${padding} ${cx + headSize},${padding + headSize}`} />
+            <polyline points={`${cx - headSize},${h - padding - headSize} ${cx},${h - padding} ${cx + headSize},${h - padding - headSize}`} />
+          </g>
+        );
+      }
 
-      case 'arrow_double_diagonal':
-        // سهم قطري برأسين
-        const doubleDiagPath = `
-          M ${padding} ${h - padding} L ${w * 0.15} ${h * 0.65} L ${w * 0.25} ${h * 0.75} L ${w * 0.75} ${h * 0.25} L ${w * 0.65} ${h * 0.15} L ${w - padding} ${padding} L ${w * 0.85} ${h * 0.35} L ${w * 0.75} ${h * 0.25} L ${w * 0.25} ${h * 0.75} L ${w * 0.35} ${h * 0.85} Z
-        `;
-        return <path d={doubleDiagPath} {...commonProps} />;
+      case 'arrow_double_diagonal': {
+        const headSize = 10;
+        return (
+          <g stroke={strokeColor || fillColor} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={padding} y1={h - padding} x2={w - padding} y2={padding} />
+            <polyline points={`${padding},${h - padding - headSize} ${padding},${h - padding} ${padding + headSize},${h - padding}`} />
+            <polyline points={`${w - padding - headSize},${padding} ${w - padding},${padding} ${w - padding},${padding + headSize}`} />
+          </g>
+        );
+      }
 
       case 'icon':
         // رسم الأيقونات باستخدام Lucide
