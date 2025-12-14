@@ -413,9 +413,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       }
     };
 
-    // إذا كان الشكل سهماً، أضف بيانات السهم
+    // إذا كان الشكل سهماً، أضف بيانات السهم مع حجم افتراضي معقول
     if (isArrowShape(shapeType)) {
-      initialElement.data.arrowData = createArrowData(0, 0, shapeType);
+      // استخدام حجم افتراضي 100x50 للسهم الجديد حتى يتم تحديثه أثناء السحب
+      initialElement.data.arrowData = createArrowData(100, 50, shapeType);
     }
 
     setTempElement(initialElement);

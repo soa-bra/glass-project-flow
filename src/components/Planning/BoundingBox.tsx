@@ -1,6 +1,12 @@
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 
+// التحقق إذا كان الشكل سهماً
+const isArrowShape = (shapeType: string | undefined): boolean => {
+  if (!shapeType) return false;
+  return shapeType.startsWith('arrow_');
+};
+
 export const BoundingBox: React.FC = () => {
   // ✅ جميع الـ Hooks أولاً (قبل أي return)
   const { selectedElementIds, elements, viewport, moveElements, resizeElements, duplicateElement, resizeFrame, activeTool } = useCanvasStore();
@@ -217,7 +223,12 @@ export const BoundingBox: React.FC = () => {
   };
   
   // ✅ Return الشرطي في النهاية بعد كل الـ Hooks
-  if (activeTool !== 'selection_tool' || selectedElements.length === 0) {
+  // ✅ لا تعرض BoundingBox إذا كانت جميع العناصر المحددة أسهماً
+  const isAllArrows = selectedElements.every(el => 
+    el.type === 'shape' && isArrowShape(el.shapeType || el.data?.shapeType)
+  );
+  
+  if (activeTool !== 'selection_tool' || selectedElements.length === 0 || isAllArrows) {
     return null;
   }
   
