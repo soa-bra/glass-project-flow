@@ -184,7 +184,7 @@ const ShapesPanel: React.FC = () => {
                   max={20}
                   value={strokeWidth}
                   onChange={(e) => updateToolSettings('shapes', { strokeWidth: Number(e.target.value) })}
-                  className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
+                  className="w-full h-2 bg-[#E3E8F0] rounded-full appearance-none cursor-pointer
                     [&::-webkit-slider-thumb]:appearance-none
                     [&::-webkit-slider-thumb]:w-4
                     [&::-webkit-slider-thumb]:h-4
