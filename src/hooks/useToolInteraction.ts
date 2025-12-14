@@ -408,7 +408,9 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       },
       strokeColor: strokeColor,
       strokeWidth: strokeWidth,
-      data: {}
+      data: {
+        shapeType: shapeType // حفظ shapeType أيضاً في data للتوافق
+      }
     };
 
     // إذا كان الشكل سهماً، أضف بيانات السهم
