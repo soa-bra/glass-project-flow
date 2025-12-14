@@ -189,14 +189,17 @@ const ShapesPanel: React.FC = () => {
                     [&::-webkit-slider-thumb]:w-4
                     [&::-webkit-slider-thumb]:h-4
                     [&::-webkit-slider-thumb]:rounded-full
-                    [&::-webkit-slider-thumb]:bg-[hsl(var(--accent-green))]
+                    [&::-webkit-slider-thumb]:bg-white
+                    [&::-webkit-slider-thumb]:border
+                    [&::-webkit-slider-thumb]:border-[#D1D5DB]
                     [&::-webkit-slider-thumb]:cursor-pointer
                     [&::-webkit-slider-thumb]:shadow-md
                     [&::-moz-range-thumb]:w-4
                     [&::-moz-range-thumb]:h-4
                     [&::-moz-range-thumb]:rounded-full
-                    [&::-moz-range-thumb]:bg-[hsl(var(--accent-green))]
-                    [&::-moz-range-thumb]:border-0
+                    [&::-moz-range-thumb]:bg-white
+                    [&::-moz-range-thumb]:border
+                    [&::-moz-range-thumb]:border-[#D1D5DB]
                     [&::-moz-range-thumb]:cursor-pointer"
                 />
               </div>
