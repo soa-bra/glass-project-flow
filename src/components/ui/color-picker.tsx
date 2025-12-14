@@ -1,33 +1,30 @@
 "use client";
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { cn } from '@/lib/utils';
-import { Range, Root, Thumb, Track } from '@radix-ui/react-slider';
-import Color from 'color';
-import { PipetteIcon } from 'lucide-react';
-import {
-  type ChangeEventHandler,
-  type ComponentProps,
-  type HTMLAttributes,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { createContext, useContext } from 'react';
+import { Portal } from "@ark-ui/react/portal";
+import { ColorPicker, parseColor } from "@ark-ui/react/color-picker";
+import { PipetteIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
-// Store for recent colors (persisted in localStorage)
-const RECENT_COLORS_KEY = 'soabra-recent-colors';
+// Utility colors (Row 1)
+const UTILITY_COLORS = [
+  { color: 'transparent', label: 'شفاف' },
+  { color: '#000000', label: 'أسود' },
+  { color: '#FFFFFF', label: 'أبيض' },
+  { color: '#808080', label: 'رمادي' },
+];
+
+// Supra brand colors from design tokens (Row 2)
+const SUPRA_COLORS = [
+  { color: '#3DBE8B', label: 'أخضر' },
+  { color: '#F6C445', label: 'أصفر' },
+  { color: '#E5564D', label: 'أحمر' },
+  { color: '#3DA8F5', label: 'أزرق' },
+];
+
+const RECENT_COLORS_KEY = 'supra-recent-colors';
 const MAX_RECENT_COLORS = 6;
 
 const getRecentColors = (): string[] => {
+  if (typeof window === 'undefined') return [];
   try {
     const stored = localStorage.getItem(RECENT_COLORS_KEY);
     return stored ? JSON.parse(stored) : [];
@@ -36,654 +33,268 @@ const getRecentColors = (): string[] => {
   }
 };
 
-const addRecentColor = (color: string): void => {
+const addRecentColor = (color: string) => {
+  if (typeof window === 'undefined') return;
+  if (color === 'transparent' || !color) return;
+  
   try {
-    const recent = getRecentColors().filter(c => c !== color);
-    recent.unshift(color);
-    localStorage.setItem(RECENT_COLORS_KEY, JSON.stringify(recent.slice(0, MAX_RECENT_COLORS)));
+    const recent = getRecentColors();
+    const filtered = recent.filter(c => c.toLowerCase() !== color.toLowerCase());
+    const updated = [color, ...filtered].slice(0, MAX_RECENT_COLORS);
+    localStorage.setItem(RECENT_COLORS_KEY, JSON.stringify(updated));
   } catch {
     // Ignore storage errors
   }
 };
 
-interface ColorPickerContextValue {
-  hue: number;
-  saturation: number;
-  lightness: number;
-  alpha: number;
-  mode: string;
-  setHue: (hue: number) => void;
-  setSaturation: (saturation: number) => void;
-  setLightness: (lightness: number) => void;
-  setAlpha: (alpha: number) => void;
-  setMode: (mode: string) => void;
-  setColorFromHex: (hex: string) => void;
+interface ColorPickerInputProps {
+  value?: string;
+  onChange?: (value: string) => void;
+  className?: string;
 }
 
-const ColorPickerContext = createContext<ColorPickerContextValue | undefined>(
-  undefined
-);
-
-export const useColorPicker = () => {
-  const context = useContext(ColorPickerContext);
-
-  if (!context) {
-    throw new Error('useColorPicker must be used within a ColorPickerProvider');
-  }
-
-  return context;
-};
-
-export type ColorPickerProps = Omit<HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> & {
-  value?: string;
-  defaultValue?: string;
-  onChange?: (value: string) => void;
-};
-
-export const ColorPicker = ({
-  value,
-  defaultValue = '#000000',
-  onChange,
-  className,
-  ...props
-}: ColorPickerProps) => {
-  const getColorValues = (colorValue: string) => {
-    try {
-      const color = Color(colorValue);
-      return {
-        hue: color.hue() || 0,
-        saturation: color.saturationl() || 100,
-        lightness: color.lightness() || 50,
-        alpha: color.alpha() * 100
-      };
-    } catch {
-      return { hue: 0, saturation: 100, lightness: 50, alpha: 100 };
-    }
-  };
-
-  const initialValues = getColorValues(value || defaultValue);
-
-  const [hue, setHue] = useState(initialValues.hue);
-  const [saturation, setSaturation] = useState(initialValues.saturation);
-  const [lightness, setLightness] = useState(initialValues.lightness);
-  const [alpha, setAlpha] = useState(initialValues.alpha);
-  const [mode, setMode] = useState('hex');
-
-  const setColorFromHex = useCallback((hex: string) => {
-    try {
-      const color = Color(hex);
-      setHue(color.hue() || 0);
-      setSaturation(color.saturationl() || 100);
-      setLightness(color.lightness() || 50);
-      setAlpha(color.alpha() * 100);
-      
-      // Add to recent colors
-      addRecentColor(hex);
-    } catch {
-      // Invalid color
-    }
-  }, []);
-
-  // Track if this is initial mount or controlled update to avoid infinite loops
-  const isControlledUpdate = useRef(false);
-  const prevValueRef = useRef(value);
-
-  // Update color when controlled value changes from outside
-  useEffect(() => {
-    if (value && value !== prevValueRef.current) {
-      isControlledUpdate.current = true;
-      const values = getColorValues(value);
-      setHue(values.hue);
-      setSaturation(values.saturation);
-      setLightness(values.lightness);
-      setAlpha(values.alpha);
-      prevValueRef.current = value;
-    }
-  }, [value]);
-
-  // Notify parent of changes (only when user interacts, not on controlled updates)
-  useEffect(() => {
-    if (isControlledUpdate.current) {
-      isControlledUpdate.current = false;
-      return;
-    }
-    
-    if (onChange) {
-      try {
-        const color = Color.hsl(hue, saturation, lightness).alpha(alpha / 100);
-        const hex = alpha < 100 
-          ? color.hexa() 
-          : color.hex();
-        
-        if (hex !== prevValueRef.current) {
-          prevValueRef.current = hex;
-          onChange(hex);
-        }
-      } catch {
-        // Ignore invalid colors
-      }
-    }
-  }, [hue, saturation, lightness, alpha, onChange]);
-
-  return (
-    <ColorPickerContext.Provider
-      value={{
-        hue,
-        saturation,
-        lightness,
-        alpha,
-        mode,
-        setHue,
-        setSaturation,
-        setLightness,
-        setAlpha,
-        setMode,
-        setColorFromHex,
-      }}
-    >
-      <div className={cn('grid w-full gap-3', className)} {...props} />
-    </ColorPickerContext.Provider>
-  );
-};
-
-export type ColorPickerSelectionProps = HTMLAttributes<HTMLDivElement>;
-
-export const ColorPickerSelection = ({
-  className,
-  ...props
-}: ColorPickerSelectionProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 1, y: 0 });
-  const { hue, saturation, lightness, setSaturation, setLightness } = useColorPicker();
-
-  // Sync position with saturation/lightness
-  useEffect(() => {
-    setPosition({
-      x: saturation / 100,
-      y: 1 - (lightness / 50) // Simplified mapping
-    });
-  }, [saturation, lightness]);
-
-  const handlePointerMove = useCallback(
-    (event: PointerEvent) => {
-      if (!isDragging || !containerRef.current) {
-        return;
-      }
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
-      const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
-
-      setPosition({ x, y });
-      setSaturation(x * 100);
-      setLightness((1 - y) * 50);
-    },
-    [isDragging, setSaturation, setLightness]
-  );
-
-  useEffect(() => {
-    const handlePointerUp = () => setIsDragging(false);
-    
-    if (isDragging) {
-      window.addEventListener('pointermove', handlePointerMove);
-      window.addEventListener('pointerup', handlePointerUp);
-    }
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-    };
-  }, [isDragging, handlePointerMove]);
-
-  return (
-    <div
-      ref={containerRef}
-      className={cn(
-        'relative aspect-[4/3] w-full cursor-crosshair rounded-[10px] overflow-hidden',
-        className
-      )}
-      style={{
-        background: `linear-gradient(0deg, rgb(0,0,0), transparent), linear-gradient(90deg, rgb(255,255,255), hsl(${hue}, 100%, 50%))`,
-      }}
-      onPointerDown={(e) => {
-        e.preventDefault();
-        setIsDragging(true);
-        handlePointerMove(e.nativeEvent);
-      }}
-      {...props}
-    >
-      <div
-        className="pointer-events-none absolute h-4 w-4 rounded-full border-2 border-white -translate-x-1/2 -translate-y-1/2"
-        style={{
-          left: `${position.x * 100}%`,
-          top: `${position.y * 100}%`,
-          boxShadow: '0 0 0 1px rgba(0,0,0,0.5)',
-        }}
-      />
-    </div>
-  );
-};
-
-export const ColorPickerHue = ({
-  className,
-}: { className?: string }) => {
-  const { hue, setHue } = useColorPicker();
-
-  return (
-    <Root
-      value={[hue]}
-      max={360}
-      step={1}
-      className={cn('relative flex h-3 w-full touch-none', className)}
-      onValueChange={([hue]) => setHue(hue)}
-    >
-      <Track className="relative h-3 w-full grow rounded-full bg-[linear-gradient(90deg,#FF0000,#FFFF00,#00FF00,#00FFFF,#0000FF,#FF00FF,#FF0000)]">
-        <Range className="absolute h-full" />
-      </Track>
-      <Thumb className="block h-4 w-4 rounded-full border-2 border-[hsl(var(--ink))] bg-white shadow-md -translate-y-0.5 focus-visible:outline-none" />
-    </Root>
-  );
-};
-
-export const ColorPickerAlpha = ({
-  className,
-}: { className?: string }) => {
-  const { hue, alpha, setAlpha } = useColorPicker();
-
-  return (
-    <Root
-      value={[alpha]}
-      max={100}
-      step={1}
-      className={cn('relative flex h-3 w-full touch-none', className)}
-      onValueChange={([alpha]) => setAlpha(alpha)}
-    >
-      <Track
-        className="relative h-3 w-full grow rounded-full overflow-hidden"
-        style={{
-          background: 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==") left center',
-        }}
-      >
-        <div 
-          className="absolute inset-0 rounded-full" 
-          style={{
-            background: `linear-gradient(to left, hsl(${hue}, 100%, 50%), transparent)`
-          }}
-        />
-        <Range className="absolute h-full rounded-full bg-transparent" />
-      </Track>
-      <Thumb className="block h-4 w-4 rounded-full border-2 border-[hsl(var(--ink))] bg-white shadow-md -translate-y-0.5 focus-visible:outline-none" />
-    </Root>
-  );
-};
-
-export type ColorPickerEyeDropperProps = ComponentProps<typeof Button>;
-
-export const ColorPickerEyeDropper = ({
-  className,
-  ...props
-}: ColorPickerEyeDropperProps) => {
-  const { setColorFromHex } = useColorPicker();
-
-  const handleEyeDropper = async () => {
-    try {
-      // @ts-ignore - EyeDropper API is experimental
-      const eyeDropper = new EyeDropper();
-      const result = await eyeDropper.open();
-      setColorFromHex(result.sRGBHex);
-    } catch (error) {
-      console.error('EyeDropper failed:', error);
-    }
-  };
-
-  return (
-    <Button
-      variant="outline"
-      size="icon"
-      onClick={handleEyeDropper}
-      className={cn('shrink-0 h-8 w-8 text-[hsl(var(--ink-60))] border-[hsl(var(--border))] hover:bg-[hsl(var(--panel))]', className)}
-      {...props}
-    >
-      <PipetteIcon size={14} />
-    </Button>
-  );
-};
-
-export type ColorPickerOutputProps = ComponentProps<typeof SelectTrigger>;
-
-const formats = ['hex', 'rgb', 'hsl'];
-
-export const ColorPickerOutput = ({
-  className,
-  ...props
-}: ColorPickerOutputProps) => {
-  const { mode, setMode } = useColorPicker();
-
-  return (
-    <Select value={mode} onValueChange={setMode}>
-      <SelectTrigger className={cn("h-7 w-16 shrink-0 text-[10px] border-[hsl(var(--border))]", className)} {...props}>
-        <SelectValue placeholder="Mode" />
-      </SelectTrigger>
-      <SelectContent>
-        {formats.map((format) => (
-          <SelectItem key={format} value={format} className="text-[10px]">
-            {format.toUpperCase()}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-};
-
-type PercentageInputProps = ComponentProps<typeof Input>;
-
-const PercentageInput = ({ className, ...props }: PercentageInputProps) => {
-  return (
-    <div className="relative">
-      <Input
-        type="text"
-        {...props}
-        className={cn(
-          'h-7 w-12 rounded-r-[10px] rounded-l-none bg-[hsl(var(--panel))] px-2 text-[10px] shadow-none border-[hsl(var(--border))]',
-          className
-        )}
-      />
-      <span className="absolute top-1/2 left-2 -translate-y-1/2 text-[hsl(var(--ink-60))] text-[10px]">
-        %
-      </span>
-    </div>
-  );
-};
-
-export type ColorPickerFormatProps = HTMLAttributes<HTMLDivElement>;
-
-export const ColorPickerFormat = ({
-  className,
-  ...props
-}: ColorPickerFormatProps) => {
-  const {
-    hue,
-    saturation,
-    lightness,
-    alpha,
-    mode,
-    setColorFromHex,
-    setAlpha,
-  } = useColorPicker();
-
-  const getColor = () => {
-    try {
-      return Color.hsl(hue, saturation, lightness).alpha(alpha / 100);
-    } catch {
-      return Color('#000000');
-    }
-  };
-  
-  const color = getColor();
-
-  if (mode === 'hex') {
-    const hex = color.hex().replace('#', '');
-
-    const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-      const value = event.target.value.replace('#', '');
-      if (value.length >= 3) {
-        setColorFromHex(`#${value}`);
-      }
-    };
-
-    return (
-      <div
-        className={cn('relative flex items-center -space-x-px flex-row-reverse', className)}
-        {...props}
-      >
-        <div className="relative flex-1">
-          <span className="absolute top-1/2 right-2 -translate-y-1/2 text-[10px] text-[hsl(var(--ink-60))]">
-            #
-          </span>
-          <Input
-            type="text"
-            value={hex}
-            onChange={handleChange}
-            className="h-7 rounded-l-[10px] rounded-r-none bg-[hsl(var(--panel))] pr-5 pl-2 text-[10px] shadow-none text-left border-[hsl(var(--border))]"
-          />
-        </div>
-        <PercentageInput 
-          value={Math.round(alpha)} 
-          onChange={(e) => setAlpha(Number(e.target.value) || 0)}
-        />
-      </div>
-    );
-  }
-
-  if (mode === 'rgb') {
-    const rgb = color.rgb().array().map((value) => Math.round(value));
-
-    return (
-      <div
-        className={cn('flex items-center -space-x-px flex-row-reverse', className)}
-        {...props}
-      >
-        {rgb.map((value, index) => (
-          <Input
-            key={index}
-            type="text"
-            value={value}
-            readOnly
-            className={cn(
-              'h-7 bg-[hsl(var(--panel))] px-2 text-[10px] shadow-none text-center border-[hsl(var(--border))] w-10',
-              index === 0 && 'rounded-l-[10px] rounded-r-none',
-              index > 0 && index < 2 && 'rounded-none',
-              index === 2 && 'rounded-r-none rounded-l-none'
-            )}
-          />
-        ))}
-        <PercentageInput value={Math.round(alpha)} />
-      </div>
-    );
-  }
-
-  if (mode === 'hsl') {
-    const hsl = [Math.round(hue), Math.round(saturation), Math.round(lightness)];
-
-    return (
-      <div
-        className={cn('flex items-center -space-x-px flex-row-reverse', className)}
-        {...props}
-      >
-        {hsl.map((value, index) => (
-          <Input
-            key={index}
-            type="text"
-            value={value}
-            readOnly
-            className={cn(
-              'h-7 bg-[hsl(var(--panel))] px-2 text-[10px] shadow-none text-center border-[hsl(var(--border))] w-10',
-              index === 0 && 'rounded-l-[10px] rounded-r-none',
-              index > 0 && index < 2 && 'rounded-none',
-              index === 2 && 'rounded-r-none rounded-l-none'
-            )}
-          />
-        ))}
-        <PercentageInput value={Math.round(alpha)} />
-      </div>
-    );
-  }
-
-  return null;
-};
-
-// Color Presets Component
-export type ColorPickerPresetsProps = HTMLAttributes<HTMLDivElement>;
-
-export const ColorPickerPresets = ({
-  className,
-  ...props
-}: ColorPickerPresetsProps) => {
-  const { setColorFromHex, setAlpha } = useColorPicker();
+export function ColorPickerInput({ value = '#000000', onChange, className }: ColorPickerInputProps) {
   const [recentColors, setRecentColors] = useState<string[]>([]);
 
   useEffect(() => {
     setRecentColors(getRecentColors());
   }, []);
 
-  // Row 1: Basic colors (transparent, black, white, gray)
-  const basicColors = [
-    { color: 'transparent', label: 'شفاف' },
-    { color: '#000000', label: 'أسود' },
-    { color: '#FFFFFF', label: 'أبيض' },
-    { color: '#808080', label: 'رمادي' },
-  ];
-
-  // Row 2: Supra brand colors from design tokens
-  const supraBrandColors = [
-    { color: '#3DBE8B', label: 'أخضر' },
-    { color: '#F6C445', label: 'أصفر' },
-    { color: '#E5564D', label: 'أحمر' },
-    { color: '#3DA8F5', label: 'أزرق' },
-  ];
-
-  const handleColorClick = (color: string) => {
-    if (color === 'transparent') {
-      setAlpha(0);
-    } else {
-      setColorFromHex(color);
-      setAlpha(100);
+  const handleValueChange = (details: { value: any; valueAsString: string }) => {
+    const hex = details.valueAsString;
+    if (onChange) {
+      onChange(hex);
     }
-    // Refresh recent colors
-    setTimeout(() => setRecentColors(getRecentColors()), 100);
+    addRecentColor(hex);
+    setRecentColors(getRecentColors());
   };
 
+  const handlePresetClick = (color: string) => {
+    if (onChange) {
+      onChange(color);
+    }
+    if (color !== 'transparent') {
+      addRecentColor(color);
+      setRecentColors(getRecentColors());
+    }
+  };
+
+  const safeValue = value && value !== 'transparent' ? value : '#000000';
+
   return (
-    <div className={cn('space-y-2', className)} {...props}>
-      {/* Row 1: Basic Colors */}
-      <div className="flex gap-1.5 justify-end">
-        {basicColors.map(({ color, label }) => (
-          <button
-            key={color}
-            type="button"
-            onClick={() => handleColorClick(color)}
-            className={cn(
-              'w-7 h-7 rounded-[6px] border border-[hsl(var(--border))] cursor-pointer hover:scale-110 transition-transform',
-              color === 'transparent' && 'bg-[url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==")]'
-            )}
-            style={{ backgroundColor: color === 'transparent' ? undefined : color }}
-            title={label}
-          />
-        ))}
-      </div>
+    <div className={className}>
+      <ColorPicker.Root 
+        value={parseColor(safeValue)} 
+        onValueChange={handleValueChange}
+      >
+        <div className="space-y-4">
+          {/* Header with input and color swatch */}
+          <div className="flex items-center gap-3">
+            <ColorPicker.Control className="flex-1">
+              <ColorPicker.ChannelInput
+                channel="hex"
+                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+              />
+            </ColorPicker.Control>
+            <ColorPicker.Trigger className="w-12 h-10 rounded-md border-2 border-border overflow-hidden cursor-pointer hover:border-muted-foreground transition-colors">
+              <ColorPicker.TransparencyGrid className="w-full h-full [--size:8px] opacity-50" />
+              <ColorPicker.ValueSwatch className="w-full h-full" />
+            </ColorPicker.Trigger>
+          </div>
 
-      {/* Row 2: Supra Brand Colors */}
-      <div className="flex gap-1.5 justify-end">
-        {supraBrandColors.map(({ color, label }) => (
-          <button
-            key={color}
-            type="button"
-            onClick={() => handleColorClick(color)}
-            className="w-7 h-7 rounded-[6px] border border-[hsl(var(--border))] cursor-pointer hover:scale-110 transition-transform"
-            style={{ backgroundColor: color }}
-            title={label}
-          />
-        ))}
-      </div>
+          {/* Color Picker Content */}
+          <Portal>
+            <ColorPicker.Positioner>
+              <ColorPicker.Content className="bg-background border border-border rounded-lg p-4 shadow-lg space-y-4 z-50 w-80">
+                {/* Color Area */}
+                <ColorPicker.Area className="w-full h-36 rounded-md overflow-hidden relative">
+                  <ColorPicker.AreaBackground className="w-full h-full" />
+                  <ColorPicker.AreaThumb className="absolute w-3 h-3 bg-white border-2 border-black rounded-full shadow-sm -translate-x-1/2 -translate-y-1/2" />
+                </ColorPicker.Area>
 
-      {/* Row 3: Recent Colors */}
-      {recentColors.length > 0 && (
-        <div className="flex gap-1.5 justify-end">
-          {recentColors.slice(0, 6).map((color, index) => (
+                {/* Eye Dropper and Sliders */}
+                <div className="flex items-center gap-3">
+                  <ColorPicker.EyeDropperTrigger className="p-2 text-muted-foreground hover:text-foreground border border-border rounded-md hover:bg-muted transition-colors">
+                    <PipetteIcon className="w-4 h-4" />
+                  </ColorPicker.EyeDropperTrigger>
+
+                  <div className="flex-1 space-y-2">
+                    {/* Hue Slider */}
+                    <ColorPicker.ChannelSlider
+                      channel="hue"
+                      className="relative w-full h-3 rounded-full overflow-hidden"
+                    >
+                      <ColorPicker.ChannelSliderTrack className="w-full h-full bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-cyan-500 via-blue-500 via-purple-500 to-red-500" />
+                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-3 h-3 bg-white border-2 border-black rounded-full shadow-sm -translate-y-1/2 -translate-x-1/2" />
+                    </ColorPicker.ChannelSlider>
+
+                    {/* Alpha Slider */}
+                    <ColorPicker.ChannelSlider
+                      channel="alpha"
+                      className="relative w-full h-3 rounded-full overflow-hidden"
+                    >
+                      <ColorPicker.TransparencyGrid className="w-full h-full [--size:8px]" />
+                      <ColorPicker.ChannelSliderTrack className="w-full h-full" />
+                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-3 h-3 bg-white border-2 border-black rounded-full shadow-sm -translate-y-1/2 -translate-x-1/2" />
+                    </ColorPicker.ChannelSlider>
+                  </div>
+                </div>
+
+                {/* Input Fields */}
+                <div className="flex gap-2">
+                  <ColorPicker.ChannelInput
+                    channel="hex"
+                    className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                  />
+                  <ColorPicker.ChannelInput
+                    channel="alpha"
+                    className="w-16 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                  />
+                </div>
+
+                {/* Row 1: Utility Colors */}
+                <div className="space-y-2">
+                  <h4 className="text-xs font-medium text-muted-foreground">ألوان أساسية</h4>
+                  <div className="flex gap-2">
+                    {UTILITY_COLORS.map(({ color, label }) => (
+                      <button
+                        key={color}
+                        type="button"
+                        title={label}
+                        onClick={() => handlePresetClick(color)}
+                        className="w-8 h-8 rounded-md border border-border cursor-pointer hover:scale-110 transition-transform relative overflow-hidden"
+                        style={{ 
+                          backgroundColor: color === 'transparent' ? undefined : color,
+                        }}
+                      >
+                        {color === 'transparent' && (
+                          <div 
+                            className="absolute inset-0"
+                            style={{
+                              backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
+                              backgroundSize: '8px 8px',
+                              backgroundPosition: '0 0, 0 4px, 4px -4px, -4px 0px'
+                            }}
+                          />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Row 2: Supra Brand Colors */}
+                <div className="space-y-2">
+                  <h4 className="text-xs font-medium text-muted-foreground">ألوان سوبرا</h4>
+                  <div className="flex gap-2">
+                    {SUPRA_COLORS.map(({ color, label }) => (
+                      <button
+                        key={color}
+                        type="button"
+                        title={label}
+                        onClick={() => handlePresetClick(color)}
+                        className="w-8 h-8 rounded-md border border-border cursor-pointer hover:scale-110 transition-transform"
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Row 3: Recent Colors */}
+                {recentColors.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-medium text-muted-foreground">الألوان الأخيرة</h4>
+                    <div className="flex gap-2">
+                      {recentColors.map((color, index) => (
+                        <button
+                          key={`${color}-${index}`}
+                          type="button"
+                          onClick={() => handlePresetClick(color)}
+                          className="w-8 h-8 rounded-md border border-border cursor-pointer hover:scale-110 transition-transform"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </ColorPicker.Content>
+            </ColorPicker.Positioner>
+          </Portal>
+        </div>
+        <ColorPicker.HiddenInput />
+      </ColorPicker.Root>
+    </div>
+  );
+}
+
+// Inline version for simple use cases (like sticky notes)
+export function InlineColorPicker({ value, onChange, className }: ColorPickerInputProps) {
+  const [recentColors, setRecentColors] = useState<string[]>([]);
+
+  useEffect(() => {
+    setRecentColors(getRecentColors());
+  }, []);
+
+  const handleColorClick = (color: string) => {
+    if (onChange) {
+      onChange(color);
+    }
+    if (color !== 'transparent') {
+      addRecentColor(color);
+      setRecentColors(getRecentColors());
+    }
+  };
+
+  const allPresets = [...UTILITY_COLORS, ...SUPRA_COLORS];
+
+  return (
+    <div className={className}>
+      <div className="space-y-3">
+        {/* Basic presets */}
+        <div className="flex flex-wrap gap-2">
+          {allPresets.map(({ color, label }) => (
             <button
-              key={`${color}-${index}`}
+              key={color}
               type="button"
+              title={label}
               onClick={() => handleColorClick(color)}
-              className="w-7 h-7 rounded-[6px] border border-[hsl(var(--border))] cursor-pointer hover:scale-110 transition-transform"
-              style={{ backgroundColor: color }}
-              title="لون مستخدم مسبقاً"
-            />
+              className={`w-7 h-7 rounded-md border-2 cursor-pointer hover:scale-110 transition-transform relative overflow-hidden ${
+                value === color ? 'border-foreground ring-2 ring-ring' : 'border-border'
+              }`}
+              style={{ 
+                backgroundColor: color === 'transparent' ? undefined : color,
+              }}
+            >
+              {color === 'transparent' && (
+                <div 
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
+                    backgroundSize: '6px 6px',
+                    backgroundPosition: '0 0, 0 3px, 3px -3px, -3px 0px'
+                  }}
+                />
+              )}
+            </button>
           ))}
         </div>
-      )}
-    </div>
-  );
-};
 
-// Wrapper component for easy integration (compatible with old API)
-interface ColorPickerInputProps {
-  value: string;
-  onChange: (color: string) => void;
-  label?: string;
-}
-
-export function ColorPickerInput({ value, onChange, label }: ColorPickerInputProps) {
-  return (
-    <div className="w-full">
-      {label && (
-        <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block text-right">
-          {label}
-        </label>
-      )}
-      <ColorPicker 
-        value={value} 
-        onChange={onChange}
-        className="w-full rounded-[12px] border border-[hsl(var(--border))] bg-white p-3 shadow-sm"
-      >
-        <ColorPickerSelection />
-        <div className="flex items-center gap-3 flex-row-reverse">
-          <ColorPickerEyeDropper />
-          <div className="flex-1 space-y-1.5">
-            <ColorPickerHue />
-            <ColorPickerAlpha />
+        {/* Recent colors */}
+        {recentColors.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {recentColors.map((color, index) => (
+              <button
+                key={`${color}-${index}`}
+                type="button"
+                onClick={() => handleColorClick(color)}
+                className={`w-7 h-7 rounded-md border-2 cursor-pointer hover:scale-110 transition-transform ${
+                  value === color ? 'border-foreground ring-2 ring-ring' : 'border-border'
+                }`}
+                style={{ backgroundColor: color }}
+              />
+            ))}
           </div>
-        </div>
-        <div className="flex items-center gap-2 flex-row-reverse">
-          <ColorPickerOutput />
-          <ColorPickerFormat className="flex-1" />
-        </div>
-        <ColorPickerPresets />
-      </ColorPicker>
-    </div>
-  );
-}
-
-// Simple inline color picker (for sticky notes)
-interface InlineColorPickerProps {
-  value: string;
-  onChange: (color: string) => void;
-  presets?: string[];
-}
-
-export function InlineColorPicker({ value, onChange, presets }: InlineColorPickerProps) {
-  const defaultPresets = [
-    "#3B82F6",
-    "#F87171", 
-    "#FBBF24",
-    "#E9D5FF",
-    "#BBF7D0",
-    "#93C5FD",
-    "#FBCFE8",
-    "#FEF9C3",
-  ];
-
-  const colorPresets = presets || defaultPresets;
-
-  return (
-    <div className="flex flex-wrap gap-2 justify-end" dir="rtl">
-      {colorPresets.map((color) => (
-        <button
-          key={color}
-          type="button"
-          onClick={() => onChange(color)}
-          className={cn(
-            "w-10 h-10 rounded-[10px] border-2 cursor-pointer hover:scale-105 transition-transform",
-            value === color ? "border-[hsl(var(--ink))]" : "border-[hsl(var(--border))]"
-          )}
-          style={{ backgroundColor: color }}
-        >
-          {value === color && (
-            <span className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
-              ✓
-            </span>
-          )}
-        </button>
-      ))}
+        )}
+      </div>
     </div>
   );
 }
