@@ -118,24 +118,24 @@ export function ColorPickerInput({ value = '#000000', onChange, className }: Col
                     <PipetteIcon className="w-4 h-4" />
                   </ColorPicker.EyeDropperTrigger>
 
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 space-y-3">
                     {/* Hue Slider */}
                     <ColorPicker.ChannelSlider
                       channel="hue"
-                      className="relative w-full h-3 rounded-full overflow-hidden"
+                      className="relative w-full h-5 flex items-center"
                     >
-                      <ColorPicker.ChannelSliderTrack className="w-full h-full bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-cyan-500 via-blue-500 via-purple-500 to-red-500" />
-                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-3 h-3 bg-white border-2 border-black rounded-full shadow-sm -translate-y-1/2 -translate-x-1/2" />
+                      <ColorPicker.ChannelSliderTrack className="w-full h-4 rounded-full" style={{ background: 'linear-gradient(to right, #00FF00, #00FFFF, #0066FF, #0000FF, #6600FF, #FF00FF, #FF0066, #FF0000)' }} />
+                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-4 h-7 bg-current rounded-full -translate-y-1/2 -translate-x-1/2 border-[3px] border-white shadow-[0_2px_8px_rgba(0,0,0,0.3)]" />
                     </ColorPicker.ChannelSlider>
 
                     {/* Alpha Slider */}
                     <ColorPicker.ChannelSlider
                       channel="alpha"
-                      className="relative w-full h-3 rounded-full overflow-hidden"
+                      className="relative w-full h-5 flex items-center"
                     >
-                      <ColorPicker.TransparencyGrid className="w-full h-full [--size:8px]" />
-                      <ColorPicker.ChannelSliderTrack className="w-full h-full" />
-                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-3 h-3 bg-white border-2 border-black rounded-full shadow-sm -translate-y-1/2 -translate-x-1/2" />
+                      <ColorPicker.TransparencyGrid className="w-full h-4 rounded-full [--size:8px]" />
+                      <ColorPicker.ChannelSliderTrack className="w-full h-4 rounded-full" />
+                      <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-4 h-7 bg-current rounded-full -translate-y-1/2 -translate-x-1/2 border-[3px] border-white shadow-[0_2px_8px_rgba(0,0,0,0.3)]" />
                     </ColorPicker.ChannelSlider>
                   </div>
                 </div>
