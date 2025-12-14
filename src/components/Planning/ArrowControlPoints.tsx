@@ -24,11 +24,12 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
 }) => {
   const { elements, updateElement } = useCanvasStore();
   
-  const [dragState, setDragState] = useState<ArrowControlDragState>({
+  const [dragState, setDragState] = useState<ArrowControlDragState & { initialMousePos?: { x: number; y: number } | null }>({
     isDragging: false,
     controlPoint: null,
     startPosition: null,
-    nearestAnchor: null
+    nearestAnchor: null,
+    initialMousePos: null
   });
 
   // الحصول على بيانات السهم أو إنشاء بيانات افتراضية بناءً على نوع السهم
@@ -142,23 +143,29 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         ? arrowData.endPoint 
         : getMiddlePoint();
 
+    // ✅ حفظ موقع الماوس الأولي وموقع النقطة الأصلي
     setDragState({
       isDragging: true,
       controlPoint,
-      startPosition: point,
-      nearestAnchor: null
+      startPosition: { ...point },
+      nearestAnchor: null,
+      initialMousePos: { x: e.clientX, y: e.clientY }
     });
   }, [arrowData]);
 
   // معالجة السحب
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!dragState.isDragging || !dragState.controlPoint) return;
+    if (!dragState.isDragging || !dragState.controlPoint || !dragState.initialMousePos || !dragState.startPosition) return;
 
-    // تحويل إحداثيات الشاشة إلى إحداثيات الكانفاس
-    const canvasX = (e.clientX - viewport.pan.x) / viewport.zoom - element.position.x;
-    const canvasY = (e.clientY - viewport.pan.y) / viewport.zoom - element.position.y;
+    // ✅ حساب الفرق بين موقع الماوس الحالي والأولي (مع مراعاة الزوم)
+    const deltaX = (e.clientX - dragState.initialMousePos.x) / viewport.zoom;
+    const deltaY = (e.clientY - dragState.initialMousePos.y) / viewport.zoom;
 
-    const newPoint: ArrowPoint = { x: canvasX, y: canvasY };
+    // ✅ إضافة الفرق إلى موقع النقطة الأصلي
+    const newPoint: ArrowPoint = { 
+      x: dragState.startPosition.x + deltaX, 
+      y: dragState.startPosition.y + deltaY 
+    };
 
     // البحث عن أقرب نقطة ارتكاز للإلتصاق
     const absolutePoint = { x: e.clientX, y: e.clientY };
@@ -215,7 +222,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       isDragging: false,
       controlPoint: null,
       startPosition: null,
-      nearestAnchor: null
+      nearestAnchor: null,
+      initialMousePos: null
     });
   }, []);
 
