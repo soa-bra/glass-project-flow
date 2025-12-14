@@ -31,18 +31,71 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     nearestAnchor: null
   });
 
-  // الحصول على بيانات السهم أو إنشاء بيانات افتراضية بناءً على أبعاد العنصر الفعلية
+  // الحصول على بيانات السهم أو إنشاء بيانات افتراضية بناءً على نوع السهم
   const getDefaultArrowData = (): ArrowData => {
     const { width, height } = element.size;
-    // تحديد نقاط البداية والنهاية بناءً على أبعاد السهم
+    const shapeType = element.shapeType || element.data?.shapeType || 'arrow_right';
+    
+    let startPoint: { x: number; y: number };
+    let endPoint: { x: number; y: number };
+    let headDirection: 'start' | 'end' | 'both' = 'end';
+
+    switch (shapeType) {
+      case 'arrow_right':
+        startPoint = { x: 0, y: height / 2 };
+        endPoint = { x: width, y: height / 2 };
+        break;
+      case 'arrow_left':
+        startPoint = { x: width, y: height / 2 };
+        endPoint = { x: 0, y: height / 2 };
+        break;
+      case 'arrow_up':
+        startPoint = { x: width / 2, y: height };
+        endPoint = { x: width / 2, y: 0 };
+        break;
+      case 'arrow_down':
+        startPoint = { x: width / 2, y: 0 };
+        endPoint = { x: width / 2, y: height };
+        break;
+      case 'arrow_up_right':
+        startPoint = { x: 0, y: height };
+        endPoint = { x: width, y: 0 };
+        break;
+      case 'arrow_down_right':
+        startPoint = { x: 0, y: 0 };
+        endPoint = { x: width, y: height };
+        break;
+      case 'arrow_up_left':
+        startPoint = { x: width, y: height };
+        endPoint = { x: 0, y: 0 };
+        break;
+      case 'arrow_down_left':
+        startPoint = { x: width, y: 0 };
+        endPoint = { x: 0, y: height };
+        break;
+      case 'arrow_double_horizontal':
+        startPoint = { x: 0, y: height / 2 };
+        endPoint = { x: width, y: height / 2 };
+        headDirection = 'both';
+        break;
+      case 'arrow_double_vertical':
+        startPoint = { x: width / 2, y: 0 };
+        endPoint = { x: width / 2, y: height };
+        headDirection = 'both';
+        break;
+      default:
+        startPoint = { x: 0, y: height / 2 };
+        endPoint = { x: width, y: height / 2 };
+    }
+
     return {
-      startPoint: { x: 0, y: height / 2 },
+      startPoint,
       middlePoint: null,
-      endPoint: { x: width, y: height / 2 },
+      endPoint,
       startConnection: null,
       endConnection: null,
       arrowType: 'straight',
-      headDirection: 'end'
+      headDirection
     };
   };
 
