@@ -155,11 +155,11 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
                 <div className="flex gap-3">
                   <ColorPicker.ChannelInput
                     channel="hex"
-                    className="flex-1 text-base text-center border border-border rounded-full bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent py-px px-[21px]"
+                    className="flex-1 text-base text-center border border-border rounded-full bg-transparent text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent py-px px-[21px]"
                   />
                   <ColorPicker.ChannelInput
                     channel="alpha"
-                    className="w-24 text-base text-center border border-border rounded-full bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent py-0 px-0"
+                    className="w-24 text-base text-center border border-border rounded-full bg-transparent text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent py-0 px-0"
                   />
                 </div>
 
