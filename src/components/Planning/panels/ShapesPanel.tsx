@@ -3,7 +3,7 @@ import {
   Circle, Square, Triangle, Hexagon, Star, Heart, Diamond, Pentagon, Octagon,
   Mail, Settings, User, Home, Phone, Calendar, Bell, Search, Camera, Folder,
   ArrowRight, ArrowLeft, ArrowUp, ArrowDown, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft,
-  MoveRight, MoveLeft, CornerDownRight, CornerUpRight,
+  MoveHorizontal, MoveVertical, Move, Maximize2,
   Shapes, StickyNote, FileText
 } from 'lucide-react';
 import { useCanvasStore, type ShapeType } from '@/stores/canvasStore';
@@ -53,18 +53,18 @@ const ShapesPanel: React.FC = () => {
   ];
 
   const arrows = [
-    { icon: <ArrowRight size={28} />, name: 'يمين' },
-    { icon: <ArrowLeft size={28} />, name: 'يسار' },
-    { icon: <ArrowUp size={28} />, name: 'أعلى' },
-    { icon: <ArrowDown size={28} />, name: 'أسفل' },
-    { icon: <ArrowUpRight size={28} />, name: 'أعلى يمين' },
-    { icon: <ArrowDownRight size={28} />, name: 'أسفل يمين' },
-    { icon: <ArrowUpLeft size={28} />, name: 'أعلى يسار' },
-    { icon: <ArrowDownLeft size={28} />, name: 'أسفل يسار' },
-    { icon: <MoveRight size={28} />, name: 'نقل يمين' },
-    { icon: <MoveLeft size={28} />, name: 'نقل يسار' },
-    { icon: <CornerDownRight size={28} />, name: 'زاوية أسفل' },
-    { icon: <CornerUpRight size={28} />, name: 'زاوية أعلى' },
+    { icon: <ArrowRight size={28} />, name: 'يمين', type: 'arrow_right' },
+    { icon: <ArrowLeft size={28} />, name: 'يسار', type: 'arrow_left' },
+    { icon: <ArrowUp size={28} />, name: 'أعلى', type: 'arrow_up' },
+    { icon: <ArrowDown size={28} />, name: 'أسفل', type: 'arrow_down' },
+    { icon: <ArrowUpRight size={28} />, name: 'أعلى يمين', type: 'arrow_up_right' },
+    { icon: <ArrowDownRight size={28} />, name: 'أسفل يمين', type: 'arrow_down_right' },
+    { icon: <ArrowUpLeft size={28} />, name: 'أعلى يسار', type: 'arrow_up_left' },
+    { icon: <ArrowDownLeft size={28} />, name: 'أسفل يسار', type: 'arrow_down_left' },
+    { icon: <MoveHorizontal size={28} />, name: 'أفقي برأسين', type: 'arrow_double_horizontal' },
+    { icon: <MoveVertical size={28} />, name: 'عمودي برأسين', type: 'arrow_double_vertical' },
+    { icon: <Move size={28} />, name: 'أربع اتجاهات', type: 'arrow_four_way' },
+    { icon: <Maximize2 size={28} />, name: 'قطري برأسين', type: 'arrow_double_diagonal' },
   ];
 
   const stickyColors = [
@@ -290,14 +290,12 @@ const ShapesPanel: React.FC = () => {
               الأسهم والاتجاهات
             </h4>
             <div className="grid grid-cols-4 gap-2">
-              {arrows.map((arrow, index) => {
-                const arrowTypes = ['arrow_right', 'arrow_left', 'arrow_up', 'arrow_down', 'arrow_up_right', 'arrow_down_right', 'arrow_up_left', 'arrow_down_left', 'arrow_right', 'arrow_left', 'arrow_down_right', 'arrow_up_right'];
-                const arrowType = arrowTypes[index];
-                const isSelected = shapeType === arrowType;
+              {arrows.map((arrow) => {
+                const isSelected = shapeType === arrow.type;
                 return (
                   <button
-                    key={index}
-                    onClick={() => handleArrowSelect(arrowType, arrow.name)}
+                    key={arrow.type}
+                    onClick={() => handleArrowSelect(arrow.type, arrow.name)}
                     className={`group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 transition-all ${
                       isSelected
                         ? 'border-[hsl(var(--accent-blue))] bg-[hsl(var(--accent-blue))]/5'
