@@ -31,29 +31,29 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     nearestAnchor: null
   });
 
-  // الحصول على بيانات السهم أو إنشاء بيانات افتراضية
-  const arrowData: ArrowData = element.data?.arrowData || {
-    startPoint: { x: 0, y: element.size.height / 2 },
-    middlePoint: null,
-    endPoint: { x: element.size.width, y: element.size.height / 2 },
-    startConnection: null,
-    endConnection: null,
-    arrowType: 'straight',
-    headDirection: 'end'
+  // الحصول على بيانات السهم أو إنشاء بيانات افتراضية بناءً على أبعاد العنصر الفعلية
+  const getDefaultArrowData = (): ArrowData => {
+    const { width, height } = element.size;
+    // تحديد نقاط البداية والنهاية بناءً على أبعاد السهم
+    return {
+      startPoint: { x: 0, y: height / 2 },
+      middlePoint: null,
+      endPoint: { x: width, y: height / 2 },
+      startConnection: null,
+      endConnection: null,
+      arrowType: 'straight',
+      headDirection: 'end'
+    };
   };
 
-  // تحويل إحداثيات نسبية إلى إحداثيات مطلقة على الشاشة
-  const getAbsolutePosition = (relativePoint: ArrowPoint): ArrowPoint => ({
-    x: element.position.x + relativePoint.x,
-    y: element.position.y + relativePoint.y
-  });
+  const arrowData: ArrowData = element.data?.arrowData || getDefaultArrowData();
 
-  // حساب موقع النقطة الوسطى
+  // حساب موقع النقطة الوسطى (دائماً في منتصف الخط الفعلي للسهم)
   const getMiddlePoint = (): ArrowPoint => {
     if (arrowData.middlePoint) {
       return arrowData.middlePoint;
     }
-    // النقطة الوسطى الافتراضية
+    // النقطة الوسطى على الخط بين البداية والنهاية
     return {
       x: (arrowData.startPoint.x + arrowData.endPoint.x) / 2,
       y: (arrowData.startPoint.y + arrowData.endPoint.y) / 2
@@ -170,31 +170,27 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     }
   }, [dragState.isDragging, handleMouseMove, handleMouseUp]);
 
-  // نمط نقطة التحكم
-  const controlPointStyle = (isConnected: boolean, isHovered: boolean) => ({
-    width: 12,
-    height: 12,
+  // نمط نقطة التحكم (مطابق لـ ResizeHandle)
+  const controlPointStyle = (isConnected: boolean) => ({
+    width: 8,
+    height: 8,
     borderRadius: '50%',
-    backgroundColor: isConnected ? 'hsl(var(--accent-green))' : 'white',
-    border: `2px solid ${isConnected ? 'hsl(var(--accent-green))' : 'hsl(var(--accent-blue))'}`,
+    backgroundColor: isConnected ? 'hsl(var(--accent-green))' : '#FFFFFF',
+    border: '1px solid #000000',
     cursor: 'grab',
-    boxShadow: isHovered 
-      ? '0 0 0 4px rgba(61, 168, 245, 0.3)' 
-      : '0 2px 4px rgba(0, 0, 0, 0.2)',
-    transition: 'box-shadow 0.15s ease',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.15)',
     zIndex: 1000
   });
 
-  // نمط النقطة الوسطى
+  // نمط النقطة الوسطى (مطابق للنقاط الأخرى)
   const middlePointStyle = {
-    width: 10,
-    height: 10,
-    borderRadius: '2px',
-    backgroundColor: arrowData.arrowType === 'elbow' ? 'hsl(var(--accent-yellow))' : 'white',
-    border: '2px solid hsl(var(--accent-yellow))',
+    width: 8,
+    height: 8,
+    borderRadius: '50%',
+    backgroundColor: arrowData.arrowType === 'elbow' ? 'hsl(var(--accent-green))' : '#FFFFFF',
+    border: '1px solid #000000',
     cursor: 'grab',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-    transform: 'rotate(45deg)',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.15)',
     zIndex: 1000
   };
 
@@ -233,9 +229,9 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       <div
         className="absolute"
         style={{
-          left: startPos.x - 6,
-          top: startPos.y - 6,
-          ...controlPointStyle(!!arrowData.startConnection, dragState.controlPoint === 'start')
+          left: startPos.x - 4,
+          top: startPos.y - 4,
+          ...controlPointStyle(!!arrowData.startConnection)
         }}
         onMouseDown={(e) => handleMouseDown(e, 'start')}
         title="نقطة البداية - اسحب للاتصال بعنصر"
@@ -245,8 +241,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       <div
         className="absolute"
         style={{
-          left: middlePos.x - 5,
-          top: middlePos.y - 5,
+          left: middlePos.x - 4,
+          top: middlePos.y - 4,
           ...middlePointStyle
         }}
         onMouseDown={(e) => handleMouseDown(e, 'middle')}
@@ -257,9 +253,9 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       <div
         className="absolute"
         style={{
-          left: endPos.x - 6,
-          top: endPos.y - 6,
-          ...controlPointStyle(!!arrowData.endConnection, dragState.controlPoint === 'end')
+          left: endPos.x - 4,
+          top: endPos.y - 4,
+          ...controlPointStyle(!!arrowData.endConnection)
         }}
         onMouseDown={(e) => handleMouseDown(e, 'end')}
         title="نقطة النهاية - اسحب للاتصال بعنصر"
