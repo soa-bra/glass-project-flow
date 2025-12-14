@@ -259,6 +259,22 @@
   animation: drawing-fade-in 0.2s ease-out;
 }
 
+/* إزالة كل أنماط الـ Bounding Box من الأسهم */
+.arrow-element {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+.arrow-element:focus,
+.arrow-element:active,
+.arrow-element:hover {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 @layer base {
   * {
     @apply border-border;
