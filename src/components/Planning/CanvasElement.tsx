@@ -183,17 +183,19 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         border: isSelected 
           ? '2px solid hsl(var(--accent-green))' 
           : (element.data?.textType === 'box' ? '1px solid hsl(var(--border))' : 'none'),
-        borderRadius: element.data?.textType === 'box' ? '8px' : '0',
-        padding: element.data?.textType === 'box' ? '12px' : '4px',
-        backgroundColor: element.data?.textType === 'box' 
-          ? (element.style?.backgroundColor || '#FFFFFF')
-          : (element.style?.backgroundColor || 'transparent'),
+        borderRadius: element.type === 'shape' ? '0' : (element.data?.textType === 'box' ? '8px' : '0'),
+        padding: element.type === 'shape' ? '0' : (element.data?.textType === 'box' ? '12px' : '4px'),
+        backgroundColor: element.type === 'shape' 
+          ? 'transparent'
+          : (element.data?.textType === 'box' 
+            ? (element.style?.backgroundColor || '#FFFFFF')
+            : (element.style?.backgroundColor || 'transparent')),
         boxShadow: isSelected 
           ? '0 0 0 2px rgba(61, 190, 139, 0.2)'
           : (element.data?.textType === 'box' ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none'),
         opacity: isLocked ? 0.6 : 1,
         pointerEvents: isLocked ? 'none' : 'auto',
-        ...element.style
+        ...(element.type !== 'shape' ? element.style : {})
       }}
     >
       {/* Element Content */}

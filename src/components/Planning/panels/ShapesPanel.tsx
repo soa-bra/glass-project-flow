@@ -77,19 +77,32 @@ const ShapesPanel: React.FC = () => {
     toast.success(`تم اختيار ${name} - انقر واسحب على الكانفاس`);
   };
 
-  const handleIconSelect = (name: string) => {
+  const handleIconSelect = (iconName: string, name: string) => {
+    updateToolSettings('shapes', { 
+      shapeType: 'icon' as ShapeType,
+      iconName: iconName,
+      fillColor: fillColor
+    });
     setActiveTool('shapes_tool');
-    toast.success(`تم اختيار أيقونة ${name}`);
+    toast.success(`تم اختيار أيقونة ${name} - انقر واسحب على الكانفاس`);
   };
 
-  const handleArrowSelect = (name: string) => {
+  const handleArrowSelect = (arrowType: string, name: string) => {
+    updateToolSettings('shapes', { 
+      shapeType: arrowType as ShapeType 
+    });
     setActiveTool('shapes_tool');
-    toast.success(`تم اختيار سهم ${name}`);
+    toast.success(`تم اختيار سهم ${name} - انقر واسحب على الكانفاس`);
   };
 
   const handleAddStickyNote = () => {
+    updateToolSettings('shapes', { 
+      shapeType: 'sticky' as ShapeType,
+      fillColor: selectedStickyColor,
+      stickyText: stickyText
+    });
     setActiveTool('shapes_tool');
-    toast.success('تم إضافة ستيكي نوت');
+    toast.success('انقر واسحب على الكانفاس لإضافة ستيكي نوت');
   };
 
   return (
@@ -230,20 +243,23 @@ const ShapesPanel: React.FC = () => {
               مكتبة الأيقونات
             </h4>
             <div className="grid grid-cols-4 gap-2">
-              {icons.map((icon, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleIconSelect(icon.name)}
-                  className="group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-white transition-all"
-                >
-                  <span className="text-[hsl(var(--accent-blue))]">
-                    {icon.icon}
-                  </span>
-                  <span className="text-[9px] font-medium text-[hsl(var(--ink-60))]">
-                    {icon.name}
-                  </span>
-                </button>
-              ))}
+              {icons.map((icon, index) => {
+                const iconNames = ['Home', 'User', 'Settings', 'Mail', 'Phone', 'Calendar', 'Star', 'Heart', 'Bell', 'Search', 'Camera', 'Folder'];
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleIconSelect(iconNames[index], icon.name)}
+                    className="group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-white transition-all"
+                  >
+                    <span className="text-[hsl(var(--accent-blue))]">
+                      {icon.icon}
+                    </span>
+                    <span className="text-[9px] font-medium text-[hsl(var(--ink-60))]">
+                      {icon.name}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -264,20 +280,23 @@ const ShapesPanel: React.FC = () => {
               الأسهم والاتجاهات
             </h4>
             <div className="grid grid-cols-4 gap-2">
-              {arrows.map((arrow, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleArrowSelect(arrow.name)}
-                  className="group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-white transition-all"
-                >
-                  <span className="text-[hsl(var(--ink-60))]">
-                    {arrow.icon}
-                  </span>
-                  <span className="text-[9px] font-medium text-[hsl(var(--ink-60))]">
-                    {arrow.name}
-                  </span>
-                </button>
-              ))}
+              {arrows.map((arrow, index) => {
+                const arrowTypes = ['arrow_right', 'arrow_left', 'arrow_up', 'arrow_down', 'arrow_up_right', 'arrow_down_right', 'arrow_up_left', 'arrow_down_left', 'arrow_right', 'arrow_left', 'arrow_down_right', 'arrow_up_right'];
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleArrowSelect(arrowTypes[index], arrow.name)}
+                    className="group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-white transition-all"
+                  >
+                    <span className="text-[hsl(var(--ink-60))]">
+                      {arrow.icon}
+                    </span>
+                    <span className="text-[9px] font-medium text-[hsl(var(--ink-60))]">
+                      {arrow.name}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
