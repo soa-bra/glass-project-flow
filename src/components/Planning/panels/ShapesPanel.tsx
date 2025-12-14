@@ -177,20 +177,29 @@ const ShapesPanel: React.FC = () => {
                   <span className="text-[11px] text-[hsl(var(--ink-60))]">px</span>
                 </div>
               </div>
-              <input
-                type="range"
-                min={0}
-                max={20}
-                value={strokeWidth}
-                onChange={(e) => updateToolSettings('shapes', { strokeWidth: Number(e.target.value) })}
-                className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
-                  [&::-webkit-slider-thumb]:appearance-none
-                  [&::-webkit-slider-thumb]:w-4
-                  [&::-webkit-slider-thumb]:h-4
-                  [&::-webkit-slider-thumb]:rounded-full
-                  [&::-webkit-slider-thumb]:bg-[hsl(var(--accent-green))]
-                  [&::-webkit-slider-thumb]:cursor-pointer"
-              />
+              <div className="relative h-6 flex items-center">
+                <input
+                  type="range"
+                  min={0}
+                  max={20}
+                  value={strokeWidth}
+                  onChange={(e) => updateToolSettings('shapes', { strokeWidth: Number(e.target.value) })}
+                  className="w-full h-2 bg-[hsl(var(--panel))] rounded-full appearance-none cursor-pointer
+                    [&::-webkit-slider-thumb]:appearance-none
+                    [&::-webkit-slider-thumb]:w-4
+                    [&::-webkit-slider-thumb]:h-4
+                    [&::-webkit-slider-thumb]:rounded-full
+                    [&::-webkit-slider-thumb]:bg-[hsl(var(--accent-green))]
+                    [&::-webkit-slider-thumb]:cursor-pointer
+                    [&::-webkit-slider-thumb]:shadow-md
+                    [&::-moz-range-thumb]:w-4
+                    [&::-moz-range-thumb]:h-4
+                    [&::-moz-range-thumb]:rounded-full
+                    [&::-moz-range-thumb]:bg-[hsl(var(--accent-green))]
+                    [&::-moz-range-thumb]:border-0
+                    [&::-moz-range-thumb]:cursor-pointer"
+                />
+              </div>
             </div>
 
             {/* Stroke Color */}
