@@ -11,7 +11,12 @@ export type ToolId =
   | "shapes_tool"
   | "smart_element_tool";
 
-export type ShapeType = 'rectangle' | 'circle' | 'triangle' | 'line' | 'star' | 'hexagon';
+export type ShapeType = 
+  | 'rectangle' | 'circle' | 'triangle' | 'line' | 'star' | 'hexagon'
+  | 'pentagon' | 'octagon' | 'diamond'
+  | 'arrow_right' | 'arrow_left' | 'arrow_up' | 'arrow_down'
+  | 'arrow_up_right' | 'arrow_down_right' | 'arrow_up_left' | 'arrow_down_left'
+  | 'icon' | 'sticky';
 
 // Pen Tool Types
 export type LineStyle = 'solid' | 'dashed' | 'dotted' | 'double';
@@ -78,6 +83,8 @@ export interface ToolSettings {
     strokeWidth: number;
     opacity: number;
     shapeType: ShapeType;
+    iconName?: string;
+    stickyText?: string;
   };
   text: {
     fontSize: number;
