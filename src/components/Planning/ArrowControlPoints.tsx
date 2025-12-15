@@ -360,6 +360,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     e.stopPropagation();
     e.preventDefault();
 
+    // ✅ تفعيل Internal Drag لمنع تعارض السحب مع CanvasElement
+    useCanvasStore.getState().setInternalDrag(true);
     const controlPointType = cp.id === 'start' || (cp.type === 'endpoint' && displayControlPoints.indexOf(cp as ArrowCP) === 0)
       ? 'start'
       : cp.id === 'end' || (cp.type === 'endpoint' && displayControlPoints.indexOf(cp as ArrowCP) === displayControlPoints.length - 1)
@@ -1215,6 +1217,11 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         data: { ...(currentElement?.data || element.data), arrowData: updatedArrowData }
       });
     }
+    
+    // ✅ إيقاف Internal Drag
+    useCanvasStore.getState().setInternalDrag(false);
+    // ✅ إيقاف Internal Drag في حالة عدم وجود nearestAnchor أيضاً
+    useCanvasStore.getState().setInternalDrag(false);
     
     setDragState({
       isDragging: false,
