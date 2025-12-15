@@ -509,7 +509,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         return 'default';
     }
   };
-  return <div ref={containerRef} className="relative w-full h-full overflow-hidden" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onDrop={handleFileDrop} onDragOver={handleFileDragOver} style={{
+  return <div ref={containerRef} data-canvas-container="true" className="relative w-full h-full overflow-hidden infinite-canvas-container" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onDrop={handleFileDrop} onDragOver={handleFileDragOver} style={{
     backgroundColor: settings.background,
     cursor: getCursorStyle()
   }}>
