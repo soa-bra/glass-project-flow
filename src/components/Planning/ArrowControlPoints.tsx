@@ -346,40 +346,44 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     let newSegments: ArrowSegment[];
     
     if (isVerticalSegment) {
-      // ضلع عمودي -> نقسمه: عمودي -> أفقي -> عمودي
+      // ضلع عمودي -> النقطة تتحرك أفقياً (يمين/يسار)
+      // نقسمه: عمودي -> أفقي -> عمودي
+      const midY = midpoint.position.y; // نستخدم Y الأصلية للنقطة
       newSegments = [
         {
           id: seg1Id,
           startPoint: segment.startPoint,
-          endPoint: { x: segment.startPoint.x, y: newPosition.y }
+          endPoint: { x: segment.startPoint.x, y: midY }
         },
         {
           id: seg2Id,
-          startPoint: { x: segment.startPoint.x, y: newPosition.y },
-          endPoint: { x: newPosition.x, y: newPosition.y }
+          startPoint: { x: segment.startPoint.x, y: midY },
+          endPoint: { x: newPosition.x, y: midY } // ضلع أفقي يمتد لليمين/اليسار
         },
         {
           id: seg3Id,
-          startPoint: { x: newPosition.x, y: newPosition.y },
+          startPoint: { x: newPosition.x, y: midY },
           endPoint: { x: newPosition.x, y: segment.endPoint.y }
         }
       ];
     } else {
-      // ضلع أفقي -> نقسمه: أفقي -> عمودي -> أفقي
+      // ضلع أفقي -> النقطة تتحرك عمودياً (أعلى/أسفل)
+      // نقسمه: أفقي -> عمودي -> أفقي
+      const midX = midpoint.position.x; // نستخدم X الأصلية للنقطة
       newSegments = [
         {
           id: seg1Id,
           startPoint: segment.startPoint,
-          endPoint: { x: newPosition.x, y: segment.startPoint.y }
+          endPoint: { x: midX, y: segment.startPoint.y }
         },
         {
           id: seg2Id,
-          startPoint: { x: newPosition.x, y: segment.startPoint.y },
-          endPoint: { x: newPosition.x, y: newPosition.y }
+          startPoint: { x: midX, y: segment.startPoint.y },
+          endPoint: { x: midX, y: newPosition.y } // ضلع عمودي يمتد للأعلى/الأسفل
         },
         {
           id: seg3Id,
-          startPoint: { x: newPosition.x, y: newPosition.y },
+          startPoint: { x: midX, y: newPosition.y },
           endPoint: { x: segment.endPoint.x, y: newPosition.y }
         }
       ];
