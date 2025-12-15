@@ -1,9 +1,3 @@
-/**
- * Arrow Routing System – FIXED VERSION
- * Rule Zero enforced:
- * Any arrow–element connection MUST end as a clean T.
- */
-
 import type {
   ArrowPoint,
   ArrowData,
@@ -13,191 +7,228 @@ import type {
 } from "@/types/arrow-connections";
 import { generateId } from "@/types/arrow-connections";
 
-/* ========================================================= */
-/* Types                                                     */
-/* ========================================================= */
+/* =====================================================
+   Config
+===================================================== */
 
-export type SegmentOrientation = "horizontal" | "vertical";
-export type EdgeOrientation = "horizontal" | "vertical";
-export type SnapEdge = "top" | "bottom" | "left" | "right";
+const OFFSET = 10;
+const EXTEND = 10;
 
-export interface TargetElement {
-  id: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-}
+/* =====================================================
+   Geometry helpers
+===================================================== */
 
-export interface RoutingConfig {
-  OFFSET_DISTANCE: number;
-  EXTENSION_DISTANCE: number;
-}
+type Orientation = "horizontal" | "vertical";
+type SnapEdge = "top" | "bottom" | "left" | "right";
 
-const CONFIG: RoutingConfig = {
-  OFFSET_DISTANCE: 10,
-  EXTENSION_DISTANCE: 10,
-};
+const cloneP = (p: ArrowPoint): ArrowPoint => ({ x: p.x, y: p.y });
 
-/* ========================================================= */
-/* Geometry helpers                                         */
-/* ========================================================= */
+const orientationOf = (s: ArrowSegment): Orientation =>
+  Math.abs(s.endPoint.x - s.startPoint.x) > Math.abs(s.endPoint.y - s.startPoint.y) ? "horizontal" : "vertical";
 
-const clone = (p: ArrowPoint): ArrowPoint => ({ x: p.x, y: p.y });
+const edgeOrientation = (e: SnapEdge): Orientation => (e === "top" || e === "bottom" ? "horizontal" : "vertical");
 
-const segmentOrientation = (s: ArrowSegment): SegmentOrientation =>
-  Math.abs(s.endPoint.y - s.startPoint.y) > Math.abs(s.endPoint.x - s.startPoint.x) ? "vertical" : "horizontal";
+/* =====================================================
+   Hard constraint (الأهم)
+===================================================== */
 
-const edgeOrientation = (edge: SnapEdge): EdgeOrientation =>
-  edge === "top" || edge === "bottom" ? "horizontal" : "vertical";
-
-const isParallel = (seg: ArrowSegment, edge: SnapEdge) => segmentOrientation(seg) === edgeOrientation(edge);
-
-/* ========================================================= */
-/* Core Routing Logic                                       */
-/* ========================================================= */
-
-/**
- * Always keeps snapPoint as FINAL endpoint.
- * All offsets happen BEFORE it.
- */
-function buildTConnection(baseSeg: ArrowSegment, snapPoint: ArrowPoint, snapEdge: SnapEdge): ArrowSegment[] {
-  const orient = segmentOrientation(baseSeg);
-
-  if (orient === "vertical") {
-    const offsetX = snapEdge === "left" ? -CONFIG.OFFSET_DISTANCE : CONFIG.OFFSET_DISTANCE;
-
-    const corner = {
-      x: snapPoint.x + offsetX,
-      y: snapPoint.y,
-    };
-
-    return [
-      {
-        id: generateId(),
-        startPoint: corner,
-        endPoint: clone(snapPoint),
-      },
-      {
-        id: generateId(),
-        startPoint: clone(baseSeg.startPoint),
-        endPoint: corner,
-      },
-    ];
-  }
-
-  // horizontal
-  const offsetY = snapEdge === "top" ? -CONFIG.OFFSET_DISTANCE : CONFIG.OFFSET_DISTANCE;
-
-  const corner = {
-    x: snapPoint.x,
-    y: snapPoint.y + offsetY,
-  };
-
-  return [
-    {
-      id: generateId(),
-      startPoint: corner,
-      endPoint: clone(snapPoint),
-    },
-    {
-      id: generateId(),
-      startPoint: clone(baseSeg.startPoint),
-      endPoint: corner,
-    },
-  ];
-}
-
-/**
- * U-maneuver for internal intersection cases
- */
-function buildUConnection(baseSeg: ArrowSegment, snapPoint: ArrowPoint, snapEdge: SnapEdge): ArrowSegment[] {
-  const orient = segmentOrientation(baseSeg);
-
-  if (orient === "vertical") {
-    const side = snapEdge === "left" ? -CONFIG.OFFSET_DISTANCE : CONFIG.OFFSET_DISTANCE;
-
-    const p1 = {
-      x: snapPoint.x + side,
-      y: snapPoint.y,
-    };
-
-    const p2 = {
-      x: p1.x,
-      y: baseSeg.startPoint.y,
-    };
-
-    return [
-      { id: generateId(), startPoint: p1, endPoint: clone(snapPoint) },
-      { id: generateId(), startPoint: p2, endPoint: p1 },
-      {
-        id: generateId(),
-        startPoint: clone(baseSeg.startPoint),
-        endPoint: p2,
-      },
-    ];
-  }
-
-  // horizontal
-  const side = snapEdge === "top" ? -CONFIG.OFFSET_DISTANCE : CONFIG.OFFSET_DISTANCE;
-
-  const p1 = {
-    x: snapPoint.x,
-    y: snapPoint.y + side,
-  };
-
-  const p2 = {
-    x: baseSeg.startPoint.x,
-    y: p1.y,
-  };
-
-  return [
-    { id: generateId(), startPoint: p1, endPoint: clone(snapPoint) },
-    { id: generateId(), startPoint: p2, endPoint: p1 },
-    {
-      id: generateId(),
-      startPoint: clone(baseSeg.startPoint),
-      endPoint: p2,
-    },
-  ];
-}
-
-/* ========================================================= */
-/* Public API                                               */
-/* ========================================================= */
-
-export function resolveSnapConnection(
-  arrow: ArrowData,
-  snapPoint: ArrowPoint,
-  snapEdge: SnapEdge,
-  target: TargetElement,
-  endpoint: "start" | "end",
-): ArrowData {
-  const segs = arrow.segments.map((s) => ({
-    ...s,
-    startPoint: clone(s.startPoint),
-    endPoint: clone(s.endPoint),
-  }));
-
-  const base = endpoint === "start" ? segs[0] : segs[segs.length - 1];
-
-  let newSegs: ArrowSegment[];
-
-  if (isParallel(base, snapEdge)) {
-    newSegs = buildTConnection(base, snapPoint, snapEdge);
-  } else {
-    newSegs = buildUConnection(base, snapPoint, snapEdge);
-  }
+function forceEndpointAlignment(segments: ArrowSegment[], snapPoint: ArrowPoint, endpoint: "start" | "end") {
+  if (!segments.length) return;
 
   if (endpoint === "start") {
-    segs.splice(0, 1, ...newSegs.reverse());
+    segments[0].startPoint = cloneP(snapPoint);
   } else {
-    segs.splice(segs.length - 1, 1, ...newSegs);
+    segments[segments.length - 1].endPoint = cloneP(snapPoint);
+  }
+}
+
+/* =====================================================
+   Parallel → T
+===================================================== */
+
+function resolveParallelT(
+  segments: ArrowSegment[],
+  snapPoint: ArrowPoint,
+  snapEdge: SnapEdge,
+  endpoint: "start" | "end",
+): ArrowSegment[] {
+  const out = segments.map((s) => ({
+    ...s,
+    startPoint: cloneP(s.startPoint),
+    endPoint: cloneP(s.endPoint),
+  }));
+
+  const idx = endpoint === "start" ? 0 : out.length - 1;
+  const seg = out[idx];
+  const o = orientationOf(seg);
+
+  if (o === "vertical") {
+    const dx = snapEdge === "left" ? -OFFSET : OFFSET;
+    const x = (endpoint === "start" ? seg.startPoint.x : seg.endPoint.x) + dx;
+
+    if (endpoint === "start") {
+      seg.startPoint = { x, y: seg.startPoint.y };
+      out.unshift({
+        id: generateId(),
+        startPoint: cloneP(snapPoint),
+        endPoint: { x, y: snapPoint.y },
+      });
+      seg.startPoint = { x, y: snapPoint.y };
+    } else {
+      seg.endPoint = { x, y: seg.endPoint.y };
+      out.push({
+        id: generateId(),
+        startPoint: { x, y: snapPoint.y },
+        endPoint: cloneP(snapPoint),
+      });
+      seg.endPoint = { x, y: snapPoint.y };
+    }
+  } else {
+    const dy = snapEdge === "top" ? -OFFSET : OFFSET;
+    const y = (endpoint === "start" ? seg.startPoint.y : seg.endPoint.y) + dy;
+
+    if (endpoint === "start") {
+      seg.startPoint = { x: seg.startPoint.x, y };
+      out.unshift({
+        id: generateId(),
+        startPoint: cloneP(snapPoint),
+        endPoint: { x: snapPoint.x, y },
+      });
+      seg.startPoint = { x: snapPoint.x, y };
+    } else {
+      seg.endPoint = { x: seg.endPoint.x, y };
+      out.push({
+        id: generateId(),
+        startPoint: { x: snapPoint.x, y },
+        endPoint: cloneP(snapPoint),
+      });
+      seg.endPoint = { x: snapPoint.x, y };
+    }
   }
 
+  forceEndpointAlignment(out, snapPoint, endpoint);
+  return out;
+}
+
+/* =====================================================
+   Intersection → U
+===================================================== */
+
+function resolveIntersectionU(
+  segments: ArrowSegment[],
+  snapPoint: ArrowPoint,
+  snapEdge: SnapEdge,
+  endpoint: "start" | "end",
+): ArrowSegment[] {
+  const out = segments.map((s) => ({
+    ...s,
+    startPoint: cloneP(s.startPoint),
+    endPoint: cloneP(s.endPoint),
+  }));
+
+  const idx = endpoint === "start" ? 0 : out.length - 1;
+  const seg = out[idx];
+  const o = orientationOf(seg);
+
+  if (o === "vertical") {
+    const dx = snapEdge === "left" ? -OFFSET : OFFSET;
+    const x = (endpoint === "start" ? seg.startPoint.x : seg.endPoint.x) + dx;
+    const y = snapPoint.y + (snapEdge === "top" ? -EXTEND : EXTEND);
+
+    if (endpoint === "start") {
+      out.unshift(
+        {
+          id: generateId(),
+          startPoint: cloneP(snapPoint),
+          endPoint: { x: snapPoint.x, y },
+        },
+        {
+          id: generateId(),
+          startPoint: { x: snapPoint.x, y },
+          endPoint: { x, y },
+        },
+      );
+      seg.startPoint = { x, y };
+    } else {
+      seg.endPoint = { x, y };
+      out.push(
+        {
+          id: generateId(),
+          startPoint: { x, y },
+          endPoint: { x: snapPoint.x, y },
+        },
+        {
+          id: generateId(),
+          startPoint: { x: snapPoint.x, y },
+          endPoint: cloneP(snapPoint),
+        },
+      );
+    }
+  } else {
+    const dy = snapEdge === "top" ? -OFFSET : OFFSET;
+    const y = (endpoint === "start" ? seg.startPoint.y : seg.endPoint.y) + dy;
+    const x = snapPoint.x + (snapEdge === "left" ? -EXTEND : EXTEND);
+
+    if (endpoint === "start") {
+      out.unshift(
+        {
+          id: generateId(),
+          startPoint: cloneP(snapPoint),
+          endPoint: { x, y: snapPoint.y },
+        },
+        {
+          id: generateId(),
+          startPoint: { x, y: snapPoint.y },
+          endPoint: { x, y },
+        },
+      );
+      seg.startPoint = { x, y };
+    } else {
+      seg.endPoint = { x, y };
+      out.push(
+        {
+          id: generateId(),
+          startPoint: { x, y },
+          endPoint: { x, y: snapPoint.y },
+        },
+        {
+          id: generateId(),
+          startPoint: { x, y: snapPoint.y },
+          endPoint: cloneP(snapPoint),
+        },
+      );
+    }
+  }
+
+  forceEndpointAlignment(out, snapPoint, endpoint);
+  return out;
+}
+
+/* =====================================================
+   Main API
+===================================================== */
+
+export function resolveSnapConnection(
+  arrowData: ArrowData,
+  snapPoint: ArrowPoint,
+  snapEdge: SnapEdge,
+  targetElement: any,
+  endpoint: "start" | "end",
+): ArrowData {
+  const segs = arrowData.segments;
+  const seg = endpoint === "start" ? segs[0] : segs[segs.length - 1];
+
+  const isParallel = orientationOf(seg) === edgeOrientation(snapEdge);
+
+  const nextSegments = isParallel
+    ? resolveParallelT(segs, snapPoint, snapEdge, endpoint)
+    : resolveIntersectionU(segs, snapPoint, snapEdge, endpoint);
+
   return {
-    ...arrow,
-    segments: segs,
-    startPoint: segs[0].startPoint,
-    endPoint: segs[segs.length - 1].endPoint,
+    ...arrowData,
+    segments: nextSegments,
+    startPoint: nextSegments[0].startPoint,
+    endPoint: nextSegments[nextSegments.length - 1].endPoint,
     arrowType: "orthogonal",
   };
 }
