@@ -44,7 +44,6 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     initialMousePos?: { x: number; y: number } | null;
     dragDirection?: 'horizontal' | 'vertical' | null;
     containerRect?: DOMRect | null;
-    startSnapshot?: { segments: ArrowSegment[] } | null;
   }>({
     isDragging: false,
     controlPoint: null,
@@ -53,8 +52,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     nearestAnchor: null,
     initialMousePos: null,
     dragDirection: null,
-    containerRect: null,
-    startSnapshot: null
+    containerRect: null
   });
 
   // حالة تعديل النص على نقطة منتصف غير نشطة
@@ -347,20 +345,13 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     ];
   }, [arrowData]);
 
-  // بدء السحب - ✅ يتطلب أن يكون السهم محدداً مسبقاً
+  // بدء السحب
   const handleMouseDown = useCallback((
     e: React.MouseEvent,
     cp: ArrowCP | { id: string; type: 'endpoint' | 'midpoint'; position: ArrowPoint; isActive: boolean }
   ) => {
     e.stopPropagation();
     e.preventDefault();
-
-    // ✅ التحقق من أن السهم محدد - إذا لم يكن محدداً، نحدده فقط بدون سحب
-    const { selectedElementIds, selectElement } = useCanvasStore.getState();
-    if (!selectedElementIds.includes(element.id)) {
-      selectElement(element.id);
-      return; // ⛔ لا تبدأ السحب الآن
-    }
 
     const controlPointType = cp.id === 'start' || (cp.type === 'endpoint' && displayControlPoints.indexOf(cp as ArrowCP) === 0)
       ? 'start'
@@ -372,15 +363,6 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     const canvasContainer = document.querySelector('[data-canvas-container]') || document.querySelector('.infinite-canvas-container');
     const containerRect = canvasContainer?.getBoundingClientRect() || null;
     
-    // ✅ إنشاء snapshot ثابت من الأضلاع عند بدء السحب
-    const startSnapshot = {
-      segments: arrowData.segments.map(s => ({
-        ...s,
-        startPoint: { ...s.startPoint },
-        endPoint: { ...s.endPoint }
-      }))
-    };
-    
     setDragState({
       isDragging: true,
       controlPoint: controlPointType,
@@ -389,10 +371,9 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       nearestAnchor: null,
       initialMousePos: { x: e.clientX, y: e.clientY },
       dragDirection: null,
-      containerRect,
-      startSnapshot
+      containerRect
     });
-  }, [displayControlPoints, element.id, arrowData.segments]);
+  }, [displayControlPoints]);
 
   // معالجة تحريك نقطة البداية/النهاية مع الحفاظ على استقامة الضلع
   const moveEndpointWithSegment = (
@@ -495,201 +476,6 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     // تحديث نقاط التحكم
     newData.controlPoints = updateMidpointsPositions(newData);
     
-    return newData;
-  };
-
-  // ✅ إنشاء اتصال T-Shape عند السناب - إضافة connector segment قصير (8px)
-  const createTShapeConnection = (
-    data: ArrowData,
-    endpoint: 'start' | 'end',
-    anchorPosition: ArrowPoint, // موقع السناب على العنصر (relative to element)
-    anchorType: 'top' | 'bottom' | 'left' | 'right'
-  ): ArrowData => {
-    const CONNECTOR_LENGTH = 8;
-    const newData = { 
-      ...data, 
-      segments: data.segments.map(s => ({ ...s, startPoint: { ...s.startPoint }, endPoint: { ...s.endPoint } })), 
-      controlPoints: data.controlPoints.map(cp => ({ ...cp, position: { ...cp.position } }))
-    };
-
-    if (endpoint === 'end') {
-      const lastIdx = newData.segments.length - 1;
-      const lastSegment = newData.segments[lastIdx];
-      
-      // تحديد اتجاه الضلع الأخير
-      const dx = Math.abs(lastSegment.endPoint.x - lastSegment.startPoint.x);
-      const dy = Math.abs(lastSegment.endPoint.y - lastSegment.startPoint.y);
-      const isVertical = dy > dx;
-
-      // إذا كان الضلع عمودياً والسناب على top/bottom = اتصال مباشر (T مثالي)
-      // إذا كان الضلع عمودياً والسناب على left/right = نحتاج connector أفقي
-      // إذا كان الضلع أفقياً والسناب على left/right = اتصال مباشر
-      // إذا كان الضلع أفقياً والسناب على top/bottom = نحتاج connector عمودي
-
-      const needsConnector = 
-        (isVertical && (anchorType === 'left' || anchorType === 'right')) ||
-        (!isVertical && (anchorType === 'top' || anchorType === 'bottom'));
-
-      if (needsConnector) {
-        // حساب نقطة الوصل
-        let connectorStart: ArrowPoint;
-        let connectorEnd: ArrowPoint = { ...anchorPosition };
-        
-        if (isVertical) {
-          // ضلع عمودي يتصل بجانب أفقي (left/right)
-          connectorStart = { 
-            x: anchorType === 'left' ? anchorPosition.x + CONNECTOR_LENGTH : anchorPosition.x - CONNECTOR_LENGTH, 
-            y: anchorPosition.y 
-          };
-        } else {
-          // ضلع أفقي يتصل بجانب عمودي (top/bottom)
-          connectorStart = { 
-            x: anchorPosition.x, 
-            y: anchorType === 'top' ? anchorPosition.y + CONNECTOR_LENGTH : anchorPosition.y - CONNECTOR_LENGTH 
-          };
-        }
-
-        // تحديث الضلع الأخير لينتهي عند نقطة بداية الـ connector
-        newData.segments[lastIdx] = {
-          ...lastSegment,
-          endPoint: connectorStart
-        };
-
-        // إضافة ضلع connector جديد
-        const connectorSegment: ArrowSegment = {
-          id: generateId(),
-          startPoint: connectorStart,
-          endPoint: connectorEnd
-        };
-        newData.segments.push(connectorSegment);
-
-        // تحديث نقطة النهاية
-        newData.endPoint = connectorEnd;
-
-        // إضافة نقطة تحكم للـ connector
-        const connectorMidpoint: ArrowCP = {
-          id: generateId(),
-          type: 'midpoint',
-          position: {
-            x: (connectorStart.x + connectorEnd.x) / 2,
-            y: (connectorStart.y + connectorEnd.y) / 2
-          },
-          isActive: false,
-          segmentId: connectorSegment.id
-        };
-
-        // إدراج نقطة المنتصف قبل نقطة النهاية
-        const endCpIdx = newData.controlPoints.findIndex(cp => cp.id === 'end' || cp.type === 'endpoint');
-        if (endCpIdx !== -1 && endCpIdx === newData.controlPoints.length - 1) {
-          newData.controlPoints.splice(endCpIdx, 0, connectorMidpoint);
-        } else {
-          newData.controlPoints.push(connectorMidpoint);
-        }
-
-        // تحديث موقع نقطة النهاية
-        const endCp = newData.controlPoints.find(cp => cp.id === 'end' || (cp.type === 'endpoint' && newData.controlPoints.indexOf(cp) === newData.controlPoints.length - 1));
-        if (endCp) {
-          endCp.position = connectorEnd;
-        }
-
-        newData.arrowType = 'orthogonal';
-      } else {
-        // اتصال مباشر - تحديث نقطة النهاية فقط
-        newData.segments[lastIdx] = {
-          ...lastSegment,
-          endPoint: anchorPosition
-        };
-        newData.endPoint = anchorPosition;
-
-        // تحديث نقاط التحكم
-        newData.controlPoints = updateMidpointsPositions(newData);
-      }
-    } else {
-      // نفس المنطق لنقطة البداية (معكوس)
-      const firstSegment = newData.segments[0];
-      
-      const dx = Math.abs(firstSegment.endPoint.x - firstSegment.startPoint.x);
-      const dy = Math.abs(firstSegment.endPoint.y - firstSegment.startPoint.y);
-      const isVertical = dy > dx;
-
-      const needsConnector = 
-        (isVertical && (anchorType === 'left' || anchorType === 'right')) ||
-        (!isVertical && (anchorType === 'top' || anchorType === 'bottom'));
-
-      if (needsConnector) {
-        let connectorEnd: ArrowPoint;
-        let connectorStart: ArrowPoint = { ...anchorPosition };
-        
-        if (isVertical) {
-          connectorEnd = { 
-            x: anchorType === 'left' ? anchorPosition.x + CONNECTOR_LENGTH : anchorPosition.x - CONNECTOR_LENGTH, 
-            y: anchorPosition.y 
-          };
-        } else {
-          connectorEnd = { 
-            x: anchorPosition.x, 
-            y: anchorType === 'top' ? anchorPosition.y + CONNECTOR_LENGTH : anchorPosition.y - CONNECTOR_LENGTH 
-          };
-        }
-
-        // إضافة ضلع connector في البداية
-        const connectorSegment: ArrowSegment = {
-          id: generateId(),
-          startPoint: connectorStart,
-          endPoint: connectorEnd
-        };
-
-        // تحديث الضلع الأول ليبدأ من نهاية الـ connector
-        newData.segments[0] = {
-          ...firstSegment,
-          startPoint: connectorEnd
-        };
-
-        // إدراج الـ connector في البداية
-        newData.segments.unshift(connectorSegment);
-
-        // تحديث نقطة البداية
-        newData.startPoint = connectorStart;
-
-        // إضافة نقطة تحكم للـ connector
-        const connectorMidpoint: ArrowCP = {
-          id: generateId(),
-          type: 'midpoint',
-          position: {
-            x: (connectorStart.x + connectorEnd.x) / 2,
-            y: (connectorStart.y + connectorEnd.y) / 2
-          },
-          isActive: false,
-          segmentId: connectorSegment.id
-        };
-
-        // إدراج نقطة المنتصف بعد نقطة البداية
-        const startCpIdx = newData.controlPoints.findIndex(cp => cp.id === 'start' || cp.type === 'endpoint');
-        if (startCpIdx !== -1) {
-          newData.controlPoints.splice(startCpIdx + 1, 0, connectorMidpoint);
-        } else {
-          newData.controlPoints.unshift(connectorMidpoint);
-        }
-
-        // تحديث موقع نقطة البداية
-        const startCp = newData.controlPoints.find(cp => cp.id === 'start' || (cp.type === 'endpoint' && newData.controlPoints.indexOf(cp) === 0));
-        if (startCp) {
-          startCp.position = connectorStart;
-        }
-
-        newData.arrowType = 'orthogonal';
-      } else {
-        // اتصال مباشر
-        newData.segments[0] = {
-          ...firstSegment,
-          startPoint: anchorPosition
-        };
-        newData.startPoint = anchorPosition;
-
-        newData.controlPoints = updateMidpointsPositions(newData);
-      }
-    }
-
     return newData;
   };
   
@@ -1207,14 +993,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           }
         : newPoint;
       
-      // ✅ استخدام T-Shape connection عند السناب
-      if (nearestAnchor && (nearestAnchor.anchorPoint === 'top' || nearestAnchor.anchorPoint === 'bottom' || 
-                           nearestAnchor.anchorPoint === 'left' || nearestAnchor.anchorPoint === 'right')) {
-        newArrowData = createTShapeConnection(arrowData, 'start', finalPoint, nearestAnchor.anchorPoint);
-      } else {
-        // تحريك الضلع المرتبط بنقطة البداية
-        newArrowData = moveEndpointWithSegment(arrowData, 'start', finalPoint);
-      }
+      // تحريك الضلع المرتبط بنقطة البداية
+      newArrowData = moveEndpointWithSegment(arrowData, 'start', finalPoint);
       
       // إضافة معلومات الاتصال على المستوى الأعلى وعلى نقطة التحكم
       if (nearestAnchor) {
@@ -1248,14 +1028,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           }
         : newPoint;
       
-      // ✅ استخدام T-Shape connection عند السناب
-      if (nearestAnchor && (nearestAnchor.anchorPoint === 'top' || nearestAnchor.anchorPoint === 'bottom' || 
-                           nearestAnchor.anchorPoint === 'left' || nearestAnchor.anchorPoint === 'right')) {
-        newArrowData = createTShapeConnection(arrowData, 'end', finalPoint, nearestAnchor.anchorPoint);
-      } else {
-        // تحريك الضلع المرتبط بنقطة النهاية
-        newArrowData = moveEndpointWithSegment(arrowData, 'end', finalPoint);
-      }
+      // تحريك الضلع المرتبط بنقطة النهاية
+      newArrowData = moveEndpointWithSegment(arrowData, 'end', finalPoint);
       
       // إضافة معلومات الاتصال على المستوى الأعلى وعلى نقطة التحكم
       if (nearestAnchor) {
@@ -1411,8 +1185,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       nearestAnchor: null,
       initialMousePos: null,
       dragDirection: null,
-      containerRect: null,
-      startSnapshot: null
+      containerRect: null
     });
   }, [dragState, element, arrowData, updateElement]);
 
