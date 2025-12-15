@@ -18,6 +18,7 @@ import {
   updateEndpointPosition,
   generateId
 } from '@/types/arrow-connections';
+import { resolveSnapConnection, type SnapEdge } from '@/utils/arrow-routing';
 
 interface ArrowControlPointsProps {
   element: CanvasElement;
@@ -1166,61 +1167,79 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     });
   }, [dragState, viewport, element, arrowData, otherElements, updateElement]);
 
-  // إنهاء السحب - ✅ حفظ الاتصال النهائي باستخدام getState()
+  // إنهاء السحب - ✅ حفظ الاتصال النهائي باستخدام resolveSnapConnection للحصول على T-shape
   const handleMouseUp = useCallback(() => {
     // ✅ حفظ الاتصال النهائي قبل إعادة تعيين الحالة
     if (dragState.nearestAnchor && (dragState.controlPoint === 'start' || dragState.controlPoint === 'end')) {
-      const connectionData = {
-        elementId: dragState.nearestAnchor.elementId,
-        anchorPoint: dragState.nearestAnchor.anchorPoint,
-        offset: { x: 0, y: 0 }
-      };
-      
       // ✅ استخدام getState() للحصول على أحدث بيانات السهم
       const currentElement = useCanvasStore.getState().elements.find(e => e.id === element.id);
       const currentArrowData = currentElement?.data?.arrowData || arrowData;
       
-      const updatedArrowData = { 
-        ...currentArrowData,
-        segments: [...(currentArrowData.segments || [])],
-        controlPoints: [...(currentArrowData.controlPoints || [])]
-      };
+      // ✅ العثور على العنصر المستهدف
+      const targetElement = otherElements.find(e => e.id === dragState.nearestAnchor?.elementId);
       
-      if (dragState.controlPoint === 'start') {
-        updatedArrowData.startConnection = connectionData;
-        // تحديث نقطة التحكم أيضاً
-        const startCP = updatedArrowData.controlPoints.find((cp: ArrowCP) => 
-          cp.id === 'start' || (cp.type === 'endpoint' && updatedArrowData.controlPoints.indexOf(cp) === 0)
+      if (targetElement) {
+        // ✅ استخدام نظام التوجيه الجديد لضمان T-shape
+        const routedArrowData = resolveSnapConnection(
+          currentArrowData,
+          dragState.nearestAnchor.position,
+          dragState.nearestAnchor.anchorPoint as SnapEdge,
+          {
+            id: targetElement.id,
+            position: targetElement.position,
+            size: targetElement.size
+          },
+          dragState.controlPoint as 'start' | 'end'
         );
-        if (startCP) {
-          startCP.connection = connectionData;
+        
+        console.log('handleMouseUp: T-Shape routing applied', { 
+          controlPoint: dragState.controlPoint, 
+          snapEdge: dragState.nearestAnchor.anchorPoint,
+          segmentsCount: routedArrowData.segments.length
+        });
+        
+        updateElement(element.id, {
+          data: { ...(currentElement?.data || element.data), arrowData: routedArrowData }
+        });
+      } else {
+        // Fallback: حفظ الاتصال بدون توجيه
+        const connectionData = {
+          elementId: dragState.nearestAnchor.elementId,
+          anchorPoint: dragState.nearestAnchor.anchorPoint,
+          offset: { x: 0, y: 0 }
+        };
+        
+        const updatedArrowData = { 
+          ...currentArrowData,
+          segments: [...(currentArrowData.segments || [])],
+          controlPoints: [...(currentArrowData.controlPoints || [])]
+        };
+        
+        if (dragState.controlPoint === 'start') {
+          updatedArrowData.startConnection = connectionData;
+          const startCP = updatedArrowData.controlPoints.find((cp: ArrowCP) => 
+            cp.id === 'start' || (cp.type === 'endpoint' && updatedArrowData.controlPoints.indexOf(cp) === 0)
+          );
+          if (startCP) {
+            startCP.connection = connectionData;
+          }
+        } else if (dragState.controlPoint === 'end') {
+          updatedArrowData.endConnection = connectionData;
+          const endCP = updatedArrowData.controlPoints.find((cp: ArrowCP) => 
+            cp.id === 'end' || (cp.type === 'endpoint' && updatedArrowData.controlPoints.indexOf(cp) === updatedArrowData.controlPoints.length - 1)
+          );
+          if (endCP) {
+            endCP.connection = connectionData;
+          }
         }
-      } else if (dragState.controlPoint === 'end') {
-        updatedArrowData.endConnection = connectionData;
-        // تحديث نقطة التحكم أيضاً
-        const endCP = updatedArrowData.controlPoints.find((cp: ArrowCP) => 
-          cp.id === 'end' || (cp.type === 'endpoint' && updatedArrowData.controlPoints.indexOf(cp) === updatedArrowData.controlPoints.length - 1)
-        );
-        if (endCP) {
-          endCP.connection = connectionData;
-        }
+        
+        updateElement(element.id, {
+          data: { ...(currentElement?.data || element.data), arrowData: updatedArrowData }
+        });
       }
-      
-      console.log('handleMouseUp: Saving connection', { 
-        controlPoint: dragState.controlPoint, 
-        connectionData,
-        updatedStartConnection: updatedArrowData.startConnection,
-        updatedEndConnection: updatedArrowData.endConnection
-      });
-      
-      updateElement(element.id, {
-        data: { ...(currentElement?.data || element.data), arrowData: updatedArrowData }
-      });
     }
     
     // ✅ إيقاف Internal Drag
-    useCanvasStore.getState().setInternalDrag(false);
-    // ✅ إيقاف Internal Drag في حالة عدم وجود nearestAnchor أيضاً
     useCanvasStore.getState().setInternalDrag(false);
     
     setDragState({
@@ -1234,7 +1253,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       containerRect: null,
       startSnapshot: null
     });
-  }, [dragState, element, arrowData, updateElement]);
+  }, [dragState, element, arrowData, otherElements, updateElement]);
 
   // إضافة مستمعي الأحداث العالمية
   useEffect(() => {
