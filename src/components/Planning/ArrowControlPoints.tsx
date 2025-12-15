@@ -1,211 +1,365 @@
-// arrowMachine.ts
-export type Point = { x: number; y: number };
+import React, { useState, useCallback, useEffect } from 'react';
+import { useCanvasStore } from '@/stores/canvasStore';
+import type { CanvasElementType } from '@/types/canvas-elements';
+import {
+  ArrowData,
+  ArrowPoint,
+  ArrowConnection,
+  ArrowControlPoint,
+  convertToOrthogonalPath,
+  updateEndpointPosition,
+  activateMidpointAndExpand,
+  getAnchorPosition
+} from '@/types/arrow-connections';
 
-export type DragKind = "none" | "endpoint" | "rootMid" | "segmentMid";
-export type Endpoint = "start" | "end";
-export type DragAxis = "horizontal" | "vertical";
+interface ArrowControlPointsProps {
+  element: CanvasElementType & { data?: { arrowData?: ArrowData } };
+  viewport: { zoom: number; pan: { x: number; y: number } };
+}
 
-export type AnchorHit = {
-  elementId: string;
-  anchorPoint: string; // أو portId / edge... حسب نظامك
-  position: Point;     // world position
-};
+interface DragState {
+  isDragging: boolean;
+  pointId: string | null;
+  pointType: 'endpoint' | 'midpoint' | null;
+  initialMousePos: { x: number; y: number } | null;
+  startPosition: ArrowPoint | null;
+  dragDirection: 'horizontal' | 'vertical' | null;
+}
 
-export type ArrowConnection = null | {
-  elementId: string;
-  anchorPoint: string;
-  offset: Point; // optional
-};
-
-export type ArrowSegment = {
-  id: string;
-  startPoint: Point;
-  endPoint: Point;
-};
-
-export type ControlPoint = {
-  id: string;
-  type: "endpoint" | "midpoint";
-  position: Point;  // LOCAL relative to arrow element
-  isActive: boolean;
-  segmentId?: string; // موجود فقط في midpoints التابعة للأضلاع
-  connection?: ArrowConnection; // endpoints
-};
-
-export type ArrowData = {
-  arrowType: "straight" | "orthogonal";
-  startPoint: Point; // LOCAL
-  endPoint: Point;   // LOCAL
-  headDirection?: "start" | "end" | "both" | "none";
-  segments: ArrowSegment[]; // LOCAL
-  controlPoints: ControlPoint[]; // LOCAL
-  middlePoint?: Point; // optional
-  startConnection?: ArrowConnection;
-  endConnection?: ArrowConnection;
-};
-
-export type Viewport = { zoom: number; pan: Point };
-
-export type MachineState =
-  | { status: "Idle" }
-  | { status: "Selected" }
-  | { status: "DragEndpoint"; endpoint: Endpoint }
-  | { status: "SnapPreview"; endpoint: Endpoint; anchor: AnchorHit }
-  | { status: "DragRootMidpoint"; axis: DragAxis }
-  | { status: "DragSegmentMidpoint"; segmentId: string; axis: DragAxis }
-  | { status: "RecomputeBindings" };
-
-export type MachineContext = {
-  arrow: ArrowData;
-  // drag runtime
-  dragKind: DragKind;
-  dragCpId?: string;
-  startMouse?: Point;     // client
-  startLocal?: Point;     // local point at drag start
-  axis?: DragAxis;
-  didActivateRootMid?: boolean;
-};
-
-export type MachineEvent =
-  | { type: "SELECT_ARROW" }
-  | { type: "DESELECT_ARROW" }
-  | { type: "DELETE_ARROW" }
-  | { type: "POINTER_DOWN_CP"; cp: ControlPoint; cpIndex: number }
-  | { type: "POINTER_MOVE"; client: Point; viewport: Viewport; nearest?: AnchorHit | null; arrowElementPosWorld: Point }
-  | { type: "POINTER_UP" }
-  | { type: "CANCEL" }
-  | { type: "ELEMENT_MOVED"; elementId: string; getAnchorPos: (hit: AnchorHit) => Point };
-
-export const MIN_SEGMENT = 8;
-
-// ---------- helpers ----------
-export const mid = (a: Point, b: Point): Point => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
-
-export const isHorizontal = (s: ArrowSegment) => Math.abs(s.startPoint.y - s.endPoint.y) < 0.001;
-export const isVertical = (s: ArrowSegment) => Math.abs(s.startPoint.x - s.endPoint.x) < 0.001;
-
-export const decideAxis = (dx: number, dy: number): DragAxis | null => {
-  const ax = Math.abs(dx);
-  const ay = Math.abs(dy);
-  if (ax < 5 && ay < 5) return null;
-  return ay > ax ? "vertical" : "horizontal";
-};
-
-export const clientToWorld = (client: Point, vp: Viewport): Point => ({
-  x: (client.x - vp.pan.x) / vp.zoom,
-  y: (client.y - vp.pan.y) / vp.zoom,
-});
-
-export const worldToLocal = (world: Point, arrowElementPosWorld: Point): Point => ({
-  x: world.x - arrowElementPosWorld.x,
-  y: world.y - arrowElementPosWorld.y,
-});
-
-const cloneArrow = (a: ArrowData): ArrowData => ({
-  ...a,
-  startPoint: { ...a.startPoint },
-  endPoint: { ...a.endPoint },
-  segments: a.segments.map(s => ({ ...s, startPoint: { ...s.startPoint }, endPoint: { ...s.endPoint } })),
-  controlPoints: a.controlPoints.map(c => ({ ...c, position: { ...c.position }, connection: c.connection ? { ...c.connection, offset: { ...c.connection.offset } } : c.connection })),
-  startConnection: a.startConnection ? { ...a.startConnection, offset: { ...a.startConnection.offset } } : null,
-  endConnection: a.endConnection ? { ...a.endConnection, offset: { ...a.endConnection.offset } } : null,
-  middlePoint: a.middlePoint ? { ...a.middlePoint } : undefined,
-});
-
-export const ensureControlPoints = (arrow: ArrowData): ArrowData => {
-  const next = cloneArrow(arrow);
-
-  if (!next.controlPoints || next.controlPoints.length === 0) {
-    next.controlPoints = [
-      { id: "start", type: "endpoint", position: next.startPoint, isActive: true, connection: next.startConnection ?? null },
-      { id: "root-mid", type: "midpoint", position: mid(next.startPoint, next.endPoint), isActive: next.arrowType !== "straight" },
-      { id: "end", type: "endpoint", position: next.endPoint, isActive: true, connection: next.endConnection ?? null },
-    ];
-  }
-  return next;
-};
-
-// straight -> orthogonal by root midpoint drag
-export const convertStraightToOrthogonal = (arrow: ArrowData, rootMidLocal: Point, axis: DragAxis): ArrowData => {
-  const next = cloneArrow(arrow);
-  next.arrowType = "orthogonal";
-  next.middlePoint = rootMidLocal;
-
-  const p0 = next.startPoint;
-  const p3 = next.endPoint;
-
-  const pts =
-    axis === "vertical"
-      ? [p0, { x: p0.x, y: rootMidLocal.y }, { x: p3.x, y: rootMidLocal.y }, p3]
-      : [p0, { x: rootMidLocal.x, y: p0.y }, { x: rootMidLocal.x, y: p3.y }, p3];
-
-  // rebuild segments
-  next.segments = [
-    { id: "seg-0", startPoint: pts[0], endPoint: pts[1] },
-    { id: "seg-1", startPoint: pts[1], endPoint: pts[2] },
-    { id: "seg-2", startPoint: pts[2], endPoint: pts[3] },
-  ];
-
-  // rebuild controlPoints: endpoints + midpoints for each segment + root-mid
-  const segMids = next.segments.map((s, i) => ({
-    id: `mid-seg-${i}`,
-    type: "midpoint" as const,
-    position: mid(s.startPoint, s.endPoint),
-    isActive: true,
-    segmentId: s.id,
-  }));
-
-  next.controlPoints = [
-    { id: "start", type: "endpoint", position: next.startPoint, isActive: true, connection: next.startConnection ?? null },
-    ...segMids,
-    { id: "root-mid", type: "midpoint", position: rootMidLocal, isActive: true },
-    { id: "end", type: "endpoint", position: next.endPoint, isActive: true, connection: next.endConnection ?? null },
-  ];
-
-  return simplify(next);
-};
-
-// root-mid move on existing orthogonal: adjust the "route" as whole (keep 3-segment base)
-export const moveRootMidOnOrthogonal = (arrow: ArrowData, rootMidLocal: Point, axis: DragAxis): ArrowData => {
-  // اذا عندك مسارات أعقد مستقبلاً، توسعها هنا. حالياً نخليها 3-segment canonical route.
-  const base = cloneArrow(arrow);
-  base.middlePoint = rootMidLocal;
-  const p0 = base.startPoint;
-  const p3 = base.endPoint;
-
-  const pts =
-    axis === "vertical"
-      ? [p0, { x: p0.x, y: rootMidLocal.y }, { x: p3.x, y: rootMidLocal.y }, p3]
-      : [p0, { x: rootMidLocal.x, y: p0.y }, { x: rootMidLocal.x, y: p3.y }, p3];
-
-  // ensure exactly 3 segments (canonical)
-  base.segments = [
-    { id: base.segments[0]?.id ?? "seg-0", startPoint: pts[0], endPoint: pts[1] },
-    { id: base.segments[1]?.id ?? "seg-1", startPoint: pts[1], endPoint: pts[2] },
-    { id: base.segments[2]?.id ?? "seg-2", startPoint: pts[2], endPoint: pts[3] },
-  ];
-
-  // update segment midpoints positions only (keep ids/segmentId)
-  base.controlPoints = base.controlPoints.map(cp => {
-    if (cp.type === "endpoint") {
-      if (cp.id === "start") return { ...cp, position: base.startPoint, connection: base.startConnection ?? null };
-      if (cp.id === "end") return { ...cp, position: base.endPoint, connection: base.endConnection ?? null };
-      return cp;
-    }
-    if (cp.id === "root-mid") return { ...cp, position: rootMidLocal, isActive: true };
-    if (cp.type === "midpoint" && cp.segmentId) {
-      const seg = base.segments.find(s => s.id === cp.segmentId);
-      if (!seg) return cp;
-      return { ...cp, position: mid(seg.startPoint, seg.endPoint), isActive: true };
-    }
-    return cp;
+export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element, viewport }) => {
+  const { updateElement, elements } = useCanvasStore();
+  
+  const [dragState, setDragState] = useState<DragState>({
+    isDragging: false,
+    pointId: null,
+    pointType: null,
+    initialMousePos: null,
+    startPosition: null,
+    dragDirection: null
   });
+  
+  const [nearestAnchor, setNearestAnchor] = useState<{ elementId: string; anchor: string; position: ArrowPoint } | null>(null);
 
-  return simplify(base);
+  // الحصول على بيانات السهم
+  const arrowData: ArrowData | null = element.data?.arrowData || null;
+  
+  if (!arrowData) return null;
+
+  const { controlPoints, segments } = arrowData;
+
+  // تحويل موقع محلي إلى موقع عالمي (شاشة)
+  const localToScreen = useCallback((local: ArrowPoint): ArrowPoint => {
+    const worldX = element.position.x + local.x;
+    const worldY = element.position.y + local.y;
+    return {
+      x: worldX * viewport.zoom + viewport.pan.x,
+      y: worldY * viewport.zoom + viewport.pan.y
+    };
+  }, [element.position, viewport]);
+
+  // تحويل موقع شاشة إلى موقع محلي
+  const screenToLocal = useCallback((screen: ArrowPoint): ArrowPoint => {
+    const worldX = (screen.x - viewport.pan.x) / viewport.zoom;
+    const worldY = (screen.y - viewport.pan.y) / viewport.zoom;
+    return {
+      x: worldX - element.position.x,
+      y: worldY - element.position.y
+    };
+  }, [element.position, viewport]);
+
+  // بدء السحب
+  const handleMouseDown = useCallback((e: React.MouseEvent, cp: ArrowControlPoint) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    setDragState({
+      isDragging: true,
+      pointId: cp.id,
+      pointType: cp.type,
+      initialMousePos: { x: e.clientX, y: e.clientY },
+      startPosition: { ...cp.position },
+      dragDirection: null
+    });
+  }, []);
+
+  // معالجة حركة الماوس
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!dragState.isDragging || !dragState.pointId || !dragState.initialMousePos || !dragState.startPosition) return;
+    
+    const deltaX = (e.clientX - dragState.initialMousePos.x) / viewport.zoom;
+    const deltaY = (e.clientY - dragState.initialMousePos.y) / viewport.zoom;
+    
+    const newLocalPos: ArrowPoint = {
+      x: dragState.startPosition.x + deltaX,
+      y: dragState.startPosition.y + deltaY
+    };
+
+    const cp = controlPoints.find(c => c.id === dragState.pointId);
+    if (!cp) return;
+
+    let newArrowData: ArrowData;
+
+    if (cp.type === 'endpoint') {
+      // نقاط النهاية - البحث عن أقرب عنصر للالتصاق
+      const worldPos = {
+        x: element.position.x + newLocalPos.x,
+        y: element.position.y + newLocalPos.y
+      };
+      
+      // البحث عن أقرب anchor في العناصر الأخرى
+      const otherElements = elements.filter(el => el.id !== element.id);
+      let foundAnchor: { elementId: string; anchor: string; position: ArrowPoint } | null = null;
+      
+      const SNAP_DISTANCE = 20;
+      for (const el of otherElements) {
+        const anchors = ['center', 'top', 'bottom', 'left', 'right'];
+        for (const anchor of anchors) {
+          const anchorPos = getAnchorPosition(
+            { position: el.position, size: el.size },
+            anchor as ArrowConnection['anchorPoint']
+          );
+          const dist = Math.hypot(worldPos.x - anchorPos.x, worldPos.y - anchorPos.y);
+          if (dist < SNAP_DISTANCE) {
+            foundAnchor = { elementId: el.id, anchor, position: anchorPos };
+            break;
+          }
+        }
+        if (foundAnchor) break;
+      }
+      
+      setNearestAnchor(foundAnchor);
+      
+      // تحديث موقع نقطة النهاية
+      const isStart = controlPoints.indexOf(cp) === 0;
+      const connection: ArrowConnection | null = foundAnchor ? {
+        elementId: foundAnchor.elementId,
+        anchorPoint: foundAnchor.anchor as ArrowConnection['anchorPoint'],
+        offset: { x: 0, y: 0 }
+      } : null;
+      
+      const finalPos = foundAnchor ? {
+        x: foundAnchor.position.x - element.position.x,
+        y: foundAnchor.position.y - element.position.y
+      } : newLocalPos;
+      
+      newArrowData = updateEndpointPosition(
+        arrowData,
+        isStart ? 'start' : 'end',
+        finalPos,
+        connection
+      );
+      
+    } else if (cp.type === 'midpoint') {
+      // تحديد اتجاه السحب
+      let direction = dragState.dragDirection;
+      if (!direction) {
+        const absDx = Math.abs(deltaX);
+        const absDy = Math.abs(deltaY);
+        if (absDx > 5 || absDy > 5) {
+          direction = absDy > absDx ? 'vertical' : 'horizontal';
+          setDragState(prev => ({ ...prev, dragDirection: direction }));
+        }
+      }
+      
+      if (!direction) return;
+      
+      // إذا كانت نقطة المنتصف غير نشطة، نفعّلها ونحوّل لمسار متعامد
+      if (!cp.isActive) {
+        if (arrowData.arrowType === 'straight') {
+          // تحويل من مستقيم إلى متعامد
+          newArrowData = convertToOrthogonalPath(arrowData, cp.id, newLocalPos, direction);
+        } else {
+          // توسيع ضلع إلى 3 أضلاع
+          newArrowData = activateMidpointAndExpand(arrowData, cp.id, newLocalPos, direction);
+        }
+      } else {
+        // نقطة منتصف نشطة - تحديث موقعها
+        const updatedControlPoints = controlPoints.map(c => {
+          if (c.id === cp.id) {
+            return { ...c, position: newLocalPos };
+          }
+          return c;
+        });
+        
+        // تحديث الأضلاع المتصلة
+        const updatedSegments = segments.map(seg => {
+          if (seg.id === cp.segmentId) {
+            // تحريك الضلع بناءً على اتجاه السحب
+            const isHorizontal = Math.abs(seg.endPoint.y - seg.startPoint.y) < 1;
+            if (isHorizontal && direction === 'vertical') {
+              return {
+                ...seg,
+                startPoint: { ...seg.startPoint, y: newLocalPos.y },
+                endPoint: { ...seg.endPoint, y: newLocalPos.y }
+              };
+            } else if (!isHorizontal && direction === 'horizontal') {
+              return {
+                ...seg,
+                startPoint: { ...seg.startPoint, x: newLocalPos.x },
+                endPoint: { ...seg.endPoint, x: newLocalPos.x }
+              };
+            }
+          }
+          return seg;
+        });
+        
+        newArrowData = {
+          ...arrowData,
+          controlPoints: updatedControlPoints,
+          segments: updatedSegments
+        };
+        
+        // تحديث نقاط المنتصف لتبقى في منتصف أضلاعها
+        newArrowData.controlPoints = newArrowData.controlPoints.map(c => {
+          if (c.type === 'midpoint' && c.segmentId && c.id !== cp.id) {
+            const seg = newArrowData.segments.find(s => s.id === c.segmentId);
+            if (seg) {
+              return {
+                ...c,
+                position: {
+                  x: (seg.startPoint.x + seg.endPoint.x) / 2,
+                  y: (seg.startPoint.y + seg.endPoint.y) / 2
+                }
+              };
+            }
+          }
+          return c;
+        });
+      }
+    } else {
+      return;
+    }
+
+    // تحديث العنصر
+    updateElement(element.id, {
+      data: {
+        ...element.data,
+        arrowData: newArrowData
+      }
+    });
+  }, [dragState, viewport, controlPoints, segments, arrowData, element, elements, updateElement]);
+
+  // إنهاء السحب
+  const handleMouseUp = useCallback(() => {
+    setDragState({
+      isDragging: false,
+      pointId: null,
+      pointType: null,
+      initialMousePos: null,
+      startPosition: null,
+      dragDirection: null
+    });
+    setNearestAnchor(null);
+  }, []);
+
+  // ربط أحداث الماوس العالمية
+  useEffect(() => {
+    if (dragState.isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [dragState.isDragging, handleMouseMove, handleMouseUp]);
+
+  // الحصول على نمط نقطة التحكم
+  const getControlPointStyle = (cp: ArrowControlPoint): React.CSSProperties => {
+    const screenPos = localToScreen(cp.position);
+    const isActive = cp.isActive;
+    const size = isActive ? 10 : 6;
+    
+    return {
+      position: 'fixed',
+      left: screenPos.x - size / 2,
+      top: screenPos.y - size / 2,
+      width: size,
+      height: size,
+      borderRadius: '50%',
+      backgroundColor: isActive ? 'white' : 'rgba(255,255,255,0.5)',
+      border: `2px solid ${cp.connection?.elementId ? '#3DBE8B' : 'black'}`,
+      boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+      cursor: 'grab',
+      zIndex: 10000,
+      opacity: isActive ? 1 : 0.6,
+      transition: 'opacity 0.2s, transform 0.2s'
+    };
+  };
+
+  // رسم خطوط المسار
+  const renderPathLines = () => {
+    if (segments.length === 0) return null;
+    
+    const pathPoints = [arrowData.startPoint];
+    segments.forEach(seg => {
+      pathPoints.push(seg.endPoint);
+    });
+    
+    return (
+      <svg
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 9999
+        }}
+      >
+        {pathPoints.slice(0, -1).map((point, i) => {
+          const start = localToScreen(point);
+          const end = localToScreen(pathPoints[i + 1]);
+          return (
+            <line
+              key={i}
+              x1={start.x}
+              y1={start.y}
+              x2={end.x}
+              y2={end.y}
+              stroke="rgba(0,0,0,0.2)"
+              strokeWidth={1}
+              strokeDasharray="4,4"
+            />
+          );
+        })}
+      </svg>
+    );
+  };
+
+  return (
+    <>
+      {renderPathLines()}
+      
+      {controlPoints.map((cp) => (
+        <div
+          key={cp.id}
+          style={getControlPointStyle(cp)}
+          onMouseDown={(e) => handleMouseDown(e, cp)}
+          title={cp.type === 'endpoint' ? 'نقطة نهاية' : 'نقطة منتصف'}
+        />
+      ))}
+      
+      {/* مؤشر الالتصاق */}
+      {nearestAnchor && (
+        <div
+          style={{
+            position: 'fixed',
+            left: nearestAnchor.position.x * viewport.zoom + viewport.pan.x - 8,
+            top: nearestAnchor.position.y * viewport.zoom + viewport.pan.y - 8,
+            width: 16,
+            height: 16,
+            borderRadius: '50%',
+            border: '2px solid #3DBE8B',
+            backgroundColor: 'rgba(61, 190, 139, 0.3)',
+            pointerEvents: 'none',
+            zIndex: 10001
+          }}
+        />
+      )}
+    </>
+  );
 };
 
-// move a segment midpoint: ONLY change that segment line (x for vertical segment, y for horizontal segment)
-export const moveSegmentMidpoint = (arrow: ArrowData, segmentId: string, newLocal: Point): ArrowData => {
-  const next = cloneArrow(arrow);
-  const segIndex = next.segments.findIndex(s => s.id === segmentId);
-  if (segIndex === -1) r
+export default ArrowControlPoints;
