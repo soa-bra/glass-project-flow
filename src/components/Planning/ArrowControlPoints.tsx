@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { 
@@ -42,6 +43,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
   const [dragState, setDragState] = useState<ArrowControlDragState & { 
     initialMousePos?: { x: number; y: number } | null;
     dragDirection?: 'horizontal' | 'vertical' | null;
+    containerRect?: DOMRect | null;
   }>({
     isDragging: false,
     controlPoint: null,
@@ -49,7 +51,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     startPosition: null,
     nearestAnchor: null,
     initialMousePos: null,
-    dragDirection: null
+    dragDirection: null,
+    containerRect: null
   });
 
   // حالة تعديل النص على نقطة منتصف غير نشطة
@@ -158,6 +161,20 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       !el.shapeType?.startsWith('arrow_')
     ), [elements, element.id]);
 
+  // ✅ إنشاء مفتاح يتغير عند تحريك أي عنصر متصل
+  const connectedElementsKey = useMemo(() => {
+    const startElId = arrowData.startConnection?.elementId;
+    const endElId = arrowData.endConnection?.elementId;
+    
+    const startEl = startElId ? otherElements.find(e => e.id === startElId) : null;
+    const endEl = endElId ? otherElements.find(e => e.id === endElId) : null;
+    
+    return JSON.stringify({
+      start: startEl ? { x: startEl.position.x, y: startEl.position.y } : null,
+      end: endEl ? { x: endEl.position.x, y: endEl.position.y } : null
+    });
+  }, [otherElements, arrowData.startConnection?.elementId, arrowData.endConnection?.elementId]);
+
   // مراقبة تحريك العناصر المتصلة وتحديث نقاط السهم تلقائياً مع الحفاظ على الأضلاع المتعامدة
   useEffect(() => {
     if (!arrowData.startConnection?.elementId && !arrowData.endConnection?.elementId) {
@@ -214,7 +231,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         data: { ...element.data, arrowData: newArrowData }
       });
     }
-  }, [otherElements, arrowData, element.id, element.position, updateElement]);
+  }, [connectedElementsKey, arrowData, element.id, element.position, updateElement, otherElements]);
 
   // نسخة محسّنة من moveEndpointWithSegment للحفاظ على الزوايا القائمة
   const moveEndpointWithSegmentForConnection = (
@@ -397,6 +414,10 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         ? 'end'
         : 'middle';
 
+    // ✅ تخزين containerRect عند بدء السحب لاستخدامه لاحقاً
+    const canvasContainer = document.querySelector('[data-canvas-container]') || document.querySelector('.infinite-canvas-container');
+    const containerRect = canvasContainer?.getBoundingClientRect() || null;
+    
     setDragState({
       isDragging: true,
       controlPoint: controlPointType,
@@ -404,7 +425,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       startPosition: { ...cp.position },
       nearestAnchor: null,
       initialMousePos: { x: e.clientX, y: e.clientY },
-      dragDirection: null
+      dragDirection: null,
+      containerRect
     });
   }, [displayControlPoints]);
 
@@ -1270,18 +1292,27 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     const { midpointId, text } = editingLabel;
     const trimmedText = text.trim();
     
-    // تحديث نقطة التحكم بالنص
+    // ✅ تحديث نقطة التحكم بالنص - الحفاظ على النص حتى لو فارغ (سيُفلتر عند العرض)
     const newControlPoints = arrowData.controlPoints.map(cp => {
       if (cp.id === midpointId) {
-        return { ...cp, label: trimmedText || undefined };
+        // إنشاء نسخة جديدة مع النص
+        const updatedCp = { ...cp };
+        if (trimmedText) {
+          (updatedCp as any).label = trimmedText;
+        } else {
+          delete (updatedCp as any).label;
+        }
+        return updatedCp;
       }
-      return cp;
+      return { ...cp }; // نسخ كل نقطة للحفاظ على التغييرات
     });
     
     const newArrowData: ArrowData = {
       ...arrowData,
       controlPoints: newControlPoints
     };
+    
+    console.log('Saving label:', { midpointId, trimmedText, newControlPoints });
     
     updateElement(element.id, {
       data: { ...element.data, arrowData: newArrowData }
@@ -1384,38 +1415,41 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         );
       })}
 
-      {/* مؤشر الالتصاق - موقعه نسبي للعنصر الأب (داخل CanvasElement) */}
-      {dragState.nearestAnchor && (
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            left: dragState.nearestAnchor.position.x - element.position.x - 16,
-            top: dragState.nearestAnchor.position.y - element.position.y - 16,
-            width: 32,
-            height: 32,
-            borderRadius: '50%',
-            border: '3px solid hsl(var(--accent-green))',
-            backgroundColor: 'rgba(61, 190, 139, 0.25)',
-            boxShadow: '0 0 12px rgba(61, 190, 139, 0.5), inset 0 0 8px rgba(61, 190, 139, 0.3)',
-            animation: 'pulse-snap 0.6s ease-in-out infinite'
-          }}
-        />
-      )}
-
-      {/* تأثير بصري إضافي عند الالتصاق */}
-      {dragState.nearestAnchor && (
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            left: dragState.nearestAnchor.position.x - element.position.x - 24,
-            top: dragState.nearestAnchor.position.y - element.position.y - 24,
-            width: 48,
-            height: 48,
-            borderRadius: '50%',
-            border: '1px solid rgba(61, 190, 139, 0.3)',
-            animation: 'pulse-ring 0.8s ease-out infinite'
-          }}
-        />
+      {/* ✅ مؤشر الالتصاق - يُعرض في document.body باستخدام createPortal */}
+      {dragState.nearestAnchor && dragState.containerRect && createPortal(
+        <>
+          <div
+            className="fixed pointer-events-none"
+            style={{
+              // تحويل إحداثيات الكانفاس إلى إحداثيات الشاشة
+              left: dragState.nearestAnchor.position.x * viewport.zoom + viewport.pan.x + dragState.containerRect.left - 16,
+              top: dragState.nearestAnchor.position.y * viewport.zoom + viewport.pan.y + dragState.containerRect.top - 16,
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              border: '3px solid #3DBE8B',
+              backgroundColor: 'rgba(61, 190, 139, 0.25)',
+              boxShadow: '0 0 12px rgba(61, 190, 139, 0.5), inset 0 0 8px rgba(61, 190, 139, 0.3)',
+              animation: 'pulse-snap 0.6s ease-in-out infinite',
+              zIndex: 99999
+            }}
+          />
+          {/* تأثير بصري إضافي عند الالتصاق */}
+          <div
+            className="fixed pointer-events-none"
+            style={{
+              left: dragState.nearestAnchor.position.x * viewport.zoom + viewport.pan.x + dragState.containerRect.left - 24,
+              top: dragState.nearestAnchor.position.y * viewport.zoom + viewport.pan.y + dragState.containerRect.top - 24,
+              width: 48,
+              height: 48,
+              borderRadius: '50%',
+              border: '1px solid rgba(61, 190, 139, 0.3)',
+              animation: 'pulse-ring 0.8s ease-out infinite',
+              zIndex: 99998
+            }}
+          />
+        </>,
+        document.body
       )}
 
       <style>{`
