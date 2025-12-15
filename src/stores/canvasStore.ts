@@ -244,6 +244,10 @@ interface CanvasState {
   startTyping: () => void;
   stopTyping: () => void;
   
+  // Internal Drag Management (لمنع تعارض السحب بين نقاط التحكم والعنصر)
+  isInternalDrag: boolean;
+  setInternalDrag: (value: boolean) => void;
+  
   // Pen Actions
   setPenSettings: (partial: Partial<PenSettings>) => void;
   toggleSmartMode: () => void;
@@ -327,6 +331,9 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   // Text Management State
   editingTextId: null,
   typingMode: false,
+  
+  // Internal Drag State
+  isInternalDrag: false,
   
   // Pen Strokes Initial State
   strokes: {},
@@ -1053,7 +1060,11 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     set({ typingMode: false });
   },
   
-  // Pen Actions Implementation
+  // Internal Drag Management
+  setInternalDrag: (value) => {
+    set({ isInternalDrag: value });
+  },
+
   setPenSettings: (partial) => {
     set(state => ({
       toolSettings: {

@@ -99,7 +99,8 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   }, [element, onSelect, isLocked, isSelected, activeTool, isEditingThisText]);
   
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDraggingRef.current || isLocked) return;
+    // ✅ منع التعارض مع سحب نقاط تحكم السهم
+    if (!isDraggingRef.current || isLocked || useCanvasStore.getState().isInternalDrag) return;
     
     const deltaX = (e.clientX - dragStartRef.current.x) / viewport.zoom;
     const deltaY = (e.clientY - dragStartRef.current.y) / viewport.zoom;

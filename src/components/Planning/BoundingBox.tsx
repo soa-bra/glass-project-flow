@@ -65,6 +65,9 @@ export const BoundingBox: React.FC = () => {
   // ✅ useEffect قبل أي return شرطي
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      // ✅ منع التعارض مع سحب نقاط تحكم السهم
+      if (useCanvasStore.getState().isInternalDrag) return;
+      
       if (isDragging) {
         // تكرار العناصر عند Cmd/Ctrl+Drag (مرة واحدة فقط)
         if ((e.metaKey || e.ctrlKey) && !hasDuplicated.current) {
