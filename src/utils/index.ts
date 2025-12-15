@@ -6,6 +6,9 @@ export { toNumber, toString, sanitizeStyleForCSS } from './canvasUtils';
 export { colorToClassName, generateColorClass, createStyleObject } from './colorMapper';
 export * from './toolPanelHelpers';
 
+// Arrow Routing System
+export * from './arrow-routing';
+
 // Type Utilities
 export { cn } from '../lib/utils';
 
