@@ -455,6 +455,100 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     };
   };
 
+  // حذف ضلع عبر النقر المزدوج على نقطة المنتصف
+  const deleteSegmentByMidpoint = useCallback((midpointId: string) => {
+    const midpoint = arrowData.controlPoints.find(cp => cp.id === midpointId);
+    if (!midpoint || !midpoint.segmentId || midpoint.type !== 'midpoint') return;
+    
+    // لا يمكن الحذف إذا كان هناك ضلع واحد فقط
+    if (arrowData.segments.length <= 1) return;
+    
+    const segmentIndex = arrowData.segments.findIndex(s => s.id === midpoint.segmentId);
+    if (segmentIndex === -1) return;
+    
+    const segment = arrowData.segments[segmentIndex];
+    const newSegments = [...arrowData.segments];
+    
+    // دمج الضلع مع الضلع السابق أو التالي
+    if (segmentIndex === 0 && newSegments.length > 1) {
+      // إذا كان الضلع الأول، ندمجه مع الثاني
+      newSegments[1] = {
+        ...newSegments[1],
+        startPoint: segment.startPoint
+      };
+      newSegments.splice(0, 1);
+    } else if (segmentIndex === newSegments.length - 1 && newSegments.length > 1) {
+      // إذا كان الضلع الأخير، ندمجه مع السابق
+      newSegments[segmentIndex - 1] = {
+        ...newSegments[segmentIndex - 1],
+        endPoint: segment.endPoint
+      };
+      newSegments.splice(segmentIndex, 1);
+    } else if (newSegments.length > 2) {
+      // ضلع في الوسط - ندمج الضلع السابق والتالي
+      const prevSegment = newSegments[segmentIndex - 1];
+      const nextSegment = newSegments[segmentIndex + 1];
+      
+      // نوصل الضلع السابق بنهاية الضلع التالي
+      newSegments[segmentIndex - 1] = {
+        ...prevSegment,
+        endPoint: nextSegment.endPoint
+      };
+      // نحذف الضلع الحالي والتالي
+      newSegments.splice(segmentIndex, 2);
+    }
+    
+    // إعادة بناء نقاط التحكم
+    const newControlPoints: ArrowCP[] = [];
+    
+    // نقطة البداية
+    const startCp = arrowData.controlPoints.find(cp => cp.type === 'endpoint' && arrowData.controlPoints.indexOf(cp) === 0);
+    newControlPoints.push({
+      id: startCp?.id || 'start',
+      type: 'endpoint',
+      position: arrowData.startPoint,
+      isActive: true,
+      connection: startCp?.connection || null
+    });
+    
+    // نقاط منتصف للأضلاع المتبقية
+    newSegments.forEach((seg) => {
+      newControlPoints.push({
+        id: generateId(),
+        type: 'midpoint',
+        position: {
+          x: (seg.startPoint.x + seg.endPoint.x) / 2,
+          y: (seg.startPoint.y + seg.endPoint.y) / 2
+        },
+        isActive: false,
+        segmentId: seg.id
+      });
+    });
+    
+    // نقطة النهاية
+    const endCp = arrowData.controlPoints.find(cp => cp.type === 'endpoint' && arrowData.controlPoints.indexOf(cp) === arrowData.controlPoints.length - 1);
+    const finalEndPoint = newSegments.length > 0 ? newSegments[newSegments.length - 1].endPoint : arrowData.endPoint;
+    newControlPoints.push({
+      id: endCp?.id || 'end',
+      type: 'endpoint',
+      position: finalEndPoint,
+      isActive: true,
+      connection: endCp?.connection || null
+    });
+    
+    const newArrowData: ArrowData = {
+      ...arrowData,
+      segments: newSegments,
+      controlPoints: newControlPoints,
+      endPoint: finalEndPoint,
+      arrowType: newSegments.length === 1 ? 'straight' : 'orthogonal'
+    };
+    
+    updateElement(element.id, {
+      data: { ...element.data, arrowData: newArrowData }
+    });
+  }, [arrowData, element, updateElement]);
+
   // معالجة السحب
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!dragState.isDragging || !dragState.controlPoint || !dragState.initialMousePos || !dragState.startPosition) return;
@@ -704,10 +798,17 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
             ...getControlPointStyle(cp)
           }}
           onMouseDown={(e) => handleMouseDown(e, cp)}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (cp.type === 'midpoint') {
+              deleteSegmentByMidpoint(cp.id);
+            }
+          }}
           title={
             cp.type === 'endpoint' 
               ? (idx === 0 ? 'نقطة البداية - اسحب للاتصال بعنصر' : 'نقطة النهاية - اسحب للاتصال بعنصر')
-              : 'نقطة المنتصف - اسحب لإنشاء مسار متعامد'
+              : 'نقطة المنتصف - اسحب لإنشاء مسار متعامد، انقر مرتين للحذف'
           }
         />
       ))}
