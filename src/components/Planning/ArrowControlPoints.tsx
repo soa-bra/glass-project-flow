@@ -216,13 +216,17 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     }
   }, [otherElements, arrowData, element.id, element.position, updateElement]);
 
-  // نسخة من moveEndpointWithSegment للاستخدام في useEffect
+  // نسخة محسّنة من moveEndpointWithSegment للحفاظ على الزوايا القائمة
   const moveEndpointWithSegmentForConnection = (
     data: ArrowData,
     endpoint: 'start' | 'end',
     newPosition: ArrowPoint
   ): ArrowData => {
-    const newData = { ...data, segments: [...data.segments], controlPoints: [...data.controlPoints] };
+    const newData = { 
+      ...data, 
+      segments: data.segments.map(s => ({ ...s })), 
+      controlPoints: data.controlPoints.map(cp => ({ ...cp }))
+    };
     
     if (data.arrowType === 'straight' || data.segments.length <= 1) {
       // سهم مستقيم - تحريك بسيط
@@ -241,86 +245,106 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         }
       }
     } else {
-      // سهم متعامد - تحريك الضلع كاملاً مع الحفاظ على الاتجاه
+      // سهم متعامد - تحريك الضلع كاملاً مع الحفاظ على الزوايا القائمة
       if (endpoint === 'start') {
+        const oldStartPoint = data.startPoint;
         newData.startPoint = newPosition;
         
-        // تحديد اتجاه الضلع الأول
+        // حساب الفرق في الموقع
+        const deltaX = newPosition.x - oldStartPoint.x;
+        const deltaY = newPosition.y - oldStartPoint.y;
+        
+        // تحديد اتجاه الضلع الأول الأصلي
         const firstSegment = data.segments[0];
         const dx = Math.abs(firstSegment.endPoint.x - firstSegment.startPoint.x);
         const dy = Math.abs(firstSegment.endPoint.y - firstSegment.startPoint.y);
-        const isFirstVertical = dy > dx;
+        const isFirstVertical = dy >= dx;
         
         if (isFirstVertical) {
-          // ضلع عمودي - نحرك كلا النقطتين أفقياً ليبقى عمودياً
-          const newEndY = firstSegment.endPoint.y;
+          // ضلع عمودي - نحركه أفقياً بالكامل ليبقى عمودياً
+          // نقطة البداية تتحرك، ونقطة النهاية تتحرك أفقياً فقط بنفس المقدار
           newData.segments[0] = {
             ...firstSegment,
             startPoint: newPosition,
-            endPoint: { x: newPosition.x, y: newEndY }
+            endPoint: { 
+              x: firstSegment.endPoint.x + deltaX, 
+              y: firstSegment.endPoint.y  // Y لا يتغير ليبقى الضلع عمودياً
+            }
           };
         } else {
-          // ضلع أفقي - نحرك كلا النقطتين عمودياً ليبقى أفقياً
-          const newEndX = firstSegment.endPoint.x;
+          // ضلع أفقي - نحركه عمودياً بالكامل ليبقى أفقياً
+          // نقطة البداية تتحرك، ونقطة النهاية تتحرك عمودياً فقط بنفس المقدار
           newData.segments[0] = {
             ...firstSegment,
             startPoint: newPosition,
-            endPoint: { x: newEndX, y: newPosition.y }
+            endPoint: { 
+              x: firstSegment.endPoint.x,  // X لا يتغير ليبقى الضلع أفقياً
+              y: firstSegment.endPoint.y + deltaY 
+            }
           };
         }
         
-        // تحديث نقطة بداية الضلع التالي
+        // تحديث نقطة بداية الضلع التالي لتتصل بنهاية الضلع الأول
         if (data.segments.length > 1) {
           newData.segments[1] = {
-            ...data.segments[1],
-            startPoint: newData.segments[0].endPoint
+            ...newData.segments[1],
+            startPoint: { ...newData.segments[0].endPoint }
           };
         }
       } else {
+        const oldEndPoint = data.endPoint;
         newData.endPoint = newPosition;
         
-        // تحديد اتجاه الضلع الأخير
+        // حساب الفرق في الموقع
+        const deltaX = newPosition.x - oldEndPoint.x;
+        const deltaY = newPosition.y - oldEndPoint.y;
+        
+        // تحديد اتجاه الضلع الأخير الأصلي
         const lastIdx = data.segments.length - 1;
         const lastSegment = data.segments[lastIdx];
         const dx = Math.abs(lastSegment.endPoint.x - lastSegment.startPoint.x);
         const dy = Math.abs(lastSegment.endPoint.y - lastSegment.startPoint.y);
-        const isLastVertical = dy > dx;
+        const isLastVertical = dy >= dx;
         
         if (isLastVertical) {
-          // ضلع عمودي - نحرك كلا النقطتين أفقياً ليبقى عمودياً
-          const newStartY = lastSegment.startPoint.y;
+          // ضلع عمودي - نحركه أفقياً بالكامل ليبقى عمودياً
           newData.segments[lastIdx] = {
             ...lastSegment,
-            startPoint: { x: newPosition.x, y: newStartY },
+            startPoint: { 
+              x: lastSegment.startPoint.x + deltaX, 
+              y: lastSegment.startPoint.y  // Y لا يتغير ليبقى الضلع عمودياً
+            },
             endPoint: newPosition
           };
         } else {
-          // ضلع أفقي - نحرك كلا النقطتين عمودياً ليبقى أفقياً
-          const newStartX = lastSegment.startPoint.x;
+          // ضلع أفقي - نحركه عمودياً بالكامل ليبقى أفقياً
           newData.segments[lastIdx] = {
             ...lastSegment,
-            startPoint: { x: newStartX, y: newPosition.y },
+            startPoint: { 
+              x: lastSegment.startPoint.x,  // X لا يتغير ليبقى الضلع أفقياً
+              y: lastSegment.startPoint.y + deltaY 
+            },
             endPoint: newPosition
           };
         }
         
-        // تحديث نقطة نهاية الضلع السابق
+        // تحديث نقطة نهاية الضلع السابق لتتصل ببداية الضلع الأخير
         if (data.segments.length > 1) {
           newData.segments[lastIdx - 1] = {
-            ...data.segments[lastIdx - 1],
-            endPoint: newData.segments[lastIdx].startPoint
+            ...newData.segments[lastIdx - 1],
+            endPoint: { ...newData.segments[lastIdx].startPoint }
           };
         }
       }
     }
     
-    // تحديث نقاط التحكم
-    newData.controlPoints = newData.controlPoints.map(cp => {
+    // تحديث نقاط التحكم مع الحفاظ على الخصائص الأصلية (isActive, label)
+    newData.controlPoints = newData.controlPoints.map((cp, idx) => {
       if (cp.type === 'midpoint' && cp.segmentId) {
         const segment = newData.segments.find(s => s.id === cp.segmentId);
         if (segment) {
           return {
-            ...cp,
+            ...cp, // الحفاظ على isActive و label والخصائص الأخرى
             position: {
               x: (segment.startPoint.x + segment.endPoint.x) / 2,
               y: (segment.startPoint.y + segment.endPoint.y) / 2
@@ -328,11 +352,10 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           };
         }
       } else if (cp.type === 'endpoint') {
-        const idx = newData.controlPoints.indexOf(cp);
         if (idx === 0) {
-          return { ...cp, position: newData.startPoint };
+          return { ...cp, position: { ...newData.startPoint } };
         } else if (idx === newData.controlPoints.length - 1) {
-          return { ...cp, position: newData.endPoint };
+          return { ...cp, position: { ...newData.endPoint } };
         }
       }
       return cp;
@@ -975,11 +998,15 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     }
 
     // البحث عن أقرب نقطة ارتكاز للإلتصاق (فقط لنقاط النهاية)
+    // ✅ إضافة containerRect لحساب الإحداثيات بشكل صحيح
+    const canvasContainer = document.querySelector('[data-canvas-container]') || document.querySelector('.infinite-canvas-container');
+    const containerRect = canvasContainer?.getBoundingClientRect();
+    
     const nearestAnchor = dragState.controlPoint !== 'middle' 
       ? findNearestAnchor(
           { 
-            x: (e.clientX - viewport.pan.x) / viewport.zoom, 
-            y: (e.clientY - viewport.pan.y) / viewport.zoom 
+            x: (e.clientX - (containerRect?.left || 0) - viewport.pan.x) / viewport.zoom, 
+            y: (e.clientY - (containerRect?.top || 0) - viewport.pan.y) / viewport.zoom 
           }, 
           otherElements,
           30 / viewport.zoom
