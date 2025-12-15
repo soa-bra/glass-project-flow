@@ -967,7 +967,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     });
   }, [arrowData, element, updateElement]);
 
-  // معالجة السحب
+  // ✅ معالجة السحب - مبسّطة: تحريك النقطة فقط بدون توجيه معقد أثناء السحب
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!dragState.isDragging || !dragState.controlPoint || !dragState.initialMousePos || !dragState.startPosition) return;
 
@@ -990,12 +990,11 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       }
     }
 
-    // البحث عن أقرب نقطة ارتكاز للإلتصاق (فقط لنقاط النهاية)
-    // ✅ إضافة containerRect لحساب الإحداثيات بشكل صحيح
+    // البحث عن أقرب نقطة ارتكاز للإلتصاق (فقط لنقاط الأطراف)
     const canvasContainer = document.querySelector('[data-canvas-container]') || document.querySelector('.infinite-canvas-container');
     const containerRect = canvasContainer?.getBoundingClientRect();
     
-    const nearestAnchor = dragState.controlPoint !== 'middle' 
+    const nearestAnchor = (dragState.controlPoint === 'start' || dragState.controlPoint === 'end')
       ? findNearestAnchor(
           { 
             x: (e.clientX - (containerRect?.left || 0) - viewport.pan.x) / viewport.zoom, 
@@ -1008,7 +1007,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
 
     setDragState(prev => ({ ...prev, nearestAnchor }));
 
-    // ✅ استخدام snapshot بدلاً من arrowData الحالي لمنع تحرك جميع النقاط
+    // استخدام snapshot للحفاظ على استقرار البيانات
     const baseArrowData = dragState.startSnapshot ? {
       ...arrowData,
       segments: dragState.startSnapshot.segments.map(s => ({ 
@@ -1024,10 +1023,10 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       endPoint: { ...dragState.startSnapshot.endPoint }
     } : arrowData;
 
-    // تحديث بيانات السهم
     let newArrowData = { ...baseArrowData };
 
-    if (dragState.controlPoint === 'start') {
+    // ✅ لنقاط الأطراف: تحريك بسيط أثناء السحب (التوجيه الفعلي في handleMouseUp)
+    if (dragState.controlPoint === 'start' || dragState.controlPoint === 'end') {
       const finalPoint = nearestAnchor 
         ? { 
             x: nearestAnchor.position.x - element.position.x, 
@@ -1035,103 +1034,37 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           }
         : newPoint;
       
-      // تحريك الضلع المرتبط بنقطة البداية
-      newArrowData = moveEndpointWithSegment(baseArrowData, 'start', finalPoint);
-      
-      // إضافة معلومات الاتصال على المستوى الأعلى وعلى نقطة التحكم
-      if (nearestAnchor) {
-        const connectionData = {
-          elementId: nearestAnchor.elementId,
-          anchorPoint: nearestAnchor.anchorPoint,
-          offset: { x: 0, y: 0 }
-        };
-        
-        // ✅ تحديث startConnection على المستوى الأعلى (للـ useEffect)
-        newArrowData.startConnection = connectionData;
-        
-        const startCP = newArrowData.controlPoints.find(cp => cp.id === 'start' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === 0));
-        if (startCP) {
-          startCP.connection = connectionData;
-        }
-      } else {
-        // ✅ إزالة الاتصال عند السحب بعيداً
-        newArrowData.startConnection = null;
-        const startCP = newArrowData.controlPoints.find(cp => cp.id === 'start' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === 0));
-        if (startCP) {
-          startCP.connection = null;
-        }
-      }
-      
-    } else if (dragState.controlPoint === 'end') {
-      const finalPoint = nearestAnchor 
-        ? { 
-            x: nearestAnchor.position.x - element.position.x, 
-            y: nearestAnchor.position.y - element.position.y 
-          }
-        : newPoint;
-      
-      // تحريك الضلع المرتبط بنقطة النهاية
-      newArrowData = moveEndpointWithSegment(baseArrowData, 'end', finalPoint);
-      
-      // إضافة معلومات الاتصال على المستوى الأعلى وعلى نقطة التحكم
-      if (nearestAnchor) {
-        const connectionData = {
-          elementId: nearestAnchor.elementId,
-          anchorPoint: nearestAnchor.anchorPoint,
-          offset: { x: 0, y: 0 }
-        };
-        
-        // ✅ تحديث endConnection على المستوى الأعلى (للـ useEffect)
-        newArrowData.endConnection = connectionData;
-        
-        const endCP = newArrowData.controlPoints.find(cp => cp.id === 'end' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === newArrowData.controlPoints.length - 1));
-        if (endCP) {
-          endCP.connection = connectionData;
-        }
-      } else {
-        // ✅ إزالة الاتصال عند السحب بعيداً
-        newArrowData.endConnection = null;
-        const endCP = newArrowData.controlPoints.find(cp => cp.id === 'end' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === newArrowData.controlPoints.length - 1));
-        if (endCP) {
-          endCP.connection = null;
-        }
-      }
+      // تحريك بسيط: فقط تحديث نقطة الطرف والضلع المتصل
+      newArrowData = moveEndpointWithSegment(baseArrowData, dragState.controlPoint, finalPoint);
       
     } else if (dragState.controlPoint === 'middle' && currentDragDirection && dragState.controlPointId) {
-      // البحث عن نقطة المنتصف
+      // معالجة نقاط المنتصف (تبقى كما هي)
       const midpoint = baseArrowData.controlPoints.find(cp => cp.id === dragState.controlPointId);
       
       if (midpoint && !midpoint.isActive) {
-        // نقطة غير نشطة - نحدد إذا كانت ضلع رابط جانبي أم ضلع أوسط
         const segmentIndex = baseArrowData.segments.findIndex(s => s.id === midpoint.segmentId);
         const isFirstOrLastSegment = segmentIndex === 0 || segmentIndex === baseArrowData.segments.length - 1;
         
         if (isFirstOrLastSegment && baseArrowData.segments.length > 1) {
-          // ضلع جانبي (رابط) - استخدام دالة التفعيل الخاصة به
           newArrowData = activateSideConnectorMidpoint(baseArrowData, dragState.controlPointId, newPoint, currentDragDirection);
         } else {
-          // تفعيل نقطة المنتصف وتقسيم الضلع (للأضلاع الوسطى أو السهم المستقيم)
           newArrowData = activateMidpointAndSplit(baseArrowData, dragState.controlPointId, newPoint, currentDragDirection);
         }
       } else if (midpoint && midpoint.isActive && midpoint.segmentId) {
-        // النقطة نشطة بالفعل - تحريكها مع الحفاظ على حالة التفعيل
         const segment = baseArrowData.segments.find(s => s.id === midpoint.segmentId);
         if (segment) {
-          // تحديد نوع الضلع: أفقي أو عمودي
           const isHorizontal = Math.abs(segment.endPoint.y - segment.startPoint.y) < 
                               Math.abs(segment.endPoint.x - segment.startPoint.x);
           
           const segmentIndex = baseArrowData.segments.findIndex(s => s.id === midpoint.segmentId);
           
           if (isHorizontal) {
-            // ضلع أفقي (عرضي) - نحركه عمودياً فقط (للأعلى والأسفل)
             newArrowData.segments[segmentIndex] = {
               ...segment,
               startPoint: { x: segment.startPoint.x, y: newPoint.y },
               endPoint: { x: segment.endPoint.x, y: newPoint.y }
             };
           } else {
-            // ضلع عمودي (طولي) - نحركه أفقياً فقط (لليمين واليسار)
             newArrowData.segments[segmentIndex] = {
               ...segment,
               startPoint: { x: newPoint.x, y: segment.startPoint.y },
@@ -1139,7 +1072,6 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
             };
           }
           
-          // تحديث الأضلاع المجاورة
           if (segmentIndex > 0) {
             newArrowData.segments[segmentIndex - 1] = {
               ...baseArrowData.segments[segmentIndex - 1],
@@ -1153,11 +1085,9 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
             };
           }
           
-          // تحديث نقاط التحكم مع الحفاظ على حالة التفعيل
           newArrowData.controlPoints = updateMidpointsPositions(newArrowData);
         }
       } else {
-        // سهم مستقيم - تحويله إلى متعامد
         newArrowData = convertToOrthogonalPath(baseArrowData, dragState.controlPointId, newPoint, currentDragDirection);
       }
     }
