@@ -646,25 +646,25 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         // النقطة نشطة بالفعل - تحريكها
         const segment = arrowData.segments.find(s => s.id === midpoint.segmentId);
         if (segment) {
-          const isVertical = Math.abs(segment.endPoint.x - segment.startPoint.x) < 
-                            Math.abs(segment.endPoint.y - segment.startPoint.y);
+          // تحديد نوع الضلع: أفقي أو عمودي
+          const isHorizontal = Math.abs(segment.endPoint.y - segment.startPoint.y) < 
+                              Math.abs(segment.endPoint.x - segment.startPoint.x);
           
-          // تحديث موقع الضلع (تحريك عمودي أو أفقي فقط)
           const segmentIndex = arrowData.segments.findIndex(s => s.id === midpoint.segmentId);
           
-          if (isVertical) {
-            // ضلع عمودي - نحركه أفقياً
-            newArrowData.segments[segmentIndex] = {
-              ...segment,
-              startPoint: { x: newPoint.x, y: segment.startPoint.y },
-              endPoint: { x: newPoint.x, y: segment.endPoint.y }
-            };
-          } else {
-            // ضلع أفقي - نحركه عمودياً
+          if (isHorizontal) {
+            // ضلع أفقي (عرضي) - نحركه عمودياً فقط (للأعلى والأسفل)
             newArrowData.segments[segmentIndex] = {
               ...segment,
               startPoint: { x: segment.startPoint.x, y: newPoint.y },
               endPoint: { x: segment.endPoint.x, y: newPoint.y }
+            };
+          } else {
+            // ضلع عمودي (طولي) - نحركه أفقياً فقط (لليمين واليسار)
+            newArrowData.segments[segmentIndex] = {
+              ...segment,
+              startPoint: { x: newPoint.x, y: segment.startPoint.y },
+              endPoint: { x: newPoint.x, y: segment.endPoint.y }
             };
           }
           
