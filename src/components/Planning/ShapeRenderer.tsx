@@ -105,6 +105,8 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
 
     return (
       <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+        {/* طبقة hit-area شفافة لتوسيع منطقة النقر */}
+        <path d={pathD} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
         <path d={pathD} />
         {/* رأس السهم في النهاية */}
         {(data.headDirection === 'end' || data.headDirection === 'both') && (
@@ -188,6 +190,8 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const lineY = h / 2;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            {/* طبقة hit-area شفافة لتوسيع منطقة النقر */}
+            <line x1={padding} y1={lineY} x2={w - padding} y2={lineY} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={padding} y1={lineY} x2={w - padding} y2={lineY} />
             <polyline points={`${w - padding - headSize},${lineY - headSize} ${w - padding},${lineY} ${w - padding - headSize},${lineY + headSize}`} />
           </g>
@@ -199,6 +203,7 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const lineY = h / 2;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={w - padding} y1={lineY} x2={padding} y2={lineY} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={w - padding} y1={lineY} x2={padding} y2={lineY} />
             <polyline points={`${padding + headSize},${lineY - headSize} ${padding},${lineY} ${padding + headSize},${lineY + headSize}`} />
           </g>
@@ -210,6 +215,7 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const lineX = w / 2;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={lineX} y1={h - padding} x2={lineX} y2={padding} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={lineX} y1={h - padding} x2={lineX} y2={padding} />
             <polyline points={`${lineX - headSize},${padding + headSize} ${lineX},${padding} ${lineX + headSize},${padding + headSize}`} />
           </g>
@@ -221,6 +227,7 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const lineX = w / 2;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={lineX} y1={padding} x2={lineX} y2={h - padding} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={lineX} y1={padding} x2={lineX} y2={h - padding} />
             <polyline points={`${lineX - headSize},${h - padding - headSize} ${lineX},${h - padding} ${lineX + headSize},${h - padding - headSize}`} />
           </g>
@@ -231,6 +238,7 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const headSize = 12;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={padding} y1={h - padding} x2={w - padding} y2={padding} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={padding} y1={h - padding} x2={w - padding} y2={padding} />
             <polyline points={`${w - padding - headSize},${padding} ${w - padding},${padding} ${w - padding},${padding + headSize}`} />
           </g>
@@ -241,6 +249,7 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const headSize = 12;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={padding} y1={padding} x2={w - padding} y2={h - padding} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={padding} y1={padding} x2={w - padding} y2={h - padding} />
             <polyline points={`${w - padding - headSize},${h - padding} ${w - padding},${h - padding} ${w - padding},${h - padding - headSize}`} />
           </g>
@@ -251,6 +260,7 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const headSize = 12;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={w - padding} y1={h - padding} x2={padding} y2={padding} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={w - padding} y1={h - padding} x2={padding} y2={padding} />
             <polyline points={`${padding + headSize},${padding} ${padding},${padding} ${padding},${padding + headSize}`} />
           </g>
@@ -261,6 +271,7 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const headSize = 12;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={w - padding} y1={padding} x2={padding} y2={h - padding} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={w - padding} y1={padding} x2={padding} y2={h - padding} />
             <polyline points={`${padding + headSize},${h - padding} ${padding},${h - padding} ${padding},${h - padding - headSize}`} />
           </g>
@@ -272,6 +283,7 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const lineY = h / 2;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={padding} y1={lineY} x2={w - padding} y2={lineY} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={padding} y1={lineY} x2={w - padding} y2={lineY} />
             <polyline points={`${padding + headSize},${lineY - headSize} ${padding},${lineY} ${padding + headSize},${lineY + headSize}`} />
             <polyline points={`${w - padding - headSize},${lineY - headSize} ${w - padding},${lineY} ${w - padding - headSize},${lineY + headSize}`} />
@@ -284,6 +296,7 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const lineX = w / 2;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={lineX} y1={padding} x2={lineX} y2={h - padding} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={lineX} y1={padding} x2={lineX} y2={h - padding} />
             <polyline points={`${lineX - headSize},${padding + headSize} ${lineX},${padding} ${lineX + headSize},${padding + headSize}`} />
             <polyline points={`${lineX - headSize},${h - padding - headSize} ${lineX},${h - padding} ${lineX + headSize},${h - padding - headSize}`} />
@@ -297,6 +310,8 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const cy = h / 2;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={padding} y1={cy} x2={w - padding} y2={cy} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
+            <line x1={cx} y1={padding} x2={cx} y2={h - padding} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={padding} y1={cy} x2={w - padding} y2={cy} />
             <line x1={cx} y1={padding} x2={cx} y2={h - padding} />
             <polyline points={`${padding + headSize},${cy - headSize} ${padding},${cy} ${padding + headSize},${cy + headSize}`} />
@@ -311,6 +326,7 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         const headSize = 10;
         return (
           <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <line x1={padding} y1={h - padding} x2={w - padding} y2={padding} strokeWidth={20} stroke="transparent" pointerEvents="stroke" />
             <line x1={padding} y1={h - padding} x2={w - padding} y2={padding} />
             <polyline points={`${padding},${h - padding - headSize} ${padding},${h - padding} ${padding + headSize},${h - padding}`} />
             <polyline points={`${w - padding - headSize},${padding} ${w - padding},${padding} ${w - padding},${padding + headSize}`} />
