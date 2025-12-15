@@ -438,7 +438,12 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         connectedArrows.forEach(arrow => {
           if (!updatedElement) return;
           
-          const arrowData = { ...arrow.data.arrowData };
+          // نسخ عميق لـ arrowData مع segments و controlPoints
+          const arrowData = { 
+            ...arrow.data.arrowData,
+            segments: arrow.data.arrowData.segments?.map((s: any) => ({ ...s, startPoint: { ...s.startPoint }, endPoint: { ...s.endPoint } })) || [],
+            controlPoints: arrow.data.arrowData.controlPoints?.map((cp: any) => ({ ...cp, position: { ...cp.position } })) || []
+          };
           
           // تحديث نقطة البداية إذا كانت متصلة
           if (arrowData.startConnection?.elementId === elementId) {
@@ -446,10 +451,22 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
               updatedElement,
               arrowData.startConnection.anchorPoint
             );
-            arrowData.startPoint = {
+            const newStartPoint = {
               x: anchorPos.x - arrow.position.x,
               y: anchorPos.y - arrow.position.y
             };
+            arrowData.startPoint = newStartPoint;
+            
+            // تحديث الضلع الأول ليتطابق مع نقطة البداية الجديدة
+            if (arrowData.segments.length > 0) {
+              arrowData.segments[0].startPoint = { ...newStartPoint };
+            }
+            
+            // تحديث نقطة التحكم الأولى (start)
+            const startControlPoint = arrowData.controlPoints.find((cp: any) => cp.type === 'start');
+            if (startControlPoint) {
+              startControlPoint.position = { ...newStartPoint };
+            }
           }
           
           // تحديث نقطة النهاية إذا كانت متصلة
@@ -458,11 +475,41 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
               updatedElement,
               arrowData.endConnection.anchorPoint
             );
-            arrowData.endPoint = {
+            const newEndPoint = {
               x: anchorPos.x - arrow.position.x,
               y: anchorPos.y - arrow.position.y
             };
+            arrowData.endPoint = newEndPoint;
+            
+            // تحديث الضلع الأخير ليتطابق مع نقطة النهاية الجديدة
+            if (arrowData.segments.length > 0) {
+              const lastSegmentIdx = arrowData.segments.length - 1;
+              arrowData.segments[lastSegmentIdx].endPoint = { ...newEndPoint };
+            }
+            
+            // تحديث نقطة التحكم الأخيرة (end)
+            const endControlPoint = arrowData.controlPoints.find((cp: any) => cp.type === 'end');
+            if (endControlPoint) {
+              endControlPoint.position = { ...newEndPoint };
+            }
           }
+          
+          // تحديث مواقع نقاط المنتصف لتبقى في وسط أضلاعها
+          arrowData.controlPoints = arrowData.controlPoints.map((cp: any) => {
+            if (cp.type === 'midpoint' && cp.segmentId) {
+              const segment = arrowData.segments.find((s: any) => s.id === cp.segmentId);
+              if (segment) {
+                return {
+                  ...cp,
+                  position: {
+                    x: (segment.startPoint.x + segment.endPoint.x) / 2,
+                    y: (segment.startPoint.y + segment.endPoint.y) / 2
+                  }
+                };
+              }
+            }
+            return cp;
+          });
           
           const idx = updatedElements.findIndex(e => e.id === arrow.id);
           if (idx !== -1) {
