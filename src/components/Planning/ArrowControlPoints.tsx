@@ -18,7 +18,7 @@ import {
   updateEndpointPosition,
   generateId
 } from '@/types/arrow-connections';
-import { resolveSnapConnection, type SnapEdge } from '@/utils/arrow-routing';
+import { resolveSnapConnection, moveConnectedSegmentRigidly, type SnapEdge } from '@/utils/arrow-routing';
 
 interface ArrowControlPointsProps {
   element: CanvasElement;
@@ -1025,7 +1025,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
 
     let newArrowData = { ...baseArrowData };
 
-    // ✅ لنقاط الأطراف: تحريك بسيط أثناء السحب (التوجيه الفعلي في handleMouseUp)
+    // ✅ لنقاط الأطراف: تحريك بسيط مع الحفاظ على الضلع المتصل صلباً
     if (dragState.controlPoint === 'start' || dragState.controlPoint === 'end') {
       const finalPoint = nearestAnchor 
         ? { 
@@ -1034,8 +1034,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           }
         : newPoint;
       
-      // تحريك بسيط: فقط تحديث نقطة الطرف والضلع المتصل
-      newArrowData = moveEndpointWithSegment(baseArrowData, dragState.controlPoint, finalPoint);
+      // ✅ استخدام moveConnectedSegmentRigidly للحفاظ على الزوايا القائمة أثناء السحب
+      newArrowData = moveConnectedSegmentRigidly(baseArrowData, dragState.controlPoint, finalPoint);
       
     } else if (dragState.controlPoint === 'middle' && currentDragDirection && dragState.controlPointId) {
       // معالجة نقاط المنتصف (تبقى كما هي)
