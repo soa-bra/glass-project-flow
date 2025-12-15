@@ -183,19 +183,21 @@ export const convertToOrthogonalPath = (
       endPoint: pathPoints[i + 1]
     });
     
-    // نقطة منتصف الضلع - الضلع الأوسط يكون مفعّلاً (لأنه الذي تم سحبه)
-    const isMiddleSegment = i === 1;
-    const midPoint: ArrowPoint = {
-      x: (pathPoints[i].x + pathPoints[i + 1].x) / 2,
-      y: (pathPoints[i].y + pathPoints[i + 1].y) / 2
-    };
-    controlPoints.push({
-      id: generateId(),
-      type: 'midpoint',
-      position: midPoint,
-      segmentId: segId,
-      isActive: isMiddleSegment // الضلع الأوسط مفعّل، الباقي غير مفعّل
-    });
+    // نقطة منتصف الضلع (غير نشطة) - ما عدا الضلع الأوسط الذي تم سحبه
+    const isMiddleSegment = i === 1; // الضلع الأوسط هو الذي تم إنشاؤه بالسحب
+    if (!isMiddleSegment) {
+      const midPoint: ArrowPoint = {
+        x: (pathPoints[i].x + pathPoints[i + 1].x) / 2,
+        y: (pathPoints[i].y + pathPoints[i + 1].y) / 2
+      };
+      controlPoints.push({
+        id: generateId(),
+        type: 'midpoint',
+        position: midPoint,
+        segmentId: segId,
+        isActive: false
+      });
+    }
   }
   
   // نقطة النهاية
@@ -220,105 +222,7 @@ export const convertToOrthogonalPath = (
 };
 
 /**
- * تفعيل نقطة منتصف وتحويلها لمسار متعامد جديد
- */
-export const activateMidpointAndExpand = (
-  arrowData: ArrowData,
-  midpointId: string,
-  newPosition: ArrowPoint,
-  dragDirection: 'horizontal' | 'vertical'
-): ArrowData => {
-  // العثور على نقطة المنتصف والضلع المرتبط
-  const midpoint = arrowData.controlPoints.find(cp => cp.id === midpointId);
-  if (!midpoint || midpoint.type !== 'midpoint' || !midpoint.segmentId) {
-    return arrowData;
-  }
-  
-  const segmentIndex = arrowData.segments.findIndex(s => s.id === midpoint.segmentId);
-  if (segmentIndex === -1) {
-    return arrowData;
-  }
-  
-  const segment = arrowData.segments[segmentIndex];
-  
-  // إنشاء 3 أضلاع جديدة بدلاً من الضلع الواحد
-  let newPathPoints: ArrowPoint[];
-  
-  if (dragDirection === 'vertical') {
-    newPathPoints = [
-      segment.startPoint,
-      { x: segment.startPoint.x, y: newPosition.y },
-      { x: segment.endPoint.x, y: newPosition.y },
-      segment.endPoint
-    ];
-  } else {
-    newPathPoints = [
-      segment.startPoint,
-      { x: newPosition.x, y: segment.startPoint.y },
-      { x: newPosition.x, y: segment.endPoint.y },
-      segment.endPoint
-    ];
-  }
-  
-  // إنشاء الأضلاع الجديدة
-  const newSegments: ArrowSegment[] = [];
-  const newMidpoints: ArrowControlPoint[] = [];
-  
-  for (let i = 0; i < newPathPoints.length - 1; i++) {
-    const segId = generateId();
-    newSegments.push({
-      id: segId,
-      startPoint: newPathPoints[i],
-      endPoint: newPathPoints[i + 1]
-    });
-    
-    // نقطة المنتصف - الضلع الأوسط مفعّل
-    const isMiddleSegment = i === 1;
-    const midPos: ArrowPoint = {
-      x: (newPathPoints[i].x + newPathPoints[i + 1].x) / 2,
-      y: (newPathPoints[i].y + newPathPoints[i + 1].y) / 2
-    };
-    newMidpoints.push({
-      id: generateId(),
-      type: 'midpoint',
-      position: midPos,
-      segmentId: segId,
-      isActive: isMiddleSegment
-    });
-  }
-  
-  // استبدال الضلع القديم بالأضلاع الجديدة
-  const updatedSegments = [
-    ...arrowData.segments.slice(0, segmentIndex),
-    ...newSegments,
-    ...arrowData.segments.slice(segmentIndex + 1)
-  ];
-  
-  // تحديث نقاط التحكم
-  const updatedControlPoints = arrowData.controlPoints.filter(cp => cp.id !== midpointId);
-  
-  // إضافة نقاط المنتصف الجديدة في المكان الصحيح
-  const insertIndex = updatedControlPoints.findIndex(cp => 
-    cp.type === 'midpoint' && 
-    arrowData.segments.findIndex(s => s.id === cp.segmentId) > segmentIndex
-  );
-  
-  if (insertIndex === -1) {
-    updatedControlPoints.push(...newMidpoints);
-  } else {
-    updatedControlPoints.splice(insertIndex, 0, ...newMidpoints);
-  }
-  
-  return {
-    ...arrowData,
-    segments: updatedSegments,
-    controlPoints: updatedControlPoints,
-    arrowType: 'orthogonal'
-  };
-};
-
-/**
- * تحديث موقع نقطة نهاية (مع تحديث الأضلاع المتصلة بحركة أفقية/عمودية فقط)
+ * تحديث موقع نقطة نهاية (مع تحديث الأضلاع المتصلة)
  */
 export const updateEndpointPosition = (
   arrowData: ArrowData,
@@ -327,135 +231,45 @@ export const updateEndpointPosition = (
   connection: ArrowConnection | null
 ): ArrowData => {
   const newData = { ...arrowData };
-  newData.segments = [...arrowData.segments];
-  newData.controlPoints = [...arrowData.controlPoints];
   
   if (endpointType === 'start') {
-    const oldPosition = newData.startPoint;
     newData.startPoint = newPosition;
     newData.startConnection = connection;
     
-    // تحديث أول ضلع - يتحرك بالكامل مع نقطة البداية
+    // تحديث أول ضلع
     if (newData.segments.length > 0) {
-      const firstSegment = newData.segments[0];
-      const deltaX = newPosition.x - oldPosition.x;
-      const deltaY = newPosition.y - oldPosition.y;
-      
-      // تحديد هل الضلع أفقي أو عمودي
-      const isHorizontal = Math.abs(firstSegment.endPoint.y - firstSegment.startPoint.y) < 1;
-      const isVertical = Math.abs(firstSegment.endPoint.x - firstSegment.startPoint.x) < 1;
-      
-      if (isHorizontal) {
-        // الضلع أفقي: تحريك نقطة البداية وتحديث Y لنقطة النهاية
-        newData.segments[0] = {
-          ...firstSegment,
-          startPoint: newPosition,
-          endPoint: { x: firstSegment.endPoint.x, y: newPosition.y }
-        };
-        
-        // تحديث الضلع التالي إذا وجد
-        if (newData.segments.length > 1) {
-          newData.segments[1] = {
-            ...newData.segments[1],
-            startPoint: { x: newData.segments[1].startPoint.x, y: newPosition.y }
-          };
-        }
-      } else if (isVertical) {
-        // الضلع عمودي: تحريك نقطة البداية وتحديث X لنقطة النهاية
-        newData.segments[0] = {
-          ...firstSegment,
-          startPoint: newPosition,
-          endPoint: { x: newPosition.x, y: firstSegment.endPoint.y }
-        };
-        
-        // تحديث الضلع التالي إذا وجد
-        if (newData.segments.length > 1) {
-          newData.segments[1] = {
-            ...newData.segments[1],
-            startPoint: { x: newPosition.x, y: newData.segments[1].startPoint.y }
-          };
-        }
-      } else {
-        // السهم المستقيم: تحديث نقطة البداية فقط
-        newData.segments[0] = {
-          ...firstSegment,
-          startPoint: newPosition
-        };
-      }
+      newData.segments[0] = {
+        ...newData.segments[0],
+        startPoint: newPosition
+      };
     }
     
     // تحديث نقطة البداية في controlPoints
-    newData.controlPoints = newData.controlPoints.map((cp, idx) => {
-      if (cp.type === 'endpoint' && idx === 0) {
-        return { ...cp, position: newPosition, connection };
-      }
-      return cp;
-    });
-    
+    const startCP = newData.controlPoints.find(cp => cp.type === 'endpoint' && !newData.controlPoints.some(other => 
+      other.type === 'endpoint' && other.id !== cp.id && newData.controlPoints.indexOf(other) < newData.controlPoints.indexOf(cp)
+    ));
+    if (startCP) {
+      startCP.position = newPosition;
+      startCP.connection = connection;
+    }
   } else {
-    const oldPosition = newData.endPoint;
     newData.endPoint = newPosition;
     newData.endConnection = connection;
     
-    // تحديث آخر ضلع - يتحرك بالكامل مع نقطة النهاية
+    // تحديث آخر ضلع
     if (newData.segments.length > 0) {
       const lastIdx = newData.segments.length - 1;
-      const lastSegment = newData.segments[lastIdx];
-      
-      // تحديد هل الضلع أفقي أو عمودي
-      const isHorizontal = Math.abs(lastSegment.endPoint.y - lastSegment.startPoint.y) < 1;
-      const isVertical = Math.abs(lastSegment.endPoint.x - lastSegment.startPoint.x) < 1;
-      
-      if (isHorizontal) {
-        // الضلع أفقي: تحريك نقطة النهاية وتحديث Y لنقطة البداية
-        newData.segments[lastIdx] = {
-          ...lastSegment,
-          startPoint: { x: lastSegment.startPoint.x, y: newPosition.y },
-          endPoint: newPosition
-        };
-        
-        // تحديث الضلع السابق إذا وجد
-        if (lastIdx > 0) {
-          newData.segments[lastIdx - 1] = {
-            ...newData.segments[lastIdx - 1],
-            endPoint: { x: newData.segments[lastIdx - 1].endPoint.x, y: newPosition.y }
-          };
-        }
-      } else if (isVertical) {
-        // الضلع عمودي: تحريك نقطة النهاية وتحديث X لنقطة البداية
-        newData.segments[lastIdx] = {
-          ...lastSegment,
-          startPoint: { x: newPosition.x, y: lastSegment.startPoint.y },
-          endPoint: newPosition
-        };
-        
-        // تحديث الضلع السابق إذا وجد
-        if (lastIdx > 0) {
-          newData.segments[lastIdx - 1] = {
-            ...newData.segments[lastIdx - 1],
-            endPoint: { x: newPosition.x, y: newData.segments[lastIdx - 1].endPoint.y }
-          };
-        }
-      } else {
-        // السهم المستقيم: تحديث نقطة النهاية فقط
-        newData.segments[lastIdx] = {
-          ...lastSegment,
-          endPoint: newPosition
-        };
-      }
+      newData.segments[lastIdx] = {
+        ...newData.segments[lastIdx],
+        endPoint: newPosition
+      };
     }
     
     // تحديث نقطة النهاية في controlPoints
-    const endpoints = newData.controlPoints.filter(cp => cp.type === 'endpoint');
-    const endPointIdx = newData.controlPoints.findIndex(cp => 
-      cp.type === 'endpoint' && cp === endpoints[endpoints.length - 1]
-    );
-    if (endPointIdx !== -1) {
-      newData.controlPoints[endPointIdx] = { 
-        ...newData.controlPoints[endPointIdx], 
-        position: newPosition, 
-        connection 
-      };
+    const endCP = newData.controlPoints.filter(cp => cp.type === 'endpoint').pop();
+    if (endCP) {
+      endCP.position = newPosition;
+      endCP.connection = connection;
     }
   }
   
