@@ -181,6 +181,260 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     });
   }, [displayControlPoints]);
 
+  // معالجة تحريك نقطة البداية/النهاية مع الحفاظ على استقامة الضلع
+  const moveEndpointWithSegment = (
+    data: ArrowData,
+    endpoint: 'start' | 'end',
+    newPosition: ArrowPoint
+  ): ArrowData => {
+    const newData = { ...data };
+    
+    if (data.arrowType === 'straight' || data.segments.length <= 1) {
+      // سهم مستقيم - تحريك بسيط
+      if (endpoint === 'start') {
+        newData.startPoint = newPosition;
+        if (newData.segments.length > 0) {
+          newData.segments[0] = { ...newData.segments[0], startPoint: newPosition };
+        }
+      } else {
+        newData.endPoint = newPosition;
+        if (newData.segments.length > 0) {
+          newData.segments[newData.segments.length - 1] = {
+            ...newData.segments[newData.segments.length - 1],
+            endPoint: newPosition
+          };
+        }
+      }
+    } else {
+      // سهم متعامد - تحريك الضلع كاملاً
+      if (endpoint === 'start') {
+        const oldStart = data.startPoint;
+        const deltaX = newPosition.x - oldStart.x;
+        const deltaY = newPosition.y - oldStart.y;
+        
+        newData.startPoint = newPosition;
+        
+        // تحديد اتجاه الضلع الأول
+        const firstSegment = data.segments[0];
+        const isFirstVertical = Math.abs(firstSegment.endPoint.x - firstSegment.startPoint.x) < 
+                                Math.abs(firstSegment.endPoint.y - firstSegment.startPoint.y);
+        
+        // تحريك الضلع الأول بالكامل
+        newData.segments[0] = {
+          ...firstSegment,
+          startPoint: newPosition,
+          endPoint: isFirstVertical
+            ? { x: newPosition.x, y: firstSegment.endPoint.y + deltaY }
+            : { x: firstSegment.endPoint.x + deltaX, y: newPosition.y }
+        };
+        
+        // تحديث نقطة بداية الضلع التالي
+        if (data.segments.length > 1) {
+          newData.segments[1] = {
+            ...data.segments[1],
+            startPoint: newData.segments[0].endPoint
+          };
+        }
+      } else {
+        const oldEnd = data.endPoint;
+        const deltaX = newPosition.x - oldEnd.x;
+        const deltaY = newPosition.y - oldEnd.y;
+        
+        newData.endPoint = newPosition;
+        
+        // تحديد اتجاه الضلع الأخير
+        const lastIdx = data.segments.length - 1;
+        const lastSegment = data.segments[lastIdx];
+        const isLastVertical = Math.abs(lastSegment.endPoint.x - lastSegment.startPoint.x) < 
+                               Math.abs(lastSegment.endPoint.y - lastSegment.startPoint.y);
+        
+        // تحريك الضلع الأخير بالكامل
+        newData.segments[lastIdx] = {
+          ...lastSegment,
+          startPoint: isLastVertical
+            ? { x: newPosition.x, y: lastSegment.startPoint.y + deltaY }
+            : { x: lastSegment.startPoint.x + deltaX, y: newPosition.y },
+          endPoint: newPosition
+        };
+        
+        // تحديث نقطة نهاية الضلع السابق
+        if (data.segments.length > 1) {
+          newData.segments[lastIdx - 1] = {
+            ...data.segments[lastIdx - 1],
+            endPoint: newData.segments[lastIdx].startPoint
+          };
+        }
+      }
+    }
+    
+    // تحديث نقاط التحكم
+    newData.controlPoints = updateMidpointsPositions(newData);
+    
+    return newData;
+  };
+  
+  // تحديث مواقع نقاط المنتصف لتبقى في منتصف أضلاعها
+  const updateMidpointsPositions = (data: ArrowData): ArrowCP[] => {
+    return data.controlPoints.map(cp => {
+      if (cp.type === 'midpoint' && cp.segmentId) {
+        const segment = data.segments.find(s => s.id === cp.segmentId);
+        if (segment) {
+          return {
+            ...cp,
+            position: {
+              x: (segment.startPoint.x + segment.endPoint.x) / 2,
+              y: (segment.startPoint.y + segment.endPoint.y) / 2
+            }
+          };
+        }
+      } else if (cp.type === 'endpoint') {
+        // تحديث نقاط النهاية
+        if (cp.id === 'start' || data.controlPoints.indexOf(cp) === 0) {
+          return { ...cp, position: data.startPoint };
+        } else if (cp.id === 'end' || data.controlPoints.indexOf(cp) === data.controlPoints.length - 1) {
+          return { ...cp, position: data.endPoint };
+        }
+      }
+      return cp;
+    });
+  };
+  
+  // تفعيل نقطة منتصف وتحويلها إلى نقطة نشطة مع إنشاء أضلاع جديدة
+  const activateMidpointAndSplit = (
+    data: ArrowData,
+    midpointId: string,
+    newPosition: ArrowPoint,
+    direction: 'horizontal' | 'vertical'
+  ): ArrowData => {
+    const newData = { ...data };
+    
+    // البحث عن نقطة المنتصف والضلع المرتبط بها
+    const midpointIndex = data.controlPoints.findIndex(cp => cp.id === midpointId);
+    const midpoint = data.controlPoints[midpointIndex];
+    
+    if (!midpoint || !midpoint.segmentId) {
+      // إذا كان سهم مستقيم، نحوله إلى متعامد
+      return convertToOrthogonalPath(data, midpointId, newPosition, direction);
+    }
+    
+    const segmentIndex = data.segments.findIndex(s => s.id === midpoint.segmentId);
+    const segment = data.segments[segmentIndex];
+    
+    if (!segment) return data;
+    
+    // تقسيم الضلع إلى 3 أضلاع جديدة
+    const isVerticalSegment = Math.abs(segment.endPoint.x - segment.startPoint.x) < 
+                              Math.abs(segment.endPoint.y - segment.startPoint.y);
+    
+    let newSegments: ArrowSegment[];
+    
+    if (isVerticalSegment) {
+      // ضلع عمودي -> نقسمه أفقياً
+      newSegments = [
+        {
+          id: generateId(),
+          startPoint: segment.startPoint,
+          endPoint: { x: segment.startPoint.x, y: newPosition.y }
+        },
+        {
+          id: generateId(),
+          startPoint: { x: segment.startPoint.x, y: newPosition.y },
+          endPoint: { x: newPosition.x, y: newPosition.y }
+        },
+        {
+          id: generateId(),
+          startPoint: { x: newPosition.x, y: newPosition.y },
+          endPoint: { x: newPosition.x, y: segment.endPoint.y }
+        }
+      ];
+      
+      // تحديث الضلع التالي إذا وجد
+      if (segmentIndex < data.segments.length - 1) {
+        newData.segments = [
+          ...data.segments.slice(0, segmentIndex),
+          ...newSegments,
+          { ...data.segments[segmentIndex + 1], startPoint: { x: newPosition.x, y: segment.endPoint.y } },
+          ...data.segments.slice(segmentIndex + 2)
+        ];
+      } else {
+        newData.segments = [
+          ...data.segments.slice(0, segmentIndex),
+          ...newSegments
+        ];
+        newData.endPoint = { x: newPosition.x, y: segment.endPoint.y };
+      }
+    } else {
+      // ضلع أفقي -> نقسمه عمودياً
+      newSegments = [
+        {
+          id: generateId(),
+          startPoint: segment.startPoint,
+          endPoint: { x: newPosition.x, y: segment.startPoint.y }
+        },
+        {
+          id: generateId(),
+          startPoint: { x: newPosition.x, y: segment.startPoint.y },
+          endPoint: { x: newPosition.x, y: newPosition.y }
+        },
+        {
+          id: generateId(),
+          startPoint: { x: newPosition.x, y: newPosition.y },
+          endPoint: { x: segment.endPoint.x, y: newPosition.y }
+        }
+      ];
+      
+      if (segmentIndex < data.segments.length - 1) {
+        newData.segments = [
+          ...data.segments.slice(0, segmentIndex),
+          ...newSegments,
+          { ...data.segments[segmentIndex + 1], startPoint: { x: segment.endPoint.x, y: newPosition.y } },
+          ...data.segments.slice(segmentIndex + 2)
+        ];
+      } else {
+        newData.segments = [
+          ...data.segments.slice(0, segmentIndex),
+          ...newSegments
+        ];
+        newData.endPoint = { x: segment.endPoint.x, y: newPosition.y };
+      }
+    }
+    
+    // إعادة بناء نقاط التحكم
+    const newControlPoints: ArrowCP[] = [
+      { id: 'start', type: 'endpoint', position: newData.startPoint, isActive: true }
+    ];
+    
+    // إضافة نقاط منتصف للأضلاع الجديدة (باستثناء الضلع الأوسط الذي يحتوي على النقطة المسحوبة)
+    newData.segments.forEach((seg, idx) => {
+      const isMiddleSegment = newSegments.length === 3 && 
+        segmentIndex <= idx && idx < segmentIndex + 3 && 
+        idx === segmentIndex + 1; // الضلع الأوسط
+      
+      newControlPoints.push({
+        id: generateId(),
+        type: 'midpoint',
+        position: {
+          x: (seg.startPoint.x + seg.endPoint.x) / 2,
+          y: (seg.startPoint.y + seg.endPoint.y) / 2
+        },
+        isActive: isMiddleSegment, // النقطة المسحوبة تكون نشطة
+        segmentId: seg.id
+      });
+    });
+    
+    newControlPoints.push({
+      id: 'end',
+      type: 'endpoint',
+      position: newData.endPoint,
+      isActive: true
+    });
+    
+    newData.controlPoints = newControlPoints;
+    newData.arrowType = 'orthogonal';
+    
+    return newData;
+  };
+
   // معالجة السحب
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!dragState.isDragging || !dragState.controlPoint || !dragState.initialMousePos || !dragState.startPosition) return;
@@ -229,11 +483,20 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           }
         : newPoint;
       
-      const connection = nearestAnchor 
-        ? { elementId: nearestAnchor.elementId, anchorPoint: nearestAnchor.anchorPoint, offset: { x: 0, y: 0 } }
-        : null;
+      // تحريك الضلع المرتبط بنقطة البداية
+      newArrowData = moveEndpointWithSegment(arrowData, 'start', finalPoint);
       
-      newArrowData = updateEndpointPosition(newArrowData, 'start', finalPoint, connection);
+      // إضافة معلومات الاتصال
+      if (nearestAnchor) {
+        const startCP = newArrowData.controlPoints.find(cp => cp.id === 'start' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === 0));
+        if (startCP) {
+          startCP.connection = {
+            elementId: nearestAnchor.elementId,
+            anchorPoint: nearestAnchor.anchorPoint,
+            offset: { x: 0, y: 0 }
+          };
+        }
+      }
       
     } else if (dragState.controlPoint === 'end') {
       const finalPoint = nearestAnchor 
@@ -243,71 +506,74 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           }
         : newPoint;
       
-      const connection = nearestAnchor 
-        ? { elementId: nearestAnchor.elementId, anchorPoint: nearestAnchor.anchorPoint, offset: { x: 0, y: 0 } }
-        : null;
+      // تحريك الضلع المرتبط بنقطة النهاية
+      newArrowData = moveEndpointWithSegment(arrowData, 'end', finalPoint);
       
-      newArrowData = updateEndpointPosition(newArrowData, 'end', finalPoint, connection);
-      
-    } else if (dragState.controlPoint === 'middle' && currentDragDirection) {
-      // تحويل السهم إلى مسار متعامد عند سحب نقطة المنتصف
-      if (arrowData.arrowType === 'straight' && dragState.controlPointId) {
-        newArrowData = convertToOrthogonalPath(
-          arrowData,
-          dragState.controlPointId,
-          newPoint,
-          currentDragDirection
-        );
-      } else {
-        // تحديث موقع النقطة الوسطى للسهم المتعامد
-        newArrowData.middlePoint = newPoint;
-        
-        // إعادة حساب المسار
-        if (currentDragDirection === 'vertical') {
-          const pathPoints = [
-            newArrowData.startPoint,
-            { x: newArrowData.startPoint.x, y: newPoint.y },
-            { x: newArrowData.endPoint.x, y: newPoint.y },
-            newArrowData.endPoint
-          ];
-          
-          // تحديث الأضلاع
-          if (newArrowData.segments.length >= 3) {
-            newArrowData.segments[0] = { ...newArrowData.segments[0], endPoint: pathPoints[1] };
-            newArrowData.segments[1] = { ...newArrowData.segments[1], startPoint: pathPoints[1], endPoint: pathPoints[2] };
-            newArrowData.segments[2] = { ...newArrowData.segments[2], startPoint: pathPoints[2] };
-          }
-        } else {
-          const pathPoints = [
-            newArrowData.startPoint,
-            { x: newPoint.x, y: newArrowData.startPoint.y },
-            { x: newPoint.x, y: newArrowData.endPoint.y },
-            newArrowData.endPoint
-          ];
-          
-          if (newArrowData.segments.length >= 3) {
-            newArrowData.segments[0] = { ...newArrowData.segments[0], endPoint: pathPoints[1] };
-            newArrowData.segments[1] = { ...newArrowData.segments[1], startPoint: pathPoints[1], endPoint: pathPoints[2] };
-            newArrowData.segments[2] = { ...newArrowData.segments[2], startPoint: pathPoints[2] };
-          }
+      // إضافة معلومات الاتصال
+      if (nearestAnchor) {
+        const endCP = newArrowData.controlPoints.find(cp => cp.id === 'end' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === newArrowData.controlPoints.length - 1));
+        if (endCP) {
+          endCP.connection = {
+            elementId: nearestAnchor.elementId,
+            anchorPoint: nearestAnchor.anchorPoint,
+            offset: { x: 0, y: 0 }
+          };
         }
-        
-        // تحديث نقاط المنتصف لتبقى في منتصف أضلاعها
-        newArrowData.controlPoints = newArrowData.controlPoints.map(cp => {
-          if (cp.type === 'midpoint' && cp.segmentId) {
-            const segment = newArrowData.segments.find(s => s.id === cp.segmentId);
-            if (segment) {
-              return {
-                ...cp,
-                position: {
-                  x: (segment.startPoint.x + segment.endPoint.x) / 2,
-                  y: (segment.startPoint.y + segment.endPoint.y) / 2
-                }
-              };
-            }
+      }
+      
+    } else if (dragState.controlPoint === 'middle' && currentDragDirection && dragState.controlPointId) {
+      // البحث عن نقطة المنتصف
+      const midpoint = arrowData.controlPoints.find(cp => cp.id === dragState.controlPointId);
+      
+      if (midpoint && !midpoint.isActive) {
+        // تفعيل نقطة المنتصف وتقسيم الضلع
+        newArrowData = activateMidpointAndSplit(arrowData, dragState.controlPointId, newPoint, currentDragDirection);
+      } else if (midpoint && midpoint.isActive && midpoint.segmentId) {
+        // النقطة نشطة بالفعل - تحريكها
+        const segment = arrowData.segments.find(s => s.id === midpoint.segmentId);
+        if (segment) {
+          const isVertical = Math.abs(segment.endPoint.x - segment.startPoint.x) < 
+                            Math.abs(segment.endPoint.y - segment.startPoint.y);
+          
+          // تحديث موقع الضلع (تحريك عمودي أو أفقي فقط)
+          const segmentIndex = arrowData.segments.findIndex(s => s.id === midpoint.segmentId);
+          
+          if (isVertical) {
+            // ضلع عمودي - نحركه أفقياً
+            newArrowData.segments[segmentIndex] = {
+              ...segment,
+              startPoint: { x: newPoint.x, y: segment.startPoint.y },
+              endPoint: { x: newPoint.x, y: segment.endPoint.y }
+            };
+          } else {
+            // ضلع أفقي - نحركه عمودياً
+            newArrowData.segments[segmentIndex] = {
+              ...segment,
+              startPoint: { x: segment.startPoint.x, y: newPoint.y },
+              endPoint: { x: segment.endPoint.x, y: newPoint.y }
+            };
           }
-          return cp;
-        });
+          
+          // تحديث الأضلاع المجاورة
+          if (segmentIndex > 0) {
+            newArrowData.segments[segmentIndex - 1] = {
+              ...arrowData.segments[segmentIndex - 1],
+              endPoint: newArrowData.segments[segmentIndex].startPoint
+            };
+          }
+          if (segmentIndex < arrowData.segments.length - 1) {
+            newArrowData.segments[segmentIndex + 1] = {
+              ...arrowData.segments[segmentIndex + 1],
+              startPoint: newArrowData.segments[segmentIndex].endPoint
+            };
+          }
+          
+          // تحديث نقاط التحكم
+          newArrowData.controlPoints = updateMidpointsPositions(newArrowData);
+        }
+      } else {
+        // سهم مستقيم - تحويله إلى متعامد
+        newArrowData = convertToOrthogonalPath(arrowData, dragState.controlPointId, newPoint, currentDragDirection);
       }
     }
 
@@ -341,18 +607,26 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     }
   }, [dragState.isDragging, handleMouseMove, handleMouseUp]);
 
-  // أنماط نقاط التحكم
+  // أنماط نقاط التحكم - موحدة بين النشطة وغير النشطة
   const getControlPointStyle = (cp: ArrowCP | { id: string; type: 'endpoint' | 'midpoint'; position: ArrowPoint; isActive: boolean; connection?: any }) => {
-    const isEndpoint = cp.type === 'endpoint';
-    const isConnected = isEndpoint && cp.connection;
+    const isConnected = cp.type === 'endpoint' && cp.connection;
     const isActive = cp.isActive;
     
+    // جميع النقاط النشطة (بما فيها نقاط المنتصف المفعّلة) تظهر بنفس الشكل
+    const size = isActive ? 10 : 6;
+    
     return {
-      width: isEndpoint ? 10 : 8,
-      height: isEndpoint ? 10 : 8,
+      width: size,
+      height: size,
       borderRadius: '50%',
-      backgroundColor: isConnected ? 'hsl(var(--accent-green))' : isActive ? '#FFFFFF' : 'transparent',
-      border: `1.5px solid ${isEndpoint ? '#000000' : '#3DA8F5'}`,
+      backgroundColor: isConnected 
+        ? 'hsl(var(--accent-green))' 
+        : isActive 
+          ? '#FFFFFF' 
+          : 'rgba(255, 255, 255, 0.4)',
+      border: isActive 
+        ? '1.5px solid #000000' 
+        : '1px dashed rgba(0, 0, 0, 0.4)',
       cursor: 'grab',
       boxShadow: isActive ? '0 1px 3px rgba(0, 0, 0, 0.2)' : 'none',
       zIndex: 1000,
