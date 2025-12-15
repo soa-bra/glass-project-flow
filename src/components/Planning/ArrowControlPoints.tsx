@@ -16,8 +16,7 @@ import {
   createStraightArrowData,
   convertToOrthogonalPath,
   updateEndpointPosition,
-  generateId,
-  applyTShapeConnection
+  generateId
 } from '@/types/arrow-connections';
 
 interface ArrowControlPointsProps {
@@ -1035,32 +1034,18 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           }
         : newPoint;
       
-      // ✅ تطبيق خوارزمية T-Shape عند وجود اتصال
+      // تحريك الضلع المرتبط بنقطة البداية
+      newArrowData = moveEndpointWithSegment(baseArrowData, 'start', finalPoint);
+      
+      // إضافة معلومات الاتصال على المستوى الأعلى وعلى نقطة التحكم
       if (nearestAnchor) {
-        // الحصول على العنصر المستهدف
-        const targetElement = otherElements.find(el => el.id === nearestAnchor.elementId);
-        
-        if (targetElement) {
-          // تطبيق T-Shape Connection
-          newArrowData = applyTShapeConnection(
-            baseArrowData,
-            'start',
-            finalPoint,
-            nearestAnchor.anchorPoint,
-            targetElement,
-            element.position
-          );
-        } else {
-          // fallback: تحريك بسيط
-          newArrowData = moveEndpointWithSegment(baseArrowData, 'start', finalPoint);
-        }
-        
         const connectionData = {
           elementId: nearestAnchor.elementId,
           anchorPoint: nearestAnchor.anchorPoint,
           offset: { x: 0, y: 0 }
         };
         
+        // ✅ تحديث startConnection على المستوى الأعلى (للـ useEffect)
         newArrowData.startConnection = connectionData;
         
         const startCP = newArrowData.controlPoints.find(cp => cp.id === 'start' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === 0));
@@ -1068,8 +1053,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           startCP.connection = connectionData;
         }
       } else {
-        // لا يوجد سناب - تحريك عادي
-        newArrowData = moveEndpointWithSegment(baseArrowData, 'start', finalPoint);
+        // ✅ إزالة الاتصال عند السحب بعيداً
         newArrowData.startConnection = null;
         const startCP = newArrowData.controlPoints.find(cp => cp.id === 'start' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === 0));
         if (startCP) {
@@ -1085,29 +1069,18 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           }
         : newPoint;
       
-      // ✅ تطبيق خوارزمية T-Shape عند وجود اتصال
+      // تحريك الضلع المرتبط بنقطة النهاية
+      newArrowData = moveEndpointWithSegment(baseArrowData, 'end', finalPoint);
+      
+      // إضافة معلومات الاتصال على المستوى الأعلى وعلى نقطة التحكم
       if (nearestAnchor) {
-        const targetElement = otherElements.find(el => el.id === nearestAnchor.elementId);
-        
-        if (targetElement) {
-          newArrowData = applyTShapeConnection(
-            baseArrowData,
-            'end',
-            finalPoint,
-            nearestAnchor.anchorPoint,
-            targetElement,
-            element.position
-          );
-        } else {
-          newArrowData = moveEndpointWithSegment(baseArrowData, 'end', finalPoint);
-        }
-        
         const connectionData = {
           elementId: nearestAnchor.elementId,
           anchorPoint: nearestAnchor.anchorPoint,
           offset: { x: 0, y: 0 }
         };
         
+        // ✅ تحديث endConnection على المستوى الأعلى (للـ useEffect)
         newArrowData.endConnection = connectionData;
         
         const endCP = newArrowData.controlPoints.find(cp => cp.id === 'end' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === newArrowData.controlPoints.length - 1));
@@ -1115,7 +1088,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           endCP.connection = connectionData;
         }
       } else {
-        newArrowData = moveEndpointWithSegment(baseArrowData, 'end', finalPoint);
+        // ✅ إزالة الاتصال عند السحب بعيداً
         newArrowData.endConnection = null;
         const endCP = newArrowData.controlPoints.find(cp => cp.id === 'end' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === newArrowData.controlPoints.length - 1));
         if (endCP) {
