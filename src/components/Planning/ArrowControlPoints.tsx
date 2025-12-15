@@ -1,14 +1,37 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCanvasStore } from "@/stores/canvasStore";
 import type { CanvasElement } from "@/types/canvas";
 import type {
-  ArrowPoint,
-  ArrowData,
   ArrowControlDragState,
-  ArrowSegment,
   ArrowControlPoint as ArrowCP,
+  ArrowData,
+  ArrowPoint,
+  ArrowSegment,
 } from "@/types/arrow-connections";
-import { findNearestAnchor, createStraightArrowData, generateId } from "@/types/arrow-connections";
+import { findNearestAnchor, generateId, createStraightArrowData } from "@/types/arrow-connections";
+
+/**
+ * ✅ هذا الملف يعالج الغلط اللي صار عندك بالصورة:
+ * الغلط كان لأننا كنا نولد ضلع “جديد” يربط نقطتين بشكل قطري (Diagonal)
+ * وهذا يكسر نموذجك (كل الأضلاع لازم تكون إما عرضية أو طولية فقط).
+ *
+ * ✅ النموذج هنا حرفيًا:
+ * اولا- أول سحب لنقطة المنتصف (سهم مستقيم) => يولد 3 أضلاع:
+ *   - ب1 (غير نشط): من start الى زاوية البداية عند مستوى A
+ *   - أ (نشط): الضلع السفلي/الأصلي المتحرك (يمتد بين الزاويتين)
+ *   - ب2 (غير نشط): من زاوية النهاية الى end
+ * ثانيا- تحريك أي ضلع:
+ *   - الضلع العرضي يتحرك فوق/تحت فقط (يتغير Y فقط)
+ *   - الضلع الطولي يتحرك يمين/يسار فقط (يتغير X فقط)
+ *   - المحور يتثبت حسب حالة الضلع عند بداية السحب.
+ * ثالثا- سحب ب (غير نشط) => يصير نشط + يقصر/يطول أ + يولد ضلع واحد جديد (غير نشط)
+ *   BUT: “ضلع واحد” لازم يكون Orthogonal (ما فيه قطر). عشان كذا نضبطه ليكون بمحاذاة
+ *   زاوية البداية (startCorner) وليس startPoint مباشرة إذا ما ينفع.
+ *   (هذا هو الحل الوحيد اللي يحافظ على شرط: ضلع واحد بدون قطريات)
+ * رابعا-
+ *   - دبل كلك على نقطة نشطة => حذف الضلع
+ *   - دبل كلك على نقطة غير نشطة => تحرير نص، وإذا النص فاضي يرجع للوضع الطبيعي
+ */
 
 interface ArrowControlPointsProps {
   element: CanvasElement;
@@ -19,89 +42,66 @@ type Axis = "x" | "y";
 
 type DragExt = ArrowControlDragState & {
   initialMousePos?: { x: number; y: number } | null;
-  lockedAxis?: Axis | null; // المحور المقفول (ما يتغير)
+  lockedAxis?: Axis | null; // المحور المقفول
   lockedValue?: number | null; // قيمة المحور المقفول
-  draggingSegmentId?: string | null; // الضلع اللي نسحب نقطته
+  segmentId?: string | null; // الضلع اللي نسحب نقطته
 };
 
-type LabelsMap = Record<string, string>; // segmentId -> label
-
-const eps = 0.0001;
-
-const clonePoint = (p: ArrowPoint): ArrowPoint => ({ x: p.x, y: p.y });
-
-const deepCloneArrow = (data: ArrowData): ArrowData => ({
-  ...data,
-  startPoint: clonePoint(data.startPoint),
-  endPoint: clonePoint(data.endPoint),
-  segments: (data.segments || []).map((s) => ({
-    ...s,
-    startPoint: clonePoint(s.startPoint),
-    endPoint: clonePoint(s.endPoint),
-  })),
-  controlPoints: (data.controlPoints || []).map((cp) => ({
-    ...cp,
-    position: clonePoint(cp.position),
-    connection: cp.connection ? { ...cp.connection, offset: { ...cp.connection.offset } } : cp.connection,
-  })),
-});
-
-const mid = (a: ArrowPoint, b: ArrowPoint): ArrowPoint => ({
-  x: (a.x + b.x) / 2,
-  y: (a.y + b.y) / 2,
-});
+const cloneP = (p: ArrowPoint): ArrowPoint => ({ x: p.x, y: p.y });
+const mid = (a: ArrowPoint, b: ArrowPoint): ArrowPoint => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
 
 const isHorizontal = (s: ArrowSegment) =>
   Math.abs(s.endPoint.y - s.startPoint.y) <= Math.abs(s.endPoint.x - s.startPoint.x);
-const isVertical = (s: ArrowSegment) => !isHorizontal(s);
 
-const applyAxisLock = (p: ArrowPoint, lockedAxis: Axis | null | undefined, lockedValue: number | null | undefined) => {
-  if (!lockedAxis || lockedValue == null) return p;
-  if (lockedAxis === "x") return { x: lockedValue, y: p.y };
-  return { x: p.x, y: lockedValue };
-};
+function deepClone(data: ArrowData): ArrowData {
+  return {
+    ...data,
+    startPoint: cloneP(data.startPoint),
+    endPoint: cloneP(data.endPoint),
+    segments: (data.segments || []).map((s) => ({
+      ...s,
+      startPoint: cloneP(s.startPoint),
+      endPoint: cloneP(s.endPoint),
+    })),
+    controlPoints: (data.controlPoints || []).map((cp) => ({
+      ...cp,
+      position: cloneP(cp.position),
+      connection: cp.connection ? { ...cp.connection, offset: { ...cp.connection.offset } } : cp.connection,
+    })),
+  };
+}
 
-/**
- * يبني نقاط التحكم حسب النموذج:
- * - endpoints: start/end active
- * - midpoint على ضلع أ active
- * - midpoints على أضلاع ب: inactive
- */
-const rebuildControlPoints_UModel = (
+function rebuildControlPoints(
   data: ArrowData,
-  activeMidpointSegmentId?: string,
-  keepActiveMidpointId?: string,
-) => {
-  const d = deepCloneArrow(data);
+  activeSegmentIds: Set<string>,
+  keepIds?: Record<string, string>,
+): ArrowData {
+  const d = deepClone(data);
 
   const cps: ArrowCP[] = [];
 
   // endpoints
   const startExisting = d.controlPoints?.find(
-    (cp) => cp.type === "endpoint" && (cp.id === "start" || d.controlPoints.indexOf(cp) === 0),
+    (c) => c.type === "endpoint" && (c.id === "start" || d.controlPoints.indexOf(c) === 0),
   );
   const endExisting = d.controlPoints?.find(
-    (cp) => cp.type === "endpoint" && (cp.id === "end" || d.controlPoints.indexOf(cp) === d.controlPoints.length - 1),
+    (c) => c.type === "endpoint" && (c.id === "end" || d.controlPoints.indexOf(c) === d.controlPoints.length - 1),
   );
 
   cps.push({
     id: startExisting?.id || "start",
     type: "endpoint",
-    position: clonePoint(d.startPoint),
+    position: cloneP(d.startPoint),
     isActive: true,
     connection: startExisting?.connection || null,
   });
 
-  // لكل ضلع: نقطة منتصف
   d.segments.forEach((seg) => {
-    const isA = activeMidpointSegmentId ? seg.id === activeMidpointSegmentId : false;
-    const id = isA && keepActiveMidpointId ? keepActiveMidpointId : generateId();
-
     cps.push({
-      id,
+      id: keepIds?.[seg.id] || generateId(),
       type: "midpoint",
       position: mid(seg.startPoint, seg.endPoint),
-      isActive: isA, // فقط ضلع أ يكون Active
+      isActive: activeSegmentIds.has(seg.id),
       segmentId: seg.id,
     });
   });
@@ -109,194 +109,201 @@ const rebuildControlPoints_UModel = (
   cps.push({
     id: endExisting?.id || "end",
     type: "endpoint",
-    position: clonePoint(d.endPoint),
+    position: cloneP(d.endPoint),
     isActive: true,
     connection: endExisting?.connection || null,
   });
 
   d.controlPoints = cps;
   return d;
-};
+}
 
 /**
- * إنشاء U مفتوح:
- * - ضلع أ = الضلع الأصلي (start -> end) كما هو
- * - ضلعين ب من طرفي أ إلى مستوى السحب (عمودي إذا أ عرضي، وعرضي إذا أ طولي)
+ * تحويل سهم مستقيم إلى نموذج U مفتوح:
+ * start -> (start.x, levelY) -> (end.x, levelY) -> end
+ * أو لو السهم طولي:
+ * start -> (levelX, start.y) -> (levelX, end.y) -> end
  */
-const convertStraightToOpenU = (data: ArrowData, uLevel: number, rootMidpointId: string) => {
-  const d = deepCloneArrow(data);
+function convertStraightToOpenU(data: ArrowData, dragPoint: ArrowPoint, keepMidpointId: string): ArrowData {
+  const d = deepClone(data);
+  const base = d.segments?.[0] || { id: generateId(), startPoint: cloneP(d.startPoint), endPoint: cloneP(d.endPoint) };
 
-  const base: ArrowSegment = d.segments?.[0] || {
-    id: generateId(),
-    startPoint: clonePoint(d.startPoint),
-    endPoint: clonePoint(d.endPoint),
-  };
   const baseIsH = isHorizontal(base);
 
-  const baseId = base.id || generateId();
-  const baseSeg: ArrowSegment = {
-    ...base,
-    id: baseId,
-    startPoint: clonePoint(d.startPoint),
-    endPoint: clonePoint(d.endPoint),
-  };
-
-  // ضلعين ب
-  let leg1: ArrowSegment;
-  let leg2: ArrowSegment;
-
   if (baseIsH) {
-    // أ عرضي => ب طولي (يتحرك Y)
-    leg1 = {
-      id: generateId(),
-      startPoint: clonePoint(d.startPoint),
-      endPoint: { x: d.startPoint.x, y: uLevel },
-    };
-    leg2 = {
-      id: generateId(),
-      startPoint: clonePoint(d.endPoint),
-      endPoint: { x: d.endPoint.x, y: uLevel },
-    };
+    const levelY = dragPoint.y;
+    const startCorner = { x: d.startPoint.x, y: levelY };
+    const endCorner = { x: d.endPoint.x, y: levelY };
+
+    const b1: ArrowSegment = { id: generateId(), startPoint: cloneP(d.startPoint), endPoint: startCorner };
+    const A: ArrowSegment = { id: generateId(), startPoint: startCorner, endPoint: endCorner };
+    const b2: ArrowSegment = { id: generateId(), startPoint: endCorner, endPoint: cloneP(d.endPoint) };
+
+    d.arrowType = "orthogonal";
+    d.segments = [b1, A, b2];
+
+    // A هو الضلع النشط
+    return rebuildControlPoints(d, new Set([A.id]), { [A.id]: keepMidpointId });
   } else {
-    // أ طولي => ب عرضي (يتحرك X)
-    leg1 = {
-      id: generateId(),
-      startPoint: clonePoint(d.startPoint),
-      endPoint: { x: uLevel, y: d.startPoint.y },
-    };
-    leg2 = {
-      id: generateId(),
-      startPoint: clonePoint(d.endPoint),
-      endPoint: { x: uLevel, y: d.endPoint.y },
-    };
+    const levelX = dragPoint.x;
+    const startCorner = { x: levelX, y: d.startPoint.y };
+    const endCorner = { x: levelX, y: d.endPoint.y };
+
+    const b1: ArrowSegment = { id: generateId(), startPoint: cloneP(d.startPoint), endPoint: startCorner };
+    const A: ArrowSegment = { id: generateId(), startPoint: startCorner, endPoint: endCorner };
+    const b2: ArrowSegment = { id: generateId(), startPoint: endCorner, endPoint: cloneP(d.endPoint) };
+
+    d.arrowType = "orthogonal";
+    d.segments = [b1, A, b2];
+
+    return rebuildControlPoints(d, new Set([A.id]), { [A.id]: keepMidpointId });
   }
-
-  d.arrowType = "orthogonal";
-  d.segments = [leg1, baseSeg, leg2];
-
-  // ملاحظة: start/end يظلون نهايات الضلع الأصلي (أ)
-  d.startPoint = clonePoint(baseSeg.startPoint);
-  d.endPoint = clonePoint(baseSeg.endPoint);
-
-  // نقطة منتصف ضلع أ مفعلة (هي المرجع)
-  return rebuildControlPoints_UModel(d, baseSeg.id, rootMidpointId);
-};
+}
 
 /**
- * تحريك نقطة نهاية ضلع (ب) مع تثبيت محوره
- * - إذا الضلع ب طولي => نسمح بتحريك X فقط؟ لا: الطولي يتحرك يمين/يسار => X فقط (نقفل Y)
- * - إذا الضلع ب عرضي => يتحرك فوق/تحت => Y فقط (نقفل X)
+ * تحريك ضلع كامل (Active midpoint) مع الحفاظ على أنه يظل عرضي/طولي:
+ * - إذا الضلع عرضي: يتحرك فوق/تحت => نغير Y للـ start/end معًا.
+ * - إذا الضلع طولي: يتحرك يمين/يسار => نغير X للـ start/end معًا.
  */
-const moveSideLegEndpoint = (data: ArrowData, legSegmentId: string, newEnd: ArrowPoint) => {
-  const d = deepCloneArrow(data);
-  const idx = d.segments.findIndex((s) => s.id === legSegmentId);
+function moveWholeSegment(data: ArrowData, segmentId: string, dragPoint: ArrowPoint): ArrowData {
+  const d = deepClone(data);
+  const idx = d.segments.findIndex((s) => s.id === segmentId);
   if (idx === -1) return d;
 
   const seg = d.segments[idx];
-  const segIsH = isHorizontal(seg);
-
-  // الضلع العرضي يتحرك Y فقط => endPoint.y يتغير، endPoint.x ثابت
-  // الضلع الطولي يتحرك X فقط => endPoint.x يتغير، endPoint.y ثابت
-  const updatedEnd: ArrowPoint = segIsH ? { x: seg.endPoint.x, y: newEnd.y } : { x: newEnd.x, y: seg.endPoint.y };
-
-  d.segments[idx] = { ...seg, endPoint: updatedEnd };
-
-  return d;
-};
-
-/**
- * عندما تُسحب نقطة ب غير مفعلة:
- * - تصبح مفعلة
- * - نولد ضلع جديد واحد (غير مفعّل) يربط طرف ب مع startPoint
- * - ونعدل ضلع أ (القاعدة) يطول/يقصر حسب مكان قاعدة ب
- *
- * الربط هنا مع startPoint (حسب وصفك).
- */
-const activateBAndGenerateOneSegmentToStart = (data: ArrowData, legSegmentId: string, activeMidpointId: string) => {
-  const d = deepCloneArrow(data);
-
-  const legIdx = d.segments.findIndex((s) => s.id === legSegmentId);
-  if (legIdx === -1) return d;
-
-  const leg = d.segments[legIdx];
-
-  // ضلع أ هو "الضلع الأصلي" = نحددّه بأنه الضلع اللي نقطة منتصفه Active الآن
-  const activeA = d.controlPoints.find((cp) => cp.type === "midpoint" && cp.isActive && cp.segmentId);
-  const aSegId = activeA?.segmentId || (d.segments[1]?.id ?? d.segments[0]?.id);
-
-  const aIdx = d.segments.findIndex((s) => s.id === aSegId);
-  if (aIdx === -1) return d;
-
-  const aSeg = d.segments[aIdx];
-  const aIsH = isHorizontal(aSeg);
-
-  // 1) نجعل نقطة ب (midpoint لهذه الرجل) Active (تصير ضلع ب "مفعّل")
-  // لكن حسب نموذجك: النقطة التي تُسحب على ب هي نقطة منتصف الضلع ب نفسه.
-  // لذلك نبدّل الـ controlPoints لاحقًا بحيث هذا الـ segmentId يصبح activeMidpointSegmentId.
-  // 2) نضيف ضلع جديد واحد (inactive) يربط طرف ب (leg.endPoint) مع startPoint (بداية السهم)
-  const newSeg: ArrowSegment = {
-    id: generateId(),
-    startPoint: clonePoint(d.startPoint),
-    endPoint: clonePoint(leg.endPoint),
-  };
-
-  // 3) تعديل ضلع أ (القاعدة) يطول/يقصر:
-  // - إذا أ عرضي: نغيّر امتداده X بحسب leg.startPoint.x (قاعدة الرجل) أو leg.endPoint.x؟ المنطقي: قاعدة الرجل على طرف أ.
-  //   بما أن الرجل متصلة بطرف أ (leg.startPoint هو startPoint أو endPoint)، فالتغيير يكون على الطرف المقابل عند الحاجة.
-  // - هنا نطبق أقرب تفسير: إذا الرجل المتحركة كانت من جهة endPoint، نخلي endPoint على أ يصير بمحاذاة إسقاط طرف ب.
-  //   وإذا من جهة startPoint، نخلي startPoint يصير بمحاذاة إسقاط طرف ب.
-  //
-  // هذا يخلي ضلع أ يطول/يقصر حسب حركة ب (يمين/يسار للعمودي أو فوق/تحت للعرضي).
-  const legFromStart =
-    Math.abs(leg.startPoint.x - d.startPoint.x) < eps && Math.abs(leg.startPoint.y - d.startPoint.y) < eps;
-
-  const projectedOnA: ArrowPoint = aIsH
-    ? { x: leg.endPoint.x, y: aSeg.startPoint.y }
-    : { x: aSeg.startPoint.x, y: leg.endPoint.y };
-
-  let newStart = clonePoint(aSeg.startPoint);
-  let newEnd = clonePoint(aSeg.endPoint);
-
-  if (legFromStart) {
-    newStart = projectedOnA;
-    d.startPoint = clonePoint(newStart);
+  if (isHorizontal(seg)) {
+    const y = dragPoint.y;
+    d.segments[idx] = { ...seg, startPoint: { x: seg.startPoint.x, y }, endPoint: { x: seg.endPoint.x, y } };
   } else {
-    newEnd = projectedOnA;
-    d.endPoint = clonePoint(newEnd);
+    const x = dragPoint.x;
+    d.segments[idx] = { ...seg, startPoint: { x, y: seg.startPoint.y }, endPoint: { x, y: seg.endPoint.y } };
   }
 
-  d.segments[aIdx] = { ...aSeg, startPoint: newStart, endPoint: newEnd };
+  // لازم نربط الأضلاع المجاورة
+  if (idx > 0) d.segments[idx - 1] = { ...d.segments[idx - 1], endPoint: cloneP(d.segments[idx].startPoint) };
+  if (idx < d.segments.length - 1)
+    d.segments[idx + 1] = { ...d.segments[idx + 1], startPoint: cloneP(d.segments[idx].endPoint) };
 
-  // 4) نضيف الضلع الجديد (inactive)
+  return d;
+}
+
+/**
+ * تحريك طرف ضلع (غير نشط) بشكل مقيد، ثم تفعيله.
+ * قاعدة النموذج:
+ * - ب هو ضلع طرفي (الأول أو الأخير غالبًا).
+ * - تحريك ب يغيّر طول أ (الضلع الأوسط) + يولد ضلع جديد واحد غير نشط.
+ *
+ * ✅ مهم: الضلع الجديد لازم Orthogonal (ما فيه قطر)
+ * لذلك نربطه بالزاوية الأقرب (corner) وليس startPoint إذا كان الربط مع startPoint
+ * يسبب قطر.
+ */
+function dragInactiveBAndActivate(data: ArrowData, bSegmentId: string, dragPoint: ArrowPoint): ArrowData {
+  const d = deepClone(data);
+
+  const bIdx = d.segments.findIndex((s) => s.id === bSegmentId);
+  if (bIdx === -1) return d;
+
+  // نفترض تركيب U الأساسي: [b1, A, b2] على الأقل
+  const AIdx = Math.floor(d.segments.length / 2);
+  const A = d.segments[AIdx];
+
+  const b = d.segments[bIdx];
+  const bIsH = isHorizontal(b);
+
+  // 1) حرك b مع القيد (العرضي فوق/تحت، الطولي يمين/يسار)
+  let newB: ArrowSegment = b;
+  if (bIsH) {
+    // عرضي => نغير Y فقط
+    const y = dragPoint.y;
+    newB = { ...b, startPoint: { x: b.startPoint.x, y }, endPoint: { x: b.endPoint.x, y } };
+  } else {
+    const x = dragPoint.x;
+    newB = { ...b, startPoint: { x, y: b.startPoint.y }, endPoint: { x, y: b.endPoint.y } };
+  }
+  d.segments[bIdx] = newB;
+
+  // 2) قص/طول A حسب اتجاه b
+  // إذا bIdx قبل A => نعدل A.startPoint ليطابق نهاية b
+  // إذا bIdx بعد A => نعدل A.endPoint ليطابق بداية b
+  if (bIdx < AIdx) {
+    d.segments[AIdx] = { ...A, startPoint: cloneP(newB.endPoint), endPoint: cloneP(A.endPoint) };
+  } else {
+    d.segments[AIdx] = { ...A, startPoint: cloneP(A.startPoint), endPoint: cloneP(newB.startPoint) };
+  }
+
+  // 3) إعادة ربط الأضلاع المجاورة لـ A
+  if (AIdx - 1 >= 0) d.segments[AIdx - 1] = { ...d.segments[AIdx - 1], endPoint: cloneP(d.segments[AIdx].startPoint) };
+  if (AIdx + 1 < d.segments.length)
+    d.segments[AIdx + 1] = { ...d.segments[AIdx + 1], startPoint: cloneP(d.segments[AIdx].endPoint) };
+
+  // 4) توليد ضلع جديد واحد غير نشط (Orthogonal):
+  // نربط بين "نقطة البداية" و"نقطة b" ولكن بدون قطر.
+  // إذا الربط المباشر يطلع قطر، نربطه بالزاوية (corner) الخاصة بالنقطة.
+
+  const startP = d.startPoint;
+  const cornerP = d.segments[0].endPoint; // زاوية البداية بعد b1
+  const bTouch = bIdx < AIdx ? d.segments[AIdx].startPoint : d.segments[AIdx].endPoint;
+
+  // جرّب ربط مباشر: إذا نفس X أو نفس Y => مسموح
+  let connectorStart = cloneP(startP);
+  let connectorEnd = cloneP(bTouch);
+
+  const directOk =
+    Math.abs(connectorStart.x - connectorEnd.x) < 0.0001 || Math.abs(connectorStart.y - connectorEnd.y) < 0.0001;
+  if (!directOk) {
+    // الحل الآمن: اربط بالزاوية (corner) بدل startPoint (يحافظ على ضلع واحد بدون قطر)
+    connectorStart = cloneP(cornerP);
+    connectorEnd = cloneP(bTouch);
+  }
+
+  const newSeg: ArrowSegment = {
+    id: generateId(),
+    startPoint: connectorStart,
+    endPoint: connectorEnd,
+  };
+
   d.segments.push(newSeg);
 
-  // 5) إعادة بناء نقاط التحكم حسب النموذج:
-  // - الآن ضلع أ يبقى Active
-  // - ضلع ب المسحوب يصبح Active بدل أضلاع ب الأخرى؟ (حسب وصفك: “عند سحبها يتم تفعيلها”)
-  //   فهنا نخلي نقطة منتصف ضلع ب المسحوب Active، ونخلي ضلع أ يظل Active كذلك؟
-  // بما أنك قلت: “الضلع أ نقطة مفعله ثابتة” + “الضلع ب يتم تفعيله عند سحبه”
-  // هذا يعني: أكثر من نقطة Active ممكنة. نعكس هذا داخل controlPoints:
-  const rebuilt = rebuildControlPoints_UModel(d, aSeg.id, activeA?.id);
+  // Active: A + b
+  const actives = new Set<string>([d.segments[AIdx].id, bSegmentId]);
+  return rebuildControlPoints(d, actives);
+}
 
-  // فعل midpoint الخاص بـ b
-  const bMid = rebuilt.controlPoints.find((cp) => cp.type === "midpoint" && cp.segmentId === legSegmentId);
-  if (bMid) bMid.isActive = true;
+function deleteSegment(data: ArrowData, segmentId: string): ArrowData {
+  const d = deepClone(data);
+  const idx = d.segments.findIndex((s) => s.id === segmentId);
+  if (idx === -1) return d;
+  if (d.segments.length <= 1) return d;
 
-  // وخلي ActiveMidpointId (النقطة اللي سحبها المستخدم) تربط بهذا الضلع (ب)
-  if (bMid) bMid.id = activeMidpointId;
+  const segs = [...d.segments];
 
-  return rebuilt;
-};
+  if (idx === 0) {
+    if (segs[1]) segs[1] = { ...segs[1], startPoint: cloneP(segs[0].startPoint) };
+    segs.splice(0, 1);
+  } else if (idx === segs.length - 1) {
+    segs[idx - 1] = { ...segs[idx - 1], endPoint: cloneP(segs[idx].endPoint) };
+    segs.splice(idx, 1);
+  } else {
+    // دمج prev مع next
+    segs[idx - 1] = { ...segs[idx - 1], endPoint: cloneP(segs[idx + 1].endPoint) };
+    segs.splice(idx, 2);
+  }
+
+  d.segments = segs;
+  d.startPoint = cloneP(segs[0].startPoint);
+  d.endPoint = cloneP(segs[segs.length - 1].endPoint);
+  d.arrowType = segs.length === 1 ? "straight" : "orthogonal";
+
+  // نخلي الضلع الأوسط Active افتراضيًا
+  const midIdx = Math.floor(segs.length / 2);
+  return rebuildControlPoints(d, new Set([segs[midIdx].id]));
+}
 
 export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element, viewport }) => {
   const { elements, updateElement } = useCanvasStore();
 
-  // محرر النص لنقاط غير مفعلة
-  const [editing, setEditing] = useState<{
-    segmentId: string;
-    at: ArrowPoint;
-    value: string;
-  } | null>(null);
+  // تحرير نص للنقاط غير النشطة
+  const [editing, setEditing] = useState<{ segmentId: string; at: ArrowPoint; value: string } | null>(null);
 
   const [dragState, setDragState] = useState<DragExt>({
     isDragging: false,
@@ -307,7 +314,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
     initialMousePos: null,
     lockedAxis: null,
     lockedValue: null,
-    draggingSegmentId: null,
+    segmentId: null,
   });
 
   const storedArrowData = element.data?.arrowData as ArrowData | undefined;
@@ -325,7 +332,6 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
 
     let startPoint: ArrowPoint;
     let endPoint: ArrowPoint;
-    let headDirection: "start" | "end" | "both" | "none" = "end";
 
     switch (shapeType) {
       case "arrow_up":
@@ -345,33 +351,30 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
         endPoint = { x: width, y: height / 2 };
     }
 
-    const straight = createStraightArrowData(startPoint, endPoint, headDirection);
-    // نضمن وجود segment واحد
-    const s0: ArrowSegment = {
-      id: generateId(),
-      startPoint: clonePoint(straight.startPoint),
-      endPoint: clonePoint(straight.endPoint),
-    };
-    straight.segments = [s0];
+    const straight = createStraightArrowData(startPoint, endPoint, "end");
+    const seg0: ArrowSegment = { id: generateId(), startPoint: cloneP(startPoint), endPoint: cloneP(endPoint) };
+    straight.segments = [seg0];
     straight.arrowType = "straight";
-    straight.controlPoints = rebuildControlPoints_UModel(straight, s0.id).controlPoints;
+    straight.controlPoints = rebuildControlPoints(straight, new Set([seg0.id])).controlPoints;
     return straight;
   }, [element.size, element.shapeType, element.data?.shapeType]);
 
   const arrowData: ArrowData = useMemo(() => {
     if (!isArrowDataValid) return getDefaultArrowData();
 
-    const d = deepCloneArrow(storedArrowData as ArrowData);
+    const d = deepClone(storedArrowData as ArrowData);
+
     if (!d.segments || d.segments.length === 0) {
-      d.segments = [{ id: generateId(), startPoint: clonePoint(d.startPoint), endPoint: clonePoint(d.endPoint) }];
+      d.segments = [{ id: generateId(), startPoint: cloneP(d.startPoint), endPoint: cloneP(d.endPoint) }];
       d.arrowType = "straight";
     }
+
     if (!d.controlPoints || d.controlPoints.length === 0) {
-      // افتراضيًا نفعل نقطة منتصف الضلع الأصلي (أ)
-      d.controlPoints = rebuildControlPoints_UModel(d, d.segments[0].id).controlPoints;
-      const aMid = d.controlPoints.find((cp) => cp.type === "midpoint" && cp.segmentId === d.segments[0].id);
-      if (aMid) aMid.isActive = true;
+      const midIdx = Math.floor(d.segments.length / 2);
+      const rebuilt = rebuildControlPoints(d, new Set([d.segments[midIdx].id]));
+      return rebuilt;
     }
+
     return d;
   }, [isArrowDataValid, storedArrowData, getDefaultArrowData]);
 
@@ -382,62 +385,20 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
 
   const displayControlPoints = useMemo(() => arrowData.controlPoints || [], [arrowData]);
 
-  // حذف ضلع مرتبط بنقطة midpoint Active
-  const deleteActiveSegmentByMidpoint = useCallback(
-    (midpointId: string) => {
-      const d = deepCloneArrow(arrowData);
-      const cp = d.controlPoints.find((c) => c.id === midpointId);
-      if (!cp || cp.type !== "midpoint" || !cp.segmentId) return;
-      if (!cp.isActive) return;
+  const getLabels = (d: ArrowData) => ((d as any).labels || {}) as Record<string, string>;
+  const setLabel = (segmentId: string, text: string) => {
+    const d = deepClone(arrowData);
+    const labels = { ...getLabels(d) };
+    if (!text.trim()) delete labels[segmentId];
+    else labels[segmentId] = text;
+    (d as any).labels = labels;
+    updateElement(element.id, { data: { ...element.data, arrowData: d } });
+  };
 
-      const idx = d.segments.findIndex((s) => s.id === cp.segmentId);
-      if (idx === -1) return;
-
-      // لا نحذف إذا الضلع الوحيد
-      if (d.segments.length === 1) return;
-
-      // دمج منطقي: نوصل الضلع السابق باللاحق إن وجد
-      const segs = [...d.segments];
-
-      if (idx === 0) {
-        // حذف الأول: خلي الثاني يبدأ من بداية الأول
-        if (segs[1]) segs[1] = { ...segs[1], startPoint: clonePoint(segs[0].startPoint) };
-        segs.splice(0, 1);
-      } else if (idx === segs.length - 1) {
-        // حذف الأخير: خلي السابق ينتهي عند نهاية الأخير
-        segs[idx - 1] = { ...segs[idx - 1], endPoint: clonePoint(segs[idx].endPoint) };
-        segs.splice(idx, 1);
-      } else {
-        // وسط: خلي السابق ينتهي عند نهاية التالي ثم احذف (الحالي + التالي)
-        const prev = segs[idx - 1];
-        const next = segs[idx + 1];
-        segs[idx - 1] = { ...prev, endPoint: clonePoint(next.endPoint) };
-        segs.splice(idx, 2);
-      }
-
-      d.segments = segs;
-      d.startPoint = clonePoint(segs[0].startPoint);
-      d.endPoint = clonePoint(segs[segs.length - 1].endPoint);
-      d.arrowType = segs.length === 1 ? "straight" : "orthogonal";
-
-      // إعادة بناء نقاط التحكم: نجعل ضلع أ = الضلع اللي “يشبه الأصلي” (الأقرب يكون أول ضلع)
-      // هنا نثبت Active على أول ضلع (أ) + نحافظ على أي Active آخر إن وجد حسب حاجتك لاحقًا.
-      const rebuilt = rebuildControlPoints_UModel(d, segs[0].id);
-      const aMid = rebuilt.controlPoints.find((c) => c.type === "midpoint" && c.segmentId === segs[0].id);
-      if (aMid) aMid.isActive = true;
-
-      updateElement(element.id, { data: { ...element.data, arrowData: rebuilt } });
-    },
-    [arrowData, element, updateElement],
-  );
-
-  // بدء السحب + تثبيت المحور حسب الضلع وقت بداية السحب
   const handleMouseDown = useCallback(
     (e: React.MouseEvent, cp: ArrowCP) => {
       e.stopPropagation();
       e.preventDefault();
-
-      // اقفل تحرير النص إذا بدأنا سحب
       setEditing(null);
 
       const isStart = cp.type === "endpoint" && (cp.id === "start" || displayControlPoints.indexOf(cp) === 0);
@@ -449,15 +410,14 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
 
       let lockedAxis: Axis | null = null;
       let lockedValue: number | null = null;
-      let draggingSegmentId: string | null = null;
+      let segmentId: string | null = null;
 
       if (controlPointType === "middle" && cp.segmentId) {
-        draggingSegmentId = cp.segmentId;
+        segmentId = cp.segmentId;
         const seg = arrowData.segments.find((s) => s.id === cp.segmentId);
-
         if (seg) {
-          // الضلع العرضي يتحرك Y فقط => نقفل X
-          // الضلع الطولي يتحرك X فقط => نقفل Y
+          // حسب نموذجك: العرضي يتحرك فوق/تحت => نقفل X
+          // الطولي يتحرك يمين/يسار => نقفل Y
           if (isHorizontal(seg)) {
             lockedAxis = "x";
             lockedValue = cp.position.x;
@@ -472,12 +432,12 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
         isDragging: true,
         controlPoint: controlPointType,
         controlPointId: cp.id,
-        startPosition: clonePoint(cp.position),
+        startPosition: cloneP(cp.position),
         nearestAnchor: null,
         initialMousePos: { x: e.clientX, y: e.clientY },
         lockedAxis,
         lockedValue,
-        draggingSegmentId,
+        segmentId,
       });
     },
     [arrowData.segments, displayControlPoints],
@@ -491,15 +451,13 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
       const deltaX = (e.clientX - dragState.initialMousePos.x) / viewport.zoom;
       const deltaY = (e.clientY - dragState.initialMousePos.y) / viewport.zoom;
 
-      let newPoint: ArrowPoint = {
-        x: dragState.startPosition.x + deltaX,
-        y: dragState.startPosition.y + deltaY,
-      };
+      let newPoint: ArrowPoint = { x: dragState.startPosition.x + deltaX, y: dragState.startPosition.y + deltaY };
 
-      // تطبيق قفل المحور (حسب اتجاه الضلع عند بداية السحب)
-      newPoint = applyAxisLock(newPoint, dragState.lockedAxis, dragState.lockedValue);
+      if (dragState.lockedAxis && dragState.lockedValue != null) {
+        if (dragState.lockedAxis === "x") newPoint = { x: dragState.lockedValue, y: newPoint.y };
+        else newPoint = { x: newPoint.x, y: dragState.lockedValue };
+      }
 
-      // snapping فقط لنقاط النهاية
       const nearestAnchor =
         dragState.controlPoint !== "middle"
           ? findNearestAnchor(
@@ -514,96 +472,67 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
 
       setDragState((prev) => ({ ...prev, nearestAnchor }));
 
-      let d = deepCloneArrow(arrowData);
+      let d = deepClone(arrowData);
 
-      // ---- endpoints drag (snap) ----
+      // endpoints (snap)
       if (dragState.controlPoint === "start" || dragState.controlPoint === "end") {
         const endpoint = dragState.controlPoint;
         const finalPoint = nearestAnchor
           ? { x: nearestAnchor.position.x - element.position.x, y: nearestAnchor.position.y - element.position.y }
           : newPoint;
 
-        // تحديث start/end مع المحافظة على أول/آخر ضلع فقط (بدون Router)
         if (!d.segments || d.segments.length === 0) {
-          d.segments = [{ id: generateId(), startPoint: clonePoint(d.startPoint), endPoint: clonePoint(d.endPoint) }];
+          d.segments = [{ id: generateId(), startPoint: cloneP(d.startPoint), endPoint: cloneP(d.endPoint) }];
         }
 
         if (endpoint === "start") {
-          d.startPoint = clonePoint(finalPoint);
-          d.segments[0] = { ...d.segments[0], startPoint: clonePoint(finalPoint) };
+          d.startPoint = cloneP(finalPoint);
+          d.segments[0] = { ...d.segments[0], startPoint: cloneP(finalPoint) };
         } else {
-          d.endPoint = clonePoint(finalPoint);
-          d.segments[d.segments.length - 1] = {
-            ...d.segments[d.segments.length - 1],
-            endPoint: clonePoint(finalPoint),
-          };
+          d.endPoint = cloneP(finalPoint);
+          d.segments[d.segments.length - 1] = { ...d.segments[d.segments.length - 1], endPoint: cloneP(finalPoint) };
         }
 
-        // إعادة بناء نقاط التحكم
-        d = rebuildControlPoints_UModel(d, d.segments[1]?.id ?? d.segments[0].id);
+        const midIdx = Math.floor(d.segments.length / 2);
+        d = rebuildControlPoints(d, new Set([d.segments[midIdx].id]));
+
+        updateElement(element.id, { data: { ...element.data, arrowData: d } });
+        return;
       }
 
-      // ---- midpoint drag ----
-      if (dragState.controlPoint === "middle" && dragState.controlPointId && dragState.draggingSegmentId) {
+      // midpoints
+      if (dragState.controlPoint === "middle" && dragState.controlPointId && dragState.segmentId) {
         const cp = d.controlPoints.find((c) => c.id === dragState.controlPointId);
-        const seg = d.segments.find((s) => s.id === dragState.draggingSegmentId);
+        if (!cp || cp.type !== "midpoint" || !cp.segmentId) return;
 
-        if (!seg) return;
-
-        // حالة السهم مستقيم: أول سحب = U مفتوح
+        // straight -> convert to U
         if (d.arrowType === "straight" || d.segments.length === 1) {
-          const s0 = d.segments[0];
-
-          // base (أ) = الضلع الأصلي
-          // level يكون حسب الحركة العمودية أو الأفقية على حسب اتجاه الضلع الأصلي:
-          const baseIsH = isHorizontal(s0);
-          const level = baseIsH ? newPoint.y : newPoint.x;
-
-          d = convertStraightToOpenU(d, level, dragState.controlPointId);
-
+          d = convertStraightToOpenU(d, newPoint, dragState.controlPointId);
           updateElement(element.id, { data: { ...element.data, arrowData: d } });
           return;
         }
 
-        // سهم U أو متعامد: تمييز Active/Inactive
-        if (!cp || cp.type !== "midpoint" || !cp.segmentId) {
+        // active vs inactive
+        if (cp.isActive) {
+          d = moveWholeSegment(d, cp.segmentId, newPoint);
+
+          // ابقِ نفس الضلع Active
+          const act = new Set<string>([cp.segmentId]);
+          d = rebuildControlPoints(d, act, { [cp.segmentId]: cp.id });
+
           updateElement(element.id, { data: { ...element.data, arrowData: d } });
           return;
-        }
-
-        const isActive = !!cp.isActive;
-
-        // لو النقطة غير مفعلة => هذا ضلع (ب) وتم سحبه:
-        // 1) حرّك طرف ضلع ب (حسب قفل المحور)
-        d = moveSideLegEndpoint(d, cp.segmentId, newPoint);
-
-        if (!isActive) {
-          // 2) فعّل النقطة + ولّد ضلع جديد واحد يربط طرف ب مع startPoint + تعديل ضلع أ
-          d = activateBAndGenerateOneSegmentToStart(d, cp.segmentId, dragState.controlPointId);
         } else {
-          // Active midpoint: نحرك ضلعها فقط (وبحسب القفل أصلاً)
-          // هنا نحرّك الضلع كامل بشكل “مقيد”:
-          const idx = d.segments.findIndex((s) => s.id === cp.segmentId);
-          if (idx !== -1) {
-            const s = d.segments[idx];
-            if (isHorizontal(s)) {
-              const y = newPoint.y;
-              d.segments[idx] = { ...s, startPoint: { x: s.startPoint.x, y }, endPoint: { x: s.endPoint.x, y } };
-            } else {
-              const x = newPoint.x;
-              d.segments[idx] = { ...s, startPoint: { x, y: s.startPoint.y }, endPoint: { x, y: s.endPoint.y } };
-            }
-            d = rebuildControlPoints_UModel(d, cp.segmentId, cp.id);
-            // نحافظ على Active على هذا الضلع
-            const midCp = d.controlPoints.find((c) => c.type === "midpoint" && c.segmentId === cp.segmentId);
-            if (midCp) midCp.isActive = true;
-          }
+          // inactive (ب)
+          d = dragInactiveBAndActivate(d, cp.segmentId, newPoint);
+          updateElement(element.id, { data: { ...element.data, arrowData: d } });
+          return;
         }
       }
 
       updateElement(element.id, { data: { ...element.data, arrowData: d } });
     },
-    [dragState, viewport, element, arrowData, otherElements, updateElement],
+    [dragState, viewport, otherElements, arrowData, updateElement, element],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -616,7 +545,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
       initialMousePos: null,
       lockedAxis: null,
       lockedValue: null,
-      draggingSegmentId: null,
+      segmentId: null,
     });
   }, []);
 
@@ -630,23 +559,6 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
     };
   }, [dragState.isDragging, handleMouseMove, handleMouseUp]);
 
-  // --- label store داخل arrowData (بدون تعديل Types) ---
-  const getLabels = (d: ArrowData): LabelsMap => ((d as any).labels || {}) as LabelsMap;
-
-  const setLabel = (segmentId: string, text: string) => {
-    const d = deepCloneArrow(arrowData);
-    const labels = { ...getLabels(d) };
-
-    if (!text.trim()) {
-      delete labels[segmentId];
-    } else {
-      labels[segmentId] = text;
-    }
-
-    (d as any).labels = labels;
-    updateElement(element.id, { data: { ...element.data, arrowData: d } });
-  };
-
   const getControlPointStyle = (cp: ArrowCP) => {
     const isConnected = cp.type === "endpoint" && !!cp.connection;
     const size = cp.isActive ? 10 : 6;
@@ -655,8 +567,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
       width: size,
       height: size,
       borderRadius: "50%",
-      backgroundColor: isConnected ? "hsl(var(--accent-green))" : cp.isActive ? "#FFFFFF" : "rgba(255, 255, 255, 0.4)",
-      border: cp.isActive ? "1.5px solid #000000" : "1px dashed rgba(0,0,0,0.4)",
+      backgroundColor: isConnected ? "hsl(var(--accent-green))" : cp.isActive ? "#FFFFFF" : "rgba(255,255,255,0.4)",
+      border: cp.isActive ? "1.5px solid #000" : "1px dashed rgba(0,0,0,0.4)",
       cursor: "grab",
       boxShadow: cp.isActive ? "0 1px 3px rgba(0,0,0,0.2)" : "none",
       zIndex: 1000,
@@ -664,46 +576,11 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
     } as React.CSSProperties;
   };
 
-  const renderPathLines = () => {
-    if (!arrowData.segments || arrowData.segments.length === 0) return null;
-    if (arrowData.arrowType === "straight" && arrowData.segments.length === 1) return null;
-
-    return (
-      <svg
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          width: element.size.width,
-          height: element.size.height,
-          pointerEvents: "none",
-          overflow: "visible",
-        }}
-      >
-        {arrowData.segments.map((segment) => (
-          <line
-            key={segment.id}
-            x1={segment.startPoint.x}
-            y1={segment.startPoint.y}
-            x2={segment.endPoint.x}
-            y2={segment.endPoint.y}
-            stroke="hsl(var(--accent-blue))"
-            strokeWidth={1}
-            strokeDasharray="4,4"
-            opacity={0.35}
-          />
-        ))}
-      </svg>
-    );
-  };
-
-  // عرض نصوص الأضلاع (لو موجودة)
   const renderLabels = () => {
     const labels = getLabels(arrowData);
     return arrowData.segments.map((seg) => {
       const txt = labels[seg.id];
       if (!txt) return null;
-
       const p = mid(seg.startPoint, seg.endPoint);
       return (
         <div
@@ -729,13 +606,10 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
 
   return (
     <>
-      {renderPathLines()}
       {renderLabels()}
 
-      {/* نقاط التحكم */}
       {displayControlPoints.map((cp, idx) => {
         const size = cp.isActive ? 10 : 6;
-
         return (
           <div
             key={cp.id}
@@ -750,13 +624,14 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
               e.stopPropagation();
               e.preventDefault();
 
-              // Active -> delete segment
-              if (cp.type === "midpoint" && cp.isActive) {
-                deleteActiveSegmentByMidpoint(cp.id);
+              // Active -> delete
+              if (cp.type === "midpoint" && cp.isActive && cp.segmentId) {
+                const nd = deleteSegment(arrowData, cp.segmentId);
+                updateElement(element.id, { data: { ...element.data, arrowData: nd } });
                 return;
               }
 
-              // Inactive -> text edit
+              // Inactive -> text
               if (cp.type === "midpoint" && !cp.isActive && cp.segmentId) {
                 const existing = getLabels(arrowData)[cp.segmentId] || "";
                 setEditing({ segmentId: cp.segmentId, at: cp.position, value: existing });
@@ -768,19 +643,18 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
                   ? "نقطة البداية - اسحب للاتصال بعنصر"
                   : "نقطة النهاية - اسحب للاتصال بعنصر"
                 : cp.isActive
-                  ? "نقطة مفعّلة - اسحب (مقيد بالمحور) / دبل كلك للحذف"
+                  ? "نقطة مفعّلة - اسحب (مقيد) / دبل كلك للحذف"
                   : "نقطة غير مفعّلة - اسحب لتفعيلها / دبل كلك لكتابة نص"
             }
           />
         );
       })}
 
-      {/* محرر النص */}
       {editing && (
         <input
           autoFocus
           value={editing.value}
-          onChange={(e) => setEditing((prev) => (prev ? { ...prev, value: e.target.value } : prev))}
+          onChange={(e) => setEditing((p) => (p ? { ...p, value: e.target.value } : p))}
           onBlur={() => {
             setLabel(editing.segmentId, editing.value);
             setEditing(null);
@@ -790,9 +664,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
               setLabel(editing.segmentId, editing.value);
               setEditing(null);
             }
-            if (e.key === "Escape") {
-              setEditing(null);
-            }
+            if (e.key === "Escape") setEditing(null);
           }}
           className="absolute border-0 outline-none bg-transparent text-black"
           style={{
@@ -803,11 +675,9 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({ element,
             fontSize: 12,
             width: 180,
           }}
-          placeholder=""
         />
       )}
 
-      {/* مؤشر السناب */}
       {dragState.nearestAnchor && (
         <div
           className="fixed pointer-events-none"
