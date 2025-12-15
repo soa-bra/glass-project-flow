@@ -801,7 +801,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           onDoubleClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
-            if (cp.type === 'midpoint') {
+            // الحذف يعمل فقط مع النقاط النشطة
+            if (cp.type === 'midpoint' && cp.isActive) {
               deleteSegmentByMidpoint(cp.id);
             }
           }}
