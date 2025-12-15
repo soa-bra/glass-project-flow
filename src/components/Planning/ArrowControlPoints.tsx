@@ -44,6 +44,12 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     initialMousePos?: { x: number; y: number } | null;
     dragDirection?: 'horizontal' | 'vertical' | null;
     containerRect?: DOMRect | null;
+    startSnapshot?: {
+      segments: ArrowSegment[];
+      controlPoints: ArrowCP[];
+      startPoint: ArrowPoint;
+      endPoint: ArrowPoint;
+    } | null;
   }>({
     isDragging: false,
     controlPoint: null,
@@ -52,7 +58,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     nearestAnchor: null,
     initialMousePos: null,
     dragDirection: null,
-    containerRect: null
+    containerRect: null,
+    startSnapshot: null
   });
 
   // حالة تعديل النص على نقطة منتصف غير نشطة
@@ -363,6 +370,21 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     const canvasContainer = document.querySelector('[data-canvas-container]') || document.querySelector('.infinite-canvas-container');
     const containerRect = canvasContainer?.getBoundingClientRect() || null;
     
+    // ✅ إنشاء snapshot كامل من arrowData لمنع تحرك جميع النقاط
+    const snapshot = {
+      segments: arrowData.segments.map(s => ({ 
+        ...s, 
+        startPoint: { ...s.startPoint }, 
+        endPoint: { ...s.endPoint } 
+      })),
+      controlPoints: arrowData.controlPoints.map(cp => ({ 
+        ...cp, 
+        position: { ...cp.position } 
+      })),
+      startPoint: { ...arrowData.startPoint },
+      endPoint: { ...arrowData.endPoint }
+    };
+    
     setDragState({
       isDragging: true,
       controlPoint: controlPointType,
@@ -371,7 +393,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       nearestAnchor: null,
       initialMousePos: { x: e.clientX, y: e.clientY },
       dragDirection: null,
-      containerRect
+      containerRect,
+      startSnapshot: snapshot
     });
   }, [displayControlPoints]);
 
@@ -982,8 +1005,24 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
 
     setDragState(prev => ({ ...prev, nearestAnchor }));
 
+    // ✅ استخدام snapshot بدلاً من arrowData الحالي لمنع تحرك جميع النقاط
+    const baseArrowData = dragState.startSnapshot ? {
+      ...arrowData,
+      segments: dragState.startSnapshot.segments.map(s => ({ 
+        ...s, 
+        startPoint: { ...s.startPoint }, 
+        endPoint: { ...s.endPoint } 
+      })),
+      controlPoints: dragState.startSnapshot.controlPoints.map(cp => ({ 
+        ...cp, 
+        position: { ...cp.position } 
+      })),
+      startPoint: { ...dragState.startSnapshot.startPoint },
+      endPoint: { ...dragState.startSnapshot.endPoint }
+    } : arrowData;
+
     // تحديث بيانات السهم
-    let newArrowData = { ...arrowData };
+    let newArrowData = { ...baseArrowData };
 
     if (dragState.controlPoint === 'start') {
       const finalPoint = nearestAnchor 
@@ -994,7 +1033,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         : newPoint;
       
       // تحريك الضلع المرتبط بنقطة البداية
-      newArrowData = moveEndpointWithSegment(arrowData, 'start', finalPoint);
+      newArrowData = moveEndpointWithSegment(baseArrowData, 'start', finalPoint);
       
       // إضافة معلومات الاتصال على المستوى الأعلى وعلى نقطة التحكم
       if (nearestAnchor) {
@@ -1029,7 +1068,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         : newPoint;
       
       // تحريك الضلع المرتبط بنقطة النهاية
-      newArrowData = moveEndpointWithSegment(arrowData, 'end', finalPoint);
+      newArrowData = moveEndpointWithSegment(baseArrowData, 'end', finalPoint);
       
       // إضافة معلومات الاتصال على المستوى الأعلى وعلى نقطة التحكم
       if (nearestAnchor) {
@@ -1057,29 +1096,29 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       
     } else if (dragState.controlPoint === 'middle' && currentDragDirection && dragState.controlPointId) {
       // البحث عن نقطة المنتصف
-      const midpoint = arrowData.controlPoints.find(cp => cp.id === dragState.controlPointId);
+      const midpoint = baseArrowData.controlPoints.find(cp => cp.id === dragState.controlPointId);
       
       if (midpoint && !midpoint.isActive) {
         // نقطة غير نشطة - نحدد إذا كانت ضلع رابط جانبي أم ضلع أوسط
-        const segmentIndex = arrowData.segments.findIndex(s => s.id === midpoint.segmentId);
-        const isFirstOrLastSegment = segmentIndex === 0 || segmentIndex === arrowData.segments.length - 1;
+        const segmentIndex = baseArrowData.segments.findIndex(s => s.id === midpoint.segmentId);
+        const isFirstOrLastSegment = segmentIndex === 0 || segmentIndex === baseArrowData.segments.length - 1;
         
-        if (isFirstOrLastSegment && arrowData.segments.length > 1) {
+        if (isFirstOrLastSegment && baseArrowData.segments.length > 1) {
           // ضلع جانبي (رابط) - استخدام دالة التفعيل الخاصة به
-          newArrowData = activateSideConnectorMidpoint(arrowData, dragState.controlPointId, newPoint, currentDragDirection);
+          newArrowData = activateSideConnectorMidpoint(baseArrowData, dragState.controlPointId, newPoint, currentDragDirection);
         } else {
           // تفعيل نقطة المنتصف وتقسيم الضلع (للأضلاع الوسطى أو السهم المستقيم)
-          newArrowData = activateMidpointAndSplit(arrowData, dragState.controlPointId, newPoint, currentDragDirection);
+          newArrowData = activateMidpointAndSplit(baseArrowData, dragState.controlPointId, newPoint, currentDragDirection);
         }
       } else if (midpoint && midpoint.isActive && midpoint.segmentId) {
         // النقطة نشطة بالفعل - تحريكها مع الحفاظ على حالة التفعيل
-        const segment = arrowData.segments.find(s => s.id === midpoint.segmentId);
+        const segment = baseArrowData.segments.find(s => s.id === midpoint.segmentId);
         if (segment) {
           // تحديد نوع الضلع: أفقي أو عمودي
           const isHorizontal = Math.abs(segment.endPoint.y - segment.startPoint.y) < 
                               Math.abs(segment.endPoint.x - segment.startPoint.x);
           
-          const segmentIndex = arrowData.segments.findIndex(s => s.id === midpoint.segmentId);
+          const segmentIndex = baseArrowData.segments.findIndex(s => s.id === midpoint.segmentId);
           
           if (isHorizontal) {
             // ضلع أفقي (عرضي) - نحركه عمودياً فقط (للأعلى والأسفل)
@@ -1100,13 +1139,13 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
           // تحديث الأضلاع المجاورة
           if (segmentIndex > 0) {
             newArrowData.segments[segmentIndex - 1] = {
-              ...arrowData.segments[segmentIndex - 1],
+              ...baseArrowData.segments[segmentIndex - 1],
               endPoint: newArrowData.segments[segmentIndex].startPoint
             };
           }
-          if (segmentIndex < arrowData.segments.length - 1) {
+          if (segmentIndex < baseArrowData.segments.length - 1) {
             newArrowData.segments[segmentIndex + 1] = {
-              ...arrowData.segments[segmentIndex + 1],
+              ...baseArrowData.segments[segmentIndex + 1],
               startPoint: newArrowData.segments[segmentIndex].endPoint
             };
           }
@@ -1116,7 +1155,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         }
       } else {
         // سهم مستقيم - تحويله إلى متعامد
-        newArrowData = convertToOrthogonalPath(arrowData, dragState.controlPointId, newPoint, currentDragDirection);
+        newArrowData = convertToOrthogonalPath(baseArrowData, dragState.controlPointId, newPoint, currentDragDirection);
       }
     }
 
@@ -1185,7 +1224,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       nearestAnchor: null,
       initialMousePos: null,
       dragDirection: null,
-      containerRect: null
+      containerRect: null,
+      startSnapshot: null
     });
   }, [dragState, element, arrowData, updateElement]);
 
@@ -1276,6 +1316,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         // النقاط غير النشطة - فتح حقل النص
         const existingLabel = midpointLabels[cp.id] || '';
         setEditingLabel({ midpointId: cp.id, text: existingLabel });
+        // ✅ تفعيل وضع الكتابة لمنع اختصارات لوحة المفاتيح
+        useCanvasStore.getState().startTyping();
         setTimeout(() => labelInputRef.current?.focus(), 50);
       }
     }
@@ -1328,15 +1370,22 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       data: { ...(currentElement?.data || {}), arrowData: newArrowData }
     });
     
+    // ✅ إيقاف وضع الكتابة
+    useCanvasStore.getState().stopTyping();
     setEditingLabel(null);
   }, [editingLabel, element.id, updateElement]);
 
   // إغلاق حقل النص
   const handleLabelKeyDown = useCallback((e: React.KeyboardEvent) => {
+    // ✅ منع وصول الحدث للمستمعين الأعلى (مثل حذف العنصر)
+    e.stopPropagation();
+    
     if (e.key === 'Enter') {
       e.preventDefault();
       saveMidpointLabel();
     } else if (e.key === 'Escape') {
+      // ✅ إيقاف وضع الكتابة
+      useCanvasStore.getState().stopTyping();
       setEditingLabel(null);
     }
   }, [saveMidpointLabel]);
