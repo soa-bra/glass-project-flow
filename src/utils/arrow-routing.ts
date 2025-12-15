@@ -1,5 +1,5 @@
 /**
- * Arrow Routing System - نظام توجيه الأسهم المتقدم (الإصدار المُصحح)
+ * Arrow Routing System - نظام توجيه الأسهم المتقدم (الإصدار النهائي)
  * يضمن أن جميع اتصالات الأسهم بالعناصر تنتهي بشكل T نظيف
  * 
  * المبدأ الذهبي (Rule Zero):
@@ -28,24 +28,14 @@ export interface TargetElement {
   size: { width: number; height: number };
 }
 
-export interface ConnectionAnalysis {
-  isParallel: boolean;
-  pathIntersectsShape: boolean;
-  segmentOrientation: SegmentOrientation;
-  edgeOrientation: EdgeOrientation;
-  snapEdge: SnapEdge;
-}
-
 export interface RoutingConfig {
   OFFSET_DISTANCE: number;
-  EXTENSION_DISTANCE: number;
   CONNECTOR_LENGTH: number;
 }
 
 const DEFAULT_CONFIG: RoutingConfig = {
-  OFFSET_DISTANCE: 15,
-  EXTENSION_DISTANCE: 15,
-  CONNECTOR_LENGTH: 12
+  OFFSET_DISTANCE: 20,
+  CONNECTOR_LENGTH: 15
 };
 
 // ============= دوال المساعدة الأساسية =============
@@ -57,12 +47,10 @@ export const getSegmentOrientation = (segment: ArrowSegment): SegmentOrientation
   const dx = Math.abs(segment.endPoint.x - segment.startPoint.x);
   const dy = Math.abs(segment.endPoint.y - segment.startPoint.y);
   
-  // إذا كان الفرق صغير جداً في أحد الاتجاهات، فهو متعامد
   const tolerance = 3;
   if (dx < tolerance) return 'vertical';
   if (dy < tolerance) return 'horizontal';
   
-  // مائل
   return 'diagonal';
 };
 
@@ -91,151 +79,76 @@ export const detectParallelSnap = (
  * فحص إذا كان المسار يمر من داخل العنصر
  */
 export const detectIntersection = (
-  segmentEndpoint: ArrowPoint,
-  snapPoint: ArrowPoint,
+  fromPoint: ArrowPoint,
+  toPoint: ArrowPoint,
   targetElement: TargetElement
 ): boolean => {
   const { position, size } = targetElement;
   const rect = {
-    left: position.x,
-    top: position.y,
-    right: position.x + size.width,
-    bottom: position.y + size.height
+    left: position.x - 5,
+    top: position.y - 5,
+    right: position.x + size.width + 5,
+    bottom: position.y + size.height + 5
   };
   
-  const x1 = segmentEndpoint.x;
-  const y1 = segmentEndpoint.y;
+  // فحص إذا النقطة البعيدة داخل العنصر
+  const isInside = fromPoint.x >= rect.left && fromPoint.x <= rect.right && 
+                   fromPoint.y >= rect.top && fromPoint.y <= rect.bottom;
   
-  // نقطة البداية داخل المستطيل؟
-  const padding = 5;
-  const startInside = x1 >= rect.left - padding && x1 <= rect.right + padding && 
-                      y1 >= rect.top - padding && y1 <= rect.bottom + padding;
-  
-  return startInside;
+  return isInside;
 };
 
-// ============= دوال تحويل الأضلاع =============
+// ============= إنشاء مسار T-Shape النظيف =============
 
 /**
- * ✅ تحويل ضلع مائل إلى مسار متعامد (ضلعين أو ثلاثة)
+ * ✅ إنشاء مسار T-shape من النقطة الثابتة إلى نقطة السناب
+ * هذه الدالة هي جوهر النظام - تضمن دائماً شكل T نظيف
  */
-const ensureOrthogonalSegments = (
-  segment: ArrowSegment,
-  preferDirection: 'horizontal-first' | 'vertical-first' = 'horizontal-first'
-): ArrowSegment[] => {
-  const orientation = getSegmentOrientation(segment);
-  
-  // إذا كان متعامد بالفعل، نرجعه كما هو
-  if (orientation !== 'diagonal') {
-    return [{
-      ...segment,
-      startPoint: { ...segment.startPoint },
-      endPoint: { ...segment.endPoint }
-    }];
-  }
-  
-  // تحويل لمسار متعامد من ضلعين
-  const { startPoint, endPoint } = segment;
-  
-  if (preferDirection === 'horizontal-first') {
-    // أفقي ثم عمودي
-    const midPoint = { x: endPoint.x, y: startPoint.y };
-    return [
-      { id: generateId(), startPoint: { ...startPoint }, endPoint: midPoint },
-      { id: generateId(), startPoint: midPoint, endPoint: { ...endPoint } }
-    ];
-  } else {
-    // عمودي ثم أفقي
-    const midPoint = { x: startPoint.x, y: endPoint.y };
-    return [
-      { id: generateId(), startPoint: { ...startPoint }, endPoint: midPoint },
-      { id: generateId(), startPoint: midPoint, endPoint: { ...endPoint } }
-    ];
-  }
-};
-
-/**
- * ✅ التأكد من أن جميع الأضلاع متعامدة ومتصلة
- */
-const validateAndFixSegments = (segments: ArrowSegment[]): ArrowSegment[] => {
-  if (segments.length === 0) return segments;
-  
-  const result: ArrowSegment[] = [];
-  
-  for (let i = 0; i < segments.length; i++) {
-    const seg = segments[i];
-    
-    // تحويل الضلع المائل لمتعامد
-    const orthogonalSegs = ensureOrthogonalSegments(seg);
-    
-    // إذا كان هناك ضلع سابق، نتأكد من اتصاله
-    if (result.length > 0) {
-      const lastSeg = result[result.length - 1];
-      orthogonalSegs[0].startPoint = { ...lastSeg.endPoint };
-    }
-    
-    result.push(...orthogonalSegs);
-  }
-  
-  // التأكد من اتصال جميع الأضلاع
-  for (let i = 1; i < result.length; i++) {
-    result[i].startPoint = { ...result[i - 1].endPoint };
-  }
-  
-  return result;
-};
-
-// ============= دوال إنشاء T-Shape =============
-
-/**
- * ✅ إنشاء مسار T-shape بسيط ونظيف
- * ينشئ ضلعين: ضلع يصل لمحاذاة نقطة السناب، ثم ضلع رابط قصير للسناب
- */
-const createTShapePath = (
-  fromPoint: ArrowPoint,
+const createOrthogonalPathWithTShape = (
+  fixedPoint: ArrowPoint,
   snapPoint: ArrowPoint,
   snapEdge: SnapEdge,
-  config: RoutingConfig
+  config: RoutingConfig = DEFAULT_CONFIG
 ): ArrowSegment[] => {
   const edgeOrientation = getEdgeOrientation(snapEdge);
   const segments: ArrowSegment[] = [];
   
+  // القاعدة: الضلع الأخير يجب أن يكون عمودي على حد العنصر (T-shape)
+  // حد أفقي (top/bottom) → الضلع الأخير عمودي
+  // حد عمودي (left/right) → الضلع الأخير أفقي
+  
   if (edgeOrientation === 'horizontal') {
-    // حد أفقي (top/bottom) → نحتاج ضلع أفقي ثم ضلع عمودي
-    // الضلع العمودي هو الـ connector الذي يتصل بالحد
-    
-    // الضلع الأفقي من نقطة البداية إلى محاذاة X لنقطة السناب
+    // حد أفقي → نحتاج ضلع أفقي ثم ضلع عمودي (connector)
+    // الضلع الأفقي من النقطة الثابتة إلى محاذاة X لنقطة السناب
     const horizontalSegment: ArrowSegment = {
       id: generateId(),
-      startPoint: { ...fromPoint },
-      endPoint: { x: snapPoint.x, y: fromPoint.y }
+      startPoint: { ...fixedPoint },
+      endPoint: { x: snapPoint.x, y: fixedPoint.y }
     };
     segments.push(horizontalSegment);
     
-    // الضلع العمودي (connector) من نهاية الأفقي إلى نقطة السناب
+    // الضلع العمودي (T-connector) من نهاية الأفقي إلى نقطة السناب
     const verticalConnector: ArrowSegment = {
       id: generateId(),
-      startPoint: { x: snapPoint.x, y: fromPoint.y },
+      startPoint: { x: snapPoint.x, y: fixedPoint.y },
       endPoint: { ...snapPoint }
     };
     segments.push(verticalConnector);
     
   } else {
-    // حد عمودي (left/right) → نحتاج ضلع عمودي ثم ضلع أفقي
-    // الضلع الأفقي هو الـ connector الذي يتصل بالحد
-    
-    // الضلع العمودي من نقطة البداية إلى محاذاة Y لنقطة السناب
+    // حد عمودي → نحتاج ضلع عمودي ثم ضلع أفقي (connector)
+    // الضلع العمودي من النقطة الثابتة إلى محاذاة Y لنقطة السناب
     const verticalSegment: ArrowSegment = {
       id: generateId(),
-      startPoint: { ...fromPoint },
-      endPoint: { x: fromPoint.x, y: snapPoint.y }
+      startPoint: { ...fixedPoint },
+      endPoint: { x: fixedPoint.x, y: snapPoint.y }
     };
     segments.push(verticalSegment);
     
-    // الضلع الأفقي (connector) من نهاية العمودي إلى نقطة السناب
+    // الضلع الأفقي (T-connector) من نهاية العمودي إلى نقطة السناب
     const horizontalConnector: ArrowSegment = {
       id: generateId(),
-      startPoint: { x: fromPoint.x, y: snapPoint.y },
+      startPoint: { x: fixedPoint.x, y: snapPoint.y },
       endPoint: { ...snapPoint }
     };
     segments.push(horizontalConnector);
@@ -248,14 +161,14 @@ const createTShapePath = (
  * ✅ إنشاء مسار U-shape للالتفاف حول العنصر
  */
 const createUShapePath = (
-  fromPoint: ArrowPoint,
+  fixedPoint: ArrowPoint,
   snapPoint: ArrowPoint,
   snapEdge: SnapEdge,
-  targetElement: TargetElement,
-  config: RoutingConfig
+  config: RoutingConfig = DEFAULT_CONFIG
 ): ArrowSegment[] => {
   const segments: ArrowSegment[] = [];
   const offset = config.OFFSET_DISTANCE;
+  const edgeOrientation = getEdgeOrientation(snapEdge);
   
   // حساب نقطة الخروج (بعيدة عن العنصر)
   let exitPoint: ArrowPoint;
@@ -275,25 +188,23 @@ const createUShapePath = (
       break;
   }
   
-  const edgeOrientation = getEdgeOrientation(snapEdge);
-  
   if (edgeOrientation === 'horizontal') {
-    // حد أفقي → U عمودي
-    // 1. ضلع أفقي من fromPoint إلى محاذاة exitPoint.x
+    // حد أفقي → U عمودي (3 أضلاع)
+    // 1. أفقي من fixedPoint إلى محاذاة exitPoint.x
     segments.push({
       id: generateId(),
-      startPoint: { ...fromPoint },
-      endPoint: { x: exitPoint.x, y: fromPoint.y }
+      startPoint: { ...fixedPoint },
+      endPoint: { x: exitPoint.x, y: fixedPoint.y }
     });
     
-    // 2. ضلع عمودي إلى exitPoint
+    // 2. عمودي إلى exitPoint
     segments.push({
       id: generateId(),
-      startPoint: { x: exitPoint.x, y: fromPoint.y },
+      startPoint: { x: exitPoint.x, y: fixedPoint.y },
       endPoint: { ...exitPoint }
     });
     
-    // 3. ضلع عمودي connector من exitPoint إلى snapPoint
+    // 3. عمودي connector من exitPoint إلى snapPoint
     segments.push({
       id: generateId(),
       startPoint: { ...exitPoint },
@@ -301,22 +212,22 @@ const createUShapePath = (
     });
     
   } else {
-    // حد عمودي → U أفقي
-    // 1. ضلع عمودي من fromPoint إلى محاذاة exitPoint.y
+    // حد عمودي → U أفقي (3 أضلاع)
+    // 1. عمودي من fixedPoint إلى محاذاة exitPoint.y
     segments.push({
       id: generateId(),
-      startPoint: { ...fromPoint },
-      endPoint: { x: fromPoint.x, y: exitPoint.y }
+      startPoint: { ...fixedPoint },
+      endPoint: { x: fixedPoint.x, y: exitPoint.y }
     });
     
-    // 2. ضلع أفقي إلى exitPoint
+    // 2. أفقي إلى exitPoint
     segments.push({
       id: generateId(),
-      startPoint: { x: fromPoint.x, y: exitPoint.y },
+      startPoint: { x: fixedPoint.x, y: exitPoint.y },
       endPoint: { ...exitPoint }
     });
     
-    // 3. ضلع أفقي connector من exitPoint إلى snapPoint
+    // 3. أفقي connector من exitPoint إلى snapPoint
     segments.push({
       id: generateId(),
       startPoint: { ...exitPoint },
@@ -327,234 +238,193 @@ const createUShapePath = (
   return segments;
 };
 
-// ============= دوال حل الاتصال المحسّنة =============
+// ============= تحريك الضلع المتصل بصلابة (للحفاظ على الزوايا القائمة) =============
 
 /**
- * ✅ حل اتصال T (للتوازي) - محسّن
+ * ✅ تحريك نقطة طرف السهم مع الضلع المتصل بها بشكل صلب
+ * هذا مهم عند تحريك العنصر المتصل - الضلع يتحرك كله ولا يُنشئ زاوية مائلة
  */
-export const resolveTConnection = (
-  segments: ArrowSegment[],
-  snapPoint: ArrowPoint,
-  snapEdge: SnapEdge,
-  endpointType: 'start' | 'end',
-  config: RoutingConfig = DEFAULT_CONFIG
-): ArrowSegment[] => {
-  if (segments.length === 0) return [];
+export const moveConnectedSegmentRigidly = (
+  arrowData: ArrowData,
+  endpoint: 'start' | 'end',
+  newPosition: ArrowPoint
+): ArrowData => {
+  // نسخ عميق
+  const newData: ArrowData = {
+    ...arrowData,
+    startPoint: { ...arrowData.startPoint },
+    endPoint: { ...arrowData.endPoint },
+    segments: arrowData.segments.map(s => ({
+      ...s,
+      startPoint: { ...s.startPoint },
+      endPoint: { ...s.endPoint }
+    })),
+    controlPoints: arrowData.controlPoints.map(cp => ({
+      ...cp,
+      position: { ...cp.position }
+    }))
+  };
   
-  const segmentIdx = endpointType === 'start' ? 0 : segments.length - 1;
-  const segment = segments[segmentIdx];
+  const isStraight = newData.arrowType === 'straight' || newData.segments.length <= 1;
   
-  // نقطة البداية للمسار الجديد
-  const fromPoint = endpointType === 'start' 
-    ? segment.endPoint  // نبدأ من نهاية الضلع الأول (الجهة الأخرى)
-    : segment.startPoint; // نبدأ من بداية الضلع الأخير (الجهة الأخرى)
-  
-  // إنشاء مسار T-shape جديد
-  const tShapePath = createTShapePath(fromPoint, snapPoint, snapEdge, config);
-  
-  // دمج المسار الجديد مع الأضلاع الموجودة
-  let result: ArrowSegment[];
-  
-  if (endpointType === 'start') {
-    // عكس المسار الجديد (لأنه يبدأ من fromPoint وينتهي بـ snapPoint)
-    const reversedPath = tShapePath.map(seg => ({
-      id: seg.id,
-      startPoint: { ...seg.endPoint },
-      endPoint: { ...seg.startPoint }
-    })).reverse();
-    
-    // الضلع الأول من المسار الجديد يبدأ من snapPoint
-    reversedPath[0].startPoint = { ...snapPoint };
-    
-    // ربط المسار الجديد بالأضلاع المتبقية
-    if (segments.length > 1) {
-      const remainingSegments = segments.slice(1);
-      remainingSegments[0].startPoint = { ...reversedPath[reversedPath.length - 1].endPoint };
-      result = [...reversedPath, ...remainingSegments];
-    } else {
-      result = reversedPath;
-    }
-  } else {
-    // للنهاية: المسار يبدأ من fromPoint وينتهي بـ snapPoint
-    if (segments.length > 1) {
-      const remainingSegments = segments.slice(0, -1);
-      remainingSegments[remainingSegments.length - 1].endPoint = { ...tShapePath[0].startPoint };
-      result = [...remainingSegments, ...tShapePath];
-    } else {
-      result = tShapePath;
-    }
-  }
-  
-  return validateAndFixSegments(result);
-};
-
-/**
- * ✅ حل اتصال U (للتقاطع) - محسّن
- */
-export const resolveUConnection = (
-  segments: ArrowSegment[],
-  snapPoint: ArrowPoint,
-  snapEdge: SnapEdge,
-  endpointType: 'start' | 'end',
-  targetElement: TargetElement,
-  config: RoutingConfig = DEFAULT_CONFIG
-): ArrowSegment[] => {
-  if (segments.length === 0) return [];
-  
-  const segmentIdx = endpointType === 'start' ? 0 : segments.length - 1;
-  const segment = segments[segmentIdx];
-  
-  const fromPoint = endpointType === 'start' 
-    ? segment.endPoint
-    : segment.startPoint;
-  
-  // إنشاء مسار U-shape
-  const uShapePath = createUShapePath(fromPoint, snapPoint, snapEdge, targetElement, config);
-  
-  let result: ArrowSegment[];
-  
-  if (endpointType === 'start') {
-    const reversedPath = uShapePath.map(seg => ({
-      id: seg.id,
-      startPoint: { ...seg.endPoint },
-      endPoint: { ...seg.startPoint }
-    })).reverse();
-    
-    reversedPath[0].startPoint = { ...snapPoint };
-    
-    if (segments.length > 1) {
-      const remainingSegments = segments.slice(1);
-      remainingSegments[0].startPoint = { ...reversedPath[reversedPath.length - 1].endPoint };
-      result = [...reversedPath, ...remainingSegments];
-    } else {
-      result = reversedPath;
-    }
-  } else {
-    if (segments.length > 1) {
-      const remainingSegments = segments.slice(0, -1);
-      remainingSegments[remainingSegments.length - 1].endPoint = { ...uShapePath[0].startPoint };
-      result = [...remainingSegments, ...uShapePath];
-    } else {
-      result = uShapePath;
-    }
-  }
-  
-  return validateAndFixSegments(result);
-};
-
-/**
- * ✅ الاتصال المباشر - محسّن
- */
-export const connectDirectly = (
-  segments: ArrowSegment[],
-  snapPoint: ArrowPoint,
-  snapEdge: SnapEdge,
-  endpointType: 'start' | 'end',
-  config: RoutingConfig = DEFAULT_CONFIG
-): ArrowSegment[] => {
-  if (segments.length === 0) return [];
-  
-  const segmentIdx = endpointType === 'start' ? 0 : segments.length - 1;
-  const segment = segments[segmentIdx];
-  const segmentOrientation = getSegmentOrientation(segment);
-  const edgeOrientation = getEdgeOrientation(snapEdge);
-  
-  // نسخ الأضلاع
-  const newSegments = segments.map(s => ({
-    ...s,
-    startPoint: { ...s.startPoint },
-    endPoint: { ...s.endPoint }
-  }));
-  
-  // إذا كان الضلع مائل، نحوله أولاً
-  if (segmentOrientation === 'diagonal') {
-    const orthogonalSegs = ensureOrthogonalSegments(segment);
-    newSegments.splice(segmentIdx, 1, ...orthogonalSegs);
-    
-    // نعيد معالجة مع الأضلاع الجديدة
-    return connectDirectly(newSegments, snapPoint, snapEdge, endpointType, config);
-  }
-  
-  // الآن الضلع متعامد (أفقي أو عمودي)
-  // إذا كان التوجه مختلف (ضلع عمودي + حد أفقي أو العكس) → T-shape بسيط
-  if (segmentOrientation !== edgeOrientation) {
-    // إضافة connector قصير فقط
-    const connectorLength = config.CONNECTOR_LENGTH;
-    
-    if (endpointType === 'start') {
-      // إضافة connector في البداية
-      let connector: ArrowSegment;
-      
-      if (edgeOrientation === 'horizontal') {
-        // حد أفقي → connector عمودي
-        const connectorEndY = (snapEdge === 'top') 
-          ? snapPoint.y - connectorLength 
-          : snapPoint.y + connectorLength;
-        
-        connector = {
-          id: generateId(),
-          startPoint: { ...snapPoint },
-          endPoint: { x: snapPoint.x, y: connectorEndY }
-        };
-        
-        // تحديث الضلع الأول ليتصل بالـ connector
-        newSegments[0].startPoint = { x: snapPoint.x, y: connectorEndY };
-      } else {
-        // حد عمودي → connector أفقي
-        const connectorEndX = (snapEdge === 'left') 
-          ? snapPoint.x - connectorLength 
-          : snapPoint.x + connectorLength;
-        
-        connector = {
-          id: generateId(),
-          startPoint: { ...snapPoint },
-          endPoint: { x: connectorEndX, y: snapPoint.y }
-        };
-        
-        newSegments[0].startPoint = { x: connectorEndX, y: snapPoint.y };
+  if (isStraight) {
+    // سهم مستقيم - تحريك بسيط
+    if (endpoint === 'start') {
+      newData.startPoint = { ...newPosition };
+      if (newData.segments.length > 0) {
+        newData.segments[0].startPoint = { ...newPosition };
       }
-      
-      newSegments.unshift(connector);
-      
     } else {
-      // إضافة connector في النهاية
-      let connector: ArrowSegment;
-      const lastIdx = newSegments.length - 1;
+      newData.endPoint = { ...newPosition };
+      if (newData.segments.length > 0) {
+        newData.segments[newData.segments.length - 1].endPoint = { ...newPosition };
+      }
+    }
+  } else {
+    // سهم متعامد - تحريك الضلع كاملاً مع الحفاظ على اتجاهه
+    if (endpoint === 'start') {
+      const oldStartPoint = arrowData.startPoint;
+      newData.startPoint = { ...newPosition };
       
-      if (edgeOrientation === 'horizontal') {
-        const connectorStartY = (snapEdge === 'top') 
-          ? snapPoint.y - connectorLength 
-          : snapPoint.y + connectorLength;
-        
-        newSegments[lastIdx].endPoint = { x: snapPoint.x, y: connectorStartY };
-        
-        connector = {
-          id: generateId(),
-          startPoint: { x: snapPoint.x, y: connectorStartY },
-          endPoint: { ...snapPoint }
+      const deltaX = newPosition.x - oldStartPoint.x;
+      const deltaY = newPosition.y - oldStartPoint.y;
+      
+      const firstSegment = arrowData.segments[0];
+      const segOrientation = getSegmentOrientation(firstSegment);
+      
+      if (segOrientation === 'vertical') {
+        // ضلع عمودي - نحركه أفقياً بالكامل
+        newData.segments[0] = {
+          ...firstSegment,
+          startPoint: { ...newPosition },
+          endPoint: { 
+            x: firstSegment.endPoint.x + deltaX, 
+            y: firstSegment.endPoint.y 
+          }
         };
       } else {
-        const connectorStartX = (snapEdge === 'left') 
-          ? snapPoint.x - connectorLength 
-          : snapPoint.x + connectorLength;
-        
-        newSegments[lastIdx].endPoint = { x: connectorStartX, y: snapPoint.y };
-        
-        connector = {
-          id: generateId(),
-          startPoint: { x: connectorStartX, y: snapPoint.y },
-          endPoint: { ...snapPoint }
+        // ضلع أفقي - نحركه عمودياً بالكامل
+        newData.segments[0] = {
+          ...firstSegment,
+          startPoint: { ...newPosition },
+          endPoint: { 
+            x: firstSegment.endPoint.x, 
+            y: firstSegment.endPoint.y + deltaY 
+          }
         };
       }
       
-      newSegments.push(connector);
+      // تحديث الضلع التالي ليتصل
+      if (newData.segments.length > 1) {
+        newData.segments[1] = {
+          ...newData.segments[1],
+          startPoint: { ...newData.segments[0].endPoint }
+        };
+      }
+      
+    } else {
+      const oldEndPoint = arrowData.endPoint;
+      newData.endPoint = { ...newPosition };
+      
+      const deltaX = newPosition.x - oldEndPoint.x;
+      const deltaY = newPosition.y - oldEndPoint.y;
+      
+      const lastIdx = arrowData.segments.length - 1;
+      const lastSegment = arrowData.segments[lastIdx];
+      const segOrientation = getSegmentOrientation(lastSegment);
+      
+      if (segOrientation === 'vertical') {
+        // ضلع عمودي - نحركه أفقياً بالكامل
+        newData.segments[lastIdx] = {
+          ...lastSegment,
+          startPoint: { 
+            x: lastSegment.startPoint.x + deltaX, 
+            y: lastSegment.startPoint.y 
+          },
+          endPoint: { ...newPosition }
+        };
+      } else {
+        // ضلع أفقي - نحركه عمودياً بالكامل
+        newData.segments[lastIdx] = {
+          ...lastSegment,
+          startPoint: { 
+            x: lastSegment.startPoint.x, 
+            y: lastSegment.startPoint.y + deltaY 
+          },
+          endPoint: { ...newPosition }
+        };
+      }
+      
+      // تحديث الضلع السابق ليتصل
+      if (newData.segments.length > 1) {
+        newData.segments[lastIdx - 1] = {
+          ...newData.segments[lastIdx - 1],
+          endPoint: { ...newData.segments[lastIdx].startPoint }
+        };
+      }
     }
-    
-    return validateAndFixSegments(newSegments);
   }
   
-  // نفس الاتجاه → نحتاج T-shape كامل
-  return resolveTConnection(segments, snapPoint, snapEdge, endpointType, config);
+  // تحديث نقاط التحكم
+  newData.controlPoints = rebuildControlPointsFromSegments(newData);
+  
+  return newData;
+};
+
+// ============= إعادة بناء نقاط التحكم =============
+
+/**
+ * ✅ إعادة بناء نقاط التحكم من الأضلاع
+ */
+const rebuildControlPointsFromSegments = (arrowData: ArrowData): ArrowControlPoint[] => {
+  const controlPoints: ArrowControlPoint[] = [];
+  
+  // نقطة البداية
+  const originalStartCp = arrowData.controlPoints.find(cp => 
+    cp.type === 'endpoint' && arrowData.controlPoints.indexOf(cp) === 0
+  );
+  
+  controlPoints.push({
+    id: originalStartCp?.id || generateId(),
+    type: 'endpoint',
+    position: { ...arrowData.startPoint },
+    isActive: true,
+    connection: arrowData.startConnection || null
+  });
+  
+  // نقاط منتصف لكل ضلع
+  arrowData.segments.forEach((seg) => {
+    const midPos = {
+      x: (seg.startPoint.x + seg.endPoint.x) / 2,
+      y: (seg.startPoint.y + seg.endPoint.y) / 2
+    };
+    
+    const existingCp = arrowData.controlPoints.find(cp => cp.segmentId === seg.id);
+    
+    controlPoints.push({
+      id: existingCp?.id || generateId(),
+      type: 'midpoint',
+      position: midPos,
+      isActive: existingCp?.isActive ?? false,
+      segmentId: seg.id,
+      label: existingCp?.label
+    });
+  });
+  
+  // نقطة النهاية
+  const originalEndCp = arrowData.controlPoints.find(cp => 
+    cp.type === 'endpoint' && arrowData.controlPoints.indexOf(cp) === arrowData.controlPoints.length - 1
+  );
+  
+  controlPoints.push({
+    id: originalEndCp?.id || generateId(),
+    type: 'endpoint',
+    position: { ...arrowData.endPoint },
+    isActive: true,
+    connection: arrowData.endConnection || null
+  });
+  
+  return controlPoints;
 };
 
 /**
@@ -619,7 +489,8 @@ export const rebuildControlPoints = (
 // ============= الدالة الرئيسية للتوجيه =============
 
 /**
- * ✅ الدالة الرئيسية لحل اتصال السهم بالعنصر - مُحسّنة بالكامل
+ * ✅ الدالة الرئيسية لحل اتصال السهم بالعنصر
+ * تضمن دائماً إنشاء مسار T-shape أو U-shape نظيف
  */
 export const resolveSnapConnection = (
   arrowData: ArrowData,
@@ -629,63 +500,39 @@ export const resolveSnapConnection = (
   endpointType: 'start' | 'end',
   config: RoutingConfig = DEFAULT_CONFIG
 ): ArrowData => {
-  // التحقق من وجود أضلاع
-  if (!arrowData.segments || arrowData.segments.length === 0) {
-    console.warn('[Arrow Routing] No segments found');
-    return arrowData;
-  }
+  // ✅ الخطوة 1: تحديد النقطة الثابتة (الطرف الآخر للسهم)
+  const fixedPoint = endpointType === 'start' 
+    ? { ...arrowData.endPoint }
+    : { ...arrowData.startPoint };
   
-  // ✅ أولاً: تحويل أي أضلاع مائلة لمتعامدة
-  const orthogonalSegments = validateAndFixSegments(
-    arrowData.segments.map(s => ({
-      ...s,
-      startPoint: { ...s.startPoint },
-      endPoint: { ...s.endPoint }
-    }))
-  );
+  // ✅ الخطوة 2: فحص إذا كان المسار يمر من داخل العنصر (يحتاج U-shape)
+  const needsUShape = detectIntersection(fixedPoint, snapPoint, targetElement);
   
-  // تحديد الضلع المتصل
-  const connectedSegmentIdx = endpointType === 'start' ? 0 : orthogonalSegments.length - 1;
-  const connectedSegment = orthogonalSegments[connectedSegmentIdx];
-  
-  if (!connectedSegment) {
-    console.warn('[Arrow Routing] No connected segment found');
-    return arrowData;
-  }
-  
-  // تحليل نوع الاتصال
-  const isParallel = detectParallelSnap(connectedSegment, snapEdge);
-  
-  const segmentEndpoint = endpointType === 'start' 
-    ? connectedSegment.startPoint 
-    : connectedSegment.endPoint;
-  
-  const intersectsShape = detectIntersection(segmentEndpoint, snapPoint, targetElement);
-  
+  // ✅ الخطوة 3: إنشاء المسار المناسب
   let newSegments: ArrowSegment[];
   
-  if (isParallel) {
-    console.log('[Arrow Routing] Parallel → T-Connection');
-    newSegments = resolveTConnection(orthogonalSegments, snapPoint, snapEdge, endpointType, config);
-  } else if (intersectsShape) {
-    console.log('[Arrow Routing] Intersection → U-Connection');
-    newSegments = resolveUConnection(orthogonalSegments, snapPoint, snapEdge, endpointType, targetElement, config);
+  if (needsUShape) {
+    console.log('[Arrow Routing] Creating U-Shape path');
+    newSegments = createUShapePath(fixedPoint, snapPoint, snapEdge, config);
   } else {
-    console.log('[Arrow Routing] Direct → Simple T-Shape');
-    newSegments = connectDirectly(orthogonalSegments, snapPoint, snapEdge, endpointType, config);
+    console.log('[Arrow Routing] Creating T-Shape path');
+    newSegments = createOrthogonalPathWithTShape(fixedPoint, snapPoint, snapEdge, config);
   }
   
-  // ✅ التحقق النهائي من صحة الأضلاع
-  newSegments = validateAndFixSegments(newSegments);
+  // ✅ الخطوة 4: عكس المسار إذا كان الاتصال من البداية
+  if (endpointType === 'start') {
+    newSegments = newSegments.map(seg => ({
+      ...seg,
+      startPoint: { ...seg.endPoint },
+      endPoint: { ...seg.startPoint }
+    })).reverse();
+  }
   
-  // إعادة بناء نقاط التحكم
-  const newControlPoints = rebuildControlPoints(newSegments, arrowData);
+  // ✅ الخطوة 5: تحديث النقاط
+  const newStartPoint = newSegments.length > 0 ? { ...newSegments[0].startPoint } : arrowData.startPoint;
+  const newEndPoint = newSegments.length > 0 ? { ...newSegments[newSegments.length - 1].endPoint } : arrowData.endPoint;
   
-  // تحديث نقاط البداية والنهاية
-  const newStartPoint = newSegments.length > 0 ? newSegments[0].startPoint : arrowData.startPoint;
-  const newEndPoint = newSegments.length > 0 ? newSegments[newSegments.length - 1].endPoint : arrowData.endPoint;
-  
-  // تحديث الاتصالات
+  // ✅ الخطوة 6: تحديث الاتصالات
   const newStartConnection = endpointType === 'start' 
     ? { elementId: targetElement.id, anchorPoint: snapEdge, offset: { x: 0, y: 0 } } as ArrowConnection
     : arrowData.startConnection;
@@ -694,26 +541,33 @@ export const resolveSnapConnection = (
     ? { elementId: targetElement.id, anchorPoint: snapEdge, offset: { x: 0, y: 0 } } as ArrowConnection
     : arrowData.endConnection;
   
-  console.log('[Arrow Routing] Result:', {
-    segmentsCount: newSegments.length,
-    startPoint: newStartPoint,
-    endPoint: newEndPoint
-  });
-  
-  return {
+  // ✅ الخطوة 7: إنشاء ArrowData جديد
+  const newArrowData: ArrowData = {
     ...arrowData,
     startPoint: newStartPoint,
     endPoint: newEndPoint,
     segments: newSegments,
-    controlPoints: newControlPoints,
     startConnection: newStartConnection,
     endConnection: newEndConnection,
     arrowType: 'orthogonal'
   };
+  
+  // ✅ الخطوة 8: إعادة بناء نقاط التحكم
+  newArrowData.controlPoints = rebuildControlPoints(newSegments, newArrowData);
+  
+  console.log('[Arrow Routing] Result:', {
+    type: needsUShape ? 'U-Shape' : 'T-Shape',
+    segmentsCount: newSegments.length,
+    snapEdge,
+    endpointType
+  });
+  
+  return newArrowData;
 };
 
 /**
- * تحديث اتصال السهم عند تحريك العنصر المتصل
+ * ✅ تحديث اتصال السهم عند تحريك العنصر المتصل
+ * هذه الدالة تُستخدم في canvasStore عند تحريك العناصر
  */
 export const updateConnectionOnElementMove = (
   arrowData: ArrowData,
@@ -731,6 +585,7 @@ export const updateConnectionOnElementMove = (
   
   const snapEdge = connection.anchorPoint as SnapEdge;
   
+  // استخدام resolveSnapConnection لضمان T-shape
   return resolveSnapConnection(
     arrowData,
     newAnchorPosition,
