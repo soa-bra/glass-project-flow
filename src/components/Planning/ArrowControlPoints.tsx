@@ -1180,8 +1180,58 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     });
   }, [dragState, viewport, element, arrowData, otherElements, updateElement]);
 
-  // إنهاء السحب
+  // إنهاء السحب - ✅ حفظ الاتصال النهائي باستخدام getState()
   const handleMouseUp = useCallback(() => {
+    // ✅ حفظ الاتصال النهائي قبل إعادة تعيين الحالة
+    if (dragState.nearestAnchor && (dragState.controlPoint === 'start' || dragState.controlPoint === 'end')) {
+      const connectionData = {
+        elementId: dragState.nearestAnchor.elementId,
+        anchorPoint: dragState.nearestAnchor.anchorPoint,
+        offset: { x: 0, y: 0 }
+      };
+      
+      // ✅ استخدام getState() للحصول على أحدث بيانات السهم
+      const currentElement = useCanvasStore.getState().elements.find(e => e.id === element.id);
+      const currentArrowData = currentElement?.data?.arrowData || arrowData;
+      
+      const updatedArrowData = { 
+        ...currentArrowData,
+        segments: [...(currentArrowData.segments || [])],
+        controlPoints: [...(currentArrowData.controlPoints || [])]
+      };
+      
+      if (dragState.controlPoint === 'start') {
+        updatedArrowData.startConnection = connectionData;
+        // تحديث نقطة التحكم أيضاً
+        const startCP = updatedArrowData.controlPoints.find((cp: ArrowCP) => 
+          cp.id === 'start' || (cp.type === 'endpoint' && updatedArrowData.controlPoints.indexOf(cp) === 0)
+        );
+        if (startCP) {
+          startCP.connection = connectionData;
+        }
+      } else if (dragState.controlPoint === 'end') {
+        updatedArrowData.endConnection = connectionData;
+        // تحديث نقطة التحكم أيضاً
+        const endCP = updatedArrowData.controlPoints.find((cp: ArrowCP) => 
+          cp.id === 'end' || (cp.type === 'endpoint' && updatedArrowData.controlPoints.indexOf(cp) === updatedArrowData.controlPoints.length - 1)
+        );
+        if (endCP) {
+          endCP.connection = connectionData;
+        }
+      }
+      
+      console.log('handleMouseUp: Saving connection', { 
+        controlPoint: dragState.controlPoint, 
+        connectionData,
+        updatedStartConnection: updatedArrowData.startConnection,
+        updatedEndConnection: updatedArrowData.endConnection
+      });
+      
+      updateElement(element.id, {
+        data: { ...(currentElement?.data || element.data), arrowData: updatedArrowData }
+      });
+    }
+    
     setDragState({
       isDragging: false,
       controlPoint: null,
@@ -1189,9 +1239,10 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       startPosition: null,
       nearestAnchor: null,
       initialMousePos: null,
-      dragDirection: null
+      dragDirection: null,
+      containerRect: null
     });
-  }, []);
+  }, [dragState, element, arrowData, updateElement]);
 
   // إضافة مستمعي الأحداث العالمية
   useEffect(() => {
@@ -1285,41 +1336,55 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     }
   }, [midpointLabels, deleteSegmentByMidpoint]);
 
-  // حفظ النص على نقطة المنتصف
+  // حفظ النص على نقطة المنتصف - ✅ استخدام getState() للحصول على أحدث البيانات
   const saveMidpointLabel = useCallback(() => {
     if (!editingLabel) return;
     
     const { midpointId, text } = editingLabel;
     const trimmedText = text.trim();
     
-    // ✅ تحديث نقطة التحكم بالنص - الحفاظ على النص حتى لو فارغ (سيُفلتر عند العرض)
-    const newControlPoints = arrowData.controlPoints.map(cp => {
+    // ✅ استخدام getState() للحصول على أحدث بيانات السهم (تجنب closure قديم)
+    const currentElement = useCanvasStore.getState().elements.find(e => e.id === element.id);
+    const currentArrowData = currentElement?.data?.arrowData;
+    
+    if (!currentArrowData) {
+      console.error('saveMidpointLabel: No arrowData found');
+      setEditingLabel(null);
+      return;
+    }
+    
+    // ✅ تحديث نقطة التحكم بالنص
+    const newControlPoints = currentArrowData.controlPoints.map((cp: ArrowCP & { label?: string }) => {
       if (cp.id === midpointId) {
         // إنشاء نسخة جديدة مع النص
         const updatedCp = { ...cp };
         if (trimmedText) {
-          (updatedCp as any).label = trimmedText;
+          updatedCp.label = trimmedText;
         } else {
-          delete (updatedCp as any).label;
+          delete updatedCp.label;
         }
         return updatedCp;
       }
-      return { ...cp }; // نسخ كل نقطة للحفاظ على التغييرات
+      return { ...cp }; // نسخ كل نقطة للحفاظ على جميع الخصائص
     });
     
     const newArrowData: ArrowData = {
-      ...arrowData,
+      ...currentArrowData,
       controlPoints: newControlPoints
     };
     
-    console.log('Saving label:', { midpointId, trimmedText, newControlPoints });
+    console.log('saveMidpointLabel with getState:', { 
+      midpointId, 
+      trimmedText, 
+      controlPointsWithLabels: newControlPoints.filter((cp: any) => cp.label)
+    });
     
     updateElement(element.id, {
-      data: { ...element.data, arrowData: newArrowData }
+      data: { ...(currentElement?.data || {}), arrowData: newArrowData }
     });
     
     setEditingLabel(null);
-  }, [editingLabel, arrowData, element, updateElement]);
+  }, [editingLabel, element.id, updateElement]);
 
   // إغلاق حقل النص
   const handleLabelKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -1415,42 +1480,52 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         );
       })}
 
-      {/* ✅ مؤشر الالتصاق - يُعرض في document.body باستخدام createPortal */}
-      {dragState.nearestAnchor && dragState.containerRect && createPortal(
-        <>
-          <div
-            className="fixed pointer-events-none"
-            style={{
-              // تحويل إحداثيات الكانفاس إلى إحداثيات الشاشة
-              left: dragState.nearestAnchor.position.x * viewport.zoom + viewport.pan.x + dragState.containerRect.left - 16,
-              top: dragState.nearestAnchor.position.y * viewport.zoom + viewport.pan.y + dragState.containerRect.top - 16,
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              border: '3px solid #3DBE8B',
-              backgroundColor: 'rgba(61, 190, 139, 0.25)',
-              boxShadow: '0 0 12px rgba(61, 190, 139, 0.5), inset 0 0 8px rgba(61, 190, 139, 0.3)',
-              animation: 'pulse-snap 0.6s ease-in-out infinite',
-              zIndex: 99999
-            }}
-          />
-          {/* تأثير بصري إضافي عند الالتصاق */}
-          <div
-            className="fixed pointer-events-none"
-            style={{
-              left: dragState.nearestAnchor.position.x * viewport.zoom + viewport.pan.x + dragState.containerRect.left - 24,
-              top: dragState.nearestAnchor.position.y * viewport.zoom + viewport.pan.y + dragState.containerRect.top - 24,
-              width: 48,
-              height: 48,
-              borderRadius: '50%',
-              border: '1px solid rgba(61, 190, 139, 0.3)',
-              animation: 'pulse-ring 0.8s ease-out infinite',
-              zIndex: 99998
-            }}
-          />
-        </>,
-        document.body
-      )}
+      {/* ✅ مؤشر الالتصاق - حساب containerRect لحظياً عند كل عرض */}
+      {dragState.nearestAnchor && (() => {
+        // ✅ حساب containerRect في لحظة العرض (ليس من dragState)
+        const canvasContainer = document.querySelector('[data-canvas-container]') || document.querySelector('.infinite-canvas-container');
+        const liveContainerRect = canvasContainer?.getBoundingClientRect();
+        
+        if (!liveContainerRect) return null;
+        
+        const screenX = dragState.nearestAnchor.position.x * viewport.zoom + viewport.pan.x + liveContainerRect.left;
+        const screenY = dragState.nearestAnchor.position.y * viewport.zoom + viewport.pan.y + liveContainerRect.top;
+        
+        return createPortal(
+          <>
+            <div
+              className="fixed pointer-events-none"
+              style={{
+                left: screenX - 16,
+                top: screenY - 16,
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                border: '3px solid #3DBE8B',
+                backgroundColor: 'rgba(61, 190, 139, 0.25)',
+                boxShadow: '0 0 12px rgba(61, 190, 139, 0.5), inset 0 0 8px rgba(61, 190, 139, 0.3)',
+                animation: 'pulse-snap 0.6s ease-in-out infinite',
+                zIndex: 99999
+              }}
+            />
+            {/* تأثير بصري إضافي عند الالتصاق */}
+            <div
+              className="fixed pointer-events-none"
+              style={{
+                left: screenX - 24,
+                top: screenY - 24,
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                border: '1px solid rgba(61, 190, 139, 0.3)',
+                animation: 'pulse-ring 0.8s ease-out infinite',
+                zIndex: 99998
+              }}
+            />
+          </>,
+          document.body
+        );
+      })()}
 
       <style>{`
         @keyframes pulse-snap {
