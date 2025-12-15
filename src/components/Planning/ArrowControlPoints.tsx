@@ -1441,14 +1441,14 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
             <div
               className="fixed pointer-events-none"
               style={{
-                left: screenX - 16,
-                top: screenY - 16,
-                width: 32,
-                height: 32,
+                left: screenX - 10,
+                top: screenY - 10,
+                width: 20,
+                height: 20,
                 borderRadius: '50%',
-                border: '3px solid #E3E8F0',
+                border: '2px solid #E3E8F0',
                 backgroundColor: 'rgba(227, 232, 240, 0.35)',
-                boxShadow: '0 0 12px rgba(227, 232, 240, 0.6), inset 0 0 8px rgba(227, 232, 240, 0.4)',
+                boxShadow: '0 0 8px rgba(227, 232, 240, 0.6), inset 0 0 4px rgba(227, 232, 240, 0.4)',
                 animation: 'pulse-snap 0.6s ease-in-out infinite',
                 zIndex: 99999
               }}
@@ -1457,10 +1457,10 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
             <div
               className="fixed pointer-events-none"
               style={{
-                left: screenX - 24,
-                top: screenY - 24,
-                width: 48,
-                height: 48,
+                left: screenX - 16,
+                top: screenY - 16,
+                width: 32,
+                height: 32,
                 borderRadius: '50%',
                 border: '1px solid rgba(227, 232, 240, 0.5)',
                 animation: 'pulse-ring 0.8s ease-out infinite',
