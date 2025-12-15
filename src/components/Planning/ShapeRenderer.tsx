@@ -68,24 +68,40 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
   const arrowStroke = strokeColor && strokeColor !== 'transparent' ? strokeColor : fillColor;
 
   /**
-   * رسم سهم متعرج (elbow arrow)
+   * رسم سهم متعرج (elbow arrow) أو متعامد (orthogonal)
    */
   const renderElbowArrow = (data: ArrowData) => {
     const start = data.startPoint;
-    const middle = data.middlePoint || { x: w / 2, y: h / 2 };
     const end = data.endPoint;
     const headSize = 12;
 
-    // نقاط المسار المتعرج
-    const midPoint1 = { x: middle.x, y: start.y };
-    const midPoint2 = { x: middle.x, y: end.y };
+    let pathD: string;
+    let lastSegmentStart: ArrowPoint;
+    let firstSegmentEnd: ArrowPoint;
+
+    // استخدام نظام الأضلاع الجديد إذا كان متاحاً
+    if (data.segments && data.segments.length > 1) {
+      const pathPoints = data.segments.map(s => `${s.startPoint.x},${s.startPoint.y}`);
+      pathPoints.push(`${data.segments[data.segments.length - 1].endPoint.x},${data.segments[data.segments.length - 1].endPoint.y}`);
+      pathD = `M ${pathPoints.join(' L ')}`;
+      
+      const lastSeg = data.segments[data.segments.length - 1];
+      const firstSeg = data.segments[0];
+      lastSegmentStart = lastSeg.startPoint;
+      firstSegmentEnd = firstSeg.endPoint;
+    } else {
+      // fallback للنظام القديم
+      const middle = data.middlePoint || { x: w / 2, y: h / 2 };
+      const midPoint1 = { x: middle.x, y: start.y };
+      const midPoint2 = { x: middle.x, y: end.y };
+      pathD = `M ${start.x} ${start.y} L ${midPoint1.x} ${midPoint1.y} L ${midPoint2.x} ${midPoint2.y} L ${end.x} ${end.y}`;
+      lastSegmentStart = midPoint2;
+      firstSegmentEnd = midPoint1;
+    }
 
     // حساب زاوية رأس السهم
-    const endAngle = calculateAngle(midPoint2, end);
-    const startAngle = calculateAngle(midPoint1, start);
-
-    // مسار السهم المتعرج
-    const pathD = `M ${start.x} ${start.y} L ${midPoint1.x} ${midPoint1.y} L ${midPoint2.x} ${midPoint2.y} L ${end.x} ${end.y}`;
+    const endAngle = calculateAngle(lastSegmentStart, end);
+    const startAngle = calculateAngle(firstSegmentEnd, start);
 
     return (
       <g stroke={arrowStroke} strokeWidth={strokeWidth || 2} fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -110,9 +126,11 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
       opacity: opacity
     };
 
-    // إذا كان هناك بيانات سهم متقدمة وكان السهم متعرجاً
-    if (arrowData && arrowData.arrowType === 'elbow' && arrowData.middlePoint) {
-      return renderElbowArrow(arrowData);
+    // إذا كان هناك بيانات سهم متقدمة وكان السهم متعرجاً أو متعامد
+    if (arrowData && (arrowData.arrowType === 'elbow' || arrowData.arrowType === 'orthogonal')) {
+      if (arrowData.middlePoint || (arrowData.segments && arrowData.segments.length > 1)) {
+        return renderElbowArrow(arrowData);
+      }
     }
 
     switch (shapeType) {

@@ -3,7 +3,7 @@ import { useCanvasStore, type ToolId, type ShapeType } from '@/stores/canvasStor
 import { screenToCanvasCoordinates, snapToGrid as applySnapToGrid } from '@/utils/canvasCoordinates';
 import { recognizeShape, pointsToSVGPath, simplifyPath, type Point } from '@/utils/shapeRecognition';
 import { toast } from 'sonner';
-import type { ArrowData } from '@/types/arrow-connections';
+import { createStraightArrowData, type ArrowData } from '@/types/arrow-connections';
 
 // التحقق إذا كان الشكل سهماً
 const isArrowShape = (shapeType: string): boolean => {
@@ -14,7 +14,7 @@ const isArrowShape = (shapeType: string): boolean => {
 const createArrowData = (width: number, height: number, shapeType: string): ArrowData => {
   let startPoint: { x: number; y: number };
   let endPoint: { x: number; y: number };
-  let headDirection: 'start' | 'end' | 'both' = 'end';
+  let headDirection: 'start' | 'end' | 'both' | 'none' = 'end';
 
   switch (shapeType) {
     case 'arrow_right':
@@ -64,15 +64,7 @@ const createArrowData = (width: number, height: number, shapeType: string): Arro
       endPoint = { x: width, y: height / 2 };
   }
 
-  return {
-    startPoint,
-    middlePoint: null,
-    endPoint,
-    startConnection: null,
-    endConnection: null,
-    arrowType: 'straight',
-    headDirection
-  };
+  return createStraightArrowData(startPoint, endPoint, headDirection);
 };
 
 export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>) => {
