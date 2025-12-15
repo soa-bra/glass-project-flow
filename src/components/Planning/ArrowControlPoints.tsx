@@ -346,45 +346,43 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     let newSegments: ArrowSegment[];
     
     if (isVerticalSegment) {
-      // ضلع عمودي -> النقطة تتحرك أفقياً (يمين/يسار)
-      // نقسمه: عمودي -> أفقي -> عمودي
-      const midY = midpoint.position.y; // نستخدم Y الأصلية للنقطة
+      // ضلع عمودي + سحب أفقي = شكل U أفقي
+      // ننشئ: أفقي -> عمودي -> أفقي
       newSegments = [
         {
           id: seg1Id,
           startPoint: segment.startPoint,
-          endPoint: { x: segment.startPoint.x, y: midY }
+          endPoint: { x: newPosition.x, y: segment.startPoint.y } // أفقي للجانب
         },
         {
           id: seg2Id,
-          startPoint: { x: segment.startPoint.x, y: midY },
-          endPoint: { x: newPosition.x, y: midY } // ضلع أفقي يمتد لليمين/اليسار
+          startPoint: { x: newPosition.x, y: segment.startPoint.y },
+          endPoint: { x: newPosition.x, y: segment.endPoint.y } // عمودي في الجانب
         },
         {
           id: seg3Id,
-          startPoint: { x: newPosition.x, y: midY },
-          endPoint: { x: newPosition.x, y: segment.endPoint.y }
+          startPoint: { x: newPosition.x, y: segment.endPoint.y },
+          endPoint: segment.endPoint // أفقي للعودة
         }
       ];
     } else {
-      // ضلع أفقي -> النقطة تتحرك عمودياً (أعلى/أسفل)
-      // نقسمه: أفقي -> عمودي -> أفقي
-      const midX = midpoint.position.x; // نستخدم X الأصلية للنقطة
+      // ضلع أفقي + سحب عمودي = شكل U عمودي
+      // ننشئ: عمودي -> أفقي -> عمودي
       newSegments = [
         {
           id: seg1Id,
           startPoint: segment.startPoint,
-          endPoint: { x: midX, y: segment.startPoint.y }
+          endPoint: { x: segment.startPoint.x, y: newPosition.y } // عمودي للأسفل/الأعلى
         },
         {
           id: seg2Id,
-          startPoint: { x: midX, y: segment.startPoint.y },
-          endPoint: { x: midX, y: newPosition.y } // ضلع عمودي يمتد للأعلى/الأسفل
+          startPoint: { x: segment.startPoint.x, y: newPosition.y },
+          endPoint: { x: segment.endPoint.x, y: newPosition.y } // أفقي في القاع/القمة
         },
         {
           id: seg3Id,
-          startPoint: { x: midX, y: newPosition.y },
-          endPoint: { x: segment.endPoint.x, y: newPosition.y }
+          startPoint: { x: segment.endPoint.x, y: newPosition.y },
+          endPoint: segment.endPoint // عمودي للعودة
         }
       ];
     }
