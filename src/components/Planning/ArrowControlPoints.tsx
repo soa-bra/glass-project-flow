@@ -16,8 +16,7 @@ import {
   createStraightArrowData,
   convertToOrthogonalPath,
   updateEndpointPosition,
-  generateId,
-  createTShapeConnection
+  generateId
 } from '@/types/arrow-connections';
 
 interface ArrowControlPointsProps {
@@ -346,7 +345,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     ];
   }, [arrowData]);
 
-  // بدء السحب - ✅ إصلاح: تحويل إحداثيات الماوس إلى إحداثيات العنصر
+  // بدء السحب
   const handleMouseDown = useCallback((
     e: React.MouseEvent,
     cp: ArrowCP | { id: string; type: 'endpoint' | 'midpoint'; position: ArrowPoint; isActive: boolean }
@@ -360,16 +359,9 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         ? 'end'
         : 'middle';
 
-    // ✅ تخزين containerRect عند بدء السحب
+    // ✅ تخزين containerRect عند بدء السحب لاستخدامه لاحقاً
     const canvasContainer = document.querySelector('[data-canvas-container]') || document.querySelector('.infinite-canvas-container');
     const containerRect = canvasContainer?.getBoundingClientRect() || null;
-    
-    // ✅ إصلاح: تحويل موضع الماوس إلى إحداثيات نسبية للعنصر
-    // هذا يمنع القفزة في أول سحب
-    const mouseCanvasX = (e.clientX - (containerRect?.left || 0) - viewport.pan.x) / viewport.zoom;
-    const mouseCanvasY = (e.clientY - (containerRect?.top || 0) - viewport.pan.y) / viewport.zoom;
-    const mouseElementX = mouseCanvasX - element.position.x;
-    const mouseElementY = mouseCanvasY - element.position.y;
     
     setDragState({
       isDragging: true,
@@ -377,12 +369,11 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       controlPointId: cp.id,
       startPosition: { ...cp.position },
       nearestAnchor: null,
-      // ✅ حفظ موضع الماوس بإحداثيات العنصر (ليس إحداثيات الشاشة)
-      initialMousePos: { x: mouseElementX, y: mouseElementY },
+      initialMousePos: { x: e.clientX, y: e.clientY },
       dragDirection: null,
       containerRect
     });
-  }, [displayControlPoints, viewport, element.position]);
+  }, [displayControlPoints]);
 
   // معالجة تحريك نقطة البداية/النهاية مع الحفاظ على استقامة الضلع
   const moveEndpointWithSegment = (
@@ -950,22 +941,12 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     });
   }, [arrowData, element, updateElement]);
 
-  // معالجة السحب - ✅ إصلاح: استخدام نفس نظام الإحداثيات
+  // معالجة السحب
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!dragState.isDragging || !dragState.controlPoint || !dragState.initialMousePos || !dragState.startPosition) return;
 
-    // ✅ إصلاح: تحويل موضع الماوس الحالي إلى إحداثيات العنصر (نفس طريقة handleMouseDown)
-    const canvasContainer = document.querySelector('[data-canvas-container]') || document.querySelector('.infinite-canvas-container');
-    const containerRect = canvasContainer?.getBoundingClientRect();
-    
-    const mouseCanvasX = (e.clientX - (containerRect?.left || 0) - viewport.pan.x) / viewport.zoom;
-    const mouseCanvasY = (e.clientY - (containerRect?.top || 0) - viewport.pan.y) / viewport.zoom;
-    const mouseElementX = mouseCanvasX - element.position.x;
-    const mouseElementY = mouseCanvasY - element.position.y;
-    
-    // ✅ حساب الفرق بإحداثيات العنصر (ليس الشاشة)
-    const deltaX = mouseElementX - dragState.initialMousePos.x;
-    const deltaY = mouseElementY - dragState.initialMousePos.y;
+    const deltaX = (e.clientX - dragState.initialMousePos.x) / viewport.zoom;
+    const deltaY = (e.clientY - dragState.initialMousePos.y) / viewport.zoom;
 
     const newPoint: ArrowPoint = { 
       x: dragState.startPosition.x + deltaX, 
@@ -984,10 +965,16 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     }
 
     // البحث عن أقرب نقطة ارتكاز للإلتصاق (فقط لنقاط النهاية)
-    // استخدام mouseCanvasX و mouseCanvasY المحسوبة أعلاه
+    // ✅ إضافة containerRect لحساب الإحداثيات بشكل صحيح
+    const canvasContainer = document.querySelector('[data-canvas-container]') || document.querySelector('.infinite-canvas-container');
+    const containerRect = canvasContainer?.getBoundingClientRect();
+    
     const nearestAnchor = dragState.controlPoint !== 'middle' 
       ? findNearestAnchor(
-          { x: mouseCanvasX, y: mouseCanvasY }, 
+          { 
+            x: (e.clientX - (containerRect?.left || 0) - viewport.pan.x) / viewport.zoom, 
+            y: (e.clientY - (containerRect?.top || 0) - viewport.pan.y) / viewport.zoom 
+          }, 
           otherElements,
           30 / viewport.zoom
         )
@@ -1138,7 +1125,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     });
   }, [dragState, viewport, element, arrowData, otherElements, updateElement]);
 
-  // إنهاء السحب - ✅ حفظ الاتصال النهائي باستخدام getState() + T-shape connection
+  // إنهاء السحب - ✅ حفظ الاتصال النهائي باستخدام getState()
   const handleMouseUp = useCallback(() => {
     // ✅ حفظ الاتصال النهائي قبل إعادة تعيين الحالة
     if (dragState.nearestAnchor && (dragState.controlPoint === 'start' || dragState.controlPoint === 'end')) {
@@ -1152,14 +1139,11 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       const currentElement = useCanvasStore.getState().elements.find(e => e.id === element.id);
       const currentArrowData = currentElement?.data?.arrowData || arrowData;
       
-      // ✅ تطبيق T-shape connection لضمان اتصال متعامد
-      let updatedArrowData = createTShapeConnection(
-        currentArrowData,
-        dragState.controlPoint as 'start' | 'end',
-        dragState.nearestAnchor.anchorPoint,
-        dragState.nearestAnchor.position,
-        element.position
-      );
+      const updatedArrowData = { 
+        ...currentArrowData,
+        segments: [...(currentArrowData.segments || [])],
+        controlPoints: [...(currentArrowData.controlPoints || [])]
+      };
       
       if (dragState.controlPoint === 'start') {
         updatedArrowData.startConnection = connectionData;
@@ -1181,10 +1165,11 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
         }
       }
       
-      console.log('handleMouseUp: Saving T-shape connection', { 
+      console.log('handleMouseUp: Saving connection', { 
         controlPoint: dragState.controlPoint, 
         connectionData,
-        anchorPoint: dragState.nearestAnchor.anchorPoint
+        updatedStartConnection: updatedArrowData.startConnection,
+        updatedEndConnection: updatedArrowData.endConnection
       });
       
       updateElement(element.id, {
