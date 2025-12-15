@@ -363,30 +363,17 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     const canvasContainer = document.querySelector('[data-canvas-container]') || document.querySelector('.infinite-canvas-container');
     const containerRect = canvasContainer?.getBoundingClientRect() || null;
     
-    // ✅ الحصول على أحدث بيانات السهم من الـ store لتجنب الـ stale state
-    const currentElement = useCanvasStore.getState().elements.find(el => el.id === element.id);
-    const currentArrowData = currentElement?.data?.arrowData;
-    
-    // ✅ الحصول على الموقع الفعلي للنقطة من البيانات المحدثة
-    let actualPosition = { ...cp.position };
-    if (currentArrowData?.controlPoints) {
-      const currentCp = currentArrowData.controlPoints.find((c: ArrowCP) => c.id === cp.id);
-      if (currentCp?.position) {
-        actualPosition = { ...currentCp.position };
-      }
-    }
-    
     setDragState({
       isDragging: true,
       controlPoint: controlPointType,
       controlPointId: cp.id,
-      startPosition: actualPosition, // ✅ استخدام الموقع المحدث
+      startPosition: { ...cp.position },
       nearestAnchor: null,
       initialMousePos: { x: e.clientX, y: e.clientY },
       dragDirection: null,
       containerRect
     });
-  }, [displayControlPoints, element.id]);
+  }, [displayControlPoints]);
 
   // معالجة تحريك نقطة البداية/النهاية مع الحفاظ على استقامة الضلع
   const moveEndpointWithSegment = (
@@ -1154,129 +1141,35 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       
       const updatedArrowData = { 
         ...currentArrowData,
-        segments: currentArrowData.segments?.map((s: ArrowSegment) => ({ ...s })) || [],
-        controlPoints: currentArrowData.controlPoints?.map((cp: ArrowCP) => ({ ...cp })) || []
+        segments: [...(currentArrowData.segments || [])],
+        controlPoints: [...(currentArrowData.controlPoints || [])]
       };
-      
-      // ✅ إضافة T-connector للحواف الجانبية والعلوية
-      const anchorPoint = dragState.nearestAnchor.anchorPoint;
-      const connectorLength = 8;
-      const snapPosition = {
-        x: dragState.nearestAnchor.position.x - element.position.x,
-        y: dragState.nearestAnchor.position.y - element.position.y
-      };
-      
-      if (updatedArrowData.segments.length > 0) {
-        if (anchorPoint === 'left' || anchorPoint === 'right') {
-          // إضافة ضلع أفقي قصير للحواف الجانبية
-          const direction = anchorPoint === 'right' ? -1 : 1;
-          const connectorEnd = { x: snapPosition.x + (connectorLength * direction), y: snapPosition.y };
-          
-          if (dragState.controlPoint === 'start') {
-            // إضافة ضلع رابط في البداية
-            const newConnector: ArrowSegment = {
-              id: generateId(),
-              startPoint: snapPosition,
-              endPoint: connectorEnd
-            };
-            updatedArrowData.segments[0] = {
-              ...updatedArrowData.segments[0],
-              startPoint: connectorEnd
-            };
-            updatedArrowData.segments.unshift(newConnector);
-            updatedArrowData.startPoint = snapPosition;
-          } else {
-            // إضافة ضلع رابط في النهاية
-            const lastIdx = updatedArrowData.segments.length - 1;
-            const newConnector: ArrowSegment = {
-              id: generateId(),
-              startPoint: connectorEnd,
-              endPoint: snapPosition
-            };
-            updatedArrowData.segments[lastIdx] = {
-              ...updatedArrowData.segments[lastIdx],
-              endPoint: connectorEnd
-            };
-            updatedArrowData.segments.push(newConnector);
-            updatedArrowData.endPoint = snapPosition;
-          }
-        } else if (anchorPoint === 'top') {
-          // إضافة شكل U مقلوب للحافة العلوية
-          const verticalOffset = connectorLength;
-          const horizontalOffset = connectorLength;
-          
-          if (dragState.controlPoint === 'start') {
-            const point1 = snapPosition;
-            const point2 = { x: snapPosition.x, y: snapPosition.y - verticalOffset };
-            const point3 = { x: snapPosition.x - horizontalOffset, y: snapPosition.y - verticalOffset };
-            
-            const seg1: ArrowSegment = { id: generateId(), startPoint: point1, endPoint: point2 };
-            const seg2: ArrowSegment = { id: generateId(), startPoint: point2, endPoint: point3 };
-            
-            updatedArrowData.segments[0] = { ...updatedArrowData.segments[0], startPoint: point3 };
-            updatedArrowData.segments.unshift(seg2);
-            updatedArrowData.segments.unshift(seg1);
-            updatedArrowData.startPoint = point1;
-          } else {
-            const lastIdx = updatedArrowData.segments.length - 1;
-            const point1 = { x: snapPosition.x + horizontalOffset, y: snapPosition.y - verticalOffset };
-            const point2 = { x: snapPosition.x, y: snapPosition.y - verticalOffset };
-            const point3 = snapPosition;
-            
-            const seg1: ArrowSegment = { id: generateId(), startPoint: point1, endPoint: point2 };
-            const seg2: ArrowSegment = { id: generateId(), startPoint: point2, endPoint: point3 };
-            
-            updatedArrowData.segments[lastIdx] = { ...updatedArrowData.segments[lastIdx], endPoint: point1 };
-            updatedArrowData.segments.push(seg1);
-            updatedArrowData.segments.push(seg2);
-            updatedArrowData.endPoint = point3;
-          }
-        }
-        
-        // تحديث نقاط التحكم بعد إضافة الأضلاع الجديدة
-        const newControlPoints: ArrowCP[] = [];
-        newControlPoints.push({
-          id: 'start',
-          type: 'endpoint',
-          position: updatedArrowData.startPoint,
-          isActive: true,
-          connection: dragState.controlPoint === 'start' ? connectionData : updatedArrowData.startConnection
-        });
-        
-        updatedArrowData.segments.forEach((seg: ArrowSegment) => {
-          newControlPoints.push({
-            id: generateId(),
-            type: 'midpoint',
-            position: {
-              x: (seg.startPoint.x + seg.endPoint.x) / 2,
-              y: (seg.startPoint.y + seg.endPoint.y) / 2
-            },
-            isActive: false,
-            segmentId: seg.id
-          });
-        });
-        
-        newControlPoints.push({
-          id: 'end',
-          type: 'endpoint',
-          position: updatedArrowData.endPoint,
-          isActive: true,
-          connection: dragState.controlPoint === 'end' ? connectionData : updatedArrowData.endConnection
-        });
-        
-        updatedArrowData.controlPoints = newControlPoints;
-      }
       
       if (dragState.controlPoint === 'start') {
         updatedArrowData.startConnection = connectionData;
+        // تحديث نقطة التحكم أيضاً
+        const startCP = updatedArrowData.controlPoints.find((cp: ArrowCP) => 
+          cp.id === 'start' || (cp.type === 'endpoint' && updatedArrowData.controlPoints.indexOf(cp) === 0)
+        );
+        if (startCP) {
+          startCP.connection = connectionData;
+        }
       } else if (dragState.controlPoint === 'end') {
         updatedArrowData.endConnection = connectionData;
+        // تحديث نقطة التحكم أيضاً
+        const endCP = updatedArrowData.controlPoints.find((cp: ArrowCP) => 
+          cp.id === 'end' || (cp.type === 'endpoint' && updatedArrowData.controlPoints.indexOf(cp) === updatedArrowData.controlPoints.length - 1)
+        );
+        if (endCP) {
+          endCP.connection = connectionData;
+        }
       }
       
-      console.log('handleMouseUp: Saving connection with T-connector', { 
+      console.log('handleMouseUp: Saving connection', { 
         controlPoint: dragState.controlPoint, 
-        anchorPoint,
-        connectionData
+        connectionData,
+        updatedStartConnection: updatedArrowData.startConnection,
+        updatedEndConnection: updatedArrowData.endConnection
       });
       
       updateElement(element.id, {
