@@ -417,3 +417,224 @@ export const updateConnectedEndpoints = (
   
   return newData;
 };
+
+/**
+ * إنشاء اتصال على شكل T عند السناب
+ * يضيف ضلع صغير (8px) لضمان أن الاتصال يكون متعامداً دائماً
+ */
+export const createTShapeConnection = (
+  arrowData: ArrowData,
+  endpoint: 'start' | 'end',
+  anchorPoint: ArrowConnection['anchorPoint'],
+  anchorPosition: ArrowPoint,
+  elementPosition: { x: number; y: number }
+): ArrowData => {
+  const connectorLength = 8; // طول الضلع الإضافي
+  const localAnchorPos = {
+    x: anchorPosition.x - elementPosition.x,
+    y: anchorPosition.y - elementPosition.y
+  };
+  
+  const newData = { 
+    ...arrowData, 
+    segments: arrowData.segments.map(s => ({ ...s })),
+    controlPoints: arrowData.controlPoints.map(cp => ({ ...cp }))
+  };
+  
+  if (endpoint === 'end') {
+    const lastIdx = newData.segments.length - 1;
+    const lastSegment = newData.segments[lastIdx];
+    
+    // تحديد اتجاه الضلع الأخير
+    const dx = Math.abs(lastSegment.endPoint.x - lastSegment.startPoint.x);
+    const dy = Math.abs(lastSegment.endPoint.y - lastSegment.startPoint.y);
+    const isVertical = dy > dx;
+    
+    // تحديد إذا كنا نحتاج إضافة ضلع T-connector
+    let needsConnector = false;
+    let connectorStart = { ...localAnchorPos };
+    
+    if (isVertical) {
+      // ضلع عمودي
+      if (anchorPoint === 'left' || anchorPoint === 'right') {
+        // الاتصال بحافة جانبية - نحتاج ضلع أفقي
+        needsConnector = true;
+        connectorStart.x = anchorPoint === 'left' 
+          ? localAnchorPos.x - connectorLength 
+          : localAnchorPos.x + connectorLength;
+      } else if (anchorPoint === 'top') {
+        // الاتصال بالحافة العلوية من ضلع عمودي قادم من الأسفل
+        needsConnector = true;
+        connectorStart.y = localAnchorPos.y - connectorLength;
+      }
+    } else {
+      // ضلع أفقي
+      if (anchorPoint === 'top' || anchorPoint === 'bottom') {
+        // الاتصال بحافة علوية/سفلية - نحتاج ضلع عمودي
+        needsConnector = true;
+        connectorStart.y = anchorPoint === 'top'
+          ? localAnchorPos.y - connectorLength
+          : localAnchorPos.y + connectorLength;
+      } else if (anchorPoint === 'left') {
+        // الاتصال بالحافة اليسرى من ضلع أفقي قادم من اليمين
+        needsConnector = true;
+        connectorStart.x = localAnchorPos.x - connectorLength;
+      }
+    }
+    
+    if (needsConnector) {
+      // تعديل الضلع الأخير لينتهي عند بداية الموصل
+      newData.segments[lastIdx] = {
+        ...lastSegment,
+        endPoint: connectorStart
+      };
+      
+      // إضافة ضلع الموصل
+      const connectorId = generateId();
+      newData.segments.push({
+        id: connectorId,
+        startPoint: connectorStart,
+        endPoint: localAnchorPos
+      });
+      
+      // إضافة نقطة منتصف للموصل الجديد
+      const midPos = {
+        x: (connectorStart.x + localAnchorPos.x) / 2,
+        y: (connectorStart.y + localAnchorPos.y) / 2
+      };
+      
+      // إدراج نقطة المنتصف قبل نقطة النهاية
+      const endCpIndex = newData.controlPoints.findIndex(cp => 
+        cp.type === 'endpoint' && newData.controlPoints.indexOf(cp) === newData.controlPoints.length - 1
+      );
+      
+      newData.controlPoints.splice(endCpIndex, 0, {
+        id: generateId(),
+        type: 'midpoint',
+        position: midPos,
+        segmentId: connectorId,
+        isActive: false
+      });
+    }
+    
+    newData.endPoint = localAnchorPos;
+    
+    // تحديث نقطة النهاية
+    const endCP = newData.controlPoints.find(cp => 
+      cp.type === 'endpoint' && newData.controlPoints.indexOf(cp) === newData.controlPoints.length - 1
+    );
+    if (endCP) {
+      endCP.position = localAnchorPos;
+    }
+    
+    // تحديث نقاط المنتصف
+    newData.controlPoints = newData.controlPoints.map(cp => {
+      if (cp.type === 'midpoint' && cp.segmentId) {
+        const segment = newData.segments.find(s => s.id === cp.segmentId);
+        if (segment) {
+          return {
+            ...cp,
+            position: {
+              x: (segment.startPoint.x + segment.endPoint.x) / 2,
+              y: (segment.startPoint.y + segment.endPoint.y) / 2
+            }
+          };
+        }
+      }
+      return cp;
+    });
+    
+  } else {
+    // endpoint === 'start' - منطق مماثل للبداية
+    const firstSegment = newData.segments[0];
+    
+    const dx = Math.abs(firstSegment.endPoint.x - firstSegment.startPoint.x);
+    const dy = Math.abs(firstSegment.endPoint.y - firstSegment.startPoint.y);
+    const isVertical = dy > dx;
+    
+    let needsConnector = false;
+    let connectorEnd = { ...localAnchorPos };
+    
+    if (isVertical) {
+      if (anchorPoint === 'left' || anchorPoint === 'right') {
+        needsConnector = true;
+        connectorEnd.x = anchorPoint === 'left' 
+          ? localAnchorPos.x - connectorLength 
+          : localAnchorPos.x + connectorLength;
+      } else if (anchorPoint === 'bottom') {
+        needsConnector = true;
+        connectorEnd.y = localAnchorPos.y + connectorLength;
+      }
+    } else {
+      if (anchorPoint === 'top' || anchorPoint === 'bottom') {
+        needsConnector = true;
+        connectorEnd.y = anchorPoint === 'top'
+          ? localAnchorPos.y - connectorLength
+          : localAnchorPos.y + connectorLength;
+      } else if (anchorPoint === 'right') {
+        needsConnector = true;
+        connectorEnd.x = localAnchorPos.x + connectorLength;
+      }
+    }
+    
+    if (needsConnector) {
+      // تعديل الضلع الأول ليبدأ من نهاية الموصل
+      newData.segments[0] = {
+        ...firstSegment,
+        startPoint: connectorEnd
+      };
+      
+      // إضافة ضلع الموصل في البداية
+      const connectorId = generateId();
+      newData.segments.unshift({
+        id: connectorId,
+        startPoint: localAnchorPos,
+        endPoint: connectorEnd
+      });
+      
+      // إضافة نقطة منتصف للموصل الجديد
+      const midPos = {
+        x: (localAnchorPos.x + connectorEnd.x) / 2,
+        y: (localAnchorPos.y + connectorEnd.y) / 2
+      };
+      
+      // إدراج نقطة المنتصف بعد نقطة البداية
+      newData.controlPoints.splice(1, 0, {
+        id: generateId(),
+        type: 'midpoint',
+        position: midPos,
+        segmentId: connectorId,
+        isActive: false
+      });
+    }
+    
+    newData.startPoint = localAnchorPos;
+    
+    // تحديث نقطة البداية
+    const startCP = newData.controlPoints.find(cp => 
+      cp.type === 'endpoint' && newData.controlPoints.indexOf(cp) === 0
+    );
+    if (startCP) {
+      startCP.position = localAnchorPos;
+    }
+    
+    // تحديث نقاط المنتصف
+    newData.controlPoints = newData.controlPoints.map(cp => {
+      if (cp.type === 'midpoint' && cp.segmentId) {
+        const segment = newData.segments.find(s => s.id === cp.segmentId);
+        if (segment) {
+          return {
+            ...cp,
+            position: {
+              x: (segment.startPoint.x + segment.endPoint.x) / 2,
+              y: (segment.startPoint.y + segment.endPoint.y) / 2
+            }
+          };
+        }
+      }
+      return cp;
+    });
+  }
+  
+  return newData;
+};
