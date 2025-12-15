@@ -175,63 +175,8 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     });
   }, [otherElements, arrowData.startConnection?.elementId, arrowData.endConnection?.elementId]);
 
-  // مراقبة تحريك العناصر المتصلة وتحديث نقاط السهم تلقائياً مع الحفاظ على الأضلاع المتعامدة
-  useEffect(() => {
-    if (!arrowData.startConnection?.elementId && !arrowData.endConnection?.elementId) {
-      return; // لا توجد اتصالات
-    }
-
-    let shouldUpdate = false;
-    let newArrowData = { ...arrowData, segments: [...arrowData.segments], controlPoints: [...arrowData.controlPoints] };
-
-    // تحديث نقطة البداية إذا كانت متصلة
-    if (arrowData.startConnection?.elementId) {
-      const connectedElement = otherElements.find(e => e.id === arrowData.startConnection?.elementId);
-      if (connectedElement) {
-        const anchorPos = getAnchorPosition(connectedElement, arrowData.startConnection.anchorPoint);
-        const newStartPoint = {
-          x: anchorPos.x - element.position.x,
-          y: anchorPos.y - element.position.y
-        };
-        
-        // تحقق إذا تغير الموقع
-        if (Math.abs(newStartPoint.x - arrowData.startPoint.x) > 0.1 || 
-            Math.abs(newStartPoint.y - arrowData.startPoint.y) > 0.1) {
-          
-          // استخدام نفس منطق moveEndpointWithSegment للحفاظ على الأضلاع المتعامدة
-          newArrowData = moveEndpointWithSegmentForConnection(newArrowData, 'start', newStartPoint);
-          shouldUpdate = true;
-        }
-      }
-    }
-
-    // تحديث نقطة النهاية إذا كانت متصلة
-    if (arrowData.endConnection?.elementId) {
-      const connectedElement = otherElements.find(e => e.id === arrowData.endConnection?.elementId);
-      if (connectedElement) {
-        const anchorPos = getAnchorPosition(connectedElement, arrowData.endConnection.anchorPoint);
-        const newEndPoint = {
-          x: anchorPos.x - element.position.x,
-          y: anchorPos.y - element.position.y
-        };
-        
-        // تحقق إذا تغير الموقع
-        if (Math.abs(newEndPoint.x - arrowData.endPoint.x) > 0.1 || 
-            Math.abs(newEndPoint.y - arrowData.endPoint.y) > 0.1) {
-          
-          // استخدام نفس منطق moveEndpointWithSegment للحفاظ على الأضلاع المتعامدة
-          newArrowData = moveEndpointWithSegmentForConnection(newArrowData, 'end', newEndPoint);
-          shouldUpdate = true;
-        }
-      }
-    }
-
-    if (shouldUpdate) {
-      updateElement(element.id, {
-        data: { ...element.data, arrowData: newArrowData }
-      });
-    }
-  }, [connectedElementsKey, arrowData, element.id, element.position, updateElement, otherElements]);
+  // تم إزالة useEffect المكرر - التحديث يتم حصرياً في canvasStore.ts
+  // لمنع التزاحم (race condition) عند تحريك العناصر المتصلة
 
   // نسخة محسّنة من moveEndpointWithSegment للحفاظ على الزوايا القائمة
   const moveEndpointWithSegmentForConnection = (
