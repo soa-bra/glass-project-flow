@@ -1179,16 +1179,27 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       const targetElement = otherElements.find(e => e.id === dragState.nearestAnchor?.elementId);
       
       if (targetElement) {
+        // ✅ تحويل الإحداثيات من عالمية إلى نسبية لعنصر السهم
+        const relativeSnapPoint = {
+          x: dragState.nearestAnchor.position.x - element.position.x,
+          y: dragState.nearestAnchor.position.y - element.position.y
+        };
+        
+        const relativeTargetElement = {
+          id: targetElement.id,
+          position: {
+            x: targetElement.position.x - element.position.x,
+            y: targetElement.position.y - element.position.y
+          },
+          size: targetElement.size
+        };
+        
         // ✅ استخدام نظام التوجيه الجديد لضمان T-shape
         const routedArrowData = resolveSnapConnection(
           currentArrowData,
-          dragState.nearestAnchor.position,
+          relativeSnapPoint,
           dragState.nearestAnchor.anchorPoint as SnapEdge,
-          {
-            id: targetElement.id,
-            position: targetElement.position,
-            size: targetElement.size
-          },
+          relativeTargetElement,
           dragState.controlPoint as 'start' | 'end'
         );
         
