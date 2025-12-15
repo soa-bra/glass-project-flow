@@ -33,6 +33,7 @@ export interface ArrowControlPoint {
   segmentId?: string; // معرف الضلع الذي تنتمي إليه نقطة المنتصف
   isActive: boolean; // هل تم تفعيلها بالسحب
   connection?: ArrowConnection | null; // للاتصال بالعناصر (فقط لنقاط النهاية)
+  label?: string; // نص توضيحي على نقطة المنتصف
 }
 
 export interface ArrowData {

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { 
@@ -23,6 +23,12 @@ interface ArrowControlPointsProps {
   viewport: { zoom: number; pan: { x: number; y: number } };
 }
 
+// حالة تعديل النص على نقطة منتصف
+interface MidpointLabelState {
+  midpointId: string;
+  text: string;
+}
+
 /**
  * مكون نقاط التحكم للأسهم
  * يدعم النظام الجديد مع المسارات المتعامدة
@@ -45,6 +51,21 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     initialMousePos: null,
     dragDirection: null
   });
+
+  // حالة تعديل النص على نقطة منتصف غير نشطة
+  const [editingLabel, setEditingLabel] = useState<MidpointLabelState | null>(null);
+  const labelInputRef = useRef<HTMLInputElement>(null);
+  
+  // تخزين النصوص على النقاط (مخزنة في arrowData.controlPoints)
+  const midpointLabels = useMemo(() => {
+    const labels: Record<string, string> = {};
+    element.data?.arrowData?.controlPoints?.forEach((cp: ArrowCP & { label?: string }) => {
+      if (cp.type === 'midpoint' && cp.label) {
+        labels[cp.id] = cp.label;
+      }
+    });
+    return labels;
+  }, [element.data?.arrowData?.controlPoints]);
 
   // الحصول على بيانات السهم أو إنشاء بيانات افتراضية
   const getDefaultArrowData = useCallback((): ArrowData => {
@@ -136,6 +157,110 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       el.type !== 'arrow' && 
       !el.shapeType?.startsWith('arrow_')
     ), [elements, element.id]);
+
+  // مراقبة تحريك العناصر المتصلة وتحديث نقاط السهم تلقائياً
+  useEffect(() => {
+    if (!arrowData.startConnection?.elementId && !arrowData.endConnection?.elementId) {
+      return; // لا توجد اتصالات
+    }
+
+    let shouldUpdate = false;
+    let newArrowData = { ...arrowData };
+
+    // تحديث نقطة البداية إذا كانت متصلة
+    if (arrowData.startConnection?.elementId) {
+      const connectedElement = otherElements.find(e => e.id === arrowData.startConnection?.elementId);
+      if (connectedElement) {
+        const anchorPos = getAnchorPosition(connectedElement, arrowData.startConnection.anchorPoint);
+        const newStartPoint = {
+          x: anchorPos.x - element.position.x,
+          y: anchorPos.y - element.position.y
+        };
+        
+        // تحقق إذا تغير الموقع
+        if (Math.abs(newStartPoint.x - arrowData.startPoint.x) > 0.1 || 
+            Math.abs(newStartPoint.y - arrowData.startPoint.y) > 0.1) {
+          newArrowData.startPoint = newStartPoint;
+          
+          // تحديث الضلع الأول
+          if (newArrowData.segments.length > 0) {
+            newArrowData.segments[0] = {
+              ...newArrowData.segments[0],
+              startPoint: newStartPoint
+            };
+          }
+          
+          // تحديث نقطة التحكم
+          const startCP = newArrowData.controlPoints.find(cp => 
+            cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === 0
+          );
+          if (startCP) {
+            startCP.position = newStartPoint;
+          }
+          
+          shouldUpdate = true;
+        }
+      }
+    }
+
+    // تحديث نقطة النهاية إذا كانت متصلة
+    if (arrowData.endConnection?.elementId) {
+      const connectedElement = otherElements.find(e => e.id === arrowData.endConnection?.elementId);
+      if (connectedElement) {
+        const anchorPos = getAnchorPosition(connectedElement, arrowData.endConnection.anchorPoint);
+        const newEndPoint = {
+          x: anchorPos.x - element.position.x,
+          y: anchorPos.y - element.position.y
+        };
+        
+        // تحقق إذا تغير الموقع
+        if (Math.abs(newEndPoint.x - arrowData.endPoint.x) > 0.1 || 
+            Math.abs(newEndPoint.y - arrowData.endPoint.y) > 0.1) {
+          newArrowData.endPoint = newEndPoint;
+          
+          // تحديث الضلع الأخير
+          if (newArrowData.segments.length > 0) {
+            const lastIdx = newArrowData.segments.length - 1;
+            newArrowData.segments[lastIdx] = {
+              ...newArrowData.segments[lastIdx],
+              endPoint: newEndPoint
+            };
+          }
+          
+          // تحديث نقطة التحكم
+          const endCP = newArrowData.controlPoints.filter(cp => cp.type === 'endpoint').pop();
+          if (endCP) {
+            endCP.position = newEndPoint;
+          }
+          
+          shouldUpdate = true;
+        }
+      }
+    }
+
+    // تحديث نقاط المنتصف لتبقى في منتصف أضلاعها
+    if (shouldUpdate) {
+      newArrowData.controlPoints = newArrowData.controlPoints.map(cp => {
+        if (cp.type === 'midpoint' && cp.segmentId) {
+          const segment = newArrowData.segments.find(s => s.id === cp.segmentId);
+          if (segment) {
+            return {
+              ...cp,
+              position: {
+                x: (segment.startPoint.x + segment.endPoint.x) / 2,
+                y: (segment.startPoint.y + segment.endPoint.y) / 2
+              }
+            };
+          }
+        }
+        return cp;
+      });
+
+      updateElement(element.id, {
+        data: { ...element.data, arrowData: newArrowData }
+      });
+    }
+  }, [otherElements, arrowData, element.id, element.position, updateElement]);
 
   // الحصول على نقاط التحكم للعرض
   const displayControlPoints = useMemo(() => {
@@ -990,58 +1115,187 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     );
   };
 
+  // معالجة النقر المزدوج على نقطة غير نشطة لإضافة نص
+  const handleMidpointDoubleClick = useCallback((e: React.MouseEvent, cp: ArrowCP) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    if (cp.type === 'midpoint') {
+      if (cp.isActive) {
+        // النقاط النشطة - حذف الضلع
+        deleteSegmentByMidpoint(cp.id);
+      } else {
+        // النقاط غير النشطة - فتح حقل النص
+        const existingLabel = midpointLabels[cp.id] || '';
+        setEditingLabel({ midpointId: cp.id, text: existingLabel });
+        setTimeout(() => labelInputRef.current?.focus(), 50);
+      }
+    }
+  }, [midpointLabels, deleteSegmentByMidpoint]);
+
+  // حفظ النص على نقطة المنتصف
+  const saveMidpointLabel = useCallback(() => {
+    if (!editingLabel) return;
+    
+    const { midpointId, text } = editingLabel;
+    const trimmedText = text.trim();
+    
+    // تحديث نقطة التحكم بالنص
+    const newControlPoints = arrowData.controlPoints.map(cp => {
+      if (cp.id === midpointId) {
+        return { ...cp, label: trimmedText || undefined };
+      }
+      return cp;
+    });
+    
+    const newArrowData: ArrowData = {
+      ...arrowData,
+      controlPoints: newControlPoints
+    };
+    
+    updateElement(element.id, {
+      data: { ...element.data, arrowData: newArrowData }
+    });
+    
+    setEditingLabel(null);
+  }, [editingLabel, arrowData, element, updateElement]);
+
+  // إغلاق حقل النص
+  const handleLabelKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveMidpointLabel();
+    } else if (e.key === 'Escape') {
+      setEditingLabel(null);
+    }
+  }, [saveMidpointLabel]);
+
   return (
     <>
       {renderPathLines()}
 
       {/* نقاط التحكم */}
-      {displayControlPoints.map((cp, idx) => (
-        <div
-          key={cp.id}
-          className="absolute"
-          style={{
-            left: cp.position.x - (cp.type === 'endpoint' ? 5 : 4),
-            top: cp.position.y - (cp.type === 'endpoint' ? 5 : 4),
-            ...getControlPointStyle(cp)
-          }}
-          onMouseDown={(e) => handleMouseDown(e, cp)}
-          onDoubleClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            // الحذف يعمل فقط مع النقاط النشطة
-            if (cp.type === 'midpoint' && cp.isActive) {
-              deleteSegmentByMidpoint(cp.id);
-            }
-          }}
-          title={
-            cp.type === 'endpoint' 
-              ? (idx === 0 ? 'نقطة البداية - اسحب للاتصال بعنصر' : 'نقطة النهاية - اسحب للاتصال بعنصر')
-              : 'نقطة المنتصف - اسحب لإنشاء مسار متعامد، انقر مرتين للحذف'
-          }
-        />
-      ))}
+      {displayControlPoints.map((cp, idx) => {
+        const label = midpointLabels[cp.id];
+        const isEditingThis = editingLabel?.midpointId === cp.id;
+        
+        return (
+          <React.Fragment key={cp.id}>
+            {/* نقطة التحكم */}
+            <div
+              className="absolute"
+              style={{
+                left: cp.position.x - (cp.type === 'endpoint' ? 5 : 4),
+                top: cp.position.y - (cp.type === 'endpoint' ? 5 : 4),
+                ...getControlPointStyle(cp)
+              }}
+              onMouseDown={(e) => handleMouseDown(e, cp)}
+              onDoubleClick={(e) => handleMidpointDoubleClick(e, cp)}
+              title={
+                cp.type === 'endpoint' 
+                  ? (idx === 0 ? 'نقطة البداية - اسحب للاتصال بعنصر' : 'نقطة النهاية - اسحب للاتصال بعنصر')
+                  : cp.isActive 
+                    ? 'نقطة المنتصف - اسحب للتحريك، انقر مرتين للحذف'
+                    : 'نقطة المنتصف - اسحب لإنشاء مسار متعامد، انقر مرتين لإضافة نص'
+              }
+            />
+            
+            {/* النص على نقطة المنتصف */}
+            {cp.type === 'midpoint' && !cp.isActive && (label || isEditingThis) && (
+              <div
+                className="absolute pointer-events-auto"
+                style={{
+                  left: cp.position.x,
+                  top: cp.position.y - 24,
+                  transform: 'translateX(-50%)',
+                  zIndex: 1001
+                }}
+              >
+                {isEditingThis ? (
+                  <input
+                    ref={labelInputRef}
+                    type="text"
+                    value={editingLabel?.text || ''}
+                    onChange={(e) => setEditingLabel(prev => prev ? { ...prev, text: e.target.value } : null)}
+                    onBlur={saveMidpointLabel}
+                    onKeyDown={handleLabelKeyDown}
+                    className="px-2 py-0.5 text-xs rounded border-none outline-none text-center"
+                    style={{
+                      backgroundColor: 'transparent',
+                      color: '#000000',
+                      minWidth: '60px',
+                      maxWidth: '150px',
+                      fontFamily: 'IBM Plex Sans Arabic, sans-serif',
+                      fontSize: '12px',
+                      direction: 'rtl'
+                    }}
+                    placeholder="أدخل نصاً..."
+                    autoFocus
+                  />
+                ) : (
+                  <span
+                    className="px-2 py-0.5 text-xs cursor-pointer"
+                    style={{
+                      backgroundColor: 'transparent',
+                      color: '#000000',
+                      fontFamily: 'IBM Plex Sans Arabic, sans-serif',
+                      fontSize: '12px',
+                      whiteSpace: 'nowrap',
+                      direction: 'rtl'
+                    }}
+                    onDoubleClick={(e) => handleMidpointDoubleClick(e, cp)}
+                  >
+                    {label}
+                  </span>
+                )}
+              </div>
+            )}
+          </React.Fragment>
+        );
+      })}
 
       {/* مؤشر الالتصاق */}
       {dragState.nearestAnchor && (
         <div
           className="fixed pointer-events-none"
           style={{
-            left: dragState.nearestAnchor.position.x * viewport.zoom + viewport.pan.x - 12,
-            top: dragState.nearestAnchor.position.y * viewport.zoom + viewport.pan.y - 12,
-            width: 24,
-            height: 24,
+            left: dragState.nearestAnchor.position.x * viewport.zoom + viewport.pan.x - 16,
+            top: dragState.nearestAnchor.position.y * viewport.zoom + viewport.pan.y - 16,
+            width: 32,
+            height: 32,
             borderRadius: '50%',
             border: '3px solid hsl(var(--accent-green))',
-            backgroundColor: 'rgba(61, 190, 139, 0.2)',
-            animation: 'pulse 0.5s ease-in-out infinite'
+            backgroundColor: 'rgba(61, 190, 139, 0.25)',
+            boxShadow: '0 0 12px rgba(61, 190, 139, 0.5), inset 0 0 8px rgba(61, 190, 139, 0.3)',
+            animation: 'pulse-snap 0.6s ease-in-out infinite'
+          }}
+        />
+      )}
+
+      {/* تأثير بصري إضافي عند الالتصاق */}
+      {dragState.nearestAnchor && (
+        <div
+          className="fixed pointer-events-none"
+          style={{
+            left: dragState.nearestAnchor.position.x * viewport.zoom + viewport.pan.x - 24,
+            top: dragState.nearestAnchor.position.y * viewport.zoom + viewport.pan.y - 24,
+            width: 48,
+            height: 48,
+            borderRadius: '50%',
+            border: '1px solid rgba(61, 190, 139, 0.3)',
+            animation: 'pulse-ring 0.8s ease-out infinite'
           }}
         />
       )}
 
       <style>{`
-        @keyframes pulse {
+        @keyframes pulse-snap {
           0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.2); opacity: 0.7; }
+          50% { transform: scale(1.15); opacity: 0.85; }
+        }
+        @keyframes pulse-ring {
+          0% { transform: scale(0.8); opacity: 0.8; }
+          100% { transform: scale(1.5); opacity: 0; }
         }
       `}</style>
     </>
