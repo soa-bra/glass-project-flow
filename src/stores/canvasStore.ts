@@ -1503,10 +1503,11 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       get().moveFrame(frameId, deltaX, deltaY);
     });
     
-    // تحريك العناصر العادية
+    // تحريك العناصر العادية مع تحديث الأسهم المتصلة
     if (nonFrameIds.length > 0) {
-      set(state => ({
-        elements: state.elements.map(el =>
+      set(state => {
+        // أولاً: تحريك العناصر
+        let updatedElements = state.elements.map(el =>
           nonFrameIds.includes(el.id)
             ? {
                 ...el,
@@ -1516,8 +1517,223 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
                 }
               }
             : el
-        )
-      }));
+        );
+
+        // ثانياً: تحديث الأسهم المتصلة بالعناصر المُحرَّكة
+        nonFrameIds.forEach(movedElementId => {
+          const movedElement = updatedElements.find(e => e.id === movedElementId);
+          if (!movedElement) return;
+
+          // البحث عن الأسهم المتصلة بهذا العنصر
+          const connectedArrows = updatedElements.filter(el => {
+            if (el.type !== 'shape') return false;
+            const shapeType = el.shapeType || el.data?.shapeType;
+            if (!shapeType?.startsWith('arrow_')) return false;
+            const arrowData = el.data?.arrowData;
+            if (!arrowData) return false;
+            return (
+              arrowData.startConnection?.elementId === movedElementId ||
+              arrowData.endConnection?.elementId === movedElementId
+            );
+          });
+
+          // تحديث كل سهم متصل
+          connectedArrows.forEach(arrow => {
+            // نسخ عميق لـ arrowData
+            const baseArrowData: any = {
+              ...arrow.data.arrowData,
+              segments:
+                arrow.data.arrowData.segments?.map((s: any) => ({
+                  ...s,
+                  startPoint: { ...s.startPoint },
+                  endPoint: { ...s.endPoint }
+                })) || [],
+              controlPoints:
+                arrow.data.arrowData.controlPoints?.map((cp: any) => ({
+                  ...cp,
+                  position: { ...cp.position }
+                })) || []
+            };
+
+            // دالة تحريك نقطة نهاية مع الضلع كاملاً
+            const moveEndpointWithSegmentForConnection = (
+              data: any,
+              endpoint: 'start' | 'end',
+              newPosition: { x: number; y: number }
+            ) => {
+              const newData: any = {
+                ...data,
+                segments: (data.segments || []).map((s: any) => ({
+                  ...s,
+                  startPoint: { ...s.startPoint },
+                  endPoint: { ...s.endPoint }
+                })),
+                controlPoints: (data.controlPoints || []).map((cp: any) => ({
+                  ...cp,
+                  position: { ...cp.position }
+                }))
+              };
+
+              const isStraight = newData.arrowType === 'straight' || newData.segments.length <= 1;
+
+              if (isStraight) {
+                if (endpoint === 'start') {
+                  newData.startPoint = newPosition;
+                  if (newData.segments.length > 0) {
+                    newData.segments[0] = { ...newData.segments[0], startPoint: { ...newPosition } };
+                  }
+                } else {
+                  newData.endPoint = newPosition;
+                  if (newData.segments.length > 0) {
+                    const lastIdx = newData.segments.length - 1;
+                    newData.segments[lastIdx] = { ...newData.segments[lastIdx], endPoint: { ...newPosition } };
+                  }
+                }
+              } else {
+                if (endpoint === 'start') {
+                  const oldStartPoint = data.startPoint;
+                  newData.startPoint = newPosition;
+
+                  const deltaX = newPosition.x - oldStartPoint.x;
+                  const deltaY = newPosition.y - oldStartPoint.y;
+
+                  const firstSegment = data.segments[0];
+                  const dx = Math.abs(firstSegment.endPoint.x - firstSegment.startPoint.x);
+                  const dy = Math.abs(firstSegment.endPoint.y - firstSegment.startPoint.y);
+                  const isFirstVertical = dy >= dx;
+
+                  if (isFirstVertical) {
+                    newData.segments[0] = {
+                      ...firstSegment,
+                      startPoint: { ...newPosition },
+                      endPoint: {
+                        x: firstSegment.endPoint.x + deltaX,
+                        y: firstSegment.endPoint.y
+                      }
+                    };
+                  } else {
+                    newData.segments[0] = {
+                      ...firstSegment,
+                      startPoint: { ...newPosition },
+                      endPoint: {
+                        x: firstSegment.endPoint.x,
+                        y: firstSegment.endPoint.y + deltaY
+                      }
+                    };
+                  }
+
+                  if (data.segments.length > 1) {
+                    newData.segments[1] = {
+                      ...newData.segments[1],
+                      startPoint: { ...newData.segments[0].endPoint }
+                    };
+                  }
+                } else {
+                  const oldEndPoint = data.endPoint;
+                  newData.endPoint = newPosition;
+
+                  const deltaX = newPosition.x - oldEndPoint.x;
+                  const deltaY = newPosition.y - oldEndPoint.y;
+
+                  const lastIdx = data.segments.length - 1;
+                  const lastSegment = data.segments[lastIdx];
+                  const dx = Math.abs(lastSegment.endPoint.x - lastSegment.startPoint.x);
+                  const dy = Math.abs(lastSegment.endPoint.y - lastSegment.startPoint.y);
+                  const isLastVertical = dy >= dx;
+
+                  if (isLastVertical) {
+                    newData.segments[lastIdx] = {
+                      ...lastSegment,
+                      startPoint: {
+                        x: lastSegment.startPoint.x + deltaX,
+                        y: lastSegment.startPoint.y
+                      },
+                      endPoint: { ...newPosition }
+                    };
+                  } else {
+                    newData.segments[lastIdx] = {
+                      ...lastSegment,
+                      startPoint: {
+                        x: lastSegment.startPoint.x,
+                        y: lastSegment.startPoint.y + deltaY
+                      },
+                      endPoint: { ...newPosition }
+                    };
+                  }
+
+                  if (data.segments.length > 1) {
+                    newData.segments[lastIdx - 1] = {
+                      ...newData.segments[lastIdx - 1],
+                      endPoint: { ...newData.segments[lastIdx].startPoint }
+                    };
+                  }
+                }
+              }
+
+              // تحديث نقاط التحكم
+              newData.controlPoints = (newData.controlPoints || []).map((cp: any, idx: number) => {
+                if (cp.type === 'midpoint' && cp.segmentId) {
+                  const segment = newData.segments.find((s: any) => s.id === cp.segmentId);
+                  if (segment) {
+                    return {
+                      ...cp,
+                      position: {
+                        x: (segment.startPoint.x + segment.endPoint.x) / 2,
+                        y: (segment.startPoint.y + segment.endPoint.y) / 2
+                      }
+                    };
+                  }
+                }
+
+                if (cp.type === 'endpoint') {
+                  if (idx === 0) {
+                    return { ...cp, position: { ...newData.startPoint } };
+                  }
+                  if (idx === newData.controlPoints.length - 1) {
+                    return { ...cp, position: { ...newData.endPoint } };
+                  }
+                }
+
+                return cp;
+              });
+
+              return newData;
+            };
+
+            let arrowData = baseArrowData;
+
+            // تحديث نقطة البداية إذا كانت متصلة
+            if (arrowData.startConnection?.elementId === movedElementId) {
+              const anchorPos = getAnchorPositionForElement(movedElement, arrowData.startConnection.anchorPoint);
+              const newStartPoint = {
+                x: anchorPos.x - arrow.position.x,
+                y: anchorPos.y - arrow.position.y
+              };
+              arrowData = moveEndpointWithSegmentForConnection(arrowData, 'start', newStartPoint);
+            }
+
+            // تحديث نقطة النهاية إذا كانت متصلة
+            if (arrowData.endConnection?.elementId === movedElementId) {
+              const anchorPos = getAnchorPositionForElement(movedElement, arrowData.endConnection.anchorPoint);
+              const newEndPoint = {
+                x: anchorPos.x - arrow.position.x,
+                y: anchorPos.y - arrow.position.y
+              };
+              arrowData = moveEndpointWithSegmentForConnection(arrowData, 'end', newEndPoint);
+            }
+
+            const idx = updatedElements.findIndex(e => e.id === arrow.id);
+            if (idx !== -1) {
+              updatedElements[idx] = {
+                ...updatedElements[idx],
+                data: { ...updatedElements[idx].data, arrowData }
+              };
+            }
+          });
+        });
+
+        return { elements: updatedElements };
+      });
     }
     
     // pushHistory مرة واحدة فقط في النهاية
