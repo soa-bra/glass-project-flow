@@ -183,21 +183,20 @@ export const convertToOrthogonalPath = (
       endPoint: pathPoints[i + 1]
     });
     
-    // نقطة منتصف الضلع (غير نشطة) - ما عدا الضلع الأوسط الذي تم سحبه
+    // نقطة منتصف الضلع
     const isMiddleSegment = i === 1; // الضلع الأوسط هو الذي تم إنشاؤه بالسحب
-    if (!isMiddleSegment) {
-      const midPoint: ArrowPoint = {
-        x: (pathPoints[i].x + pathPoints[i + 1].x) / 2,
-        y: (pathPoints[i].y + pathPoints[i + 1].y) / 2
-      };
-      controlPoints.push({
-        id: generateId(),
-        type: 'midpoint',
-        position: midPoint,
-        segmentId: segId,
-        isActive: false
-      });
-    }
+    const midPoint: ArrowPoint = {
+      x: (pathPoints[i].x + pathPoints[i + 1].x) / 2,
+      y: (pathPoints[i].y + pathPoints[i + 1].y) / 2
+    };
+    
+    controlPoints.push({
+      id: isMiddleSegment ? draggedMidpointId : generateId(),
+      type: 'midpoint',
+      position: midPoint,
+      segmentId: segId,
+      isActive: isMiddleSegment // الضلع الأوسط يكون نشطاً، البقية غير نشطة
+    });
   }
   
   // نقطة النهاية
