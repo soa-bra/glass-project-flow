@@ -285,14 +285,14 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     return newData;
   };
   
-  // تحديث مواقع نقاط المنتصف لتبقى في منتصف أضلاعها
+  // تحديث مواقع نقاط المنتصف لتبقى في منتصف أضلاعها مع الحفاظ على حالة التفعيل
   const updateMidpointsPositions = (data: ArrowData): ArrowCP[] => {
     return data.controlPoints.map(cp => {
       if (cp.type === 'midpoint' && cp.segmentId) {
         const segment = data.segments.find(s => s.id === cp.segmentId);
         if (segment) {
           return {
-            ...cp,
+            ...cp, // الحفاظ على isActive وباقي الخصائص
             position: {
               x: (segment.startPoint.x + segment.endPoint.x) / 2,
               y: (segment.startPoint.y + segment.endPoint.y) / 2
@@ -312,6 +312,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
   };
   
   // تفعيل نقطة منتصف وتحويلها إلى نقطة نشطة مع إنشاء أضلاع جديدة
+  // المنطق الجديد: الضلع الأصلي يتحرك إلى الموقع الجديد + إنشاء ضلعين رابطين
   const activateMidpointAndSplit = (
     data: ArrowData,
     midpointId: string,
@@ -338,53 +339,64 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     const dy = Math.abs(segment.endPoint.y - segment.startPoint.y);
     const isVerticalSegment = dy > dx;
     
-    // إنشاء 3 أضلاع جديدة بدلاً من الضلع الحالي
-    const seg1Id = generateId();
-    const seg2Id = generateId();
-    const seg3Id = generateId();
+    // إنشاء IDs للأضلاع الجديدة
+    const leftConnectorId = generateId();
+    const rightConnectorId = generateId();
+    // الضلع الأوسط يحتفظ بـ ID الأصلي!
+    const middleSegmentId = segment.id;
     
     let newSegments: ArrowSegment[];
     
     if (isVerticalSegment) {
       // ضلع عمودي + سحب أفقي = شكل U أفقي
-      // ننشئ: أفقي -> عمودي -> أفقي
-      newSegments = [
-        {
-          id: seg1Id,
-          startPoint: segment.startPoint,
-          endPoint: { x: newPosition.x, y: segment.startPoint.y } // أفقي للجانب
-        },
-        {
-          id: seg2Id,
-          startPoint: { x: newPosition.x, y: segment.startPoint.y },
-          endPoint: { x: newPosition.x, y: segment.endPoint.y } // عمودي في الجانب
-        },
-        {
-          id: seg3Id,
-          startPoint: { x: newPosition.x, y: segment.endPoint.y },
-          endPoint: segment.endPoint // أفقي للعودة
-        }
-      ];
+      // الضلع الأصلي ينتقل إلى newPosition.x (يبقى عمودي)
+      // نضيف ضلعين أفقيين على الأعلى والأسفل
+      
+      const movedMiddleSegment: ArrowSegment = {
+        id: middleSegmentId,
+        startPoint: { x: newPosition.x, y: segment.startPoint.y },
+        endPoint: { x: newPosition.x, y: segment.endPoint.y }
+      };
+      
+      const topConnector: ArrowSegment = {
+        id: leftConnectorId,
+        startPoint: segment.startPoint, // من البداية الأصلية
+        endPoint: { x: newPosition.x, y: segment.startPoint.y } // إلى بداية الضلع المنقول
+      };
+      
+      const bottomConnector: ArrowSegment = {
+        id: rightConnectorId,
+        startPoint: { x: newPosition.x, y: segment.endPoint.y }, // من نهاية الضلع المنقول
+        endPoint: segment.endPoint // إلى النهاية الأصلية
+      };
+      
+      // الترتيب: topConnector → movedMiddleSegment → bottomConnector
+      newSegments = [topConnector, movedMiddleSegment, bottomConnector];
     } else {
       // ضلع أفقي + سحب عمودي = شكل U عمودي
-      // ننشئ: عمودي -> أفقي -> عمودي
-      newSegments = [
-        {
-          id: seg1Id,
-          startPoint: segment.startPoint,
-          endPoint: { x: segment.startPoint.x, y: newPosition.y } // عمودي للأسفل/الأعلى
-        },
-        {
-          id: seg2Id,
-          startPoint: { x: segment.startPoint.x, y: newPosition.y },
-          endPoint: { x: segment.endPoint.x, y: newPosition.y } // أفقي في القاع/القمة
-        },
-        {
-          id: seg3Id,
-          startPoint: { x: segment.endPoint.x, y: newPosition.y },
-          endPoint: segment.endPoint // عمودي للعودة
-        }
-      ];
+      // الضلع الأصلي ينتقل إلى newPosition.y (يبقى أفقي)
+      // نضيف ضلعين عموديين على اليسار واليمين
+      
+      const movedMiddleSegment: ArrowSegment = {
+        id: middleSegmentId,
+        startPoint: { x: segment.startPoint.x, y: newPosition.y },
+        endPoint: { x: segment.endPoint.x, y: newPosition.y }
+      };
+      
+      const leftConnector: ArrowSegment = {
+        id: leftConnectorId,
+        startPoint: segment.startPoint, // من البداية الأصلية
+        endPoint: { x: segment.startPoint.x, y: newPosition.y } // إلى بداية الضلع المنقول
+      };
+      
+      const rightConnector: ArrowSegment = {
+        id: rightConnectorId,
+        startPoint: { x: segment.endPoint.x, y: newPosition.y }, // من نهاية الضلع المنقول
+        endPoint: segment.endPoint // إلى النهاية الأصلية
+      };
+      
+      // الترتيب: leftConnector → movedMiddleSegment → rightConnector
+      newSegments = [leftConnector, movedMiddleSegment, rightConnector];
     }
     
     // بناء قائمة الأضلاع الكاملة
@@ -419,20 +431,23 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     });
     
     // نقاط منتصف لكل ضلع
-    allSegments.forEach((seg, idx) => {
+    allSegments.forEach((seg) => {
       const midPos = {
         x: (seg.startPoint.x + seg.endPoint.x) / 2,
         y: (seg.startPoint.y + seg.endPoint.y) / 2
       };
       
-      // الضلع الأوسط من الأضلاع الجديدة يكون نشطاً (هو الذي تم سحبه)
-      const isTheActivatedMiddle = seg.id === seg2Id;
+      // الضلع الأوسط (الأصلي المنقول) يكون نشطاً - نقطته تحتفظ بـ midpointId
+      const isTheOriginalMiddle = seg.id === middleSegmentId;
+      
+      // البحث عن نقطة تحكم موجودة مسبقاً لهذا الضلع (للحفاظ على حالة التفعيل)
+      const existingCp = data.controlPoints.find(cp => cp.segmentId === seg.id);
       
       newControlPoints.push({
-        id: isTheActivatedMiddle ? midpointId : generateId(),
+        id: isTheOriginalMiddle ? midpointId : (existingCp?.id || generateId()),
         type: 'midpoint',
         position: midPos,
-        isActive: isTheActivatedMiddle,
+        isActive: isTheOriginalMiddle || (existingCp?.isActive ?? false), // الضلع الأوسط نشط دائماً
         segmentId: seg.id
       });
     });
@@ -451,6 +466,187 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     return {
       ...data,
       segments: allSegments,
+      controlPoints: newControlPoints,
+      endPoint: finalEndPoint,
+      arrowType: 'orthogonal'
+    };
+  };
+  
+  // تفعيل نقطة ضلع جانبي (رابط) وإنشاء ضلع جديد واحد فقط
+  const activateSideConnectorMidpoint = (
+    data: ArrowData,
+    midpointId: string,
+    newPosition: ArrowPoint,
+    direction: 'horizontal' | 'vertical'
+  ): ArrowData => {
+    const midpoint = data.controlPoints.find(cp => cp.id === midpointId);
+    if (!midpoint || !midpoint.segmentId) return data;
+    
+    const segmentIndex = data.segments.findIndex(s => s.id === midpoint.segmentId);
+    const segment = data.segments[segmentIndex];
+    if (!segment) return data;
+    
+    // تحديد اتجاه الضلع الحالي (الضلع الرابط)
+    const dx = Math.abs(segment.endPoint.x - segment.startPoint.x);
+    const dy = Math.abs(segment.endPoint.y - segment.startPoint.y);
+    const isVerticalConnector = dy > dx;
+    
+    // هل هذا ضلع بداية (متصل بنقطة البداية) أم ضلع نهاية (متصل بنقطة النهاية)؟
+    const isStartConnector = segmentIndex === 0;
+    const isEndConnector = segmentIndex === data.segments.length - 1;
+    
+    // إنشاء ضلع جديد واحد فقط
+    const newConnectorId = generateId();
+    const newSegments = [...data.segments];
+    
+    if (isVerticalConnector) {
+      // ضلع رابط عمودي - يُسحب أفقياً
+      // ينقسم إلى: ضلع أفقي جديد + ضلع عمودي مُعدّل
+      
+      if (isStartConnector) {
+        // ضلع بداية: نضيف ضلع أفقي جديد من البداية، ونقصّر الضلع العمودي
+        const newHorizontalSegment: ArrowSegment = {
+          id: newConnectorId,
+          startPoint: segment.startPoint,
+          endPoint: { x: newPosition.x, y: segment.startPoint.y }
+        };
+        
+        const modifiedVerticalSegment: ArrowSegment = {
+          id: segment.id,
+          startPoint: { x: newPosition.x, y: segment.startPoint.y },
+          endPoint: { x: newPosition.x, y: segment.endPoint.y }
+        };
+        
+        // نحدّث الضلع الأوسط (التالي) ليتصل بالضلع المعدّل
+        if (newSegments[1]) {
+          newSegments[1] = {
+            ...newSegments[1],
+            startPoint: modifiedVerticalSegment.endPoint
+          };
+        }
+        
+        newSegments.splice(0, 1, newHorizontalSegment, modifiedVerticalSegment);
+      } else if (isEndConnector) {
+        // ضلع نهاية: نضيف ضلع أفقي جديد للنهاية، ونقصّر الضلع العمودي
+        const modifiedVerticalSegment: ArrowSegment = {
+          id: segment.id,
+          startPoint: { x: newPosition.x, y: segment.startPoint.y },
+          endPoint: { x: newPosition.x, y: segment.endPoint.y }
+        };
+        
+        const newHorizontalSegment: ArrowSegment = {
+          id: newConnectorId,
+          startPoint: modifiedVerticalSegment.endPoint,
+          endPoint: segment.endPoint
+        };
+        
+        // نحدّث الضلع السابق ليتصل بالضلع المعدّل
+        if (newSegments[segmentIndex - 1]) {
+          newSegments[segmentIndex - 1] = {
+            ...newSegments[segmentIndex - 1],
+            endPoint: modifiedVerticalSegment.startPoint
+          };
+        }
+        
+        newSegments.splice(segmentIndex, 1, modifiedVerticalSegment, newHorizontalSegment);
+      }
+    } else {
+      // ضلع رابط أفقي - يُسحب عمودياً
+      // ينقسم إلى: ضلع عمودي جديد + ضلع أفقي مُعدّل
+      
+      if (isStartConnector) {
+        const newVerticalSegment: ArrowSegment = {
+          id: newConnectorId,
+          startPoint: segment.startPoint,
+          endPoint: { x: segment.startPoint.x, y: newPosition.y }
+        };
+        
+        const modifiedHorizontalSegment: ArrowSegment = {
+          id: segment.id,
+          startPoint: { x: segment.startPoint.x, y: newPosition.y },
+          endPoint: { x: segment.endPoint.x, y: newPosition.y }
+        };
+        
+        if (newSegments[1]) {
+          newSegments[1] = {
+            ...newSegments[1],
+            startPoint: modifiedHorizontalSegment.endPoint
+          };
+        }
+        
+        newSegments.splice(0, 1, newVerticalSegment, modifiedHorizontalSegment);
+      } else if (isEndConnector) {
+        const modifiedHorizontalSegment: ArrowSegment = {
+          id: segment.id,
+          startPoint: { x: segment.startPoint.x, y: newPosition.y },
+          endPoint: { x: segment.endPoint.x, y: newPosition.y }
+        };
+        
+        const newVerticalSegment: ArrowSegment = {
+          id: newConnectorId,
+          startPoint: modifiedHorizontalSegment.endPoint,
+          endPoint: segment.endPoint
+        };
+        
+        if (newSegments[segmentIndex - 1]) {
+          newSegments[segmentIndex - 1] = {
+            ...newSegments[segmentIndex - 1],
+            endPoint: modifiedHorizontalSegment.startPoint
+          };
+        }
+        
+        newSegments.splice(segmentIndex, 1, modifiedHorizontalSegment, newVerticalSegment);
+      }
+    }
+    
+    // إعادة بناء نقاط التحكم مع الحفاظ على حالة التفعيل
+    const newControlPoints: ArrowCP[] = [];
+    
+    // نقطة البداية
+    const startCp = data.controlPoints.find(cp => cp.type === 'endpoint' && data.controlPoints.indexOf(cp) === 0);
+    newControlPoints.push({
+      id: startCp?.id || 'start',
+      type: 'endpoint',
+      position: data.startPoint,
+      isActive: true,
+      connection: startCp?.connection || null
+    });
+    
+    // نقاط منتصف لكل ضلع
+    newSegments.forEach((seg) => {
+      const midPos = {
+        x: (seg.startPoint.x + seg.endPoint.x) / 2,
+        y: (seg.startPoint.y + seg.endPoint.y) / 2
+      };
+      
+      // البحث عن نقطة تحكم موجودة لهذا الضلع
+      const existingCp = data.controlPoints.find(cp => cp.segmentId === seg.id);
+      // النقطة التي تم سحبها تصبح نشطة
+      const isActivatedMidpoint = seg.id === segment.id;
+      
+      newControlPoints.push({
+        id: isActivatedMidpoint ? midpointId : (existingCp?.id || generateId()),
+        type: 'midpoint',
+        position: midPos,
+        isActive: isActivatedMidpoint || (existingCp?.isActive ?? false),
+        segmentId: seg.id
+      });
+    });
+    
+    // نقطة النهاية
+    const endCp = data.controlPoints.find(cp => cp.type === 'endpoint' && data.controlPoints.indexOf(cp) === data.controlPoints.length - 1);
+    const finalEndPoint = newSegments.length > 0 ? newSegments[newSegments.length - 1].endPoint : data.endPoint;
+    newControlPoints.push({
+      id: endCp?.id || 'end',
+      type: 'endpoint',
+      position: finalEndPoint,
+      isActive: true,
+      connection: endCp?.connection || null
+    });
+    
+    return {
+      ...data,
+      segments: newSegments,
       controlPoints: newControlPoints,
       endPoint: finalEndPoint,
       arrowType: 'orthogonal'
@@ -642,10 +838,19 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       const midpoint = arrowData.controlPoints.find(cp => cp.id === dragState.controlPointId);
       
       if (midpoint && !midpoint.isActive) {
-        // تفعيل نقطة المنتصف وتقسيم الضلع
-        newArrowData = activateMidpointAndSplit(arrowData, dragState.controlPointId, newPoint, currentDragDirection);
+        // نقطة غير نشطة - نحدد إذا كانت ضلع رابط جانبي أم ضلع أوسط
+        const segmentIndex = arrowData.segments.findIndex(s => s.id === midpoint.segmentId);
+        const isFirstOrLastSegment = segmentIndex === 0 || segmentIndex === arrowData.segments.length - 1;
+        
+        if (isFirstOrLastSegment && arrowData.segments.length > 1) {
+          // ضلع جانبي (رابط) - استخدام دالة التفعيل الخاصة به
+          newArrowData = activateSideConnectorMidpoint(arrowData, dragState.controlPointId, newPoint, currentDragDirection);
+        } else {
+          // تفعيل نقطة المنتصف وتقسيم الضلع (للأضلاع الوسطى أو السهم المستقيم)
+          newArrowData = activateMidpointAndSplit(arrowData, dragState.controlPointId, newPoint, currentDragDirection);
+        }
       } else if (midpoint && midpoint.isActive && midpoint.segmentId) {
-        // النقطة نشطة بالفعل - تحريكها
+        // النقطة نشطة بالفعل - تحريكها مع الحفاظ على حالة التفعيل
         const segment = arrowData.segments.find(s => s.id === midpoint.segmentId);
         if (segment) {
           // تحديد نوع الضلع: أفقي أو عمودي
@@ -684,7 +889,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
             };
           }
           
-          // تحديث نقاط التحكم
+          // تحديث نقاط التحكم مع الحفاظ على حالة التفعيل
           newArrowData.controlPoints = updateMidpointsPositions(newArrowData);
         }
       } else {
