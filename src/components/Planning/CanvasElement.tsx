@@ -6,6 +6,7 @@ import { ResizeHandle } from './ResizeHandle';
 import { TextEditor } from './TextEditor';
 import { ShapeRenderer } from './ShapeRenderer';
 import { ArrowControlPoints } from './ArrowControlPoints';
+import { ArrowLabels } from './ArrowLabels';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 
 // التحقق إذا كان العنصر سهماً
@@ -271,19 +272,25 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       )}
       
       {element.type === 'shape' && (
-        <ShapeRenderer
-          shapeType={element.shapeType || element.data?.shapeType || 'rectangle'}
-          width={element.size.width}
-          height={element.size.height}
-          fillColor={element.style?.backgroundColor || element.data?.fillColor || '#3DBE8B'}
-          strokeColor={element.strokeColor || element.data?.strokeColor || '#000000'}
-          strokeWidth={element.strokeWidth || element.data?.strokeWidth || 2}
-          opacity={element.style?.opacity || 1}
-          borderRadius={element.style?.borderRadius || 0}
-          iconName={element.iconName || element.data?.iconName}
-          stickyText={element.stickyText || element.data?.stickyText}
-          arrowData={element.data?.arrowData}
-        />
+        <>
+          <ShapeRenderer
+            shapeType={element.shapeType || element.data?.shapeType || 'rectangle'}
+            width={element.size.width}
+            height={element.size.height}
+            fillColor={element.style?.backgroundColor || element.data?.fillColor || '#3DBE8B'}
+            strokeColor={element.strokeColor || element.data?.strokeColor || '#000000'}
+            strokeWidth={element.strokeWidth || element.data?.strokeWidth || 2}
+            opacity={element.style?.opacity || 1}
+            borderRadius={element.style?.borderRadius || 0}
+            iconName={element.iconName || element.data?.iconName}
+            stickyText={element.stickyText || element.data?.stickyText}
+            arrowData={element.data?.arrowData}
+          />
+          {/* عرض النصوص على نقاط السهم دائماً */}
+          {isElementArrow(element) && element.data?.arrowData && (
+            <ArrowLabels arrowData={element.data.arrowData} />
+          )}
+        </>
       )}
       
       {element.type === 'frame' && (

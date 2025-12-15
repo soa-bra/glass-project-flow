@@ -923,15 +923,27 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       // تحريك الضلع المرتبط بنقطة البداية
       newArrowData = moveEndpointWithSegment(arrowData, 'start', finalPoint);
       
-      // إضافة معلومات الاتصال
+      // إضافة معلومات الاتصال على المستوى الأعلى وعلى نقطة التحكم
       if (nearestAnchor) {
+        const connectionData = {
+          elementId: nearestAnchor.elementId,
+          anchorPoint: nearestAnchor.anchorPoint,
+          offset: { x: 0, y: 0 }
+        };
+        
+        // ✅ تحديث startConnection على المستوى الأعلى (للـ useEffect)
+        newArrowData.startConnection = connectionData;
+        
         const startCP = newArrowData.controlPoints.find(cp => cp.id === 'start' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === 0));
         if (startCP) {
-          startCP.connection = {
-            elementId: nearestAnchor.elementId,
-            anchorPoint: nearestAnchor.anchorPoint,
-            offset: { x: 0, y: 0 }
-          };
+          startCP.connection = connectionData;
+        }
+      } else {
+        // ✅ إزالة الاتصال عند السحب بعيداً
+        newArrowData.startConnection = null;
+        const startCP = newArrowData.controlPoints.find(cp => cp.id === 'start' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === 0));
+        if (startCP) {
+          startCP.connection = null;
         }
       }
       
@@ -946,15 +958,27 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
       // تحريك الضلع المرتبط بنقطة النهاية
       newArrowData = moveEndpointWithSegment(arrowData, 'end', finalPoint);
       
-      // إضافة معلومات الاتصال
+      // إضافة معلومات الاتصال على المستوى الأعلى وعلى نقطة التحكم
       if (nearestAnchor) {
+        const connectionData = {
+          elementId: nearestAnchor.elementId,
+          anchorPoint: nearestAnchor.anchorPoint,
+          offset: { x: 0, y: 0 }
+        };
+        
+        // ✅ تحديث endConnection على المستوى الأعلى (للـ useEffect)
+        newArrowData.endConnection = connectionData;
+        
         const endCP = newArrowData.controlPoints.find(cp => cp.id === 'end' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === newArrowData.controlPoints.length - 1));
         if (endCP) {
-          endCP.connection = {
-            elementId: nearestAnchor.elementId,
-            anchorPoint: nearestAnchor.anchorPoint,
-            offset: { x: 0, y: 0 }
-          };
+          endCP.connection = connectionData;
+        }
+      } else {
+        // ✅ إزالة الاتصال عند السحب بعيداً
+        newArrowData.endConnection = null;
+        const endCP = newArrowData.controlPoints.find(cp => cp.id === 'end' || (cp.type === 'endpoint' && newArrowData.controlPoints.indexOf(cp) === newArrowData.controlPoints.length - 1));
+        if (endCP) {
+          endCP.connection = null;
         }
       }
       
