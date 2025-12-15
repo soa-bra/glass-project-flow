@@ -338,9 +338,9 @@ export const findNearestAnchor = (
   let nearest: ElementAnchor | null = null;
   let minDistance = threshold;
   
+  // نقاط السناب فقط على الحواف (أعلى، أسفل، يمين، يسار) بدون الزوايا
   const anchors: ArrowConnection['anchorPoint'][] = [
-    'center', 'top', 'bottom', 'left', 'right',
-    'top-left', 'top-right', 'bottom-left', 'bottom-right'
+    'top', 'bottom', 'left', 'right'
   ];
   
   for (const element of elements) {

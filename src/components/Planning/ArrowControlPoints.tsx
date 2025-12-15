@@ -1446,9 +1446,9 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
                 width: 32,
                 height: 32,
                 borderRadius: '50%',
-                border: '3px solid #3DBE8B',
-                backgroundColor: 'rgba(61, 190, 139, 0.25)',
-                boxShadow: '0 0 12px rgba(61, 190, 139, 0.5), inset 0 0 8px rgba(61, 190, 139, 0.3)',
+                border: '3px solid #E3E8F0',
+                backgroundColor: 'rgba(227, 232, 240, 0.35)',
+                boxShadow: '0 0 12px rgba(227, 232, 240, 0.6), inset 0 0 8px rgba(227, 232, 240, 0.4)',
                 animation: 'pulse-snap 0.6s ease-in-out infinite',
                 zIndex: 99999
               }}
@@ -1462,7 +1462,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
                 width: 48,
                 height: 48,
                 borderRadius: '50%',
-                border: '1px solid rgba(61, 190, 139, 0.3)',
+                border: '1px solid rgba(227, 232, 240, 0.5)',
                 animation: 'pulse-ring 0.8s ease-out infinite',
                 zIndex: 99998
               }}
