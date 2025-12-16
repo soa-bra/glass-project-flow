@@ -1,23 +1,19 @@
+// vite.config.ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
-import HeaderBar from '@/components/HeaderBar';
-import MainContent from '@/components/MainContent';
-
-const Index = () => {
-  return (
-    <div 
-      dir="rtl" 
-      className="relative min-h-screen w-full font-arabic overflow-hidden"
-      style={{ background: '#dfecf2' }}
-    >
-      <div 
-        className="fixed top-0 inset-x-0 z-header"
-        style={{ background: '#dfecf2' }}
-      >
-        <HeaderBar />
-      </div>
-      <MainContent />
-    </div>
-  );
-};
-
-export default Index;
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+    // ✅ يمنع وجود نسختين React (السبب الأشهر لخطأ ReactCurrentDispatcher/useState = null)
+    dedupe: ["react", "react-dom"],
+  },
+  optimizeDeps: {
+    // ✅ يساعد Vite يثبت نفس نسخة React وقت الـ pre-bundle
+    include: ["react", "react-dom"],
+  },
+});
