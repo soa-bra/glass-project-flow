@@ -19,6 +19,8 @@ interface InfiniteCanvasProps {
   boardId: string;
 }
 
+type CanvasEngine = "native" | "reactflow";
+
 const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -52,8 +54,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
 
   useKeyboardShortcuts();
 
-  // ✅ Feature Flag للمحرك (خله reactflow الآن)
-  const engine: "native" | "reactflow" = "reactflow";
+  // ✅ Feature Flag للمحرك
+  const engine = useMemo<CanvasEngine>(() => "reactflow", []);
 
   const isPanningRef = useRef(false);
   const lastPanPositionRef = useRef({ x: 0, y: 0 });
@@ -137,7 +139,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
 
   const handleWheel = useCallback(
     (e: WheelEvent) => {
-      // ✅ ReactFlow عنده Pan/Zoom داخلي، لا نتدخل
       if (engine === "reactflow") return;
 
       e.preventDefault();
@@ -154,11 +155,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      // ✅ ReactFlow ماسك السحب/التحديد، لا نتدخل
-      if (engine === "reactflow") {
-        // بس نخلي إسقاط الملفات يشتغل عبر onDrop / onDragOver
-        return;
-      }
+      if (engine === "reactflow") return;
 
       if (e.button === 1 || (e.button === 0 && e.altKey)) {
         isPanningRef.current = true;
@@ -371,11 +368,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         e.preventDefault();
         const selectedElements = elements.filter((el) => selectedElementIds.includes(el.id));
         const groupIds = [...new Set(selectedElements.map((el) => el.metadata?.groupId).filter(Boolean))];
-
         groupIds.forEach((groupId) => {
           if (groupId) ungroupElements(groupId);
         });
-
         if (groupIds.length > 0) toast.success("تم فك التجميع");
       }
 
@@ -442,7 +437,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     const container = containerRef.current;
     if (!container) return;
 
-    // ✅ فقط native
     if (engine === "native") {
       container.addEventListener("wheel", handleWheel, { passive: false });
       return () => container.removeEventListener("wheel", handleWheel);
@@ -520,7 +514,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       onDragOver={handleFileDragOver}
       style={{ backgroundColor: settings.background, cursor: getCursorStyle() }}
     >
-      {/* Canvas Renderer */}
       {engine === "native" ? (
         <div
           ref={canvasRef}
@@ -566,7 +559,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         <ReactFlowCanvas boardId={boardId} />
       )}
 
-      {/* Selection Box (native فقط) */}
       {engine === "native" && isSelecting && selectionStart && selectionCurrent && (
         <SelectionBox
           startX={selectionStart.x}
@@ -576,7 +568,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         />
       )}
 
-      {/* Input Layers (native فقط) */}
       {engine === "native" && (
         <>
           <PenInputLayer containerRef={containerRef} active={activeTool === "smart_pen"} />
