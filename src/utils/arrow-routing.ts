@@ -715,8 +715,48 @@ export const rebuildControlPoints = (
 // ============= الدالة الرئيسية للتوجيه =============
 
 /**
+ * ✅ البحث عن أقرب نقطة وسط مُفعّلة من طرف معين
+ * تُرجع index الضلع الذي يحتوي على أول نقطة مُفعّلة
+ */
+const findNearestActiveMidpointIndex = (
+  arrowData: ArrowData,
+  fromEndpoint: 'start' | 'end'
+): number | null => {
+  const activeMidpoints = arrowData.controlPoints.filter(
+    cp => cp.type === 'midpoint' && cp.isActive === true && cp.segmentId
+  );
+  
+  if (activeMidpoints.length === 0) return null;
+  
+  if (fromEndpoint === 'start') {
+    // نبحث من البداية عن أول نقطة مُفعّلة
+    for (let i = 0; i < arrowData.segments.length; i++) {
+      const seg = arrowData.segments[i];
+      const hasActiveMidpoint = activeMidpoints.some(cp => cp.segmentId === seg.id);
+      if (hasActiveMidpoint) {
+        return i;
+      }
+    }
+  } else {
+    // نبحث من النهاية عن أول نقطة مُفعّلة
+    for (let i = arrowData.segments.length - 1; i >= 0; i--) {
+      const seg = arrowData.segments[i];
+      const hasActiveMidpoint = activeMidpoints.some(cp => cp.segmentId === seg.id);
+      if (hasActiveMidpoint) {
+        return i;
+      }
+    }
+  }
+  
+  return null;
+};
+
+/**
  * ✅ الدالة الرئيسية لحل اتصال السهم بالعنصر
  * تضمن دائماً إنشاء مسار T-shape أو U-shape نظيف
+ * 
+ * القاعدة الجديدة: لا يتم تحريك أي ضلع يحتوي على نقطة وسط مُفعّلة
+ * يتم فقط تعديل الأضلاع بين نقطة النهاية المُلصقة وأقرب نقطة مُفعّلة
  */
 export const resolveSnapConnection = (
   arrowData: ArrowData,
@@ -726,39 +766,111 @@ export const resolveSnapConnection = (
   endpointType: 'start' | 'end',
   config: RoutingConfig = DEFAULT_CONFIG
 ): ArrowData => {
-  // ✅ الخطوة 1: تحديد النقطة الثابتة (الطرف الآخر للسهم)
-  const fixedPoint = endpointType === 'start' 
-    ? { ...arrowData.endPoint }
-    : { ...arrowData.startPoint };
+  // ✅ الخطوة 1: البحث عن أقرب نقطة وسط مُفعّلة
+  const nearestActiveIndex = findNearestActiveMidpointIndex(arrowData, endpointType);
   
-  // ✅ الخطوة 2: فحص إذا كان المسار يمر من داخل العنصر (يحتاج U-shape)
-  const needsUShape = detectIntersection(fixedPoint, snapPoint, targetElement);
+  // ✅ الخطوة 2: تحديد الأضلاع التي يجب الاحتفاظ بها والنقطة الثابتة
+  let fixedPoint: ArrowPoint;
+  let preservedSegments: ArrowSegment[] = [];
+  let preservedControlPoints: ArrowControlPoint[] = [];
   
-  // ✅ الخطوة 3: إنشاء المسار المناسب
-  let newSegments: ArrowSegment[];
-  
-  if (needsUShape) {
-    console.log('[Arrow Routing] Creating U-Shape path');
-    newSegments = createUShapePath(fixedPoint, snapPoint, snapEdge, config);
+  if (nearestActiveIndex !== null) {
+    // يوجد نقاط مُفعّلة - نحتفظ بالأضلاع التي بعد/قبل النقطة المُفعّلة
+    if (endpointType === 'start') {
+      // نسحب من البداية → نحتفظ بالأضلاع من النقطة المُفعّلة حتى النهاية
+      // النقطة الثابتة هي بداية الضلع المُفعّل
+      preservedSegments = arrowData.segments.slice(nearestActiveIndex);
+      fixedPoint = { ...preservedSegments[0].startPoint };
+      
+      // نحتفظ بنقاط التحكم للأضلاع المحفوظة
+      preservedControlPoints = arrowData.controlPoints.filter(cp => {
+        if (cp.type === 'endpoint') return false;
+        if (!cp.segmentId) return false;
+        return preservedSegments.some(s => s.id === cp.segmentId);
+      });
+      
+      console.log('[Arrow Routing] Preserving segments from active midpoint to end:', {
+        activeIndex: nearestActiveIndex,
+        preservedCount: preservedSegments.length,
+        fixedPoint
+      });
+    } else {
+      // نسحب من النهاية → نحتفظ بالأضلاع من البداية حتى النقطة المُفعّلة
+      // النقطة الثابتة هي نهاية الضلع المُفعّل
+      preservedSegments = arrowData.segments.slice(0, nearestActiveIndex + 1);
+      fixedPoint = { ...preservedSegments[preservedSegments.length - 1].endPoint };
+      
+      // نحتفظ بنقاط التحكم للأضلاع المحفوظة
+      preservedControlPoints = arrowData.controlPoints.filter(cp => {
+        if (cp.type === 'endpoint') return false;
+        if (!cp.segmentId) return false;
+        return preservedSegments.some(s => s.id === cp.segmentId);
+      });
+      
+      console.log('[Arrow Routing] Preserving segments from start to active midpoint:', {
+        activeIndex: nearestActiveIndex,
+        preservedCount: preservedSegments.length,
+        fixedPoint
+      });
+    }
   } else {
-    console.log('[Arrow Routing] Creating T-Shape path');
-    newSegments = createOrthogonalPathWithTShape(fixedPoint, snapPoint, snapEdge, config);
+    // لا يوجد نقاط مُفعّلة - نستخدم الطرف الآخر كنقطة ثابتة
+    fixedPoint = endpointType === 'start' 
+      ? { ...arrowData.endPoint }
+      : { ...arrowData.startPoint };
   }
   
-  // ✅ الخطوة 4: عكس المسار إذا كان الاتصال من البداية
+  // ✅ الخطوة 3: فحص إذا كان المسار يمر من داخل العنصر (يحتاج U-shape)
+  const needsUShape = detectIntersection(fixedPoint, snapPoint, targetElement);
+  
+  // ✅ الخطوة 4: إنشاء المسار الجديد للجزء المُعدّل فقط
+  let newPathSegments: ArrowSegment[];
+  
+  if (needsUShape) {
+    console.log('[Arrow Routing] Creating U-Shape path for modified section');
+    newPathSegments = createUShapePath(fixedPoint, snapPoint, snapEdge, config);
+  } else {
+    console.log('[Arrow Routing] Creating T-Shape path for modified section');
+    newPathSegments = createOrthogonalPathWithTShape(fixedPoint, snapPoint, snapEdge, config);
+  }
+  
+  // ✅ الخطوة 5: عكس المسار الجديد إذا كان الاتصال من البداية
   if (endpointType === 'start') {
-    newSegments = newSegments.map(seg => ({
+    newPathSegments = newPathSegments.map(seg => ({
       ...seg,
       startPoint: { ...seg.endPoint },
       endPoint: { ...seg.startPoint }
     })).reverse();
   }
   
-  // ✅ الخطوة 5: تحديث النقاط
-  const newStartPoint = newSegments.length > 0 ? { ...newSegments[0].startPoint } : arrowData.startPoint;
-  const newEndPoint = newSegments.length > 0 ? { ...newSegments[newSegments.length - 1].endPoint } : arrowData.endPoint;
+  // ✅ الخطوة 6: دمج الأضلاع المحفوظة مع الأضلاع الجديدة
+  let finalSegments: ArrowSegment[];
   
-  // ✅ الخطوة 6: تحديث الاتصالات
+  if (nearestActiveIndex !== null) {
+    if (endpointType === 'start') {
+      // الأضلاع الجديدة + الأضلاع المحفوظة
+      // نتأكد أن نهاية المسار الجديد تتصل ببداية الأضلاع المحفوظة
+      if (newPathSegments.length > 0 && preservedSegments.length > 0) {
+        newPathSegments[newPathSegments.length - 1].endPoint = { ...preservedSegments[0].startPoint };
+      }
+      finalSegments = [...newPathSegments, ...preservedSegments];
+    } else {
+      // الأضلاع المحفوظة + الأضلاع الجديدة
+      // نتأكد أن بداية المسار الجديد تتصل بنهاية الأضلاع المحفوظة
+      if (preservedSegments.length > 0 && newPathSegments.length > 0) {
+        newPathSegments[0].startPoint = { ...preservedSegments[preservedSegments.length - 1].endPoint };
+      }
+      finalSegments = [...preservedSegments, ...newPathSegments];
+    }
+  } else {
+    finalSegments = newPathSegments;
+  }
+  
+  // ✅ الخطوة 7: تحديث النقاط
+  const newStartPoint = finalSegments.length > 0 ? { ...finalSegments[0].startPoint } : arrowData.startPoint;
+  const newEndPoint = finalSegments.length > 0 ? { ...finalSegments[finalSegments.length - 1].endPoint } : arrowData.endPoint;
+  
+  // ✅ الخطوة 8: تحديث الاتصالات
   const newStartConnection = endpointType === 'start' 
     ? { elementId: targetElement.id, anchorPoint: snapEdge, offset: { x: 0, y: 0 } } as ArrowConnection
     : arrowData.startConnection;
@@ -767,28 +879,87 @@ export const resolveSnapConnection = (
     ? { elementId: targetElement.id, anchorPoint: snapEdge, offset: { x: 0, y: 0 } } as ArrowConnection
     : arrowData.endConnection;
   
-  // ✅ الخطوة 7: إنشاء ArrowData جديد
+  // ✅ الخطوة 9: إنشاء ArrowData جديد
   const newArrowData: ArrowData = {
     ...arrowData,
     startPoint: newStartPoint,
     endPoint: newEndPoint,
-    segments: newSegments,
+    segments: finalSegments,
     startConnection: newStartConnection,
     endConnection: newEndConnection,
     arrowType: 'orthogonal'
   };
   
-  // ✅ الخطوة 8: إعادة بناء نقاط التحكم
-  newArrowData.controlPoints = rebuildControlPoints(newSegments, newArrowData);
+  // ✅ الخطوة 10: إعادة بناء نقاط التحكم مع الحفاظ على حالة isActive للأضلاع المحفوظة
+  newArrowData.controlPoints = rebuildControlPointsPreservingActive(
+    finalSegments, 
+    newArrowData, 
+    preservedControlPoints
+  );
   
   console.log('[Arrow Routing] Result:', {
     type: needsUShape ? 'U-Shape' : 'T-Shape',
-    segmentsCount: newSegments.length,
+    totalSegments: finalSegments.length,
+    preservedSegments: preservedSegments.length,
+    newSegments: newPathSegments.length,
     snapEdge,
     endpointType
   });
   
   return newArrowData;
+};
+
+/**
+ * ✅ إعادة بناء نقاط التحكم مع الحفاظ على حالة isActive للأضلاع المحفوظة
+ */
+const rebuildControlPointsPreservingActive = (
+  segments: ArrowSegment[],
+  arrowData: ArrowData,
+  preservedControlPoints: ArrowControlPoint[]
+): ArrowControlPoint[] => {
+  const controlPoints: ArrowControlPoint[] = [];
+  
+  // نقطة البداية
+  const startPoint = segments.length > 0 ? segments[0].startPoint : arrowData.startPoint;
+  controlPoints.push({
+    id: generateId(),
+    type: 'endpoint',
+    position: { ...startPoint },
+    isActive: true,
+    connection: arrowData.startConnection || null
+  });
+  
+  // نقاط منتصف لكل ضلع
+  segments.forEach((seg) => {
+    const midPos = {
+      x: (seg.startPoint.x + seg.endPoint.x) / 2,
+      y: (seg.startPoint.y + seg.endPoint.y) / 2
+    };
+    
+    // نبحث عن نقطة تحكم محفوظة لهذا الضلع
+    const preservedCp = preservedControlPoints.find(cp => cp.segmentId === seg.id);
+    
+    controlPoints.push({
+      id: preservedCp?.id || generateId(),
+      type: 'midpoint',
+      position: midPos,
+      isActive: preservedCp?.isActive ?? false, // نحافظ على حالة isActive للأضلاع المحفوظة
+      segmentId: seg.id,
+      label: preservedCp?.label
+    });
+  });
+  
+  // نقطة النهاية
+  const endPoint = segments.length > 0 ? segments[segments.length - 1].endPoint : arrowData.endPoint;
+  controlPoints.push({
+    id: generateId(),
+    type: 'endpoint',
+    position: { ...endPoint },
+    isActive: true,
+    connection: arrowData.endConnection || null
+  });
+  
+  return controlPoints;
 };
 
 /**
@@ -811,7 +982,7 @@ export const updateConnectionOnElementMove = (
   
   const snapEdge = connection.anchorPoint as SnapEdge;
   
-  // استخدام resolveSnapConnection لضمان T-shape
+  // استخدام resolveSnapConnection لضمان T-shape مع الحفاظ على الأضلاع المُفعّلة
   return resolveSnapConnection(
     arrowData,
     newAnchorPosition,
