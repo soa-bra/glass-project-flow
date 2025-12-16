@@ -76,7 +76,8 @@ export const detectParallelSnap = (
 };
 
 /**
- * فحص إذا كان المسار يمر من داخل العنصر
+ * فحص إذا كان المسار يمر من داخل العنصر (تقاطع خط مع مستطيل)
+ * يستخدم خوارزمية Line-Rectangle Intersection
  */
 export const detectIntersection = (
   fromPoint: ArrowPoint,
@@ -84,18 +85,68 @@ export const detectIntersection = (
   targetElement: TargetElement
 ): boolean => {
   const { position, size } = targetElement;
+  const padding = 10; // هامش حول العنصر
+  
   const rect = {
-    left: position.x - 5,
-    top: position.y - 5,
-    right: position.x + size.width + 5,
-    bottom: position.y + size.height + 5
+    left: position.x - padding,
+    top: position.y - padding,
+    right: position.x + size.width + padding,
+    bottom: position.y + size.height + padding
   };
   
-  // فحص إذا النقطة البعيدة داخل العنصر
-  const isInside = fromPoint.x >= rect.left && fromPoint.x <= rect.right && 
-                   fromPoint.y >= rect.top && fromPoint.y <= rect.bottom;
+  // ✅ فحص 1: هل النقطة الثابتة (fromPoint) داخل العنصر؟
+  const fromInside = fromPoint.x >= rect.left && fromPoint.x <= rect.right && 
+                     fromPoint.y >= rect.top && fromPoint.y <= rect.bottom;
+  if (fromInside) return true;
   
-  return isInside;
+  // ✅ فحص 2: هل الخط المستقيم يمر عبر العنصر؟
+  // نفحص التقاطع مع الأربع حدود للمستطيل
+  
+  // فحص التقاطع مع الحد الأيسر
+  if (lineIntersectsLine(fromPoint, toPoint, 
+    { x: rect.left, y: rect.top }, { x: rect.left, y: rect.bottom })) return true;
+  
+  // فحص التقاطع مع الحد الأيمن
+  if (lineIntersectsLine(fromPoint, toPoint, 
+    { x: rect.right, y: rect.top }, { x: rect.right, y: rect.bottom })) return true;
+  
+  // فحص التقاطع مع الحد العلوي
+  if (lineIntersectsLine(fromPoint, toPoint, 
+    { x: rect.left, y: rect.top }, { x: rect.right, y: rect.top })) return true;
+  
+  // فحص التقاطع مع الحد السفلي
+  if (lineIntersectsLine(fromPoint, toPoint, 
+    { x: rect.left, y: rect.bottom }, { x: rect.right, y: rect.bottom })) return true;
+  
+  // ✅ فحص 3: هل مسار T-shape المحتمل يمر عبر العنصر؟
+  // نقطة المنتصف في T-shape (حيث يلتقي الضلعان)
+  const midPoint1 = { x: toPoint.x, y: fromPoint.y }; // للحدود الأفقية
+  const midPoint2 = { x: fromPoint.x, y: toPoint.y }; // للحدود العمودية
+  
+  // فحص إذا نقطة المنتصف داخل العنصر
+  const mid1Inside = midPoint1.x >= rect.left && midPoint1.x <= rect.right && 
+                     midPoint1.y >= rect.top && midPoint1.y <= rect.bottom;
+  const mid2Inside = midPoint2.x >= rect.left && midPoint2.x <= rect.right && 
+                     midPoint2.y >= rect.top && midPoint2.y <= rect.bottom;
+  
+  if (mid1Inside || mid2Inside) return true;
+  
+  return false;
+};
+
+/**
+ * فحص تقاطع خطين (Line Segment Intersection)
+ * يستخدم خوارزمية CCW (Counter-Clockwise)
+ */
+const lineIntersectsLine = (
+  p1: ArrowPoint, p2: ArrowPoint,
+  p3: ArrowPoint, p4: ArrowPoint
+): boolean => {
+  const ccw = (A: ArrowPoint, B: ArrowPoint, C: ArrowPoint): boolean => {
+    return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
+  };
+  
+  return ccw(p1, p3, p4) !== ccw(p2, p3, p4) && ccw(p1, p2, p3) !== ccw(p1, p2, p4);
 };
 
 // ============= إنشاء مسار T-Shape النظيف =============
