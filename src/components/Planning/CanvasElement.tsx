@@ -100,7 +100,7 @@ function Body({ element }: { element: CanvasElementModel }) {
           fontWeight: element.style?.fontWeight ?? 500,
         }}
       >
-        {(element as any).text ?? \"\"}
+        {(element as any).text ?? ""}
       </div>
     );
   }
