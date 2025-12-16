@@ -1,5 +1,6 @@
 // src/contexts/NavigationContext.tsx
-import * as React from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
+import type { ReactNode, FC } from "react";
 
 type NavigationStateData = {
   activeSection: string;
@@ -14,24 +15,24 @@ type NavigationState = {
   navigateToCustomerDetails: (customerId: string) => void;
 };
 
-const NavigationContext = React.createContext<NavigationState | null>(null);
+const NavigationContext = createContext<NavigationState | null>(null);
 
-export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [navigationState, setNavigationState] = React.useState<NavigationStateData>({
+export const NavigationProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const [navigationState, setNavigationState] = useState<NavigationStateData>({
     activeSection: "home",
     selectedDepartment: null,
     selectedCustomer: null,
   });
 
-  const setActiveSection = React.useCallback((section: string) => {
+  const setActiveSection = useCallback((section: string) => {
     setNavigationState((prev) => ({ ...prev, activeSection: section }));
   }, []);
 
-  const setSelectedDepartment = React.useCallback((department: string | null) => {
+  const setSelectedDepartment = useCallback((department: string | null) => {
     setNavigationState((prev) => ({ ...prev, selectedDepartment: department }));
   }, []);
 
-  const navigateToCustomerDetails = React.useCallback((customerId: string) => {
+  const navigateToCustomerDetails = useCallback((customerId: string) => {
     setNavigationState((prev) => ({
       ...prev,
       activeSection: "departments",
@@ -40,7 +41,7 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }));
   }, []);
 
-  const value = React.useMemo<NavigationState>(
+  const value = useMemo<NavigationState>(
     () => ({
       navigationState,
       setActiveSection,
@@ -54,7 +55,7 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 };
 
 export const useNavigation = (): NavigationState => {
-  const ctx = React.useContext(NavigationContext);
+  const ctx = useContext(NavigationContext);
   if (!ctx) {
     throw new Error("useNavigation must be used within NavigationProvider");
   }
