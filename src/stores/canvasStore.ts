@@ -232,8 +232,9 @@ export function createCanvasStore(initial?: Partial<CanvasState>): CanvasStore {
 export const canvasStore = createCanvasStore();
 
 // -----------------------------
-// React selector hook (fast)\n// -----------------------------
-export function useCanvasStore<T>(selector: (s: CanvasState) => T, isEqual: (a: T, b: T) => boolean = Object.is): T {
+// React selector hook (fast)
+// -----------------------------
+function useCanvasStoreImpl<T>(selector: (s: CanvasState) => T, isEqual: (a: T, b: T) => boolean = Object.is): T {
   const getSnapshot = () => selector(canvasStore.getState());
 
   return useSyncExternalStore(
@@ -242,6 +243,13 @@ export function useCanvasStore<T>(selector: (s: CanvasState) => T, isEqual: (a: 
     () => getSnapshot(),
   );
 }
+
+// Add Zustand-compatible static methods
+export const useCanvasStore = Object.assign(useCanvasStoreImpl, {
+  getState: canvasStore.getState,
+  setState: canvasStore.setState,
+  subscribe: canvasStore.subscribe,
+});
 
 // Convenience selectors
 export function useCamera() {
