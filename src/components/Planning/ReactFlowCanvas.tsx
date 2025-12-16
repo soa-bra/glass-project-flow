@@ -5,7 +5,8 @@ import {
   Background,
   Controls,
   type Node,
-  type OnSelectionChangeParams
+  type NodeChange,
+  type OnSelectionChangeParams,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -13,20 +14,19 @@ import { useCanvasStore } from "@/stores/canvasStore";
 import type { CanvasElement } from "@/types/canvas";
 import CanvasElementComponent from "./CanvasElement";
 
-type Props = { boardId: string };
+type Props = {
+  boardId: string;
+};
 
 const isArrowElement = (el: CanvasElement) =>
-  el.type === "shape" && ((el.shapeType || el.data?.shapeType || "").startsWith("arrow_"));
+  el.type === "shape" && (el.shapeType || el.data?.shapeType || "").startsWith("arrow_");
 
 function elementsToNodes(elements: CanvasElement[], layers: any[]): Node[] {
   return elements
     .filter((el) => {
       const layer = layers.find((l: any) => l.id === el.layerId);
-      const isVisible = el.visible !== false && layer?.visible !== false;
-
+      if (!layer?.visible || el.visible === false) return false;
       if (isArrowElement(el)) return false;
-      if (!isVisible) return false;
-
       return true;
     })
     .map((el) => ({
@@ -35,14 +35,12 @@ function elementsToNodes(elements: CanvasElement[], layers: any[]): Node[] {
       position: { x: el.position.x, y: el.position.y },
       data: { elementId: el.id },
       draggable: !el.locked,
-      selectable: !el.locked
+      selectable: !el.locked,
     }));
 }
 
-const SoaBraNode = ({ data }: { data: { elementId: string } }) => {
-  const elementId = data?.elementId;
-
-  const element = useCanvasStore((s) => s.elements.find((e) => e.id === elementId));
+const SoaBraNode = ({ id }: { id: string }) => {
+  const element = useCanvasStore((s) => s.elements.find((e) => e.id === id));
   const selectedIds = useCanvasStore((s) => s.selectedElementIds);
   const activeTool = useCanvasStore((s) => s.activeTool);
   const selectElement = useCanvasStore((s) => s.selectElement);
@@ -62,7 +60,9 @@ const SoaBraNode = ({ data }: { data: { elementId: string } }) => {
   );
 };
 
-const nodeTypes = { soaBraNode: SoaBraNode };
+const nodeTypes = {
+  soaBraNode: SoaBraNode,
+};
 
 export default function ReactFlowCanvas({ boardId }: Props) {
   const elements = useCanvasStore((s) => s.elements);
@@ -73,12 +73,18 @@ export default function ReactFlowCanvas({ boardId }: Props) {
 
   const nodes = useMemo(() => elementsToNodes(elements, layers), [elements, layers]);
 
+  const onNodesChange = useCallback((_changes: NodeChange[]) => {
+    // intentionally empty (controlled on drag stop)
+  }, []);
+
   const onNodeDragStop = useCallback(
     (_e: any, node: any) => {
-      updateElement(node.id, { position: { x: node.position.x, y: node.position.y } });
+      updateElement(node.id, {
+        position: { x: node.position.x, y: node.position.y },
+      });
       pushHistory();
     },
-    [updateElement, pushHistory]
+    [updateElement, pushHistory],
   );
 
   const onSelectionChange = useCallback(
@@ -86,7 +92,7 @@ export default function ReactFlowCanvas({ boardId }: Props) {
       const ids = (params.nodes || []).map((n) => n.id);
       selectElements(ids);
     },
-    [selectElements]
+    [selectElements],
   );
 
   return (
@@ -94,7 +100,8 @@ export default function ReactFlowCanvas({ boardId }: Props) {
       <ReactFlow
         nodes={nodes}
         edges={[]}
-        nodeTypes={nodeTypes as any}
+        nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
         onNodeDragStop={onNodeDragStop}
         onSelectionChange={onSelectionChange}
         fitView
