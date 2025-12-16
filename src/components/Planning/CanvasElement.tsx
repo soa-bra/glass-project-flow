@@ -1,6 +1,12 @@
 import React, { memo, useMemo } from "react";
-import type { CanvasElementRenderProps } from "./canvas-component-props";
-import type { CanvasElementModel } from "./canvas-elements";
+import type { CanvasElement as CanvasElementModel } from "@/stores/canvasStore";
+
+interface CanvasElementRenderProps {
+  element: CanvasElementModel;
+  isSelected: boolean;
+  isPrimary: boolean;
+  onPointerDown?: (id: string, e: React.PointerEvent) => void;
+}
 
 function elementBg(el: CanvasElementModel) {
   if (el.type === "note") return "#FEF08A";

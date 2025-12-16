@@ -1,5 +1,5 @@
 import React from "react";
-import { addNewElement, canvasStore } from "./canvasStore";
+import { addNewElement, canvasStore } from "@/stores/canvasStore";
 
 export default function CanvasToolbar() {
   return (
