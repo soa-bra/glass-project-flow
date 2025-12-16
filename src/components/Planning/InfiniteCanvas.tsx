@@ -20,7 +20,7 @@ interface InfiniteCanvasProps {
 }
 
 const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
-  const engine: "native" | "reactflow" = "reactflow";
+  const engine = "native" as "native" | "reactflow";
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
