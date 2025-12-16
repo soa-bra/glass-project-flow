@@ -57,7 +57,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       typeof window !== "undefined" && window.localStorage
         ? (localStorage.getItem("soabra_canvas_engine") as "native" | "reactflow" | null)
         : null;
-    return stored === "reactflow" || stored === "native" ? stored : "native";
+    return stored === "reactflow" || stored === "native" ? stored : "reactflow";
   });
 
   // Pan State
@@ -562,7 +562,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     >
       {engine === "native" ? (
         <>
-          {/* Canvas Container */}
           <div
             ref={canvasRef}
             className="absolute inset-0 origin-top-left"
@@ -571,7 +570,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
               transition: isPanningRef.current ? "none" : "transform 0.1s ease-out",
             }}
           >
-            {/* Grid Lines */}
             {settings.gridEnabled && (
               <div
                 className="absolute"
@@ -588,10 +586,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
               </div>
             )}
 
-            {/* Pen Strokes Layer */}
             <StrokesLayer />
 
-            {/* Canvas Elements */}
             {visibleElements.map((element) => (
               <CanvasElement
                 key={element.id}
@@ -603,14 +599,10 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
               />
             ))}
 
-            {/* BoundingBox for selected elements */}
             <BoundingBox />
-
-            {/* Drawing Preview */}
             {tempElement && <DrawingPreview element={tempElement} />}
           </div>
 
-          {/* Selection Box */}
           {isSelecting && selectionStart && selectionCurrent && (
             <SelectionBox
               startX={selectionStart.x}
@@ -620,13 +612,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
             />
           )}
 
-          {/* Pen Input Layer */}
           <PenInputLayer containerRef={containerRef} active={activeTool === "smart_pen"} />
-
-          {/* Frame Input Layer */}
           <FrameInputLayer containerRef={containerRef} active={activeTool === "frame_tool"} />
 
-          {/* Pen Floating Toolbar */}
           <PenFloatingToolbar position={{ x: window.innerWidth / 2, y: 80 }} isVisible={activeTool === "smart_pen"} />
         </>
       ) : (
