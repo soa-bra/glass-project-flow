@@ -18,7 +18,7 @@ import {
   updateEndpointPosition,
   generateId
 } from '@/types/arrow-connections';
-import { resolveSnapConnection, moveConnectedSegmentRigidly, type SnapEdge } from '@/utils/arrow-routing';
+import { resolveSnapConnection, type SnapEdge } from '@/utils/arrow-routing';
 
 interface ArrowControlPointsProps {
   element: CanvasElement;
@@ -1025,17 +1025,38 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
 
     let newArrowData = { ...baseArrowData };
 
-    // ✅ لنقاط الأطراف: تحريك بسيط مع الحفاظ على الضلع المتصل صلباً
+    // ✅ لنقاط الأطراف: استخدام resolveSnapConnection لضمان T-shape عند وجود سناب
     if (dragState.controlPoint === 'start' || dragState.controlPoint === 'end') {
-      const finalPoint = nearestAnchor 
-        ? { 
-            x: nearestAnchor.position.x - element.position.x, 
-            y: nearestAnchor.position.y - element.position.y 
-          }
-        : newPoint;
-      
-      // ✅ استخدام moveConnectedSegmentRigidly للحفاظ على الزوايا القائمة أثناء السحب
-      newArrowData = moveConnectedSegmentRigidly(baseArrowData, dragState.controlPoint, finalPoint);
+      if (nearestAnchor) {
+        // ✅ عند وجود سناب: استخدام resolveSnapConnection لإنشاء T-shape
+        const targetElement = otherElements.find(e => e.id === nearestAnchor.elementId);
+        if (targetElement) {
+          const relativeSnapPoint = {
+            x: nearestAnchor.position.x - element.position.x,
+            y: nearestAnchor.position.y - element.position.y
+          };
+          
+          const relativeTargetElement = {
+            id: targetElement.id,
+            position: {
+              x: targetElement.position.x - element.position.x,
+              y: targetElement.position.y - element.position.y
+            },
+            size: targetElement.size
+          };
+          
+          newArrowData = resolveSnapConnection(
+            baseArrowData,
+            relativeSnapPoint,
+            nearestAnchor.anchorPoint as SnapEdge,
+            relativeTargetElement,
+            dragState.controlPoint as 'start' | 'end'
+          );
+        }
+      } else {
+        // ✅ بدون سناب: تحريك بسيط مع الحفاظ على الضلع المتصل
+        newArrowData = moveEndpointWithSegment(baseArrowData, dragState.controlPoint, newPoint);
+      }
       
     } else if (dragState.controlPoint === 'middle' && currentDragDirection && dragState.controlPointId) {
       // معالجة نقاط المنتصف (تبقى كما هي)

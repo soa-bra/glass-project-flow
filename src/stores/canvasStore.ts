@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { nanoid } from 'nanoid';
 import type { CanvasElement, LayerInfo, CanvasSettings } from '@/types/canvas';
 import type { ArrowConnection } from '@/types/arrow-connections';
-import { moveConnectedSegmentRigidly, type SnapEdge } from '@/utils/arrow-routing';
+import { resolveSnapConnection, type SnapEdge } from '@/utils/arrow-routing';
 
 /**
  * حساب موقع نقطة الارتكاز على عنصر
@@ -615,7 +615,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
           let arrowData = baseArrowData;
 
-          // ✅ استخدام moveConnectedSegmentRigidly للحفاظ على الزوايا القائمة
+          // ✅ استخدام resolveSnapConnection لضمان T-shape عند تحريك العنصر
           // تحديث نقطة البداية إذا كانت متصلة
           if (arrowData.startConnection?.elementId === elementId) {
             const anchorPos = getAnchorPositionForElement(updatedElement, arrowData.startConnection.anchorPoint);
@@ -623,7 +623,24 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
               x: anchorPos.x - arrow.position.x,
               y: anchorPos.y - arrow.position.y
             };
-            arrowData = moveConnectedSegmentRigidly(arrowData, 'start', newStartPoint);
+            
+            // إنشاء targetElement بإحداثيات نسبية لعنصر السهم
+            const relativeTargetElement = {
+              id: updatedElement.id,
+              position: {
+                x: updatedElement.position.x - arrow.position.x,
+                y: updatedElement.position.y - arrow.position.y
+              },
+              size: updatedElement.size
+            };
+            
+            arrowData = resolveSnapConnection(
+              arrowData,
+              newStartPoint,
+              arrowData.startConnection.anchorPoint as SnapEdge,
+              relativeTargetElement,
+              'start'
+            );
           }
 
           // تحديث نقطة النهاية إذا كانت متصلة
@@ -633,7 +650,24 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
               x: anchorPos.x - arrow.position.x,
               y: anchorPos.y - arrow.position.y
             };
-            arrowData = moveConnectedSegmentRigidly(arrowData, 'end', newEndPoint);
+            
+            // إنشاء targetElement بإحداثيات نسبية لعنصر السهم
+            const relativeTargetElement = {
+              id: updatedElement.id,
+              position: {
+                x: updatedElement.position.x - arrow.position.x,
+                y: updatedElement.position.y - arrow.position.y
+              },
+              size: updatedElement.size
+            };
+            
+            arrowData = resolveSnapConnection(
+              arrowData,
+              newEndPoint,
+              arrowData.endConnection.anchorPoint as SnapEdge,
+              relativeTargetElement,
+              'end'
+            );
           }
 
           const idx = updatedElements.findIndex(e => e.id === arrow.id);
@@ -1715,7 +1749,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
             let arrowData = baseArrowData;
 
-            // ✅ استخدام moveConnectedSegmentRigidly للحفاظ على الزوايا القائمة
+            // ✅ استخدام resolveSnapConnection لضمان T-shape عند تحريك العنصر
             // تحديث نقطة البداية إذا كانت متصلة
             if (arrowData.startConnection?.elementId === movedElementId) {
               const anchorPos = getAnchorPositionForElement(movedElement, arrowData.startConnection.anchorPoint);
@@ -1723,7 +1757,24 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
                 x: anchorPos.x - arrow.position.x,
                 y: anchorPos.y - arrow.position.y
               };
-              arrowData = moveConnectedSegmentRigidly(arrowData, 'start', newStartPoint);
+              
+              // إنشاء targetElement بإحداثيات نسبية لعنصر السهم
+              const relativeTargetElement = {
+                id: movedElement.id,
+                position: {
+                  x: movedElement.position.x - arrow.position.x,
+                  y: movedElement.position.y - arrow.position.y
+                },
+                size: movedElement.size
+              };
+              
+              arrowData = resolveSnapConnection(
+                arrowData,
+                newStartPoint,
+                arrowData.startConnection.anchorPoint as SnapEdge,
+                relativeTargetElement,
+                'start'
+              );
             }
 
             // تحديث نقطة النهاية إذا كانت متصلة
@@ -1733,7 +1784,24 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
                 x: anchorPos.x - arrow.position.x,
                 y: anchorPos.y - arrow.position.y
               };
-              arrowData = moveConnectedSegmentRigidly(arrowData, 'end', newEndPoint);
+              
+              // إنشاء targetElement بإحداثيات نسبية لعنصر السهم
+              const relativeTargetElement = {
+                id: movedElement.id,
+                position: {
+                  x: movedElement.position.x - arrow.position.x,
+                  y: movedElement.position.y - arrow.position.y
+                },
+                size: movedElement.size
+              };
+              
+              arrowData = resolveSnapConnection(
+                arrowData,
+                newEndPoint,
+                arrowData.endConnection.anchorPoint as SnapEdge,
+                relativeTargetElement,
+                'end'
+              );
             }
 
             const idx = updatedElements.findIndex(e => e.id === arrow.id);
