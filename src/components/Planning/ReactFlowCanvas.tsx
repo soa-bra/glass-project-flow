@@ -7,6 +7,7 @@ import {
   type NodeChange,
   type OnSelectionChangeParams,
   type NodeProps,
+  type NodeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -16,12 +17,16 @@ import CanvasElementComponent from "./CanvasElement";
 
 type Props = { boardId: string };
 
+type SoaBraNodeData = {
+  elementId: string;
+};
+
 const isArrowElement = (el: CanvasElement) => {
   const shapeType = (el as any)?.shapeType || (el as any)?.data?.shapeType || "";
   return el.type === "shape" && typeof shapeType === "string" && shapeType.startsWith("arrow_");
 };
 
-function elementsToNodes(elements: CanvasElement[], layers: any[]): Node[] {
+function elementsToNodes(elements: CanvasElement[], layers: any[]): Node<SoaBraNodeData>[] {
   return elements
     .filter((el) => {
       if (!el) return false;
@@ -44,9 +49,11 @@ function elementsToNodes(elements: CanvasElement[], layers: any[]): Node[] {
     }));
 }
 
-const SoaBraNode = (props: NodeProps<{ elementId: string }>) => {
-  const elementId = props.data?.elementId;
-  const element = useCanvasStore((s) => s.elements.find((e) => e.id === elementId));
+const SoaBraNode: React.FC<NodeProps> = (props) => {
+  const data = (props.data || {}) as any;
+  const elementId: string | undefined = data.elementId;
+
+  const element = useCanvasStore((s) => (elementId ? s.elements.find((e) => e.id === elementId) : undefined));
   const selectedIds = useCanvasStore((s) => s.selectedElementIds);
   const activeTool = useCanvasStore((s) => s.activeTool);
   const selectElement = useCanvasStore((s) => s.selectElement);
@@ -66,7 +73,7 @@ const SoaBraNode = (props: NodeProps<{ elementId: string }>) => {
   );
 };
 
-const nodeTypes = { soaBraNode: SoaBraNode };
+const nodeTypes: NodeTypes = { soaBraNode: SoaBraNode };
 
 export default function ReactFlowCanvas({ boardId }: Props) {
   const elements = useCanvasStore((s) => s.elements);
@@ -101,7 +108,7 @@ export default function ReactFlowCanvas({ boardId }: Props) {
   return (
     <div className="absolute inset-0" data-reactflow-canvas="true">
       <ReactFlow
-        nodes={nodes}
+        nodes={nodes as any}
         edges={[]}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
