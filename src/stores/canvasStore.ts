@@ -1,280 +1,687 @@
-import { useSyncExternalStore } from "react";
-import type { CanvasElementModel, ElementsById, ElementId } from "./canvas-elements";
-import { applyElementPatch, createElement, normalizeElement, toById } from "./canvas-elements";
+import { create } from 'zustand';
+import { nanoid } from 'nanoid';
 
-export type Camera = {
+// Types
+export type ToolId = 
+  | 'selection_tool'
+  | 'text_tool'
+  | 'shapes_tool'
+  | 'smart_pen'
+  | 'frame_tool'
+  | 'file_uploader'
+  | 'smart_element_tool';
+
+export interface Position {
   x: number;
   y: number;
+}
+
+export interface Size {
+  width: number;
+  height: number;
+}
+
+export interface ElementStyle {
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  fontSize?: number;
+  fontFamily?: string;
+  fontWeight?: number;
+  fontStyle?: string;
+  textColor?: string;
+  textAlign?: string;
+  textDecoration?: string;
+  direction?: string;
+  alignItems?: string;
+  opacity?: number;
+  radius?: number;
+  zIndex?: number;
+  color?: string;
+  backgroundColor?: string;
+  borderColor?: string;
+}
+
+export type ShapeType = 'rect' | 'circle' | 'triangle' | 'arrow' | string;
+export type LineStyle = 'solid' | 'dashed' | 'dotted';
+
+export interface CanvasElement {
+  id: string;
+  type: string;
+  position: Position;
+  size: Size;
+  rotation?: number;
+  locked?: boolean;
+  visible?: boolean;
+  layerId?: string;
+  style?: ElementStyle;
+  name?: string;
+  text?: string;
+  content?: string;
+  src?: string;
+  shapeType?: string;
+  smartType?: string;
+  data?: any;
+  children?: string[];
+  arrowData?: any;
+  metadata?: any;
+  hidden?: boolean;
+}
+
+export interface Layer {
+  id: string;
+  name: string;
+  visible: boolean;
+  locked: boolean;
+  order: number;
+}
+
+export interface Viewport {
   zoom: number;
-};
-
-export type CanvasState = {
-  camera: Camera;
-  elementsById: ElementsById;
-  elementOrder: ElementId[]; // rendering order (z)
-  selection: { ids: ElementId[]; primaryId?: ElementId };
-};
-
-export type CanvasActions = {
-  setCamera(patch: Partial<Camera> | ((c: Camera) => Partial<Camera>)): void;
-
-  setSelection(ids: ElementId[], primaryId?: ElementId): void;
-  clearSelection(): void;
-
-  addElement(el: CanvasElementModel): void;
-  addElements(els: CanvasElementModel[]): void;
-
-  updateElement(id: ElementId, patch: Partial<CanvasElementModel>): void;
-  updateElements(patches: Array<{ id: ElementId; patch: Partial<CanvasElementModel> }>): void;
-
-  removeElement(id: ElementId): void;
-  removeElements(ids: ElementId[]): void;
-
-  bringToFront(ids: ElementId[]): void;
-  sendToBack(ids: ElementId[]): void;
-
-  reset(initial?: Partial<CanvasState>): void;
-};
-
-export type CanvasStore = {
-  getState(): CanvasState;
-  setState(next: CanvasState): void;
-  subscribe(cb: () => void): () => void;
-  actions: CanvasActions;
-};
-
-const DEFAULT_STATE: CanvasState = {
-  camera: { x: 0, y: 0, zoom: 1 },
-  elementsById: {},
-  elementOrder: [],
-  selection: { ids: [], primaryId: undefined },
-};
-
-function shallowEq(a: any, b: any) {
-  if (Object.is(a, b)) return true;
-  if (typeof a !== "object" || typeof b !== "object" || !a || !b) return false;
-  const ak = Object.keys(a);
-  const bk = Object.keys(b);
-  if (ak.length !== bk.length) return false;
-  for (const k of ak) if (!Object.is(a[k], b[k])) return false;
-  return true;
+  pan: Position;
 }
 
-export function createCanvasStore(initial?: Partial<CanvasState>): CanvasStore {
-  let state: CanvasState = {
-    ...DEFAULT_STATE,
-    ...(initial ?? {}),
-    camera: { ...DEFAULT_STATE.camera, ...(initial?.camera ?? {}) },
-    elementsById: initial?.elementsById ?? DEFAULT_STATE.elementsById,
-    elementOrder: initial?.elementOrder ?? DEFAULT_STATE.elementOrder,
-    selection: initial?.selection ?? DEFAULT_STATE.selection,
+export interface ToolSettings {
+  shapes?: {
+    shapeType?: string;
+    fillColor?: string;
+    strokeColor?: string;
+    strokeWidth?: number;
+    opacity?: number;
+    iconName?: string;
   };
-
-  const subs = new Set<() => void>();
-  const notify = () => subs.forEach((s) => s());
-
-  const setState = (next: CanvasState) => {
-    state = next;
-    notify();
+  pen?: {
+    color?: string;
+    size?: number;
+    eraserMode?: boolean;
+    smartMode?: boolean;
   };
-
-  const getState = () => state;
-
-  const subscribe = (cb: () => void) => {
-    subs.add(cb);
-    return () => subs.delete(cb);
+  frame?: {
+    backgroundColor?: string;
+    title?: string;
+    strokeWidth?: number;
+    strokeColor?: string;
   };
-
-  const actions: CanvasActions = {
-    setCamera(patch) {
-      const cur = state.camera;
-      const nextPatch = typeof patch === "function" ? patch(cur) : patch;
-      const nextCamera = { ...cur, ...nextPatch };
-      if (shallowEq(cur, nextCamera)) return;
-      setState({ ...state, camera: nextCamera });
-    },
-
-    setSelection(ids, primaryId) {
-      const uniq = Array.from(new Set(ids));
-      const next = { ids: uniq, primaryId: primaryId ?? uniq[0] };
-      if (shallowEq(state.selection, next)) return;
-      setState({ ...state, selection: next });
-    },
-
-    clearSelection() {
-      if (state.selection.ids.length === 0) return;
-      setState({ ...state, selection: { ids: [], primaryId: undefined } });
-    },
-
-    addElement(el) {
-      const nextEl = normalizeElement(el);
-      const nextById = { ...state.elementsById, [nextEl.id]: nextEl };
-      const nextOrder = state.elementOrder.includes(nextEl.id)
-        ? state.elementOrder
-        : [...state.elementOrder, nextEl.id];
-      setState({ ...state, elementsById: nextById, elementOrder: nextOrder });
-    },
-
-    addElements(els) {
-      if (els.length === 0) return;
-      const nextById = { ...state.elementsById };
-      const nextOrder = [...state.elementOrder];
-      for (const e of els) {
-        const ne = normalizeElement(e);
-        nextById[ne.id] = ne;
-        if (!nextOrder.includes(ne.id)) nextOrder.push(ne.id);
-      }
-      setState({ ...state, elementsById: nextById, elementOrder: nextOrder });
-    },
-
-    updateElement(id, patch) {
-      const cur = state.elementsById[id];
-      if (!cur) return;
-      const next = applyElementPatch(cur, patch);
-      if (shallowEq(cur, next)) return;
-      setState({
-        ...state,
-        elementsById: { ...state.elementsById, [id]: next },
-      });
-    },
-
-    updateElements(patches) {
-      if (patches.length === 0) return;
-      let changed = false;
-      const nextById = { ...state.elementsById };
-      for (const { id, patch } of patches) {
-        const cur = state.elementsById[id];
-        if (!cur) continue;
-        const next = applyElementPatch(cur, patch);
-        if (!shallowEq(cur, next)) {
-          nextById[id] = next;
-          changed = true;
-        }
-      }
-      if (!changed) return;
-      setState({ ...state, elementsById: nextById });
-    },
-
-    removeElement(id) {
-      if (!state.elementsById[id]) return;
-      const nextById = { ...state.elementsById };
-      delete nextById[id];
-      const nextOrder = state.elementOrder.filter((x) => x !== id);
-      const nextSelIds = state.selection.ids.filter((x) => x !== id);
-      const nextPrimary = nextSelIds[0];
-      setState({
-        ...state,
-        elementsById: nextById,
-        elementOrder: nextOrder,
-        selection: { ids: nextSelIds, primaryId: nextPrimary },
-      });
-    },
-
-    removeElements(ids) {
-      if (ids.length === 0) return;
-      const set = new Set(ids);
-      let changed = false;
-      const nextById = { ...state.elementsById };
-      for (const id of set) {
-        if (nextById[id]) {
-          delete nextById[id];
-          changed = true;
-        }
-      }
-      if (!changed) return;
-      const nextOrder = state.elementOrder.filter((x) => !set.has(x));
-      const nextSelIds = state.selection.ids.filter((x) => !set.has(x));
-      const nextPrimary = nextSelIds[0];
-      setState({
-        ...state,
-        elementsById: nextById,
-        elementOrder: nextOrder,
-        selection: { ids: nextSelIds, primaryId: nextPrimary },
-      });
-    },
-
-    bringToFront(ids) {
-      if (ids.length === 0) return;
-      const set = new Set(ids);
-      const rest = state.elementOrder.filter((id) => !set.has(id));
-      const nextOrder = [...rest, ...ids.filter((id) => state.elementOrder.includes(id))];
-      if (nextOrder.join("|") === state.elementOrder.join("|")) return;
-      setState({ ...state, elementOrder: nextOrder });
-    },
-
-    sendToBack(ids) {
-      if (ids.length === 0) return;
-      const set = new Set(ids);
-      const rest = state.elementOrder.filter((id) => !set.has(id));
-      const nextOrder = [...ids.filter((id) => state.elementOrder.includes(id)), ...rest];
-      if (nextOrder.join("|") === state.elementOrder.join("|")) return;
-      setState({ ...state, elementOrder: nextOrder });
-    },
-
-    reset(initial2) {
-      const base = { ...DEFAULT_STATE, ...(initial2 ?? {}) } as CanvasState;
-      setState({
-        ...base,
-        camera: { ...DEFAULT_STATE.camera, ...(base.camera ?? {}) },
-        elementsById: base.elementsById ?? {},
-        elementOrder: base.elementOrder ?? Object.keys(base.elementsById ?? {}),
-        selection: base.selection ?? { ids: [], primaryId: undefined },
-      });
-    },
-  };
-
-  return { getState, setState, subscribe, actions };
 }
 
-// -----------------------------
-// Singleton store (optional)
-// -----------------------------
-export const canvasStore = createCanvasStore();
-
-// -----------------------------
-// React selector hook (fast)
-// -----------------------------
-function useCanvasStoreImpl<T>(selector: (s: CanvasState) => T, isEqual: (a: T, b: T) => boolean = Object.is): T {
-  const getSnapshot = () => selector(canvasStore.getState());
-
-  return useSyncExternalStore(
-    canvasStore.subscribe,
-    () => getSnapshot(),
-    () => getSnapshot(),
-  );
+export interface StrokePoint {
+  x: number;
+  y: number;
+  pressure?: number;
 }
 
-// Add Zustand-compatible static methods
-export const useCanvasStore = Object.assign(useCanvasStoreImpl, {
-  getState: canvasStore.getState,
-  setState: canvasStore.setState,
-  subscribe: canvasStore.subscribe,
-});
-
-// Convenience selectors
-export function useCamera() {
-  return useCanvasStore((s) => s.camera, shallowEq);
+export interface PenStroke {
+  id: string;
+  points: StrokePoint[];
+  color: string;
+  size: number;
+  width?: number;
+  style?: LineStyle;
 }
 
-export function useSelection() {
-  return useCanvasStore((s) => s.selection, shallowEq);
+interface CanvasState {
+  // Elements
+  elements: CanvasElement[];
+  selectedElementIds: string[];
+  tempElement: CanvasElement | null;
+  
+  // Viewport
+  viewport: Viewport;
+  
+  // Tools
+  activeTool: ToolId;
+  toolSettings: ToolSettings;
+  
+  // Layers
+  layers: Layer[];
+  activeLayerId: string;
+  
+  // UI State
+  showMinimap: boolean;
+  isPanMode: boolean;
+  isFullscreen: boolean;
+  isDrawing: boolean;
+  drawStartPoint: Position | null;
+  typingMode: boolean;
+  isInternalDrag: boolean;
+  
+  // Pen/Drawing
+  strokes: PenStroke[];
+  pendingStroke: PenStroke | null;
+  
+  // History
+  history: { past: CanvasElement[][]; future: CanvasElement[][] };
+  
+  // Clipboard
+  clipboard: CanvasElement[];
+  
+  // Smart Elements
+  selectedSmartElement: string | null;
 }
 
-export function useOrderedElements(): CanvasElementModel[] {
-  return useCanvasStore((s) => {
-    const out: CanvasElementModel[] = [];
-    for (const id of s.elementOrder) {
-      const el = s.elementsById[id];
-      if (el && !el.hidden) out.push(el);
+interface CanvasActions {
+  // Element Actions
+  addElement: (element: Partial<CanvasElement>) => void;
+  updateElement: (id: string, updates: Partial<CanvasElement>) => void;
+  deleteElement: (id: string) => void;
+  deleteElements: (ids: string[]) => void;
+  duplicateElement: (id: string) => void;
+  moveElements: (ids: string[], delta: Position) => void;
+  resizeElements: (ids: string[], newSize: Size, anchor?: string) => void;
+  resizeFrame: (id: string, newSize: Size) => void;
+  
+  // Selection
+  selectElement: (id: string, multi?: boolean) => void;
+  selectElements: (ids: string[]) => void;
+  clearSelection: () => void;
+  
+  // Viewport
+  setZoom: (zoom: number) => void;
+  setPan: (x: number, y: number) => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  zoomToFit: () => void;
+  setZoomPercentage: (percentage: number) => void;
+  
+  // Tools
+  setActiveTool: (tool: ToolId) => void;
+  setToolSettings: (settings: Partial<ToolSettings>) => void;
+  
+  // Layers
+  addLayer: (name: string) => void;
+  deleteLayer: (id: string) => void;
+  toggleLayerVisibility: (id: string) => void;
+  toggleLayerLock: (id: string) => void;
+  setActiveLayer: (id: string) => void;
+  updateLayer: (id: string, updates: Partial<Layer>) => void;
+  
+  // UI Toggles
+  toggleMinimap: () => void;
+  togglePanMode: () => void;
+  toggleFullscreen: () => void;
+  setIsDrawing: (value: boolean) => void;
+  setDrawStartPoint: (point: Position | null) => void;
+  setTempElement: (element: CanvasElement | null) => void;
+  startTyping: () => void;
+  stopTyping: () => void;
+  setInternalDrag: (value: boolean) => void;
+  
+  // Frame Actions
+  assignElementsToFrame: (frameId: string, elementIds: string[]) => void;
+  addChildToFrame: (frameId: string, childId: string) => void;
+  removeChildFromFrame: (frameId: string, childId: string) => void;
+  
+  // Pen/Stroke Actions
+  beginStroke: (point: StrokePoint, color: string, size: number) => void;
+  appendPoint: (point: StrokePoint) => void;
+  endStroke: () => void;
+  clearPendingStrokes: () => void;
+  removeStroke: (id: string) => void;
+  eraseStrokeAtPoint: (x: number, y: number, radius: number) => void;
+  
+  // History
+  undo: () => void;
+  redo: () => void;
+  pushHistory: () => void;
+  
+  // Clipboard
+  copyElements: (ids: string[]) => void;
+  pasteElements: () => void;
+  
+  // Alignment
+  alignElements: (ids: string[], alignment: string) => void;
+  groupElements: (ids: string[]) => void;
+  
+  // Smart Elements
+  setSelectedSmartElement: (type: string | null) => void;
+}
+
+const DEFAULT_LAYER: Layer = {
+  id: 'default',
+  name: 'الطبقة الرئيسية',
+  visible: true,
+  locked: false,
+  order: 0,
+};
+
+export const useCanvasStore = create<CanvasState & CanvasActions>((set, get) => ({
+  // Initial State
+  elements: [],
+  selectedElementIds: [],
+  tempElement: null,
+  viewport: { zoom: 1, pan: { x: 0, y: 0 } },
+  activeTool: 'selection_tool',
+  toolSettings: {},
+  layers: [DEFAULT_LAYER],
+  activeLayerId: 'default',
+  showMinimap: false,
+  isPanMode: false,
+  isFullscreen: false,
+  isDrawing: false,
+  drawStartPoint: null,
+  typingMode: false,
+  isInternalDrag: false,
+  strokes: [],
+  pendingStroke: null,
+  history: { past: [], future: [] },
+  clipboard: [],
+  selectedSmartElement: null,
+
+  // Element Actions
+  addElement: (element) => {
+    const newElement: CanvasElement = {
+      id: element.id || nanoid(),
+      type: element.type || 'rect',
+      position: element.position || { x: 0, y: 0 },
+      size: element.size || { width: 100, height: 100 },
+      visible: true,
+      layerId: element.layerId || get().activeLayerId,
+      ...element,
+    };
+    get().pushHistory();
+    set((state) => ({ elements: [...state.elements, newElement] }));
+  },
+
+  updateElement: (id, updates) => {
+    set((state) => ({
+      elements: state.elements.map((el) =>
+        el.id === id ? { ...el, ...updates } : el
+      ),
+    }));
+  },
+
+  deleteElement: (id) => {
+    get().pushHistory();
+    set((state) => ({
+      elements: state.elements.filter((el) => el.id !== id),
+      selectedElementIds: state.selectedElementIds.filter((i) => i !== id),
+    }));
+  },
+
+  deleteElements: (ids) => {
+    get().pushHistory();
+    set((state) => ({
+      elements: state.elements.filter((el) => !ids.includes(el.id)),
+      selectedElementIds: state.selectedElementIds.filter((i) => !ids.includes(i)),
+    }));
+  },
+
+  duplicateElement: (id) => {
+    const element = get().elements.find((el) => el.id === id);
+    if (!element) return;
+    get().pushHistory();
+    const newElement: CanvasElement = {
+      ...element,
+      id: nanoid(),
+      position: {
+        x: element.position.x + 20,
+        y: element.position.y + 20,
+      },
+    };
+    set((state) => ({
+      elements: [...state.elements, newElement],
+      selectedElementIds: [newElement.id],
+    }));
+  },
+
+  moveElements: (ids, delta) => {
+    set((state) => ({
+      elements: state.elements.map((el) =>
+        ids.includes(el.id) && !el.locked
+          ? {
+              ...el,
+              position: {
+                x: el.position.x + delta.x,
+                y: el.position.y + delta.y,
+              },
+            }
+          : el
+      ),
+    }));
+  },
+
+  resizeElements: (ids, newSize) => {
+    set((state) => ({
+      elements: state.elements.map((el) =>
+        ids.includes(el.id) ? { ...el, size: newSize } : el
+      ),
+    }));
+  },
+
+  resizeFrame: (id, newSize) => {
+    set((state) => ({
+      elements: state.elements.map((el) =>
+        el.id === id ? { ...el, size: newSize } : el
+      ),
+    }));
+  },
+
+  // Selection
+  selectElement: (id, multi = false) => {
+    set((state) => ({
+      selectedElementIds: multi
+        ? state.selectedElementIds.includes(id)
+          ? state.selectedElementIds.filter((i) => i !== id)
+          : [...state.selectedElementIds, id]
+        : [id],
+    }));
+  },
+
+  selectElements: (ids) => set({ selectedElementIds: ids }),
+  clearSelection: () => set({ selectedElementIds: [] }),
+
+  // Viewport
+  setZoom: (zoom) =>
+    set((state) => ({
+      viewport: { ...state.viewport, zoom: Math.max(0.1, Math.min(5, zoom)) },
+    })),
+
+  setPan: (x, y) =>
+    set((state) => ({
+      viewport: { ...state.viewport, pan: { x, y } },
+    })),
+
+  zoomIn: () =>
+    set((state) => ({
+      viewport: { ...state.viewport, zoom: Math.min(5, state.viewport.zoom * 1.2) },
+    })),
+
+  zoomOut: () =>
+    set((state) => ({
+      viewport: { ...state.viewport, zoom: Math.max(0.1, state.viewport.zoom / 1.2) },
+    })),
+
+  zoomToFit: () => {
+    const { elements, viewport } = get();
+    if (elements.length === 0) return;
+    // Simple zoom to fit implementation
+    set({ viewport: { ...viewport, zoom: 1, pan: { x: 0, y: 0 } } });
+  },
+
+  setZoomPercentage: (percentage) =>
+    set((state) => ({
+      viewport: { ...state.viewport, zoom: percentage / 100 },
+    })),
+
+  // Tools
+  setActiveTool: (tool) => set({ activeTool: tool }),
+  setToolSettings: (settings) =>
+    set((state) => ({
+      toolSettings: { ...state.toolSettings, ...settings },
+    })),
+
+  // Layers
+  addLayer: (name) => {
+    const newLayer: Layer = {
+      id: nanoid(),
+      name,
+      visible: true,
+      locked: false,
+      order: get().layers.length,
+    };
+    set((state) => ({ layers: [...state.layers, newLayer] }));
+  },
+
+  deleteLayer: (id) => {
+    if (id === 'default') return;
+    set((state) => ({
+      layers: state.layers.filter((l) => l.id !== id),
+      elements: state.elements.filter((el) => el.layerId !== id),
+    }));
+  },
+
+  toggleLayerVisibility: (id) =>
+    set((state) => ({
+      layers: state.layers.map((l) =>
+        l.id === id ? { ...l, visible: !l.visible } : l
+      ),
+    })),
+
+  toggleLayerLock: (id) =>
+    set((state) => ({
+      layers: state.layers.map((l) =>
+        l.id === id ? { ...l, locked: !l.locked } : l
+      ),
+    })),
+
+  setActiveLayer: (id) => set({ activeLayerId: id }),
+
+  updateLayer: (id, updates) =>
+    set((state) => ({
+      layers: state.layers.map((l) =>
+        l.id === id ? { ...l, ...updates } : l
+      ),
+    })),
+
+  // UI Toggles
+  toggleMinimap: () => set((state) => ({ showMinimap: !state.showMinimap })),
+  togglePanMode: () => set((state) => ({ isPanMode: !state.isPanMode })),
+  toggleFullscreen: () => set((state) => ({ isFullscreen: !state.isFullscreen })),
+  setIsDrawing: (value) => set({ isDrawing: value }),
+  setDrawStartPoint: (point) => set({ drawStartPoint: point }),
+  setTempElement: (element) => set({ tempElement: element }),
+  startTyping: () => set({ typingMode: true }),
+  stopTyping: () => set({ typingMode: false }),
+  setInternalDrag: (value) => set({ isInternalDrag: value }),
+
+  // Frame Actions
+  assignElementsToFrame: (frameId, elementIds) => {
+    set((state) => ({
+      elements: state.elements.map((el) =>
+        el.id === frameId
+          ? { ...el, children: [...(el.children || []), ...elementIds] }
+          : el
+      ),
+    }));
+  },
+
+  addChildToFrame: (frameId, childId) => {
+    set((state) => ({
+      elements: state.elements.map((el) =>
+        el.id === frameId
+          ? { ...el, children: [...(el.children || []), childId] }
+          : el
+      ),
+    }));
+  },
+
+  removeChildFromFrame: (frameId, childId) => {
+    set((state) => ({
+      elements: state.elements.map((el) =>
+        el.id === frameId
+          ? { ...el, children: (el.children || []).filter((c) => c !== childId) }
+          : el
+      ),
+    }));
+  },
+
+  // Pen/Stroke Actions
+  beginStroke: (point, color, size) => {
+    set({
+      pendingStroke: {
+        id: nanoid(),
+        points: [point],
+        color,
+        size,
+      },
+    });
+  },
+
+  appendPoint: (point) => {
+    set((state) => ({
+      pendingStroke: state.pendingStroke
+        ? { ...state.pendingStroke, points: [...state.pendingStroke.points, point] }
+        : null,
+    }));
+  },
+
+  endStroke: () => {
+    const { pendingStroke } = get();
+    if (pendingStroke && pendingStroke.points.length > 1) {
+      set((state) => ({
+        strokes: [...state.strokes, pendingStroke],
+        pendingStroke: null,
+      }));
+    } else {
+      set({ pendingStroke: null });
     }
-    return out;
-  });
-}
+  },
 
-// Factory helper for quick add (optional)
-export function addNewElement(type: CanvasElementModel["type"], partial?: Partial<CanvasElementModel>) {
-  const el = createElement({ type, ...(partial ?? {}) } as any);
-  canvasStore.actions.addElement(el);
-  canvasStore.actions.setSelection([el.id], el.id);
+  clearPendingStrokes: () => set({ strokes: [], pendingStroke: null }),
+
+  removeStroke: (id) =>
+    set((state) => ({
+      strokes: state.strokes.filter((s) => s.id !== id),
+    })),
+
+  eraseStrokeAtPoint: (x, y, radius) => {
+    set((state) => ({
+      strokes: state.strokes.filter((stroke) => {
+        return !stroke.points.some((p) => {
+          const dx = p.x - x;
+          const dy = p.y - y;
+          return Math.sqrt(dx * dx + dy * dy) <= radius;
+        });
+      }),
+    }));
+  },
+
+  // History
+  undo: () => {
+    const { history, elements } = get();
+    if (history.past.length === 0) return;
+    const previous = history.past[history.past.length - 1];
+    set({
+      elements: previous,
+      history: {
+        past: history.past.slice(0, -1),
+        future: [elements, ...history.future],
+      },
+    });
+  },
+
+  redo: () => {
+    const { history, elements } = get();
+    if (history.future.length === 0) return;
+    const next = history.future[0];
+    set({
+      elements: next,
+      history: {
+        past: [...history.past, elements],
+        future: history.future.slice(1),
+      },
+    });
+  },
+
+  pushHistory: () => {
+    set((state) => ({
+      history: {
+        past: [...state.history.past.slice(-50), state.elements],
+        future: [],
+      },
+    }));
+  },
+
+  // Clipboard
+  copyElements: (ids) => {
+    const elements = get().elements.filter((el) => ids.includes(el.id));
+    set({ clipboard: elements });
+  },
+
+  pasteElements: () => {
+    const { clipboard } = get();
+    if (clipboard.length === 0) return;
+    get().pushHistory();
+    const newElements = clipboard.map((el) => ({
+      ...el,
+      id: nanoid(),
+      position: { x: el.position.x + 20, y: el.position.y + 20 },
+    }));
+    set((state) => ({
+      elements: [...state.elements, ...newElements],
+      selectedElementIds: newElements.map((el) => el.id),
+    }));
+  },
+
+  // Alignment
+  alignElements: (ids, alignment) => {
+    const elements = get().elements.filter((el) => ids.includes(el.id));
+    if (elements.length < 2) return;
+
+    const minX = Math.min(...elements.map((e) => e.position.x));
+    const maxX = Math.max(...elements.map((e) => e.position.x + e.size.width));
+    const minY = Math.min(...elements.map((e) => e.position.y));
+
+    set((state) => ({
+      elements: state.elements.map((el) => {
+        if (!ids.includes(el.id)) return el;
+        switch (alignment) {
+          case 'left':
+            return { ...el, position: { ...el.position, x: minX } };
+          case 'right':
+            return { ...el, position: { ...el.position, x: maxX - el.size.width } };
+          case 'top':
+            return { ...el, position: { ...el.position, y: minY } };
+          default:
+            return el;
+        }
+      }),
+    }));
+  },
+
+  groupElements: (ids) => {
+    const groupId = nanoid();
+    set((state) => ({
+      elements: state.elements.map((el) =>
+        ids.includes(el.id)
+          ? { ...el, metadata: { ...el.metadata, groupId } }
+          : el
+      ),
+    }));
+  },
+
+  // Smart Elements
+  setSelectedSmartElement: (type) => set({ selectedSmartElement: type }),
+}));
+
+// Legacy exports for compatibility
+export const canvasStore = {
+  getState: useCanvasStore.getState,
+  setState: useCanvasStore.setState,
+  subscribe: useCanvasStore.subscribe,
+  actions: {
+    setCamera: (patch: any) => {
+      const state = useCanvasStore.getState();
+      if (typeof patch === 'function') {
+        const { zoom, pan } = patch({ x: state.viewport.pan.x, y: state.viewport.pan.y, zoom: state.viewport.zoom });
+        if (zoom !== undefined) state.setZoom(zoom);
+        if (pan) state.setPan(pan.x, pan.y);
+      } else {
+        if (patch.zoom !== undefined) state.setZoom(patch.zoom);
+        if (patch.x !== undefined || patch.y !== undefined) {
+          state.setPan(patch.x ?? state.viewport.pan.x, patch.y ?? state.viewport.pan.y);
+        }
+      }
+    },
+    setSelection: (ids: string[], primaryId?: string) => useCanvasStore.getState().selectElements(ids),
+    clearSelection: () => useCanvasStore.getState().clearSelection(),
+    addElement: (el: CanvasElement) => useCanvasStore.getState().addElement(el),
+    updateElement: (id: string, patch: Partial<CanvasElement>) => useCanvasStore.getState().updateElement(id, patch),
+    removeElement: (id: string) => useCanvasStore.getState().deleteElement(id),
+  },
+};
+
+// Helper function for adding new elements
+export function addNewElement(type: string, partial?: Partial<CanvasElement>) {
+  const store = useCanvasStore.getState();
+  const el: Partial<CanvasElement> = {
+    id: nanoid(),
+    type,
+    position: partial?.position || { x: 100, y: 100 },
+    size: partial?.size || { width: 200, height: 150 },
+    ...partial,
+  };
+  store.addElement(el);
+  store.selectElement(el.id!);
   return el;
 }
