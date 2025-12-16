@@ -1,24 +1,17 @@
+// vite.config.ts
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-  },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
-  ].filter(Boolean),
+export default defineConfig({
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    // Prevent "Invalid hook call" / React hooks dispatcher errors caused by duplicate React copies
     dedupe: ["react", "react-dom"],
   },
-}));
+  optimizeDeps: {
+    include: ["react", "react-dom"],
+  },
+});
