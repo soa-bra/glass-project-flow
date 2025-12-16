@@ -153,7 +153,13 @@ const lineIntersectsLine = (
 
 /**
  * ✅ إنشاء مسار T-shape من النقطة الثابتة إلى نقطة السناب
- * هذه الدالة هي جوهر النظام - تضمن دائماً شكل T نظيف
+ * هذه الدالة تضمن دائماً شكل T نظيف مع الضلع الأخير عمودي على حد العنصر
+ * 
+ * القواعد المستخدمة (مطابقة لـ Miro/FigJam):
+ * - الضلع الأخير دائماً عمودي على حد العنصر المتصل
+ * - للحدود الأفقية (top/bottom): الضلع الأخير عمودي
+ * - للحدود العمودية (left/right): الضلع الأخير أفقي
+ * - المسار يتكون من ضلعين أو ثلاثة حسب موقع النقطة الثابتة
  */
 const createOrthogonalPathWithTShape = (
   fixedPoint: ArrowPoint,
@@ -161,48 +167,181 @@ const createOrthogonalPathWithTShape = (
   snapEdge: SnapEdge,
   config: RoutingConfig = DEFAULT_CONFIG
 ): ArrowSegment[] => {
-  const edgeOrientation = getEdgeOrientation(snapEdge);
   const segments: ArrowSegment[] = [];
+  const offset = config.OFFSET_DISTANCE;
   
-  // القاعدة: الضلع الأخير يجب أن يكون عمودي على حد العنصر (T-shape)
-  // حد أفقي (top/bottom) → الضلع الأخير عمودي
-  // حد عمودي (left/right) → الضلع الأخير أفقي
+  // تحديد ما إذا كانت النقطتان متقاربتان جداً في محور معين
+  const dx = Math.abs(snapPoint.x - fixedPoint.x);
+  const dy = Math.abs(snapPoint.y - fixedPoint.y);
+  const threshold = 5;
   
-  if (edgeOrientation === 'horizontal') {
-    // حد أفقي → نحتاج ضلع أفقي ثم ضلع عمودي (connector)
-    // الضلع الأفقي من النقطة الثابتة إلى محاذاة X لنقطة السناب
-    const horizontalSegment: ArrowSegment = {
-      id: generateId(),
-      startPoint: { ...fixedPoint },
-      endPoint: { x: snapPoint.x, y: fixedPoint.y }
-    };
-    segments.push(horizontalSegment);
-    
-    // الضلع العمودي (T-connector) من نهاية الأفقي إلى نقطة السناب
-    const verticalConnector: ArrowSegment = {
-      id: generateId(),
-      startPoint: { x: snapPoint.x, y: fixedPoint.y },
-      endPoint: { ...snapPoint }
-    };
-    segments.push(verticalConnector);
-    
-  } else {
-    // حد عمودي → نحتاج ضلع عمودي ثم ضلع أفقي (connector)
-    // الضلع العمودي من النقطة الثابتة إلى محاذاة Y لنقطة السناب
-    const verticalSegment: ArrowSegment = {
-      id: generateId(),
-      startPoint: { ...fixedPoint },
-      endPoint: { x: fixedPoint.x, y: snapPoint.y }
-    };
-    segments.push(verticalSegment);
-    
-    // الضلع الأفقي (T-connector) من نهاية العمودي إلى نقطة السناب
-    const horizontalConnector: ArrowSegment = {
-      id: generateId(),
-      startPoint: { x: fixedPoint.x, y: snapPoint.y },
-      endPoint: { ...snapPoint }
-    };
-    segments.push(horizontalConnector);
+  switch (snapEdge) {
+    case 'top':
+      // الاتصال من أعلى العنصر → الضلع الأخير عمودي من الأعلى
+      if (dx < threshold) {
+        // النقطتان متحاذيتان عمودياً → ضلع واحد عمودي
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { ...snapPoint }
+        });
+      } else if (fixedPoint.y < snapPoint.y) {
+        // النقطة الثابتة أعلى من نقطة السناب → ضلعين
+        // أفقي إلى محاذاة X ثم عمودي للأسفل
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { x: snapPoint.x, y: fixedPoint.y }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: snapPoint.x, y: fixedPoint.y },
+          endPoint: { ...snapPoint }
+        });
+      } else {
+        // النقطة الثابتة أسفل من نقطة السناب → 3 أضلاع (L-shape مقلوب)
+        // عمودي للأعلى أولاً ثم أفقي ثم عمودي للأعلى
+        const midY = snapPoint.y - offset;
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { x: fixedPoint.x, y: midY }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: fixedPoint.x, y: midY },
+          endPoint: { x: snapPoint.x, y: midY }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: snapPoint.x, y: midY },
+          endPoint: { ...snapPoint }
+        });
+      }
+      break;
+      
+    case 'bottom':
+      // الاتصال من أسفل العنصر → الضلع الأخير عمودي من الأسفل
+      if (dx < threshold) {
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { ...snapPoint }
+        });
+      } else if (fixedPoint.y > snapPoint.y) {
+        // النقطة الثابتة أسفل من نقطة السناب → ضلعين
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { x: snapPoint.x, y: fixedPoint.y }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: snapPoint.x, y: fixedPoint.y },
+          endPoint: { ...snapPoint }
+        });
+      } else {
+        // النقطة الثابتة أعلى من نقطة السناب → 3 أضلاع
+        const midY = snapPoint.y + offset;
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { x: fixedPoint.x, y: midY }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: fixedPoint.x, y: midY },
+          endPoint: { x: snapPoint.x, y: midY }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: snapPoint.x, y: midY },
+          endPoint: { ...snapPoint }
+        });
+      }
+      break;
+      
+    case 'left':
+      // الاتصال من يسار العنصر → الضلع الأخير أفقي من اليسار
+      if (dy < threshold) {
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { ...snapPoint }
+        });
+      } else if (fixedPoint.x < snapPoint.x) {
+        // النقطة الثابتة على يسار نقطة السناب → ضلعين
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { x: fixedPoint.x, y: snapPoint.y }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: fixedPoint.x, y: snapPoint.y },
+          endPoint: { ...snapPoint }
+        });
+      } else {
+        // النقطة الثابتة على يمين نقطة السناب → 3 أضلاع
+        const midX = snapPoint.x - offset;
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { x: midX, y: fixedPoint.y }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: midX, y: fixedPoint.y },
+          endPoint: { x: midX, y: snapPoint.y }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: midX, y: snapPoint.y },
+          endPoint: { ...snapPoint }
+        });
+      }
+      break;
+      
+    case 'right':
+      // الاتصال من يمين العنصر → الضلع الأخير أفقي من اليمين
+      if (dy < threshold) {
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { ...snapPoint }
+        });
+      } else if (fixedPoint.x > snapPoint.x) {
+        // النقطة الثابتة على يمين نقطة السناب → ضلعين
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { x: fixedPoint.x, y: snapPoint.y }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: fixedPoint.x, y: snapPoint.y },
+          endPoint: { ...snapPoint }
+        });
+      } else {
+        // النقطة الثابتة على يسار نقطة السناب → 3 أضلاع
+        const midX = snapPoint.x + offset;
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { x: midX, y: fixedPoint.y }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: midX, y: fixedPoint.y },
+          endPoint: { x: midX, y: snapPoint.y }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: midX, y: snapPoint.y },
+          endPoint: { ...snapPoint }
+        });
+      }
+      break;
   }
   
   return segments;
@@ -210,6 +349,13 @@ const createOrthogonalPathWithTShape = (
 
 /**
  * ✅ إنشاء مسار U-shape للالتفاف حول العنصر
+ * يُستخدم عندما يكون المسار المباشر يمر من داخل العنصر
+ * 
+ * المسار يتكون من 4 أضلاع:
+ * 1. خروج من النقطة الثابتة
+ * 2. التفاف حول العنصر (ضلع موازي للحد)
+ * 3. اقتراب من الحد
+ * 4. دخول إلى نقطة السناب (عمودي على الحد)
  */
 const createUShapePath = (
   fixedPoint: ArrowPoint,
@@ -219,71 +365,100 @@ const createUShapePath = (
 ): ArrowSegment[] => {
   const segments: ArrowSegment[] = [];
   const offset = config.OFFSET_DISTANCE;
-  const edgeOrientation = getEdgeOrientation(snapEdge);
-  
-  // حساب نقطة الخروج (بعيدة عن العنصر)
-  let exitPoint: ArrowPoint;
   
   switch (snapEdge) {
     case 'top':
-      exitPoint = { x: snapPoint.x, y: snapPoint.y - offset };
+      // الالتفاف للوصول إلى أعلى العنصر
+      // نقطة الخروج أعلى من نقطة السناب
+      const topExitY = snapPoint.y - offset;
+      
+      // 1. عمودي من النقطة الثابتة للأعلى
+      segments.push({
+        id: generateId(),
+        startPoint: { ...fixedPoint },
+        endPoint: { x: fixedPoint.x, y: topExitY }
+      });
+      
+      // 2. أفقي إلى محاذاة X لنقطة السناب
+      segments.push({
+        id: generateId(),
+        startPoint: { x: fixedPoint.x, y: topExitY },
+        endPoint: { x: snapPoint.x, y: topExitY }
+      });
+      
+      // 3. عمودي للأسفل إلى نقطة السناب
+      segments.push({
+        id: generateId(),
+        startPoint: { x: snapPoint.x, y: topExitY },
+        endPoint: { ...snapPoint }
+      });
       break;
+      
     case 'bottom':
-      exitPoint = { x: snapPoint.x, y: snapPoint.y + offset };
+      const bottomExitY = snapPoint.y + offset;
+      
+      segments.push({
+        id: generateId(),
+        startPoint: { ...fixedPoint },
+        endPoint: { x: fixedPoint.x, y: bottomExitY }
+      });
+      
+      segments.push({
+        id: generateId(),
+        startPoint: { x: fixedPoint.x, y: bottomExitY },
+        endPoint: { x: snapPoint.x, y: bottomExitY }
+      });
+      
+      segments.push({
+        id: generateId(),
+        startPoint: { x: snapPoint.x, y: bottomExitY },
+        endPoint: { ...snapPoint }
+      });
       break;
+      
     case 'left':
-      exitPoint = { x: snapPoint.x - offset, y: snapPoint.y };
+      const leftExitX = snapPoint.x - offset;
+      
+      segments.push({
+        id: generateId(),
+        startPoint: { ...fixedPoint },
+        endPoint: { x: leftExitX, y: fixedPoint.y }
+      });
+      
+      segments.push({
+        id: generateId(),
+        startPoint: { x: leftExitX, y: fixedPoint.y },
+        endPoint: { x: leftExitX, y: snapPoint.y }
+      });
+      
+      segments.push({
+        id: generateId(),
+        startPoint: { x: leftExitX, y: snapPoint.y },
+        endPoint: { ...snapPoint }
+      });
       break;
+      
     case 'right':
-      exitPoint = { x: snapPoint.x + offset, y: snapPoint.y };
+      const rightExitX = snapPoint.x + offset;
+      
+      segments.push({
+        id: generateId(),
+        startPoint: { ...fixedPoint },
+        endPoint: { x: rightExitX, y: fixedPoint.y }
+      });
+      
+      segments.push({
+        id: generateId(),
+        startPoint: { x: rightExitX, y: fixedPoint.y },
+        endPoint: { x: rightExitX, y: snapPoint.y }
+      });
+      
+      segments.push({
+        id: generateId(),
+        startPoint: { x: rightExitX, y: snapPoint.y },
+        endPoint: { ...snapPoint }
+      });
       break;
-  }
-  
-  if (edgeOrientation === 'horizontal') {
-    // حد أفقي → U عمودي (3 أضلاع)
-    // 1. أفقي من fixedPoint إلى محاذاة exitPoint.x
-    segments.push({
-      id: generateId(),
-      startPoint: { ...fixedPoint },
-      endPoint: { x: exitPoint.x, y: fixedPoint.y }
-    });
-    
-    // 2. عمودي إلى exitPoint
-    segments.push({
-      id: generateId(),
-      startPoint: { x: exitPoint.x, y: fixedPoint.y },
-      endPoint: { ...exitPoint }
-    });
-    
-    // 3. عمودي connector من exitPoint إلى snapPoint
-    segments.push({
-      id: generateId(),
-      startPoint: { ...exitPoint },
-      endPoint: { ...snapPoint }
-    });
-    
-  } else {
-    // حد عمودي → U أفقي (3 أضلاع)
-    // 1. عمودي من fixedPoint إلى محاذاة exitPoint.y
-    segments.push({
-      id: generateId(),
-      startPoint: { ...fixedPoint },
-      endPoint: { x: fixedPoint.x, y: exitPoint.y }
-    });
-    
-    // 2. أفقي إلى exitPoint
-    segments.push({
-      id: generateId(),
-      startPoint: { x: fixedPoint.x, y: exitPoint.y },
-      endPoint: { ...exitPoint }
-    });
-    
-    // 3. أفقي connector من exitPoint إلى snapPoint
-    segments.push({
-      id: generateId(),
-      startPoint: { ...exitPoint },
-      endPoint: { ...snapPoint }
-    });
   }
   
   return segments;
