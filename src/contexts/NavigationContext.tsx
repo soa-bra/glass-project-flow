@@ -1,6 +1,5 @@
 // src/contexts/NavigationContext.tsx
-import { createContext, useContext, useState, useCallback, useMemo } from "react";
-import type { ReactNode, FC } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
 
 type NavigationStateData = {
   activeSection: string;
@@ -17,7 +16,7 @@ type NavigationState = {
 
 const NavigationContext = createContext<NavigationState | null>(null);
 
-export const NavigationProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [navigationState, setNavigationState] = useState<NavigationStateData>({
     activeSection: "home",
     selectedDepartment: null,
