@@ -1,18 +1,7 @@
 import { useMemo, useState } from "react";
-import { clamp } from "@/utils/canvasUtils";
-
-type Camera = { x: number; y: number; zoom: number };
-type Point = { x: number; y: number };
-
-function zoomAtPoint(camera: Camera, nextZoom: number, pivot: Point): Camera {
-  const wx = (pivot.x - camera.x) / camera.zoom;
-  const wy = (pivot.y - camera.y) / camera.zoom;
-  return {
-    x: pivot.x - wx * nextZoom,
-    y: pivot.y - wy * nextZoom,
-    zoom: nextZoom,
-  };
-}
+import type { Camera, Point } from "./canvasCoordinates";
+import { clamp } from "./canvasUtils";
+import { zoomAtPoint } from "./canvasCoordinates";
 
 type SetCameraPatch = Partial<Camera> | ((c: Camera) => Partial<Camera>);
 

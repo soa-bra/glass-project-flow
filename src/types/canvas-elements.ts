@@ -1,127 +1,181 @@
-// Proper TypeScript interfaces for Canvas Elements
+export type ElementId = string;
 
-export interface CanvasPosition {
+export type ElementType = "rect" | "note" | "text" | "frame" | "image" | "connector" | "group";
+
+export type ElementStyle = {
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  radius?: number;
+  opacity?: number;
+  fontSize?: number;
+  fontWeight?: number | string;
+  textColor?: string;
+  zIndex?: number;
+};
+
+export type BaseElement = {
+  id: ElementId;
+  type: ElementType;
   x: number;
   y: number;
-}
-
-export interface CanvasSize {
-  width: number;
-  height: number;
-}
-
-export interface CanvasStyle {
-  backgroundColor?: string;
-  color?: string;
-  fontSize?: number;
-  fontWeight?: string;
-  fontFamily?: string;
-  border?: string;
-  borderRadius?: number;
-  padding?: number;
-  margin?: number;
-  opacity?: number;
-  transform?: string;
-  zIndex?: number;
-}
-
-export interface CanvasElementBase {
-  id: string;
-  type: string;
-  position: CanvasPosition;
-  size: CanvasSize;
-  style?: CanvasStyle;
-  content?: string;
+  w: number;
+  h: number;
+  rotation?: number; // degrees
   locked?: boolean;
-  visible?: boolean;
-  layerId?: string;
-  metadata?: Record<string, unknown>;
+  hidden?: boolean;
+  style?: ElementStyle;
+  name?: string;
+  createdAt?: number;
+  updatedAt?: number;
+};
+
+export type RectElement = BaseElement & {
+  type: "rect";
+};
+
+export type NoteElement = BaseElement & {
+  type: "note";
+  text?: string;
+};
+
+export type TextElement = BaseElement & {
+  type: "text";
+  text?: string;
+};
+
+export type FrameElement = BaseElement & {
+  type: "frame";
+};
+
+export type ImageElement = BaseElement & {
+  type: "image";
+  src?: string;
+};
+
+export type ConnectorElement = BaseElement & {
+  type: "connector";
+  fromId?: ElementId;
+  toId?: ElementId;
+};
+
+export type GroupElement = BaseElement & {
+  type: "group";
+  childIds?: ElementId[];
+};
+
+export type CanvasElementModel =
+  | RectElement
+  | NoteElement
+  | TextElement
+  | FrameElement
+  | ImageElement
+  | ConnectorElement
+  | GroupElement;
+
+export type ElementsById = Record<ElementId, CanvasElementModel>;
+
+export const DEFAULT_ELEMENT_STYLE: Required<ElementStyle> = {
+  fill: "#ffffff",
+  stroke: "#e5e7eb",
+  strokeWidth: 1,
+  radius: 12,
+  opacity: 1,
+  fontSize: 14,
+  fontWeight: 500,
+  textColor: "#111827",
+  zIndex: 0,
+};
+
+export function nowTs() {
+  return Date.now();
 }
 
-export interface CanvasTextElement extends CanvasElementBase {
-  type: 'text';
-  content: string;
-  fontSize?: number;
-  fontWeight?: string;
-  textAlign?: 'left' | 'center' | 'right';
+export function createElement(
+  partial: Partial<CanvasElementModel> & Pick<CanvasElementModel, "type">,
+): CanvasElementModel {
+  const id = partial.id ?? cryptoRandomId();
+  const t = nowTs();
+
+  const base: BaseElement = {
+    id,
+    type: partial.type,
+    x: partial.x ?? 0,
+    y: partial.y ?? 0,
+    w: partial.w ?? 240,
+    h: partial.h ?? 160,
+    rotation: partial.rotation ?? 0,
+    locked: partial.locked ?? false,
+    hidden: partial.hidden ?? false,
+    style: { ...DEFAULT_ELEMENT_STYLE, ...(partial.style ?? {}) },
+    name: partial.name ?? "",
+    createdAt: partial.createdAt ?? t,
+    updatedAt: partial.updatedAt ?? t,
+  };
+
+  switch (partial.type) {
+    case "note":
+      return { ...base, type: "note", text: (partial as any).text ?? "ملاحظة" };
+    case "text":
+      return { ...base, type: "text", text: (partial as any).text ?? "نص" };
+    case "image":
+      return { ...base, type: "image", src: (partial as any).src ?? "" };
+    case "connector":
+      return {
+        ...base,
+        type: "connector",
+        fromId: (partial as any).fromId,
+        toId: (partial as any).toId,
+      };
+    case "group":
+      return {
+        ...base,
+        type: "group",
+        childIds: (partial as any).childIds ?? [],
+      };
+    case "frame":
+      return { ...base, type: "frame" };
+    case "rect":
+    default:
+      return { ...base, type: "rect" };
+  }
 }
 
-export interface CanvasShapeElement extends CanvasElementBase {
-  type: 'shape';
-  shapeType: 'rectangle' | 'circle' | 'triangle' | 'line';
-  strokeWidth?: number;
-  strokeColor?: string;
-  fillColor?: string;
+export function normalizeElement(el: CanvasElementModel): CanvasElementModel {
+  return {
+    ...el,
+    rotation: el.rotation ?? 0,
+    locked: el.locked ?? false,
+    hidden: el.hidden ?? false,
+    style: { ...DEFAULT_ELEMENT_STYLE, ...(el.style ?? {}) },
+    createdAt: el.createdAt ?? nowTs(),
+    updatedAt: nowTs(),
+  } as CanvasElementModel;
 }
 
-export interface CanvasImageElement extends CanvasElementBase {
-  type: 'image';
-  src: string;
-  alt?: string;
+export function applyElementPatch(el: CanvasElementModel, patch: Partial<CanvasElementModel>): CanvasElementModel {
+  const next: CanvasElementModel = {
+    ...(el as any),
+    ...(patch as any),
+    style: patch.style ? { ...(el.style ?? {}), ...(patch.style as any) } : el.style,
+    updatedAt: nowTs(),
+  };
+  return normalizeElement(next);
 }
 
-export interface CanvasStickyElement extends CanvasElementBase {
-  type: 'sticky';
-  content: string;
-  color?: string;
+export function toById(list: CanvasElementModel[]): ElementsById {
+  const byId: ElementsById = {};
+  for (const el of list) byId[el.id] = el;
+  return byId;
 }
 
-export interface CanvasSmartElement extends CanvasElementBase {
-  type: 'smart';
-  smartType: 'thinking_board' | 'kanban' | 'voting' | 'brainstorming' | 'timeline' 
-    | 'decisions_matrix' | 'gantt' | 'interactive_sheet' | 'mind_map' 
-    | 'project_card' | 'finance_card' | 'csr_card' | 'crm_card' | 'root_connector';
-  data: any;
-}
-
-export interface CanvasFrameElement extends CanvasElementBase {
-  type: 'frame';
-  title?: string;
-  childrenIds?: string[];
-  frameStyle?: 'rectangle' | 'rounded' | 'circle';
-  strokeWidth?: number;
-  strokeColor?: string;
-}
-
-export interface CanvasFileElement extends CanvasElementBase {
-  type: 'file';
-  fileName: string;
-  fileType: string;
-  fileSize: number;
-  fileUrl?: string;
-  thumbnailUrl?: string;
-}
-
-export type CanvasElementType = 
-  | CanvasTextElement 
-  | CanvasShapeElement 
-  | CanvasImageElement 
-  | CanvasStickyElement 
-  | CanvasSmartElement
-  | CanvasFrameElement
-  | CanvasFileElement
-  | CanvasElementBase;
-
-export interface CanvasEventHandlers {
-  onElementSelect?: (elementId: string) => void;
-  onElementUpdate?: (elementId: string, updates: Partial<CanvasElementType>) => void;
-  onElementDelete?: (elementId: string) => void;
-  onElementMove?: (elementId: string, position: CanvasPosition) => void;
-  onElementResize?: (elementId: string, size: CanvasSize) => void;
-}
-
-export interface CanvasToolSettings {
-  selectedTool: string;
-  brushSize: number;
-  color: string;
-  opacity: number;
-}
-
-export interface CanvasViewportSettings {
-  zoom: number;
-  panX: number;
-  panY: number;
-  showGrid: boolean;
-  snapToGrid: boolean;
-  gridSize: number;
+export function cryptoRandomId() {
+  // Works in modern browsers; fallback to Math.random
+  try {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  } catch {
+    return Math.random().toString(36).slice(2);
+  }
 }

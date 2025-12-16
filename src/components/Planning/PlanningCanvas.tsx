@@ -1,213 +1,108 @@
-import React, { useState } from 'react';
-import { ArrowRight, Save, RotateCcw, RotateCw, Clock, Share2, File, Layers, Sparkles } from 'lucide-react';
-import { usePlanningStore } from '@/stores/planningStore';
-import { useCanvasStore } from '@/stores/canvasStore';
-import type { CanvasBoard } from '@/types/planning';
-import InfiniteCanvas from './InfiniteCanvas';
-import BottomToolbar from './BottomToolbar';
-import RightSidePanel from './RightSidePanel';
-import NavigationBar from './NavigationBar';
-import FloatingEditBar from './FloatingEditBar';
-import Minimap from './Minimap';
-import { HistoryPopover } from './popovers/HistoryPopover';
-import { SharePopover } from './popovers/SharePopover';
-import { FileMenuPopover } from './popovers/FileMenuPopover';
-import { LayersMenuPopover } from './popovers/LayersMenuPopover';
-import { AIAssistantPopover } from './AIAssistantPopover';
-interface PlanningCanvasProps {
-  board: CanvasBoard;
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import InfiniteCanvas from "./InfiniteCanvas";
+import { CanvasElement } from "./CanvasElement";
+import CanvasToolbar from "./CanvasToolbar";
+import CanvasPropertiesPopover from "./CanvasPropertiesPopover";
+import { addNewElement, canvasStore, useCamera, useOrderedElements, useSelection } from "./canvasStore";
+import { worldToScreen } from "./canvasCoordinates";
+
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
 }
-const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
-  board
-}) => {
-  const { setCurrentBoard, renameBoard } = usePlanningStore();
-  const { activeTool, undo, redo, history } = useCanvasStore();
-  
-  const canUndo = history.past.length > 0;
-  const canRedo = history.future.length > 0;
-  
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [isShareOpen, setIsShareOpen] = useState(false);
-  const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
-  const [isLayersOpen, setIsLayersOpen] = useState(false);
-  const [isAIOpen, setIsAIOpen] = useState(false);
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [boardName, setBoardName] = useState(board?.name || 'لوحة جديدة');
-  
-  const handleSaveName = () => {
-    if (board && boardName.trim()) {
-      renameBoard(board.id, boardName.trim());
+
+export default function PlanningCanvas() {
+  const elements = useOrderedElements();
+  const selection = useSelection();
+  const camera = useCamera();
+
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  // Example: create a default element if empty
+  useEffect(() => {
+    if (elements.length === 0) {
+      addNewElement("note", { x: 0, y: 0, w: 260, h: 160, name: "ملاحظة" });
     }
-    setIsEditingName(false);
-  };
-  
-  return <div className="h-full flex flex-col bg-white">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-[hsl(var(--border))]">
-        {/* Right Section: Back Button + Board Name */}
-        <div className="flex items-center gap-3">
-          {/* Back Button */}
-          <button 
-            onClick={() => setCurrentBoard(null)} 
-            className="p-2 hover:bg-[hsl(var(--panel))] rounded-lg transition-colors" 
-            title="العودة إلى القائمة"
-          >
-            <ArrowRight size={20} className="text-[hsl(var(--ink))]" />
-          </button>
-          
-          <div className="h-6 w-px bg-[hsl(var(--border))]" />
-          
-          {/* Board Name */}
-          {isEditingName ? (
-            <input
-              type="text"
-              value={boardName}
-              onChange={(e) => setBoardName(e.target.value)}
-              onBlur={handleSaveName}
-              onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
-              autoFocus
-              className="text-[16px] font-bold text-[hsl(var(--ink))] px-2 py-1 border border-[hsl(var(--ink))] rounded focus:outline-none"
-            />
-          ) : (
-            <h2 
-              className="text-[16px] font-bold text-[hsl(var(--ink))] cursor-pointer hover:bg-[hsl(var(--panel))] px-2 py-1 rounded"
-              onDoubleClick={() => setIsEditingName(true)}
-              title="انقر مرتين للتعديل"
-            >
-              {board?.name || 'لوحة جديدة'}
-            </h2>
-          )}
-        </div>
-        
-        {/* Center Section: Main Controls */}
-        <div className="flex items-center gap-2">
-          {/* Share - Black Capsule */}
-          <div className="relative">
-            <button
-              onClick={() => setIsShareOpen(!isShareOpen)}
-              className="flex items-center gap-2 px-4 py-1.5 bg-[hsl(var(--ink))] text-white rounded-full transition-opacity hover:opacity-90"
-              title="المشاركين"
-            >
-              <span className="text-[12px] font-medium">المشاركين</span>
-            </button>
-            <SharePopover isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} />
-          </div>
-          
-          {/* AI Assistant */}
-          <div className="relative">
-            <AIAssistantPopover isOpen={isAIOpen} onOpenChange={setIsAIOpen}>
-              <button
-                onClick={() => setIsAIOpen(!isAIOpen)}
-                className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white rounded-full hover:opacity-90 transition-opacity"
-                title="مساعد الذكاء الصناعي"
-              >
-                <Sparkles size={18} className="animate-pulse" />
-                <span className="text-[12px] font-medium">AI</span>
-              </button>
-            </AIAssistantPopover>
-          </div>
-          
-          <div className="h-6 w-px bg-[hsl(var(--border))] mx-1" />
-          
-          {/* File Menu */}
-          <div className="relative">
-            <button
-              onClick={() => setIsFileMenuOpen(!isFileMenuOpen)}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-[hsl(var(--panel))] rounded-lg transition-colors"
-              title="قائمة الملف"
-            >
-              <File size={18} className="text-[hsl(var(--ink))]" />
-              <span className="text-[13px] font-medium text-[hsl(var(--ink))]">ملف</span>
-            </button>
-            <FileMenuPopover isOpen={isFileMenuOpen} onClose={() => setIsFileMenuOpen(false)} />
-          </div>
-          
-          {/* Layers */}
-          <div className="relative">
-            <button
-              onClick={() => setIsLayersOpen(!isLayersOpen)}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-[hsl(var(--panel))] rounded-lg transition-colors"
-              title="الطبقات"
-            >
-              <Layers size={18} className="text-[hsl(var(--ink))]" />
-              <span className="text-[13px] font-medium text-[hsl(var(--ink))]">الطبقات</span>
-            </button>
-            <LayersMenuPopover isOpen={isLayersOpen} onClose={() => setIsLayersOpen(false)} />
-          </div>
-          
-          <div className="h-6 w-px bg-[hsl(var(--border))] mx-1" />
-          
-          {/* History */}
-          <div className="relative">
-            <button
-              onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-[hsl(var(--panel))] rounded-lg transition-colors"
-              title="سجل العمليات"
-            >
-              <Clock size={18} className="text-[hsl(var(--ink))]" />
-              <span className="text-[13px] font-medium text-[hsl(var(--ink))]">السجل</span>
-            </button>
-            <HistoryPopover isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
-          </div>
-          
-          {/* Undo */}
-          <button
-            onClick={undo}
-            disabled={!canUndo}
-            className={`p-2 rounded-lg transition-colors ${
-              canUndo
-                ? 'hover:bg-[hsl(var(--panel))] text-[hsl(var(--ink))]'
-                : 'text-[hsl(var(--ink-30))] cursor-not-allowed'
-            }`}
-            title="تراجع (Ctrl + Z)"
-          >
-            <RotateCcw size={18} />
-          </button>
-          
-          {/* Redo */}
-          <button
-            onClick={redo}
-            disabled={!canRedo}
-            className={`p-2 rounded-lg transition-colors ${
-              canRedo
-                ? 'hover:bg-[hsl(var(--panel))] text-[hsl(var(--ink))]'
-                : 'text-[hsl(var(--ink-30))] cursor-not-allowed'
-            }`}
-            title="إعادة (Ctrl + Shift + Z)"
-          >
-            <RotateCw size={18} />
-          </button>
-        </div>
-        
-        {/* Left Section: Save Button */}
-        <button className="flex items-center gap-2 px-4 py-1.5 bg-[#3DBE8B] text-white rounded-full hover:opacity-90 transition-opacity">
-          <Save size={16} />
-          <span className="text-[12px] font-medium">حفظ</span>
-        </button>
-      </div>
-      
-      {/* Main Canvas Area with Panels */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {/* Infinite Canvas */}
-        <div className="flex-1">
-          <InfiniteCanvas boardId={board.id} />
-        </div>
-        
-        {/* Tool Settings Panel (Right) */}
-        <RightSidePanel activeTool={activeTool} />
-      </div>
-      
-      {/* Bottom Toolbar */}
-      <BottomToolbar />
-      
-      {/* Navigation Bar */}
-      <NavigationBar />
-      
-      {/* Floating Edit Bar */}
-      <FloatingEditBar />
-      
-      {/* Minimap */}
-      <Minimap />
-    </div>;
-};
-export default PlanningCanvas;
+  }, [elements.length]);
+
+  const selectedElement = useMemo(() => {
+    const primary = selection.primaryId;
+    if (!primary) return null;
+    return elements.find((e) => e.id === primary) ?? null;
+  }, [elements, selection.primaryId]);
+
+  const [popoverPos, setPopoverPos] = useState<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const vp = viewportRef.current;
+    if (!vp) return;
+
+    if (!selectedElement) {
+      setPopoverPos(null);
+      return;
+    }
+
+    const rect = vp.getBoundingClientRect();
+
+    // Anchor point: right-center of element in world space
+    const anchorWorld = {
+      x: selectedElement.x + selectedElement.w,
+      y: selectedElement.y + selectedElement.h / 2,
+    };
+
+    // Convert to screen space (relative to viewport)
+    const anchorScreen = worldToScreen(anchorWorld, camera);
+
+    // Convert to page (fixed) coordinates
+    const baseX = rect.left + anchorScreen.x + 12; // offset
+    const baseY = rect.top + anchorScreen.y - 10;
+
+    // Clamp inside viewport (avoid going off-screen)
+    const popW = 240;
+    const popH = 280;
+
+    const x = clamp(baseX, rect.left + 8, rect.right - popW - 8);
+    const y = clamp(baseY, rect.top + 8, rect.bottom - popH - 8);
+
+    setPopoverPos({ x, y });
+  }, [selectedElement, camera.x, camera.y, camera.zoom]);
+
+  return (
+    <div ref={viewportRef} className="w-full h-full relative">
+      <CanvasToolbar />
+
+      <InfiniteCanvas>
+        {elements.map((el) => (
+          <CanvasElement
+            key={el.id}
+            element={el}
+            isSelected={selection.ids.includes(el.id)}
+            isPrimary={selection.primaryId === el.id}
+            onPointerDown={(id, e) => {
+              // Block if panning intent
+              if (e.button === 1) return;
+              if (e.button === 0 && e.shiftKey) return;
+
+              const additive = e.metaKey || e.ctrlKey;
+              if (!additive) {
+                canvasStore.actions.setSelection([id], id);
+              } else {
+                const next = Array.from(new Set([...selection.ids, id]));
+                canvasStore.actions.setSelection(next, id);
+              }
+            }}
+          />
+        ))}
+      </InfiniteCanvas>
+
+      {selectedElement && popoverPos && (
+        <CanvasPropertiesPopover
+          element={selectedElement}
+          screenX={popoverPos.x}
+          screenY={popoverPos.y}
+          onChange={(patch) => canvasStore.actions.updateElement(selectedElement.id, patch)}
+          onClose={() => canvasStore.actions.clearSelection()}
+        />
+      )}
+    </div>
+  );
+}

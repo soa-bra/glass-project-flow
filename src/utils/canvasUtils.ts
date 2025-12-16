@@ -1,37 +1,26 @@
-// Simplified Canvas Utilities
-export const toNumber = (value: any, defaultValue: number = 0): number => {
-  if (typeof value === 'number') return value;
-  if (typeof value === 'string') {
-    const parsed = parseFloat(value);
-    return isNaN(parsed) ? defaultValue : parsed;
-  }
-  return defaultValue;
-};
+import { Camera } from "./canvasCoordinates";
 
-export const toString = (value: any, defaultValue: string = ''): string => {
-  if (typeof value === 'string') return value;
-  if (typeof value === 'number') return value.toString();
-  if (value === null || value === undefined) return defaultValue;
-  return String(value);
-};
+export function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
 
-export const sanitizeStyleForCSS = (style: any): any => {
-  // Just return style as-is for maximum compatibility
-  return { ...style };
-};
+export function rafThrottle<T extends (...args: any[]) => void>(fn: T): T {
+  let frame = 0;
+  return ((...args: any[]) => {
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      fn(...args);
+    });
+  }) as T;
+}
 
-export const clamp = (value: number, min: number, max: number): number => {
-  return Math.min(Math.max(value, min), max);
-};
+export function getGridStyle(camera: Camera) {
+  const size = 40 * camera.zoom;
 
-export const getGridStyle = (viewport: { pan: { x: number; y: number }; zoom: number }) => {
-  const gridSize = 20 * viewport.zoom;
   return {
-    backgroundImage: `
-      linear-gradient(to right, hsl(var(--border) / 0.3) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--border) / 0.3) 1px, transparent 1px)
-    `,
-    backgroundSize: `${gridSize}px ${gridSize}px`,
-    backgroundPosition: `${viewport.pan.x % gridSize}px ${viewport.pan.y % gridSize}px`,
+    backgroundSize: `${size}px ${size}px`,
+    backgroundPosition: `${camera.x}px ${camera.y}px`,
+    backgroundImage: "radial-gradient(circle, rgba(0,0,0,0.15) 1px, transparent 1px)",
   };
-};
+}

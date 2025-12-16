@@ -1,6 +1,6 @@
 import React from "react";
-import { useCanvasStore } from "@/stores/canvasStore";
-import { getGridStyle } from "@/utils/canvasUtils";
+import { useCamera } from "./canvasStore";
+import { getGridStyle } from "./canvasUtils";
 
 type Props = {
   /** محتوى العالم (World) — يُطبق عليه Transform الكاميرا */
@@ -10,18 +10,18 @@ type Props = {
 };
 
 export default function PureCanvasBoard({ children, overlay }: Props) {
-  const viewport = useCanvasStore((s) => s.viewport);
+  const camera = useCamera();
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-neutral-100">
       {/* Grid (Screen layer but aligned to World via camera) */}
-      <div className="absolute inset-0 pointer-events-none" style={getGridStyle(viewport)} />
+      <div className="absolute inset-0 pointer-events-none" style={getGridStyle(camera)} />
 
       {/* World (transformed) */}
       <div
         className="absolute inset-0 origin-top-left will-change-transform"
         style={{
-          transform: `translate(${viewport.pan.x}px, ${viewport.pan.y}px) scale(${viewport.zoom})`,
+          transform: `translate(${camera.x}px, ${camera.y}px) scale(${camera.zoom})`,
         }}
       >
         {children}
