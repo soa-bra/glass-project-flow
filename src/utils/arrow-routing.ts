@@ -152,42 +152,123 @@ const lineIntersectsLine = (
 // ============= إنشاء مسار T-Shape النظيف =============
 
 /**
+ * ✅ تحديد ما إذا كان الضلع الأخير يتجه مباشرة نحو نقطة السناب
+ * إذا كان الضلع يتجه مباشرة نحو السناب → لا نحتاج أضلاع إضافية
+ */
+const isDirectConnection = (
+  lastSegment: ArrowSegment | null,
+  snapEdge: SnapEdge,
+  fixedPoint: ArrowPoint,
+  snapPoint: ArrowPoint
+): boolean => {
+  const threshold = 5;
+  
+  // إذا لا يوجد ضلع سابق، نفحص اتجاه النقطة الثابتة نحو السناب
+  if (!lastSegment) {
+    const dx = Math.abs(snapPoint.x - fixedPoint.x);
+    const dy = Math.abs(snapPoint.y - fixedPoint.y);
+    
+    // للحدود العلوية/السفلية: نحتاج اتصال عمودي مباشر
+    if (snapEdge === 'top' || snapEdge === 'bottom') {
+      return dx < threshold;
+    }
+    // للحدود اليمنى/اليسرى: نحتاج اتصال أفقي مباشر
+    return dy < threshold;
+  }
+  
+  const segmentOrientation = getSegmentOrientation(lastSegment);
+  const edgeOrientation = getEdgeOrientation(snapEdge);
+  
+  // الاتصال المباشر يحدث عندما:
+  // - الضلع عمودي على الحد (عمودي للحدود الأفقية، أفقي للحدود العمودية)
+  // - والنقطة الثابتة على نفس المحور مع نقطة السناب
+  
+  if (edgeOrientation === 'horizontal') {
+    // حد أفقي (top/bottom) → الضلع يجب أن يكون عمودي وعلى نفس X
+    const sameX = Math.abs(fixedPoint.x - snapPoint.x) < threshold;
+    return segmentOrientation === 'vertical' && sameX;
+  } else {
+    // حد عمودي (left/right) → الضلع يجب أن يكون أفقي وعلى نفس Y
+    const sameY = Math.abs(fixedPoint.y - snapPoint.y) < threshold;
+    return segmentOrientation === 'horizontal' && sameY;
+  }
+};
+
+/**
+ * ✅ تحديد ما إذا كان الضلع الأخير متعامد مع الحد
+ * إذا كان متعامداً → نحتاج ضلع واحد إضافي فقط
+ */
+const isPerpendicularConnection = (
+  lastSegment: ArrowSegment | null,
+  snapEdge: SnapEdge,
+  fixedPoint: ArrowPoint,
+  snapPoint: ArrowPoint
+): boolean => {
+  if (!lastSegment) {
+    // لا يوجد ضلع سابق → نحسب من النقطة الثابتة
+    const edgeOrientation = getEdgeOrientation(snapEdge);
+    
+    // للحدود الأفقية: نحتاج أن يكون الضلع الجديد عمودياً (من أعلى/أسفل)
+    if (edgeOrientation === 'horizontal') {
+      // نقطة ثابتة أعلى من السناب (للحد العلوي) أو أسفل (للحد السفلي)
+      if (snapEdge === 'top') {
+        return fixedPoint.y < snapPoint.y;
+      }
+      return fixedPoint.y > snapPoint.y;
+    } else {
+      // للحدود العمودية: نحتاج أن يكون الضلع الجديد أفقياً
+      if (snapEdge === 'left') {
+        return fixedPoint.x < snapPoint.x;
+      }
+      return fixedPoint.x > snapPoint.x;
+    }
+  }
+  
+  const segmentOrientation = getSegmentOrientation(lastSegment);
+  const edgeOrientation = getEdgeOrientation(snapEdge);
+  
+  // الاتصال المتعامد يحدث عندما الضلع عمودي على الحد
+  // لكن النقطتين ليستا على نفس المحور (فنحتاج ضلع إضافي)
+  return segmentOrientation !== edgeOrientation;
+};
+
+/**
  * ✅ إنشاء مسار T-shape من النقطة الثابتة إلى نقطة السناب
- * هذه الدالة تضمن دائماً شكل T نظيف مع الضلع الأخير عمودي على حد العنصر
  * 
- * القواعد المستخدمة (مطابقة لـ Miro/FigJam):
- * - الضلع الأخير دائماً عمودي على حد العنصر المتصل
- * - للحدود الأفقية (top/bottom): الضلع الأخير عمودي
- * - للحدود العمودية (left/right): الضلع الأخير أفقي
- * - المسار يتكون من ضلعين أو ثلاثة حسب موقع النقطة الثابتة
+ * القواعد الجديدة:
+ * 1. إذا كانت النقطة تتجه مباشرة نحو السناب → 0 أضلاع (مد الضلع الحالي)
+ * 2. إذا كانت على حد متعامد → ضلع واحد فقط
+ * 3. إذا كانت على حد موازٍ → ضلعين
  */
 const createOrthogonalPathWithTShape = (
   fixedPoint: ArrowPoint,
   snapPoint: ArrowPoint,
   snapEdge: SnapEdge,
+  lastSegment: ArrowSegment | null = null,
   config: RoutingConfig = DEFAULT_CONFIG
 ): ArrowSegment[] => {
   const segments: ArrowSegment[] = [];
-  const offset = config.OFFSET_DISTANCE;
-  
-  // تحديد ما إذا كانت النقطتان متقاربتان جداً في محور معين
-  const dx = Math.abs(snapPoint.x - fixedPoint.x);
-  const dy = Math.abs(snapPoint.y - fixedPoint.y);
   const threshold = 5;
   
-  switch (snapEdge) {
-    case 'top':
-      // الاتصال من أعلى العنصر → الضلع الأخير عمودي من الأعلى
-      if (dx < threshold) {
-        // النقطتان متحاذيتان عمودياً → ضلع واحد عمودي
-        segments.push({
-          id: generateId(),
-          startPoint: { ...fixedPoint },
-          endPoint: { ...snapPoint }
-        });
-      } else if (fixedPoint.y < snapPoint.y) {
-        // النقطة الثابتة أعلى من نقطة السناب → ضلعين
-        // أفقي إلى محاذاة X ثم عمودي للأسفل
+  // ✅ الحالة 1: اتصال مباشر (T-shape مثالي) → ضلع واحد فقط
+  if (isDirectConnection(lastSegment, snapEdge, fixedPoint, snapPoint)) {
+    console.log('[Arrow Routing] Direct T-Shape connection - single segment');
+    segments.push({
+      id: generateId(),
+      startPoint: { ...fixedPoint },
+      endPoint: { ...snapPoint }
+    });
+    return segments;
+  }
+  
+  // ✅ الحالة 2: اتصال متعامد → ضلع واحد إضافي
+  if (isPerpendicularConnection(lastSegment, snapEdge, fixedPoint, snapPoint)) {
+    console.log('[Arrow Routing] Perpendicular connection - one turn');
+    
+    switch (snapEdge) {
+      case 'top':
+      case 'bottom':
+        // نحتاج: أفقي ثم عمودي
         segments.push({
           id: generateId(),
           startPoint: { ...fixedPoint },
@@ -198,9 +279,34 @@ const createOrthogonalPathWithTShape = (
           startPoint: { x: snapPoint.x, y: fixedPoint.y },
           endPoint: { ...snapPoint }
         });
-      } else {
-        // النقطة الثابتة أسفل من نقطة السناب → 3 أضلاع (L-shape مقلوب)
-        // عمودي للأعلى أولاً ثم أفقي ثم عمودي للأعلى
+        break;
+        
+      case 'left':
+      case 'right':
+        // نحتاج: عمودي ثم أفقي
+        segments.push({
+          id: generateId(),
+          startPoint: { ...fixedPoint },
+          endPoint: { x: fixedPoint.x, y: snapPoint.y }
+        });
+        segments.push({
+          id: generateId(),
+          startPoint: { x: fixedPoint.x, y: snapPoint.y },
+          endPoint: { ...snapPoint }
+        });
+        break;
+    }
+    return segments;
+  }
+  
+  // ✅ الحالة 3: اتصال موازٍ (يحتاج التفاف) → ضلعين (3 أضلاع مع الضلع الأصلي)
+  console.log('[Arrow Routing] Parallel connection - two turns needed');
+  const offset = config.OFFSET_DISTANCE;
+  
+  switch (snapEdge) {
+    case 'top':
+      // الضلع الأخير أفقي، نحتاج الالتفاف للأعلى
+      {
         const midY = snapPoint.y - offset;
         segments.push({
           id: generateId(),
@@ -221,27 +327,7 @@ const createOrthogonalPathWithTShape = (
       break;
       
     case 'bottom':
-      // الاتصال من أسفل العنصر → الضلع الأخير عمودي من الأسفل
-      if (dx < threshold) {
-        segments.push({
-          id: generateId(),
-          startPoint: { ...fixedPoint },
-          endPoint: { ...snapPoint }
-        });
-      } else if (fixedPoint.y > snapPoint.y) {
-        // النقطة الثابتة أسفل من نقطة السناب → ضلعين
-        segments.push({
-          id: generateId(),
-          startPoint: { ...fixedPoint },
-          endPoint: { x: snapPoint.x, y: fixedPoint.y }
-        });
-        segments.push({
-          id: generateId(),
-          startPoint: { x: snapPoint.x, y: fixedPoint.y },
-          endPoint: { ...snapPoint }
-        });
-      } else {
-        // النقطة الثابتة أعلى من نقطة السناب → 3 أضلاع
+      {
         const midY = snapPoint.y + offset;
         segments.push({
           id: generateId(),
@@ -262,27 +348,7 @@ const createOrthogonalPathWithTShape = (
       break;
       
     case 'left':
-      // الاتصال من يسار العنصر → الضلع الأخير أفقي من اليسار
-      if (dy < threshold) {
-        segments.push({
-          id: generateId(),
-          startPoint: { ...fixedPoint },
-          endPoint: { ...snapPoint }
-        });
-      } else if (fixedPoint.x < snapPoint.x) {
-        // النقطة الثابتة على يسار نقطة السناب → ضلعين
-        segments.push({
-          id: generateId(),
-          startPoint: { ...fixedPoint },
-          endPoint: { x: fixedPoint.x, y: snapPoint.y }
-        });
-        segments.push({
-          id: generateId(),
-          startPoint: { x: fixedPoint.x, y: snapPoint.y },
-          endPoint: { ...snapPoint }
-        });
-      } else {
-        // النقطة الثابتة على يمين نقطة السناب → 3 أضلاع
+      {
         const midX = snapPoint.x - offset;
         segments.push({
           id: generateId(),
@@ -303,27 +369,7 @@ const createOrthogonalPathWithTShape = (
       break;
       
     case 'right':
-      // الاتصال من يمين العنصر → الضلع الأخير أفقي من اليمين
-      if (dy < threshold) {
-        segments.push({
-          id: generateId(),
-          startPoint: { ...fixedPoint },
-          endPoint: { ...snapPoint }
-        });
-      } else if (fixedPoint.x > snapPoint.x) {
-        // النقطة الثابتة على يمين نقطة السناب → ضلعين
-        segments.push({
-          id: generateId(),
-          startPoint: { ...fixedPoint },
-          endPoint: { x: fixedPoint.x, y: snapPoint.y }
-        });
-        segments.push({
-          id: generateId(),
-          startPoint: { x: fixedPoint.x, y: snapPoint.y },
-          endPoint: { ...snapPoint }
-        });
-      } else {
-        // النقطة الثابتة على يسار نقطة السناب → 3 أضلاع
+      {
         const midX = snapPoint.x + offset;
         segments.push({
           id: generateId(),
@@ -823,6 +869,18 @@ export const resolveSnapConnection = (
   // ✅ الخطوة 3: فحص إذا كان المسار يمر من داخل العنصر (يحتاج U-shape)
   const needsUShape = detectIntersection(fixedPoint, snapPoint, targetElement);
   
+  // ✅ الخطوة 3.5: تحديد الضلع الأخير قبل نقطة الاتصال (للتحديد الذكي للمسار)
+  let lastSegmentBeforeConnection: ArrowSegment | null = null;
+  if (preservedSegments.length > 0) {
+    if (endpointType === 'start') {
+      // نسحب من البداية → الضلع الأخير هو أول ضلع محفوظ
+      lastSegmentBeforeConnection = preservedSegments[0];
+    } else {
+      // نسحب من النهاية → الضلع الأخير هو آخر ضلع محفوظ
+      lastSegmentBeforeConnection = preservedSegments[preservedSegments.length - 1];
+    }
+  }
+  
   // ✅ الخطوة 4: إنشاء المسار الجديد للجزء المُعدّل فقط
   let newPathSegments: ArrowSegment[];
   
@@ -831,7 +889,7 @@ export const resolveSnapConnection = (
     newPathSegments = createUShapePath(fixedPoint, snapPoint, snapEdge, config);
   } else {
     console.log('[Arrow Routing] Creating T-Shape path for modified section');
-    newPathSegments = createOrthogonalPathWithTShape(fixedPoint, snapPoint, snapEdge, config);
+    newPathSegments = createOrthogonalPathWithTShape(fixedPoint, snapPoint, snapEdge, lastSegmentBeforeConnection, config);
   }
   
   // ✅ الخطوة 5: عكس المسار الجديد إذا كان الاتصال من البداية
