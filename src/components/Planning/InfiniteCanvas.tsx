@@ -19,8 +19,6 @@ interface InfiniteCanvasProps {
   boardId: string;
 }
 
-type CanvasEngine = "native" | "reactflow";
-
 const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,16 +52,24 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
 
   useKeyboardShortcuts();
 
-  // ✅ Feature Flag للمحرك
-  const engine = useMemo<CanvasEngine>(() => "reactflow", []);
+  const [engine] = useState<"native" | "reactflow">(() => {
+    const stored =
+      typeof window !== "undefined" && window.localStorage
+        ? (localStorage.getItem("soabra_canvas_engine") as "native" | "reactflow" | null)
+        : null;
+    return stored === "reactflow" || stored === "native" ? stored : "native";
+  });
 
+  // Pan State
   const isPanningRef = useRef(false);
   const lastPanPositionRef = useRef({ x: 0, y: 0 });
 
+  // Selection Box State (native only)
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState<{ x: number; y: number } | null>(null);
   const [selectionCurrent, setSelectionCurrent] = useState<{ x: number; y: number } | null>(null);
 
+  // Viewport bounds for virtualization (native only)
   const viewportBounds = useMemo(
     () => ({
       x: -viewport.pan.x / viewport.zoom,
@@ -74,6 +80,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     [viewport],
   );
 
+  // Virtualized elements (only render visible ones) (native only)
   const visibleElements = useMemo(() => {
     const padding = 200;
     return elements.filter((el) => {
@@ -88,11 +95,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     });
   }, [elements, viewportBounds, layers]);
 
+  // Grid Lines (native only)
   const gridLines = useMemo(() => {
     if (!settings.gridEnabled) return [];
     const lines: React.CSSProperties[] = [];
     const gridSize = settings.gridSize;
-
     const startX = Math.floor(viewportBounds.x / gridSize) * gridSize;
     const startY = Math.floor(viewportBounds.y / gridSize) * gridSize;
     const endX = Math.ceil((viewportBounds.x + viewportBounds.width) / gridSize) * gridSize;
@@ -125,6 +132,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     return lines;
   }, [settings.gridEnabled, settings.gridSize, viewportBounds]);
 
+  // Snap to Grid Function
   const snapToGrid = useCallback(
     (x: number, y: number) => {
       if (!settings.snapToGrid) return { x, y };
@@ -137,11 +145,15 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     [settings.snapToGrid, settings.gridSize],
   );
 
+  // Handle Wheel (Zoom)
   const handleWheel = useCallback(
     (e: WheelEvent) => {
-      if (engine === "reactflow") return;
-
       e.preventDefault();
+
+      if (engine === "reactflow") {
+        return;
+      }
+
       if (e.ctrlKey || e.metaKey) {
         const delta = -e.deltaY * 0.001;
         const newZoom = viewport.zoom * (1 + delta);
@@ -153,6 +165,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     [engine, viewport, setZoom, setPan],
   );
 
+  // Handle Mouse Down (Start Pan or Selection)
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (engine === "reactflow") return;
@@ -160,7 +173,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       if (e.button === 1 || (e.button === 0 && e.altKey)) {
         isPanningRef.current = true;
         lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
-        if (containerRef.current) containerRef.current.style.cursor = "grabbing";
+        if (containerRef.current) {
+          containerRef.current.style.cursor = "grabbing";
+        }
         e.preventDefault();
       } else if (
         e.button === 0 &&
@@ -168,7 +183,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         !(e.target as HTMLElement).closest('[data-canvas-element="true"]') &&
         !(e.target as HTMLElement).closest(".bounding-box")
       ) {
-        if (!e.shiftKey) clearSelection();
+        if (!e.shiftKey) {
+          clearSelection();
+        }
         setIsSelecting(true);
 
         const containerRect = containerRef.current?.getBoundingClientRect();
@@ -176,7 +193,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         const relativeY = e.clientY - (containerRect?.top || 0);
 
         setSelectionStart({ x: relativeX, y: relativeY } as any);
-        (setSelectionStart as any)((prev: any) => ({ ...prev, shiftKey: e.shiftKey }));
+        (setSelectionStart as any)((prev: any) => ({ ...(prev || {}), shiftKey: e.shiftKey }));
+
         setSelectionCurrent({ x: relativeX, y: relativeY });
       } else if (
         e.button === 0 &&
@@ -199,6 +217,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     [engine, activeTool, handleCanvasMouseDown, clearSelection],
   );
 
+  // Handle Mouse Move (Pan or Drawing or Selection)
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
       if (engine === "reactflow") return;
@@ -221,11 +240,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     [engine, viewport, setPan, handleCanvasMouseMove, isSelecting],
   );
 
+  // Handle Mouse Up (Stop Pan or Drawing or Selection)
   const handleMouseUp = useCallback(() => {
     if (engine === "reactflow") return;
 
     isPanningRef.current = false;
-    if (containerRef.current) containerRef.current.style.cursor = "default";
+    if (containerRef.current) {
+      containerRef.current.style.cursor = "default";
+    }
 
     if (isSelecting && selectionStart && selectionCurrent) {
       const minX = Math.min(selectionStart.x, selectionCurrent.x);
@@ -237,7 +259,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       const boxHeight = maxY - minY;
 
       if (boxWidth < 5 && boxHeight < 5) {
-        if (!(selectionStart as any).shiftKey) clearSelection();
+        if (!(selectionStart as any).shiftKey) {
+          clearSelection();
+        }
       } else {
         const selectedIds: string[] = [];
         elements.forEach((el) => {
@@ -263,6 +287,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
           const finalSelection = (selectionStart as any).shiftKey
             ? [...new Set([...currentSelection, ...selectedIds])]
             : selectedIds;
+
           useCanvasStore.getState().selectElements(finalSelection);
         }
       }
@@ -275,10 +300,13 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     handleCanvasMouseUp();
   }, [engine, handleCanvasMouseUp, isSelecting, selectionStart, selectionCurrent, elements, viewport, clearSelection]);
 
+  // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const typingMode = useCanvasStore.getState().typingMode;
       if (typingMode) return;
+
+      if (engine === "reactflow") return;
 
       if ((e.ctrlKey || e.metaKey) && (e.key === "=" || e.key === "+")) {
         e.preventDefault();
@@ -353,7 +381,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         e.preventDefault();
         const allElementIds = elements.map((el) => el.id);
         selectElements(allElementIds);
-        if (allElementIds.length > 0) toast.success(`تم تحديد ${allElementIds.length} عنصر`);
+        if (allElementIds.length > 0) {
+          toast.success(`تم تحديد ${allElementIds.length} عنصر`);
+        }
       }
 
       if ((e.ctrlKey || e.metaKey) && e.key === "g" && !e.shiftKey) {
@@ -368,10 +398,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         e.preventDefault();
         const selectedElements = elements.filter((el) => selectedElementIds.includes(el.id));
         const groupIds = [...new Set(selectedElements.map((el) => el.metadata?.groupId).filter(Boolean))];
+
         groupIds.forEach((groupId) => {
           if (groupId) ungroupElements(groupId);
         });
-        if (groupIds.length > 0) toast.success("تم فك التجميع");
+
+        if (groupIds.length > 0) {
+          toast.success("تم فك التجميع");
+        }
       }
 
       if (e.key === "g" && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
@@ -417,6 +451,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [
+    engine,
     undo,
     redo,
     toggleGrid,
@@ -426,25 +461,26 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     cutElements,
     deleteElements,
     clearSelection,
-    elements,
-    selectElements,
     moveElements,
     groupElements,
     ungroupElements,
+    elements,
+    selectElements,
   ]);
 
+  // Wheel event listener
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    return () => container.removeEventListener("wheel", handleWheel);
+  }, [handleWheel]);
 
-    if (engine === "native") {
-      container.addEventListener("wheel", handleWheel, { passive: false });
-      return () => container.removeEventListener("wheel", handleWheel);
-    }
-  }, [engine, handleWheel]);
-
+  // Handle file drop on canvas (native only)
   const handleFileDrop = useCallback(
     (e: React.DragEvent) => {
+      if (engine === "reactflow") return;
+
       e.preventDefault();
       if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
 
@@ -477,12 +513,16 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         toast.success(`تم إدراج الملف: ${file.name}`);
       }
     },
-    [viewport],
+    [engine, viewport],
   );
 
-  const handleFileDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-  }, []);
+  const handleFileDragOver = useCallback(
+    (e: React.DragEvent) => {
+      if (engine === "reactflow") return;
+      e.preventDefault();
+    },
+    [engine],
+  );
 
   const getCursorStyle = () => {
     if (engine === "reactflow") return "default";
@@ -490,12 +530,15 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       case "text_tool":
         return "text";
       case "smart_pen":
+        return "crosshair";
       case "shapes_tool":
+        return "crosshair";
       case "frame_tool":
-      case "smart_element_tool":
         return "crosshair";
       case "file_uploader":
         return "copy";
+      case "smart_element_tool":
+        return "crosshair";
       default:
         return "default";
     }
@@ -512,68 +555,82 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       onMouseLeave={handleMouseUp}
       onDrop={handleFileDrop}
       onDragOver={handleFileDragOver}
-      style={{ backgroundColor: settings.background, cursor: getCursorStyle() }}
+      style={{
+        backgroundColor: settings.background,
+        cursor: getCursorStyle(),
+      }}
     >
       {engine === "native" ? (
-        <div
-          ref={canvasRef}
-          className="absolute inset-0 origin-top-left"
-          style={{
-            transform: `translate(${viewport.pan.x}px, ${viewport.pan.y}px) scale(${viewport.zoom})`,
-            transition: isPanningRef.current ? "none" : "transform 0.1s ease-out",
-          }}
-        >
-          {settings.gridEnabled && (
-            <div
-              className="absolute"
-              style={{
-                left: viewportBounds.x - 200,
-                top: viewportBounds.y - 200,
-                width: viewportBounds.width + 400,
-                height: viewportBounds.height + 400,
-              }}
-            >
-              {gridLines.map((lineStyle, index) => (
-                <div key={index} style={lineStyle} />
-              ))}
-            </div>
+        <>
+          {/* Canvas Container */}
+          <div
+            ref={canvasRef}
+            className="absolute inset-0 origin-top-left"
+            style={{
+              transform: `translate(${viewport.pan.x}px, ${viewport.pan.y}px) scale(${viewport.zoom})`,
+              transition: isPanningRef.current ? "none" : "transform 0.1s ease-out",
+            }}
+          >
+            {/* Grid Lines */}
+            {settings.gridEnabled && (
+              <div
+                className="absolute"
+                style={{
+                  left: viewportBounds.x - 200,
+                  top: viewportBounds.y - 200,
+                  width: viewportBounds.width + 400,
+                  height: viewportBounds.height + 400,
+                }}
+              >
+                {gridLines.map((lineStyle, index) => (
+                  <div key={index} style={lineStyle} />
+                ))}
+              </div>
+            )}
+
+            {/* Pen Strokes Layer */}
+            <StrokesLayer />
+
+            {/* Canvas Elements */}
+            {visibleElements.map((element) => (
+              <CanvasElement
+                key={element.id}
+                element={element}
+                isSelected={selectedElementIds.includes(element.id)}
+                onSelect={(multiSelect) => selectElement(element.id, multiSelect)}
+                snapToGrid={settings.snapToGrid ? snapToGrid : undefined}
+                activeTool={activeTool}
+              />
+            ))}
+
+            {/* BoundingBox for selected elements */}
+            <BoundingBox />
+
+            {/* Drawing Preview */}
+            {tempElement && <DrawingPreview element={tempElement} />}
+          </div>
+
+          {/* Selection Box */}
+          {isSelecting && selectionStart && selectionCurrent && (
+            <SelectionBox
+              startX={selectionStart.x}
+              startY={selectionStart.y}
+              currentX={selectionCurrent.x}
+              currentY={selectionCurrent.y}
+            />
           )}
 
-          <StrokesLayer />
-
-          {visibleElements.map((element) => (
-            <CanvasElement
-              key={element.id}
-              element={element}
-              isSelected={selectedElementIds.includes(element.id)}
-              onSelect={(multiSelect) => selectElement(element.id, multiSelect)}
-              snapToGrid={settings.snapToGrid ? snapToGrid : undefined}
-              activeTool={activeTool}
-            />
-          ))}
-
-          <BoundingBox />
-          {tempElement && <DrawingPreview element={tempElement} />}
-        </div>
-      ) : (
-        <ReactFlowCanvas boardId={boardId} />
-      )}
-
-      {engine === "native" && isSelecting && selectionStart && selectionCurrent && (
-        <SelectionBox
-          startX={selectionStart.x}
-          startY={selectionStart.y}
-          currentX={selectionCurrent.x}
-          currentY={selectionCurrent.y}
-        />
-      )}
-
-      {engine === "native" && (
-        <>
+          {/* Pen Input Layer */}
           <PenInputLayer containerRef={containerRef} active={activeTool === "smart_pen"} />
+
+          {/* Frame Input Layer */}
           <FrameInputLayer containerRef={containerRef} active={activeTool === "frame_tool"} />
+
+          {/* Pen Floating Toolbar */}
           <PenFloatingToolbar position={{ x: window.innerWidth / 2, y: 80 }} isVisible={activeTool === "smart_pen"} />
         </>
+      ) : (
+        <ReactFlowCanvas boardId={boardId} />
       )}
     </div>
   );
