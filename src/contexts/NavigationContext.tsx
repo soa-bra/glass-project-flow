@@ -1,67 +1,33 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+// src/contexts/NavigationContext.tsx
+import * as React from "react";
 
-interface NavigationState {
+type NavigationState = {
   activeSection: string;
-  selectedDepartment: string | null;
-  selectedCustomer: string | null;
-}
-
-interface NavigationContextType {
-  navigationState: NavigationState;
   setActiveSection: (section: string) => void;
-  setSelectedDepartment: (department: string | null) => void;
-  setSelectedCustomer: (customerId: string | null) => void;
-  navigateToCustomerDetails: (customerId: string) => void;
-}
+};
 
-const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
+const NavigationContext = React.createContext<NavigationState | null>(null);
 
-export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [navigationState, setNavigationState] = useState<NavigationState>({
-    activeSection: 'home',
-    selectedDepartment: null,
-    selectedCustomer: null,
-  });
+export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [activeSection, setActiveSection] = React.useState<string>("home");
 
-  const setActiveSection = (section: string) => {
-    setNavigationState(prev => ({ ...prev, activeSection: section }));
-  };
-
-  const setSelectedDepartment = (department: string | null) => {
-    setNavigationState(prev => ({ ...prev, selectedDepartment: department }));
-  };
-
-  const setSelectedCustomer = (customerId: string | null) => {
-    setNavigationState(prev => ({ ...prev, selectedCustomer: customerId }));
-  };
-
-  const navigateToCustomerDetails = (customerId: string) => {
-    setNavigationState({
-      activeSection: 'departments',
-      selectedDepartment: 'crm',
-      selectedCustomer: customerId,
-    });
-  };
-
-  return (
-    <NavigationContext.Provider
-      value={{
-        navigationState,
-        setActiveSection,
-        setSelectedDepartment,
-        setSelectedCustomer,
-        navigateToCustomerDetails,
-      }}
-    >
-      {children}
-    </NavigationContext.Provider>
+  const value = React.useMemo<NavigationState>(
+    () => ({
+      activeSection,
+      setActiveSection,
+    }),
+    [activeSection],
   );
+
+  return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;
 };
 
-export const useNavigation = (): NavigationContextType => {
-  const context = useContext(NavigationContext);
-  if (context === undefined) {
-    throw new Error('useNavigation must be used within a NavigationProvider');
+export const useNavigation = (): NavigationState => {
+  const ctx = React.useContext(NavigationContext);
+  if (!ctx) {
+    throw new Error("useNavigation must be used within NavigationProvider");
   }
-  return context;
+  return ctx;
 };
+
+export default NavigationContext;
