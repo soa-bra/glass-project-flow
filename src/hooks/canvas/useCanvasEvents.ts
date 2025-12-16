@@ -1,145 +1,122 @@
-import { useCallback, useRef } from 'react';
-import { useCanvasStore } from '@/stores/canvasStore';
-import { screenToCanvasCoordinates } from '@/utils/canvasCoordinates';
+import { useEffect, useMemo, useRef } from "react";
+import type { Camera } from "./canvasStore";
+import { canvasStore } from "./canvasStore";
+import { clamp, rafThrottle } from "./canvasUtils";
+import { zoomAtPoint } from "./canvasCoordinates";
+import { getViewportRect, toViewportPoint } from "./canvas-events";
 
-interface UseCanvasEventsOptions {
-  containerRef: React.RefObject<HTMLElement>;
-  onElementClick?: (elementId: string, event: React.MouseEvent) => void;
-  onCanvasClick?: (position: { x: number; y: number }, event: React.MouseEvent) => void;
-  onElementDragStart?: (elementId: string, position: { x: number; y: number }) => void;
-  onElementDragMove?: (elementId: string, position: { x: number; y: number }) => void;
-  onElementDragEnd?: (elementId: string, position: { x: number; y: number }) => void;
-  onSelectionBoxStart?: (position: { x: number; y: number }) => void;
-  onSelectionBoxMove?: (position: { x: number; y: number }) => void;
-  onSelectionBoxEnd?: (bounds: { x: number; y: number; width: number; height: number }) => void;
-}
+export type CanvasEventsOptions = {
+  /** When true: holding Space enables pan with left button */
+  enableSpacePan?: boolean;
+  /** When true: holding Shift enables pan with left button */
+  enableShiftPan?: boolean;
+};
 
-/**
- * هوك لإدارة أحداث الكانفاس (النقر، السحب، التحديد)
- */
-export function useCanvasEvents(options: UseCanvasEventsOptions) {
-  const {
-    containerRef,
-    onElementClick,
-    onCanvasClick,
-    onElementDragStart,
-    onElementDragMove,
-    onElementDragEnd,
-    onSelectionBoxStart,
-    onSelectionBoxMove,
-    onSelectionBoxEnd
-  } = options;
+export function useCanvasEvents(
+  viewportRef: React.RefObject<HTMLDivElement>,
+  options: CanvasEventsOptions = { enableSpacePan: true, enableShiftPan: true },
+) {
+  const opts = options;
+  const stateRef = useRef({
+    isPanning: false,
+    lastClient: { x: 0, y: 0 },
+    spaceDown: false,
+  });
 
-  const viewport = useCanvasStore(state => state.viewport);
-  const typingMode = useCanvasStore(state => state.typingMode);
-  
-  const { zoom, pan } = viewport;
-  
-  const isDraggingRef = useRef(false);
-  const isSelectingRef = useRef(false);
-  const dragStartRef = useRef({ x: 0, y: 0 });
-  const selectionStartRef = useRef({ x: 0, y: 0 });
+  const onPointerDown = useMemo(() => {
+    return (e: React.PointerEvent) => {
+      const vp = viewportRef.current;
+      if (!vp) return;
 
-  // تحويل إحداثيات الشاشة إلى إحداثيات الكانفاس
-  const getCanvasPosition = useCallback((clientX: number, clientY: number) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    return screenToCanvasCoordinates(clientX, clientY, { zoom, pan }, rect);
-  }, [containerRef, zoom, pan]);
+      const isMiddle = e.button === 1;
+      const isLeft = e.button === 0;
 
-  // معالجة النقر على الكانفاس
-  const handleCanvasMouseDown = useCallback((event: React.MouseEvent) => {
-    if (typingMode) return;
-    
-    const position = getCanvasPosition(event.clientX, event.clientY);
-    
-    // إذا لم يكن النقر على عنصر، ابدأ صندوق التحديد
-    const target = event.target as HTMLElement;
-    const isOnElement = target.closest('[data-canvas-element]');
-    
-    if (!isOnElement) {
-      isSelectingRef.current = true;
-      selectionStartRef.current = position;
-      onSelectionBoxStart?.(position);
-      onCanvasClick?.(position, event);
-    }
-  }, [typingMode, getCanvasPosition, onSelectionBoxStart, onCanvasClick]);
+      const allowLeftPan =
+        isLeft && ((opts.enableShiftPan && e.shiftKey) || (opts.enableSpacePan && stateRef.current.spaceDown));
 
-  // معالجة تحريك الماوس على الكانفاس
-  const handleCanvasMouseMove = useCallback((event: React.MouseEvent) => {
-    const position = getCanvasPosition(event.clientX, event.clientY);
-    
-    if (isSelectingRef.current) {
-      onSelectionBoxMove?.(position);
-    }
-    
-    if (isDraggingRef.current) {
-      onElementDragMove?.('', position);
-    }
-  }, [getCanvasPosition, onSelectionBoxMove, onElementDragMove]);
+      if (!isMiddle && !allowLeftPan) return;
 
-  // معالجة رفع زر الماوس
-  const handleCanvasMouseUp = useCallback((event: React.MouseEvent) => {
-    const position = getCanvasPosition(event.clientX, event.clientY);
-    
-    if (isSelectingRef.current) {
-      const bounds = {
-        x: Math.min(selectionStartRef.current.x, position.x),
-        y: Math.min(selectionStartRef.current.y, position.y),
-        width: Math.abs(position.x - selectionStartRef.current.x),
-        height: Math.abs(position.y - selectionStartRef.current.y)
-      };
-      onSelectionBoxEnd?.(bounds);
-      isSelectingRef.current = false;
-    }
-    
-    if (isDraggingRef.current) {
-      onElementDragEnd?.('', position);
-      isDraggingRef.current = false;
-    }
-  }, [getCanvasPosition, onSelectionBoxEnd, onElementDragEnd]);
+      stateRef.current.isPanning = true;
+      stateRef.current.lastClient = { x: e.clientX, y: e.clientY };
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      e.preventDefault();
+      e.stopPropagation();
+    };
+  }, [viewportRef, opts.enableShiftPan, opts.enableSpacePan]);
 
-  // معالجة النقر على عنصر
-  const handleElementMouseDown = useCallback((
-    elementId: string, 
-    event: React.MouseEvent
-  ) => {
-    if (typingMode) return;
-    
-    event.stopPropagation();
-    const position = getCanvasPosition(event.clientX, event.clientY);
-    
-    isDraggingRef.current = true;
-    dragStartRef.current = position;
-    
-    onElementDragStart?.(elementId, position);
-    onElementClick?.(elementId, event);
-  }, [typingMode, getCanvasPosition, onElementDragStart, onElementClick]);
+  const onPointerMove = useMemo(() => {
+    return rafThrottle((e: React.PointerEvent) => {
+      if (!stateRef.current.isPanning) return;
 
-  // معالجة مغادرة الماوس للكانفاس
-  const handleCanvasMouseLeave = useCallback(() => {
-    if (isSelectingRef.current) {
-      isSelectingRef.current = false;
-    }
-    if (isDraggingRef.current) {
-      isDraggingRef.current = false;
-    }
+      const cam = canvasStore.getState().camera;
+      const dx = (e.clientX - stateRef.current.lastClient.x) / cam.zoom;
+      const dy = (e.clientY - stateRef.current.lastClient.y) / cam.zoom;
+
+      stateRef.current.lastClient = { x: e.clientX, y: e.clientY };
+
+      canvasStore.actions.setCamera((c) => ({ x: c.x + dx, y: c.y + dy }));
+      e.preventDefault();
+      e.stopPropagation();
+    });
   }, []);
 
+  const onPointerUp = useMemo(() => {
+    return (_e: React.PointerEvent) => {
+      stateRef.current.isPanning = false;
+    };
+  }, []);
+
+  const onWheel = useMemo(() => {
+    return rafThrottle((e: WheelEvent) => {
+      const vp = viewportRef.current;
+      if (!vp) return;
+      if (!e.ctrlKey && !e.metaKey) return;
+
+      e.preventDefault();
+
+      const rect = getViewportRect(vp);
+      const screen = toViewportPoint({ x: e.clientX, y: e.clientY }, rect);
+
+      const cam = canvasStore.getState().camera;
+      const nextZoom = clamp(cam.zoom * (1 - e.deltaY * 0.001), 0.2, 4);
+
+      const next = zoomAtPoint(cam as any, nextZoom, screen as any) as Camera;
+      canvasStore.actions.setCamera(next);
+    });
+  }, [viewportRef]);
+
+  // Space key tracking
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space") stateRef.current.spaceDown = true;
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.code === "Space") stateRef.current.spaceDown = false;
+    };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+    };
+  }, []);
+
+  // Wheel must be registered as non-passive to allow preventDefault
+  useEffect(() => {
+    const vp = viewportRef.current;
+    if (!vp) return;
+
+    const handler = (e: WheelEvent) => onWheel(e);
+    vp.addEventListener("wheel", handler, { passive: false });
+
+    return () => {
+      vp.removeEventListener("wheel", handler);
+    };
+  }, [viewportRef, onWheel]);
+
   return {
-    // حالات السحب والتحديد
-    isDragging: isDraggingRef.current,
-    isSelecting: isSelectingRef.current,
-    
-    // المعالجات
-    handleCanvasMouseDown,
-    handleCanvasMouseMove,
-    handleCanvasMouseUp,
-    handleCanvasMouseLeave,
-    handleElementMouseDown,
-    
-    // أدوات مساعدة
-    getCanvasPosition
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
   };
 }
-
-export default useCanvasEvents;

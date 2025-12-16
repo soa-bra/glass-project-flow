@@ -1,39 +1,30 @@
-import React from 'react';
+import React from "react";
 
-interface SelectionBoxOverlayProps {
-  startX: number;
-  startY: number;
-  currentX: number;
-  currentY: number;
-  isVisible: boolean;
-}
+type Props = {
+  rect: { x: number; y: number; w: number; h: number } | null;
+};
 
-/**
- * مكون لعرض صندوق التحديد المتعدد كطبقة فوق الكانفاس
- */
-export default function SelectionBoxOverlay({ 
-  startX, 
-  startY, 
-  currentX, 
-  currentY,
-  isVisible 
-}: SelectionBoxOverlayProps) {
-  if (!isVisible) return null;
+export default function SelectionBoxOverlay({ rect }: Props) {
+  if (!rect) return null;
 
-  const x = Math.min(startX, currentX);
-  const y = Math.min(startY, currentY);
-  const width = Math.abs(currentX - startX);
-  const height = Math.abs(currentY - startY);
-  
+  const x = Math.round(rect.x);
+  const y = Math.round(rect.y);
+  const w = Math.max(0, Math.round(rect.w));
+  const h = Math.max(0, Math.round(rect.h));
+
+  if (w === 0 || h === 0) return null;
+
   return (
     <div
-      className="absolute pointer-events-none border border-[hsl(var(--ink)/0.25)] bg-[hsl(var(--ink)/0.03)] rounded"
+      className="absolute"
       style={{
-        left: `${x}px`,
-        top: `${y}px`,
-        width: `${width}px`,
-        height: `${height}px`,
-        zIndex: 9999
+        left: x,
+        top: y,
+        width: w,
+        height: h,
+        border: "1px solid rgba(37, 99, 235, 0.9)",
+        background: "rgba(37, 99, 235, 0.10)",
+        borderRadius: 8,
       }}
     />
   );

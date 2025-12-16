@@ -1,54 +1,34 @@
-import React, { memo } from 'react';
-import { CanvasElement as CanvasElementType } from '@/types/canvas';
+import React from "react";
+import { useCamera } from "./canvasStore";
+import { getGridStyle } from "./canvasUtils";
 
-interface PureCanvasBoardProps {
-  elements: CanvasElementType[];
-  zoom: number;
-  pan: { x: number; y: number };
-  gridEnabled: boolean;
-  gridSize: number;
+type Props = {
+  /** محتوى العالم (World) — يُطبق عليه Transform الكاميرا */
   children?: React.ReactNode;
-}
+  /** طبقة Overlay على مستوى الشاشة (Screen) — بدون Transform */
+  overlay?: React.ReactNode;
+};
 
-/**
- * مكون الكانفاس النقي - يعرض العناصر فقط بدون منطق التفاعل
- * يستخدم memo لتحسين الأداء وتجنب إعادة الرسم غير الضرورية
- */
-const PureCanvasBoard = memo(function PureCanvasBoard({
-  elements,
-  zoom,
-  pan,
-  gridEnabled,
-  gridSize,
-  children
-}: PureCanvasBoardProps) {
-  const transformStyle = {
-    transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-    transformOrigin: '0 0'
-  };
-
-  const gridStyle = gridEnabled ? {
-    backgroundImage: `
-      linear-gradient(to right, hsl(var(--border)/0.3) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--border)/0.3) 1px, transparent 1px)
-    `,
-    backgroundSize: `${gridSize * zoom}px ${gridSize * zoom}px`,
-    backgroundPosition: `${pan.x}px ${pan.y}px`
-  } : {};
+export default function PureCanvasBoard({ children, overlay }: Props) {
+  const camera = useCamera();
 
   return (
-    <div 
-      className="absolute inset-0 overflow-hidden"
-      style={gridStyle}
-    >
-      <div 
-        className="absolute"
-        style={transformStyle}
+    <div className="relative w-full h-full overflow-hidden bg-neutral-100">
+      {/* Grid (Screen layer but aligned to World via camera) */}
+      <div className="absolute inset-0 pointer-events-none" style={getGridStyle(camera)} />
+
+      {/* World (transformed) */}
+      <div
+        className="absolute inset-0 origin-top-left will-change-transform"
+        style={{
+          transform: `translate(${camera.x}px, ${camera.y}px) scale(${camera.zoom})`,
+        }}
       >
         {children}
       </div>
+
+      {/* Overlay (screen space) */}
+      {overlay ? <div className="absolute inset-0 pointer-events-none">{overlay}</div> : null}
     </div>
   );
-});
-
-export default PureCanvasBoard;
+}
