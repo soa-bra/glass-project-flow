@@ -1,9 +1,38 @@
 import { useEffect, useMemo, useRef } from "react";
-import type { Camera } from "./canvasStore";
-import { canvasStore } from "./canvasStore";
-import { clamp, rafThrottle } from "./canvasUtils";
-import { zoomAtPoint } from "./canvasCoordinates";
-import { getViewportRect, toViewportPoint } from "./canvas-events";
+import { useCanvasStore } from "@/stores/canvasStore";
+import { clamp } from "@/utils/canvasUtils";
+
+type Camera = { x: number; y: number; zoom: number };
+type Point = { x: number; y: number };
+
+function rafThrottle<T extends (...args: any[]) => void>(fn: T): T {
+  let rafId: number | null = null;
+  return ((...args: any[]) => {
+    if (rafId !== null) return;
+    rafId = requestAnimationFrame(() => {
+      fn(...args);
+      rafId = null;
+    });
+  }) as T;
+}
+
+function zoomAtPoint(camera: Camera, nextZoom: number, pivot: Point): Camera {
+  const wx = (pivot.x - camera.x) / camera.zoom;
+  const wy = (pivot.y - camera.y) / camera.zoom;
+  return {
+    x: pivot.x - wx * nextZoom,
+    y: pivot.y - wy * nextZoom,
+    zoom: nextZoom,
+  };
+}
+
+function getViewportRect(el: HTMLElement) {
+  return el.getBoundingClientRect();
+}
+
+function toViewportPoint(clientPoint: Point, rect: DOMRect): Point {
+  return { x: clientPoint.x - rect.left, y: clientPoint.y - rect.top };
+}
 
 export type CanvasEventsOptions = {
   /** When true: holding Space enables pan with left button */
@@ -48,13 +77,13 @@ export function useCanvasEvents(
     return rafThrottle((e: React.PointerEvent) => {
       if (!stateRef.current.isPanning) return;
 
-      const cam = canvasStore.getState().camera;
-      const dx = (e.clientX - stateRef.current.lastClient.x) / cam.zoom;
-      const dy = (e.clientY - stateRef.current.lastClient.y) / cam.zoom;
+      const viewport = useCanvasStore.getState().viewport;
+      const dx = (e.clientX - stateRef.current.lastClient.x) / viewport.zoom;
+      const dy = (e.clientY - stateRef.current.lastClient.y) / viewport.zoom;
 
       stateRef.current.lastClient = { x: e.clientX, y: e.clientY };
 
-      canvasStore.actions.setCamera((c) => ({ x: c.x + dx, y: c.y + dy }));
+      useCanvasStore.getState().setPan(viewport.pan.x + dx, viewport.pan.y + dy);
       e.preventDefault();
       e.stopPropagation();
     });
@@ -77,11 +106,13 @@ export function useCanvasEvents(
       const rect = getViewportRect(vp);
       const screen = toViewportPoint({ x: e.clientX, y: e.clientY }, rect);
 
-      const cam = canvasStore.getState().camera;
+      const viewport = useCanvasStore.getState().viewport;
+      const cam: Camera = { x: viewport.pan.x, y: viewport.pan.y, zoom: viewport.zoom };
       const nextZoom = clamp(cam.zoom * (1 - e.deltaY * 0.001), 0.2, 4);
 
-      const next = zoomAtPoint(cam as any, nextZoom, screen as any) as Camera;
-      canvasStore.actions.setCamera(next);
+      const next = zoomAtPoint(cam, nextZoom, screen);
+      useCanvasStore.getState().setPan(next.x, next.y);
+      useCanvasStore.getState().setZoom(next.zoom);
     });
   }, [viewportRef]);
 
