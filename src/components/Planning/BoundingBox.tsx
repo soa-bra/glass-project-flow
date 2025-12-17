@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel } from '@/core/canvasKernel';
 
 // التحقق إذا كان الشكل سهماً
