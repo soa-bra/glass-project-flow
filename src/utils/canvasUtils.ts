@@ -36,3 +36,29 @@ export function distance(a: { x: number; y: number }, b: { x: number; y: number 
   const dy = a.y - b.y;
   return Math.sqrt(dx * dx + dy * dy);
 }
+
+export function toNumber(value: any, defaultValue: number = 0): number {
+  if (typeof value === 'number' && !isNaN(value)) return value;
+  if (typeof value === 'string') {
+    const parsed = parseFloat(value);
+    if (!isNaN(parsed)) return parsed;
+  }
+  return defaultValue;
+}
+
+export function toString(value: any, defaultValue: string = ''): string {
+  if (typeof value === 'string') return value;
+  if (value === null || value === undefined) return defaultValue;
+  return String(value);
+}
+
+export function sanitizeStyleForCSS(style: Record<string, any>): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const key in style) {
+    const value = style[key];
+    if (value !== null && value !== undefined) {
+      result[key] = typeof value === 'number' ? `${value}px` : String(value);
+    }
+  }
+  return result;
+}

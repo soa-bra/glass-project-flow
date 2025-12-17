@@ -1,9 +1,9 @@
 import React from 'react';
-import { useCanvasStore } from '@/stores/canvasStore';
+import { useCanvasStore, type PenStrokeStyle } from '@/stores/canvasStore';
 import { Minus, MoreHorizontal, Sparkles, Trash2 } from 'lucide-react';
 
 export default function SmartPenPanel() {
-  const { toolSettings, updateToolSettings, setActiveTool, setPenSettings, toggleSmartMode, clearAllStrokes } = useCanvasStore();
+  const { toolSettings, setActiveTool, setPenSettings, toggleSmartMode, clearAllStrokes } = useCanvasStore();
   const penSettings = toolSettings.pen;
 
   const handleStrokeWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -14,7 +14,7 @@ export default function SmartPenPanel() {
     setPenSettings({ color: e.target.value });
   };
 
-  const handleStyleChange = (style: 'solid' | 'dashed' | 'dotted' | 'double') => {
+  const handleStyleChange = (style: PenStrokeStyle) => {
     setPenSettings({ style });
   };
 
@@ -70,7 +70,7 @@ export default function SmartPenPanel() {
           <label className="text-[12px] text-[hsl(var(--ink-60))] mb-2 block">
             نمط الخط
           </label>
-          <div className="grid grid-cols-2 gap-2 mb-2">
+          <div className="grid grid-cols-3 gap-2 mb-2">
             <button
               onClick={() => handleStyleChange('solid')}
               className={`flex items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors ${
@@ -105,18 +105,6 @@ export default function SmartPenPanel() {
             >
               <span className="text-[16px] leading-none">···</span>
               <span className="text-[11px]">نقطي</span>
-            </button>
-
-            <button
-              onClick={() => handleStyleChange('double')}
-              className={`flex items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                penSettings.style === 'double'
-                  ? 'bg-[hsl(var(--ink))] text-white'
-                  : 'bg-[hsl(var(--panel))] hover:bg-[rgba(217,231,237,0.8)]'
-              }`}
-            >
-              <span className="text-[14px] font-bold leading-none">=</span>
-              <span className="text-[11px]">مزدوج</span>
             </button>
           </div>
         </div>

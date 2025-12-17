@@ -23,6 +23,7 @@ const panelTitles: Record<ToolId, string> = {
   text_tool: 'النص',
   shapes_tool: 'الأشكال',
   smart_element_tool: 'العناصر الذكية',
+  root_connector_tool: 'أداة الموصلات',
 };
 
 const RightSidePanel: React.FC<RightSidePanelProps> = ({ activeTool, onClose }) => {

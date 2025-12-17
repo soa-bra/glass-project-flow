@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useCanvasStore } from "@/stores/canvasStore";
-import { isTypingTarget } from "./canvasUtils";
+import { isTypingTarget } from "@/utils/canvasUtils";
 
 export function useCanvasKeyboard() {
   const store = useCanvasStore();
