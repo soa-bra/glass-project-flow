@@ -3,6 +3,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/stores/canvasStore';
 import { FloatingToolbar } from '@/components/ui/floating-toolbar';
 import { createPortal } from 'react-dom';
+import { sanitizeHTML } from '@/utils/sanitize';
 
 interface TextEditorProps {
   element: CanvasElement;
@@ -32,10 +33,10 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     }
   }, []);
   
-  // ✅ تعيين المحتوى الأولي مرة واحدة فقط
+  // ✅ تعيين المحتوى الأولي مرة واحدة فقط (مع تعقيم XSS)
   useEffect(() => {
     if (editorRef.current && element.content) {
-      editorRef.current.innerHTML = element.content;
+      editorRef.current.innerHTML = sanitizeHTML(element.content);
     }
   }, []); // ✅ مرة واحدة فقط عند mount
   
@@ -80,9 +81,9 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     
     document.execCommand(command, false, value);
     
-    // حفظ المحتوى بعد التنسيق
+    // حفظ المحتوى بعد التنسيق (مع تعقيم)
     if (editorRef.current) {
-      const newContent = editorRef.current.innerHTML;
+      const newContent = sanitizeHTML(editorRef.current.innerHTML);
       onUpdate(newContent);
     }
   }, [onUpdate]);
@@ -96,8 +97,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     const command = listType === 'ul' ? 'insertUnorderedList' : 'insertOrderedList';
     document.execCommand(command, false);
     
-    // تحديث المحتوى
-    onUpdate(editorRef.current.innerHTML);
+    // تحديث المحتوى (مع تعقيم)
+    onUpdate(sanitizeHTML(editorRef.current.innerHTML));
   }, [onUpdate]);
 
   const removeFormatting = useCallback(() => {
@@ -124,7 +125,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       }
     }
     
-    onUpdate(editorRef.current.innerHTML);
+    onUpdate(sanitizeHTML(editorRef.current.innerHTML));
   }, [onUpdate]);
 
   const handleAlignChange = useCallback((align: 'left' | 'center' | 'right') => {
@@ -223,7 +224,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       
       e.preventDefault();
       if (editorRef.current) {
-        onUpdate(editorRef.current.innerHTML);
+        onUpdate(sanitizeHTML(editorRef.current.innerHTML));
       }
       onClose();
       return;
@@ -336,7 +337,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
           suppressContentEditableWarning
           dir={element.style?.direction || 'rtl'}
           onInput={(e) => {
-            const newContent = e.currentTarget.innerHTML || '';
+            const newContent = sanitizeHTML(e.currentTarget.innerHTML || '');
             onUpdate(newContent);
           }}
           onKeyDown={handleKeyDown}
@@ -348,7 +349,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
             
             if (!isClickingPanel && !isClickingToolbar) {
               if (editorRef.current) {
-                onUpdate(editorRef.current.innerHTML);
+                onUpdate(sanitizeHTML(editorRef.current.innerHTML));
               }
               setShowToolbar(false);
               stopTyping();
