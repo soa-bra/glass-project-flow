@@ -1,7 +1,7 @@
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useRef, useState, useEffect, useMemo } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { eventPipeline } from '@/core/eventPipeline';
-import { canvasKernel } from '@/core/canvasKernel';
+import { canvasKernel, type Bounds, type Point } from '@/core/canvasKernel';
 
 // التحقق إذا كان الشكل سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -9,23 +9,40 @@ const isArrowShape = (shapeType: string | undefined): boolean => {
   return shapeType.startsWith('arrow_');
 };
 
+/**
+ * مكون الإطار المحيط للعناصر المحددة
+ * 
+ * ✅ Sprint 4: جميع الحسابات في World Space
+ * ✅ العرض يتم عبر CSS transform من الكانفاس
+ */
 export const BoundingBox: React.FC = () => {
   // ✅ جميع الـ Hooks أولاً (قبل أي return)
-  const { selectedElementIds, elements, viewport, moveElements, resizeElements, duplicateElement, resizeFrame, activeTool } = useCanvasStore();
+  const { 
+    selectedElementIds, 
+    elements, 
+    viewport, 
+    moveElements, 
+    resizeElements, 
+    duplicateElement, 
+    resizeFrame, 
+    activeTool 
+  } = useCanvasStore();
+  
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<string | null>(null);
-  const dragStart = useRef({ x: 0, y: 0 });
-  const initialMousePos = useRef({ x: 0, y: 0 });
+  const dragStart = useRef<Point>({ x: 0, y: 0 });
   const hasDuplicated = useRef(false);
   
-  // حساب حدود الإطار المحيط بشكل آمن
-  const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));
+  // ✅ حساب حدود الإطار المحيط في World Space
+  const selectedElements = useMemo(() => 
+    elements.filter(el => selectedElementIds.includes(el.id)),
+    [elements, selectedElementIds]
+  );
   
   // حساب عدد العناصر الفعلية (بدون تكرار الأطفال)
-  const displayCount = React.useMemo(() => {
+  const displayCount = useMemo(() => {
     const frames = selectedElements.filter(el => el.type === 'frame');
     
-    // إذا كان هناك إطار محدد، لا تحسب أطفاله مرتين
     if (frames.length > 0) {
       const childIds = frames.flatMap(f => (f as any).children || []);
       const nonChildElements = selectedElements.filter(
@@ -37,116 +54,107 @@ export const BoundingBox: React.FC = () => {
     return selectedElements.length;
   }, [selectedElements]);
   
-  const bounds = selectedElements.length > 0 ? {
-    minX: Math.min(...selectedElements.map(e => e.position.x)),
-    minY: Math.min(...selectedElements.map(e => e.position.y)),
-    maxX: Math.max(...selectedElements.map(e => e.position.x + e.size.width)),
-    maxY: Math.max(...selectedElements.map(e => e.position.y + e.size.height))
-  } : { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+  // ✅ حساب الحدود في World Space باستخدام Canvas Kernel
+  const bounds = useMemo((): Bounds & { centerX: number; centerY: number } => {
+    if (selectedElements.length === 0) {
+      return { x: 0, y: 0, width: 0, height: 0, centerX: 0, centerY: 0 };
+    }
+    
+    const result = canvasKernel.calculateBounds(selectedElements);
+    return result;
+  }, [selectedElements]);
   
-  const width = bounds.maxX - bounds.minX;
-  const height = bounds.maxY - bounds.minY;
-  const centerX = bounds.minX + width / 2;
-  const centerY = bounds.minY + height / 2;
-  
-  // حساب نقطة المرجع بناءً على المقبض المسحوب (النقطة المقابلة تكون ثابتة)
-  const getResizeOrigin = (handle: string): { x: number; y: number } => {
-    const originMap: Record<string, { x: number; y: number }> = {
-      'nw': { x: bounds.maxX, y: bounds.maxY }, // عكس: جنوب شرق
-      'ne': { x: bounds.minX, y: bounds.maxY }, // عكس: جنوب غرب
-      'sw': { x: bounds.maxX, y: bounds.minY }, // عكس: شمال شرق
-      'se': { x: bounds.minX, y: bounds.minY }, // عكس: شمال غرب
-      'n': { x: centerX, y: bounds.maxY },      // عكس: جنوب
-      's': { x: centerX, y: bounds.minY },      // عكس: شمال
-      'w': { x: bounds.maxX, y: centerY },      // عكس: شرق
-      'e': { x: bounds.minX, y: centerY }       // عكس: غرب
+  // ✅ حساب نقطة المرجع للـ resize (في World Space)
+  const getResizeOrigin = useCallback((handle: string): Point => {
+    const { x, y, width, height, centerX, centerY } = bounds;
+    const maxX = x + width;
+    const maxY = y + height;
+    
+    const originMap: Record<string, Point> = {
+      'nw': { x: maxX, y: maxY },
+      'ne': { x: x, y: maxY },
+      'sw': { x: maxX, y: y },
+      'se': { x: x, y: y },
+      'n': { x: centerX, y: maxY },
+      's': { x: centerX, y: y },
+      'w': { x: maxX, y: centerY },
+      'e': { x: x, y: centerY }
     };
     return originMap[handle] || { x: centerX, y: centerY };
-  };
+  }, [bounds]);
   
-  // ✅ useEffect قبل أي return شرطي
+  // ✅ معالجة حركة الماوس باستخدام Event Pipeline
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // ✅ منع التعارض مع سحب نقاط تحكم السهم
+      // منع التعارض مع سحب نقاط تحكم السهم
       if (useCanvasStore.getState().isInternalDrag) return;
       
       if (isDragging) {
-        // تكرار العناصر عند Cmd/Ctrl+Drag (مرة واحدة فقط)
+        // تكرار العناصر عند Cmd/Ctrl+Drag
         if ((e.metaKey || e.ctrlKey) && !hasDuplicated.current) {
           selectedElementIds.forEach(id => duplicateElement(id));
           hasDuplicated.current = true;
         }
         
-        const rawDeltaX = e.clientX - dragStart.current.x;
-        const rawDeltaY = e.clientY - dragStart.current.y;
+        // ✅ استخدام Event Pipeline لتحويل الدلتا
+        const worldDelta = eventPipeline.screenDeltaToWorld(
+          e.clientX - dragStart.current.x,
+          e.clientY - dragStart.current.y,
+          viewport.zoom
+        );
         
-        // ✅ استخدام Canvas Kernel لتحويل الدلتا
-        const worldDelta = canvasKernel.screenDeltaToWorld(rawDeltaX, rawDeltaY, viewport.zoom);
         let deltaX = worldDelta.x;
         let deltaY = worldDelta.y;
         
         // تقييد الحركة بمحور واحد مع Shift
         if (e.shiftKey) {
-          const absX = Math.abs(rawDeltaX);
-          const absY = Math.abs(rawDeltaY);
+          const absX = Math.abs(e.clientX - dragStart.current.x);
+          const absY = Math.abs(e.clientY - dragStart.current.y);
           
           if (absX > absY) {
-            deltaY = 0; // الحركة أفقية فقط
+            deltaY = 0;
           } else {
-            deltaX = 0; // الحركة عمودية فقط
+            deltaX = 0;
           }
         }
         
         if (deltaX !== 0 || deltaY !== 0) {
-          // استدعاء moveElements مباشرة - ستتعامل تلقائياً مع الإطارات
           moveElements(selectedElementIds, deltaX, deltaY);
-          
           dragStart.current = { x: e.clientX, y: e.clientY };
         }
       } else if (isResizing) {
-        // ✅ استخدام Canvas Kernel لتحويل الدلتا
-        const resizeDelta = canvasKernel.screenDeltaToWorld(
+        // ✅ استخدام Event Pipeline لتحويل الدلتا
+        const resizeDelta = eventPipeline.screenDeltaToWorld(
           e.clientX - dragStart.current.x,
           e.clientY - dragStart.current.y,
           viewport.zoom
         );
-        const dx = resizeDelta.x;
-        const dy = resizeDelta.y;
         
+        const { width, height } = bounds;
         let scaleX = 1;
         let scaleY = 1;
         const origin = getResizeOrigin(isResizing);
         
-        if (isResizing.includes('e')) {
-          scaleX = 1 + dx / width;
-        }
-        if (isResizing.includes('w')) {
-          scaleX = 1 - dx / width;
-        }
-        if (isResizing.includes('s')) {
-          scaleY = 1 + dy / height;
-        }
-        if (isResizing.includes('n')) {
-          scaleY = 1 - dy / height;
-        }
+        if (isResizing.includes('e')) scaleX = 1 + resizeDelta.x / width;
+        if (isResizing.includes('w')) scaleX = 1 - resizeDelta.x / width;
+        if (isResizing.includes('s')) scaleY = 1 + resizeDelta.y / height;
+        if (isResizing.includes('n')) scaleY = 1 - resizeDelta.y / height;
+        
+        // منع القيم السالبة أو الصفرية
+        scaleX = Math.max(0.1, scaleX);
+        scaleY = Math.max(0.1, scaleY);
         
         if (scaleX !== 1 || scaleY !== 1) {
-          // ✨ تحقق إذا كان الإطار
           const isFrame = selectedElements.length === 1 && selectedElements[0].type === 'frame';
           
           if (isFrame) {
             const frameId = selectedElements[0].id;
             const newBounds = {
-              x: bounds.minX,
-              y: bounds.minY,
+              x: origin.x - (origin.x - bounds.x) * scaleX,
+              y: origin.y - (origin.y - bounds.y) * scaleY,
               width: width * scaleX,
               height: height * scaleY
             };
-            
-            // تطبيق المنشأ الصحيح
-            newBounds.x = origin.x - (origin.x - bounds.minX) * scaleX;
-            newBounds.y = origin.y - (origin.y - bounds.minY) * scaleY;
-            
             resizeFrame(frameId, newBounds);
           } else {
             resizeElements(selectedElementIds, scaleX, scaleY, origin);
@@ -158,7 +166,7 @@ export const BoundingBox: React.FC = () => {
     };
     
     const handleMouseUp = () => {
-      // ✨ عند إفلات العناصر، تحقق من وجودها داخل إطار
+      // التحقق من وجود العناصر داخل إطار عند الإفلات
       if (isDragging && selectedElements.length > 0) {
         const frames = elements.filter(el => el.type === 'frame');
         const { addChildToFrame, removeChildFromFrame } = useCanvasStore.getState();
@@ -166,29 +174,28 @@ export const BoundingBox: React.FC = () => {
         selectedElements.forEach(selectedEl => {
           let targetFrameId: string | null = null;
           
-          // البحث عن إطار يحتوي العنصر بالكامل
           for (const frame of frames) {
-            const frameRect = {
-              x: frame.position.x,
-              y: frame.position.y,
-              width: frame.size.width,
-              height: frame.size.height
-            };
-            
-            const isInside = (
-              selectedEl.position.x >= frameRect.x &&
-              selectedEl.position.y >= frameRect.y &&
-              selectedEl.position.x + selectedEl.size.width <= frameRect.x + frameRect.width &&
-              selectedEl.position.y + selectedEl.size.height <= frameRect.y + frameRect.height
+            // ✅ استخدام Canvas Kernel للتحقق من الاحتواء
+            const isInside = canvasKernel.pointInBounds(
+              { 
+                x: selectedEl.position.x + selectedEl.size.width / 2, 
+                y: selectedEl.position.y + selectedEl.size.height / 2 
+              },
+              { 
+                x: frame.position.x, 
+                y: frame.position.y, 
+                width: frame.size.width, 
+                height: frame.size.height 
+              }
             );
             
             if (isInside) {
               targetFrameId = frame.id;
-              break; // أول إطار يحتوي العنصر
+              break;
             }
           }
           
-          // إزالة من جميع الإطارات القديمة
+          // إزالة من الإطارات القديمة
           frames.forEach(frame => {
             const children = (frame as any).children || [];
             if (children.includes(selectedEl.id) && frame.id !== targetFrameId) {
@@ -220,108 +227,100 @@ export const BoundingBox: React.FC = () => {
         window.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, isResizing, viewport, moveElements, resizeElements, selectedElementIds, width, height, centerX, centerY, bounds]);
+  }, [isDragging, isResizing, viewport, moveElements, resizeElements, selectedElementIds, bounds, getResizeOrigin, selectedElements, elements, duplicateElement, resizeFrame]);
   
   // معالجات الأحداث
-  const handleDragStart = (e: React.MouseEvent) => {
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDragging(true);
     dragStart.current = { x: e.clientX, y: e.clientY };
-  };
+  }, []);
   
-  const handleResizeStart = (e: React.MouseEvent, corner: string) => {
+  const handleResizeStart = useCallback((e: React.MouseEvent, corner: string) => {
     e.stopPropagation();
     setIsResizing(corner);
     dragStart.current = { x: e.clientX, y: e.clientY };
-  };
+  }, []);
   
-  // ✅ Return الشرطي في النهاية بعد كل الـ Hooks
-  // ✅ لا تعرض BoundingBox إذا كانت جميع العناصر المحددة أسهماً
-  const isAllArrows = selectedElements.every(el => 
-    el.type === 'shape' && isArrowShape(el.shapeType || el.data?.shapeType)
+  // ✅ التحقق من إظهار BoundingBox
+  const isAllArrows = useMemo(() => 
+    selectedElements.every(el => 
+      el.type === 'shape' && isArrowShape(el.shapeType || el.data?.shapeType)
+    ),
+    [selectedElements]
   );
   
   if (activeTool !== 'selection_tool' || selectedElements.length === 0 || isAllArrows) {
     return null;
   }
   
+  // مقبض تغيير الحجم
+  const ResizeHandle = ({ position, cursor, onStart }: { 
+    position: string; 
+    cursor: string; 
+    onStart: (e: React.MouseEvent) => void 
+  }) => {
+    const positionStyles: Record<string, React.CSSProperties> = {
+      'nw': { top: -8, left: -8 },
+      'ne': { top: -8, right: -8 },
+      'sw': { bottom: -8, left: -8 },
+      'se': { bottom: -8, right: -8 },
+      'n': { top: -8, left: '50%', transform: 'translateX(-50%)' },
+      's': { bottom: -8, left: '50%', transform: 'translateX(-50%)' },
+      'w': { top: '50%', left: -8, transform: 'translateY(-50%)' },
+      'e': { top: '50%', right: -8, transform: 'translateY(-50%)' }
+    };
+    
+    return (
+      <div 
+        className="absolute pointer-events-auto group"
+        style={{ ...positionStyles[position], cursor, width: 16, height: 16 }}
+        onMouseDown={onStart}
+      >
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border-[1.5px] border-[hsl(var(--accent-blue))] rounded-full group-hover:scale-150 transition-transform shadow-sm" />
+      </div>
+    );
+  };
+  
   return (
     <div
-      className="absolute pointer-events-none"
+      className="absolute pointer-events-none bounding-box"
       style={{
-        left: bounds.minX,
-        top: bounds.minY,
-        width,
-        height,
+        left: bounds.x,
+        top: bounds.y,
+        width: bounds.width,
+        height: bounds.height,
         border: '2px dashed hsl(var(--accent-blue) / 0.8)',
         borderRadius: '4px'
       }}
     >
-      {/* مقابض تغيير الحجم في الزوايا */}
-      <div 
-        className="absolute -top-2 -left-2 pointer-events-auto cursor-nwse-resize group"
-        onMouseDown={(e) => handleResizeStart(e, 'nw')}
-        style={{ width: '16px', height: '16px' }}
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border-[1.5px] border-[hsl(var(--accent-blue))] rounded-full group-hover:scale-150 transition-transform" />
-      </div>
-      <div 
-        className="absolute -top-2 -right-2 pointer-events-auto cursor-nesw-resize group"
-        onMouseDown={(e) => handleResizeStart(e, 'ne')}
-        style={{ width: '16px', height: '16px' }}
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border-[1.5px] border-[hsl(var(--accent-blue))] rounded-full group-hover:scale-150 transition-transform" />
-      </div>
-      <div 
-        className="absolute -bottom-2 -left-2 pointer-events-auto cursor-nesw-resize group"
-        onMouseDown={(e) => handleResizeStart(e, 'sw')}
-        style={{ width: '16px', height: '16px' }}
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border-[1.5px] border-[hsl(var(--accent-blue))] rounded-full group-hover:scale-150 transition-transform" />
-      </div>
-      <div 
-        className="absolute -bottom-2 -right-2 pointer-events-auto cursor-nwse-resize group"
-        onMouseDown={(e) => handleResizeStart(e, 'se')}
-        style={{ width: '16px', height: '16px' }}
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border-[1.5px] border-[hsl(var(--accent-blue))] rounded-full group-hover:scale-150 transition-transform" />
-      </div>
+      {/* مقابض الزوايا */}
+      <ResizeHandle position="nw" cursor="nwse-resize" onStart={(e) => handleResizeStart(e, 'nw')} />
+      <ResizeHandle position="ne" cursor="nesw-resize" onStart={(e) => handleResizeStart(e, 'ne')} />
+      <ResizeHandle position="sw" cursor="nesw-resize" onStart={(e) => handleResizeStart(e, 'sw')} />
+      <ResizeHandle position="se" cursor="nwse-resize" onStart={(e) => handleResizeStart(e, 'se')} />
       
-      {/* مقابض تغيير الحجم في المنتصف */}
-      <div 
-        className="absolute -top-2 left-1/2 -translate-x-1/2 pointer-events-auto cursor-ns-resize group"
-        onMouseDown={(e) => handleResizeStart(e, 'n')}
-        style={{ width: '16px', height: '16px' }}
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border-[1.5px] border-[hsl(var(--accent-blue))] rounded-full group-hover:scale-150 transition-transform" />
-      </div>
-      <div 
-        className="absolute -bottom-2 left-1/2 -translate-x-1/2 pointer-events-auto cursor-ns-resize group"
-        onMouseDown={(e) => handleResizeStart(e, 's')}
-        style={{ width: '16px', height: '16px' }}
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border-[1.5px] border-[hsl(var(--accent-blue))] rounded-full group-hover:scale-150 transition-transform" />
-      </div>
-      <div 
-        className="absolute top-1/2 -translate-y-1/2 -left-2 pointer-events-auto cursor-ew-resize group"
-        onMouseDown={(e) => handleResizeStart(e, 'w')}
-        style={{ width: '16px', height: '16px' }}
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border-[1.5px] border-[hsl(var(--accent-blue))] rounded-full group-hover:scale-150 transition-transform" />
-      </div>
-      <div 
-        className="absolute top-1/2 -translate-y-1/2 -right-2 pointer-events-auto cursor-ew-resize group"
-        onMouseDown={(e) => handleResizeStart(e, 'e')}
-        style={{ width: '16px', height: '16px' }}
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border-[1.5px] border-[hsl(var(--accent-blue))] rounded-full group-hover:scale-150 transition-transform" />
-      </div>
+      {/* مقابض الأضلاع */}
+      <ResizeHandle position="n" cursor="ns-resize" onStart={(e) => handleResizeStart(e, 'n')} />
+      <ResizeHandle position="s" cursor="ns-resize" onStart={(e) => handleResizeStart(e, 's')} />
+      <ResizeHandle position="w" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'w')} />
+      <ResizeHandle position="e" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'e')} />
       
       {/* منطقة السحب للتحريك */}
       <div
         className="absolute inset-4 pointer-events-auto cursor-move"
         onMouseDown={handleDragStart}
       />
+      
+      {/* عداد العناصر (إذا أكثر من عنصر) */}
+      {displayCount > 1 && (
+        <div 
+          className="absolute -top-7 left-0 px-2 py-0.5 text-xs font-medium rounded bg-[hsl(var(--accent-blue))] text-white"
+          style={{ direction: 'rtl' }}
+        >
+          {displayCount} عنصر
+        </div>
+      )}
     </div>
   );
 };
