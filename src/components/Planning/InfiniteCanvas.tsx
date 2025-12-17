@@ -12,6 +12,7 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { canvasKernel, getContainerRect } from '@/core/canvasKernel';
 import { toast } from 'sonner';
 import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
+import { CanvasGridLayer } from './CanvasGridLayer';
 interface InfiniteCanvasProps {
   boardId: string;
 }
@@ -88,43 +89,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     });
   }, [elements, viewportBounds, layers]);
 
-  // Grid Lines
-  const gridLines = useMemo(() => {
-    if (!settings.gridEnabled) return [];
-    const lines: React.CSSProperties[] = [];
-    const gridSize = settings.gridSize;
-    const startX = Math.floor(viewportBounds.x / gridSize) * gridSize;
-    const startY = Math.floor(viewportBounds.y / gridSize) * gridSize;
-    const endX = Math.ceil((viewportBounds.x + viewportBounds.width) / gridSize) * gridSize;
-    const endY = Math.ceil((viewportBounds.y + viewportBounds.height) / gridSize) * gridSize;
-
-    // Vertical lines
-    for (let x = startX; x <= endX; x += gridSize) {
-      lines.push({
-        position: 'absolute',
-        left: `${x}px`,
-        top: `${startY}px`,
-        width: '1px',
-        height: `${endY - startY}px`,
-        backgroundColor: 'rgba(11, 15, 18, 0.08)',
-        pointerEvents: 'none'
-      });
-    }
-
-    // Horizontal lines
-    for (let y = startY; y <= endY; y += gridSize) {
-      lines.push({
-        position: 'absolute',
-        left: `${startX}px`,
-        top: `${y}px`,
-        width: `${endX - startX}px`,
-        height: '1px',
-        backgroundColor: 'rgba(11, 15, 18, 0.08)',
-        pointerEvents: 'none'
-      });
-    }
-    return lines;
-  }, [settings.gridEnabled, settings.gridSize, viewportBounds]);
+  // ✅ Grid rendering moved to CanvasGridLayer component (Sprint 2)
 
   // ✅ استخدام Canvas Kernel للمحاذاة
   const snapToGrid = useCallback((x: number, y: number) => {
@@ -505,21 +470,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     backgroundColor: settings.background,
     cursor: getCursorStyle()
   }}>
+      {/* ✅ Sprint 2: Infinite Grid Layer (Canvas-based, World Space anchored) */}
+      <CanvasGridLayer />
+      
       {/* Canvas Container */}
       <div ref={canvasRef} className="absolute inset-0 origin-top-left" style={{
       transform: `translate(${viewport.pan.x}px, ${viewport.pan.y}px) scale(${viewport.zoom})`,
       transition: isPanningRef.current ? 'none' : 'transform 0.1s ease-out'
     }}>
-        {/* Grid Lines */}
-        {settings.gridEnabled && <div className="absolute" style={{
-        left: viewportBounds.x - 200,
-        top: viewportBounds.y - 200,
-        width: viewportBounds.width + 400,
-        height: viewportBounds.height + 400
-      }}>
-            {gridLines.map((lineStyle, index) => <div key={index} style={lineStyle} />)}
-          </div>}
-        
         {/* Pen Strokes Layer */}
         <StrokesLayer />
         
