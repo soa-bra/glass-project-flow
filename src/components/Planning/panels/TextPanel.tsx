@@ -2,6 +2,7 @@ import React from 'react';
 import { Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline, ArrowRightLeft, AlignVerticalJustifyStart, AlignVerticalJustifyCenter, AlignVerticalJustifyEnd, List, ListOrdered, RemoveFormatting } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { toast } from 'sonner';
+import { sanitizeHTML } from '@/utils/sanitize';
 
 const TextPanel: React.FC = () => {
   const { 
@@ -153,8 +154,8 @@ const TextPanel: React.FC = () => {
           span.style.fontSize = `${value}px`;
           try {
             range.surroundContents(span);
-            // تحديث المحتوى
-            const newContent = currentEditor.editorRef.innerHTML;
+            // تحديث المحتوى (مع تعقيم)
+            const newContent = sanitizeHTML(currentEditor.editorRef.innerHTML);
             currentEditor.applyFormat('insertHTML', newContent);
           } catch (e) {
             console.warn('Failed to apply fontSize with surroundContents', e);

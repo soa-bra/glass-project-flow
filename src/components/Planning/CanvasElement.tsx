@@ -8,6 +8,7 @@ import { ShapeRenderer } from './ShapeRenderer';
 import { ArrowControlPoints } from './ArrowControlPoints';
 import { ArrowLabels } from './ArrowLabels';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
+import { sanitizeHTMLForDisplay } from '@/utils/sanitize';
 
 // التحقق إذا كان العنصر سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -251,7 +252,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
                 padding: '8px'
               }}
               dangerouslySetInnerHTML={{ 
-                __html: element.content || 'انقر مرتين للكتابة...' 
+                __html: sanitizeHTMLForDisplay(element.content, 'انقر مرتين للكتابة...') 
               }}
             />
           )}
