@@ -18,7 +18,13 @@ export type ShapeType =
   | "diamond"
   | "line"
   | "arrow"
-  | "double_arrow";
+  | "double_arrow"
+  | "hexagon"
+  | "pentagon"
+  | "octagon"
+  | "star"
+  | "icon"
+  | "sticky";
 
 export type PenStrokeStyle = "solid" | "dashed" | "dotted";
 
@@ -216,16 +222,41 @@ interface CanvasState {
   // Tool
   setActiveTool: (tool: ToolId) => void;
   setSelectedSmartElement: (id: string | null) => void;
+  updateToolSettings: <K extends keyof ToolSettings>(category: K, updates: Partial<ToolSettings[K]>) => void;
+
+  // Drawing state setters
+  setIsDrawing: (value: boolean) => void;
+  setDrawStartPoint: (point: CanvasPoint | null) => void;
+  setTempElement: (element: CanvasElement | null) => void;
 
   // Viewport
   setViewport: (partial: Partial<{ zoom: number; pan: CanvasPoint }>) => void;
   panCanvas: (dx: number, dy: number) => void;
   zoomCanvas: (nextZoom: number, anchorScreen?: { x: number; y: number }, containerRect?: DOMRect) => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  zoomToFit: () => void;
+  setZoomPercentage: (percentage: number) => void;
+  resetViewport: () => void;
+  setPan: (x: number, y: number) => void;
+
+  // View modes
+  togglePanMode: () => void;
+  toggleMinimap: () => void;
+  toggleFullscreen: () => void;
 
   // Settings
   updateSettings: (partial: Partial<CanvasSettings>) => void;
   toggleGrid: () => void;
   toggleSnapToGrid: () => void;
+
+  // Layers
+  addLayer: (name: string) => void;
+  deleteLayer: (layerId: string) => void;
+  updateLayer: (layerId: string, updates: Partial<LayerInfo>) => void;
+  toggleLayerVisibility: (layerId: string) => void;
+  toggleLayerLock: (layerId: string) => void;
+  setActiveLayer: (layerId: string) => void;
 
   // History
   pushHistory: () => void;
@@ -479,6 +510,19 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
   setSelectedSmartElement: (id) => set({ selectedSmartElement: id }),
 
+  updateToolSettings: (category, updates) => {
+    set((s) => ({
+      toolSettings: {
+        ...s.toolSettings,
+        [category]: { ...s.toolSettings[category], ...updates },
+      },
+    }));
+  },
+
+  setIsDrawing: (value) => set({ isDrawing: value }),
+  setDrawStartPoint: (point) => set({ drawStartPoint: point }),
+  setTempElement: (element) => set({ tempElement: element }),
+
   setViewport: (partial) => {
     const next = {
       zoom: partial.zoom ?? get().viewport.zoom,
@@ -535,6 +579,82 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   toggleGrid: () => set((s) => ({ settings: { ...s.settings, gridEnabled: !s.settings.gridEnabled } })),
 
   toggleSnapToGrid: () => set((s) => ({ settings: { ...s.settings, snapToGrid: !s.settings.snapToGrid } })),
+
+  zoomIn: () => {
+    const v = get().viewport;
+    const nextZoom = clamp(v.zoom * 1.2, 0.1, 6);
+    set({ viewport: { ...v, zoom: nextZoom } });
+    set((s) => ({ settings: { ...s.settings, zoom: nextZoom } }));
+  },
+
+  zoomOut: () => {
+    const v = get().viewport;
+    const nextZoom = clamp(v.zoom / 1.2, 0.1, 6);
+    set({ viewport: { ...v, zoom: nextZoom } });
+    set((s) => ({ settings: { ...s.settings, zoom: nextZoom } }));
+  },
+
+  zoomToFit: () => {
+    set({ viewport: { zoom: 1, pan: { x: 0, y: 0 } } });
+    set((s) => ({ settings: { ...s.settings, zoom: 1, pan: { x: 0, y: 0 } } }));
+  },
+
+  setZoomPercentage: (percentage) => {
+    const nextZoom = clamp(percentage / 100, 0.1, 6);
+    const v = get().viewport;
+    set({ viewport: { ...v, zoom: nextZoom } });
+    set((s) => ({ settings: { ...s.settings, zoom: nextZoom } }));
+  },
+
+  resetViewport: () => {
+    set({ viewport: { zoom: 1, pan: { x: 0, y: 0 } } });
+    set((s) => ({ settings: { ...s.settings, zoom: 1, pan: { x: 0, y: 0 } } }));
+  },
+
+  setPan: (x, y) => {
+    const v = get().viewport;
+    set({ viewport: { ...v, pan: { x, y } } });
+    set((s) => ({ settings: { ...s.settings, pan: { x, y } } }));
+  },
+
+  togglePanMode: () => set((s) => ({ isPanMode: !s.isPanMode })),
+  toggleMinimap: () => set((s) => ({ showMinimap: !s.showMinimap })),
+  toggleFullscreen: () => set((s) => ({ isFullscreen: !s.isFullscreen })),
+
+  // Layers
+  addLayer: (name) => {
+    const id = uid("layer");
+    set((s) => ({
+      layers: [...s.layers, { id, name, visible: true, locked: false, elements: [] }],
+    }));
+  },
+
+  deleteLayer: (layerId) => {
+    set((s) => ({
+      layers: s.layers.filter((l) => l.id !== layerId),
+      activeLayerId: s.activeLayerId === layerId ? s.layers[0]?.id || null : s.activeLayerId,
+    }));
+  },
+
+  updateLayer: (layerId, updates) => {
+    set((s) => ({
+      layers: s.layers.map((l) => (l.id === layerId ? { ...l, ...updates } : l)),
+    }));
+  },
+
+  toggleLayerVisibility: (layerId) => {
+    set((s) => ({
+      layers: s.layers.map((l) => (l.id === layerId ? { ...l, visible: !l.visible } : l)),
+    }));
+  },
+
+  toggleLayerLock: (layerId) => {
+    set((s) => ({
+      layers: s.layers.map((l) => (l.id === layerId ? { ...l, locked: !l.locked } : l)),
+    }));
+  },
+
+  setActiveLayer: (layerId) => set({ activeLayerId: layerId }),
 
   pushHistory: () => {
     const snapshot = get().elements.map((e) => ({ ...e }));

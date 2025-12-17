@@ -174,7 +174,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
             <RotateCw size={18} />
           </button>
 
-          <div className="relative">
+          <AIAssistantPopover isOpen={isAIOpen} onOpenChange={setIsAIOpen}>
             <button
               onClick={() => setIsAIOpen((v) => !v)}
               disabled={topBarButtonsDisabled}
@@ -186,8 +186,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
               <Sparkles size={18} className="text-[hsl(var(--ink))]" />
               <span className="text-[13px] font-medium text-[hsl(var(--ink))]">مساعد</span>
             </button>
-            <AIAssistantPopover isOpen={isAIOpen} onClose={() => setIsAIOpen(false)} />
-          </div>
+          </AIAssistantPopover>
         </div>
 
         {/* Left Section */}
