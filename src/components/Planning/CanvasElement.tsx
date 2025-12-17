@@ -9,6 +9,7 @@ import { ArrowControlPoints } from './ArrowControlPoints';
 import { ArrowLabels } from './ArrowLabels';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { sanitizeHTMLForDisplay } from '@/utils/sanitize';
+import { canvasKernel } from '@/core/canvasKernel';
 
 // التحقق إذا كان العنصر سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -103,8 +104,14 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     // ✅ منع التعارض مع سحب نقاط تحكم السهم
     if (!isDraggingRef.current || isLocked || useCanvasStore.getState().isInternalDrag) return;
     
-    const deltaX = (e.clientX - dragStartRef.current.x) / viewport.zoom;
-    const deltaY = (e.clientY - dragStartRef.current.y) / viewport.zoom;
+    // ✅ استخدام Canvas Kernel لتحويل الدلتا
+    const worldDelta = canvasKernel.screenDeltaToWorld(
+      e.clientX - dragStartRef.current.x,
+      e.clientY - dragStartRef.current.y,
+      viewport.zoom
+    );
+    const deltaX = worldDelta.x;
+    const deltaY = worldDelta.y;
     
     let newX = dragStartRef.current.elementX + deltaX;
     let newY = dragStartRef.current.elementY + deltaY;

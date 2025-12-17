@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { canvasKernel } from '@/core/canvasKernel';
 
 // التحقق إذا كان الشكل سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -78,8 +79,10 @@ export const BoundingBox: React.FC = () => {
         const rawDeltaX = e.clientX - dragStart.current.x;
         const rawDeltaY = e.clientY - dragStart.current.y;
         
-        let deltaX = rawDeltaX / viewport.zoom;
-        let deltaY = rawDeltaY / viewport.zoom;
+        // ✅ استخدام Canvas Kernel لتحويل الدلتا
+        const worldDelta = canvasKernel.screenDeltaToWorld(rawDeltaX, rawDeltaY, viewport.zoom);
+        let deltaX = worldDelta.x;
+        let deltaY = worldDelta.y;
         
         // تقييد الحركة بمحور واحد مع Shift
         if (e.shiftKey) {
@@ -100,8 +103,14 @@ export const BoundingBox: React.FC = () => {
           dragStart.current = { x: e.clientX, y: e.clientY };
         }
       } else if (isResizing) {
-        const dx = (e.clientX - dragStart.current.x) / viewport.zoom;
-        const dy = (e.clientY - dragStart.current.y) / viewport.zoom;
+        // ✅ استخدام Canvas Kernel لتحويل الدلتا
+        const resizeDelta = canvasKernel.screenDeltaToWorld(
+          e.clientX - dragStart.current.x,
+          e.clientY - dragStart.current.y,
+          viewport.zoom
+        );
+        const dx = resizeDelta.x;
+        const dy = resizeDelta.y;
         
         let scaleX = 1;
         let scaleY = 1;
