@@ -2,7 +2,7 @@ import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react'
 import { useCanvasStore } from '@/stores/canvasStore';
 import CanvasElement from './CanvasElement';
 import DrawingPreview from './DrawingPreview';
-import SelectionBox from './SelectionBox';
+import SelectionBox, { useSelectionBox } from './SelectionBox';
 import StrokesLayer from './StrokesLayer';
 import PenInputLayer from './PenInputLayer';
 import FrameInputLayer from './FrameInputLayer';
@@ -13,6 +13,7 @@ import { canvasKernel, getContainerRect } from '@/core/canvasKernel';
 import { toast } from 'sonner';
 import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
 import { CanvasGridLayer } from './CanvasGridLayer';
+
 interface InfiniteCanvasProps {
   boardId: string;
 }
@@ -50,6 +51,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     handleCanvasMouseMove,
     handleCanvasMouseUp
   } = useToolInteraction(containerRef);
+
+  // ✅ Sprint 4: استخدام Selection Box hook
+  const { finishSelection } = useSelectionBox();
 
   // Enable keyboard shortcuts
   useKeyboardShortcuts();
@@ -187,15 +191,10 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       containerRef.current.style.cursor = 'default';
     }
 
-    // Handle Selection Box completion
+    // ✅ Sprint 4: Handle Selection Box completion using Canvas Kernel
     if (isSelecting && selectionStart && selectionCurrent) {
-      const minX = Math.min(selectionStart.x, selectionCurrent.x);
-      const maxX = Math.max(selectionStart.x, selectionCurrent.x);
-      const minY = Math.min(selectionStart.y, selectionCurrent.y);
-      const maxY = Math.max(selectionStart.y, selectionCurrent.y);
-
-      const boxWidth = maxX - minX;
-      const boxHeight = maxY - minY;
+      const boxWidth = Math.abs(selectionCurrent.x - selectionStart.x);
+      const boxHeight = Math.abs(selectionCurrent.y - selectionStart.y);
 
       // إذا كان الصندوق صغيراً جداً (< 5px)، اعتباره نقرة وليس تحديد
       if (boxWidth < 5 && boxHeight < 5) {
@@ -203,32 +202,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           clearSelection();
         }
       } else {
-        // Find elements within selection box
-        // الآن الإحداثيات نسبية للـ container، لذلك نحتاج تحويلها لإحداثيات الكانفاس
-        const selectedIds: string[] = [];
-        elements.forEach(el => {
-          // تحويل موضع العنصر من إحداثيات الكانفاس إلى إحداثيات الشاشة
-          const elScreenPos = {
-            x: el.position.x * viewport.zoom + viewport.pan.x,
-            y: el.position.y * viewport.zoom + viewport.pan.y,
-            width: el.size.width * viewport.zoom,
-            height: el.size.height * viewport.zoom
-          };
-
-          // Check if element intersects with selection box
-          if (elScreenPos.x < maxX && elScreenPos.x + elScreenPos.width > minX && elScreenPos.y < maxY && elScreenPos.y + elScreenPos.height > minY) {
-            selectedIds.push(el.id);
-          }
-        });
-        
-        if (selectedIds.length > 0) {
-          const currentSelection = useCanvasStore.getState().selectedElementIds;
-          const finalSelection = (selectionStart as any).shiftKey 
-            ? [...new Set([...currentSelection, ...selectedIds])]
-            : selectedIds;
-          
-          useCanvasStore.getState().selectElements(finalSelection);
-        }
+        // ✅ استخدام finishSelection من useSelectionBox
+        finishSelection(
+          selectionStart.x,
+          selectionStart.y,
+          selectionCurrent.x,
+          selectionCurrent.y,
+          (selectionStart as any).shiftKey
+        );
       }
       
       setIsSelecting(false);
@@ -236,7 +217,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       setSelectionCurrent(null);
     }
     handleCanvasMouseUp();
-  }, [handleCanvasMouseUp, isSelecting, selectionStart, selectionCurrent, elements, viewport]);
+  }, [handleCanvasMouseUp, isSelecting, selectionStart, selectionCurrent, finishSelection, clearSelection]);
 
   // Keyboard Shortcuts
   useEffect(() => {
