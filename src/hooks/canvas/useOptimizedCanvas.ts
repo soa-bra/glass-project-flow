@@ -1,170 +1,174 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useCanvasEvents } from "./useCanvasEvents";
-import { useOrderedElements, useSelection, canvasStore } from "./canvasStore";
-import { screenToWorld } from "./canvasCoordinates";
-import { getViewportRect, toViewportPoint } from "./canvas-events";
-import { elementsInRect, hitTest, normalizeRect, uniqIds, type Rect } from "./useCanvasHelpers";
+// Performance Optimized Hooks
+import { useCallback, useMemo, useRef, useEffect } from 'react';
+import type { CanvasElement } from '../../types/enhanced-canvas';
 
-type ScreenRect = Rect;
+// Optimized Canvas State Hook
+export const useOptimizedCanvasState = (initialElements: CanvasElement[] = []) => {
+  const elementsRef = useRef<CanvasElement[]>(initialElements);
+  const selectedIdsRef = useRef<Set<string>>(new Set());
+  
+  const addElement = useCallback((element: CanvasElement) => {
+    elementsRef.current = [...elementsRef.current, element];
+  }, []);
 
-export function useOptimizedCanvas(viewportRef: React.RefObject<HTMLDivElement>) {
-  const elements = useOrderedElements();
-  const selection = useSelection();
+  const updateElement = useCallback((elementId: string, updates: Partial<CanvasElement>) => {
+    elementsRef.current = elementsRef.current.map(el => 
+      el.id === elementId ? { ...el, ...updates } : el
+    );
+  }, []);
 
-  // Pan + Zoom (store-driven)
-  const { onPointerDown, onPointerMove, onPointerUp } = useCanvasEvents(viewportRef);
+  const deleteElement = useCallback((elementId: string) => {
+    elementsRef.current = elementsRef.current.filter(el => el.id !== elementId);
+    selectedIdsRef.current.delete(elementId);
+  }, []);
 
-  // --- Selection Box (Marquee) state ---
-  const marqueeRef = useRef<{
-    active: boolean;
-    pointerId: number | null;
-    startScreen: { x: number; y: number };
-    curScreen: { x: number; y: number };
-    additive: boolean;
-  }>({
-    active: false,
-    pointerId: null,
-    startScreen: { x: 0, y: 0 },
-    curScreen: { x: 0, y: 0 },
-    additive: false,
-  });
+  const selectElements = useCallback((elementIds: string[]) => {
+    selectedIdsRef.current = new Set(elementIds);
+  }, []);
 
-  const [selectionBox, setSelectionBox] = useState<ScreenRect | null>(null);
-
-  // Keep selectionBox updates cheap
-  const updateSelectionBox = (rect: ScreenRect | null) => {
-    setSelectionBox(rect);
-  };
-
-  const endMarquee = () => {
-    marqueeRef.current.active = false;
-    marqueeRef.current.pointerId = null;
-    updateSelectionBox(null);
-  };
-
-  // Selection click + marquee start
-  const onElementLayerPointerDown = useMemo(() => {
-    return (e: React.PointerEvent) => {
-      const vp = viewportRef.current;
-      if (!vp) return;
-
-      // Don't interfere with pan gestures (middle button or shift-pan)
-      if (e.button === 1) return;
-      if (e.button === 0 && e.shiftKey) return;
-
-      const rect = getViewportRect(vp);
-      const screen = toViewportPoint({ x: e.clientX, y: e.clientY }, rect);
-
-      const cam = canvasStore.getState().camera;
-      const world = screenToWorld(screen, cam);
-
-      const hit = hitTest(elements, world);
-
-      // If hit element => normal selection
-      if (hit) {
-        const additive = e.metaKey || e.ctrlKey;
-        if (!additive) {
-          canvasStore.actions.setSelection([hit], hit);
-        } else {
-          const next = uniqIds([...selection.ids, hit]);
-          canvasStore.actions.setSelection(next, hit);
-        }
-        return;
-      }
-
-      // Empty space => start marquee
-      const additive = e.metaKey || e.ctrlKey; // hold ctrl/meta to add to selection
-      marqueeRef.current.active = true;
-      marqueeRef.current.pointerId = e.pointerId;
-      marqueeRef.current.startScreen = { x: screen.x, y: screen.y };
-      marqueeRef.current.curScreen = { x: screen.x, y: screen.y };
-      marqueeRef.current.additive = additive;
-
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-      e.preventDefault();
-      e.stopPropagation();
-
-      updateSelectionBox(normalizeRect(marqueeRef.current.startScreen, marqueeRef.current.curScreen));
-    };
-  }, [viewportRef, elements, selection.ids]);
-
-  // Marquee move/up on window to be robust
-  useEffect(() => {
-    const onMove = (ev: PointerEvent) => {
-      if (!marqueeRef.current.active) return;
-      const vp = viewportRef.current;
-      if (!vp) return;
-      if (marqueeRef.current.pointerId !== ev.pointerId) return;
-
-      const rect = getViewportRect(vp);
-      const screen = toViewportPoint({ x: ev.clientX, y: ev.clientY }, rect);
-
-      marqueeRef.current.curScreen = { x: screen.x, y: screen.y };
-      updateSelectionBox(normalizeRect(marqueeRef.current.startScreen, marqueeRef.current.curScreen));
-    };
-
-    const onUp = (ev: PointerEvent) => {
-      if (!marqueeRef.current.active) return;
-      const vp = viewportRef.current;
-      if (!vp) return;
-      if (marqueeRef.current.pointerId !== ev.pointerId) return;
-
-      const rect = getViewportRect(vp);
-      const endScreen = toViewportPoint({ x: ev.clientX, y: ev.clientY }, rect);
-
-      const start = marqueeRef.current.startScreen;
-      const end = endScreen;
-
-      const screenRect = normalizeRect(start, end);
-
-      // Click threshold: if tiny drag, treat as clear selection
-      const dragPixels = Math.hypot(screenRect.w, screenRect.h);
-      const clickLike = dragPixels < 6;
-
-      if (clickLike) {
-        if (!marqueeRef.current.additive) canvasStore.actions.clearSelection();
-        endMarquee();
-        return;
-      }
-
-      // Convert marquee rect to world rect for hit testing
-      const cam = canvasStore.getState().camera;
-      const w1 = screenToWorld({ x: screenRect.x, y: screenRect.y }, cam);
-      const w2 = screenToWorld({ x: screenRect.x + screenRect.w, y: screenRect.y + screenRect.h }, cam);
-      const worldRect = normalizeRect(w1, w2);
-
-      const hits = elementsInRect(elements, worldRect);
-
-      if (!marqueeRef.current.additive) {
-        if (hits.length === 0) canvasStore.actions.clearSelection();
-        else canvasStore.actions.setSelection(hits, hits[0]);
-      } else {
-        const next = uniqIds([...selection.ids, ...hits]);
-        if (next.length === 0) canvasStore.actions.clearSelection();
-        else canvasStore.actions.setSelection(next, next[next.length - 1]);
-      }
-
-      endMarquee();
-    };
-
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-    window.addEventListener("pointercancel", onUp);
-
-    return () => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      window.removeEventListener("pointercancel", onUp);
-    };
-  }, [viewportRef, elements, selection.ids]);
+  const selectedElements = useMemo(() => {
+    return elementsRef.current.filter(el => selectedIdsRef.current.has(el.id));
+  }, [elementsRef.current, selectedIdsRef.current]);
 
   return {
-    elements,
-    selection,
-    selectionBox, // screen-space rect (for overlay)
-    onPointerDown,
-    onPointerMove,
-    onPointerUp,
-    onElementLayerPointerDown,
+    elements: elementsRef.current,
+    selectedElements,
+    addElement,
+    updateElement,
+    deleteElement,
+    selectElements
   };
-}
+};
+
+// Optimized Selection Hook
+export const useOptimizedSelection = (elements: CanvasElement[]) => {
+  const selectionRef = useRef<Set<string>>(new Set());
+  
+  const toggleSelection = useCallback((elementId: string, multiSelect = false) => {
+    if (!multiSelect) {
+      selectionRef.current.clear();
+    }
+    
+    if (selectionRef.current.has(elementId)) {
+      selectionRef.current.delete(elementId);
+    } else {
+      selectionRef.current.add(elementId);
+    }
+  }, []);
+
+  const clearSelection = useCallback(() => {
+    selectionRef.current.clear();
+  }, []);
+
+  const isSelected = useCallback((elementId: string) => {
+    return selectionRef.current.has(elementId);
+  }, []);
+
+  const selectedElementIds = useMemo(() => {
+    return Array.from(selectionRef.current);
+  }, [selectionRef.current]);
+
+  return {
+    selectedElementIds,
+    toggleSelection,
+    clearSelection,
+    isSelected
+  };
+};
+
+// Optimized Canvas Interactions Hook
+export const useOptimizedCanvasInteractions = (
+  canvasRef: React.RefObject<HTMLDivElement>,
+  onElementUpdate: (elementId: string, updates: Partial<CanvasElement>) => void
+) => {
+  const isDraggingRef = useRef(false);
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const dragElementRef = useRef<string | null>(null);
+
+  const handleMouseDown = useCallback((event: React.MouseEvent, elementId?: string) => {
+    if (elementId) {
+      isDraggingRef.current = true;
+      dragElementRef.current = elementId;
+      dragStartRef.current = { x: event.clientX, y: event.clientY };
+    }
+  }, []);
+
+  const handleMouseMove = useCallback((event: React.MouseEvent) => {
+    if (isDraggingRef.current && dragElementRef.current && dragStartRef.current) {
+      const deltaX = event.clientX - dragStartRef.current.x;
+      const deltaY = event.clientY - dragStartRef.current.y;
+      
+      // Throttle updates for performance
+      if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+        onElementUpdate(dragElementRef.current, {
+          position: { x: deltaX, y: deltaY }
+        });
+        dragStartRef.current = { x: event.clientX, y: event.clientY };
+      }
+    }
+  }, [onElementUpdate]);
+
+  const handleMouseUp = useCallback(() => {
+    isDraggingRef.current = false;
+    dragElementRef.current = null;
+    dragStartRef.current = null;
+  }, []);
+
+  return {
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    isDragging: isDraggingRef.current
+  };
+};
+
+// Optimized Render Hook - prevents unnecessary re-renders
+export const useOptimizedRender = <T>(value: T, deps: React.DependencyList): T => {
+  const memoizedValue = useMemo(() => value, deps);
+  return memoizedValue;
+};
+
+// Debounced callback hook for performance
+export const useDebouncedCallback = <T extends (...args: unknown[]) => unknown>(
+  callback: T,
+  delay: number
+): T => {
+  const timeoutRef = useRef<NodeJS.Timeout>();
+  
+  return useCallback((...args: Parameters<T>) => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => callback(...args), delay);
+  }, [callback, delay]) as T;
+};
+
+// Virtualized list hook for large element collections
+export const useVirtualizedElements = (
+  elements: CanvasElement[],
+  viewportBounds: { x: number; y: number; width: number; height: number },
+  padding = 100
+) => {
+  return useMemo(() => {
+    return elements.filter(element => {
+      const elementBounds = {
+        left: element.position.x,
+        top: element.position.y,
+        right: element.position.x + element.size.width,
+        bottom: element.position.y + element.size.height
+      };
+
+      const viewport = {
+        left: viewportBounds.x - padding,
+        top: viewportBounds.y - padding,
+        right: viewportBounds.x + viewportBounds.width + padding,
+        bottom: viewportBounds.y + viewportBounds.height + padding
+      };
+
+      return (
+        elementBounds.right >= viewport.left &&
+        elementBounds.left <= viewport.right &&
+        elementBounds.bottom >= viewport.top &&
+        elementBounds.top <= viewport.bottom
+      );
+    });
+  }, [elements, viewportBounds, padding]);
+};

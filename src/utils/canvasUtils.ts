@@ -1,26 +1,21 @@
-import { Camera } from "./canvasCoordinates";
+// Simplified Canvas Utilities
+export const toNumber = (value: any, defaultValue: number = 0): number => {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? defaultValue : parsed;
+  }
+  return defaultValue;
+};
 
-export function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
-}
+export const toString = (value: any, defaultValue: string = ''): string => {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return value.toString();
+  if (value === null || value === undefined) return defaultValue;
+  return String(value);
+};
 
-export function rafThrottle<T extends (...args: any[]) => void>(fn: T): T {
-  let frame = 0;
-  return ((...args: any[]) => {
-    if (frame) return;
-    frame = requestAnimationFrame(() => {
-      frame = 0;
-      fn(...args);
-    });
-  }) as T;
-}
-
-export function getGridStyle(camera: Camera) {
-  const size = 40 * camera.zoom;
-
-  return {
-    backgroundSize: `${size}px ${size}px`,
-    backgroundPosition: `${camera.x}px ${camera.y}px`,
-    backgroundImage: "radial-gradient(circle, rgba(0,0,0,0.15) 1px, transparent 1px)",
-  };
-}
+export const sanitizeStyleForCSS = (style: any): any => {
+  // Just return style as-is for maximum compatibility
+  return { ...style };
+};

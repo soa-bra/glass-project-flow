@@ -1,77 +1,146 @@
-import React from "react";
-import type { CanvasElementModel } from "./canvas-elements";
+import React from 'react';
+import { Settings } from 'lucide-react';
+import { useCanvasStore } from '@/stores/canvasStore';
 
-type Props = {
-  element: CanvasElementModel;
-  screenX: number;
-  screenY: number;
-  onChange: (patch: Partial<CanvasElementModel>) => void;
+interface CanvasPropertiesPopoverProps {
+  isOpen: boolean;
   onClose: () => void;
+}
+
+export const CanvasPropertiesPopover: React.FC<CanvasPropertiesPopoverProps> = ({ isOpen, onClose }) => {
+  const { settings, updateSettings, toggleGrid, toggleSnapToGrid } = useCanvasStore();
+  
+  if (!isOpen) return null;
+  
+  const gridTypes = [
+    { value: 'dots', label: 'نقاط', icon: '⋅⋅⋅' },
+    { value: 'grid', label: 'شبكة', icon: '☐' },
+    { value: 'isometric', label: 'إيزومتريك', icon: '◇' },
+    { value: 'hex', label: 'سداسي', icon: '⬡' },
+  ];
+  
+  const gridSizes = [4, 8, 16, 32, 64];
+  
+  return (
+    <>
+      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border p-4 z-50">
+        <div className="flex items-center gap-2 mb-4">
+          <Settings size={16} className="text-sb-ink-40" />
+          <h3 className="text-[14px] font-semibold text-sb-ink">خصائص الكانفاس</h3>
+        </div>
+        
+        <div className="space-y-4">
+          {/* Grid Toggle */}
+          <div className="flex items-center justify-between">
+            <label className="text-[13px] text-sb-ink">إظهار الشبكة</label>
+            <button
+              onClick={toggleGrid}
+              className={`w-12 h-6 rounded-full transition-colors ${
+                settings.gridEnabled ? 'bg-[#3DBE8B]' : 'bg-sb-ink-20'
+              }`}
+            >
+              <div className={`w-4 h-4 bg-white rounded-full transition-transform ${
+                settings.gridEnabled ? 'translate-x-[-6px]' : 'translate-x-[6px]'
+              }`} />
+            </button>
+          </div>
+          
+          {/* Snap to Grid */}
+          <div className="flex items-center justify-between">
+            <label className="text-[13px] text-sb-ink">المحاذاة التلقائية</label>
+            <button
+              onClick={toggleSnapToGrid}
+              className={`w-12 h-6 rounded-full transition-colors ${
+                settings.snapToGrid ? 'bg-[#3DBE8B]' : 'bg-sb-ink-20'
+              }`}
+            >
+              <div className={`w-4 h-4 bg-white rounded-full transition-transform ${
+                settings.snapToGrid ? 'translate-x-[-6px]' : 'translate-x-[6px]'
+              }`} />
+            </button>
+          </div>
+          
+          {/* Grid Type */}
+          <div>
+            <label className="text-[13px] text-sb-ink block mb-2">شكل الشبكة</label>
+            <div className="grid grid-cols-2 gap-2">
+              {gridTypes.map(type => (
+                <button
+                  key={type.value}
+                  onClick={() => updateSettings({ gridType: type.value as any })}
+                  className={`p-3 rounded-lg border transition-colors ${
+                    settings.gridType === type.value
+                      ? 'border-sb-ink bg-sb-panel-bg'
+                      : 'border-sb-border hover:bg-sb-panel-bg'
+                  }`}
+                >
+                  <div className="text-[20px] mb-1">{type.icon}</div>
+                  <div className="text-[11px] text-sb-ink">{type.label}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Grid Size */}
+          <div>
+            <label className="text-[13px] text-sb-ink block mb-2">حجم الشبكة</label>
+            <div className="flex gap-2">
+              {gridSizes.map(size => (
+                <button
+                  key={size}
+                  onClick={() => updateSettings({ gridSize: size })}
+                  className={`flex-1 py-2 rounded-lg text-[12px] font-medium transition-colors ${
+                    settings.gridSize === size
+                      ? 'bg-sb-ink text-white'
+                      : 'bg-sb-panel-bg text-sb-ink hover:bg-sb-ink-20'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Background Color */}
+          <div>
+            <label className="text-[13px] text-sb-ink block mb-2">لون الخلفية</label>
+            <input
+              type="color"
+              value={settings.backgroundColor}
+              onChange={(e) => updateSettings({ backgroundColor: e.target.value })}
+              className="w-full h-10 rounded-lg cursor-pointer"
+            />
+          </div>
+          
+          {/* Theme */}
+          <div>
+            <label className="text-[13px] text-sb-ink block mb-2">المظهر</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => updateSettings({ theme: 'light' })}
+                className={`py-2 rounded-lg text-[12px] font-medium transition-colors ${
+                  settings.theme === 'light'
+                    ? 'bg-sb-ink text-white'
+                    : 'bg-sb-panel-bg text-sb-ink hover:bg-sb-ink-20'
+                }`}
+              >
+                ☀️ فاتح
+              </button>
+              <button
+                onClick={() => updateSettings({ theme: 'dark' })}
+                className={`py-2 rounded-lg text-[12px] font-medium transition-colors ${
+                  settings.theme === 'dark'
+                    ? 'bg-sb-ink text-white'
+                    : 'bg-sb-panel-bg text-sb-ink hover:bg-sb-ink-20'
+                }`}
+              >
+                🌙 داكن
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
-
-export default function CanvasPropertiesPopover({ element, screenX, screenY, onChange, onClose }: Props) {
-  return (
-    <div
-      className="fixed z-50 bg-white border rounded-xl shadow-lg p-3 w-[240px]"
-      style={{ left: screenX, top: screenY }}
-    >
-      <div className="flex items-center justify-between mb-2">
-        <div className="font-semibold text-sm">خصائص العنصر</div>
-        <button
-          className="w-8 h-8 border rounded-lg hover:bg-neutral-50"
-          onClick={onClose}
-          aria-label="Close"
-          title="Close"
-        >
-          ✕
-        </button>
-      </div>
-
-      <label className="block text-xs text-neutral-600 mb-1">الاسم</label>
-      <input
-        className="w-full border rounded-lg px-2 py-1 text-sm"
-        value={element.name ?? ""}
-        onChange={(e) => onChange({ name: e.target.value })}
-      />
-
-      <div className="grid grid-cols-2 gap-2 mt-3">
-        <Field label="العرض" value={element.w} onChange={(v) => onChange({ w: v })} />
-        <Field label="الارتفاع" value={element.h} onChange={(v) => onChange({ h: v })} />
-      </div>
-
-      <div className="grid grid-cols-2 gap-2 mt-2">
-        <Field label="X" value={element.x} onChange={(v) => onChange({ x: v })} />
-        <Field label="Y" value={element.y} onChange={(v) => onChange({ y: v })} />
-      </div>
-
-      <div className="grid grid-cols-2 gap-2 mt-2">
-        <Field label="Rotate" value={element.rotation ?? 0} onChange={(v) => onChange({ rotation: v })} />
-        <Field
-          label="Opacity"
-          value={Math.round((element.style?.opacity ?? 1) * 100)}
-          onChange={(v) => onChange({ style: { opacity: Math.max(0, Math.min(1, v / 100)) } as any })}
-        />
-      </div>
-
-      <div className="flex gap-2 mt-3">
-        <button className="flex-1 px-3 py-2 text-sm border rounded-lg hover:bg-neutral-50" onClick={onClose}>
-          إغلاق
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function Field({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
-  return (
-    <div>
-      <label className="block text-xs text-neutral-600 mb-1">{label}</label>
-      <input
-        type="number"
-        className="w-full border rounded-lg px-2 py-1 text-sm"
-        value={Number.isFinite(value) ? Math.round(value) : 0}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-    </div>
-  );
-}
