@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { canvasKernel, getContainerRect } from '@/core/canvasKernel';
 
 interface Props {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -19,13 +20,10 @@ export default function PenInputLayer({ containerRef, active }: Props) {
   const drawingRef = useRef(false);
   const eraserMode = toolSettings.pen.eraserMode;
   
+  // ✅ استخدام Canvas Kernel للتحويل
   const toCanvas = useCallback((clientX: number, clientY: number) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return { x: 0, y: 0 };
-    
-    const x = (clientX - rect.left - viewport.pan.x) / viewport.zoom;
-    const y = (clientY - rect.top - viewport.pan.y) / viewport.zoom;
-    return { x, y };
+    const rect = getContainerRect(containerRef);
+    return canvasKernel.screenToWorld(clientX, clientY, viewport, rect);
   }, [viewport, containerRef]);
   
   useEffect(() => {

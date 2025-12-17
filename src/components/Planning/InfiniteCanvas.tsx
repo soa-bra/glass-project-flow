@@ -9,7 +9,7 @@ import FrameInputLayer from './FrameInputLayer';
 import { BoundingBox } from './BoundingBox';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
-import { screenToCanvasCoordinates } from '@/utils/canvasCoordinates';
+import { canvasKernel, getContainerRect } from '@/core/canvasKernel';
 import { toast } from 'sonner';
 import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
 interface InfiniteCanvasProps {
@@ -71,13 +71,12 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     y: number;
   } | null>(null);
 
-  // Viewport bounds for virtualization
-  const viewportBounds = useMemo(() => ({
-    x: -viewport.pan.x / viewport.zoom,
-    y: -viewport.pan.y / viewport.zoom,
-    width: (containerRef.current?.clientWidth || window.innerWidth) / viewport.zoom,
-    height: (containerRef.current?.clientHeight || window.innerHeight) / viewport.zoom
-  }), [viewport]);
+  // ✅ استخدام Canvas Kernel لحساب حدود العرض
+  const viewportBounds = useMemo(() => {
+    const containerWidth = containerRef.current?.clientWidth || window.innerWidth;
+    const containerHeight = containerRef.current?.clientHeight || window.innerHeight;
+    return canvasKernel.getVisibleBounds(viewport, containerWidth, containerHeight);
+  }, [viewport]);
 
   // Virtualized elements (only render visible ones)
   const visibleElements = useMemo(() => {
@@ -127,17 +126,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     return lines;
   }, [settings.gridEnabled, settings.gridSize, viewportBounds]);
 
-  // Snap to Grid Function
+  // ✅ استخدام Canvas Kernel للمحاذاة
   const snapToGrid = useCallback((x: number, y: number) => {
-    if (!settings.snapToGrid) return {
-      x,
-      y
-    };
-    const gridSize = settings.gridSize;
-    return {
-      x: Math.round(x / gridSize) * gridSize,
-      y: Math.round(y / gridSize) * gridSize
-    };
+    return canvasKernel.snapToGrid({ x, y }, settings.gridSize, settings.snapToGrid);
   }, [settings.snapToGrid, settings.gridSize]);
 
   // Handle Wheel (Zoom)
@@ -450,13 +441,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   }, [handleWheel]);
 
   // Handle file drop on canvas
+  // ✅ استخدام Canvas Kernel لإسقاط الملفات
   const handleFileDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
     const file = e.dataTransfer.files[0];
-    const containerRect = containerRef.current?.getBoundingClientRect();
+    const containerRect = getContainerRect(containerRef);
     if (!containerRect) return;
-    const canvasPoint = screenToCanvasCoordinates(e.clientX, e.clientY, viewport, containerRect);
+    const canvasPoint = canvasKernel.screenToWorld(e.clientX, e.clientY, viewport, containerRect);
     if (file.type.startsWith('image/')) {
       const imageUrl = URL.createObjectURL(file);
       useCanvasStore.getState().addElement({
