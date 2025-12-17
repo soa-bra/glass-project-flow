@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { useCanvasStore, type ToolId, type ShapeType } from '@/stores/canvasStore';
-import { screenToCanvasCoordinates, snapToGrid as applySnapToGrid } from '@/utils/canvasCoordinates';
+import { eventPipeline } from '@/core/eventPipeline';
+import { canvasKernel } from '@/core/canvasKernel';
 import { recognizeShape, pointsToSVGPath, simplifyPath, type Point } from '@/utils/shapeRecognition';
 import { toast } from 'sonner';
 import { createStraightArrowData, type ArrowData } from '@/types/arrow-connections';
@@ -103,16 +104,17 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     const containerRect = containerRef.current?.getBoundingClientRect();
     if (!containerRect) return;
 
-    const canvasPoint = screenToCanvasCoordinates(
+    // ✅ استخدام Event Pipeline للتحويل
+    const canvasPoint = eventPipeline.screenToWorld(
       e.clientX,
       e.clientY,
-      viewport,
-      containerRect
+      containerRect,
+      viewport
     );
 
-    const snappedPoint = applySnapToGrid(
-      canvasPoint.x,
-      canvasPoint.y,
+    // ✅ استخدام Canvas Kernel للمحاذاة
+    const snappedPoint = canvasKernel.snapToGrid(
+      canvasPoint,
       settings.gridSize,
       settings.snapToGrid
     );
@@ -205,16 +207,17 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     const containerRect = containerRef.current?.getBoundingClientRect();
     if (!containerRect) return;
 
-    const canvasPoint = screenToCanvasCoordinates(
+    // ✅ استخدام Event Pipeline للتحويل
+    const canvasPoint = eventPipeline.screenToWorld(
       e.clientX,
       e.clientY,
-      viewport,
-      containerRect
+      containerRect,
+      viewport
     );
 
-    const snappedPoint = applySnapToGrid(
-      canvasPoint.x,
-      canvasPoint.y,
+    // ✅ استخدام Canvas Kernel للمحاذاة
+    const snappedPoint = canvasKernel.snapToGrid(
+      canvasPoint,
       settings.gridSize,
       settings.snapToGrid
     );

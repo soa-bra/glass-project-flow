@@ -1,7 +1,8 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { toast } from 'sonner';
-import { canvasKernel, getContainerRect } from '@/core/canvasKernel';
+import { eventPipeline } from '@/core/eventPipeline';
+import { getContainerRect } from '@/core/canvasKernel';
 
 interface Props {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -23,10 +24,10 @@ export default function FrameInputLayer({ containerRef, active }: Props) {
   const startPointRef = useRef<{ x: number; y: number } | null>(null);
   const keysRef = useRef({ shift: false, alt: false });
   
-  // ✅ استخدام Canvas Kernel للتحويل
+  // ✅ استخدام Event Pipeline للتحويل
   const toCanvas = useCallback((clientX: number, clientY: number) => {
     const rect = getContainerRect(containerRef);
-    return canvasKernel.screenToWorld(clientX, clientY, viewport, rect);
+    return eventPipeline.screenToWorld(clientX, clientY, rect, viewport);
   }, [viewport, containerRef]);
   
   // حساب أبعاد الإطار مع دعم Shift/Alt

@@ -19,6 +19,7 @@ import {
   generateId
 } from '@/types/arrow-connections';
 import { resolveSnapConnection, type SnapEdge } from '@/utils/arrow-routing';
+import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel } from '@/core/canvasKernel';
 
 interface ArrowControlPointsProps {
