@@ -165,7 +165,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
   const otherElements = useMemo(() => 
     elements.filter(el => 
       el.id !== element.id && 
-      el.type !== 'shape' && 
+      el.type !== 'arrow' && 
       !el.shapeType?.startsWith('arrow_')
     ), [elements, element.id]);
 

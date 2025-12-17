@@ -5,8 +5,7 @@ export type ToolId =
   | "file_uploader"
   | "text_tool"
   | "shapes_tool"
-  | "smart_element_tool"
-  | "root_connector_tool";
+  | "smart_element_tool";
 
 export type GridType = "dots" | "grid" | "isometric" | "hex";
 

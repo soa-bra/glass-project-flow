@@ -1,5 +1,5 @@
 // Enhanced Canvas Event Types
-import { CanvasElement } from "./enhanced-canvas";
+import { CanvasElement } from './enhanced-canvas';
 
 export interface CanvasEventData {
   elementId?: string;
@@ -7,22 +7,6 @@ export interface CanvasEventData {
   data: Record<string, unknown>;
   timestamp: number;
   [key: string]: unknown;
-}
-
-/**
- * ✅ Pointer Events payload (موحد) — يساعدنا نوثق كل تفاعلات Miro-style
- */
-export interface CanvasPointerEventPayload {
-  pointerId: number;
-  pointerType: "mouse" | "pen" | "touch";
-  buttons: number;
-  button: number;
-  clientX: number;
-  clientY: number;
-  altKey: boolean;
-  ctrlKey: boolean;
-  metaKey: boolean;
-  shiftKey: boolean;
 }
 
 export interface ElementUpdateData {
@@ -65,7 +49,7 @@ export interface CanvasSettings {
   snapToGrid: boolean;
   gridSize: number;
   background: string;
-  theme: "light" | "dark";
+  theme: 'light' | 'dark';
   [key: string]: unknown;
 }
 

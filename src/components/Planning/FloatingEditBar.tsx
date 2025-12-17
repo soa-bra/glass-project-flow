@@ -74,9 +74,9 @@ const FloatingEditBar: React.FC = () => {
   const handleRotate = (angle: number) => {
     selectedElementIds.forEach(id => {
       const current = elements.find(el => el.id === id);
-      const currentRotation = typeof (current?.style as any)?.rotation === 'number' ? (current?.style as any).rotation : 0;
+      const currentRotation = typeof current?.rotation === 'number' ? current.rotation : 0;
       updateElement(id, {
-        style: { ...(current?.style || {}), rotation: (currentRotation + angle) % 360 }
+        rotation: (currentRotation + angle) % 360
       });
     });
   };
@@ -179,7 +179,7 @@ const FloatingEditBar: React.FC = () => {
           </button>
           
           <span className="text-[12px] text-sb-ink-40 min-w-[40px] text-center">
-            {Math.round(typeof (firstElement?.style as any)?.rotation === 'number' ? (firstElement?.style as any).rotation : 0)}°
+            {Math.round(typeof firstElement?.rotation === 'number' ? firstElement.rotation : 0)}°
           </span>
           
           <button
