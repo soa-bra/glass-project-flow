@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import type { ToolId } from '../../../panels';
+import type { ToolId } from '@/types/canvas';
 import { useCanvasStore } from '@/stores/canvasStore';
 import SelectionPanel from './panels/SelectionPanel';
 import SmartPenPanel from './panels/SmartPenPanel';
