@@ -638,6 +638,7 @@ const DEFAULT_SMART_ELEMENT_SIZES: Record<SmartElementType, { width: number; hei
   csr_card: { width: 320, height: 200 },
   crm_card: { width: 320, height: 200 },
   root_connector: { width: 0, height: 0 }, // Connectors don't have fixed size
+  visual_diagram: { width: 600, height: 500 },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
