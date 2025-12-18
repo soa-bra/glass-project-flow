@@ -59,6 +59,10 @@ export const CanvasGridLayer: React.FC<CanvasGridLayerProps> = ({ config }) => {
     );
 
     if (shouldRender || needsResize) {
+      // الإزاحة لتحويل World Space إلى Canvas Space
+      // الشبكة تبدأ من -5000 في World Space، لذا نضيف 5000 للرسم في Canvas Space
+      const gridOffset = 5000;
+      
       gridRenderer.render(
         ctx,
         { zoom: 1, pan: { x: 0, y: 0 } }, // World Space مباشرة
@@ -67,7 +71,8 @@ export const CanvasGridLayer: React.FC<CanvasGridLayerProps> = ({ config }) => {
         {
           ...config,
           gridSize: settings.gridSize,
-          enabled: settings.gridEnabled
+          enabled: settings.gridEnabled,
+          offset: { x: gridOffset, y: gridOffset }
         }
       );
     }
