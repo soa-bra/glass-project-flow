@@ -360,6 +360,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     gridEnabled: true,
     snapToGrid: false,
     gridSize: 20,
+    gridType: 'grid' as 'dots' | 'grid' | 'isometric' | 'hex',
     snapToEdges: true,
     snapToCenter: true,
     snapToDistribution: false,
