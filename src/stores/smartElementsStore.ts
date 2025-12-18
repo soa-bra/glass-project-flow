@@ -748,20 +748,19 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     if (!entry || entry.smartType !== 'kanban') return;
     
     const data = entry.data as SmartElementDataType<'kanban'>;
-    const columns = [...data.columns];
-    
-    // Find and update columns
-    const fromCol = columns.find(c => c.id === fromColumnId);
-    const toCol = columns.find(c => c.id === toColumnId);
-    if (!fromCol || !toCol) return;
-    
-    // Remove from source
-    fromCol.cardIds = fromCol.cardIds.filter(id => id !== cardId);
-    
-    // Add to destination
-    const newCardIds = [...toCol.cardIds];
-    newCardIds.splice(toIndex, 0, cardId);
-    toCol.cardIds = newCardIds;
+    const columns = data.columns.map(col => {
+      if (col.id === fromColumnId) {
+        return { ...col, cards: (col.cards || []).filter(c => c.id !== cardId) };
+      }
+      if (col.id === toColumnId) {
+        const movedCard = data.columns.find(c => c.id === fromColumnId)?.cards?.find(c => c.id === cardId);
+        if (!movedCard) return col;
+        const newCards = [...(col.cards || [])];
+        newCards.splice(toIndex, 0, movedCard);
+        return { ...col, cards: newCards };
+      }
+      return col;
+    });
     
     get().updateSmartElementData(elementId, { columns });
   },
@@ -786,19 +785,16 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
       votes: 0,
       attachments: 0,
       createdAt: new Date().toISOString(),
-      order: Object.keys(data.cards).length,
+      order: 0,
     };
     
     const columns = data.columns.map(col =>
       col.id === columnId
-        ? { ...col, cardIds: [...col.cardIds, cardId] }
+        ? { ...col, cards: [...(col.cards || []), newCard] }
         : col
     );
     
-    get().updateSmartElementData(elementId, {
-      cards: { ...data.cards, [cardId]: newCard },
-      columns,
-    });
+    get().updateSmartElementData(elementId, { columns });
     
     return cardId;
   },
@@ -808,14 +804,14 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     if (!entry || entry.smartType !== 'kanban') return;
     
     const data = entry.data as SmartElementDataType<'kanban'>;
-    if (!data.cards[cardId]) return;
+    const columns = data.columns.map(col => ({
+      ...col,
+      cards: (col.cards || []).map(card =>
+        card.id === cardId ? { ...card, ...updates } : card
+      ),
+    }));
     
-    get().updateSmartElementData(elementId, {
-      cards: {
-        ...data.cards,
-        [cardId]: { ...data.cards[cardId], ...updates },
-      },
-    });
+    get().updateSmartElementData(elementId, { columns });
   },
   
   deleteKanbanCard: (elementId, cardId) => {
@@ -823,14 +819,12 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     if (!entry || entry.smartType !== 'kanban') return;
     
     const data = entry.data as SmartElementDataType<'kanban'>;
-    const { [cardId]: _, ...remainingCards } = data.cards;
-    
     const columns = data.columns.map(col => ({
       ...col,
-      cardIds: col.cardIds.filter(id => id !== cardId),
+      cards: (col.cards || []).filter(card => card.id !== cardId),
     }));
     
-    get().updateSmartElementData(elementId, { cards: remainingCards, columns });
+    get().updateSmartElementData(elementId, { columns });
   },
   
   addKanbanColumn: (elementId, column) => {
@@ -844,7 +838,7 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
       id: columnId,
       title: column.title || 'عمود جديد',
       color: column.color,
-      cardIds: [],
+      cards: [],
       limit: column.limit,
       collapsed: false,
     };
@@ -875,13 +869,7 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     const data = entry.data as SmartElementDataType<'kanban'>;
     const columns = data.columns.filter(col => col.id !== columnId);
     
-    // Also remove cards from deleted column
-    const deletedColumn = data.columns.find(c => c.id === columnId);
-    const cardsToRemove = deletedColumn?.cardIds || [];
-    const remainingCards = { ...data.cards };
-    cardsToRemove.forEach(cardId => delete remainingCards[cardId]);
-    
-    get().updateSmartElementData(elementId, { columns, cards: remainingCards });
+    get().updateSmartElementData(elementId, { columns });
   },
   
   reorderKanbanColumns: (elementId, columnIds) => {

@@ -104,18 +104,17 @@ export const KanbanColumnSchema = z.object({
   id: z.string(),
   title: z.string(),
   color: z.string().optional(),
-  cardIds: z.array(z.string()).default([]),
+  cards: z.array(KanbanCardSchema).default([]),
   limit: z.number().optional(), // WIP limit
   collapsed: z.boolean().default(false),
 });
 
 export const KanbanBoardDataSchema = z.object({
   columns: z.array(KanbanColumnSchema).default([
-    { id: 'todo', title: 'المهام', cardIds: [], collapsed: false },
-    { id: 'in-progress', title: 'قيد التنفيذ', cardIds: [], collapsed: false },
-    { id: 'done', title: 'منجز', cardIds: [], collapsed: false },
+    { id: 'todo', title: 'المهام', cards: [], collapsed: false },
+    { id: 'in-progress', title: 'قيد التنفيذ', cards: [], collapsed: false },
+    { id: 'done', title: 'منجز', cards: [], collapsed: false },
   ]),
-  cards: z.record(z.string(), KanbanCardSchema).default({}),
   defaultColumn: z.string().default('todo'),
   allowColumnReorder: z.boolean().default(true),
   allowColumnAdd: z.boolean().default(true),
