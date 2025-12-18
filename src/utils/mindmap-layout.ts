@@ -371,3 +371,144 @@ export function getLayoutName(type: LayoutType): string {
     default: return type;
   }
 }
+
+/**
+ * اكتشاف التداخل بين العقد
+ */
+export function detectOverlaps(
+  nodes: CanvasElement[],
+  padding: number = 20
+): { nodeId1: string; nodeId2: string; overlapX: number; overlapY: number }[] {
+  const overlaps: { nodeId1: string; nodeId2: string; overlapX: number; overlapY: number }[] = [];
+  
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i];
+      const b = nodes[j];
+      
+      const ax1 = a.position.x - padding;
+      const ay1 = a.position.y - padding;
+      const ax2 = a.position.x + a.size.width + padding;
+      const ay2 = a.position.y + a.size.height + padding;
+      
+      const bx1 = b.position.x - padding;
+      const by1 = b.position.y - padding;
+      const bx2 = b.position.x + b.size.width + padding;
+      const by2 = b.position.y + b.size.height + padding;
+      
+      const overlapX = Math.max(0, Math.min(ax2, bx2) - Math.max(ax1, bx1));
+      const overlapY = Math.max(0, Math.min(ay2, by2) - Math.max(ay1, by1));
+      
+      if (overlapX > 0 && overlapY > 0) {
+        overlaps.push({
+          nodeId1: a.id,
+          nodeId2: b.id,
+          overlapX,
+          overlapY
+        });
+      }
+    }
+  }
+  
+  return overlaps;
+}
+
+/**
+ * حل التداخلات بإزاحة العقد
+ */
+export function resolveOverlaps(
+  elements: CanvasElement[],
+  overlaps: { nodeId1: string; nodeId2: string; overlapX: number; overlapY: number }[]
+): Map<string, { deltaX: number; deltaY: number }> {
+  const adjustments = new Map<string, { deltaX: number; deltaY: number }>();
+  
+  overlaps.forEach(({ nodeId1, nodeId2, overlapX, overlapY }) => {
+    const node1 = elements.find(e => e.id === nodeId1);
+    const node2 = elements.find(e => e.id === nodeId2);
+    if (!node1 || !node2) return;
+    
+    // تحديد اتجاه الإزاحة (الإزاحة الأصغر)
+    if (overlapY < overlapX) {
+      // إزاحة رأسية
+      const moveAmount = (overlapY / 2) + 10;
+      const node1Above = node1.position.y < node2.position.y;
+      
+      const adj1 = adjustments.get(nodeId1) || { deltaX: 0, deltaY: 0 };
+      const adj2 = adjustments.get(nodeId2) || { deltaX: 0, deltaY: 0 };
+      
+      adj1.deltaY += node1Above ? -moveAmount : moveAmount;
+      adj2.deltaY += node1Above ? moveAmount : -moveAmount;
+      
+      adjustments.set(nodeId1, adj1);
+      adjustments.set(nodeId2, adj2);
+    } else {
+      // إزاحة أفقية
+      const moveAmount = (overlapX / 2) + 10;
+      const node1Left = node1.position.x < node2.position.x;
+      
+      const adj1 = adjustments.get(nodeId1) || { deltaX: 0, deltaY: 0 };
+      const adj2 = adjustments.get(nodeId2) || { deltaX: 0, deltaY: 0 };
+      
+      adj1.deltaX += node1Left ? -moveAmount : moveAmount;
+      adj2.deltaX += node1Left ? moveAmount : -moveAmount;
+      
+      adjustments.set(nodeId1, adj1);
+      adjustments.set(nodeId2, adj2);
+    }
+  });
+  
+  return adjustments;
+}
+
+/**
+ * إيجاد موقع متاح لفرع جديد (تجنب التداخل)
+ */
+export function findAvailableSlot(
+  parentElement: CanvasElement,
+  siblingBounds: { top: number; bottom: number }[],
+  newNodeHeight: number,
+  verticalGap: number = 80
+): number {
+  const parentCenterY = parentElement.position.y + parentElement.size.height / 2;
+  
+  if (siblingBounds.length === 0) {
+    return parentCenterY;
+  }
+  
+  // ترتيب الأشقاء حسب الموقع
+  const sorted = [...siblingBounds].sort((a, b) => a.top - b.top);
+  
+  // محاولة التوزيع المتناظر
+  const totalSiblings = siblingBounds.length;
+  const newIndex = totalSiblings;
+  const direction = newIndex % 2 === 0 ? 1 : -1;
+  const step = Math.ceil((newIndex + 1) / 2);
+  
+  let proposedY = parentCenterY + direction * step * (newNodeHeight + verticalGap);
+  
+  // التحقق من عدم التداخل مع الأشقاء
+  const halfHeight = newNodeHeight / 2;
+  let hasOverlap = true;
+  let attempts = 0;
+  
+  while (hasOverlap && attempts < 20) {
+    hasOverlap = false;
+    const proposedTop = proposedY - halfHeight - verticalGap / 2;
+    const proposedBottom = proposedY + halfHeight + verticalGap / 2;
+    
+    for (const sibling of sorted) {
+      if (proposedBottom > sibling.top && proposedTop < sibling.bottom) {
+        hasOverlap = true;
+        if (direction > 0) {
+          proposedY = sibling.bottom + halfHeight + verticalGap;
+        } else {
+          proposedY = sibling.top - halfHeight - verticalGap;
+        }
+        break;
+      }
+    }
+    attempts++;
+  }
+  
+  return proposedY;
+}

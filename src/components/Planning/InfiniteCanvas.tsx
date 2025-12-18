@@ -327,6 +327,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   // Handle Mouse Up (Stop Pan or Drawing or Selection)
   const handleMouseUp = useCallback(() => {
+    // ✅ إلغاء اتصال الخريطة الذهنية عند الإفلات (سواء تم التوصيل أم لا)
+    if (mindMapConnection.isConnecting) {
+      cancelConnection();
+    }
+    
     isPanningRef.current = false;
     if (containerRef.current) {
       containerRef.current.style.cursor = 'default';
@@ -358,7 +363,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       setSelectionCurrent(null);
     }
     handleCanvasMouseUp();
-  }, [handleCanvasMouseUp, isSelecting, selectionStart, selectionCurrent, finishSelection, clearSelection]);
+  }, [handleCanvasMouseUp, isSelecting, selectionStart, selectionCurrent, finishSelection, clearSelection, mindMapConnection.isConnecting, cancelConnection]);
 
   // Keyboard Shortcuts
   useEffect(() => {

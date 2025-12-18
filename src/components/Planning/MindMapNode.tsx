@@ -66,39 +66,103 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setIsEditing(false);
   }, [element.id, nodeData, editText, updateElement]);
   
-  // إضافة فرع جديد مع توزيع تلقائي
+  // إضافة فرع جديد مع توزيع تلقائي وتجنب التداخل
   const handleAddBranch = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     
     const state = useCanvasStore.getState();
     
-    // ✅ حساب عدد الفروع الموجودة لهذه العقدة
+    // ✅ الحصول على جميع الأبناء الحاليين لهذه العقدة
     const existingConnectors = state.elements.filter(el => 
       el.type === 'mindmap_connector' && 
       (el.data as any)?.startNodeId === element.id
     );
-    const childCount = existingConnectors.length;
     
-    // ✅ توزيع متناظر للفروع (أعلى وأسفل بالتناوب)
-    const verticalSpacing = 80;
-    const direction = childCount % 2 === 0 ? 1 : -1;
-    const step = Math.ceil((childCount + 1) / 2);
-    const yOffset = direction * step * verticalSpacing;
+    // ✅ حساب حدود كل فرع موجود (شاملة الأحفاد)
+    const getSubtreeBounds = (nodeId: string): { top: number; bottom: number } => {
+      const node = state.elements.find(el => el.id === nodeId);
+      if (!node) return { top: 0, bottom: 0 };
+      
+      let minY = node.position.y;
+      let maxY = node.position.y + node.size.height;
+      
+      // البحث عن الأبناء recursively
+      const childConnectors = state.elements.filter(el => 
+        el.type === 'mindmap_connector' && 
+        (el.data as any)?.startNodeId === nodeId
+      );
+      
+      childConnectors.forEach(conn => {
+        const childId = (conn.data as any)?.endNodeId;
+        if (childId) {
+          const childBounds = getSubtreeBounds(childId);
+          minY = Math.min(minY, childBounds.top);
+          maxY = Math.max(maxY, childBounds.bottom);
+        }
+      });
+      
+      return { top: minY, bottom: maxY };
+    };
+    
+    const siblingBounds = existingConnectors.map(conn => {
+      const childId = (conn.data as any)?.endNodeId;
+      return getSubtreeBounds(childId);
+    });
+    
+    // ✅ إيجاد موقع متاح للفرع الجديد
+    const newNodeHeight = 60;
+    const verticalGap = 80;
+    const parentCenterY = element.position.y + element.size.height / 2;
+    
+    let yPosition = parentCenterY;
+    
+    if (siblingBounds.length > 0) {
+      // ترتيب الأشقاء
+      const sorted = [...siblingBounds].sort((a, b) => a.top - b.top);
+      
+      // توزيع متناظر
+      const childCount = siblingBounds.length;
+      const direction = childCount % 2 === 0 ? 1 : -1;
+      const step = Math.ceil((childCount + 1) / 2);
+      yPosition = parentCenterY + direction * step * (newNodeHeight + verticalGap);
+      
+      // التحقق من عدم التداخل
+      const halfHeight = newNodeHeight / 2;
+      let hasOverlap = true;
+      let attempts = 0;
+      
+      while (hasOverlap && attempts < 20) {
+        hasOverlap = false;
+        const proposedTop = yPosition - halfHeight - verticalGap / 2;
+        const proposedBottom = yPosition + halfHeight + verticalGap / 2;
+        
+        for (const sibling of sorted) {
+          if (proposedBottom > sibling.top && proposedTop < sibling.bottom) {
+            hasOverlap = true;
+            if (direction > 0) {
+              yPosition = sibling.bottom + halfHeight + verticalGap;
+            } else {
+              yPosition = sibling.top - halfHeight - verticalGap;
+            }
+            break;
+          }
+        }
+        attempts++;
+      }
+    }
     
     const offset = 200;
-    
-    // ✅ إنشاء ID مُحدد مسبقاً للعقدة الجديدة
     const newNodeId = `mindmap-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    // إضافة العقدة الجديدة مع ID معروف
+    // إضافة العقدة الجديدة في الموقع الآمن
     addElement({
       id: newNodeId,
       type: 'mindmap_node',
       position: {
         x: element.position.x + element.size.width + offset,
-        y: element.position.y + yOffset
+        y: yPosition - newNodeHeight / 2
       },
-      size: { width: 160, height: 60 },
+      size: { width: 160, height: newNodeHeight },
       data: {
         label: 'فرع جديد',
         color: NODE_COLORS[Math.floor(Math.random() * NODE_COLORS.length)],
@@ -107,7 +171,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       } as MindMapNodeData
     });
     
-    // ✅ إضافة الـ connector فوراً (بدون setTimeout)
+    // ✅ إضافة الـ connector
     addElement({
       type: 'mindmap_connector',
       position: { x: 0, y: 0 },

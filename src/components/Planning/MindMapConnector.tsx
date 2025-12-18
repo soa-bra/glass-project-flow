@@ -39,24 +39,65 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
     [elements, connectorData.endNodeId]
   );
   
-  // حساب مواقع نقاط الربط
+  // ✅ حساب مواقع نقاط الربط مع offset للروابط المتعددة
   const positions = useMemo(() => {
     if (!startNode || !endNode) return null;
     
-    const startPos = getAnchorPosition(
+    const startAnchor = connectorData.startAnchor?.anchor || 'right';
+    const endAnchor = connectorData.endAnchor?.anchor || 'left';
+    
+    // حساب عدد الروابط الأخرى من نفس النقطة
+    const sameStartAnchorConnectors = elements.filter(el => {
+      if (el.type !== 'mindmap_connector' || el.id === element.id) return false;
+      const data = el.data as any;
+      return data?.startNodeId === connectorData.startNodeId && 
+             data?.startAnchor?.anchor === startAnchor;
+    });
+    
+    const sameEndAnchorConnectors = elements.filter(el => {
+      if (el.type !== 'mindmap_connector' || el.id === element.id) return false;
+      const data = el.data as any;
+      return data?.endNodeId === connectorData.endNodeId && 
+             data?.endAnchor?.anchor === endAnchor;
+    });
+    
+    // حساب index للرابط الحالي
+    const startIndex = sameStartAnchorConnectors.length;
+    const endIndex = sameEndAnchorConnectors.length;
+    
+    // حساب offset (توزيع متناظر)
+    const offsetAmount = 8;
+    const startOffset = (startIndex - sameStartAnchorConnectors.length / 2) * offsetAmount;
+    const endOffset = (endIndex - sameEndAnchorConnectors.length / 2) * offsetAmount;
+    
+    const baseStartPos = getAnchorPosition(
       startNode.position,
       startNode.size,
-      connectorData.startAnchor?.anchor || 'right'
+      startAnchor
     );
     
-    const endPos = getAnchorPosition(
+    const baseEndPos = getAnchorPosition(
       endNode.position,
       endNode.size,
-      connectorData.endAnchor?.anchor || 'left'
+      endAnchor
     );
     
+    // تطبيق offset عمودي للربط الأفقي أو أفقي للربط الرأسي
+    const isHorizontalStart = startAnchor === 'left' || startAnchor === 'right';
+    const isHorizontalEnd = endAnchor === 'left' || endAnchor === 'right';
+    
+    const startPos = {
+      x: baseStartPos.x + (isHorizontalStart ? 0 : startOffset),
+      y: baseStartPos.y + (isHorizontalStart ? startOffset : 0)
+    };
+    
+    const endPos = {
+      x: baseEndPos.x + (isHorizontalEnd ? 0 : endOffset),
+      y: baseEndPos.y + (isHorizontalEnd ? endOffset : 0)
+    };
+    
     return { start: startPos, end: endPos };
-  }, [startNode, endNode, connectorData]);
+  }, [startNode, endNode, connectorData, elements, element.id]);
   
   // حساب المسار
   const path = useMemo(() => {
