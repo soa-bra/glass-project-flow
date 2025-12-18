@@ -232,6 +232,10 @@ export const TimelineItemSchema = z.object({
   layer: z.number().default(0), // for preventing overlap
   importance: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
   completed: z.boolean().default(false),
+  // ✅ حقول ربط المشروع
+  projectId: z.string().uuid().optional(),
+  phaseId: z.string().uuid().optional(),
+  type: z.enum(['project_start', 'project_end', 'phase', 'custom']).default('custom'),
 });
 
 export const TimelineDataSchema = z.object({
@@ -239,6 +243,7 @@ export const TimelineDataSchema = z.object({
   endDate: z.string().default(getDefaultEndDate), // ✅ قيمة افتراضية
   viewMode: z.enum(['day', 'week', 'month']).default('week'), // ✅ تغيير من unit إلى viewMode
   events: z.array(TimelineItemSchema).default([]), // ✅ تغيير من items إلى events
+  linkedProjectId: z.string().uuid().optional(), // ✅ ربط بمشروع من قاعدة البيانات
   showToday: z.boolean().default(true),
   showWeekends: z.boolean().default(true),
   layers: z.number().min(1).max(10).default(3),
