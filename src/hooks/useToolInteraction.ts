@@ -448,14 +448,35 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
    * أداة العناصر الذكية: إنشاء عنصر ذكي
    */
   const handleSmartElementClick = (point: { x: number; y: number }) => {
-    const { selectedSmartElement } = useCanvasStore.getState();
+    const { selectedSmartElement, addElement: addCanvasElement } = useCanvasStore.getState();
     
     if (!selectedSmartElement) {
       toast.info('اختر عنصراً ذكياً من اللوحة الجانبية أولاً');
       return;
     }
 
-    // ✅ استخدام addSmartElement من smartElementsStore بدلاً من addElement
+    // ✅ حالة خاصة للخريطة الذهنية - إنشاء عقدة مباشرة على الكانفس
+    if (selectedSmartElement === 'mind_map') {
+      addCanvasElement({
+        type: 'mindmap_node',
+        position: { x: point.x - 90, y: point.y - 30 },
+        size: { width: 180, height: 60 },
+        data: {
+          label: 'الفكرة الرئيسية',
+          color: '#3B82F6',
+          nodeStyle: 'rounded',
+          isRoot: true,
+          fontSize: 16,
+          textColor: '#FFFFFF'
+        }
+      });
+      
+      toast.success('تم إنشاء عقدة خريطة ذهنية - اسحب من نقاط الربط لإضافة فروع');
+      useCanvasStore.getState().setSelectedSmartElement(null);
+      return;
+    }
+
+    // ✅ باقي العناصر الذكية (kanban, voting, etc.)
     const { addSmartElement } = useSmartElementsStore.getState();
     
     addSmartElement(
