@@ -421,10 +421,57 @@ export function applyLayoutWithSettings(
     }
   }
   
+  // ✅ الخطوة 1: تحديث جميع مواقع العقد أولاً
   results.forEach(result => {
     updateElement(result.nodeId, {
       position: result.position
     });
+  });
+  
+  // ✅ الخطوة 2: إنشاء خريطة للمواقع الجديدة
+  const newPositions = new Map<string, { position: { x: number; y: number }; size: { width: number; height: number } }>();
+  results.forEach(result => {
+    const node = nodes.find(n => n.id === result.nodeId);
+    if (node) {
+      newPositions.set(result.nodeId, {
+        position: result.position,
+        size: node.size
+      });
+    }
+  });
+  
+  // ✅ الخطوة 3: تحديث جميع الـ connectors بناءً على المواقع الجديدة
+  connectors.forEach(connector => {
+    const connectorData = connector.data as MindMapConnectorData;
+    
+    const startNodeData = newPositions.get(connectorData.startNodeId);
+    const endNodeData = newPositions.get(connectorData.endNodeId);
+    
+    // استخدام المواقع الجديدة إن وجدت، وإلا استخدام المواقع الأصلية
+    const startNode = startNodeData || nodes.find(n => n.id === connectorData.startNodeId);
+    const endNode = endNodeData || nodes.find(n => n.id === connectorData.endNodeId);
+    
+    if (startNode && endNode) {
+      const startInfo = 'position' in startNode && 'size' in startNode 
+        ? startNode 
+        : { position: (startNode as CanvasElement).position, size: (startNode as CanvasElement).size };
+      const endInfo = 'position' in endNode && 'size' in endNode 
+        ? endNode 
+        : { position: (endNode as CanvasElement).position, size: (endNode as CanvasElement).size };
+      
+      // حساب حدود الـ connector الجديدة
+      const padding = 50;
+      const minX = Math.min(startInfo.position.x, endInfo.position.x + endInfo.size.width) - padding;
+      const minY = Math.min(startInfo.position.y, endInfo.position.y + endInfo.size.height) - padding;
+      const maxX = Math.max(startInfo.position.x + startInfo.size.width, endInfo.position.x + endInfo.size.width) + padding;
+      const maxY = Math.max(startInfo.position.y + startInfo.size.height, endInfo.position.y + endInfo.size.height) + padding;
+      
+      // تحديث موقع وحجم الـ connector
+      updateElement(connector.id, {
+        position: { x: minX, y: minY },
+        size: { width: maxX - minX, height: maxY - minY }
+      });
+    }
   });
 }
 
