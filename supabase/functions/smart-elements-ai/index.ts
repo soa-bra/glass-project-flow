@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.52.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -335,6 +336,35 @@ const systemPrompt = `أنت مساعد ذكي متخصص في نظام سوبر
 
 استخدم الأدوات المتاحة لتوليد هياكل البيانات المطلوبة.`;
 
+// Helper function to authenticate user
+async function authenticateUser(req: Request): Promise<{ user: any; error: string | null }> {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader) {
+    return { user: null, error: 'Missing authorization header' };
+  }
+
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('[smart-elements-ai] Missing Supabase configuration');
+    return { user: null, error: 'Server configuration error' };
+  }
+
+  const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } }
+  });
+
+  const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+  
+  if (authError || !user) {
+    console.error('[smart-elements-ai] Authentication failed:', authError?.message);
+    return { user: null, error: 'Unauthorized' };
+  }
+
+  return { user, error: null };
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -342,6 +372,17 @@ serve(async (req) => {
   }
 
   try {
+    // Authenticate user
+    const { user, error: authError } = await authenticateUser(req);
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: authError || 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`[smart-elements-ai] Authenticated user: ${user.id}`);
+
     const { prompt, action, selectedElements, context } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -374,7 +415,7 @@ serve(async (req) => {
       userMessage = prompt;
     }
 
-    console.log(`[smart-elements-ai] Action: ${action}, Tool: ${selectedTool}`);
+    console.log(`[smart-elements-ai] User: ${user.id}, Action: ${action}, Tool: ${selectedTool}`);
     console.log(`[smart-elements-ai] User message: ${userMessage.substring(0, 200)}...`);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -452,7 +493,7 @@ serve(async (req) => {
       }));
     }
 
-    console.log(`[smart-elements-ai] Generated ${toolResult.elements?.length || 0} elements`);
+    console.log(`[smart-elements-ai] User: ${user.id}, Generated ${toolResult.elements?.length || 0} elements`);
 
     return new Response(JSON.stringify({
       success: true,
@@ -465,7 +506,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('[smart-elements-ai] Error:', error);
     return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'خطأ غير متوقع',
+      error: error instanceof Error ? error.message : 'حدث خطأ غير متوقع',
       code: 'INTERNAL_ERROR'
     }), {
       status: 500,
@@ -474,12 +515,12 @@ serve(async (req) => {
   }
 });
 
-// Helper function to calculate element positions based on layout
+// Calculate position for elements based on layout
 function calculatePosition(index: number, total: number, layout: string): { x: number; y: number } {
   const baseX = 100;
   const baseY = 100;
-  const spacing = 300;
-
+  const spacing = 350;
+  
   switch (layout) {
     case 'horizontal':
       return { x: baseX + (index * spacing), y: baseY };
@@ -487,15 +528,16 @@ function calculatePosition(index: number, total: number, layout: string): { x: n
       return { x: baseX, y: baseY + (index * spacing) };
     case 'grid': {
       const cols = Math.ceil(Math.sqrt(total));
-      const row = Math.floor(index / cols);
-      const col = index % cols;
-      return { x: baseX + (col * spacing), y: baseY + (row * spacing) };
+      return {
+        x: baseX + (index % cols) * spacing,
+        y: baseY + Math.floor(index / cols) * spacing
+      };
     }
     case 'radial': {
       const angle = (2 * Math.PI * index) / total;
-      const radius = 250;
+      const radius = 300;
       return {
-        x: baseX + 300 + Math.cos(angle) * radius,
+        x: baseX + 400 + Math.cos(angle) * radius,
         y: baseY + 300 + Math.sin(angle) * radius
       };
     }
