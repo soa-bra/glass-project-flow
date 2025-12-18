@@ -139,17 +139,6 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
             </AIAssistantPopover>
           </div>
           
-          {/* Smart Command Bar Trigger */}
-          <button
-            onClick={commandBar.open}
-            className="flex items-center gap-2 px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-lg transition-colors border"
-            title="شريط الأوامر الذكي (Ctrl+K)"
-          >
-            <Command size={16} className="text-muted-foreground" />
-            <span className="text-[12px] text-muted-foreground font-mono">Ctrl+K</span>
-          </button>
-          
-          <div className="h-6 w-px bg-[hsl(var(--border))] mx-1" />
           
           {/* File Menu */}
           <div className="relative">
