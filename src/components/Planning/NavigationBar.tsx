@@ -1,7 +1,14 @@
 import React from 'react';
-import { ZoomIn, ZoomOut, Maximize, Hand, Map as MapIcon, Maximize2 } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize, Hand, Map as MapIcon, Maximize2, Wifi, WifiOff, Users } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { useCollaborationStore } from '@/stores/collaborationStore';
 import SnapSettingsDropdown from './SnapSettingsDropdown';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const NavigationBar: React.FC = () => {
   const { 
@@ -18,6 +25,8 @@ const NavigationBar: React.FC = () => {
     isFullscreen
   } = useCanvasStore();
   
+  const { isConnected, participants } = useCollaborationStore();
+  
   const zoomPercentage = Math.round(viewport.zoom * 100);
   const [isZoomDropdownOpen, setIsZoomDropdownOpen] = React.useState(false);
   
@@ -31,11 +40,43 @@ const NavigationBar: React.FC = () => {
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setZoomPercentage(parseInt(e.target.value));
   };
+
+  const onlineParticipants = participants.filter(p => p.online);
   
   return (
     <div className="fixed bottom-6 right-6 z-40 bg-white rounded-[12px] p-2 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_12px_28px_rgba(0,0,0,0.10)] border border-sb-border">
-      {/* First Row */}
+      {/* First Row - Connection Status & Tools */}
       <div className="flex items-center gap-1.5 mb-1.5">
+        {/* Connection Status */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-muted/50">
+                {isConnected ? (
+                  <Wifi size={12} className="text-accent-green" />
+                ) : (
+                  <WifiOff size={12} className="text-accent-red" />
+                )}
+                {onlineParticipants.length > 0 && (
+                  <div className="flex items-center gap-0.5">
+                    <Users size={10} className="text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground">{onlineParticipants.length}</span>
+                  </div>
+                )}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>{isConnected ? 'متصل' : 'غير متصل'}</p>
+              {onlineParticipants.length > 0 && (
+                <p className="text-xs text-muted-foreground">{onlineParticipants.length} متصل</p>
+              )}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        {/* Separator */}
+        <div className="h-3 w-px bg-border" />
+
         {/* Fit to Screen */}
         <button
           onClick={zoomToFit}
