@@ -22,6 +22,8 @@ import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useSmartElementAI } from '@/hooks/useSmartElementAI';
 import type { SmartElementType } from '@/types/smart-elements';
+import type { MindMapNodeData } from '@/types/mindmap-canvas';
+import { NODE_COLORS } from '@/types/mindmap-canvas';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -303,6 +305,30 @@ const SmartElementsPanel: React.FC = () => {
     const centerX = (-viewport.pan.x + window.innerWidth / 2) / viewport.zoom;
     const centerY = (-viewport.pan.y + window.innerHeight / 2) / viewport.zoom;
 
+    // ✅ إنشاء خريطة ذهنية كعقد مستقلة على الكانفس
+    if (selectedElement.id === 'mind_map') {
+      const { addElement } = useCanvasStore.getState();
+      
+      // إنشاء عقدة الجذر مباشرة على الكانفس
+      addElement({
+        type: 'mindmap_node',
+        position: { x: centerX - 80, y: centerY - 30 },
+        size: { width: 180, height: 60 },
+        data: {
+          label: elementTitle || 'الفكرة الرئيسية',
+          color: NODE_COLORS[0], // أزرق
+          nodeStyle: 'rounded',
+          isRoot: true,
+          fontSize: 16,
+          textColor: '#FFFFFF'
+        } as MindMapNodeData
+      });
+      
+      toast.success('تم إنشاء خريطة ذهنية جديدة - انقر على العقدة واسحب من نقاط الربط لإضافة فروع');
+      setSelectedElement(null);
+      return;
+    }
+
     const initialData: Record<string, any> = {
       title: elementTitle || selectedElement.nameAr,
       ...settings,
@@ -328,26 +354,6 @@ const SmartElementsPanel: React.FC = () => {
       }));
       initialData.maxVotesPerUser = settings.maxVotesPerUser || 1;
       initialData.allowMultipleVotes = settings.allowMultiple || false;
-    }
-
-    // Initialize mind_map with proper root node structure
-    if (selectedElement.id === 'mind_map') {
-      const rootId = `node-${Date.now()}`;
-      initialData.rootId = rootId;
-      initialData.nodes = {
-        [rootId]: {
-          id: rootId,
-          label: elementTitle || 'الفكرة الرئيسية',
-          parentId: null,
-          childIds: [],
-          collapsed: false,
-          order: 0,
-          color: '#3DA8F5',
-        }
-      };
-      initialData.connections = [];
-      initialData.layout = settings.layout || 'radial';
-      initialData.autoLayout = settings.autoLayout !== false;
     }
 
     addSmartElement(

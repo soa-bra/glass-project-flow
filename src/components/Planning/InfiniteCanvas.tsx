@@ -17,6 +17,8 @@ import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
 import { CanvasGridLayer } from './CanvasGridLayer';
 import { RealtimeSyncManager } from './collaboration';
 import { useCollaborationUser } from '@/hooks/useCollaborationUser';
+import MindMapConnectionLine from './MindMapConnectionLine';
+import { findNearestAnchor, type NodeAnchorPoint, type MindMapConnectorData } from '@/types/mindmap-canvas';
 import type { SnapLine } from '@/core/snapEngine';
 
 interface InfiniteCanvasProps {
@@ -86,6 +88,128 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   
   // ✅ Sprint 5: Snap Guides State
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
+  
+  // ✅ Mind Map Connection State
+  const [mindMapConnection, setMindMapConnection] = useState<{
+    isConnecting: boolean;
+    sourceNodeId: string | null;
+    sourceAnchor: 'top' | 'bottom' | 'left' | 'right' | null;
+    startPosition: { x: number; y: number } | null;
+    currentPosition: { x: number; y: number } | null;
+    nearestAnchor: NodeAnchorPoint | null;
+  }>({
+    isConnecting: false,
+    sourceNodeId: null,
+    sourceAnchor: null,
+    startPosition: null,
+    currentPosition: null,
+    nearestAnchor: null
+  });
+  
+  // Mind Map: بدء التوصيل من عقدة
+  const handleStartConnection = useCallback((
+    nodeId: string, 
+    anchor: 'top' | 'bottom' | 'left' | 'right', 
+    position: { x: number; y: number }
+  ) => {
+    setMindMapConnection({
+      isConnecting: true,
+      sourceNodeId: nodeId,
+      sourceAnchor: anchor,
+      startPosition: position,
+      currentPosition: position,
+      nearestAnchor: null
+    });
+  }, []);
+  
+  // Mind Map: إنهاء التوصيل في عقدة
+  const handleEndConnection = useCallback((
+    nodeId: string, 
+    anchor: 'top' | 'bottom' | 'left' | 'right'
+  ) => {
+    if (!mindMapConnection.isConnecting || !mindMapConnection.sourceNodeId) return;
+    if (mindMapConnection.sourceNodeId === nodeId) return; // لا يمكن الربط بنفس العقدة
+    
+    const sourceNode = elements.find(el => el.id === mindMapConnection.sourceNodeId);
+    if (!sourceNode) return;
+    
+    // إنشاء رابط جديد
+    useCanvasStore.getState().addElement({
+      type: 'mindmap_connector',
+      position: { x: 0, y: 0 },
+      size: { width: 0, height: 0 },
+      data: {
+        startNodeId: mindMapConnection.sourceNodeId,
+        endNodeId: nodeId,
+        startAnchor: { nodeId: mindMapConnection.sourceNodeId, anchor: mindMapConnection.sourceAnchor },
+        endAnchor: { nodeId, anchor },
+        curveStyle: 'bezier',
+        color: sourceNode.data?.color || '#3DA8F5',
+        strokeWidth: 2
+      } as MindMapConnectorData
+    });
+    
+    // إعادة تعيين حالة التوصيل
+    setMindMapConnection({
+      isConnecting: false,
+      sourceNodeId: null,
+      sourceAnchor: null,
+      startPosition: null,
+      currentPosition: null,
+      nearestAnchor: null
+    });
+  }, [mindMapConnection, elements]);
+  
+  // Mind Map: تحديث موقع السحب والبحث عن أقرب عقدة
+  const updateConnectionPosition = useCallback((clientX: number, clientY: number) => {
+    if (!mindMapConnection.isConnecting) return;
+    
+    const containerRect = getContainerRect(containerRef);
+    if (!containerRect) return;
+    
+    const canvasPoint = canvasKernel.screenToWorld(clientX, clientY, viewport, containerRect);
+    
+    // البحث عن أقرب عقدة (غير المصدر)
+    const mindMapNodes = elements.filter(
+      el => el.type === 'mindmap_node' && el.id !== mindMapConnection.sourceNodeId
+    );
+    
+    let nearest: NodeAnchorPoint | null = null;
+    let nearestDistance = 50; // عتبة الـ snap
+    
+    for (const node of mindMapNodes) {
+      const result = findNearestAnchor(canvasPoint, node.position, node.size);
+      if (result.distance < nearestDistance) {
+        nearestDistance = result.distance;
+        nearest = {
+          id: `${node.id}-${result.anchor}`,
+          nodeId: node.id,
+          anchor: result.anchor,
+          position: result.position
+        };
+      }
+    }
+    
+    setMindMapConnection(prev => ({
+      ...prev,
+      currentPosition: canvasPoint,
+      nearestAnchor: nearest
+    }));
+  }, [mindMapConnection.isConnecting, mindMapConnection.sourceNodeId, elements, viewport]);
+  
+  // إلغاء التوصيل عند النقر على الكانفس
+  const cancelConnection = useCallback(() => {
+    if (mindMapConnection.isConnecting) {
+      setMindMapConnection({
+        isConnecting: false,
+        sourceNodeId: null,
+        sourceAnchor: null,
+        startPosition: null,
+        currentPosition: null,
+        nearestAnchor: null
+      });
+    }
+  }, [mindMapConnection.isConnecting]);
 
   // ✅ استخدام Canvas Kernel لحساب حدود العرض
   const viewportBounds = useMemo(() => {
@@ -492,7 +616,30 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         <StrokesLayer />
         
         {/* Canvas Elements */}
-        {visibleElements.map(element => <CanvasElement key={element.id} element={element} isSelected={selectedElementIds.includes(element.id)} onSelect={multiSelect => selectElement(element.id, multiSelect)} snapToGrid={settings.snapToGrid ? snapToGrid : undefined} activeTool={activeTool} />)}
+        {visibleElements.map(element => (
+          <CanvasElement 
+            key={element.id} 
+            element={element} 
+            isSelected={selectedElementIds.includes(element.id)} 
+            onSelect={multiSelect => selectElement(element.id, multiSelect)} 
+            snapToGrid={settings.snapToGrid ? snapToGrid : undefined} 
+            activeTool={activeTool}
+            onStartConnection={handleStartConnection}
+            onEndConnection={handleEndConnection}
+            isConnecting={mindMapConnection.isConnecting}
+            nearestAnchor={mindMapConnection.nearestAnchor}
+          />
+        ))}
+        
+        {/* Mind Map Connection Line (during drag) */}
+        {mindMapConnection.isConnecting && mindMapConnection.startPosition && mindMapConnection.currentPosition && (
+          <MindMapConnectionLine
+            startPosition={mindMapConnection.startPosition}
+            endPosition={mindMapConnection.nearestAnchor?.position || mindMapConnection.currentPosition}
+            startAnchor={mindMapConnection.sourceAnchor || 'right'}
+            color={elements.find(el => el.id === mindMapConnection.sourceNodeId)?.data?.color}
+          />
+        )}
         
         {/* BoundingBox for selected elements with Snap Engine */}
         <BoundingBox onGuidesChange={setSnapGuides} />
