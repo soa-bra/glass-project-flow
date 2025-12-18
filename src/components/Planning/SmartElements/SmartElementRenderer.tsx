@@ -1,46 +1,64 @@
 import React from 'react';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
+import { SmartElementLabels } from '@/types/smart-elements';
+import { KanbanBoard } from './KanbanBoard';
+import { 
+  Brain, Kanban, Vote, Lightbulb, Calendar, Grid3X3, 
+  BarChart3, Table, GitBranch, FolderKanban, Wallet,
+  HeartHandshake, Users, Link2 
+} from 'lucide-react';
 
 interface SmartElementRendererProps {
   element: CanvasSmartElement;
   onUpdate?: (data: any) => void;
 }
 
+const ICONS: Record<string, React.ElementType> = {
+  thinking_board: Brain,
+  kanban: Kanban,
+  voting: Vote,
+  brainstorming: Lightbulb,
+  timeline: Calendar,
+  decisions_matrix: Grid3X3,
+  gantt: BarChart3,
+  interactive_sheet: Table,
+  mind_map: GitBranch,
+  project_card: FolderKanban,
+  finance_card: Wallet,
+  csr_card: HeartHandshake,
+  crm_card: Users,
+  root_connector: Link2,
+};
+
 export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({ 
   element, 
   onUpdate 
 }) => {
-  const handleDataUpdate = (newData: any) => {
-    if (onUpdate) {
-      onUpdate(newData);
-    }
-  };
+  const smartType = element.smartType;
+  const data = element.data || {};
+
+  // Kanban has full implementation
+  if (smartType === 'kanban') {
+    return (
+      <KanbanBoard 
+        initialColumns={data.columns as any} 
+        onUpdate={(columns) => onUpdate?.({ ...data, columns })} 
+      />
+    );
+  }
+
+  // Placeholder for all other types
+  const Icon = ICONS[smartType] || Brain;
+  const label = SmartElementLabels[smartType as keyof typeof SmartElementLabels] || smartType;
 
   return (
-    <div className="w-full h-full flex items-center justify-center bg-white border border-[hsl(var(--border))] rounded-lg p-4">
+    <div className="w-full h-full flex items-center justify-center bg-background border border-border rounded-lg p-4" dir="rtl">
       <div className="text-center">
-        <div className="text-2xl mb-2">
-          {element.smartType === 'thinking_board' && '🧠'}
-          {element.smartType === 'kanban' && '📋'}
-          {element.smartType === 'voting' && '🗳️'}
-          {element.smartType === 'brainstorming' && '💡'}
-          {element.smartType === 'timeline' && '📅'}
-          {element.smartType === 'decisions_matrix' && '📊'}
-          {element.smartType === 'gantt' && '📈'}
-          {element.smartType === 'interactive_sheet' && '📑'}
-          {element.smartType === 'mind_map' && '🗺️'}
-          {element.smartType === 'project_card' && '📁'}
-          {element.smartType === 'finance_card' && '💰'}
-          {element.smartType === 'csr_card' && '🌱'}
-          {element.smartType === 'crm_card' && '👥'}
-          {element.smartType === 'root_connector' && '🔗'}
+        <div className="w-16 h-16 mx-auto mb-3 rounded-xl bg-primary/10 flex items-center justify-center">
+          <Icon className="h-8 w-8 text-primary" />
         </div>
-        <p className="text-sm text-[hsl(var(--ink))] font-medium mb-1">
-          {element.smartType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-        </p>
-        <p className="text-xs text-[hsl(var(--ink-60))]">
-          العنصر الذكي جاهز للاستخدام
-        </p>
+        <p className="text-sm font-medium text-foreground mb-1">{label}</p>
+        <p className="text-xs text-muted-foreground">العنصر الذكي جاهز للاستخدام</p>
       </div>
     </div>
   );
