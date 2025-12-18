@@ -400,8 +400,16 @@ const SmartElementsPanel: React.FC = () => {
           {filteredElements.map((element) => (
             <button
               key={element.id}
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData('application/smart-element', JSON.stringify({
+                  type: element.id,
+                  name: element.nameAr,
+                }));
+                e.dataTransfer.effectAllowed = 'copy';
+              }}
               onClick={() => handleSelectElement(element)}
-              className={`group flex flex-col items-center gap-2 p-3 rounded-xl transition-all ${
+              className={`group flex flex-col items-center gap-2 p-3 rounded-xl transition-all cursor-grab active:cursor-grabbing ${
                 selectedElement?.id === element.id
                   ? 'bg-[hsl(var(--accent-green))] text-white'
                   : 'bg-muted text-foreground hover:bg-muted/80'

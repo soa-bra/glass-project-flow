@@ -1,5 +1,6 @@
 import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import CanvasElement from './CanvasElement';
 import DrawingPreview from './DrawingPreview';
 import SelectionBox, { useSelectionBox } from './SelectionBox';
@@ -393,14 +394,32 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   }, [handleWheel]);
 
   // Handle file drop on canvas
-  // ✅ استخدام Canvas Kernel لإسقاط الملفات
+  // ✅ استخدام Canvas Kernel لإسقاط الملفات والعناصر الذكية
   const handleFileDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-    if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
-    const file = e.dataTransfer.files[0];
+    
     const containerRect = getContainerRect(containerRef);
     if (!containerRect) return;
     const canvasPoint = canvasKernel.screenToWorld(e.clientX, e.clientY, viewport, containerRect);
+    
+    // ✅ التحقق من السحب للعناصر الذكية أولاً
+    const smartElementData = e.dataTransfer.getData('application/smart-element');
+    if (smartElementData) {
+      try {
+        const { type, name } = JSON.parse(smartElementData);
+        const { addSmartElement } = useSmartElementsStore.getState();
+        addSmartElement(type, canvasPoint, { title: name });
+        toast.success(`تم إدراج ${name}`);
+        return;
+      } catch (err) {
+        console.error('Failed to parse smart element data:', err);
+      }
+    }
+    
+    // ✅ معالجة إسقاط الملفات
+    if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
+    const file = e.dataTransfer.files[0];
+    
     if (file.type.startsWith('image/')) {
       const imageUrl = URL.createObjectURL(file);
       useCanvasStore.getState().addElement({

@@ -682,14 +682,17 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     const canvasStore = useCanvasStore.getState();
     const elementSize = size || DEFAULT_SMART_ELEMENT_SIZES[type];
     
+    // ✅ إضافة smartType على المستوى العلوي + البيانات الفعلية في data
     canvasStore.addElement({
       type: 'smart',
+      smartType: type, // ← إضافة على المستوى العلوي للكانفاس
       position,
       size: elementSize,
       style: {},
       data: {
         smartType: type,
         smartElementId: elementId,
+        ...mergedData, // ← تضمين البيانات الفعلية
       },
     });
     
