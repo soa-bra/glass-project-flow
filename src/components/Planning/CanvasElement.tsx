@@ -285,11 +285,11 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         width: element.size.width,
         height: element.size.height,
         // إزالة كل أنماط التحديد للأسهم
-        border: isElementArrow(element) ? 'none' : (isSelected ? '2px solid hsl(var(--accent-green))' : (element.data?.textType === 'box' ? '1px solid hsl(var(--border))' : 'none')),
+        border: (isElementArrow(element) || element.type === 'text') ? 'none' : (isSelected ? '2px solid hsl(var(--accent-green))' : (element.data?.textType === 'box' ? '1px solid hsl(var(--border))' : 'none')),
         borderRadius: isElementArrow(element) ? '0' : (element.type === 'shape' ? '0' : (element.data?.textType === 'box' ? '8px' : '0')),
         padding: isElementArrow(element) ? '0' : (element.type === 'shape' ? '0' : (element.data?.textType === 'box' ? '12px' : '4px')),
         backgroundColor: isElementArrow(element) ? 'transparent' : (element.type === 'shape' ? 'transparent' : (element.data?.textType === 'box' ? (element.style?.backgroundColor || '#FFFFFF') : (element.style?.backgroundColor || 'transparent'))),
-        boxShadow: isElementArrow(element) ? 'none' : (isSelected ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : (element.data?.textType === 'box' ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none')),
+        boxShadow: (isElementArrow(element) || element.type === 'text') ? 'none' : (isSelected ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : (element.data?.textType === 'box' ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none')),
         outline: isElementArrow(element) ? 'none' : undefined,
         opacity: isLocked ? 0.6 : 1,
         pointerEvents: isLocked ? 'none' : 'auto',
