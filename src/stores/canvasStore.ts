@@ -1941,9 +1941,9 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     get().pushHistory();
   },
 
-  // ✅ تحريك عنصر مع كل أبنائه في الخريطة الذهنية
+  // ✅ تحريك عنصر مع كل أبنائه في الخريطة الذهنية مع اكتشاف وحل التداخلات
   moveElementWithChildren: (elementId: string, deltaX: number, deltaY: number) => {
-    const { elements, updateElement } = get();
+    const { elements } = get();
     
     // الحصول على كل الأبناء recursively
     const getAllChildren = (nodeId: string): string[] => {
@@ -1981,6 +1981,74 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         return el;
       })
     }));
+    
+    // ✅ اكتشاف وحل التداخلات (Responsive) - الآن يستورد من mindmap-layout
+    const updatedElements = get().elements;
+    const mindMapNodes = updatedElements.filter(el => el.type === 'mindmap_node');
+    
+    // اكتشاف التداخل البسيط
+    const overlaps: { nodeId1: string; nodeId2: string; overlapY: number }[] = [];
+    const padding = 20;
+    
+    for (let i = 0; i < mindMapNodes.length; i++) {
+      for (let j = i + 1; j < mindMapNodes.length; j++) {
+        const a = mindMapNodes[i];
+        const b = mindMapNodes[j];
+        
+        // تحقق من التداخل فقط إذا لم تكن العقدتان من nodesToMove (تجنب التعديل على نفس المجموعة)
+        if (nodesToMove.includes(a.id) && nodesToMove.includes(b.id)) continue;
+        if (!nodesToMove.includes(a.id) && !nodesToMove.includes(b.id)) continue;
+        
+        const ax1 = a.position.x - padding;
+        const ay1 = a.position.y - padding;
+        const ax2 = a.position.x + a.size.width + padding;
+        const ay2 = a.position.y + a.size.height + padding;
+        
+        const bx1 = b.position.x - padding;
+        const by1 = b.position.y - padding;
+        const bx2 = b.position.x + b.size.width + padding;
+        const by2 = b.position.y + b.size.height + padding;
+        
+        const overlapX = Math.max(0, Math.min(ax2, bx2) - Math.max(ax1, bx1));
+        const overlapY = Math.max(0, Math.min(ay2, by2) - Math.max(ay1, by1));
+        
+        if (overlapX > 0 && overlapY > 0) {
+          // تحديد العقدة التي يجب تحريكها (التي ليست في مجموعة السحب)
+          const nodeToMove = nodesToMove.includes(a.id) ? b.id : a.id;
+          const otherNode = nodesToMove.includes(a.id) ? a : b;
+          const movingNode = nodesToMove.includes(a.id) ? a : b;
+          
+          overlaps.push({
+            nodeId1: nodeToMove,
+            nodeId2: otherNode.id,
+            overlapY
+          });
+        }
+      }
+    }
+    
+    // حل التداخلات بإزاحة العقد الأخرى
+    if (overlaps.length > 0) {
+      set(state => ({
+        elements: state.elements.map(el => {
+          const overlap = overlaps.find(o => o.nodeId1 === el.id);
+          if (overlap) {
+            const otherNode = state.elements.find(e => e.id === overlap.nodeId2);
+            if (otherNode) {
+              const direction = el.position.y < otherNode.position.y ? -1 : 1;
+              return {
+                ...el,
+                position: {
+                  ...el.position,
+                  y: el.position.y + direction * (overlap.overlapY + 10)
+                }
+              };
+            }
+          }
+          return el;
+        })
+      }));
+    }
   },
 
   // ✅ تحديد كامل شجرة الخريطة الذهنية

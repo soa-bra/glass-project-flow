@@ -39,7 +39,7 @@ const MindMapConnectionLine: React.FC<MindMapConnectionLineProps> = ({
   
   return (
     <svg
-      className="fixed pointer-events-none"
+      className="absolute pointer-events-none"
       style={{
         left: minX,
         top: minY,
