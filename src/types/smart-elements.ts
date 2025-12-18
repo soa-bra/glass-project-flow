@@ -424,8 +424,18 @@ export const MindMapConnectionSchema = z.object({
 });
 
 export const MindMapDataSchema = z.object({
-  rootId: z.string(),
-  nodes: z.record(z.string(), MindMapNodeSchema).default({}),
+  rootId: z.string().default('root'),
+  nodes: z.record(z.string(), MindMapNodeSchema).default({
+    root: {
+      id: 'root',
+      label: 'الفكرة الرئيسية',
+      parentId: null,
+      childIds: [],
+      collapsed: false,
+      order: 0,
+      color: '#3DA8F5',
+    }
+  }),
   connections: z.array(MindMapConnectionSchema).default([]), // cross-branch connections
   layout: z.enum(['radial', 'tree-right', 'tree-down', 'organic']).default('radial'),
   branchColors: z.array(z.string()).default([
@@ -436,6 +446,69 @@ export const MindMapDataSchema = z.object({
   allowAIExpansion: z.boolean().default(true),
   maxDepth: z.number().optional(), // limit expansion depth
 });
+
+// Migration function for legacy mind map data
+export function migrateMindMapLegacyData(data: unknown): { data: unknown; migrated: boolean } {
+  if (!data || typeof data !== 'object') {
+    return { data, migrated: false };
+  }
+  
+  const obj = data as Record<string, unknown>;
+  let migrated = false;
+  
+  // Check if migration is needed (old format uses 'text' and 'children')
+  if (obj.nodes && typeof obj.nodes === 'object') {
+    const nodes = obj.nodes as Record<string, Record<string, unknown>>;
+    const migratedNodes: Record<string, Record<string, unknown>> = {};
+    
+    for (const [nodeId, node] of Object.entries(nodes)) {
+      if (node && typeof node === 'object') {
+        const migratedNode = { ...node };
+        
+        // Migrate text → label
+        if ('text' in node && !('label' in node)) {
+          migratedNode.label = node.text;
+          delete migratedNode.text;
+          migrated = true;
+        }
+        
+        // Migrate children → childIds
+        if ('children' in node && !('childIds' in node)) {
+          migratedNode.childIds = node.children;
+          delete migratedNode.children;
+          migrated = true;
+        }
+        
+        // Add parentId if missing
+        if (!('parentId' in node)) {
+          migratedNode.parentId = nodeId === (obj.rootId || 'root') ? null : findParentId(nodes, nodeId);
+          migrated = true;
+        }
+        
+        migratedNodes[nodeId] = migratedNode;
+      }
+    }
+    
+    if (migrated) {
+      return { 
+        data: { ...obj, nodes: migratedNodes }, 
+        migrated: true 
+      };
+    }
+  }
+  
+  return { data, migrated: false };
+}
+
+function findParentId(nodes: Record<string, Record<string, unknown>>, targetId: string): string | null {
+  for (const [nodeId, node] of Object.entries(nodes)) {
+    const children = (node.children || node.childIds) as string[] | undefined;
+    if (children?.includes(targetId)) {
+      return nodeId;
+    }
+  }
+  return null;
+}
 
 export type MindMapNode = z.infer<typeof MindMapNodeSchema>;
 export type MindMapConnection = z.infer<typeof MindMapConnectionSchema>;

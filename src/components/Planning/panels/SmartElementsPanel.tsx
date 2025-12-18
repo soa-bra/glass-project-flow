@@ -330,6 +330,26 @@ const SmartElementsPanel: React.FC = () => {
       initialData.allowMultipleVotes = settings.allowMultiple || false;
     }
 
+    // Initialize mind_map with proper root node structure
+    if (selectedElement.id === 'mind_map') {
+      const rootId = `node-${Date.now()}`;
+      initialData.rootId = rootId;
+      initialData.nodes = {
+        [rootId]: {
+          id: rootId,
+          label: elementTitle || 'الفكرة الرئيسية',
+          parentId: null,
+          childIds: [],
+          collapsed: false,
+          order: 0,
+          color: '#3DA8F5',
+        }
+      };
+      initialData.connections = [];
+      initialData.layout = settings.layout || 'radial';
+      initialData.autoLayout = settings.autoLayout !== false;
+    }
+
     addSmartElement(
       selectedElement.id,
       { x: centerX, y: centerY },
