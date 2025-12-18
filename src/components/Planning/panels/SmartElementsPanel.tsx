@@ -289,6 +289,10 @@ const SmartElementsPanel: React.FC = () => {
     setSettings(initialSettings);
     setElementTitle('');
     setAiPrompt('');
+    
+    // ✅ إخبار canvasStore بالعنصر المختار وتفعيل الأداة
+    useCanvasStore.getState().setSelectedSmartElement(element.id);
+    useCanvasStore.getState().setActiveTool('smart_element_tool');
   };
 
   // Add element to canvas
