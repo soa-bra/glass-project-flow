@@ -134,8 +134,10 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     const sourceNode = elements.find(el => el.id === mindMapConnection.sourceNodeId);
     if (!sourceNode) return;
     
-    // إنشاء رابط جديد مع حساب الـ bounds الحقيقي
+    // ✅ البحث عن العنصر الهدف (أي نوع وليس فقط mindmap_node)
     const targetNode = elements.find(el => el.id === nodeId);
+    if (!targetNode) return;
+    
     const connectorBounds = calculateConnectorBounds(sourceNode, targetNode);
     
     useCanvasStore.getState().addElement({
@@ -173,15 +175,20 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     
     const canvasPoint = canvasKernel.screenToWorld(clientX, clientY, viewport, containerRect);
     
-    // البحث عن أقرب عقدة (غير المصدر)
-    const mindMapNodes = elements.filter(
-      el => el.type === 'mindmap_node' && el.id !== mindMapConnection.sourceNodeId
-    );
+    // ✅ البحث عن أقرب عنصر قابل للربط (جميع الأنواع)
+    const connectableElements = elements.filter(el => {
+      // استثناء العقدة المصدر
+      if (el.id === mindMapConnection.sourceNodeId) return false;
+      // استثناء الـ connectors
+      if (el.type === 'mindmap_connector' || el.type === 'visual_connector') return false;
+      // قبول جميع أنواع العناصر الأخرى
+      return ['mindmap_node', 'visual_node', 'shape', 'text', 'image', 'sticky', 'frame', 'smart', 'file'].includes(el.type);
+    });
     
     let nearest: NodeAnchorPoint | null = null;
-    let nearestDistance = 50; // عتبة الـ snap
+    let nearestDistance = 60; // عتبة الـ snap أكبر للسهولة
     
-    for (const node of mindMapNodes) {
+    for (const node of connectableElements) {
       const result = findNearestAnchor(canvasPoint, node.position, node.size);
       if (result.distance < nearestDistance) {
         nearestDistance = result.distance;
