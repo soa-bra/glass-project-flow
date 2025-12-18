@@ -67,15 +67,20 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     );
     const childCount = existingConnectors.length;
     
-    // ✅ حساب الإزاحة العمودية لتوزيع الفروع
+    // ✅ توزيع متناظر للفروع (أعلى وأسفل بالتناوب)
     const verticalSpacing = 80;
-    const yOffset = (childCount - Math.floor(childCount / 2)) * verticalSpacing;
+    const direction = childCount % 2 === 0 ? 1 : -1;
+    const step = Math.ceil((childCount + 1) / 2);
+    const yOffset = direction * step * verticalSpacing;
     
     const offset = 200;
-    const newNodeId = `mindmap-node-${Date.now()}`;
     
-    // إضافة العقدة الجديدة في موقع مختلف
+    // ✅ إنشاء ID مُحدد مسبقاً للعقدة الجديدة
+    const newNodeId = `mindmap-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // إضافة العقدة الجديدة مع ID معروف
     addElement({
+      id: newNodeId,
       type: 'mindmap_node',
       position: {
         x: element.position.x + element.size.width + offset,
@@ -90,29 +95,21 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       } as MindMapNodeData
     });
     
-    // إضافة الرابط
-    setTimeout(() => {
-      const updatedState = useCanvasStore.getState();
-      const allNodes = updatedState.elements.filter(el => el.type === 'mindmap_node');
-      const newNode = allNodes[allNodes.length - 1]; // آخر عقدة تمت إضافتها
-      
-      if (newNode && newNode.id !== element.id) {
-        addElement({
-          type: 'mindmap_connector',
-          position: { x: 0, y: 0 },
-          size: { width: 0, height: 0 },
-          data: {
-            startNodeId: element.id,
-            endNodeId: newNode.id,
-            startAnchor: { nodeId: element.id, anchor: 'right' },
-            endAnchor: { nodeId: newNode.id, anchor: 'left' },
-            curveStyle: 'bezier',
-            color: nodeData.color || '#3DA8F5',
-            strokeWidth: 2
-          }
-        });
+    // ✅ إضافة الـ connector فوراً (بدون setTimeout)
+    addElement({
+      type: 'mindmap_connector',
+      position: { x: 0, y: 0 },
+      size: { width: 0, height: 0 },
+      data: {
+        startNodeId: element.id,
+        endNodeId: newNodeId,
+        startAnchor: { nodeId: element.id, anchor: 'right' },
+        endAnchor: { nodeId: newNodeId, anchor: 'left' },
+        curveStyle: 'bezier',
+        color: nodeData.color || '#3DA8F5',
+        strokeWidth: 2
       }
-    }, 50);
+    });
   }, [element, nodeData, addElement]);
   
   // تغيير اللون
@@ -131,9 +128,9 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
     onSelect(multiSelect);
     
-    if (activeTool !== 'selection_tool') return;
+    // ✅ السماح بالتحريك مع أداة التحديد أو أداة العنصر الذكي
+    if (activeTool !== 'selection_tool' && activeTool !== 'smart_element_tool') return;
     
-    // ✅ استخدام useState بدلاً من useRef
     setIsDragging(true);
     dragStartRef.current = {
       x: e.clientX,

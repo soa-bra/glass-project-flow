@@ -182,7 +182,7 @@ interface CanvasState {
   };
   
   // Element Actions
-  addElement: (element: Omit<CanvasElement, 'id'>) => void;
+  addElement: (element: Omit<CanvasElement, 'id'> & { id?: string }) => void;
   updateElement: (elementId: string, updates: Partial<CanvasElement>) => void;
   deleteElement: (elementId: string) => void;
   deleteElements: (elementIds: string[]) => void;
@@ -383,7 +383,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       size: elementData.size || { width: 200, height: 100 },
       style: elementData.style || {},
       ...elementData,
-      id: nanoid(),
+      id: elementData.id || nanoid(),
       layerId: get().activeLayerId || 'default',
       visible: true,
       locked: false

@@ -71,11 +71,17 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
     );
     const childCount = existingConnectors.length;
     
-    // ✅ حساب الإزاحة العمودية لتوزيع الفروع
+    // ✅ توزيع متناظر للفروع (أعلى وأسفل بالتناوب)
     const verticalSpacing = 80;
-    const yOffset = (childCount - Math.floor(childCount / 2)) * verticalSpacing;
+    const direction = childCount % 2 === 0 ? 1 : -1;
+    const step = Math.ceil((childCount + 1) / 2);
+    const yOffset = direction * step * verticalSpacing;
     
     const offset = 220;
+    
+    // ✅ إنشاء ID مُحدد مسبقاً للعقدة الجديدة
+    const newNodeId = `mindmap-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
     const newNodeData: MindMapNodeData = {
       label: 'فرع جديد',
       color: NODE_COLORS[Math.floor(Math.random() * NODE_COLORS.length)],
@@ -83,8 +89,9 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
       isRoot: false
     };
     
-    // إضافة العقدة الجديدة في موقع مختلف
+    // إضافة العقدة الجديدة مع ID معروف
     addElement({
+      id: newNodeId,
       type: 'mindmap_node',
       position: {
         x: selectedNode.position.x + selectedNode.size.width + offset,
@@ -94,29 +101,21 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
       data: newNodeData
     });
     
-    // إضافة الرابط
-    setTimeout(() => {
-      const state = useCanvasStore.getState();
-      const allNodes = state.elements.filter(el => el.type === 'mindmap_node');
-      const newNode = allNodes[allNodes.length - 1]; // آخر عقدة تمت إضافتها
-      
-      if (newNode && newNode.id !== selectedNode.id) {
-        addElement({
-          type: 'mindmap_connector',
-          position: { x: 0, y: 0 },
-          size: { width: 0, height: 0 },
-          data: {
-            startNodeId: selectedNode.id,
-            endNodeId: newNode.id,
-            startAnchor: { nodeId: selectedNode.id, anchor: 'right' },
-            endAnchor: { nodeId: newNode.id, anchor: 'left' },
-            curveStyle: 'bezier',
-            color: nodeData?.color || '#3DA8F5',
-            strokeWidth: 2
-          }
-        });
+    // ✅ إضافة الـ connector فوراً (بدون setTimeout)
+    addElement({
+      type: 'mindmap_connector',
+      position: { x: 0, y: 0 },
+      size: { width: 0, height: 0 },
+      data: {
+        startNodeId: selectedNode.id,
+        endNodeId: newNodeId,
+        startAnchor: { nodeId: selectedNode.id, anchor: 'right' },
+        endAnchor: { nodeId: newNodeId, anchor: 'left' },
+        curveStyle: 'bezier',
+        color: nodeData?.color || '#3DA8F5',
+        strokeWidth: 2
       }
-    }, 50);
+    });
   }, [selectedNode, elements, nodeData, addElement]);
   
   // تغيير اللون
