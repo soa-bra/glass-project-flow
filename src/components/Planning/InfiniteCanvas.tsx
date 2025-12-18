@@ -7,12 +7,14 @@ import StrokesLayer from './StrokesLayer';
 import PenInputLayer from './PenInputLayer';
 import FrameInputLayer from './FrameInputLayer';
 import { BoundingBox } from './BoundingBox';
+import { SnapGuides } from './SnapGuides';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { canvasKernel, getContainerRect } from '@/core/canvasKernel';
 import { toast } from 'sonner';
 import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
 import { CanvasGridLayer } from './CanvasGridLayer';
+import type { SnapLine } from '@/core/snapEngine';
 
 interface InfiniteCanvasProps {
   boardId: string;
@@ -75,6 +77,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     x: number;
     y: number;
   } | null>(null);
+  
+  // ✅ Sprint 5: Snap Guides State
+  const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
 
   // ✅ استخدام Canvas Kernel لحساب حدود العرض
   const viewportBounds = useMemo(() => {
@@ -465,8 +470,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         {/* Canvas Elements */}
         {visibleElements.map(element => <CanvasElement key={element.id} element={element} isSelected={selectedElementIds.includes(element.id)} onSelect={multiSelect => selectElement(element.id, multiSelect)} snapToGrid={settings.snapToGrid ? snapToGrid : undefined} activeTool={activeTool} />)}
         
-        {/* BoundingBox for selected elements */}
-        <BoundingBox />
+        {/* BoundingBox for selected elements with Snap Engine */}
+        <BoundingBox onGuidesChange={setSnapGuides} />
         
         {/* Drawing Preview */}
         {tempElement && <DrawingPreview element={tempElement} />}
@@ -474,6 +479,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       
       {/* Selection Box */}
       {isSelecting && selectionStart && selectionCurrent && <SelectionBox startX={selectionStart.x} startY={selectionStart.y} currentX={selectionCurrent.x} currentY={selectionCurrent.y} />}
+      
+      {/* ✅ Sprint 5: Snap Guides */}
+      <SnapGuides guides={snapGuides} containerRef={containerRef} />
       
       {/* Pen Input Layer */}
       <PenInputLayer 
