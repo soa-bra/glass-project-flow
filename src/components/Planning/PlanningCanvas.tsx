@@ -122,7 +122,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
             >
               <span className="text-[12px] font-medium">المشاركين</span>
             </button>
-            <SharePopover isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} />
+            <SharePopover isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} boardId={board?.id} />
           </div>
           
           {/* AI Assistant */}
