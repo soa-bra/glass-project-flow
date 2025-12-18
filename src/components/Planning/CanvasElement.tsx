@@ -3,6 +3,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
 import { ResizeHandle } from './ResizeHandle';
+import { TextResizeHandles } from './TextResizeHandles';
 import { TextEditor } from './TextEditor';
 import { ShapeRenderer } from './ShapeRenderer';
 import { ArrowControlPoints } from './ArrowControlPoints';
@@ -488,6 +489,9 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
               element={element} 
               viewport={viewport}
             />
+          ) : element.type === 'text' ? (
+            /* ✅ نقاط تحكم خاصة للنصوص - على الحدود الخارجية تماماً */
+            <TextResizeHandles elementId={element.id} />
           ) : (
             /* مقابض تغيير الحجم العادية للعناصر الأخرى */
             <>
