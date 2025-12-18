@@ -299,50 +299,58 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     >
       {/* Element Content */}
       {element.type === 'text' && (
-        <div 
-          className="w-full h-full cursor-text"
-          onDoubleClick={handleTextDoubleClick}
-        >
-          {/* مؤشر النص المرتبط */}
-          {element.data?.textType === 'attached' && (
-            <div className="absolute -top-2 -right-2 bg-[hsl(var(--accent-green))] rounded-full p-1">
-              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"/>
-              </svg>
-            </div>
-          )}
+        <div className="relative w-full h-full">
+          {/* المحتوى الداخلي - pointerEvents: none عند عدم التحرير لتمكين السحب */}
+          <div 
+            className={`w-full h-full ${isEditingThisText ? 'cursor-text' : ''}`}
+            onDoubleClick={handleTextDoubleClick}
+            style={{ pointerEvents: isEditingThisText ? 'auto' : 'none' }}
+          >
+            {/* مؤشر النص المرتبط */}
+            {element.data?.textType === 'attached' && (
+              <div className="absolute -top-2 -right-2 bg-[hsl(var(--accent-green))] rounded-full p-1">
+                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"/>
+                </svg>
+              </div>
+            )}
+            
+            {isEditingThisText ? (
+              <TextEditor
+                element={element}
+                onUpdate={(content) => updateTextContent(element.id, content)}
+                onClose={() => stopEditingText(element.id)}
+              />
+            ) : (
+              <div
+                dir={element.style?.direction || 'rtl'}
+                style={{
+                  fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
+                  fontSize: `${element.style?.fontSize || 16}px`,
+                  fontWeight: element.style?.fontWeight || 'normal',
+                  fontStyle: element.style?.fontStyle || 'normal',
+                  textDecoration: element.style?.textDecoration || 'none',
+                  color: element.style?.color || '#0B0F12',
+                  textAlign: (element.style?.textAlign as any) || 'right',
+                  direction: (element.style?.direction as any) || 'rtl',
+                  unicodeBidi: 'plaintext',
+                  whiteSpace: (element.content?.includes('<ul>') || element.content?.includes('<ol>') || element.data?.textType === 'box') ? 'pre-wrap' : 'nowrap',
+                  wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
+                  overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
+                  width: '100%',
+                  height: '100%',
+                  padding: '8px'
+                }}
+                dangerouslySetInnerHTML={{ 
+                  __html: sanitizeHTMLForDisplay(element.content, 'انقر مرتين للكتابة...') 
+                }}
+              />
+            )}
+          </div>
           
-          {isEditingThisText ? (
-            <TextEditor
-              element={element}
-              onUpdate={(content) => updateTextContent(element.id, content)}
-              onClose={() => stopEditingText(element.id)}
-            />
-          ) : (
-            <div
-              dir={element.style?.direction || 'rtl'}
-              style={{
-                fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
-                fontSize: `${element.style?.fontSize || 16}px`,
-                fontWeight: element.style?.fontWeight || 'normal',
-                fontStyle: element.style?.fontStyle || 'normal',
-                textDecoration: element.style?.textDecoration || 'none',
-                color: element.style?.color || '#0B0F12',
-                textAlign: (element.style?.textAlign as any) || 'right',
-                direction: (element.style?.direction as any) || 'rtl',
-                unicodeBidi: 'plaintext',
-                // ✅ السماح بأسطر متعددة عند وجود قوائم
-                whiteSpace: (element.content?.includes('<ul>') || element.content?.includes('<ol>') || element.data?.textType === 'box') ? 'pre-wrap' : 'nowrap',
-                wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
-                overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
-                width: '100%',
-                height: '100%',
-                padding: '8px'
-              }}
-              dangerouslySetInnerHTML={{ 
-                __html: sanitizeHTMLForDisplay(element.content, 'انقر مرتين للكتابة...') 
-              }}
-            />
+          {/* ✅ نقاط التحكم خارج الـ padding - على الحدود الخارجية تماماً */}
+          {isSelected && !isLocked && (
+            <TextResizeHandles elementId={element.id} />
           )}
         </div>
       )}
@@ -480,8 +488,8 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         />
       )}
       
-      {/* Selection Handles (shown only when selected) */}
-      {isSelected && !isLocked && (
+      {/* Selection Handles (shown only when selected) - للعناصر غير النصية */}
+      {isSelected && !isLocked && element.type !== 'text' && (
         <>
           {/* نقاط تحكم خاصة للأسهم */}
           {element.type === 'shape' && isArrowShape(element.shapeType || element.data?.shapeType) ? (
@@ -489,9 +497,6 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
               element={element} 
               viewport={viewport}
             />
-          ) : element.type === 'text' ? (
-            /* ✅ نقاط تحكم خاصة للنصوص - على الحدود الخارجية تماماً */
-            <TextResizeHandles elementId={element.id} />
           ) : (
             /* مقابض تغيير الحجم العادية للعناصر الأخرى */
             <>
