@@ -19,7 +19,7 @@ import { RealtimeSyncManager } from './collaboration';
 import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 import MindMapConnectionLine from './MindMapConnectionLine';
 import MindMapToolbar from './MindMapToolbar';
-import { findNearestAnchor, type NodeAnchorPoint, type MindMapConnectorData } from '@/types/mindmap-canvas';
+import { findNearestAnchor, calculateConnectorBounds, type NodeAnchorPoint, type MindMapConnectorData } from '@/types/mindmap-canvas';
 import type { SnapLine } from '@/core/snapEngine';
 
 interface InfiniteCanvasProps {
@@ -134,11 +134,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     const sourceNode = elements.find(el => el.id === mindMapConnection.sourceNodeId);
     if (!sourceNode) return;
     
-    // إنشاء رابط جديد
+    // إنشاء رابط جديد مع حساب الـ bounds الحقيقي
+    const targetNode = elements.find(el => el.id === nodeId);
+    const connectorBounds = calculateConnectorBounds(sourceNode, targetNode);
+    
     useCanvasStore.getState().addElement({
       type: 'mindmap_connector',
-      position: { x: 0, y: 0 },
-      size: { width: 0, height: 0 },
+      position: connectorBounds.position,
+      size: connectorBounds.size,
       data: {
         startNodeId: mindMapConnection.sourceNodeId,
         endNodeId: nodeId,
@@ -225,6 +228,10 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     return elements.filter(el => {
       const layer = layers.find(l => l.id === el.layerId);
       if (!layer?.visible || !el.visible) return false;
+      
+      // ✅ الـ connectors دائماً مرئية - لديها منطق خاص للرؤية داخل المكون
+      if (el.type === 'mindmap_connector') return true;
+      
       return el.position.x + el.size.width >= viewportBounds.x - padding && el.position.x <= viewportBounds.x + viewportBounds.width + padding && el.position.y + el.size.height >= viewportBounds.y - padding && el.position.y <= viewportBounds.y + viewportBounds.height + padding;
     });
   }, [elements, viewportBounds, layers]);

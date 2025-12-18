@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { MindMapNodeData, NodeAnchorPoint } from '@/types/mindmap-canvas';
-import { getAnchorPosition, NODE_COLORS } from '@/types/mindmap-canvas';
+import { getAnchorPosition, NODE_COLORS, calculateConnectorBounds } from '@/types/mindmap-canvas';
 import { Plus, GripVertical, Trash2, Palette, ChevronDown, ChevronRight } from 'lucide-react';
 import { redistributeUpwards } from '@/utils/mindmap-layout';
 interface MindMapNodeProps {
@@ -108,10 +108,19 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       } as MindMapNodeData
     });
     
+    // حساب الـ bounds الحقيقي للـ connector
+    const newNodeX = element.position.x + element.size.width + offset;
+    const newNodePos = { x: newNodeX, y: parentCenterY - newNodeHeight / 2 };
+    const newNodeSize = { width: 160, height: newNodeHeight };
+    const connectorBounds = calculateConnectorBounds(
+      { position: element.position, size: element.size },
+      { position: newNodePos, size: newNodeSize }
+    );
+    
     addElement({
       type: 'mindmap_connector',
-      position: { x: 0, y: 0 },
-      size: { width: 0, height: 0 },
+      position: connectorBounds.position,
+      size: connectorBounds.size,
       data: {
         startNodeId: element.id,
         endNodeId: newNodeId,

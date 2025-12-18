@@ -215,3 +215,29 @@ export const createElbowPath = (
     return `M ${start.x} ${start.y} L ${start.x} ${end.y} L ${end.x} ${end.y}`;
   }
 };
+
+// ✅ حساب bounds الحقيقي للـ connector بناءً على مواقع العقدتين
+export const calculateConnectorBounds = (
+  startNode: { position: { x: number; y: number }; size: { width: number; height: number } } | undefined,
+  endNode: { position: { x: number; y: number }; size: { width: number; height: number } } | undefined,
+  padding: number = 50
+): { position: { x: number; y: number }; size: { width: number; height: number } } => {
+  if (!startNode || !endNode) {
+    return { position: { x: 0, y: 0 }, size: { width: 100, height: 100 } };
+  }
+  
+  // حساب نقاط الربط
+  const startPos = getAnchorPosition(startNode.position, startNode.size, 'right');
+  const endPos = getAnchorPosition(endNode.position, endNode.size, 'left');
+  
+  // حساب الـ bounding box
+  const minX = Math.min(startPos.x, endPos.x) - padding;
+  const minY = Math.min(startPos.y, endPos.y) - padding;
+  const maxX = Math.max(startPos.x, endPos.x) + padding;
+  const maxY = Math.max(startPos.y, endPos.y) + padding;
+  
+  return {
+    position: { x: minX, y: minY },
+    size: { width: maxX - minX, height: maxY - minY }
+  };
+};
