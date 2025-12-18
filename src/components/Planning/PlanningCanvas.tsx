@@ -245,10 +245,14 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
           {isPanelCollapsed ? <PanelRightOpen size={18} className="text-[hsl(var(--ink))]" /> : <PanelRightClose size={18} className="text-[hsl(var(--ink))]" />}
         </button>
         
-        {/* Tool Settings Panel (Right) - Collapsible */}
-        <div className={`transition-all duration-300 ease-out ${
-          isPanelCollapsed ? 'w-0 opacity-0 overflow-hidden' : 'w-auto opacity-100'
-        }`}>
+        {/* Tool Settings Panel (Right) - Collapsible with smooth animation */}
+        <div 
+          className={`transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] transform ${
+            isPanelCollapsed 
+              ? 'w-0 opacity-0 translate-x-full overflow-hidden' 
+              : 'w-[320px] opacity-100 translate-x-0'
+          }`}
+        >
           <RightSidePanel activeTool={activeTool} />
         </div>
       </div>
