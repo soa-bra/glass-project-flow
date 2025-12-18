@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { Magnet, Grid3X3, AlignHorizontalJustifyCenter, AlignVerticalJustifyCenter, Columns } from 'lucide-react';
+import { Magnet, Grid3X3, AlignHorizontalJustifyCenter, AlignVerticalJustifyCenter, Columns, Check } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 
 const SnapSettingsDropdown: React.FC = () => {
@@ -50,16 +50,18 @@ const SnapSettingsDropdown: React.FC = () => {
           >
             {/* تفعيل/تعطيل السناب */}
             <div className="flex items-center justify-between mb-3 pb-3 border-b border-sb-border">
-              <span className="text-[13px] font-medium text-sb-ink">المحاذاة التلقائية</span>
+              <span className="text-[13px] font-semibold text-sb-ink">المحاذاة التلقائية</span>
               <button
                 onClick={toggleSnapToGrid}
-                className={`w-9 h-5 rounded-full transition-colors relative ${
-                  settings.snapToGrid ? 'bg-sb-accent-green' : 'bg-sb-ink-30'
+                className={`w-11 h-6 rounded-full transition-all duration-200 relative shadow-inner ${
+                  settings.snapToGrid 
+                    ? 'bg-[#3DBE8B]' 
+                    : 'bg-[#D1D5DB]'
                 }`}
               >
                 <span 
-                  className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${
-                    settings.snapToGrid ? 'right-0.5' : 'right-[18px]'
+                  className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-200 ${
+                    settings.snapToGrid ? 'right-1' : 'right-6'
                   }`}
                 />
               </button>
@@ -104,15 +106,13 @@ const SnapSettingsDropdown: React.FC = () => {
                     : 'hover:bg-sb-panel-bg/50'
                 }`}
               >
-                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                   settings.snapToEdges 
-                    ? 'border-sb-accent-green bg-sb-accent-green' 
-                    : 'border-sb-ink-30'
+                    ? 'border-[#3DBE8B] bg-[#3DBE8B]' 
+                    : 'border-[#9CA3AF] bg-white'
                 }`}>
                   {settings.snapToEdges && (
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5L4 7L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <Check size={14} className="text-white" strokeWidth={3} />
                   )}
                 </div>
                 <AlignHorizontalJustifyCenter size={14} className="text-sb-ink-60" />
@@ -128,15 +128,13 @@ const SnapSettingsDropdown: React.FC = () => {
                     : 'hover:bg-sb-panel-bg/50'
                 }`}
               >
-                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                   settings.snapToCenter 
-                    ? 'border-sb-accent-blue bg-sb-accent-blue' 
-                    : 'border-sb-ink-30'
+                    ? 'border-[#3DA8F5] bg-[#3DA8F5]' 
+                    : 'border-[#9CA3AF] bg-white'
                 }`}>
                   {settings.snapToCenter && (
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5L4 7L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <Check size={14} className="text-white" strokeWidth={3} />
                   )}
                 </div>
                 <AlignVerticalJustifyCenter size={14} className="text-sb-ink-60" />
@@ -152,15 +150,13 @@ const SnapSettingsDropdown: React.FC = () => {
                     : 'hover:bg-sb-panel-bg/50'
                 }`}
               >
-                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                   settings.snapToDistribution 
-                    ? 'border-sb-accent-yellow bg-sb-accent-yellow' 
-                    : 'border-sb-ink-30'
+                    ? 'border-[#F6C445] bg-[#F6C445]' 
+                    : 'border-[#9CA3AF] bg-white'
                 }`}>
                   {settings.snapToDistribution && (
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5L4 7L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <Check size={14} className="text-white" strokeWidth={3} />
                   )}
                 </div>
                 <Columns size={14} className="text-sb-ink-60" />
