@@ -7,6 +7,7 @@ interface BaseBadgeProps {
   variant?: 'success' | 'warning' | 'error' | 'info' | 'default' | 'secondary' | 'outline' | 'primary';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  style?: React.CSSProperties;
   onClick?: () => void;
 }
 
@@ -15,6 +16,7 @@ export const BaseBadge: React.FC<BaseBadgeProps> = ({
   variant = 'default',
   size = 'md',
   className = '',
+  style,
   onClick
 }) => {
   const variantClasses = {
@@ -44,6 +46,7 @@ export const BaseBadge: React.FC<BaseBadgeProps> = ({
         onClick && 'cursor-pointer',
         className
       )}
+      style={style}
       onClick={onClick}
     >
       {children}

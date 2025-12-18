@@ -2,6 +2,9 @@ import React from 'react';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { SmartElementLabels } from '@/types/smart-elements';
 import { KanbanBoard } from './KanbanBoard';
+import { ThinkingBoard } from './ThinkingBoard';
+import { VotingBoard } from './VotingBoard';
+import { BrainstormingBoard } from './BrainstormingBoard';
 import { 
   Brain, Kanban, Vote, Lightbulb, Calendar, Grid3X3, 
   BarChart3, Table, GitBranch, FolderKanban, Wallet,
@@ -37,7 +40,17 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   const smartType = element.smartType;
   const data = element.data || {};
 
-  // Kanban has full implementation
+  // ThinkingBoard
+  if (smartType === 'thinking_board') {
+    return (
+      <ThinkingBoard 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Kanban Board
   if (smartType === 'kanban') {
     return (
       <KanbanBoard 
@@ -47,7 +60,27 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
     );
   }
 
-  // Placeholder for all other types
+  // Voting Board
+  if (smartType === 'voting') {
+    return (
+      <VotingBoard 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Brainstorming Board
+  if (smartType === 'brainstorming') {
+    return (
+      <BrainstormingBoard 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Placeholder for other types
   const Icon = ICONS[smartType] || Brain;
   const label = SmartElementLabels[smartType as keyof typeof SmartElementLabels] || smartType;
 
