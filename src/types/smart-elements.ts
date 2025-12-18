@@ -10,6 +10,7 @@
  */
 
 import { z } from 'zod';
+import { migrateKanbanLegacyData } from '@/utils/kanbanLegacyMigration';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Smart Element Types Enum
@@ -716,8 +717,14 @@ export function parseSmartElementData<T extends SmartElementType>(
   data: unknown
 ): SmartElementDataType<T> {
   const schema = SmartElementDataSchemaMap[type];
-  const result = schema.safeParse(data);
-  
+
+  const input =
+    type === 'kanban'
+      ? (migrateKanbanLegacyData(data).data as unknown)
+      : data;
+
+  const result = schema.safeParse(input);
+
   if (result.success) {
     return result.data as SmartElementDataType<T>;
   }

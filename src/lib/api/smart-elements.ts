@@ -1,11 +1,12 @@
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  SmartElementType, 
+import {
+  SmartElementType,
   SmartElementDataSchemaMap,
   SmartElementDataType,
   getDefaultSmartElementData,
-  parseSmartElementData
+  parseSmartElementData,
 } from '@/types/smart-elements';
+import { migrateKanbanLegacyData } from '@/utils/kanbanLegacyMigration';
 import type { Json } from '@/integrations/supabase/types';
 
 interface Position {
@@ -132,11 +133,57 @@ export const smartElementsApi = {
       return null;
     }
 
+    const smartType = data.smart_type as SmartElementType;
+    const raw = data.data;
+
+    // ✅ ترحيل كانبان القديم (cardIds + cards record) إلى columns[].cards وحفظه مرة واحدة
+    if (smartType === 'kanban') {
+      const migrated = migrateKanbanLegacyData(raw);
+      const validated = parseSmartElementData('kanban', migrated.data);
+
+      if (migrated.migrated) {
+        const { data: updatedRow } = await supabase
+          .from('smart_element_data')
+          .update({
+            data: validated as Json,
+            version: data.version + 1,
+          })
+          .eq('board_object_id', boardObjectId)
+          .eq('version', data.version)
+          .select('*')
+          .maybeSingle();
+
+        if (updatedRow) {
+          return {
+            id: updatedRow.id,
+            boardObjectId: updatedRow.board_object_id,
+            smartType: updatedRow.smart_type as SmartElementType,
+            data: updatedRow.data,
+            version: updatedRow.version,
+            createdAt: updatedRow.created_at,
+            updatedAt: updatedRow.updated_at,
+          };
+        }
+      }
+
+      return {
+        id: data.id,
+        boardObjectId: data.board_object_id,
+        smartType,
+        data: validated as Json,
+        version: data.version,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      };
+    }
+
+    const validated = parseSmartElementData(smartType, raw);
+
     return {
       id: data.id,
       boardObjectId: data.board_object_id,
-      smartType: data.smart_type as SmartElementType,
-      data: data.data,
+      smartType,
+      data: validated as unknown as Json,
       version: data.version,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
@@ -158,11 +205,56 @@ export const smartElementsApi = {
       return null;
     }
 
+    const smartType = data.smart_type as SmartElementType;
+    const raw = data.data;
+
+    if (smartType === 'kanban') {
+      const migrated = migrateKanbanLegacyData(raw);
+      const validated = parseSmartElementData('kanban', migrated.data);
+
+      if (migrated.migrated) {
+        const { data: updatedRow } = await supabase
+          .from('smart_element_data')
+          .update({
+            data: validated as Json,
+            version: data.version + 1,
+          })
+          .eq('board_object_id', data.board_object_id)
+          .eq('version', data.version)
+          .select('*')
+          .maybeSingle();
+
+        if (updatedRow) {
+          return {
+            id: updatedRow.id,
+            boardObjectId: updatedRow.board_object_id,
+            smartType: updatedRow.smart_type as SmartElementType,
+            data: updatedRow.data,
+            version: updatedRow.version,
+            createdAt: updatedRow.created_at,
+            updatedAt: updatedRow.updated_at,
+          };
+        }
+      }
+
+      return {
+        id: data.id,
+        boardObjectId: data.board_object_id,
+        smartType,
+        data: validated as Json,
+        version: data.version,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      };
+    }
+
+    const validated = parseSmartElementData(smartType, raw);
+
     return {
       id: data.id,
       boardObjectId: data.board_object_id,
-      smartType: data.smart_type as SmartElementType,
-      data: data.data,
+      smartType,
+      data: validated as unknown as Json,
       version: data.version,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
@@ -286,15 +378,66 @@ export const smartElementsApi = {
       return [];
     }
 
-    return smartElements.map((el) => ({
-      id: el.id,
-      boardObjectId: el.board_object_id,
-      smartType: el.smart_type as SmartElementType,
-      data: el.data,
-      version: el.version,
-      createdAt: el.created_at,
-      updatedAt: el.updated_at,
-    }));
+    // ✅ ترحيل كانبان القديم إن وُجد + حفظه مرة واحدة (بشكل متوازي)
+    const records = await Promise.all(
+      smartElements.map(async (el) => {
+        const smartType = el.smart_type as SmartElementType;
+
+        if (smartType === 'kanban') {
+          const migrated = migrateKanbanLegacyData(el.data);
+          const validated = parseSmartElementData('kanban', migrated.data);
+
+          if (migrated.migrated) {
+            const { data: updatedRow } = await supabase
+              .from('smart_element_data')
+              .update({
+                data: validated as Json,
+                version: el.version + 1,
+              })
+              .eq('board_object_id', el.board_object_id)
+              .eq('version', el.version)
+              .select('*')
+              .maybeSingle();
+
+            if (updatedRow) {
+              return {
+                id: updatedRow.id,
+                boardObjectId: updatedRow.board_object_id,
+                smartType: updatedRow.smart_type as SmartElementType,
+                data: updatedRow.data,
+                version: updatedRow.version,
+                createdAt: updatedRow.created_at,
+                updatedAt: updatedRow.updated_at,
+              };
+            }
+          }
+
+          return {
+            id: el.id,
+            boardObjectId: el.board_object_id,
+            smartType,
+            data: validated as unknown as Json,
+            version: el.version,
+            createdAt: el.created_at,
+            updatedAt: el.updated_at,
+          };
+        }
+
+        const validated = parseSmartElementData(smartType, el.data);
+
+        return {
+          id: el.id,
+          boardObjectId: el.board_object_id,
+          smartType,
+          data: validated as unknown as Json,
+          version: el.version,
+          createdAt: el.created_at,
+          updatedAt: el.updated_at,
+        };
+      })
+    );
+
+    return records;
   },
 
   /**
