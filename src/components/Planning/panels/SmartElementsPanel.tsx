@@ -342,29 +342,7 @@ const SmartElementsPanel: React.FC = () => {
       return;
     }
 
-    // ✅ إنشاء مخطط بصري كعقد مستقلة على الكانفس
-    if (selectedElement.id === 'visual_diagram') {
-      const { addElement } = useCanvasStore.getState();
-      
-      addElement({
-        type: 'visual_node',
-        position: { x: centerX - 80, y: centerY - 30 },
-        size: { width: 180, height: 60 },
-        data: {
-          label: elementTitle || 'العنصر الرئيسي',
-          color: '#3DA8F5',
-          nodeStyle: 'rounded',
-          isRoot: true,
-          fontSize: 16,
-          textColor: '#FFFFFF',
-          diagramType: 'visual_diagram'
-        }
-      });
-      
-      toast.success('تم إنشاء مخطط بصري جديد - انقر على العنصر واسحب من نقاط الربط لإضافة عناصر');
-      setSelectedElement(null);
-      return;
-    }
+    // ✅ المخطط البصري يُنشأ كعنصر ذكي عادي (يُعرض بـ SmartElementRenderer)
 
     const initialData: Record<string, any> = {
       title: elementTitle || selectedElement.nameAr,
