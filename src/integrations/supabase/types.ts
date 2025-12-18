@@ -689,6 +689,44 @@ export type Database = {
         }
         Relationships: []
       }
+      smart_element_data: {
+        Row: {
+          board_object_id: string
+          created_at: string
+          data: Json
+          id: string
+          smart_type: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          board_object_id: string
+          created_at?: string
+          data?: Json
+          id?: string
+          smart_type: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          board_object_id?: string
+          created_at?: string
+          data?: Json
+          id?: string
+          smart_type?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_element_data_board_object_id_fkey"
+            columns: ["board_object_id"]
+            isOneToOne: true
+            referencedRelation: "board_objects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       snapshots: {
         Row: {
           board_id: string
@@ -917,6 +955,7 @@ export type Database = {
         | "drawing"
         | "connector"
         | "template"
+        | "smart"
       board_role: "host" | "editor" | "viewer"
       invoice_status: "draft" | "pending" | "paid" | "overdue"
       operation_type: "create" | "update" | "delete" | "move" | "resize"
@@ -1072,6 +1111,7 @@ export const Constants = {
         "drawing",
         "connector",
         "template",
+        "smart",
       ],
       board_role: ["host", "editor", "viewer"],
       invoice_status: ["draft", "pending", "paid", "overdue"],
