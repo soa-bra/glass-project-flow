@@ -288,7 +288,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         // إزالة كل أنماط التحديد للأسهم
         border: (isElementArrow(element) || element.type === 'text') ? 'none' : (isSelected ? '2px solid hsl(var(--accent-green))' : (element.data?.textType === 'box' ? '1px solid hsl(var(--border))' : 'none')),
         borderRadius: isElementArrow(element) ? '0' : (element.type === 'shape' ? '0' : (element.data?.textType === 'box' ? '8px' : '0')),
-        padding: isElementArrow(element) ? '0' : (element.type === 'shape' ? '0' : (element.data?.textType === 'box' ? '12px' : '4px')),
+        padding: isElementArrow(element) ? '0' : (element.type === 'shape' ? '0' : (element.type === 'text' ? '0' : (element.data?.textType === 'box' ? '12px' : '4px'))),
         backgroundColor: isElementArrow(element) ? 'transparent' : (element.type === 'shape' ? 'transparent' : (element.data?.textType === 'box' ? (element.style?.backgroundColor || '#FFFFFF') : (element.style?.backgroundColor || 'transparent'))),
         boxShadow: (isElementArrow(element) || element.type === 'text') ? 'none' : (isSelected ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : (element.data?.textType === 'box' ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none')),
         outline: isElementArrow(element) ? 'none' : undefined,
@@ -300,61 +300,73 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       {/* Element Content */}
       {element.type === 'text' && (
         <div className="relative w-full h-full">
-          {/* المحتوى الداخلي - pointerEvents: none عند عدم التحرير لتمكين السحب */}
-          <div 
+          {/* ✅ نقاط التحكم على حدود العنصر الرئيسية (خارج padding) */}
+          {isSelected && !isLocked && <TextResizeHandles elementId={element.id} />}
+
+          {/* المحتوى الداخلي */}
+          <div
             className={`w-full h-full ${isEditingThisText ? 'cursor-text' : ''}`}
             onDoubleClick={handleTextDoubleClick}
-            style={{ pointerEvents: isEditingThisText ? 'auto' : 'none' }}
+            onMouseDown={(e) => {
+              // أثناء التحرير: امنع أحداث السحب/التحديد من التقاط الـ mousedown
+              if (isEditingThisText) e.stopPropagation();
+            }}
           >
-            {/* مؤشر النص المرتبط */}
-            {element.data?.textType === 'attached' && (
-              <div className="absolute -top-2 -right-2 bg-[hsl(var(--accent-green))] rounded-full p-1">
-                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"/>
-                </svg>
-              </div>
-            )}
-            
-            {isEditingThisText ? (
-              <TextEditor
-                element={element}
-                onUpdate={(content) => updateTextContent(element.id, content)}
-                onClose={() => stopEditingText(element.id)}
-              />
-            ) : (
-              <div
-                dir={element.style?.direction || 'rtl'}
-                style={{
-                  fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
-                  fontSize: `${element.style?.fontSize || 16}px`,
-                  fontWeight: element.style?.fontWeight || 'normal',
-                  fontStyle: element.style?.fontStyle || 'normal',
-                  textDecoration: element.style?.textDecoration || 'none',
-                  color: element.style?.color || '#0B0F12',
-                  textAlign: (element.style?.textAlign as any) || 'right',
-                  direction: (element.style?.direction as any) || 'rtl',
-                  unicodeBidi: 'plaintext',
-                  whiteSpace: (element.content?.includes('<ul>') || element.content?.includes('<ol>') || element.data?.textType === 'box') ? 'pre-wrap' : 'nowrap',
-                  wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
-                  overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
-                  width: '100%',
-                  height: '100%',
-                  padding: '8px'
-                }}
-                dangerouslySetInnerHTML={{ 
-                  __html: sanitizeHTMLForDisplay(element.content, 'انقر مرتين للكتابة...') 
-                }}
-              />
-            )}
+            {/* ✅ نقل padding من العنصر الرئيسي إلى div داخلي فقط */}
+            <div
+              className="w-full h-full"
+              style={{ padding: element.data?.textType === 'box' ? '12px' : '4px' }}
+            >
+              {/* مؤشر النص المرتبط */}
+              {element.data?.textType === 'attached' && (
+                <div className="absolute -top-2 -right-2 bg-[hsl(var(--accent-green))] rounded-full p-1">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" />
+                  </svg>
+                </div>
+              )}
+
+              {isEditingThisText ? (
+                <TextEditor
+                  element={element}
+                  onUpdate={(content) => updateTextContent(element.id, content)}
+                  onClose={() => stopEditingText(element.id)}
+                />
+              ) : (
+                <div
+                  dir={element.style?.direction || 'rtl'}
+                  style={{
+                    fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
+                    fontSize: `${element.style?.fontSize || 16}px`,
+                    fontWeight: element.style?.fontWeight || 'normal',
+                    fontStyle: element.style?.fontStyle || 'normal',
+                    textDecoration: element.style?.textDecoration || 'none',
+                    color: element.style?.color || '#0B0F12',
+                    textAlign: (element.style?.textAlign as any) || 'right',
+                    direction: (element.style?.direction as any) || 'rtl',
+                    unicodeBidi: 'plaintext',
+                    whiteSpace:
+                      element.content?.includes('<ul>') ||
+                      element.content?.includes('<ol>') ||
+                      element.data?.textType === 'box'
+                        ? 'pre-wrap'
+                        : 'nowrap',
+                    wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
+                    overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
+                    width: '100%',
+                    height: '100%',
+                    padding: '8px'
+                  }}
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHTMLForDisplay(element.content, 'انقر مرتين للكتابة...')
+                  }}
+                />
+              )}
+            </div>
           </div>
-          
-          {/* ✅ نقاط التحكم خارج الـ padding - على الحدود الخارجية تماماً */}
-          {isSelected && !isLocked && (
-            <TextResizeHandles elementId={element.id} />
-          )}
         </div>
       )}
-      
+
       {element.type === 'sticky' && (
         <div className="text-[13px] text-[hsl(var(--ink))] leading-relaxed">
           {element.content || 'ملاحظة لاصقة'}
