@@ -10,6 +10,7 @@ import { TimelineView } from './TimelineView';
 import { DecisionsMatrix } from './DecisionsMatrix';
 import { GanttChart } from './GanttChart';
 import { MindMap } from './MindMap';
+import { VisualDiagram } from './VisualDiagram';
 import { InteractiveSheet } from './InteractiveSheet';
 import { ProjectCard } from './ProjectCard';
 import { FinanceCard } from './FinanceCard';
@@ -19,7 +20,7 @@ import { RootConnectorDisplay } from './RootConnectorDisplay';
 import { 
   Brain, Kanban, Vote, Lightbulb, Calendar, Grid3X3, 
   BarChart3, Table, GitBranch, FolderKanban, Wallet,
-  HeartHandshake, Users, Link2 
+  HeartHandshake, Users, Link2, Share2 
 } from 'lucide-react';
 
 interface SmartElementRendererProps {
@@ -37,6 +38,7 @@ const ICONS: Record<string, React.ElementType> = {
   gantt: BarChart3,
   interactive_sheet: Table,
   mind_map: GitBranch,
+  visual_diagram: Share2,
   project_card: FolderKanban,
   finance_card: Wallet,
   csr_card: HeartHandshake,
@@ -131,6 +133,16 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   if (smartType === 'mind_map') {
     return (
       <MindMap 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Visual Diagram
+  if (smartType === 'visual_diagram') {
+    return (
+      <VisualDiagram 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
       />
