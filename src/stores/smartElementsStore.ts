@@ -34,6 +34,7 @@ import {
   parseSmartElementData,
   validateSmartElementData,
 } from '@/types/smart-elements';
+import { migrateKanbanLegacyData } from '@/utils/kanbanLegacyMigration';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -702,6 +703,28 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
   getSmartElementData: (elementId) => {
     const entry = get().smartElements[elementId];
     if (!entry) return null;
+    
+    // ✅ ترحيل كانبان القديم إن وُجد في Zustand
+    if (entry.smartType === 'kanban') {
+      const migrated = migrateKanbanLegacyData(entry.data);
+      if (migrated.migrated) {
+        const validated = parseSmartElementData('kanban', migrated.data);
+        // تحديث entry مرة واحدة
+        set(state => ({
+          smartElements: {
+            ...state.smartElements,
+            [elementId]: {
+              ...state.smartElements[elementId],
+              data: validated,
+              version: state.smartElements[elementId].version + 1,
+              updatedAt: new Date().toISOString(),
+            },
+          },
+        }));
+        return validated as SmartElementDataType<typeof entry.smartType>;
+      }
+    }
+    
     return entry.data as SmartElementDataType<typeof entry.smartType>;
   },
   
@@ -709,8 +732,17 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     const entry = get().smartElements[elementId];
     if (!entry) return;
     
+    // ✅ ترحيل كانبان القديم قبل الدمج إن لزم
+    let baseData = entry.data;
+    if (entry.smartType === 'kanban') {
+      const migrated = migrateKanbanLegacyData(baseData);
+      if (migrated.migrated) {
+        baseData = parseSmartElementData('kanban', migrated.data);
+      }
+    }
+    
     const updatedData = parseSmartElementData(entry.smartType, {
-      ...entry.data,
+      ...baseData,
       ...dataUpdates,
     });
     
