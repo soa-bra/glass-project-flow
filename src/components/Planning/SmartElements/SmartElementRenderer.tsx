@@ -14,6 +14,7 @@ import { ProjectCard } from './ProjectCard';
 import { FinanceCard } from './FinanceCard';
 import { CsrCard } from './CsrCard';
 import { CrmCard } from './CrmCard';
+import { RootConnectorDisplay } from './RootConnectorDisplay';
 import { 
   Brain, Kanban, Vote, Lightbulb, Calendar, Grid3X3, 
   BarChart3, Table, GitBranch, FolderKanban, Wallet,
@@ -175,6 +176,16 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
       <CrmCard 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Root Connector (SVG-based)
+  if (smartType === 'root_connector') {
+    return (
+      <RootConnectorDisplay 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })}
       />
     );
   }
