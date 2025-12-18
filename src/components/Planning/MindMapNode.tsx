@@ -26,23 +26,35 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   nearestAnchor,
   activeTool
 }) => {
-  const { updateElement, deleteElement, viewport, addElement } = useCanvasStore();
+  const { updateElement, deleteElement, viewport, addElement, selectMindMapTree, moveElementWithChildren } = useCanvasStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState('');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isSingleNodeMode, setIsSingleNodeMode] = useState(false); // ✅ وضع تحديد العقدة الفردية
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const nodeData = element.data as MindMapNodeData;
   
-  // بدء التحرير بالنقر المزدوج
+  // ✅ بدء التحرير بالنقر المزدوج
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    // إلغاء timeout النقرة العادية
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+    }
+    
+    // ✅ النقر المزدوج = تحديد العقدة الفردية + بدء التحرير
+    setIsSingleNodeMode(true);
+    onSelect(false);
     setIsEditing(true);
     setEditText(nodeData.label || '');
-  }, [nodeData.label]);
+  }, [nodeData.label, onSelect]);
   
   // حفظ التعديل
   const handleSaveEdit = useCallback(() => {
@@ -120,16 +132,28 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setShowColorPicker(false);
   }, [element.id, nodeData, updateElement]);
   
-  // سحب العقدة
+  // ✅ سحب العقدة مع سلوك تحديد جديد
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (isEditing) return;
     e.stopPropagation();
     
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
-    onSelect(multiSelect);
     
     // ✅ السماح بالتحريك مع أداة التحديد أو أداة العنصر الذكي
-    if (activeTool !== 'selection_tool' && activeTool !== 'smart_element_tool') return;
+    if (activeTool !== 'selection_tool' && activeTool !== 'smart_element_tool') {
+      onSelect(multiSelect);
+      return;
+    }
+    
+    // ✅ النقر العادي بأداة التحديد = تحديد كامل الشجرة
+    if (activeTool === 'selection_tool' && !isSingleNodeMode && !multiSelect) {
+      // استخدام timeout للتمييز بين النقر العادي والمزدوج
+      clickTimeoutRef.current = setTimeout(() => {
+        selectMindMapTree(element.id);
+      }, 200);
+    } else {
+      onSelect(multiSelect);
+    }
     
     setIsDragging(true);
     dragStartRef.current = {
@@ -138,19 +162,28 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       elementX: element.position.x,
       elementY: element.position.y
     };
-  }, [element, onSelect, activeTool, isEditing]);
+  }, [element, onSelect, activeTool, isEditing, isSingleNodeMode, selectMindMapTree]);
   
+  // ✅ تحريك العقدة مع الفروع
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const deltaX = (e.clientX - dragStartRef.current.x) / viewport.zoom;
     const deltaY = (e.clientY - dragStartRef.current.y) / viewport.zoom;
     
-    updateElement(element.id, {
-      position: {
-        x: dragStartRef.current.elementX + deltaX,
-        y: dragStartRef.current.elementY + deltaY
-      }
-    });
-  }, [element.id, viewport.zoom, updateElement]);
+    // ✅ إذا كنا في وضع العقدة الفردية أو مع أداة التحديد (بعد نقر مزدوج)، نحرك العقدة فقط
+    if (isSingleNodeMode) {
+      updateElement(element.id, {
+        position: {
+          x: dragStartRef.current.elementX + deltaX,
+          y: dragStartRef.current.elementY + deltaY
+        }
+      });
+    } else {
+      // ✅ تحريك العقدة مع كل أبنائها
+      const totalDeltaX = dragStartRef.current.elementX + deltaX - element.position.x;
+      const totalDeltaY = dragStartRef.current.elementY + deltaY - element.position.y;
+      moveElementWithChildren(element.id, totalDeltaX, totalDeltaY);
+    }
+  }, [element.id, element.position, viewport.zoom, updateElement, isSingleNodeMode, moveElementWithChildren]);
   
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -188,6 +221,19 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, handleMouseMove, handleMouseUp]);
+  
+  // ✅ تنظيف timeout والـ single node mode عند إلغاء التحديد
+  useEffect(() => {
+    if (!isSelected) {
+      setIsSingleNodeMode(false);
+    }
+    
+    return () => {
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+    };
+  }, [isSelected]);
   
   // التركيز على الإدخال عند التحرير
   useEffect(() => {

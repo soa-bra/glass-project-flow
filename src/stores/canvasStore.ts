@@ -284,6 +284,10 @@ interface CanvasState {
   rotateElements: (elementIds: string[], angle: number, origin: { x: number; y: number }) => void;
   flipHorizontally: (elementIds: string[]) => void;
   flipVertically: (elementIds: string[]) => void;
+  
+  // Mind Map Tree Actions
+  moveElementWithChildren: (elementId: string, deltaX: number, deltaY: number) => void;
+  selectMindMapTree: (nodeId: string) => void;
 }
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
@@ -1935,5 +1939,88 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       })
     }));
     get().pushHistory();
+  },
+
+  // ✅ تحريك عنصر مع كل أبنائه في الخريطة الذهنية
+  moveElementWithChildren: (elementId: string, deltaX: number, deltaY: number) => {
+    const { elements, updateElement } = get();
+    
+    // الحصول على كل الأبناء recursively
+    const getAllChildren = (nodeId: string): string[] => {
+      const children: string[] = [];
+      const connectors = elements.filter(el => 
+        el.type === 'mindmap_connector' && 
+        (el.data as any)?.startNodeId === nodeId
+      );
+      
+      connectors.forEach(conn => {
+        const childId = (conn.data as any)?.endNodeId;
+        if (childId) {
+          children.push(childId);
+          children.push(...getAllChildren(childId));
+        }
+      });
+      
+      return children;
+    };
+    
+    // تحريك العقدة الأصل وكل أبنائها
+    const nodesToMove = [elementId, ...getAllChildren(elementId)];
+    
+    set(state => ({
+      elements: state.elements.map(el => {
+        if (nodesToMove.includes(el.id)) {
+          return {
+            ...el,
+            position: {
+              x: el.position.x + deltaX,
+              y: el.position.y + deltaY
+            }
+          };
+        }
+        return el;
+      })
+    }));
+  },
+
+  // ✅ تحديد كامل شجرة الخريطة الذهنية
+  selectMindMapTree: (nodeId: string) => {
+    const { elements } = get();
+    
+    // البحث عن جذر الشجرة
+    const findRoot = (id: string): string => {
+      const parentConnector = elements.find(el => {
+        if (el.type !== 'mindmap_connector') return false;
+        return (el.data as any)?.endNodeId === id;
+      });
+      
+      if (!parentConnector) return id;
+      return findRoot((parentConnector.data as any).startNodeId);
+    };
+    
+    const rootId = findRoot(nodeId);
+    
+    // الحصول على كل عقد وروابط الشجرة
+    const collectTree = (parentId: string): string[] => {
+      const ids: string[] = [parentId];
+      
+      const childConnectors = elements.filter(el => {
+        if (el.type !== 'mindmap_connector') return false;
+        return (el.data as any)?.startNodeId === parentId;
+      });
+      
+      childConnectors.forEach(conn => {
+        ids.push(conn.id); // إضافة الـ connector
+        const childId = (conn.data as any)?.endNodeId;
+        if (childId) {
+          ids.push(...collectTree(childId));
+        }
+      });
+      
+      return ids;
+    };
+    
+    const treeIds = collectTree(rootId);
+    set({ selectedElementIds: treeIds });
   }
 }));

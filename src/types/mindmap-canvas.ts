@@ -126,7 +126,7 @@ export const findNearestAnchor = (
   return { anchor: nearestAnchor, position: nearestPosition, distance: nearestDistance };
 };
 
-// إنشاء مسار Bezier بين نقطتين
+// إنشاء مسار Bezier بين نقطتين - محسّن للمنحنيات السلسة
 export const createBezierPath = (
   start: { x: number; y: number },
   end: { x: number; y: number },
@@ -135,12 +135,19 @@ export const createBezierPath = (
 ): string => {
   const dx = end.x - start.x;
   const dy = end.y - start.y;
+  const distance = Math.hypot(dx, dy);
+  
+  // ✅ حساب محسّن للـ controlOffset للحصول على منحنيات سلسة
+  // القيمة تعتمد على المسافة بين النقطتين مع حد أدنى لضمان الانحناء
+  const controlOffset = Math.max(
+    distance * 0.4,  // 40% من المسافة
+    60,              // حد أدنى 60px
+    Math.min(Math.abs(dx), Math.abs(dy)) * 0.5  // نصف أقصر بُعد
+  );
   
   // حساب نقاط التحكم بناءً على اتجاه الربط
   let cp1: { x: number; y: number };
   let cp2: { x: number; y: number };
-  
-  const controlOffset = Math.min(Math.abs(dx), Math.abs(dy), 100);
   
   switch (startAnchor) {
     case 'top':
