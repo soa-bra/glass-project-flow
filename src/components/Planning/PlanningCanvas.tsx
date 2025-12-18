@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { ArrowRight, Save, RotateCcw, RotateCw, Clock, Share2, File, Layers, Sparkles, Command } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { ArrowRight, Save, RotateCcw, RotateCw, Clock, Share2, File, Layers, Sparkles, Command, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { usePlanningStore } from '@/stores/planningStore';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasBoard } from '@/types/planning';
@@ -38,6 +38,18 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
   
   // Smart Command Bar
   const commandBar = useSmartCommandBar();
+  
+  // Panel collapse state
+  const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
+  
+  // Auto-collapse panel when text tool is selected
+  useEffect(() => {
+    if (activeTool === 'text_tool') {
+      setIsPanelCollapsed(true);
+    } else {
+      setIsPanelCollapsed(false);
+    }
+  }, [activeTool]);
   
   // Handle AI-generated elements
   const handleElementsGenerated = useCallback((elements: any[], layout: string) => {
@@ -224,8 +236,21 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
           <InfiniteCanvas boardId={board.id} />
         </div>
         
-        {/* Tool Settings Panel (Right) */}
-        <RightSidePanel activeTool={activeTool} />
+        {/* Panel Toggle Button - Always visible */}
+        <button
+          onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
+          className="absolute left-4 top-4 z-20 p-2 bg-white border border-[hsl(var(--border))] rounded-lg shadow-sm hover:bg-[hsl(var(--panel))] transition-colors"
+          title={isPanelCollapsed ? 'توسيع البانل' : 'طي البانل'}
+        >
+          {isPanelCollapsed ? <PanelRightOpen size={18} className="text-[hsl(var(--ink))]" /> : <PanelRightClose size={18} className="text-[hsl(var(--ink))]" />}
+        </button>
+        
+        {/* Tool Settings Panel (Right) - Collapsible */}
+        <div className={`transition-all duration-300 ease-out ${
+          isPanelCollapsed ? 'w-0 opacity-0 overflow-hidden' : 'w-auto opacity-100'
+        }`}>
+          <RightSidePanel activeTool={activeTool} />
+        </div>
       </div>
       
       {/* Bottom Toolbar */}
