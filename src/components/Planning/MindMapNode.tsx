@@ -152,9 +152,14 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setShowColorPicker(false);
   }, [element.id, nodeData, updateElement]);
   
-  // سحب العقدة
+  // ✅ سحب العقدة - منطق موحّد مع CanvasElement
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (isEditing) return;
+    // أثناء التحرير: امنع السحب لكن اسمح بالأحداث الداخلية
+    if (isEditing) {
+      e.stopPropagation();
+      return;
+    }
+    
     e.stopPropagation();
     
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
