@@ -6,6 +6,7 @@ export interface MindMapNodeData {
   color: string;
   nodeStyle: 'rounded' | 'pill' | 'rectangle' | 'circle';
   isRoot?: boolean;
+  isCollapsed?: boolean; // ✅ لطي/توسيع الفروع
   icon?: string;
   fontSize?: number;
   textColor?: string;

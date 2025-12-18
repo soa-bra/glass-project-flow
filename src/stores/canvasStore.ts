@@ -288,6 +288,7 @@ interface CanvasState {
   // Mind Map Tree Actions
   moveElementWithChildren: (elementId: string, deltaX: number, deltaY: number) => void;
   selectMindMapTree: (nodeId: string) => void;
+  autoResolveOverlapsForMindMap: () => void;
 }
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
@@ -2090,5 +2091,68 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     
     const treeIds = collectTree(rootId);
     set({ selectedElementIds: treeIds });
+  },
+
+  // ✅ إزاحة تلقائية لجميع عقد الخريطة الذهنية عند التداخل
+  autoResolveOverlapsForMindMap: () => {
+    const { elements, updateElement } = get();
+    const mindMapNodes = elements.filter(el => el.type === 'mindmap_node');
+    
+    if (mindMapNodes.length < 2) return;
+    
+    const padding = 30;
+    const overlaps: { id: string; deltaY: number }[] = [];
+    
+    // اكتشاف التداخلات
+    for (let i = 0; i < mindMapNodes.length; i++) {
+      for (let j = i + 1; j < mindMapNodes.length; j++) {
+        const a = mindMapNodes[i];
+        const b = mindMapNodes[j];
+        
+        const ax1 = a.position.x - padding;
+        const ay1 = a.position.y - padding;
+        const ax2 = a.position.x + a.size.width + padding;
+        const ay2 = a.position.y + a.size.height + padding;
+        
+        const bx1 = b.position.x - padding;
+        const by1 = b.position.y - padding;
+        const bx2 = b.position.x + b.size.width + padding;
+        const by2 = b.position.y + b.size.height + padding;
+        
+        const overlapX = Math.max(0, Math.min(ax2, bx2) - Math.max(ax1, bx1));
+        const overlapY = Math.max(0, Math.min(ay2, by2) - Math.max(ay1, by1));
+        
+        if (overlapX > 0 && overlapY > 0) {
+          // إزاحة العقدة الأسفل للأسفل
+          const nodeToMove = a.position.y > b.position.y ? a : b;
+          const existingOverlap = overlaps.find(o => o.id === nodeToMove.id);
+          
+          if (existingOverlap) {
+            existingOverlap.deltaY = Math.max(existingOverlap.deltaY, overlapY + 10);
+          } else {
+            overlaps.push({ id: nodeToMove.id, deltaY: overlapY + 10 });
+          }
+        }
+      }
+    }
+    
+    // تطبيق الإزاحات
+    if (overlaps.length > 0) {
+      set(state => ({
+        elements: state.elements.map(el => {
+          const overlap = overlaps.find(o => o.id === el.id);
+          if (overlap) {
+            return {
+              ...el,
+              position: {
+                ...el.position,
+                y: el.position.y + overlap.deltaY
+              }
+            };
+          }
+          return el;
+        })
+      }));
+    }
   }
 }));

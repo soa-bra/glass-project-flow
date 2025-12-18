@@ -1,14 +1,14 @@
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, useRef, useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
-import type { MindMapConnectorData } from '@/types/mindmap-canvas';
+import type { MindMapConnectorData, MindMapNodeData } from '@/types/mindmap-canvas';
 import { 
   getAnchorPosition, 
   createBezierPath, 
   createStraightPath, 
   createElbowPath 
 } from '@/types/mindmap-canvas';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Type } from 'lucide-react';
 
 interface MindMapConnectorProps {
   element: CanvasElement;
@@ -26,6 +26,9 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
   const [isEditingLabel, setIsEditingLabel] = useState(false);
   const [labelText, setLabelText] = useState('');
   
+  // ✅ الاحتفاظ بآخر موقع معروف لمنع الاختفاء
+  const lastPositionsRef = useRef<{start: {x: number, y: number}, end: {x: number, y: number}} | null>(null);
+  
   const connectorData = element.data as MindMapConnectorData;
   
   // الحصول على العقد المتصلة
@@ -39,9 +42,18 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
     [elements, connectorData.endNodeId]
   );
   
+  // ✅ التحقق من الطي - إخفاء إذا كان الأب مطوياً
+  const isHiddenByCollapse = useMemo(() => {
+    if (!startNode) return false;
+    const parentData = startNode.data as MindMapNodeData;
+    return parentData?.isCollapsed === true;
+  }, [startNode]);
+  
   // ✅ حساب مواقع نقاط الربط مع offset للروابط المتعددة
   const positions = useMemo(() => {
-    if (!startNode || !endNode) return null;
+    if (!startNode || !endNode) {
+      return lastPositionsRef.current; // ✅ استخدام آخر موقع معروف
+    }
     
     const startAnchor = connectorData.startAnchor?.anchor || 'right';
     const endAnchor = connectorData.endAnchor?.anchor || 'left';
@@ -86,17 +98,21 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
     const isHorizontalStart = startAnchor === 'left' || startAnchor === 'right';
     const isHorizontalEnd = endAnchor === 'left' || endAnchor === 'right';
     
-    const startPos = {
-      x: baseStartPos.x + (isHorizontalStart ? 0 : startOffset),
-      y: baseStartPos.y + (isHorizontalStart ? startOffset : 0)
+    const newPositions = {
+      start: {
+        x: baseStartPos.x + (isHorizontalStart ? 0 : startOffset),
+        y: baseStartPos.y + (isHorizontalStart ? startOffset : 0)
+      },
+      end: {
+        x: baseEndPos.x + (isHorizontalEnd ? 0 : endOffset),
+        y: baseEndPos.y + (isHorizontalEnd ? endOffset : 0)
+      }
     };
     
-    const endPos = {
-      x: baseEndPos.x + (isHorizontalEnd ? 0 : endOffset),
-      y: baseEndPos.y + (isHorizontalEnd ? endOffset : 0)
-    };
+    // ✅ تحديث آخر موقع معروف
+    lastPositionsRef.current = newPositions;
     
-    return { start: startPos, end: endPos };
+    return newPositions;
   }, [startNode, endNode, connectorData, elements, element.id]);
   
   // حساب المسار
@@ -173,7 +189,20 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
     setIsEditingLabel(false);
   }, [element.id, connectorData, labelText, updateElement]);
   
-  if (!startNode || !endNode || !positions) {
+  // ✅ بدء إضافة نص جديد
+  const handleStartAddLabel = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditingLabel(true);
+    setLabelText(connectorData.label || '');
+  }, [connectorData.label]);
+  
+  // ✅ إخفاء إذا كان مطوياً
+  if (isHiddenByCollapse) {
+    return null;
+  }
+  
+  // ✅ لا نرجع null حتى لو لم تتوفر المواقع - نستخدم آخر موقع معروف
+  if (!positions) {
     return null;
   }
   
@@ -276,20 +305,36 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
         </div>
       )}
       
-      {/* زر الحذف عند التحديد */}
-      {isSelected && labelPosition && (
-        <button
-          className="absolute w-6 h-6 bg-white rounded-full shadow-md border border-[hsl(var(--border))] flex items-center justify-center text-[hsl(var(--accent-red))] hover:bg-red-50 transition-colors"
+      {/* ✅ أزرار hover للحذف وإضافة النص */}
+      {(isHovered || isSelected) && labelPosition && (
+        <div
+          className="absolute flex items-center gap-1 pointer-events-auto"
           style={{
-            left: labelPosition.x - 12,
-            top: labelPosition.y + 20,
+            left: labelPosition.x - 32,
+            top: labelPosition.y + (connectorData.label ? 25 : 15),
             zIndex: 52
           }}
-          onClick={() => deleteElement(element.id)}
-          title="حذف الرابط"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          <Trash2 size={12} />
-        </button>
+          {/* زر إضافة/تحرير النص */}
+          <button
+            className="w-6 h-6 bg-white rounded-full shadow-md border border-[hsl(var(--border))] flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] hover:bg-blue-50 transition-colors"
+            onClick={handleStartAddLabel}
+            title={connectorData.label ? "تحرير النص" : "إضافة نص"}
+          >
+            <Type size={12} />
+          </button>
+          
+          {/* زر الحذف */}
+          <button
+            className="w-6 h-6 bg-white rounded-full shadow-md border border-[hsl(var(--border))] flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-red))] hover:bg-red-50 transition-colors"
+            onClick={() => deleteElement(element.id)}
+            title="حذف الرابط"
+          >
+            <Trash2 size={12} />
+          </button>
+        </div>
       )}
     </>
   );

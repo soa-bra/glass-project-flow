@@ -3,7 +3,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { MindMapNodeData, NodeAnchorPoint } from '@/types/mindmap-canvas';
 import { getAnchorPosition, NODE_COLORS } from '@/types/mindmap-canvas';
-import { Plus, GripVertical, Trash2, Palette } from 'lucide-react';
+import { Plus, GripVertical, Trash2, Palette, ChevronDown, ChevronRight } from 'lucide-react';
 
 interface MindMapNodeProps {
   element: CanvasElement;
@@ -26,30 +26,36 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   nearestAnchor,
   activeTool
 }) => {
-  const { updateElement, deleteElement, viewport, addElement, selectMindMapTree, moveElementWithChildren } = useCanvasStore();
+  const { updateElement, deleteElement, viewport, addElement, selectMindMapTree, moveElementWithChildren, autoResolveOverlapsForMindMap } = useCanvasStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState('');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [isSingleNodeMode, setIsSingleNodeMode] = useState(false); // ✅ وضع تحديد العقدة الفردية
+  const [isSingleNodeMode, setIsSingleNodeMode] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const nodeData = element.data as MindMapNodeData;
   
+  // ✅ التحقق من وجود فروع
+  const hasChildren = useCanvasStore(state => 
+    state.elements.some(el => 
+      el.type === 'mindmap_connector' && 
+      (el.data as any)?.startNodeId === element.id
+    )
+  );
+  
   // ✅ بدء التحرير بالنقر المزدوج
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // إلغاء timeout النقرة العادية
     if (clickTimeoutRef.current) {
       clearTimeout(clickTimeoutRef.current);
       clickTimeoutRef.current = null;
     }
     
-    // ✅ النقر المزدوج = تحديد العقدة الفردية + بدء التحرير
     setIsSingleNodeMode(true);
     onSelect(false);
     setIsEditing(true);
@@ -66,19 +72,27 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setIsEditing(false);
   }, [element.id, nodeData, editText, updateElement]);
   
+  // ✅ طي/توسيع الفروع
+  const handleToggleCollapse = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    updateElement(element.id, {
+      data: { ...nodeData, isCollapsed: !nodeData.isCollapsed }
+    });
+  }, [element.id, nodeData, updateElement]);
+  
   // إضافة فرع جديد مع توزيع تلقائي وتجنب التداخل
   const handleAddBranch = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     
     const state = useCanvasStore.getState();
     
-    // ✅ الحصول على جميع الأبناء الحاليين لهذه العقدة
+    // الحصول على جميع الأبناء الحاليين لهذه العقدة
     const existingConnectors = state.elements.filter(el => 
       el.type === 'mindmap_connector' && 
       (el.data as any)?.startNodeId === element.id
     );
     
-    // ✅ حساب حدود كل فرع موجود (شاملة الأحفاد)
+    // حساب حدود كل فرع موجود (شاملة الأحفاد)
     const getSubtreeBounds = (nodeId: string): { top: number; bottom: number } => {
       const node = state.elements.find(el => el.id === nodeId);
       if (!node) return { top: 0, bottom: 0 };
@@ -86,7 +100,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       let minY = node.position.y;
       let maxY = node.position.y + node.size.height;
       
-      // البحث عن الأبناء recursively
       const childConnectors = state.elements.filter(el => 
         el.type === 'mindmap_connector' && 
         (el.data as any)?.startNodeId === nodeId
@@ -109,7 +122,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       return getSubtreeBounds(childId);
     });
     
-    // ✅ إيجاد موقع متاح للفرع الجديد
+    // إيجاد موقع متاح للفرع الجديد
     const newNodeHeight = 60;
     const verticalGap = 80;
     const parentCenterY = element.position.y + element.size.height / 2;
@@ -117,16 +130,13 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     let yPosition = parentCenterY;
     
     if (siblingBounds.length > 0) {
-      // ترتيب الأشقاء
       const sorted = [...siblingBounds].sort((a, b) => a.top - b.top);
       
-      // توزيع متناظر
       const childCount = siblingBounds.length;
       const direction = childCount % 2 === 0 ? 1 : -1;
       const step = Math.ceil((childCount + 1) / 2);
       yPosition = parentCenterY + direction * step * (newNodeHeight + verticalGap);
       
-      // التحقق من عدم التداخل
       const halfHeight = newNodeHeight / 2;
       let hasOverlap = true;
       let attempts = 0;
@@ -154,7 +164,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     const offset = 200;
     const newNodeId = `mindmap-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    // إضافة العقدة الجديدة في الموقع الآمن
     addElement({
       id: newNodeId,
       type: 'mindmap_node',
@@ -171,7 +180,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       } as MindMapNodeData
     });
     
-    // ✅ إضافة الـ connector
     addElement({
       type: 'mindmap_connector',
       position: { x: 0, y: 0 },
@@ -186,6 +194,11 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         strokeWidth: 2
       }
     });
+    
+    // ✅ تفعيل الإزاحة التلقائية بعد إضافة الفرع
+    setTimeout(() => {
+      useCanvasStore.getState().autoResolveOverlapsForMindMap?.();
+    }, 50);
   }, [element, nodeData, addElement]);
   
   // تغيير اللون
@@ -196,22 +209,19 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setShowColorPicker(false);
   }, [element.id, nodeData, updateElement]);
   
-  // ✅ سحب العقدة مع سلوك تحديد جديد
+  // سحب العقدة
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (isEditing) return;
     e.stopPropagation();
     
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
     
-    // ✅ السماح بالتحريك مع أداة التحديد أو أداة العنصر الذكي
     if (activeTool !== 'selection_tool' && activeTool !== 'smart_element_tool') {
       onSelect(multiSelect);
       return;
     }
     
-    // ✅ النقر العادي بأداة التحديد = تحديد كامل الشجرة
     if (activeTool === 'selection_tool' && !isSingleNodeMode && !multiSelect) {
-      // استخدام timeout للتمييز بين النقر العادي والمزدوج
       clickTimeoutRef.current = setTimeout(() => {
         selectMindMapTree(element.id);
       }, 200);
@@ -228,12 +238,11 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     };
   }, [element, onSelect, activeTool, isEditing, isSingleNodeMode, selectMindMapTree]);
   
-  // ✅ تحريك العقدة مع الفروع
+  // تحريك العقدة مع الفروع
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const deltaX = (e.clientX - dragStartRef.current.x) / viewport.zoom;
     const deltaY = (e.clientY - dragStartRef.current.y) / viewport.zoom;
     
-    // ✅ إذا كنا في وضع العقدة الفردية أو مع أداة التحديد (بعد نقر مزدوج)، نحرك العقدة فقط
     if (isSingleNodeMode) {
       updateElement(element.id, {
         position: {
@@ -242,7 +251,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         }
       });
     } else {
-      // ✅ تحريك العقدة مع كل أبنائها
       const totalDeltaX = dragStartRef.current.elementX + deltaX - element.position.x;
       const totalDeltaY = dragStartRef.current.elementY + deltaY - element.position.y;
       moveElementWithChildren(element.id, totalDeltaX, totalDeltaY);
@@ -273,7 +281,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     }
   }, [element.id, isConnecting, onEndConnection]);
   
-  // ✅ إضافة مستمعي الأحداث العامة - يعمل الآن بشكل صحيح مع useState
+  // إضافة مستمعي الأحداث العامة
   useEffect(() => {
     if (!isDragging) return;
     
@@ -286,7 +294,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     };
   }, [isDragging, handleMouseMove, handleMouseUp]);
   
-  // ✅ تنظيف timeout والـ single node mode عند إلغاء التحديد
+  // تنظيف
   useEffect(() => {
     if (!isSelected) {
       setIsSingleNodeMode(false);
@@ -349,7 +357,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     >
       {/* محتوى العقدة */}
       <div
-        className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md transition-all"
+        className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md transition-all relative"
         style={getNodeStyle()}
       >
         {isEditing ? (
@@ -378,6 +386,17 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           <div className="absolute -top-2 -right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm">
             <div className="w-3 h-3 rounded-full bg-[hsl(var(--accent-green))]" />
           </div>
+        )}
+        
+        {/* ✅ زر الطي - يظهر إذا كان للعقدة فروع */}
+        {hasChildren && (
+          <button
+            onClick={handleToggleCollapse}
+            className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-md border border-[hsl(var(--border))] flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
+            title={nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع"}
+          >
+            {nodeData.isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+          </button>
         )}
       </div>
       
@@ -419,6 +438,17 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           >
             <Plus size={16} />
           </button>
+          
+          {/* ✅ طي/توسيع */}
+          {hasChildren && (
+            <button
+              onClick={handleToggleCollapse}
+              className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
+              title={nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع"}
+            >
+              {nodeData.isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+            </button>
+          )}
           
           {/* تغيير اللون */}
           <div className="relative">

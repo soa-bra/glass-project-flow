@@ -53,6 +53,21 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
 }) => {
   // عرض عناصر الخريطة الذهنية بمكونات خاصة
   if (element.type === 'mindmap_node') {
+    // ✅ التحقق من الطي - إخفاء إذا كان الأب مطوياً
+    const elements = useCanvasStore.getState().elements;
+    const parentConnector = elements.find(el => 
+      el.type === 'mindmap_connector' && 
+      (el.data as any)?.endNodeId === element.id
+    );
+    
+    if (parentConnector) {
+      const parentNodeId = (parentConnector.data as any)?.startNodeId;
+      const parentNode = elements.find(el => el.id === parentNodeId);
+      if ((parentNode?.data as any)?.isCollapsed) {
+        return null; // إخفاء العقدة إذا كان الأب مطوياً
+      }
+    }
+    
     return (
       <MindMapNode
         element={element}
