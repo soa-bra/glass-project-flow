@@ -4,6 +4,7 @@ import type { CanvasElement, LayerInfo, CanvasSettings } from '@/types/canvas';
 import type { ArrowConnection } from '@/types/arrow-connections';
 import { resolveSnapConnection, type SnapEdge } from '@/utils/arrow-routing';
 import { redistributeBranches } from '@/utils/mindmap-layout';
+import { calculateConnectorBounds } from '@/types/mindmap-canvas';
 
 /**
  * حساب موقع نقطة الارتكاز على عنصر
@@ -688,6 +689,40 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
             };
           }
         });
+        
+        // ✅ تحديث bounds الـ mindmap_connectors المتصلة بهذا العنصر
+        if (updatedElement?.type === 'mindmap_node') {
+          const connectedMindMapConnectors = updatedElements.filter(el => {
+            if (el.type !== 'mindmap_connector') return false;
+            const connectorData = el.data as any;
+            return (
+              connectorData?.startNodeId === elementId ||
+              connectorData?.endNodeId === elementId
+            );
+          });
+          
+          connectedMindMapConnectors.forEach(connector => {
+            const connectorData = connector.data as any;
+            const startNode = updatedElements.find(el => el.id === connectorData?.startNodeId);
+            const endNode = updatedElements.find(el => el.id === connectorData?.endNodeId);
+            
+            if (startNode && endNode) {
+              const newBounds = calculateConnectorBounds(
+                { position: startNode.position, size: startNode.size },
+                { position: endNode.position, size: endNode.size }
+              );
+              
+              const connIdx = updatedElements.findIndex(e => e.id === connector.id);
+              if (connIdx !== -1) {
+                updatedElements[connIdx] = {
+                  ...updatedElements[connIdx],
+                  position: newBounds.position,
+                  size: newBounds.size
+                };
+              }
+            }
+          });
+        }
       }
       
       return { elements: updatedElements };
@@ -1969,8 +2004,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     // تحريك العقدة الأصل وكل أبنائها
     const nodesToMove = [elementId, ...getAllChildren(elementId)];
     
-    set(state => ({
-      elements: state.elements.map(el => {
+    set(state => {
+      let updatedElements = state.elements.map(el => {
         if (nodesToMove.includes(el.id)) {
           return {
             ...el,
@@ -1981,8 +2016,42 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
           };
         }
         return el;
-      })
-    }));
+      });
+      
+      // ✅ تحديث bounds جميع الـ connectors المتصلة بالعقد المتحركة
+      const affectedConnectors = updatedElements.filter(el => {
+        if (el.type !== 'mindmap_connector') return false;
+        const connectorData = el.data as any;
+        return (
+          nodesToMove.includes(connectorData?.startNodeId) ||
+          nodesToMove.includes(connectorData?.endNodeId)
+        );
+      });
+      
+      affectedConnectors.forEach(connector => {
+        const connectorData = connector.data as any;
+        const startNode = updatedElements.find(el => el.id === connectorData?.startNodeId);
+        const endNode = updatedElements.find(el => el.id === connectorData?.endNodeId);
+        
+        if (startNode && endNode) {
+          const newBounds = calculateConnectorBounds(
+            { position: startNode.position, size: startNode.size },
+            { position: endNode.position, size: endNode.size }
+          );
+          
+          const connIdx = updatedElements.findIndex(e => e.id === connector.id);
+          if (connIdx !== -1) {
+            updatedElements[connIdx] = {
+              ...updatedElements[connIdx],
+              position: newBounds.position,
+              size: newBounds.size
+            };
+          }
+        }
+      });
+      
+      return { elements: updatedElements };
+    });
     
     // ✅ اكتشاف وحل التداخلات (Responsive) - الآن يستورد من mindmap-layout
     const updatedElements = get().elements;
