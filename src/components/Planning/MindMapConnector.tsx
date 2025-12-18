@@ -27,10 +27,20 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
   const [isEditingLabel, setIsEditingLabel] = useState(false);
   const [labelText, setLabelText] = useState('');
   
-  // ✅ الاحتفاظ بآخر موقع معروف لمنع الاختفاء
-  const lastPositionsRef = useRef<{start: {x: number, y: number}, end: {x: number, y: number}} | null>(null);
-  
   const connectorData = element.data as MindMapConnectorData;
+  
+  // ✅ تهيئة أولية قوية من بيانات connectorData مباشرة
+  const getInitialPositions = (): {start: {x: number, y: number}, end: {x: number, y: number}} | null => {
+    if (connectorData.startAnchor?.position && connectorData.endAnchor?.position) {
+      return {
+        start: connectorData.startAnchor.position,
+        end: connectorData.endAnchor.position
+      };
+    }
+    return null;
+  };
+  
+  const lastPositionsRef = useRef<{start: {x: number, y: number}, end: {x: number, y: number}} | null>(getInitialPositions());
   
   // الحصول على العقد المتصلة
   const startNode = useMemo(() => 
@@ -43,16 +53,16 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
     [elements, connectorData.endNodeId]
   );
   
-  // ✅ تهيئة أولية للمواقع من البيانات المتاحة
+  // ✅ تهيئة فورية للمواقع وتحديثها عند كل تغيير
   useEffect(() => {
-    if (startNode && endNode && !lastPositionsRef.current) {
+    if (startNode && endNode) {
       const startAnchor = connectorData.startAnchor?.anchor || 'right';
       const endAnchor = connectorData.endAnchor?.anchor || 'left';
       const startPos = getAnchorPosition(startNode.position, startNode.size, startAnchor);
       const endPos = getAnchorPosition(endNode.position, endNode.size, endAnchor);
       lastPositionsRef.current = { start: startPos, end: endPos };
     }
-  }, [startNode, endNode, connectorData]);
+  }, [startNode, endNode, connectorData, elements]);
   
   // ✅ التحقق من الطي التكراري - إخفاء إذا كان أي جد مطوياً
   const isHiddenByCollapse = useMemo(() => {
@@ -74,68 +84,71 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
   
   // ✅ حساب مواقع نقاط الربط مع offset للروابط المتعددة
   const positions = useMemo(() => {
-    if (!startNode || !endNode) {
-      return lastPositionsRef.current; // ✅ استخدام آخر موقع معروف
+    // ✅ حساب من العقد إذا كانت متاحة
+    if (startNode && endNode) {
+      const startAnchor = connectorData.startAnchor?.anchor || 'right';
+      const endAnchor = connectorData.endAnchor?.anchor || 'left';
+      
+      // حساب عدد الروابط الأخرى من نفس النقطة
+      const sameStartAnchorConnectors = elements.filter(el => {
+        if (el.type !== 'mindmap_connector' || el.id === element.id) return false;
+        const data = el.data as any;
+        return data?.startNodeId === connectorData.startNodeId && 
+               data?.startAnchor?.anchor === startAnchor;
+      });
+      
+      const sameEndAnchorConnectors = elements.filter(el => {
+        if (el.type !== 'mindmap_connector' || el.id === element.id) return false;
+        const data = el.data as any;
+        return data?.endNodeId === connectorData.endNodeId && 
+               data?.endAnchor?.anchor === endAnchor;
+      });
+      
+      const startIndex = sameStartAnchorConnectors.length;
+      const endIndex = sameEndAnchorConnectors.length;
+      const offsetAmount = 8;
+      const startOffset = (startIndex - sameStartAnchorConnectors.length / 2) * offsetAmount;
+      const endOffset = (endIndex - sameEndAnchorConnectors.length / 2) * offsetAmount;
+      
+      const baseStartPos = getAnchorPosition(startNode.position, startNode.size, startAnchor);
+      const baseEndPos = getAnchorPosition(endNode.position, endNode.size, endAnchor);
+      
+      const isHorizontalStart = startAnchor === 'left' || startAnchor === 'right';
+      const isHorizontalEnd = endAnchor === 'left' || endAnchor === 'right';
+      
+      const newPositions = {
+        start: {
+          x: baseStartPos.x + (isHorizontalStart ? 0 : startOffset),
+          y: baseStartPos.y + (isHorizontalStart ? startOffset : 0)
+        },
+        end: {
+          x: baseEndPos.x + (isHorizontalEnd ? 0 : endOffset),
+          y: baseEndPos.y + (isHorizontalEnd ? endOffset : 0)
+        }
+      };
+      
+      lastPositionsRef.current = newPositions;
+      return newPositions;
     }
     
-    const startAnchor = connectorData.startAnchor?.anchor || 'right';
-    const endAnchor = connectorData.endAnchor?.anchor || 'left';
+    // ✅ استخدام آخر موقع معروف
+    if (lastPositionsRef.current) {
+      return lastPositionsRef.current;
+    }
     
-    // حساب عدد الروابط الأخرى من نفس النقطة
-    const sameStartAnchorConnectors = elements.filter(el => {
-      if (el.type !== 'mindmap_connector' || el.id === element.id) return false;
-      const data = el.data as any;
-      return data?.startNodeId === connectorData.startNodeId && 
-             data?.startAnchor?.anchor === startAnchor;
-    });
+    // ✅ fallback: حساب من بيانات العقد المخزنة في elements
+    const cachedStart = elements.find(el => el.id === connectorData.startNodeId);
+    const cachedEnd = elements.find(el => el.id === connectorData.endNodeId);
     
-    const sameEndAnchorConnectors = elements.filter(el => {
-      if (el.type !== 'mindmap_connector' || el.id === element.id) return false;
-      const data = el.data as any;
-      return data?.endNodeId === connectorData.endNodeId && 
-             data?.endAnchor?.anchor === endAnchor;
-    });
+    if (cachedStart && cachedEnd) {
+      const startPos = getAnchorPosition(cachedStart.position, cachedStart.size, 'right');
+      const endPos = getAnchorPosition(cachedEnd.position, cachedEnd.size, 'left');
+      const fallbackPositions = { start: startPos, end: endPos };
+      lastPositionsRef.current = fallbackPositions;
+      return fallbackPositions;
+    }
     
-    // حساب index للرابط الحالي
-    const startIndex = sameStartAnchorConnectors.length;
-    const endIndex = sameEndAnchorConnectors.length;
-    
-    // حساب offset (توزيع متناظر)
-    const offsetAmount = 8;
-    const startOffset = (startIndex - sameStartAnchorConnectors.length / 2) * offsetAmount;
-    const endOffset = (endIndex - sameEndAnchorConnectors.length / 2) * offsetAmount;
-    
-    const baseStartPos = getAnchorPosition(
-      startNode.position,
-      startNode.size,
-      startAnchor
-    );
-    
-    const baseEndPos = getAnchorPosition(
-      endNode.position,
-      endNode.size,
-      endAnchor
-    );
-    
-    // تطبيق offset عمودي للربط الأفقي أو أفقي للربط الرأسي
-    const isHorizontalStart = startAnchor === 'left' || startAnchor === 'right';
-    const isHorizontalEnd = endAnchor === 'left' || endAnchor === 'right';
-    
-    const newPositions = {
-      start: {
-        x: baseStartPos.x + (isHorizontalStart ? 0 : startOffset),
-        y: baseStartPos.y + (isHorizontalStart ? startOffset : 0)
-      },
-      end: {
-        x: baseEndPos.x + (isHorizontalEnd ? 0 : endOffset),
-        y: baseEndPos.y + (isHorizontalEnd ? endOffset : 0)
-      }
-    };
-    
-    // ✅ تحديث آخر موقع معروف
-    lastPositionsRef.current = newPositions;
-    
-    return newPositions;
+    return null;
   }, [startNode, endNode, connectorData, elements, element.id]);
   
   // حساب المسار
@@ -242,12 +255,12 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
           zIndex: isSelected ? 50 : 5
         }}
       >
-        {/* منطقة النقر (شفافة وعريضة) */}
+        {/* ✅ منطقة النقر (شفافة وعريضة جداً للسهولة) */}
         <path
           d={path}
           fill="none"
           stroke="transparent"
-          strokeWidth={20}
+          strokeWidth={30}
           className="cursor-pointer pointer-events-stroke"
           onClick={handleClick}
           onDoubleClick={handleDoubleClick}
@@ -258,18 +271,19 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
           }}
         />
         
-        {/* الخط المرئي */}
+        {/* ✅ الخط المرئي مع تأثير hover قوي */}
         <path
           d={path}
           fill="none"
           stroke={connectorData.color || '#3DA8F5'}
-          strokeWidth={connectorData.strokeWidth || 2}
+          strokeWidth={(connectorData.strokeWidth || 2) * (isHovered ? 1.5 : 1)}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={`transition-all ${isHovered || isSelected ? 'filter drop-shadow-md' : ''}`}
+          className="transition-all duration-200"
           style={{
             transform: `translate(${-bounds.x}px, ${-bounds.y}px)`,
-            opacity: isHovered || isSelected ? 1 : 0.8
+            opacity: isHovered || isSelected ? 1 : 0.7,
+            filter: isHovered ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' : 'none'
           }}
         />
         
@@ -328,50 +342,55 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
         </div>
       )}
       
-      {/* ✅ placeholder لإضافة نص عند عدم وجوده */}
-      {!connectorData.label && !isEditingLabel && (isHovered || isSelected) && labelPosition && (
-        <button
-          className="absolute transform -translate-x-1/2 px-3 py-1.5 text-xs bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-[hsl(var(--border))] flex items-center gap-1.5 text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] hover:bg-blue-50 transition-colors pointer-events-auto"
-          onClick={handleStartAddLabel}
-          style={{ 
-            left: labelPosition.x, 
-            top: labelPosition.y,
-            zIndex: 52
+      {/* ✅ نقطة وسطى للتفاعل - تظهر دائماً للإشارة لقابلية النقر */}
+      {labelPosition && !connectorData.label && !isEditingLabel && (
+        <div
+          className={`absolute w-4 h-4 rounded-full border-2 cursor-pointer transition-all pointer-events-auto ${
+            isHovered || isSelected 
+              ? 'bg-[hsl(var(--accent-blue))] border-white scale-125 shadow-lg' 
+              : 'bg-white border-[hsl(var(--border))] hover:scale-110 hover:border-[hsl(var(--accent-blue))]'
+          }`}
+          style={{
+            left: labelPosition.x - 8,
+            top: labelPosition.y - 8,
+            zIndex: 10
           }}
-        >
-          <Type size={12} />
-          أضف نصاً
-        </button>
+          onClick={handleClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          title="انقر للتحديد أو أضف نصاً"
+        />
       )}
       
-      {/* ✅ أزرار hover للحذف وإضافة النص - أكبر وأوضح */}
+      {/* ✅ أزرار التحكم - تظهر في منتصف الـ connector بشكل واضح */}
       {(isHovered || isSelected) && labelPosition && (
         <div
-          className="absolute flex items-center gap-2 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-1.5 border border-[hsl(var(--border))]"
+          className="absolute flex items-center gap-3 pointer-events-auto bg-white rounded-xl shadow-xl p-2 border-2 border-[hsl(var(--border))]"
           style={{
-            left: labelPosition.x - 44,
-            top: labelPosition.y + (connectorData.label ? 30 : 35),
-            zIndex: 52
+            left: labelPosition.x,
+            top: labelPosition.y + 25,
+            transform: 'translateX(-50%)',
+            zIndex: 100
           }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           {/* زر إضافة/تحرير النص */}
           <button
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] hover:bg-blue-50 transition-colors"
+            className="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-50 text-[hsl(var(--accent-blue))] hover:bg-blue-100 transition-all"
             onClick={handleStartAddLabel}
             title={connectorData.label ? "تحرير النص" : "إضافة نص"}
           >
-            <Type size={16} />
+            <Type size={18} />
           </button>
           
           {/* زر الحذف */}
           <button
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-red))] hover:bg-red-50 transition-colors"
+            className="w-9 h-9 rounded-lg flex items-center justify-center bg-red-50 text-[hsl(var(--accent-red))] hover:bg-red-100 transition-all"
             onClick={() => deleteElement(element.id)}
             title="حذف الرابط"
           >
-            <Trash2 size={16} />
+            <Trash2 size={18} />
           </button>
         </div>
       )}
