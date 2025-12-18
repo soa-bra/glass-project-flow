@@ -212,14 +212,22 @@ export type BrainstormingData = z.infer<typeof BrainstormingDataSchema>;
 // 5. Timeline - خط زمني
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ✅ Helper function for default dates
+const getDefaultStartDate = () => new Date().toISOString().split('T')[0];
+const getDefaultEndDate = () => {
+  const date = new Date();
+  date.setMonth(date.getMonth() + 1);
+  return date.toISOString().split('T')[0];
+};
+
 export const TimelineItemSchema = z.object({
   id: z.string(),
   elementId: z.string().optional(), // linked canvas element
-  label: z.string(),
+  title: z.string().default('حدث جديد'), // ✅ تغيير من label إلى title
   description: z.string().optional(),
-  date: z.string().datetime(),
-  endDate: z.string().datetime().optional(), // for date ranges
-  color: z.string().optional(),
+  date: z.string().default(getDefaultStartDate), // ✅ تاريخ بسيط بدون datetime
+  endDate: z.string().optional(), // for date ranges
+  color: z.string().default('#3DBE8B'),
   icon: z.string().optional(),
   layer: z.number().default(0), // for preventing overlap
   importance: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
@@ -227,10 +235,10 @@ export const TimelineItemSchema = z.object({
 });
 
 export const TimelineDataSchema = z.object({
-  startDate: z.string().datetime(),
-  endDate: z.string().datetime(),
-  unit: z.enum(['day', 'week', 'month', 'quarter', 'year']).default('week'),
-  items: z.array(TimelineItemSchema).default([]),
+  startDate: z.string().default(getDefaultStartDate), // ✅ قيمة افتراضية
+  endDate: z.string().default(getDefaultEndDate), // ✅ قيمة افتراضية
+  viewMode: z.enum(['day', 'week', 'month']).default('week'), // ✅ تغيير من unit إلى viewMode
+  events: z.array(TimelineItemSchema).default([]), // ✅ تغيير من items إلى events
   showToday: z.boolean().default(true),
   showWeekends: z.boolean().default(true),
   layers: z.number().min(1).max(10).default(3),

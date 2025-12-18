@@ -319,7 +319,7 @@ interface SmartElementsState {
     timelineId: string,
     targetElementId: string,
     date: string,
-    label?: string
+    title?: string // ✅ تغيير من label إلى title
   ) => string;
   
   /**
@@ -1196,9 +1196,9 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     const newItem: TimelineItem = {
       id: itemId,
       elementId: item.elementId,
-      label: item.label || 'حدث جديد',
+      title: item.title || 'حدث جديد', // ✅ تغيير من label إلى title
       description: item.description,
-      date: item.date || new Date().toISOString(),
+      date: item.date || new Date().toISOString().split('T')[0],
       endDate: item.endDate,
       color: item.color,
       icon: item.icon,
@@ -1208,7 +1208,7 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     };
     
     get().updateSmartElementData(elementId, {
-      items: [...data.items, newItem],
+      events: [...(data.events || []), newItem], // ✅ تغيير من items إلى events
     });
     
     return itemId;
@@ -1219,11 +1219,11 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     if (!entry || entry.smartType !== 'timeline') return;
     
     const data = entry.data as SmartElementDataType<'timeline'>;
-    const items = data.items.map(item =>
+    const events = (data.events || []).map(item =>
       item.id === itemId ? { ...item, ...updates } : item
     );
     
-    get().updateSmartElementData(elementId, { items });
+    get().updateSmartElementData(elementId, { events }); // ✅ تغيير من items إلى events
   },
   
   deleteTimelineItem: (elementId, itemId) => {
@@ -1231,18 +1231,18 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     if (!entry || entry.smartType !== 'timeline') return;
     
     const data = entry.data as SmartElementDataType<'timeline'>;
-    const items = data.items.filter(item => item.id !== itemId);
+    const events = (data.events || []).filter(item => item.id !== itemId);
     
-    get().updateSmartElementData(elementId, { items });
+    get().updateSmartElementData(elementId, { events }); // ✅ تغيير من items إلى events
   },
   
-  linkElementToTimeline: (timelineId, targetElementId, date, label) => {
+  linkElementToTimeline: (timelineId, targetElementId, date, title) => { // ✅ تغيير label إلى title
     const entry = get().smartElements[timelineId];
     if (!entry || entry.smartType !== 'timeline') return '';
     
     return get().addTimelineItem(timelineId, {
       elementId: targetElementId,
-      label: label || 'عنصر مرتبط',
+      title: title || 'عنصر مرتبط', // ✅ تغيير من label إلى title
       date,
     });
   },
@@ -1252,7 +1252,7 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     if (!entry || entry.smartType !== 'timeline') return;
     
     const data = entry.data as SmartElementDataType<'timeline'>;
-    const item = data.items.find(i => i.elementId === targetElementId);
+    const item = (data.events || []).find(i => i.elementId === targetElementId); // ✅ تغيير من items إلى events
     if (item) {
       get().deleteTimelineItem(timelineId, item.id);
     }
