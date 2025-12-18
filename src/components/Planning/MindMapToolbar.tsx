@@ -1,12 +1,13 @@
 /**
  * شريط أدوات عائم للخرائط الذهنية
+ * مع نظام إعدادات التخطيط الثلاثي
  */
 
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { applyMindMapLayout, getLayoutName, type LayoutType } from '@/utils/mindmap-layout';
+import { applyLayoutWithSettings, DEFAULT_LAYOUT_SETTINGS, type LayoutSettings } from '@/utils/mindmap-layout';
 import { NODE_COLORS, calculateConnectorBounds } from '@/types/mindmap-canvas';
 import type { MindMapNodeData } from '@/types/mindmap-canvas';
 import {
@@ -19,22 +20,18 @@ import {
   RectangleHorizontal,
   Trash2,
   ChevronDown,
-  GitBranch,
-  Sun,
-  Waypoints,
-  TreeDeciduous
+  MoveHorizontal,
+  MoveVertical,
+  Columns,
+  ArrowLeftRight,
+  ArrowRightToLine,
+  ArrowLeftToLine
 } from 'lucide-react';
 
 interface MindMapToolbarProps {
   selectedNodeIds: string[];
   onClose?: () => void;
 }
-
-const LAYOUT_OPTIONS: { type: LayoutType; icon: React.ReactNode; label: string }[] = [
-  { type: 'tree', icon: <TreeDeciduous size={16} />, label: 'شجري' },
-  { type: 'radial', icon: <Sun size={16} />, label: 'شعاعي' },
-  { type: 'organic', icon: <Waypoints size={16} />, label: 'عضوي' },
-];
 
 const NODE_STYLES: { type: string; icon: React.ReactNode; label: string }[] = [
   { type: 'rounded', icon: <RectangleHorizontal size={16} />, label: 'مستدير' },
@@ -43,12 +40,35 @@ const NODE_STYLES: { type: string; icon: React.ReactNode; label: string }[] = [
   { type: 'circle', icon: <Circle size={16} />, label: 'دائري' },
 ];
 
+// مكون زر الراديو
+const RadioOption: React.FC<{
+  selected: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+}> = ({ selected, onClick, icon, label }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+      selected 
+        ? 'bg-[hsl(var(--accent-blue))] text-white shadow-sm' 
+        : 'bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:bg-[hsl(var(--border))]'
+    }`}
+  >
+    {icon}
+    <span>{label}</span>
+  </button>
+);
+
 const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClose }) => {
   const { elements, updateElement, deleteElement, addElement, viewport } = useCanvasStore();
   
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showLayoutMenu, setShowLayoutMenu] = useState(false);
   const [showStyleMenu, setShowStyleMenu] = useState(false);
+  
+  // إعدادات التخطيط
+  const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(DEFAULT_LAYOUT_SETTINGS);
   
   // الحصول على العقدة المحددة الأولى
   const selectedNode = elements.find(el => selectedNodeIds.includes(el.id) && el.type === 'mindmap_node');
@@ -64,14 +84,12 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
   const handleAddBranch = useCallback(() => {
     if (!selectedNode) return;
     
-    // ✅ حساب عدد الفروع الموجودة لهذه العقدة
     const existingConnectors = elements.filter(el => 
       el.type === 'mindmap_connector' && 
       (el.data as any)?.startNodeId === selectedNode.id
     );
     const childCount = existingConnectors.length;
     
-    // ✅ توزيع متناظر للفروع (أعلى وأسفل بالتناوب)
     const verticalSpacing = 80;
     const direction = childCount % 2 === 0 ? 1 : -1;
     const step = Math.ceil((childCount + 1) / 2);
@@ -79,7 +97,6 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
     
     const offset = 220;
     
-    // ✅ إنشاء ID مُحدد مسبقاً للعقدة الجديدة
     const newNodeId = `mindmap-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     const newNodeData: MindMapNodeData = {
@@ -89,7 +106,6 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
       isRoot: false
     };
     
-    // إضافة العقدة الجديدة مع ID معروف
     addElement({
       id: newNodeId,
       type: 'mindmap_node',
@@ -101,7 +117,6 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
       data: newNodeData
     });
     
-    // ✅ إضافة الـ connector مع حساب الـ bounds الحقيقي
     const newNodePos = { x: selectedNode.position.x + selectedNode.size.width + offset, y: selectedNode.position.y + yOffset };
     const newNodeSize = { width: 160, height: 60 };
     const connectorBounds = calculateConnectorBounds(
@@ -152,14 +167,13 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
   }, [selectedNodeIds, elements, updateElement]);
   
   // تطبيق التخطيط
-  const handleApplyLayout = useCallback((layoutType: LayoutType) => {
-    applyMindMapLayout(layoutType, elements, updateElement);
+  const handleApplyLayout = useCallback(() => {
+    applyLayoutWithSettings(layoutSettings, elements, updateElement);
     setShowLayoutMenu(false);
-  }, [elements, updateElement]);
+  }, [layoutSettings, elements, updateElement]);
   
   // حذف العقد المحددة
   const handleDelete = useCallback(() => {
-    // حذف العقد وجميع الروابط المتصلة بها
     const connectorIds = elements
       .filter(el => el.type === 'mindmap_connector')
       .filter(el => {
@@ -286,7 +300,7 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
         
         <div className="w-px h-6 bg-[hsl(var(--border))]" />
         
-        {/* تخطيط تلقائي */}
+        {/* تخطيط تلقائي - النظام الجديد */}
         <div className="relative">
           <button
             onClick={() => {
@@ -308,18 +322,79 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -5 }}
-                className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl p-2 border border-[hsl(var(--border))] min-w-[160px]"
+                className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl p-4 border border-[hsl(var(--border))] min-w-[280px]"
+                onClick={(e) => e.stopPropagation()}
               >
-                {LAYOUT_OPTIONS.map((layout) => (
-                  <button
-                    key={layout.type}
-                    onClick={() => handleApplyLayout(layout.type)}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors text-sm"
-                  >
-                    {layout.icon}
-                    <span>{layout.label}</span>
-                  </button>
-                ))}
+                {/* 1️⃣ التعامد */}
+                <div className="mb-4">
+                  <label className="text-xs font-semibold text-[hsl(var(--ink-60))] mb-2 block">
+                    التعامد
+                  </label>
+                  <div className="flex gap-2">
+                    <RadioOption 
+                      selected={layoutSettings.orientation === 'horizontal'}
+                      onClick={() => setLayoutSettings(s => ({ ...s, orientation: 'horizontal' }))}
+                      icon={<MoveHorizontal size={14} />}
+                      label="عرضي"
+                    />
+                    <RadioOption 
+                      selected={layoutSettings.orientation === 'vertical'}
+                      onClick={() => setLayoutSettings(s => ({ ...s, orientation: 'vertical' }))}
+                      icon={<MoveVertical size={14} />}
+                      label="طولي"
+                    />
+                  </div>
+                </div>
+                
+                {/* 2️⃣ التناظر */}
+                <div className="mb-4">
+                  <label className="text-xs font-semibold text-[hsl(var(--ink-60))] mb-2 block">
+                    التناظر
+                  </label>
+                  <div className="flex gap-2">
+                    <RadioOption 
+                      selected={layoutSettings.symmetry === 'symmetric'}
+                      onClick={() => setLayoutSettings(s => ({ ...s, symmetry: 'symmetric' }))}
+                      icon={<ArrowLeftRight size={14} />}
+                      label="تناظري"
+                    />
+                    <RadioOption 
+                      selected={layoutSettings.symmetry === 'unilateral'}
+                      onClick={() => setLayoutSettings(s => ({ ...s, symmetry: 'unilateral' }))}
+                      icon={<Columns size={14} />}
+                      label="أحادي"
+                    />
+                  </div>
+                </div>
+                
+                {/* 3️⃣ الاتجاه */}
+                <div className="mb-4">
+                  <label className="text-xs font-semibold text-[hsl(var(--ink-60))] mb-2 block">
+                    الاتجاه
+                  </label>
+                  <div className="flex gap-2">
+                    <RadioOption 
+                      selected={layoutSettings.direction === 'rtl'}
+                      onClick={() => setLayoutSettings(s => ({ ...s, direction: 'rtl' }))}
+                      icon={<ArrowRightToLine size={14} />}
+                      label={layoutSettings.orientation === 'horizontal' ? 'يمين ← يسار' : 'أعلى ← أسفل'}
+                    />
+                    <RadioOption 
+                      selected={layoutSettings.direction === 'ltr'}
+                      onClick={() => setLayoutSettings(s => ({ ...s, direction: 'ltr' }))}
+                      icon={<ArrowLeftToLine size={14} />}
+                      label={layoutSettings.orientation === 'horizontal' ? 'يسار ← يمين' : 'أسفل ← أعلى'}
+                    />
+                  </div>
+                </div>
+                
+                {/* زر تطبيق */}
+                <button 
+                  onClick={handleApplyLayout}
+                  className="w-full py-2.5 rounded-lg bg-[hsl(var(--accent-blue))] text-white font-medium text-sm hover:bg-[hsl(var(--accent-blue)/0.9)] transition-colors"
+                >
+                  تطبيق التخطيط
+                </button>
               </motion.div>
             )}
           </AnimatePresence>
