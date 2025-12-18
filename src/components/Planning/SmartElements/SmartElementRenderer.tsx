@@ -10,6 +10,10 @@ import { DecisionsMatrix } from './DecisionsMatrix';
 import { GanttChart } from './GanttChart';
 import { MindMap } from './MindMap';
 import { InteractiveSheet } from './InteractiveSheet';
+import { ProjectCard } from './ProjectCard';
+import { FinanceCard } from './FinanceCard';
+import { CsrCard } from './CsrCard';
+import { CrmCard } from './CrmCard';
 import { 
   Brain, Kanban, Vote, Lightbulb, Calendar, Grid3X3, 
   BarChart3, Table, GitBranch, FolderKanban, Wallet,
@@ -129,6 +133,46 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   if (smartType === 'interactive_sheet') {
     return (
       <InteractiveSheet 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Project Card
+  if (smartType === 'project_card') {
+    return (
+      <ProjectCard 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Finance Card
+  if (smartType === 'finance_card') {
+    return (
+      <FinanceCard 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // CSR Card
+  if (smartType === 'csr_card') {
+    return (
+      <CsrCard 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // CRM Card
+  if (smartType === 'crm_card') {
+    return (
+      <CrmCard 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
       />
