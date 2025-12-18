@@ -18,6 +18,7 @@ import { CanvasGridLayer } from './CanvasGridLayer';
 import { RealtimeSyncManager } from './collaboration';
 import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 import MindMapConnectionLine from './MindMapConnectionLine';
+import MindMapToolbar from './MindMapToolbar';
 import { findNearestAnchor, type NodeAnchorPoint, type MindMapConnectorData } from '@/types/mindmap-canvas';
 import type { SnapLine } from '@/core/snapEngine';
 
@@ -671,6 +672,15 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         position={{ x: window.innerWidth / 2, y: 80 }}
         isVisible={activeTool === 'smart_pen'}
       />
+      
+      {/* Mind Map Floating Toolbar */}
+      {selectedElementIds.length > 0 && elements.some(el => 
+        selectedElementIds.includes(el.id) && el.type === 'mindmap_node'
+      ) && (
+        <MindMapToolbar selectedNodeIds={selectedElementIds.filter(id => 
+          elements.find(el => el.id === id)?.type === 'mindmap_node'
+        )} />
+      )}
       
       {/* ✅ Sprint 17: Real-time Collaboration Sync Manager */}
       <RealtimeSyncManager
