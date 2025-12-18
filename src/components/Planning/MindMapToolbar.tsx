@@ -60,9 +60,20 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
   const toolbarX = selectedNode.position.x + selectedNode.size.width / 2;
   const toolbarY = selectedNode.position.y - 60;
   
-  // إضافة فرع جديد
+  // إضافة فرع جديد مع توزيع تلقائي
   const handleAddBranch = useCallback(() => {
     if (!selectedNode) return;
+    
+    // ✅ حساب عدد الفروع الموجودة لهذه العقدة
+    const existingConnectors = elements.filter(el => 
+      el.type === 'mindmap_connector' && 
+      (el.data as any)?.startNodeId === selectedNode.id
+    );
+    const childCount = existingConnectors.length;
+    
+    // ✅ حساب الإزاحة العمودية لتوزيع الفروع
+    const verticalSpacing = 80;
+    const yOffset = (childCount - Math.floor(childCount / 2)) * verticalSpacing;
     
     const offset = 220;
     const newNodeData: MindMapNodeData = {
@@ -72,12 +83,12 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
       isRoot: false
     };
     
-    // إضافة العقدة الجديدة
+    // إضافة العقدة الجديدة في موقع مختلف
     addElement({
       type: 'mindmap_node',
       position: {
         x: selectedNode.position.x + selectedNode.size.width + offset,
-        y: selectedNode.position.y
+        y: selectedNode.position.y + yOffset
       },
       size: { width: 160, height: 60 },
       data: newNodeData
@@ -86,12 +97,10 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
     // إضافة الرابط
     setTimeout(() => {
       const state = useCanvasStore.getState();
-      const newNodes = state.elements.filter(el => 
-        el.type === 'mindmap_node' && !selectedNodeIds.includes(el.id)
-      );
-      const newNode = newNodes[newNodes.length - 1];
+      const allNodes = state.elements.filter(el => el.type === 'mindmap_node');
+      const newNode = allNodes[allNodes.length - 1]; // آخر عقدة تمت إضافتها
       
-      if (newNode) {
+      if (newNode && newNode.id !== selectedNode.id) {
         addElement({
           type: 'mindmap_connector',
           position: { x: 0, y: 0 },
@@ -108,7 +117,7 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
         });
       }
     }, 50);
-  }, [selectedNode, selectedNodeIds, nodeData, addElement]);
+  }, [selectedNode, elements, nodeData, addElement]);
   
   // تغيير اللون
   const handleColorChange = useCallback((color: string) => {
