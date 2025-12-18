@@ -14,6 +14,7 @@ import { canvasKernel, getContainerRect } from '@/core/canvasKernel';
 import { toast } from 'sonner';
 import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
 import { CanvasGridLayer } from './CanvasGridLayer';
+import { RealtimeSyncManager } from './collaboration';
 import type { SnapLine } from '@/core/snapEngine';
 
 interface InfiniteCanvasProps {
@@ -499,6 +500,18 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       <PenFloatingToolbar
         position={{ x: window.innerWidth / 2, y: 80 }}
         isVisible={activeTool === 'smart_pen'}
+      />
+      
+      {/* ✅ Sprint 17: Real-time Collaboration Sync Manager */}
+      <RealtimeSyncManager
+        boardId={boardId}
+        userId={`user-${Date.now()}`}
+        userName="مستخدم سوبرا"
+        enabled={true}
+        viewport={viewport}
+        onSyncStatusChange={(status) => {
+          console.log('Sync status:', status);
+        }}
       />
       
     </div>;
