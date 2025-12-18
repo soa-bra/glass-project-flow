@@ -456,7 +456,28 @@ class SnapEngineImpl {
     const guides: SnapLine[] = [];
     const target = this._targets.find(t => t.id === candidate.elementId);
 
-    if (!target) return guides;
+    // ✅ Fix: دعم Grid Guides (بدون elementId)
+    if (!target) {
+      // Grid snap - إنشاء خط إرشاد قصير حول العنصر
+      if (type === 'vertical') {
+        guides.push({
+          type: 'vertical',
+          position: snappedX,
+          start: { x: snappedX, y: snappedY - 30 },
+          end: { x: snappedX, y: snappedY + bounds.height + 30 },
+          snapType: 'grid'
+        });
+      } else {
+        guides.push({
+          type: 'horizontal',
+          position: snappedY,
+          start: { x: snappedX - 30, y: snappedY },
+          end: { x: snappedX + bounds.width + 30, y: snappedY },
+          snapType: 'grid'
+        });
+      }
+      return guides;
+    }
 
     if (type === 'vertical') {
       const x = candidate.type === 'center' 
