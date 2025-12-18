@@ -387,6 +387,38 @@ function calculateVerticalSymmetricLayout(
 }
 
 /**
+ * تحديد نقاط الاتصال (Anchors) المناسبة بناءً على إعدادات التخطيط
+ */
+function getAnchorsForLayout(
+  settings: LayoutSettings,
+  isSecondary: boolean = false
+): { startAnchor: 'top' | 'bottom' | 'left' | 'right'; endAnchor: 'top' | 'bottom' | 'left' | 'right' } {
+  if (settings.orientation === 'horizontal') {
+    // تخطيط أفقي
+    if (settings.symmetry === 'symmetric' && isSecondary) {
+      // الجانب الثانوي في التناظري (معكوس)
+      return settings.direction === 'rtl'
+        ? { startAnchor: 'left', endAnchor: 'right' }
+        : { startAnchor: 'right', endAnchor: 'left' };
+    }
+    // الجانب الأساسي أو أحادي
+    return settings.direction === 'rtl'
+      ? { startAnchor: 'right', endAnchor: 'left' }   // يمين ← يسار
+      : { startAnchor: 'left', endAnchor: 'right' };  // يسار ← يمين
+  } else {
+    // تخطيط عمودي
+    if (settings.symmetry === 'symmetric' && isSecondary) {
+      return settings.direction === 'rtl'
+        ? { startAnchor: 'top', endAnchor: 'bottom' }
+        : { startAnchor: 'bottom', endAnchor: 'top' };
+    }
+    return settings.direction === 'rtl'
+      ? { startAnchor: 'bottom', endAnchor: 'top' }   // أعلى ← أسفل
+      : { startAnchor: 'top', endAnchor: 'bottom' };  // أسفل ← أعلى
+  }
+}
+
+/**
  * تطبيق التخطيط الجديد بناءً على الإعدادات
  */
 export function applyLayoutWithSettings(
@@ -406,6 +438,18 @@ export function applyLayoutWithSettings(
   if (!tree) return;
   
   let results: LayoutResult[] = [];
+  
+  // خريطة لتتبع أي جانب ينتمي إليه كل عقدة (للتناظري)
+  const nodeSideMap = new Map<string, 'primary' | 'secondary'>();
+  
+  // بناء خريطة الجوانب من الشجرة
+  function mapNodeSides(node: LayoutNode) {
+    if (node.side) {
+      nodeSideMap.set(node.id, node.side);
+    }
+    node.children.forEach(child => mapNodeSides(child));
+  }
+  mapNodeSides(tree);
   
   if (settings.orientation === 'horizontal') {
     if (settings.symmetry === 'symmetric') {
@@ -440,14 +484,13 @@ export function applyLayoutWithSettings(
     }
   });
   
-  // ✅ الخطوة 3: تحديث جميع الـ connectors بناءً على المواقع الجديدة
+  // ✅ الخطوة 3: تحديث جميع الـ connectors مع الـ anchors الصحيحة
   connectors.forEach(connector => {
     const connectorData = connector.data as MindMapConnectorData;
     
     const startNodeData = newPositions.get(connectorData.startNodeId);
     const endNodeData = newPositions.get(connectorData.endNodeId);
     
-    // استخدام المواقع الجديدة إن وجدت، وإلا استخدام المواقع الأصلية
     const startNode = startNodeData || nodes.find(n => n.id === connectorData.startNodeId);
     const endNode = endNodeData || nodes.find(n => n.id === connectorData.endNodeId);
     
@@ -459,17 +502,29 @@ export function applyLayoutWithSettings(
         ? endNode 
         : { position: (endNode as CanvasElement).position, size: (endNode as CanvasElement).size };
       
+      // تحديد إذا كان الـ connector في الجانب الثانوي (للتناظري)
+      const endNodeSide = nodeSideMap.get(connectorData.endNodeId);
+      const isSecondary = endNodeSide === 'secondary';
+      
+      // الحصول على الـ anchors المناسبة بناءً على إعدادات التخطيط
+      const { startAnchor, endAnchor } = getAnchorsForLayout(settings, isSecondary);
+      
       // حساب حدود الـ connector الجديدة
       const padding = 50;
-      const minX = Math.min(startInfo.position.x, endInfo.position.x + endInfo.size.width) - padding;
-      const minY = Math.min(startInfo.position.y, endInfo.position.y + endInfo.size.height) - padding;
+      const minX = Math.min(startInfo.position.x, endInfo.position.x) - padding;
+      const minY = Math.min(startInfo.position.y, endInfo.position.y) - padding;
       const maxX = Math.max(startInfo.position.x + startInfo.size.width, endInfo.position.x + endInfo.size.width) + padding;
       const maxY = Math.max(startInfo.position.y + startInfo.size.height, endInfo.position.y + endInfo.size.height) + padding;
       
-      // تحديث موقع وحجم الـ connector
+      // تحديث موقع وحجم والـ anchors للـ connector
       updateElement(connector.id, {
         position: { x: minX, y: minY },
-        size: { width: maxX - minX, height: maxY - minY }
+        size: { width: maxX - minX, height: maxY - minY },
+        data: {
+          ...connectorData,
+          startAnchor: { nodeId: connectorData.startNodeId, anchor: startAnchor },
+          endAnchor: { nodeId: connectorData.endNodeId, anchor: endAnchor }
+        }
       });
     }
   });

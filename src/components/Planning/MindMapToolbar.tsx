@@ -70,6 +70,14 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
   // إعدادات التخطيط
   const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(DEFAULT_LAYOUT_SETTINGS);
   
+  // تطبيق التخطيط تلقائياً عند تغيير أي إعداد
+  const handleLayoutSettingChange = useCallback((newSettings: Partial<LayoutSettings>) => {
+    const updatedSettings = { ...layoutSettings, ...newSettings };
+    setLayoutSettings(updatedSettings);
+    // تطبيق مباشر بدون زر
+    applyLayoutWithSettings(updatedSettings, elements, updateElement);
+  }, [layoutSettings, elements, updateElement]);
+  
   // الحصول على العقدة المحددة الأولى
   const selectedNode = elements.find(el => selectedNodeIds.includes(el.id) && el.type === 'mindmap_node');
   const nodeData = selectedNode?.data as MindMapNodeData | undefined;
@@ -166,10 +174,9 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
     setShowStyleMenu(false);
   }, [selectedNodeIds, elements, updateElement]);
   
-  // تطبيق التخطيط
+  // تطبيق التخطيط (للاستخدام اليدوي إن لزم)
   const handleApplyLayout = useCallback(() => {
     applyLayoutWithSettings(layoutSettings, elements, updateElement);
-    setShowLayoutMenu(false);
   }, [layoutSettings, elements, updateElement]);
   
   // حذف العقد المحددة
@@ -330,16 +337,16 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
                   <label className="text-xs font-semibold text-[hsl(var(--ink-60))] mb-2 block">
                     التعامد
                   </label>
-                  <div className="flex gap-2">
+                <div className="flex gap-2">
                     <RadioOption 
                       selected={layoutSettings.orientation === 'horizontal'}
-                      onClick={() => setLayoutSettings(s => ({ ...s, orientation: 'horizontal' }))}
+                      onClick={() => handleLayoutSettingChange({ orientation: 'horizontal' })}
                       icon={<MoveHorizontal size={14} />}
                       label="عرضي"
                     />
                     <RadioOption 
                       selected={layoutSettings.orientation === 'vertical'}
-                      onClick={() => setLayoutSettings(s => ({ ...s, orientation: 'vertical' }))}
+                      onClick={() => handleLayoutSettingChange({ orientation: 'vertical' })}
                       icon={<MoveVertical size={14} />}
                       label="طولي"
                     />
@@ -354,13 +361,13 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
                   <div className="flex gap-2">
                     <RadioOption 
                       selected={layoutSettings.symmetry === 'symmetric'}
-                      onClick={() => setLayoutSettings(s => ({ ...s, symmetry: 'symmetric' }))}
+                      onClick={() => handleLayoutSettingChange({ symmetry: 'symmetric' })}
                       icon={<ArrowLeftRight size={14} />}
                       label="تناظري"
                     />
                     <RadioOption 
                       selected={layoutSettings.symmetry === 'unilateral'}
-                      onClick={() => setLayoutSettings(s => ({ ...s, symmetry: 'unilateral' }))}
+                      onClick={() => handleLayoutSettingChange({ symmetry: 'unilateral' })}
                       icon={<Columns size={14} />}
                       label="أحادي"
                     />
@@ -368,33 +375,25 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
                 </div>
                 
                 {/* 3️⃣ الاتجاه */}
-                <div className="mb-4">
+                <div>
                   <label className="text-xs font-semibold text-[hsl(var(--ink-60))] mb-2 block">
                     الاتجاه
                   </label>
                   <div className="flex gap-2">
                     <RadioOption 
                       selected={layoutSettings.direction === 'rtl'}
-                      onClick={() => setLayoutSettings(s => ({ ...s, direction: 'rtl' }))}
+                      onClick={() => handleLayoutSettingChange({ direction: 'rtl' })}
                       icon={<ArrowRightToLine size={14} />}
                       label={layoutSettings.orientation === 'horizontal' ? 'يمين ← يسار' : 'أعلى ← أسفل'}
                     />
                     <RadioOption 
                       selected={layoutSettings.direction === 'ltr'}
-                      onClick={() => setLayoutSettings(s => ({ ...s, direction: 'ltr' }))}
+                      onClick={() => handleLayoutSettingChange({ direction: 'ltr' })}
                       icon={<ArrowLeftToLine size={14} />}
                       label={layoutSettings.orientation === 'horizontal' ? 'يسار ← يمين' : 'أسفل ← أعلى'}
                     />
                   </div>
                 </div>
-                
-                {/* زر تطبيق */}
-                <button 
-                  onClick={handleApplyLayout}
-                  className="w-full py-2.5 rounded-lg bg-[hsl(var(--accent-blue))] text-white font-medium text-sm hover:bg-[hsl(var(--accent-blue)/0.9)] transition-colors"
-                >
-                  تطبيق التخطيط
-                </button>
               </motion.div>
             )}
           </AnimatePresence>
