@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { applyMindMapLayout, getLayoutName, type LayoutType } from '@/utils/mindmap-layout';
-import { NODE_COLORS } from '@/types/mindmap-canvas';
+import { NODE_COLORS, calculateConnectorBounds } from '@/types/mindmap-canvas';
 import type { MindMapNodeData } from '@/types/mindmap-canvas';
 import {
   Plus,
@@ -101,11 +101,18 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
       data: newNodeData
     });
     
-    // ✅ إضافة الـ connector فوراً (بدون setTimeout)
+    // ✅ إضافة الـ connector مع حساب الـ bounds الحقيقي
+    const newNodePos = { x: selectedNode.position.x + selectedNode.size.width + offset, y: selectedNode.position.y + yOffset };
+    const newNodeSize = { width: 160, height: 60 };
+    const connectorBounds = calculateConnectorBounds(
+      { position: selectedNode.position, size: selectedNode.size },
+      { position: newNodePos, size: newNodeSize }
+    );
+    
     addElement({
       type: 'mindmap_connector',
-      position: { x: 0, y: 0 },
-      size: { width: 0, height: 0 },
+      position: connectorBounds.position,
+      size: connectorBounds.size,
       data: {
         startNodeId: selectedNode.id,
         endNodeId: newNodeId,
