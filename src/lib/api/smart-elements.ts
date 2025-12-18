@@ -263,20 +263,21 @@ export const smartElementsApi = {
 
   /**
    * Update smart element data with optimistic locking
+   * Returns { success, data, conflictError }
    */
   update: async <T extends SmartElementType>(
     boardObjectId: string,
     updates: Partial<SmartElementDataType<T>>,
     expectedVersion?: number
-  ): Promise<SmartElementRecord | null> => {
+  ): Promise<{ success: boolean; data: SmartElementRecord | null; conflictError?: boolean }> => {
     // First read current data
     const current = await smartElementsApi.read(boardObjectId);
-    if (!current) return null;
+    if (!current) return { success: false, data: null };
 
     // Optimistic locking check
     if (expectedVersion !== undefined && current.version !== expectedVersion) {
       console.error('Version mismatch - data may have been modified');
-      return null;
+      return { success: false, data: null, conflictError: true };
     }
 
     // Merge updates with current data
@@ -294,21 +295,30 @@ export const smartElementsApi = {
       })
       .eq('board_object_id', boardObjectId)
       .select()
-      .single();
+      .maybeSingle();
 
-    if (error || !data) {
+    if (error) {
       console.error('Failed to update smart element:', error);
-      return null;
+      return { success: false, data: null };
+    }
+
+    // No row returned means concurrent update (version mismatch or row deleted)
+    if (!data) {
+      console.error('Concurrent update detected - row not found or version changed');
+      return { success: false, data: null, conflictError: true };
     }
 
     return {
-      id: data.id,
-      boardObjectId: data.board_object_id,
-      smartType: data.smart_type as SmartElementType,
-      data: data.data,
-      version: data.version,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
+      success: true,
+      data: {
+        id: data.id,
+        boardObjectId: data.board_object_id,
+        smartType: data.smart_type as SmartElementType,
+        data: data.data,
+        version: data.version,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      },
     };
   },
 
@@ -448,18 +458,23 @@ export const smartElementsApi = {
       boardObjectId: string;
       data: Partial<Record<string, unknown>>;
     }>
-  ): Promise<number> => {
+  ): Promise<{ successCount: number; conflicts: string[] }> => {
     let successCount = 0;
+    const conflicts: string[] = [];
 
     for (const update of updates) {
       const result = await smartElementsApi.update(
         update.boardObjectId,
         update.data as any
       );
-      if (result) successCount++;
+      if (result.success) {
+        successCount++;
+      } else if (result.conflictError) {
+        conflicts.push(update.boardObjectId);
+      }
     }
 
-    return successCount;
+    return { successCount, conflicts };
   },
 };
 
