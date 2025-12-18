@@ -13,6 +13,8 @@ import { useCollaboration } from '@/hooks/useCollaboration';
 import { RemoteCursors } from './RemoteCursors';
 import { CollaboratorsList } from './CollaboratorsList';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { useCollaborationStore, Participant } from '@/stores/collaborationStore';
+import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -80,6 +82,36 @@ export const RealtimeSyncManager: React.FC<RealtimeSyncManagerProps> = ({
   });
 
   const { elements, selectedElementIds } = useCanvasStore();
+  const { setParticipants, setCurrentUser, setConnected, voiceState } = useCollaborationStore();
+  const collaborationUser = useCollaborationUser();
+
+  // ✅ تحديث حالة الاتصال في الـ store
+  useEffect(() => {
+    setConnected(isConnected);
+  }, [isConnected, setConnected]);
+
+  // ✅ تحديث collaborationStore بالمشاركين
+  useEffect(() => {
+    if (collaborators.length > 0 || isConnected) {
+      const updatedParticipants: Participant[] = collaborators.map((c, index) => ({
+        id: c.odId,
+        name: c.name,
+        color: c.color,
+        role: index === 0 ? 'host' as const : 'editor' as const,
+        online: true,
+        inVoiceCall: voiceState.participants.includes(c.odId),
+        isMuted: true,
+        isSpeaking: false,
+      }));
+      setParticipants(updatedParticipants);
+    }
+  }, [collaborators, isConnected, voiceState.participants, setParticipants]);
+
+  // ✅ تعيين المستخدم الحالي كمستضيف إذا كان أول من انضم
+  useEffect(() => {
+    const isFirstUser = collaborators.length === 0 || collaborators[0]?.odId === collaborationUser.id;
+    setCurrentUser(collaborationUser.id, isFirstUser);
+  }, [collaborationUser.id, collaborators, setCurrentUser]);
 
   // تحديث حالة التزامن
   useEffect(() => {

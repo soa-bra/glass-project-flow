@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Users, MessageSquare, Phone, UserPlus, Send } from 'lucide-react';
+import { 
+  Users, MessageSquare, Phone, UserPlus, Send, 
+  Mic, MicOff, PhoneCall, PhoneOff, Volume2,
+  Check, Crown, Eye, Edit3
+} from 'lucide-react';
+import { useCollaborationStore, Participant } from '@/stores/collaborationStore';
+import { useCollaborationUser } from '@/hooks/useCollaborationUser';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SharePopoverProps {
   isOpen: boolean;
@@ -8,34 +15,105 @@ interface SharePopoverProps {
 
 type TabType = 'participants' | 'comments' | 'voice';
 
-export const SharePopover: React.FC<SharePopoverProps> = ({ isOpen, onClose }) => {
+export const SharePopover: React.FC<SharePopoverProps> = ({ 
+  isOpen, 
+  onClose,
+}) => {
   const [activeTab, setActiveTab] = useState<TabType>('participants');
   const [newComment, setNewComment] = useState('');
   
+  const collaborationUser = useCollaborationUser();
+  const {
+    participants,
+    comments,
+    voiceState,
+    isHost,
+    isConnected,
+    addComment,
+    resolveComment,
+    startVoiceCall,
+    endVoiceCall,
+    joinVoiceCall,
+    leaveVoiceCall,
+    toggleMute,
+  } = useCollaborationStore();
+  
   if (!isOpen) return null;
   
-  // Mock data
-  const participants = [
-    { id: 1, name: 'أحمد محمد', role: 'مالك', online: true, color: '#3DBE8B' },
-    { id: 2, name: 'فاطمة علي', role: 'محرر', online: true, color: '#F6C445' },
-    { id: 3, name: 'خالد سعيد', role: 'قارئ', online: false, color: '#3DA8F5' },
-  ];
+  const handleSendComment = () => {
+    if (!newComment.trim()) return;
+    
+    addComment({
+      authorId: collaborationUser.id,
+      authorName: collaborationUser.name,
+      authorColor: collaborationUser.color,
+      text: newComment.trim(),
+      resolved: false,
+    });
+    setNewComment('');
+  };
   
-  const comments = [
-    { id: 1, author: 'أحمد', text: 'هل نغير هذا اللون؟', resolved: false, timestamp: Date.now() },
-    { id: 2, author: 'فاطمة', text: 'تمام، تم التعديل', resolved: true, timestamp: Date.now() - 3600000 },
-  ];
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendComment();
+    }
+  };
   
-  const voiceParticipants = [
-    { id: 1, name: 'أحمد محمد', inCall: true, muted: false, volume: 80 },
-    { id: 2, name: 'فاطمة علي', inCall: true, muted: false, volume: 65 },
+  const getRoleIcon = (role: string) => {
+    switch (role) {
+      case 'host': return <Crown size={12} className="text-[#F6C445]" />;
+      case 'editor': return <Edit3 size={12} className="text-sb-ink-60" />;
+      case 'viewer': return <Eye size={12} className="text-sb-ink-40" />;
+      default: return null;
+    }
+  };
+  
+  const getRoleName = (role: string) => {
+    switch (role) {
+      case 'host': return 'مستضيف';
+      case 'editor': return 'محرر';
+      case 'viewer': return 'قارئ';
+      default: return '';
+    }
+  };
+  
+  const formatTime = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // دمج المستخدم الحالي مع المشاركين
+  const allParticipants: Participant[] = [
+    {
+      id: collaborationUser.id,
+      name: collaborationUser.name + ' (أنت)',
+      color: collaborationUser.color,
+      role: isHost ? 'host' : 'editor',
+      online: true,
+      inVoiceCall: voiceState.participants.includes(collaborationUser.id),
+      isMuted: voiceState.isMuted,
+      isSpeaking: false,
+    },
+    ...participants.filter(p => p.id !== collaborationUser.id),
   ];
   
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div className="absolute top-full left-0 mt-2 w-96 bg-white rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border overflow-hidden z-50">
-        {/* Tabs */}
+      <div className="absolute top-full left-0 mt-2 w-96 bg-white rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border overflow-hidden z-50" dir="rtl">
+        {/* حالة الاتصال */}
+        <div className="px-4 py-2 bg-sb-panel-bg border-b border-sb-border flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#3DBE8B]' : 'bg-sb-ink-30'}`} />
+          <span className="text-[11px] text-sb-ink-60">
+            {isConnected ? 'متصل' : 'غير متصل'}
+          </span>
+          <span className="text-[11px] text-sb-ink-40 mr-auto">
+            {allParticipants.length} مشارك
+          </span>
+        </div>
+        
+        {/* التبويبات */}
         <div className="flex border-b border-sb-border">
           <button
             onClick={() => setActiveTab('participants')}
@@ -58,6 +136,11 @@ export const SharePopover: React.FC<SharePopoverProps> = ({ isOpen, onClose }) =
           >
             <MessageSquare size={16} />
             التعليقات
+            {comments.filter(c => !c.resolved).length > 0 && (
+              <span className="bg-[#E5564D] text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                {comments.filter(c => !c.resolved).length}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setActiveTab('voice')}
@@ -69,101 +152,272 @@ export const SharePopover: React.FC<SharePopoverProps> = ({ isOpen, onClose }) =
           >
             <Phone size={16} />
             الصوت
+            {voiceState.isCallActive && (
+              <span className="w-2 h-2 rounded-full bg-[#3DBE8B] animate-pulse" />
+            )}
           </button>
         </div>
         
-        {/* Content */}
+        {/* المحتوى */}
         <div className="p-4 max-h-96 overflow-y-auto">
-          {activeTab === 'participants' && (
-            <div className="space-y-3">
-              <button className="w-full flex items-center gap-2 px-3 py-2 bg-sb-panel-bg rounded-lg hover:bg-sb-ink-20 transition-colors">
-                <UserPlus size={16} className="text-sb-ink" />
-                <span className="text-[13px] font-medium text-sb-ink">دعوة مشاركين</span>
-              </button>
-              
-              <div className="space-y-2">
-                {participants.map(participant => (
-                  <div key={participant.id} className="flex items-center gap-3 p-2">
-                    <div 
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[14px] font-semibold"
-                      style={{ backgroundColor: participant.color }}
-                    >
-                      {participant.name.charAt(0)}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-[13px] font-medium text-sb-ink">{participant.name}</p>
-                      <p className="text-[11px] text-sb-ink-40">{participant.role}</p>
-                    </div>
-                    <div className={`w-2 h-2 rounded-full ${participant.online ? 'bg-[#3DBE8B]' : 'bg-sb-ink-20'}`} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {activeTab === 'comments' && (
-            <div className="space-y-3">
-              <div className="space-y-2">
-                {comments.map(comment => (
-                  <div 
-                    key={comment.id} 
-                    className={`p-3 rounded-lg ${comment.resolved ? 'bg-sb-panel-bg' : 'bg-white border border-sb-border'}`}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <p className="text-[13px] font-medium text-sb-ink">{comment.author}</p>
-                      {comment.resolved && (
-                        <span className="text-[11px] text-[#3DBE8B]">✓ محلول</span>
+          <AnimatePresence mode="wait">
+            {/* === تبويب المشاركين === */}
+            {activeTab === 'participants' && (
+              <motion.div
+                key="participants"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-3"
+              >
+                <button className="w-full flex items-center gap-2 px-3 py-2 bg-sb-panel-bg rounded-lg hover:bg-sb-ink-20 transition-colors">
+                  <UserPlus size={16} className="text-sb-ink" />
+                  <span className="text-[13px] font-medium text-sb-ink">دعوة مشاركين</span>
+                </button>
+                
+                <div className="space-y-2">
+                  {allParticipants.map(participant => (
+                    <div key={participant.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-sb-panel-bg/50 transition-colors">
+                      <div className="relative">
+                        <div 
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[14px] font-semibold"
+                          style={{ backgroundColor: participant.color }}
+                        >
+                          {participant.name.charAt(0)}
+                        </div>
+                        <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${
+                          participant.online ? 'bg-[#3DBE8B]' : 'bg-sb-ink-20'
+                        }`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-medium text-sb-ink truncate">{participant.name}</p>
+                        <div className="flex items-center gap-1">
+                          {getRoleIcon(participant.role)}
+                          <p className="text-[11px] text-sb-ink-40">{getRoleName(participant.role)}</p>
+                        </div>
+                      </div>
+                      {participant.inVoiceCall && (
+                        <div className="flex items-center gap-1">
+                          {participant.isMuted ? (
+                            <MicOff size={14} className="text-sb-ink-40" />
+                          ) : (
+                            <Mic size={14} className={participant.isSpeaking ? 'text-[#3DBE8B]' : 'text-sb-ink-60'} />
+                          )}
+                        </div>
                       )}
                     </div>
-                    <p className="text-[12px] text-sb-ink-70">{comment.text}</p>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+            
+            {/* === تبويب التعليقات === */}
+            {activeTab === 'comments' && (
+              <motion.div
+                key="comments"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-3"
+              >
+                {comments.length === 0 ? (
+                  <div className="text-center py-8">
+                    <MessageSquare size={32} className="mx-auto text-sb-ink-20 mb-2" />
+                    <p className="text-[13px] text-sb-ink-40">لا توجد تعليقات بعد</p>
                   </div>
-                ))}
-              </div>
-              
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="اكتب تعليقًا..."
-                  className="flex-1 px-3 py-2 text-[12px] border border-sb-border rounded-lg focus:outline-none focus:border-sb-ink"
-                />
-                <button className="p-2 bg-sb-ink text-white rounded-lg hover:opacity-90 transition-opacity">
-                  <Send size={16} />
-                </button>
-              </div>
-            </div>
-          )}
-          
-          {activeTab === 'voice' && (
-            <div className="space-y-3">
-              <button className="w-full px-4 py-3 bg-[#3DBE8B] text-white rounded-lg font-medium hover:opacity-90 transition-opacity">
-                بدء المكالمة
-              </button>
-              
-              <div className="space-y-2">
-                {voiceParticipants.map(participant => (
-                  <div key={participant.id} className="flex items-center gap-3 p-2">
-                    <div className="w-10 h-10 rounded-full bg-sb-panel-bg flex items-center justify-center">
-                      <Phone size={16} className="text-sb-ink" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-[13px] font-medium text-sb-ink">{participant.name}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="flex-1 h-1 bg-sb-panel-bg rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-[#3DBE8B]"
-                            style={{ width: `${participant.volume}%` }}
-                          />
+                ) : (
+                  <div className="space-y-2">
+                    {comments.map(comment => (
+                      <div 
+                        key={comment.id} 
+                        className={`p-3 rounded-lg ${
+                          comment.resolved 
+                            ? 'bg-sb-panel-bg opacity-60' 
+                            : 'bg-white border border-sb-border'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-semibold"
+                              style={{ backgroundColor: comment.authorColor }}
+                            >
+                              {comment.authorName.charAt(0)}
+                            </div>
+                            <p className="text-[13px] font-medium text-sb-ink">{comment.authorName}</p>
+                            <p className="text-[10px] text-sb-ink-40">{formatTime(comment.timestamp)}</p>
+                          </div>
+                          {!comment.resolved && (
+                            <button 
+                              onClick={() => resolveComment(comment.id)}
+                              className="p-1 hover:bg-sb-panel-bg rounded transition-colors"
+                              title="تم الحل"
+                            >
+                              <Check size={14} className="text-[#3DBE8B]" />
+                            </button>
+                          )}
                         </div>
-                        <span className="text-[10px] text-sb-ink-40">{participant.volume}%</span>
+                        <p className="text-[12px] text-sb-ink-70 leading-relaxed">{comment.text}</p>
+                        {comment.resolved && (
+                          <span className="inline-flex items-center gap-1 mt-2 text-[10px] text-[#3DBE8B]">
+                            <Check size={10} /> تم الحل
+                          </span>
+                        )}
                       </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
+                )}
+                
+                <div className="flex gap-2 pt-2 border-t border-sb-border">
+                  <input
+                    type="text"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="اكتب تعليقًا..."
+                    className="flex-1 px-3 py-2 text-[12px] border border-sb-border rounded-lg focus:outline-none focus:border-sb-ink bg-white"
+                  />
+                  <button 
+                    onClick={handleSendComment}
+                    disabled={!newComment.trim()}
+                    className="p-2 bg-sb-ink text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                  >
+                    <Send size={16} />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+            
+            {/* === تبويب الصوت === */}
+            {activeTab === 'voice' && (
+              <motion.div
+                key="voice"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-4"
+              >
+                {/* حالة المكالمة */}
+                {!voiceState.isCallActive ? (
+                  <div className="text-center py-6">
+                    <Phone size={40} className="mx-auto text-sb-ink-20 mb-3" />
+                    <p className="text-[13px] text-sb-ink-60 mb-4">لا توجد مكالمة نشطة</p>
+                    {isHost ? (
+                      <button 
+                        onClick={startVoiceCall}
+                        className="w-full px-4 py-3 bg-[#3DBE8B] text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                      >
+                        <PhoneCall size={18} />
+                        بدء مكالمة صوتية
+                      </button>
+                    ) : (
+                      <p className="text-[12px] text-sb-ink-40">
+                        انتظر المستضيف لبدء المكالمة
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    {/* شريط التحكم */}
+                    <div className="bg-sb-panel-bg rounded-xl p-4">
+                      <div className="flex items-center justify-center gap-4">
+                        {/* زر الكتم */}
+                        <button
+                          onClick={toggleMute}
+                          className={`p-3 rounded-full transition-colors ${
+                            voiceState.isMuted
+                              ? 'bg-sb-ink-20 text-sb-ink-60'
+                              : 'bg-[#3DBE8B] text-white'
+                          }`}
+                          title={voiceState.isMuted ? 'إلغاء الكتم' : 'كتم'}
+                          disabled={!isHost} // فقط المستضيف يمكنه التحدث
+                        >
+                          {voiceState.isMuted ? <MicOff size={20} /> : <Mic size={20} />}
+                        </button>
+                        
+                        {/* زر مغادرة/إنهاء */}
+                        {isHost ? (
+                          <button
+                            onClick={endVoiceCall}
+                            className="p-3 rounded-full bg-[#E5564D] text-white transition-colors hover:opacity-90"
+                            title="إنهاء المكالمة"
+                          >
+                            <PhoneOff size={20} />
+                          </button>
+                        ) : (
+                          voiceState.participants.includes(collaborationUser.id) ? (
+                            <button
+                              onClick={leaveVoiceCall}
+                              className="p-3 rounded-full bg-[#E5564D] text-white transition-colors hover:opacity-90"
+                              title="مغادرة المكالمة"
+                            >
+                              <PhoneOff size={20} />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={joinVoiceCall}
+                              className="p-3 rounded-full bg-[#3DBE8B] text-white transition-colors hover:opacity-90"
+                              title="الانضمام للمكالمة"
+                            >
+                              <PhoneCall size={20} />
+                            </button>
+                          )
+                        )}
+                      </div>
+                      
+                      {/* رسالة للمشاركين غير المستضيفين */}
+                      {!isHost && (
+                        <p className="text-center text-[11px] text-sb-ink-40 mt-3">
+                          <Volume2 size={12} className="inline ml-1" />
+                          وضع الاستماع فقط - المستضيف يتحدث
+                        </p>
+                      )}
+                    </div>
+                    
+                    {/* قائمة المشاركين في المكالمة */}
+                    <div className="space-y-2">
+                      <p className="text-[12px] text-sb-ink-60 font-medium">
+                        المشاركين في المكالمة ({voiceState.participants.length})
+                      </p>
+                      {allParticipants
+                        .filter(p => voiceState.participants.includes(p.id))
+                        .map(participant => (
+                          <div key={participant.id} className="flex items-center gap-3 p-2 bg-sb-panel-bg/50 rounded-lg">
+                            <div 
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-semibold"
+                              style={{ backgroundColor: participant.color }}
+                            >
+                              {participant.name.charAt(0)}
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-[12px] font-medium text-sb-ink">{participant.name}</p>
+                              <p className="text-[10px] text-sb-ink-40">
+                                {participant.role === 'host' ? 'مستضيف - يتحدث' : 'مستمع'}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {participant.isSpeaking && !participant.isMuted && (
+                                <motion.div
+                                  animate={{ scale: [1, 1.2, 1] }}
+                                  transition={{ repeat: Infinity, duration: 0.8 }}
+                                >
+                                  <Volume2 size={14} className="text-[#3DBE8B]" />
+                                </motion.div>
+                              )}
+                              {participant.isMuted ? (
+                                <MicOff size={14} className="text-sb-ink-40" />
+                              ) : (
+                                <Mic size={14} className="text-[#3DBE8B]" />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </>
