@@ -36,7 +36,12 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   ],
   onUpdate,
 }) => {
-  const [columns, setColumns] = useState<KanbanColumn[]>(initialColumns);
+  const [columns, setColumns] = useState<KanbanColumn[]>(() =>
+    (initialColumns ?? []).map((col) => ({
+      ...col,
+      cards: Array.isArray((col as any).cards) ? (col as any).cards : [],
+    }))
+  );
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState('');
 
@@ -61,7 +66,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     if (!sourceColumn || !destColumn) return;
 
     if (source.droppableId === destination.droppableId) {
-      const newCards = Array.from(sourceColumn.cards);
+      const newCards = Array.from(sourceColumn.cards ?? []);
       const [movedCard] = newCards.splice(source.index, 1);
       newCards.splice(destination.index, 0, movedCard);
 
@@ -71,8 +76,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
       setColumns(newColumns);
       onUpdate?.(newColumns);
     } else {
-      const sourceCards = Array.from(sourceColumn.cards);
-      const destCards = Array.from(destColumn.cards);
+      const sourceCards = Array.from(sourceColumn.cards ?? []);
+      const destCards = Array.from(destColumn.cards ?? []);
       const [movedCard] = sourceCards.splice(source.index, 1);
       destCards.splice(destination.index, 0, movedCard);
 
@@ -152,7 +157,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         <div className="flex items-center gap-2">
                           <h3 className="font-semibold text-sm">{column.title}</h3>
                           <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                            {column.cards.length}
+                            {(column.cards ?? []).length}
                           </span>
                         </div>
                         <DropdownMenu>
