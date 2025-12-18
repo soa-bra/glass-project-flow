@@ -38,10 +38,12 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<string | null>(null);
+  const [isSnapped, setIsSnapped] = useState(false); // ✅ تأثير السناب البصري
   const dragStart = useRef<Point>({ x: 0, y: 0 });
   const elementStartPos = useRef<Point>({ x: 0, y: 0 });
   const lastAppliedPos = useRef<Point>({ x: 0, y: 0 }); // ✅ Fix: تتبع آخر موقع مُطبَّق
   const hasDuplicated = useRef(false);
+  const snapTimeoutRef = useRef<NodeJS.Timeout | null>(null); // ✅ للتحكم في مدة تأثير السناب
   
   // ✅ حساب حدود الإطار المحيط في World Space
   const selectedElements = useMemo(() => 
@@ -157,6 +159,19 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
           
           finalX = snapResult.snappedBounds.x;
           finalY = snapResult.snappedBounds.y;
+          
+          // ✅ تأثير بصري عند السناب
+          if (snapResult.didSnap) {
+            setIsSnapped(true);
+            // إلغاء المؤقت السابق
+            if (snapTimeoutRef.current) {
+              clearTimeout(snapTimeoutRef.current);
+            }
+            // إخفاء التأثير بعد 300ms
+            snapTimeoutRef.current = setTimeout(() => {
+              setIsSnapped(false);
+            }, 300);
+          }
           
           // إرسال خطوط الإرشاد للعرض
           if (onGuidesChange) {
@@ -347,14 +362,22 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   
   return (
     <div
-      className="absolute pointer-events-none bounding-box"
+      className={`absolute pointer-events-none bounding-box transition-all duration-150 ${
+        isSnapped ? 'snap-effect' : ''
+      }`}
       style={{
         left: bounds.x,
         top: bounds.y,
         width: bounds.width,
         height: bounds.height,
-        border: '2px dashed hsl(var(--accent-blue) / 0.8)',
-        borderRadius: '4px'
+        border: isSnapped 
+          ? '2px solid hsl(var(--accent-green))' 
+          : '2px dashed hsl(var(--accent-blue) / 0.8)',
+        borderRadius: '4px',
+        boxShadow: isSnapped 
+          ? '0 0 20px hsl(var(--accent-green) / 0.4), inset 0 0 10px hsl(var(--accent-green) / 0.1)' 
+          : 'none',
+        transform: isSnapped ? 'scale(1.005)' : 'scale(1)'
       }}
     >
       {/* مقابض الزوايا */}
