@@ -253,7 +253,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         {/* Panel Toggle Button - Always visible */}
         <button
           onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
-          className="absolute left-4 top-8 z-20 p-2 bg-white border border-[hsl(var(--border))] rounded-lg shadow-sm hover:bg-[hsl(var(--panel))] transition-colors"
+          className="absolute left-4 top-6 z-20 p-2 bg-white border border-[hsl(var(--border))] rounded-lg shadow-sm hover:bg-[hsl(var(--panel))] transition-colors"
           title={isPanelCollapsed ? "توسيع البانل" : "طي البانل"}
         >
           {isPanelCollapsed ? (
