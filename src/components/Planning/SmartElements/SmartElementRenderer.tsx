@@ -7,6 +7,9 @@ import { VotingBoard } from './VotingBoard';
 import { BrainstormingBoard } from './BrainstormingBoard';
 import { TimelineView } from './TimelineView';
 import { DecisionsMatrix } from './DecisionsMatrix';
+import { GanttChart } from './GanttChart';
+import { MindMap } from './MindMap';
+import { InteractiveSheet } from './InteractiveSheet';
 import { 
   Brain, Kanban, Vote, Lightbulb, Calendar, Grid3X3, 
   BarChart3, Table, GitBranch, FolderKanban, Wallet,
@@ -96,6 +99,36 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   if (smartType === 'decisions_matrix') {
     return (
       <DecisionsMatrix 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Gantt Chart
+  if (smartType === 'gantt') {
+    return (
+      <GanttChart 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Mind Map
+  if (smartType === 'mind_map') {
+    return (
+      <MindMap 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Interactive Sheet
+  if (smartType === 'interactive_sheet') {
+    return (
+      <InteractiveSheet 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
       />
