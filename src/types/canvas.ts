@@ -88,6 +88,9 @@ export interface CanvasSettings {
   gridEnabled: boolean;
   snapToGrid: boolean;
   gridSize: number;
+  snapToEdges: boolean;
+  snapToCenter: boolean;
+  snapToDistribution: boolean;
   background: string;
   theme: 'light' | 'dark';
   [key: string]: any;

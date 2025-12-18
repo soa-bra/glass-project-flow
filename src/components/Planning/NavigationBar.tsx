@@ -1,6 +1,7 @@
 import React from 'react';
-import { ZoomIn, ZoomOut, Maximize, Hand, Map as MapIcon, Maximize2, Magnet } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize, Hand, Map as MapIcon, Maximize2 } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import SnapSettingsDropdown from './SnapSettingsDropdown';
 
 const NavigationBar: React.FC = () => {
   const { 
@@ -14,9 +15,7 @@ const NavigationBar: React.FC = () => {
     toggleMinimap,
     showMinimap,
     toggleFullscreen,
-    isFullscreen,
-    settings,
-    toggleSnapToGrid
+    isFullscreen
   } = useCanvasStore();
   
   const zoomPercentage = Math.round(viewport.zoom * 100);
@@ -59,18 +58,8 @@ const NavigationBar: React.FC = () => {
           <Hand size={12} />
         </button>
         
-        {/* Snap Toggle */}
-        <button
-          onClick={toggleSnapToGrid}
-          className={`p-1 rounded-lg transition-colors ${
-            settings.snapToGrid 
-              ? 'bg-sb-panel-bg text-sb-ink' 
-              : 'hover:bg-sb-panel-bg text-sb-ink-40'
-          }`}
-          title="المحاذاة التلقائية (السناب)"
-        >
-          <Magnet size={12} />
-        </button>
+        {/* Snap Settings Dropdown */}
+        <SnapSettingsDropdown />
         <button
           onClick={toggleMinimap}
           className={`p-1 rounded-lg transition-colors ${
