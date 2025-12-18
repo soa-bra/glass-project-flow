@@ -79,7 +79,7 @@ function buildTree(
 }
 
 /**
- * تخطيط شجري (من اليمين لليسار - RTL)
+ * تخطيط شجري (الفروع على يمين الجذر - متوافق مع إضافة الفروع يدوياً)
  */
 function calculateTreeLayout(
   root: LayoutNode,
@@ -117,8 +117,8 @@ function calculateTreeLayout(
     // البدء من أعلى المنطقة المخصصة
     let currentY = y - totalHeight / 2 + subtreeHeights[0] / 2;
     
-    // وضع الأطفال (من اليسار - لأن RTL)
-    const childX = x - horizontalSpacing;
+    // ✅ وضع الأطفال على اليمين (متوافق مع إضافة الفروع يدوياً)
+    const childX = x + node.element.size.width + horizontalSpacing;
     
     node.children.forEach((child, index) => {
       layoutNode(child, childX, currentY);
