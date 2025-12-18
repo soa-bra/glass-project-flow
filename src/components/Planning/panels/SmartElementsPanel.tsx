@@ -14,130 +14,404 @@ import {
   DollarSign,
   Users,
   Building,
-  Palette,
-  MessageSquare,
-  Target,
-  TrendingDown
+  Sparkles,
+  Plus,
+  Loader2
 } from 'lucide-react';
+import { useSmartElementsStore } from '@/stores/smartElementsStore';
+import { useCanvasStore } from '@/stores/canvasStore';
+import { useSmartElementAI } from '@/hooks/useSmartElementAI';
+import type { SmartElementType } from '@/types/smart-elements';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 
-interface SmartElement {
-  id: string;
+// ─────────────────────────────────────────────────────────────────────────────
+// Smart Element Configuration
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface SmartElementConfig {
+  id: SmartElementType;
   name: string;
+  nameAr: string;
   icon: React.ReactNode;
-  category: 'planning' | 'analysis' | 'collaboration' | 'business';
+  category: 'planning' | 'analysis' | 'collaboration' | 'cards';
+  description: string;
+  settings: SmartElementSetting[];
 }
 
-const smartElements: SmartElement[] = [
-  { id: 'think-board', name: 'Think Board', icon: <Lightbulb size={20} />, category: 'planning' },
-  { id: 'kanban', name: 'Kanban', icon: <LayoutGrid size={20} />, category: 'planning' },
-  { id: 'voting', name: 'Voting', icon: <Vote size={20} />, category: 'collaboration' },
-  { id: 'brainstorm', name: 'Brainstorm', icon: <Zap size={20} />, category: 'collaboration' },
-  { id: 'timeline', name: 'Timeline', icon: <Calendar size={20} />, category: 'planning' },
-  { id: 'decision-matrix', name: 'Decision Matrix', icon: <Table2 size={20} />, category: 'analysis' },
-  { id: 'root-linker', name: 'Root Linker', icon: <Link size={20} />, category: 'analysis' },
-  { id: 'gantt', name: 'Gantt', icon: <TrendingUp size={20} />, category: 'planning' },
-  { id: 'spreadsheet', name: 'Spreadsheet', icon: <FileSpreadsheet size={20} />, category: 'analysis' },
-  { id: 'mindmap', name: 'Mindmap', icon: <Network size={20} />, category: 'planning' },
-  { id: 'project-cards', name: 'Project Cards', icon: <FolderKanban size={20} />, category: 'business' },
-  { id: 'finance', name: 'Finance', icon: <DollarSign size={20} />, category: 'business' },
-  { id: 'csr', name: 'CSR', icon: <Users size={20} />, category: 'business' },
-  { id: 'crm', name: 'CRM', icon: <Building size={20} />, category: 'business' },
-  { id: 'cultural-fit', name: 'Cultural Fit', icon: <Palette size={20} />, category: 'analysis' },
-  { id: 'content-planner', name: 'Content Planner', icon: <MessageSquare size={20} />, category: 'planning' },
-  { id: 'campaigns', name: 'Campaigns', icon: <Target size={20} />, category: 'business' },
-  { id: 'csr-impact', name: 'CSR Impact', icon: <TrendingDown size={20} />, category: 'analysis' },
+interface SmartElementSetting {
+  key: string;
+  label: string;
+  type: 'text' | 'number' | 'select' | 'checkbox';
+  options?: { value: string; label: string }[];
+  defaultValue: string | number | boolean;
+}
+
+const SMART_ELEMENTS: SmartElementConfig[] = [
+  // Collaboration Elements
+  {
+    id: 'thinking_board',
+    name: 'Think Board',
+    nameAr: 'لوحة التفكير',
+    icon: <Lightbulb size={20} />,
+    category: 'collaboration',
+    description: 'تجميع الأفكار والمكونات ضمن لوحة واحدة مرنة',
+    settings: [
+      { key: 'backgroundColor', label: 'لون الخلفية', type: 'select', options: [
+        { value: '#ffffff', label: 'أبيض' },
+        { value: '#f0f9ff', label: 'أزرق فاتح' },
+        { value: '#f0fdf4', label: 'أخضر فاتح' },
+        { value: '#fefce8', label: 'أصفر فاتح' },
+      ], defaultValue: '#ffffff' },
+    ]
+  },
+  {
+    id: 'kanban',
+    name: 'Kanban Board',
+    nameAr: 'لوحة كانبان',
+    icon: <LayoutGrid size={20} />,
+    category: 'collaboration',
+    description: 'تنظيم المهام ضمن أعمدة حسب الحالة',
+    settings: [
+      { key: 'columnsCount', label: 'عدد الأعمدة', type: 'number', defaultValue: 3 },
+      { key: 'columnNames', label: 'أسماء الأعمدة', type: 'text', defaultValue: 'للتنفيذ,قيد التنفيذ,مكتمل' },
+    ]
+  },
+  {
+    id: 'voting',
+    name: 'Voting',
+    nameAr: 'التصويت',
+    icon: <Vote size={20} />,
+    category: 'collaboration',
+    description: 'جمع الآراء واتخاذ القرار الجماعي',
+    settings: [
+      { key: 'optionsCount', label: 'عدد الخيارات', type: 'number', defaultValue: 3 },
+      { key: 'maxVotesPerUser', label: 'الأصوات لكل مستخدم', type: 'number', defaultValue: 1 },
+      { key: 'allowMultiple', label: 'تصويت متعدد', type: 'checkbox', defaultValue: false },
+      { key: 'showResults', label: 'عرض النتائج مباشرة', type: 'checkbox', defaultValue: true },
+    ]
+  },
+  {
+    id: 'brainstorming',
+    name: 'Brainstorming',
+    nameAr: 'العصف الذهني',
+    icon: <Zap size={20} />,
+    category: 'collaboration',
+    description: 'تجميع الأفكار من عدة مشاركين',
+    settings: [
+      { key: 'mode', label: 'نمط العصف', type: 'select', options: [
+        { value: 'collaborative', label: 'تعاوني' },
+        { value: 'silent', label: 'صامت' },
+        { value: 'rapid', label: 'سريع' },
+        { value: 'branching', label: 'تشعبي' },
+      ], defaultValue: 'collaborative' },
+      { key: 'timeLimit', label: 'الوقت (دقائق)', type: 'number', defaultValue: 10 },
+    ]
+  },
+  
+  // Planning Elements
+  {
+    id: 'timeline',
+    name: 'Timeline',
+    nameAr: 'خط زمني',
+    icon: <Calendar size={20} />,
+    category: 'planning',
+    description: 'تنظيم العناصر على محور زمني',
+    settings: [
+      { key: 'timeUnit', label: 'وحدة الوقت', type: 'select', options: [
+        { value: 'day', label: 'يوم' },
+        { value: 'week', label: 'أسبوع' },
+        { value: 'month', label: 'شهر' },
+      ], defaultValue: 'week' },
+      { key: 'showMilestones', label: 'عرض المحطات', type: 'checkbox', defaultValue: true },
+    ]
+  },
+  {
+    id: 'decisions_matrix',
+    name: 'Decision Matrix',
+    nameAr: 'مصفوفة القرارات',
+    icon: <Table2 size={20} />,
+    category: 'planning',
+    description: 'تقييم الخيارات بناءً على معايير محددة',
+    settings: [
+      { key: 'rowsCount', label: 'عدد الخيارات', type: 'number', defaultValue: 4 },
+      { key: 'columnsCount', label: 'عدد المعايير', type: 'number', defaultValue: 3 },
+      { key: 'showWeights', label: 'ترجيح المعايير', type: 'checkbox', defaultValue: true },
+    ]
+  },
+  {
+    id: 'gantt',
+    name: 'Gantt Chart',
+    nameAr: 'مخطط جانت',
+    icon: <TrendingUp size={20} />,
+    category: 'planning',
+    description: 'عرض وتسلسل المهام عبر مستويات زمنية',
+    settings: [
+      { key: 'timeUnit', label: 'وحدة الوقت', type: 'select', options: [
+        { value: 'day', label: 'يومي' },
+        { value: 'week', label: 'أسبوعي' },
+        { value: 'month', label: 'شهري' },
+      ], defaultValue: 'week' },
+      { key: 'showDependencies', label: 'عرض التبعيات', type: 'checkbox', defaultValue: true },
+    ]
+  },
+  
+  // Analysis Elements
+  {
+    id: 'interactive_sheet',
+    name: 'Interactive Sheet',
+    nameAr: 'ورقة تفاعلية',
+    icon: <FileSpreadsheet size={20} />,
+    category: 'analysis',
+    description: 'إدارة بيانات مركبة داخل جدول تفاعلي',
+    settings: [
+      { key: 'rows', label: 'عدد الصفوف', type: 'number', defaultValue: 10 },
+      { key: 'columns', label: 'عدد الأعمدة', type: 'number', defaultValue: 5 },
+      { key: 'enableFormulas', label: 'تفعيل الصيغ', type: 'checkbox', defaultValue: true },
+    ]
+  },
+  {
+    id: 'mind_map',
+    name: 'Mind Map',
+    nameAr: 'خريطة ذهنية',
+    icon: <Network size={20} />,
+    category: 'analysis',
+    description: 'تنظيم وربط الأفكار بصرياً',
+    settings: [
+      { key: 'layout', label: 'التخطيط', type: 'select', options: [
+        { value: 'radial', label: 'شعاعي' },
+        { value: 'tree', label: 'شجري' },
+        { value: 'org', label: 'هيكلي' },
+      ], defaultValue: 'radial' },
+      { key: 'autoLayout', label: 'ترتيب تلقائي', type: 'checkbox', defaultValue: true },
+    ]
+  },
+  {
+    id: 'root_connector',
+    name: 'Root Connector',
+    nameAr: 'رابط الجذر',
+    icon: <Link size={20} />,
+    category: 'analysis',
+    description: 'ربط المكونات بعلاقات بصرية ووظيفية',
+    settings: [
+      { key: 'showAISuggestions', label: 'اقتراحات AI', type: 'checkbox', defaultValue: true },
+    ]
+  },
+  
+  // Smart Cards
+  {
+    id: 'project_card',
+    name: 'Project Card',
+    nameAr: 'بطاقة مشروع',
+    icon: <FolderKanban size={20} />,
+    category: 'cards',
+    description: 'عرض المشاريع والمهام بشكل تفاعلي',
+    settings: [
+      { key: 'showProgress', label: 'عرض التقدم', type: 'checkbox', defaultValue: true },
+      { key: 'showTasks', label: 'عرض المهام', type: 'checkbox', defaultValue: true },
+    ]
+  },
+  {
+    id: 'finance_card',
+    name: 'Finance Card',
+    nameAr: 'بطاقة مالية',
+    icon: <DollarSign size={20} />,
+    category: 'cards',
+    description: 'تحليل مالي تفاعلي للميزانيات',
+    settings: [
+      { key: 'showCharts', label: 'عرض الرسوم البيانية', type: 'checkbox', defaultValue: true },
+      { key: 'currency', label: 'العملة', type: 'select', options: [
+        { value: 'SAR', label: 'ريال سعودي' },
+        { value: 'USD', label: 'دولار أمريكي' },
+        { value: 'EUR', label: 'يورو' },
+      ], defaultValue: 'SAR' },
+    ]
+  },
+  {
+    id: 'csr_card',
+    name: 'CSR Card',
+    nameAr: 'بطاقة المسؤولية الاجتماعية',
+    icon: <Users size={20} />,
+    category: 'cards',
+    description: 'تتبع مبادرات المسؤولية الاجتماعية',
+    settings: [
+      { key: 'showImpact', label: 'عرض التأثير', type: 'checkbox', defaultValue: true },
+    ]
+  },
+  {
+    id: 'crm_card',
+    name: 'CRM Card',
+    nameAr: 'بطاقة علاقات العملاء',
+    icon: <Building size={20} />,
+    category: 'cards',
+    description: 'عرض وتحليل بيانات تفاعل العملاء',
+    settings: [
+      { key: 'showAnalytics', label: 'عرض التحليلات', type: 'checkbox', defaultValue: true },
+    ]
+  },
 ];
 
+const CATEGORIES = [
+  { id: 'all', label: 'الكل' },
+  { id: 'collaboration', label: 'تعاون' },
+  { id: 'planning', label: 'تخطيط' },
+  { id: 'analysis', label: 'تحليل' },
+  { id: 'cards', label: 'بطاقات' },
+] as const;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────────────────────────────────────
+
 const SmartElementsPanel: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'planning' | 'analysis' | 'collaboration' | 'business'>('all');
-  const [selectedElement, setSelectedElement] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedElement, setSelectedElement] = useState<SmartElementConfig | null>(null);
+  const [elementTitle, setElementTitle] = useState('');
+  const [settings, setSettings] = useState<Record<string, any>>({});
+  const [aiPrompt, setAiPrompt] = useState('');
+  
+  const { addSmartElement } = useSmartElementsStore();
+  const { viewport } = useCanvasStore();
+  const { generateElements, isLoading: aiLoading } = useSmartElementAI();
 
   const filteredElements = selectedCategory === 'all' 
-    ? smartElements 
-    : smartElements.filter(el => el.category === selectedCategory);
+    ? SMART_ELEMENTS 
+    : SMART_ELEMENTS.filter(el => el.category === selectedCategory);
+
+  // Initialize settings when element is selected
+  const handleSelectElement = (element: SmartElementConfig) => {
+    setSelectedElement(element);
+    const initialSettings: Record<string, any> = {};
+    element.settings.forEach(setting => {
+      initialSettings[setting.key] = setting.defaultValue;
+    });
+    setSettings(initialSettings);
+    setElementTitle('');
+    setAiPrompt('');
+  };
+
+  // Add element to canvas
+  const handleAddElement = () => {
+    if (!selectedElement) return;
+
+    // Calculate center of viewport
+    const centerX = (-viewport.pan.x + window.innerWidth / 2) / viewport.zoom;
+    const centerY = (-viewport.pan.y + window.innerHeight / 2) / viewport.zoom;
+
+    const initialData: Record<string, any> = {
+      title: elementTitle || selectedElement.nameAr,
+      ...settings,
+    };
+
+    // Add type-specific initial data
+    if (selectedElement.id === 'kanban' && settings.columnNames) {
+      const columnNames = (settings.columnNames as string).split(',');
+      initialData.columns = columnNames.map((name, index) => ({
+        id: `col-${index}`,
+        title: name.trim(),
+        cards: [],
+        order: index,
+      }));
+    }
+
+    if (selectedElement.id === 'voting') {
+      initialData.options = Array.from({ length: settings.optionsCount || 3 }, (_, i) => ({
+        id: `opt-${i}`,
+        label: `خيار ${i + 1}`,
+        votes: [],
+        order: i,
+      }));
+      initialData.maxVotesPerUser = settings.maxVotesPerUser || 1;
+      initialData.allowMultipleVotes = settings.allowMultiple || false;
+    }
+
+    addSmartElement(
+      selectedElement.id,
+      { x: centerX, y: centerY },
+      initialData
+    );
+
+    toast.success(`تم إضافة ${selectedElement.nameAr}`);
+    setSelectedElement(null);
+  };
+
+  // Generate with AI
+  const handleGenerateWithAI = async () => {
+    if (!selectedElement || !aiPrompt.trim()) {
+      toast.error('يرجى كتابة وصف للعنصر');
+      return;
+    }
+
+    const result = await generateElements(aiPrompt, selectedElement.id);
+    
+    if (result?.elements && result.elements.length > 0) {
+      const centerX = (-viewport.pan.x + window.innerWidth / 2) / viewport.zoom;
+      const centerY = (-viewport.pan.y + window.innerHeight / 2) / viewport.zoom;
+
+      result.elements.forEach((element, index) => {
+        addSmartElement(
+          element.type as SmartElementType,
+          { x: centerX + index * 50, y: centerY + index * 50 },
+          element.data
+        );
+      });
+
+      toast.success(`تم إنشاء ${result.elements.length} عنصر بالذكاء الاصطناعي`);
+      setSelectedElement(null);
+      setAiPrompt('');
+    }
+  };
+
+  const updateSetting = (key: string, value: any) => {
+    setSettings(prev => ({ ...prev, [key]: value }));
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Category Filter */}
       <div>
-        <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
+        <h4 className="text-[13px] font-semibold text-foreground mb-3">
           فئة العناصر
         </h4>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`px-3 py-2 rounded-[10px] text-[11px] font-medium transition-colors ${
-              selectedCategory === 'all'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
-            }`}
-          >
-            الكل ({smartElements.length})
-          </button>
-          <button
-            onClick={() => setSelectedCategory('planning')}
-            className={`px-3 py-2 rounded-[10px] text-[11px] font-medium transition-colors ${
-              selectedCategory === 'planning'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
-            }`}
-          >
-            تخطيط
-          </button>
-          <button
-            onClick={() => setSelectedCategory('analysis')}
-            className={`px-3 py-2 rounded-[10px] text-[11px] font-medium transition-colors ${
-              selectedCategory === 'analysis'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
-            }`}
-          >
-            تحليل
-          </button>
-          <button
-            onClick={() => setSelectedCategory('collaboration')}
-            className={`px-3 py-2 rounded-[10px] text-[11px] font-medium transition-colors ${
-              selectedCategory === 'collaboration'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
-            }`}
-          >
-            تعاون
-          </button>
-          <button
-            onClick={() => setSelectedCategory('business')}
-            className={`px-3 py-2 rounded-[10px] text-[11px] font-medium transition-colors col-span-2 ${
-              selectedCategory === 'business'
-                ? 'bg-[hsl(var(--accent-green))] text-white'
-                : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
-            }`}
-          >
-            أعمال
-          </button>
+        <div className="flex flex-wrap gap-2">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors ${
+                selectedCategory === cat.id
+                  ? 'bg-[hsl(var(--accent-green))] text-white'
+                  : 'bg-muted text-foreground hover:bg-muted/80'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Smart Elements Grid */}
+      {/* Elements Grid */}
       <div>
-        <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
+        <h4 className="text-[13px] font-semibold text-foreground mb-3">
           اختر عنصر ذكي
         </h4>
-        <div className="grid grid-cols-2 gap-2 max-h-[400px] overflow-y-auto">
+        <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
           {filteredElements.map((element) => (
             <button
               key={element.id}
-              onClick={() => setSelectedElement(element.id)}
-              className={`group flex flex-col items-center gap-2 p-3 rounded-[10px] transition-all ${
-                selectedElement === element.id
+              onClick={() => handleSelectElement(element)}
+              className={`group flex flex-col items-center gap-2 p-3 rounded-xl transition-all ${
+                selectedElement?.id === element.id
                   ? 'bg-[hsl(var(--accent-green))] text-white'
-                  : 'bg-[hsl(var(--panel))] text-[hsl(var(--ink))] hover:bg-[rgba(217,231,237,0.8)]'
+                  : 'bg-muted text-foreground hover:bg-muted/80'
               }`}
             >
-              <span className={selectedElement === element.id ? 'text-white' : 'text-[hsl(var(--ink))]'}>
+              <span className={selectedElement?.id === element.id ? 'text-white' : 'text-foreground'}>
                 {element.icon}
               </span>
               <span className="text-[10px] font-medium text-center">
-                {element.name}
+                {element.nameAr}
               </span>
             </button>
           ))}
@@ -146,68 +420,139 @@ const SmartElementsPanel: React.FC = () => {
 
       {/* Selected Element Settings */}
       {selectedElement && (
-        <div className="pt-4 border-t border-[#DADCE0]">
-          <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3">
-            إعدادات العنصر المحدد
-          </h4>
-          <div className="p-4 bg-[hsl(var(--panel))] rounded-[10px]">
-            <p className="text-[11px] text-[hsl(var(--ink-60))] mb-3">
-              {smartElements.find(el => el.id === selectedElement)?.name}
-            </p>
-            
-            {/* Dynamic settings based on element */}
-            <div className="space-y-3">
-              <div>
-                <label className="text-[11px] font-medium text-[hsl(var(--ink))] mb-1 block">
-                  عنوان العنصر
-                </label>
-                <input
-                  type="text"
-                  placeholder="اختياري..."
-                  className="w-full px-2 py-1.5 text-[11px] border border-[#DADCE0] rounded-lg outline-none focus:border-[hsl(var(--accent-green))] transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="text-[11px] font-medium text-[hsl(var(--ink))] mb-1 block">
-                  الحجم
-                </label>
-                <select className="w-full px-2 py-1.5 text-[11px] border border-[#DADCE0] rounded-lg outline-none focus:border-[hsl(var(--accent-green))] transition-colors bg-white">
-                  <option value="small">صغير</option>
-                  <option value="medium">متوسط</option>
-                  <option value="large">كبير</option>
-                  <option value="custom">مخصص</option>
-                </select>
-              </div>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="w-3.5 h-3.5" />
-                <span className="text-[11px] text-[hsl(var(--ink))]">
-                  بيانات تجريبية
-                </span>
+        <div className="pt-4 border-t border-border space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-[13px] font-semibold text-foreground">
+              إعدادات {selectedElement.nameAr}
+            </h4>
+            <span className="text-[10px] text-muted-foreground">
+              {selectedElement.description}
+            </span>
+          </div>
+          
+          <div className="space-y-3">
+            {/* Title */}
+            <div>
+              <label className="text-[11px] font-medium text-foreground mb-1 block">
+                عنوان العنصر
               </label>
+              <Input
+                value={elementTitle}
+                onChange={(e) => setElementTitle(e.target.value)}
+                placeholder={selectedElement.nameAr}
+                className="h-8 text-[12px]"
+              />
+            </div>
+
+            {/* Dynamic Settings */}
+            {selectedElement.settings.map(setting => (
+              <div key={setting.key}>
+                <label className="text-[11px] font-medium text-foreground mb-1 block">
+                  {setting.label}
+                </label>
+                {setting.type === 'text' && (
+                  <Input
+                    value={settings[setting.key] || ''}
+                    onChange={(e) => updateSetting(setting.key, e.target.value)}
+                    className="h-8 text-[12px]"
+                  />
+                )}
+                {setting.type === 'number' && (
+                  <Input
+                    type="number"
+                    value={settings[setting.key] || 0}
+                    onChange={(e) => updateSetting(setting.key, parseInt(e.target.value))}
+                    className="h-8 text-[12px]"
+                    min={1}
+                    max={20}
+                  />
+                )}
+                {setting.type === 'select' && (
+                  <select
+                    value={settings[setting.key] || ''}
+                    onChange={(e) => updateSetting(setting.key, e.target.value)}
+                    className="w-full h-8 px-2 text-[12px] border border-border rounded-lg bg-background"
+                  >
+                    {setting.options?.map(opt => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {setting.type === 'checkbox' && (
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={settings[setting.key] || false}
+                      onChange={(e) => updateSetting(setting.key, e.target.checked)}
+                      className="w-4 h-4 rounded"
+                    />
+                    <span className="text-[11px] text-muted-foreground">تفعيل</span>
+                  </label>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Add Button */}
+          <Button
+            onClick={handleAddElement}
+            className="w-full bg-[hsl(var(--accent-green))] hover:bg-[hsl(var(--accent-green))]/90"
+          >
+            <Plus size={16} className="ml-2" />
+            إضافة {selectedElement.nameAr}
+          </Button>
+
+          {/* AI Generation Section */}
+          <div className="pt-3 border-t border-border">
+            <h5 className="text-[12px] font-semibold text-foreground mb-2 flex items-center gap-2">
+              <Sparkles size={14} className="text-[hsl(var(--accent-blue))]" />
+              إنشاء بالذكاء الاصطناعي
+            </h5>
+            <div className="space-y-2">
+              <Input
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                placeholder={`صف ${selectedElement.nameAr} الذي تريده...`}
+                className="h-8 text-[12px]"
+              />
+              <Button
+                onClick={handleGenerateWithAI}
+                disabled={aiLoading || !aiPrompt.trim()}
+                variant="outline"
+                className="w-full h-8 text-[12px] border-[hsl(var(--accent-blue))] text-[hsl(var(--accent-blue))] hover:bg-[hsl(var(--accent-blue))]/10"
+              >
+                {aiLoading ? (
+                  <>
+                    <Loader2 size={14} className="ml-2 animate-spin" />
+                    جاري الإنشاء...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={14} className="ml-2" />
+                    إنشاء تلقائي
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </div>
       )}
 
       {/* Keyboard Shortcuts */}
-      <div className="pt-4 border-t border-[#DADCE0]">
-        <h4 className="text-[12px] font-semibold text-[hsl(var(--ink-60))] mb-2">
-          اختصارات الكيبورد
+      <div className="pt-4 border-t border-border">
+        <h4 className="text-[12px] font-semibold text-muted-foreground mb-2">
+          اختصارات
         </h4>
-        <div className="space-y-1.5 text-[11px] text-[hsl(var(--ink-60))]">
+        <div className="space-y-1.5 text-[11px] text-muted-foreground">
           <div className="flex justify-between">
-            <span>نسبة متساوية</span>
-            <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">Shift</code>
+            <span>شريط الأوامر</span>
+            <code className="bg-muted px-1.5 py-0.5 rounded">Ctrl+K</code>
           </div>
           <div className="flex justify-between">
-            <span>من المركز</span>
-            <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">Alt</code>
-          </div>
-          <div className="flex justify-between">
-            <span>إدراج</span>
-            <code className="bg-[hsl(var(--panel))] px-1.5 py-0.5 rounded">Enter</code>
+            <span>إدراج سريع</span>
+            <code className="bg-muted px-1.5 py-0.5 rounded">Enter</code>
           </div>
         </div>
       </div>
