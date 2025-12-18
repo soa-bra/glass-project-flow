@@ -148,7 +148,7 @@ const ShapesPanel: React.FC = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 py-2.5 px-2 text-[11px] font-medium rounded-[10px] transition-all ${
               activeTab === tab.id
-                ? "bg-[hsl(var(--ink-60))] text-[hsl(var(--accent-whait))] shadow-sm"
+                ? "bg-black text-white shadow-sm"
                 : "text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))]"
             }`}
           >
