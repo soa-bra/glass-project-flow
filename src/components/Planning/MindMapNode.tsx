@@ -4,7 +4,7 @@ import type { CanvasElement } from '@/types/canvas';
 import type { MindMapNodeData, NodeAnchorPoint } from '@/types/mindmap-canvas';
 import { getAnchorPosition, NODE_COLORS } from '@/types/mindmap-canvas';
 import { Plus, GripVertical, Trash2, Palette, ChevronDown, ChevronRight } from 'lucide-react';
-
+import { redistributeUpwards } from '@/utils/mindmap-layout';
 interface MindMapNodeProps {
   element: CanvasElement;
   isSelected: boolean;
@@ -80,88 +80,16 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     });
   }, [element.id, nodeData, updateElement]);
   
-  // إضافة فرع جديد مع توزيع تلقائي وتجنب التداخل
+  // إضافة فرع جديد مع توزيع تلقائي متناظر
   const handleAddBranch = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     
     const state = useCanvasStore.getState();
-    
-    // الحصول على جميع الأبناء الحاليين لهذه العقدة
-    const existingConnectors = state.elements.filter(el => 
-      el.type === 'mindmap_connector' && 
-      (el.data as any)?.startNodeId === element.id
-    );
-    
-    // حساب حدود كل فرع موجود (شاملة الأحفاد)
-    const getSubtreeBounds = (nodeId: string): { top: number; bottom: number } => {
-      const node = state.elements.find(el => el.id === nodeId);
-      if (!node) return { top: 0, bottom: 0 };
-      
-      let minY = node.position.y;
-      let maxY = node.position.y + node.size.height;
-      
-      const childConnectors = state.elements.filter(el => 
-        el.type === 'mindmap_connector' && 
-        (el.data as any)?.startNodeId === nodeId
-      );
-      
-      childConnectors.forEach(conn => {
-        const childId = (conn.data as any)?.endNodeId;
-        if (childId) {
-          const childBounds = getSubtreeBounds(childId);
-          minY = Math.min(minY, childBounds.top);
-          maxY = Math.max(maxY, childBounds.bottom);
-        }
-      });
-      
-      return { top: minY, bottom: maxY };
-    };
-    
-    const siblingBounds = existingConnectors.map(conn => {
-      const childId = (conn.data as any)?.endNodeId;
-      return getSubtreeBounds(childId);
-    });
-    
-    // إيجاد موقع متاح للفرع الجديد
-    const newNodeHeight = 60;
-    const verticalGap = 80;
     const parentCenterY = element.position.y + element.size.height / 2;
     
-    let yPosition = parentCenterY;
-    
-    if (siblingBounds.length > 0) {
-      const sorted = [...siblingBounds].sort((a, b) => a.top - b.top);
-      
-      const childCount = siblingBounds.length;
-      const direction = childCount % 2 === 0 ? 1 : -1;
-      const step = Math.ceil((childCount + 1) / 2);
-      yPosition = parentCenterY + direction * step * (newNodeHeight + verticalGap);
-      
-      const halfHeight = newNodeHeight / 2;
-      let hasOverlap = true;
-      let attempts = 0;
-      
-      while (hasOverlap && attempts < 20) {
-        hasOverlap = false;
-        const proposedTop = yPosition - halfHeight - verticalGap / 2;
-        const proposedBottom = yPosition + halfHeight + verticalGap / 2;
-        
-        for (const sibling of sorted) {
-          if (proposedBottom > sibling.top && proposedTop < sibling.bottom) {
-            hasOverlap = true;
-            if (direction > 0) {
-              yPosition = sibling.bottom + halfHeight + verticalGap;
-            } else {
-              yPosition = sibling.top - halfHeight - verticalGap;
-            }
-            break;
-          }
-        }
-        attempts++;
-      }
-    }
-    
+    // إنشاء الفرع الجديد على نفس مستوى الأب مبدئياً
     const offset = 200;
+    const newNodeHeight = 60;
     const newNodeId = `mindmap-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     addElement({
@@ -169,7 +97,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       type: 'mindmap_node',
       position: {
         x: element.position.x + element.size.width + offset,
-        y: yPosition - newNodeHeight / 2
+        y: parentCenterY - newNodeHeight / 2
       },
       size: { width: 160, height: newNodeHeight },
       data: {
@@ -195,9 +123,15 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       }
     });
     
-    // ✅ تفعيل الإزاحة التلقائية بعد إضافة الفرع
+    // ✅ إعادة توزيع جميع الفروع بشكل متناظر تصاعدياً
     setTimeout(() => {
-      useCanvasStore.getState().autoResolveOverlapsForMindMap?.();
+      const currentState = useCanvasStore.getState();
+      const adjustments = redistributeUpwards(element.id, currentState.elements, 80);
+      
+      // تطبيق التعديلات
+      adjustments.forEach((newPos, nodeId) => {
+        currentState.updateElement(nodeId, { position: newPos });
+      });
     }, 50);
   }, [element, nodeData, addElement]);
   

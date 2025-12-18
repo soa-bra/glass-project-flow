@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import type { CanvasElement, LayerInfo, CanvasSettings } from '@/types/canvas';
 import type { ArrowConnection } from '@/types/arrow-connections';
 import { resolveSnapConnection, type SnapEdge } from '@/utils/arrow-routing';
+import { redistributeBranches } from '@/utils/mindmap-layout';
 
 /**
  * حساب موقع نقطة الارتكاز على عنصر
@@ -2093,61 +2094,84 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     set({ selectedElementIds: treeIds });
   },
 
-  // ✅ إزاحة تلقائية لجميع عقد الخريطة الذهنية عند التداخل
+  // ✅ إزاحة تلقائية متناظرة لجميع عقد الخريطة الذهنية
   autoResolveOverlapsForMindMap: () => {
-    const { elements, updateElement } = get();
-    const mindMapNodes = elements.filter(el => el.type === 'mindmap_node');
+    const { elements } = get();
+    const mindMapConnectors = elements.filter(el => el.type === 'mindmap_connector');
     
-    if (mindMapNodes.length < 2) return;
+    if (mindMapConnectors.length === 0) return;
     
-    const padding = 30;
-    const overlaps: { id: string; deltaY: number }[] = [];
+    // إيجاد جميع العقد الأب (التي لها فروع)
+    const parentIds = new Set<string>();
+    mindMapConnectors.forEach(conn => {
+      const startNodeId = (conn.data as any)?.startNodeId;
+      if (startNodeId) parentIds.add(startNodeId);
+    });
     
-    // اكتشاف التداخلات
-    for (let i = 0; i < mindMapNodes.length; i++) {
-      for (let j = i + 1; j < mindMapNodes.length; j++) {
-        const a = mindMapNodes[i];
-        const b = mindMapNodes[j];
-        
-        const ax1 = a.position.x - padding;
-        const ay1 = a.position.y - padding;
-        const ax2 = a.position.x + a.size.width + padding;
-        const ay2 = a.position.y + a.size.height + padding;
-        
-        const bx1 = b.position.x - padding;
-        const by1 = b.position.y - padding;
-        const bx2 = b.position.x + b.size.width + padding;
-        const by2 = b.position.y + b.size.height + padding;
-        
-        const overlapX = Math.max(0, Math.min(ax2, bx2) - Math.max(ax1, bx1));
-        const overlapY = Math.max(0, Math.min(ay2, by2) - Math.max(ay1, by1));
-        
-        if (overlapX > 0 && overlapY > 0) {
-          // إزاحة العقدة الأسفل للأسفل
-          const nodeToMove = a.position.y > b.position.y ? a : b;
-          const existingOverlap = overlaps.find(o => o.id === nodeToMove.id);
-          
-          if (existingOverlap) {
-            existingOverlap.deltaY = Math.max(existingOverlap.deltaY, overlapY + 10);
-          } else {
-            overlaps.push({ id: nodeToMove.id, deltaY: overlapY + 10 });
-          }
-        }
+    // إيجاد الجذور (عقد ليس لها أباء)
+    const rootIds = new Set<string>();
+    parentIds.forEach(parentId => {
+      const hasParent = mindMapConnectors.some(conn => 
+        (conn.data as any)?.endNodeId === parentId
+      );
+      if (!hasParent) {
+        rootIds.add(parentId);
       }
-    }
+    });
     
-    // تطبيق الإزاحات
-    if (overlaps.length > 0) {
+    // أيضاً إضافة العقد المعلمة كجذور
+    elements.filter(el => el.type === 'mindmap_node' && (el.data as any)?.isRoot)
+      .forEach(el => rootIds.add(el.id));
+    
+    // إعادة توزيع من كل جذر
+    let allAdjustments = new Map<string, { x: number; y: number }>();
+    
+    // ترتيب العقد حسب العمق (الجذور أولاً)
+    const processNode = (nodeId: string, currentElements: CanvasElement[]) => {
+      const adjustments = redistributeBranches(nodeId, currentElements, 80);
+      
+      // دمج التعديلات
+      adjustments.forEach((pos: { x: number; y: number }, id: string) => {
+        allAdjustments.set(id, pos);
+      });
+      
+      // تحديث العناصر للحسابات التالية
+      const updatedElements = currentElements.map(el => {
+        const adj = allAdjustments.get(el.id);
+        if (adj) {
+          return { ...el, position: adj };
+        }
+        return el;
+      });
+      
+      // معالجة الأبناء
+      const childConnectors = currentElements.filter(el => 
+        el.type === 'mindmap_connector' && 
+        (el.data as any)?.startNodeId === nodeId
+      );
+      
+      childConnectors.forEach(conn => {
+        const childId = (conn.data as any)?.endNodeId;
+        if (childId && parentIds.has(childId)) {
+          processNode(childId, updatedElements);
+        }
+      });
+    };
+    
+    // البدء من الجذور
+    rootIds.forEach(rootId => {
+      processNode(rootId, elements);
+    });
+    
+    // تطبيق جميع التعديلات دفعة واحدة
+    if (allAdjustments.size > 0) {
       set(state => ({
         elements: state.elements.map(el => {
-          const overlap = overlaps.find(o => o.id === el.id);
-          if (overlap) {
+          const adj = allAdjustments.get(el.id);
+          if (adj) {
             return {
               ...el,
-              position: {
-                ...el.position,
-                y: el.position.y + overlap.deltaY
-              }
+              position: adj
             };
           }
           return el;

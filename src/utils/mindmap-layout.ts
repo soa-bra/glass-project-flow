@@ -512,3 +512,199 @@ export function findAvailableSlot(
   
   return proposedY;
 }
+
+/**
+ * الحصول على جميع أحفاد عقدة معينة
+ */
+export function getAllDescendants(
+  nodeId: string,
+  elements: CanvasElement[]
+): string[] {
+  const descendants: string[] = [];
+  
+  const childConnectors = elements.filter(el => 
+    el.type === 'mindmap_connector' && 
+    (el.data as MindMapConnectorData)?.startNodeId === nodeId
+  );
+  
+  childConnectors.forEach(conn => {
+    const childId = (conn.data as MindMapConnectorData)?.endNodeId;
+    if (childId) {
+      descendants.push(childId);
+      descendants.push(...getAllDescendants(childId, elements));
+    }
+  });
+  
+  return descendants;
+}
+
+/**
+ * حساب ارتفاع الشجرة الفرعية لعقدة معينة (شاملة جميع الأحفاد)
+ */
+export function calculateSubtreeHeight(
+  nodeId: string,
+  elements: CanvasElement[],
+  verticalGap: number = 80
+): number {
+  const node = elements.find(el => el.id === nodeId);
+  if (!node) return 0;
+  
+  const childConnectors = elements.filter(el => 
+    el.type === 'mindmap_connector' && 
+    (el.data as MindMapConnectorData)?.startNodeId === nodeId
+  );
+  
+  // إذا لم يكن هناك أطفال، ارتفاع الشجرة = ارتفاع العقدة
+  if (childConnectors.length === 0) {
+    return node.size.height;
+  }
+  
+  // حساب مجموع ارتفاعات الأشجار الفرعية للأطفال
+  let totalChildrenHeight = 0;
+  childConnectors.forEach((conn, index) => {
+    const childId = (conn.data as MindMapConnectorData)?.endNodeId;
+    if (childId) {
+      totalChildrenHeight += calculateSubtreeHeight(childId, elements, verticalGap);
+      if (index < childConnectors.length - 1) {
+        totalChildrenHeight += verticalGap;
+      }
+    }
+  });
+  
+  // الارتفاع هو الأكبر بين ارتفاع العقدة ومجموع ارتفاعات الأطفال
+  return Math.max(node.size.height, totalChildrenHeight);
+}
+
+/**
+ * إعادة توزيع الفروع بشكل متناظر حول الأصل
+ * - الفرع الأوسط (إذا كان العدد فردي) يكون على خط مستقيم مع الأصل
+ * - الفروع توزع بالتساوي أعلى وأسفل
+ */
+export function redistributeBranches(
+  parentId: string,
+  elements: CanvasElement[],
+  verticalGap: number = 80
+): Map<string, { x: number; y: number }> {
+  const adjustments = new Map<string, { x: number; y: number }>();
+  
+  // الحصول على العقدة الأب
+  const parentNode = elements.find(el => el.id === parentId);
+  if (!parentNode) return adjustments;
+  
+  // الحصول على جميع الأبناء المباشرين
+  const childConnectors = elements.filter(el => 
+    el.type === 'mindmap_connector' && 
+    (el.data as MindMapConnectorData)?.startNodeId === parentId
+  );
+  
+  if (childConnectors.length === 0) return adjustments;
+  
+  // جمع الأبناء مع ارتفاع شجرتهم الفرعية
+  const children: { id: string; node: CanvasElement; subtreeHeight: number; connectorId: string }[] = [];
+  
+  childConnectors.forEach(conn => {
+    const childId = (conn.data as MindMapConnectorData)?.endNodeId;
+    const childNode = elements.find(el => el.id === childId);
+    if (childNode) {
+      const subtreeHeight = calculateSubtreeHeight(childId, elements, verticalGap);
+      children.push({ 
+        id: childId, 
+        node: childNode, 
+        subtreeHeight,
+        connectorId: conn.id 
+      });
+    }
+  });
+  
+  if (children.length === 0) return adjustments;
+  
+  const parentCenterY = parentNode.position.y + parentNode.size.height / 2;
+  
+  // حساب الارتفاع الكلي للفروع (مع المسافات بينها)
+  const totalHeight = children.reduce((sum, c, index) => {
+    return sum + c.subtreeHeight + (index < children.length - 1 ? verticalGap : 0);
+  }, 0);
+  
+  // البدء من أعلى نقطة (بحيث يكون المركز في منتصف الأب)
+  let currentY = parentCenterY - totalHeight / 2;
+  
+  // توزيع الأبناء متناظرياً
+  children.forEach((child) => {
+    // مركز الشجرة الفرعية لهذا الطفل
+    const childSubtreeCenterY = currentY + child.subtreeHeight / 2;
+    
+    // حساب الموقع الجديد للعقدة (مركز العقدة = مركز شجرتها الفرعية)
+    const newY = childSubtreeCenterY - child.node.size.height / 2;
+    
+    // حساب الفرق عن الموقع الحالي
+    const deltaY = newY - child.node.position.y;
+    
+    // إضافة التعديل لهذه العقدة
+    adjustments.set(child.id, {
+      x: child.node.position.x,
+      y: newY
+    });
+    
+    // إضافة التعديلات لجميع أحفاد هذه العقدة
+    const descendants = getAllDescendants(child.id, elements);
+    descendants.forEach(descId => {
+      const descNode = elements.find(el => el.id === descId);
+      if (descNode) {
+        adjustments.set(descId, {
+          x: descNode.position.x,
+          y: descNode.position.y + deltaY
+        });
+      }
+    });
+    
+    // الانتقال للفرع التالي
+    currentY += child.subtreeHeight + verticalGap;
+  });
+  
+  return adjustments;
+}
+
+/**
+ * إعادة توزيع الفروع بشكل تصاعدي (من العقدة المحددة إلى الجذر)
+ * هذا يضمن أن تغيير فرع يؤثر على جميع الأجداد
+ */
+export function redistributeUpwards(
+  nodeId: string,
+  elements: CanvasElement[],
+  verticalGap: number = 80
+): Map<string, { x: number; y: number }> {
+  const allAdjustments = new Map<string, { x: number; y: number }>();
+  let currentId: string | null = nodeId;
+  let currentElements = [...elements];
+  
+  while (currentId) {
+    // إعادة توزيع فروع العقدة الحالية
+    const adjustments = redistributeBranches(currentId, currentElements, verticalGap);
+    
+    // دمج التعديلات
+    adjustments.forEach((pos, id) => {
+      allAdjustments.set(id, pos);
+    });
+    
+    // تطبيق التعديلات على نسخة العناصر للحسابات التالية
+    currentElements = currentElements.map(el => {
+      const adj = allAdjustments.get(el.id);
+      if (adj) {
+        return { ...el, position: adj };
+      }
+      return el;
+    });
+    
+    // البحث عن الجد
+    const parentConnector = elements.find(el => 
+      el.type === 'mindmap_connector' && 
+      (el.data as MindMapConnectorData)?.endNodeId === currentId
+    );
+    
+    currentId = parentConnector 
+      ? (parentConnector.data as MindMapConnectorData)?.startNodeId || null
+      : null;
+  }
+  
+  return allAdjustments;
+}
