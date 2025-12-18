@@ -198,6 +198,83 @@ class GridRendererImpl {
   }
 
   /**
+   * رسم الشبكة مباشرة بنطاق محدد (بدون حساب visibleBounds)
+   * هذا يحل مشكلة عدم تطابق الإحداثيات
+   */
+  renderDirect(
+    ctx: CanvasRenderingContext2D,
+    bounds: { startX: number; startY: number; endX: number; endY: number },
+    canvasWidth: number,
+    canvasHeight: number,
+    config: Partial<GridConfig> = {}
+  ): void {
+    const gridConfig = { ...DEFAULT_GRID_CONFIG, ...config };
+    
+    if (!gridConfig.enabled) {
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      return;
+    }
+
+    const dpr = canvasKernel.dpr;
+    
+    // مسح الكانفاس
+    ctx.clearRect(0, 0, canvasWidth * dpr, canvasHeight * dpr);
+    
+    const gridSize = gridConfig.gridSize;
+    const majorEvery = gridConfig.majorLineEvery;
+    
+    // حساب الإزاحة لتحويل World Space إلى Canvas Space
+    const offsetX = gridConfig.offset?.x ?? 0;
+    const offsetY = gridConfig.offset?.y ?? 0;
+    
+    // محاذاة النطاق مع حجم الشبكة
+    const startX = Math.floor(bounds.startX / gridSize) * gridSize;
+    const startY = Math.floor(bounds.startY / gridSize) * gridSize;
+    const endX = Math.ceil(bounds.endX / gridSize) * gridSize;
+    const endY = Math.ceil(bounds.endY / gridSize) * gridSize;
+
+    // تطبيق DPR للرسم الحاد
+    ctx.save();
+    ctx.scale(dpr, dpr);
+
+    // رسم الخطوط الثانوية أولاً
+    this.drawGridLines(
+      ctx,
+      { zoom: 1, pan: { x: 0, y: 0 } },
+      startX,
+      startY,
+      endX,
+      endY,
+      gridSize,
+      majorEvery,
+      gridConfig.minorLineColor,
+      gridConfig.minorLineWidth,
+      false,
+      offsetX,
+      offsetY
+    );
+
+    // رسم الخطوط الرئيسية فوقها
+    this.drawGridLines(
+      ctx,
+      { zoom: 1, pan: { x: 0, y: 0 } },
+      startX,
+      startY,
+      endX,
+      endY,
+      gridSize * majorEvery,
+      1,
+      gridConfig.majorLineColor,
+      gridConfig.majorLineWidth,
+      true,
+      offsetX,
+      offsetY
+    );
+
+    ctx.restore();
+  }
+
+  /**
    * تحديد إذا كان يجب إعادة الرسم
    */
   shouldRerender(
