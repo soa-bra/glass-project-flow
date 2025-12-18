@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowRight, Save, RotateCcw, RotateCw, Clock, Share2, File, Layers, Sparkles } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { ArrowRight, Save, RotateCcw, RotateCw, Clock, Share2, File, Layers, Sparkles, Command } from 'lucide-react';
 import { usePlanningStore } from '@/stores/planningStore';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasBoard } from '@/types/planning';
@@ -14,6 +14,7 @@ import { SharePopover } from './popovers/SharePopover';
 import { FileMenuPopover } from './popovers/FileMenuPopover';
 import { LayersMenuPopover } from './popovers/LayersMenuPopover';
 import { AIAssistantPopover } from './AIAssistantPopover';
+import { SmartCommandBar, useSmartCommandBar } from './SmartElements/SmartCommandBar';
 interface PlanningCanvasProps {
   board: CanvasBoard;
 }
@@ -21,7 +22,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
   board
 }) => {
   const { setCurrentBoard, renameBoard } = usePlanningStore();
-  const { activeTool, undo, redo, history } = useCanvasStore();
+  const { activeTool, undo, redo, history, addElement, viewport } = useCanvasStore();
   
   const canUndo = history.past.length > 0;
   const canRedo = history.future.length > 0;
@@ -33,6 +34,36 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [boardName, setBoardName] = useState(board?.name || 'لوحة جديدة');
+  
+  // Smart Command Bar
+  const commandBar = useSmartCommandBar();
+  
+  // Handle AI-generated elements
+  const handleElementsGenerated = useCallback((elements: any[], layout: string) => {
+    elements.forEach((element, index) => {
+      // Adjust position based on current viewport
+      const adjustedPosition = {
+        x: (element.position?.x || 100 + index * 50) - viewport.pan.x / viewport.zoom,
+        y: (element.position?.y || 100 + index * 50) - viewport.pan.y / viewport.zoom
+      };
+      
+      addElement({
+        type: 'smart',
+        position: adjustedPosition,
+        size: { width: 400, height: 300 },
+        content: element.title,
+        style: {
+          backgroundColor: 'transparent'
+        },
+        metadata: {
+          smartType: element.type,
+          smartData: element.data,
+          description: element.description,
+          connections: element.connections
+        }
+      });
+    });
+  }, [addElement, viewport]);
   
   const handleSaveName = () => {
     if (board && boardName.trim()) {
@@ -106,6 +137,16 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
               </button>
             </AIAssistantPopover>
           </div>
+          
+          {/* Smart Command Bar Trigger */}
+          <button
+            onClick={commandBar.open}
+            className="flex items-center gap-2 px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-lg transition-colors border"
+            title="شريط الأوامر الذكي (Ctrl+K)"
+          >
+            <Command size={16} className="text-muted-foreground" />
+            <span className="text-[12px] text-muted-foreground font-mono">Ctrl+K</span>
+          </button>
           
           <div className="h-6 w-px bg-[hsl(var(--border))] mx-1" />
           
@@ -208,6 +249,13 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
       
       {/* Minimap */}
       <Minimap />
+      
+      {/* Smart Command Bar */}
+      <SmartCommandBar
+        isOpen={commandBar.isOpen}
+        onClose={commandBar.close}
+        onElementsGenerated={handleElementsGenerated}
+      />
     </div>;
 };
 export default PlanningCanvas;
