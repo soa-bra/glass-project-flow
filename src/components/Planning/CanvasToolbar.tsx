@@ -13,8 +13,7 @@ import {
   Settings,
   File,
   Layers,
-  Sparkles,
-  Magnet
+  Sparkles
 } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { usePlanningStore } from '@/stores/planningStore';
@@ -33,7 +32,6 @@ const CanvasToolbar: React.FC = () => {
     undo,
     redo,
     toggleGrid,
-    toggleSnapToGrid,
     settings,
     history,
     addElement
@@ -161,25 +159,6 @@ const CanvasToolbar: React.FC = () => {
           </button>
           <LayersMenuPopover isOpen={isLayersOpen} onClose={() => setIsLayersOpen(false)} />
         </div>
-        
-        {/* ✅ Snap Toggle Button */}
-        <button
-          onClick={toggleSnapToGrid}
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
-            settings.snapToGrid 
-              ? 'bg-[hsl(var(--accent-green))] text-white' 
-              : 'hover:bg-sb-panel-bg text-sb-ink-60'
-          }`}
-          title={settings.snapToGrid ? 'إيقاف المحاذاة الذكية' : 'تفعيل المحاذاة الذكية'}
-        >
-          <Magnet size={18} className={settings.snapToGrid ? 'animate-pulse' : ''} />
-          <span className="text-[13px] font-medium">
-            {settings.snapToGrid ? 'سناب' : 'سناب'}
-          </span>
-          {settings.snapToGrid && (
-            <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-          )}
-        </button>
         
         {/* AI Assistant */}
         <div className="relative">
