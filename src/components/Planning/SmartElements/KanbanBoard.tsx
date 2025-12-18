@@ -179,7 +179,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                               snapshot.isDraggingOver ? 'bg-accent/5' : ''
                             }`}
                           >
-                            {column.cards.map((card, cardIndex) => (
+                            {(column.cards || []).map((card, cardIndex) => (
                               <Draggable key={card.id} draggableId={card.id} index={cardIndex}>
                                 {(provided, snapshot) => (
                                   <div
