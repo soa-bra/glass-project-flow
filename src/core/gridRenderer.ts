@@ -28,6 +28,8 @@ export interface GridConfig {
   majorLineWidth: number;
   /** هل الشبكة مفعّلة */
   enabled: boolean;
+  /** إزاحة الرسم لتحويل World Space إلى Canvas Space */
+  offset?: { x: number; y: number };
 }
 
 export const DEFAULT_GRID_CONFIG: GridConfig = {
@@ -37,7 +39,8 @@ export const DEFAULT_GRID_CONFIG: GridConfig = {
   majorLineColor: 'rgba(11, 15, 18, 0.12)',
   minorLineWidth: 1,
   majorLineWidth: 1,
-  enabled: true
+  enabled: true,
+  offset: { x: 0, y: 0 }
 };
 
 // =============================================================================
@@ -97,6 +100,10 @@ class GridRendererImpl {
     ctx.save();
     ctx.scale(dpr, dpr);
 
+    // حساب الإزاحة لتحويل World Space إلى Canvas Space
+    const offsetX = gridConfig.offset?.x ?? 0;
+    const offsetY = gridConfig.offset?.y ?? 0;
+
     // رسم الخطوط الثانوية أولاً
     this.drawGridLines(
       ctx,
@@ -109,7 +116,9 @@ class GridRendererImpl {
       majorEvery,
       gridConfig.minorLineColor,
       gridConfig.minorLineWidth,
-      false
+      false,
+      offsetX,
+      offsetY
     );
 
     // رسم الخطوط الرئيسية فوقها
@@ -124,7 +133,9 @@ class GridRendererImpl {
       1, // لا نريد تخطي أي خط رئيسي
       gridConfig.majorLineColor,
       gridConfig.majorLineWidth,
-      true
+      true,
+      offsetX,
+      offsetY
     );
 
     ctx.restore();
@@ -145,36 +156,42 @@ class GridRendererImpl {
     majorEvery: number,
     color: string,
     lineWidth: number,
-    isMajor: boolean
+    isMajor: boolean,
+    offsetX: number = 0,
+    offsetY: number = 0
   ): void {
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.lineWidth = lineWidth;
 
-    // رسم الخطوط العمودية في World Space مباشرة
+    // رسم الخطوط العمودية - تحويل World Space إلى Canvas Space
     for (let worldX = startX; worldX <= endX; worldX += gridSize) {
       // تخطي الخطوط الرئيسية إذا كنا نرسم الثانوية
       if (!isMajor && majorEvery > 1 && Math.abs(worldX % (gridSize * majorEvery)) < 0.01) {
         continue;
       }
 
-      // رسم مباشر في World Space - CSS transform يتولى التحويل
-      const x = Math.round(worldX) + 0.5;
-      ctx.moveTo(x, startY);
-      ctx.lineTo(x, endY);
+      // تحويل من World Space إلى Canvas Space بإضافة الـ offset
+      const canvasX = Math.round(worldX + offsetX) + 0.5;
+      const canvasStartY = startY + offsetY;
+      const canvasEndY = endY + offsetY;
+      ctx.moveTo(canvasX, canvasStartY);
+      ctx.lineTo(canvasX, canvasEndY);
     }
 
-    // رسم الخطوط الأفقية في World Space مباشرة
+    // رسم الخطوط الأفقية - تحويل World Space إلى Canvas Space
     for (let worldY = startY; worldY <= endY; worldY += gridSize) {
       // تخطي الخطوط الرئيسية إذا كنا نرسم الثانوية
       if (!isMajor && majorEvery > 1 && Math.abs(worldY % (gridSize * majorEvery)) < 0.01) {
         continue;
       }
 
-      // رسم مباشر في World Space - CSS transform يتولى التحويل
-      const y = Math.round(worldY) + 0.5;
-      ctx.moveTo(startX, y);
-      ctx.lineTo(endX, y);
+      // تحويل من World Space إلى Canvas Space بإضافة الـ offset
+      const canvasY = Math.round(worldY + offsetY) + 0.5;
+      const canvasStartX = startX + offsetX;
+      const canvasEndX = endX + offsetX;
+      ctx.moveTo(canvasStartX, canvasY);
+      ctx.lineTo(canvasEndX, canvasY);
     }
 
     ctx.stroke();
