@@ -1,6 +1,7 @@
 import React from 'react';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { SmartElementLabels } from '@/types/smart-elements';
+import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import { KanbanBoard } from './KanbanBoard';
 import { ThinkingBoard } from './ThinkingBoard';
 import { VotingBoard } from './VotingBoard';
@@ -47,8 +48,14 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   element, 
   onUpdate 
 }) => {
-  const smartType = element.smartType;
-  const data = element.data || {};
+  // ✅ توحيد البحث عن smartType في كلا المكانين
+  const smartType = element.smartType || element.data?.smartType;
+  
+  // ✅ جلب البيانات من smartElementsStore إذا كان smartElementId موجوداً
+  const smartElementId = element.data?.smartElementId;
+  const { getSmartElementData } = useSmartElementsStore();
+  const storedData = smartElementId ? getSmartElementData(smartElementId) : null;
+  const data = storedData || element.data || {};
 
   // ThinkingBoard
   if (smartType === 'thinking_board') {

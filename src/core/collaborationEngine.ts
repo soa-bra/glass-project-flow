@@ -155,8 +155,15 @@ export class CollaborationEngine {
    */
   async leaveBoard(): Promise<void> {
     if (this.channel) {
-      await this.channel.untrack();
-      await supabase.removeChannel(this.channel);
+      try {
+        await this.channel.untrack();
+        // ✅ التحقق من وجود القناة قبل إزالتها
+        if (this.channel) {
+          await supabase.removeChannel(this.channel);
+        }
+      } catch (err) {
+        console.warn('[CollaborationEngine] Error leaving board:', err);
+      }
       this.channel = null;
     }
     
