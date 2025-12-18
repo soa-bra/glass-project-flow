@@ -2,6 +2,7 @@ import React, { useCallback, useRef, useState, useEffect, useMemo } from 'react'
 import { useCanvasStore } from '@/stores/canvasStore';
 import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel, type Bounds, type Point } from '@/core/canvasKernel';
+import { snapEngine, type SnapLine } from '@/core/snapEngine';
 
 // التحقق إذا كان الشكل سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -13,14 +14,21 @@ const isArrowShape = (shapeType: string | undefined): boolean => {
  * مكون الإطار المحيط للعناصر المحددة
  * 
  * ✅ Sprint 4: جميع الحسابات في World Space
+ * ✅ Sprint 5: دعم Snap Engine للمحاذاة الذكية
  * ✅ العرض يتم عبر CSS transform من الكانفاس
  */
-export const BoundingBox: React.FC = () => {
+
+interface BoundingBoxProps {
+  onGuidesChange?: (guides: SnapLine[]) => void;
+}
+
+export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   // ✅ جميع الـ Hooks أولاً (قبل أي return)
   const { 
     selectedElementIds, 
     elements, 
     viewport, 
+    settings,
     moveElements, 
     resizeElements, 
     duplicateElement, 
@@ -31,6 +39,7 @@ export const BoundingBox: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<string | null>(null);
   const dragStart = useRef<Point>({ x: 0, y: 0 });
+  const elementStartPos = useRef<Point>({ x: 0, y: 0 });
   const hasDuplicated = useRef(false);
   
   // ✅ حساب حدود الإطار المحيط في World Space
@@ -83,7 +92,22 @@ export const BoundingBox: React.FC = () => {
     return originMap[handle] || { x: centerX, y: centerY };
   }, [bounds]);
   
-  // ✅ معالجة حركة الماوس باستخدام Event Pipeline
+  // ✅ تحديث Snap Engine targets عند تغيير العناصر
+  useEffect(() => {
+    snapEngine.updateConfig({
+      gridEnabled: settings.snapToGrid,
+      gridSize: settings.gridSize,
+      elementSnapEnabled: true,
+      snapThreshold: 8,
+      centerSnapEnabled: true,
+      edgeSnapEnabled: true
+    });
+    
+    const validElements = elements.filter(el => el.visible !== false && el.locked !== true);
+    snapEngine.updateTargets(validElements, selectedElementIds);
+  }, [elements, selectedElementIds, settings.snapToGrid, settings.gridSize]);
+
+  // ✅ معالجة حركة الماوس باستخدام Event Pipeline و Snap Engine
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       // منع التعارض مع سحب نقاط تحكم السهم
@@ -103,24 +127,39 @@ export const BoundingBox: React.FC = () => {
           viewport.zoom
         );
         
-        let deltaX = worldDelta.x;
-        let deltaY = worldDelta.y;
+        // حساب الموضع الجديد المقترح
+        let newX = elementStartPos.current.x + worldDelta.x;
+        let newY = elementStartPos.current.y + worldDelta.y;
         
         // تقييد الحركة بمحور واحد مع Shift
         if (e.shiftKey) {
-          const absX = Math.abs(e.clientX - dragStart.current.x);
-          const absY = Math.abs(e.clientY - dragStart.current.y);
+          const absX = Math.abs(worldDelta.x);
+          const absY = Math.abs(worldDelta.y);
           
           if (absX > absY) {
-            deltaY = 0;
+            newY = elementStartPos.current.y;
           } else {
-            deltaX = 0;
+            newX = elementStartPos.current.x;
           }
         }
         
-        if (deltaX !== 0 || deltaY !== 0) {
-          moveElements(selectedElementIds, deltaX, deltaY);
-          dragStart.current = { x: e.clientX, y: e.clientY };
+        // ✅ Sprint 5: تطبيق Snap Engine
+        const snapResult = snapEngine.snapBounds(
+          { x: newX, y: newY, width: bounds.width, height: bounds.height },
+          selectedElementIds
+        );
+        
+        // إرسال خطوط الإرشاد للعرض
+        if (onGuidesChange) {
+          onGuidesChange(snapResult.guides);
+        }
+        
+        // حساب الفرق الفعلي بعد المحاذاة
+        const finalDeltaX = snapResult.snappedBounds.x - bounds.x;
+        const finalDeltaY = snapResult.snappedBounds.y - bounds.y;
+        
+        if (finalDeltaX !== 0 || finalDeltaY !== 0) {
+          moveElements(selectedElementIds, finalDeltaX, finalDeltaY);
         }
       } else if (isResizing) {
         // ✅ استخدام Event Pipeline لتحويل الدلتا
@@ -217,6 +256,11 @@ export const BoundingBox: React.FC = () => {
       setIsDragging(false);
       setIsResizing(null);
       hasDuplicated.current = false;
+      
+      // مسح خطوط الإرشاد
+      if (onGuidesChange) {
+        onGuidesChange([]);
+      }
     };
     
     if (isDragging || isResizing) {
@@ -227,13 +271,14 @@ export const BoundingBox: React.FC = () => {
         window.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, isResizing, viewport, moveElements, resizeElements, selectedElementIds, bounds, getResizeOrigin, selectedElements, elements, duplicateElement, resizeFrame]);
+  }, [isDragging, isResizing, viewport, moveElements, resizeElements, selectedElementIds, bounds, getResizeOrigin, selectedElements, elements, duplicateElement, resizeFrame, onGuidesChange, settings.snapToGrid, settings.gridSize]);
   
   // معالجات الأحداث
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDragging(true);
     dragStart.current = { x: e.clientX, y: e.clientY };
+    elementStartPos.current = { x: bounds.x, y: bounds.y };
   }, []);
   
   const handleResizeStart = useCallback((e: React.MouseEvent, corner: string) => {
