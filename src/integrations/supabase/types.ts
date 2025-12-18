@@ -14,6 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
+      board_invite_links: {
+        Row: {
+          board_id: string
+          created_at: string | null
+          created_by: string
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          token: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string | null
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          token: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string | null
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_invite_links_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_join_requests: {
+        Row: {
+          board_id: string
+          created_at: string | null
+          granted_role: string | null
+          id: string
+          invite_link_id: string
+          processed_at: string | null
+          processed_by: string | null
+          requester_name: string
+          requester_session_id: string
+          status: string | null
+        }
+        Insert: {
+          board_id: string
+          created_at?: string | null
+          granted_role?: string | null
+          id?: string
+          invite_link_id: string
+          processed_at?: string | null
+          processed_by?: string | null
+          requester_name: string
+          requester_session_id: string
+          status?: string | null
+        }
+        Update: {
+          board_id?: string
+          created_at?: string | null
+          granted_role?: string | null
+          id?: string
+          invite_link_id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          requester_name?: string
+          requester_session_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_join_requests_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "board_join_requests_invite_link_id_fkey"
+            columns: ["invite_link_id"]
+            isOneToOne: false
+            referencedRelation: "board_invite_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       board_objects: {
         Row: {
           board_id: string

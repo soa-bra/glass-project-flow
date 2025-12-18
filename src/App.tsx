@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import JoinBoardPage from "./pages/JoinBoardPage";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/join/:token" element={<JoinBoardPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

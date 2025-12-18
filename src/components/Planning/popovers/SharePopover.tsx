@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { 
   Users, MessageSquare, Phone, UserPlus, Send, 
   Mic, MicOff, PhoneCall, PhoneOff, Volume2,
-  Check, Crown, Eye, Edit3, Loader2
+  Check, Crown, Eye, Edit3, Loader2, Link2
 } from 'lucide-react';
 import { useCollaborationStore, Participant } from '@/stores/collaborationStore';
 import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 import { useWebRTCVoice } from '@/hooks/useWebRTCVoice';
+import { useBoardInvites } from '@/hooks/useBoardInvites';
 import { motion, AnimatePresence } from 'framer-motion';
+import { InviteLinkDialog } from './InviteLinkDialog';
+import { JoinRequestNotification } from './JoinRequestNotification';
 
 interface SharePopoverProps {
   isOpen: boolean;
@@ -25,6 +28,7 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
   const [activeTab, setActiveTab] = useState<TabType>('participants');
   const [newComment, setNewComment] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
   
   const collaborationUser = useCollaborationUser();
   const {
@@ -50,6 +54,17 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
     toggleMute,
     isParticipantSpeaking,
   } = useWebRTCVoice({ boardId, enabled: isOpen });
+
+  // Board Invites Hook
+  const {
+    activeLink,
+    pendingRequests,
+    isLoading: isInviteLoading,
+    createInviteLink,
+    deactivateLink,
+    handleJoinRequest,
+    getInviteUrl,
+  } = useBoardInvites({ boardId, isHost });
   
   if (!isOpen) return null;
   
@@ -115,16 +130,48 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div className="absolute top-full left-0 mt-2 w-96 bg-white rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border overflow-hidden z-50" dir="rtl">
-        {/* حالة الاتصال */}
+        {/* حالة الاتصال + زر الدعوة */}
         <div className="px-4 py-2 bg-sb-panel-bg border-b border-sb-border flex items-center gap-2">
           <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#3DBE8B]' : 'bg-sb-ink-30'}`} />
           <span className="text-[11px] text-sb-ink-60">
             {isConnected ? 'متصل' : 'غير متصل'}
           </span>
-          <span className="text-[11px] text-sb-ink-40 mr-auto">
+          <span className="text-[11px] text-sb-ink-40">
             {allParticipants.length} مشارك
           </span>
+          
+          {/* زر دعوة مشاركين */}
+          {isHost && (
+            <button
+              onClick={() => setShowInviteDialog(true)}
+              className="mr-auto flex items-center gap-1.5 px-2.5 py-1.5 bg-sb-ink text-white text-[11px] font-medium rounded-lg hover:opacity-90 transition-opacity"
+            >
+              <UserPlus size={12} />
+              دعوة
+              {pendingRequests.length > 0 && (
+                <span className="w-4 h-4 flex items-center justify-center bg-[#E5564D] text-[9px] rounded-full">
+                  {pendingRequests.length}
+                </span>
+              )}
+            </button>
+          )}
         </div>
+        
+        {/* إشعارات طلبات الانضمام */}
+        {isHost && pendingRequests.length > 0 && (
+          <div className="p-3 border-b border-sb-border space-y-2">
+            <AnimatePresence>
+              {pendingRequests.map((request) => (
+                <JoinRequestNotification
+                  key={request.id}
+                  request={request}
+                  onApprove={(id, role) => handleJoinRequest(id, 'approved', role)}
+                  onReject={(id) => handleJoinRequest(id, 'rejected')}
+                />
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
         
         {/* التبويبات */}
         <div className="flex border-b border-sb-border">
@@ -183,10 +230,7 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-3"
               >
-                <button className="w-full flex items-center gap-2 px-3 py-2 bg-sb-panel-bg rounded-lg hover:bg-sb-ink-20 transition-colors">
-                  <UserPlus size={16} className="text-sb-ink" />
-                  <span className="text-[13px] font-medium text-sb-ink">دعوة مشاركين</span>
-                </button>
+                {/* قائمة المشاركين */}
                 
                 <div className="space-y-2">
                   {allParticipants.map(participant => (
@@ -461,6 +505,16 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
           </AnimatePresence>
         </div>
       </div>
+      
+      {/* نافذة رابط الدعوة */}
+      <InviteLinkDialog
+        isOpen={showInviteDialog}
+        onClose={() => setShowInviteDialog(false)}
+        inviteUrl={getInviteUrl()}
+        isLoading={isInviteLoading}
+        onCreateLink={createInviteLink}
+        onDeactivateLink={deactivateLink}
+      />
     </>
   );
 };
