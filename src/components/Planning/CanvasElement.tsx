@@ -13,6 +13,7 @@ import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { sanitizeHTMLForDisplay } from '@/utils/sanitize';
 import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel } from '@/core/canvasKernel';
+import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 
 // التحقق إذا كان العنصر سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -55,7 +56,6 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   if (element.type === 'mindmap_node') {
     // ✅ التحقق من الطي التكراري - إخفاء إذا كان أي جد مطوياً
     const elements = useCanvasStore.getState().elements;
-    const { isAncestorCollapsed } = require('@/utils/mindmap-layout');
     
     if (isAncestorCollapsed(element.id, elements)) {
       return null; // إخفاء العقدة إذا كان أي جد مطوياً
