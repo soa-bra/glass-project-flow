@@ -9,6 +9,7 @@ import {
   createElbowPath 
 } from '@/types/mindmap-canvas';
 import { Trash2, Type } from 'lucide-react';
+import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 
 interface MindMapConnectorProps {
   element: CanvasElement;
@@ -42,12 +43,34 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
     [elements, connectorData.endNodeId]
   );
   
-  // ✅ التحقق من الطي - إخفاء إذا كان الأب مطوياً
+  // ✅ تهيئة أولية للمواقع من البيانات المتاحة
+  useEffect(() => {
+    if (startNode && endNode && !lastPositionsRef.current) {
+      const startAnchor = connectorData.startAnchor?.anchor || 'right';
+      const endAnchor = connectorData.endAnchor?.anchor || 'left';
+      const startPos = getAnchorPosition(startNode.position, startNode.size, startAnchor);
+      const endPos = getAnchorPosition(endNode.position, endNode.size, endAnchor);
+      lastPositionsRef.current = { start: startPos, end: endPos };
+    }
+  }, [startNode, endNode, connectorData]);
+  
+  // ✅ التحقق من الطي التكراري - إخفاء إذا كان أي جد مطوياً
   const isHiddenByCollapse = useMemo(() => {
-    if (!startNode) return false;
-    const parentData = startNode.data as MindMapNodeData;
-    return parentData?.isCollapsed === true;
-  }, [startNode]);
+    // إذا كان الأب المباشر مطوياً
+    if (startNode) {
+      const parentData = startNode.data as MindMapNodeData;
+      if (parentData?.isCollapsed === true) {
+        return true;
+      }
+    }
+    
+    // ✅ التحقق من جميع أجداد العقدة البادئة
+    if (connectorData.startNodeId && isAncestorCollapsed(connectorData.startNodeId, elements)) {
+      return true;
+    }
+    
+    return false;
+  }, [startNode, connectorData.startNodeId, elements]);
   
   // ✅ حساب مواقع نقاط الربط مع offset للروابط المتعددة
   const positions = useMemo(() => {
@@ -305,13 +328,29 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
         </div>
       )}
       
-      {/* ✅ أزرار hover للحذف وإضافة النص */}
+      {/* ✅ placeholder لإضافة نص عند عدم وجوده */}
+      {!connectorData.label && !isEditingLabel && (isHovered || isSelected) && labelPosition && (
+        <button
+          className="absolute transform -translate-x-1/2 px-3 py-1.5 text-xs bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-[hsl(var(--border))] flex items-center gap-1.5 text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] hover:bg-blue-50 transition-colors pointer-events-auto"
+          onClick={handleStartAddLabel}
+          style={{ 
+            left: labelPosition.x, 
+            top: labelPosition.y,
+            zIndex: 52
+          }}
+        >
+          <Type size={12} />
+          أضف نصاً
+        </button>
+      )}
+      
+      {/* ✅ أزرار hover للحذف وإضافة النص - أكبر وأوضح */}
       {(isHovered || isSelected) && labelPosition && (
         <div
-          className="absolute flex items-center gap-1 pointer-events-auto"
+          className="absolute flex items-center gap-2 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-1.5 border border-[hsl(var(--border))]"
           style={{
-            left: labelPosition.x - 32,
-            top: labelPosition.y + (connectorData.label ? 25 : 15),
+            left: labelPosition.x - 44,
+            top: labelPosition.y + (connectorData.label ? 30 : 35),
             zIndex: 52
           }}
           onMouseEnter={() => setIsHovered(true)}
@@ -319,20 +358,20 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
         >
           {/* زر إضافة/تحرير النص */}
           <button
-            className="w-6 h-6 bg-white rounded-full shadow-md border border-[hsl(var(--border))] flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] hover:bg-blue-50 transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] hover:bg-blue-50 transition-colors"
             onClick={handleStartAddLabel}
             title={connectorData.label ? "تحرير النص" : "إضافة نص"}
           >
-            <Type size={12} />
+            <Type size={16} />
           </button>
           
           {/* زر الحذف */}
           <button
-            className="w-6 h-6 bg-white rounded-full shadow-md border border-[hsl(var(--border))] flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-red))] hover:bg-red-50 transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-red))] hover:bg-red-50 transition-colors"
             onClick={() => deleteElement(element.id)}
             title="حذف الرابط"
           >
-            <Trash2 size={12} />
+            <Trash2 size={16} />
           </button>
         </div>
       )}

@@ -514,6 +514,39 @@ export function findAvailableSlot(
 }
 
 /**
+ * التحقق مما إذا كان أي جد للعقدة مطوياً
+ * يُستخدم لإخفاء العقد والروابط التي يكون أي من أجدادها مطوياً
+ */
+export function isAncestorCollapsed(
+  nodeId: string,
+  elements: CanvasElement[]
+): boolean {
+  let currentId: string | null = nodeId;
+  
+  while (currentId) {
+    // البحث عن الـ connector الذي ينتهي عند هذه العقدة
+    const parentConnector = elements.find(el => 
+      el.type === 'mindmap_connector' && 
+      (el.data as MindMapConnectorData)?.endNodeId === currentId
+    );
+    
+    if (!parentConnector) break; // وصلنا للجذر
+    
+    const parentNodeId = (parentConnector.data as MindMapConnectorData)?.startNodeId;
+    const parentNode = elements.find(el => el.id === parentNodeId);
+    
+    // إذا كان أي جد مطوياً، أرجع true
+    if ((parentNode?.data as any)?.isCollapsed) {
+      return true;
+    }
+    
+    currentId = parentNodeId || null;
+  }
+  
+  return false;
+}
+
+/**
  * الحصول على جميع أحفاد عقدة معينة
  */
 export function getAllDescendants(
