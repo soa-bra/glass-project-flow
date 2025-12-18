@@ -5,6 +5,8 @@ import { KanbanBoard } from './KanbanBoard';
 import { ThinkingBoard } from './ThinkingBoard';
 import { VotingBoard } from './VotingBoard';
 import { BrainstormingBoard } from './BrainstormingBoard';
+import { TimelineView } from './TimelineView';
+import { DecisionsMatrix } from './DecisionsMatrix';
 import { 
   Brain, Kanban, Vote, Lightbulb, Calendar, Grid3X3, 
   BarChart3, Table, GitBranch, FolderKanban, Wallet,
@@ -74,6 +76,26 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   if (smartType === 'brainstorming') {
     return (
       <BrainstormingBoard 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Timeline View
+  if (smartType === 'timeline') {
+    return (
+      <TimelineView 
+        data={data as any} 
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Decisions Matrix
+  if (smartType === 'decisions_matrix') {
+    return (
+      <DecisionsMatrix 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
       />
