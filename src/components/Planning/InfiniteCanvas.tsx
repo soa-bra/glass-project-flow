@@ -456,14 +456,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     backgroundColor: settings.background,
     cursor: getCursorStyle()
   }}>
-      {/* ✅ Sprint 2: Infinite Grid Layer (Canvas-based, World Space anchored) */}
-      <CanvasGridLayer />
-      
       {/* Canvas Container */}
       <div ref={canvasRef} className="absolute inset-0 origin-top-left" style={{
       transform: `translate(${viewport.pan.x}px, ${viewport.pan.y}px) scale(${viewport.zoom})`,
       transition: isPanningRef.current ? 'none' : 'transform 0.1s ease-out'
     }}>
+        {/* ✅ Grid Layer - داخل الطبقة المتحركة للتزامن مع العناصر */}
+        <CanvasGridLayer />
+        
         {/* Pen Strokes Layer */}
         <StrokesLayer />
         

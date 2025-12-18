@@ -20,9 +20,9 @@ export const CanvasGridLayer: React.FC<CanvasGridLayerProps> = ({ config }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number>(0);
   
-  const { viewport, settings } = useCanvasStore();
+  const { settings } = useCanvasStore();
 
-  // دالة الرسم
+  // دالة الرسم - في World Space مباشرة
   const render = useCallback(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
@@ -31,37 +31,39 @@ export const CanvasGridLayer: React.FC<CanvasGridLayerProps> = ({ config }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const containerWidth = container.clientWidth;
-    const containerHeight = container.clientHeight;
+    // حجم منطقة الشبكة الثابت (World Space)
+    const gridWidth = 10000;
+    const gridHeight = 10000;
     const dpr = canvasKernel.dpr;
 
     // تحديث حجم الكانفاس مع DPR
     const needsResize = 
-      canvas.width !== containerWidth * dpr ||
-      canvas.height !== containerHeight * dpr;
+      canvas.width !== gridWidth * dpr ||
+      canvas.height !== gridHeight * dpr;
 
     if (needsResize) {
-      canvas.width = containerWidth * dpr;
-      canvas.height = containerHeight * dpr;
-      canvas.style.width = `${containerWidth}px`;
-      canvas.style.height = `${containerHeight}px`;
+      canvas.width = gridWidth * dpr;
+      canvas.height = gridHeight * dpr;
+      canvas.style.width = `${gridWidth}px`;
+      canvas.style.height = `${gridHeight}px`;
       gridRenderer.invalidateCache();
     }
 
-    // التحقق إذا كان يجب إعادة الرسم
+    // رسم الشبكة في World Space مباشرة
+    // الـ viewport يُستخدم فقط لتحديد المنطقة المرئية، لكن الرسم يكون في World Space
     const shouldRender = gridRenderer.shouldRerender(
-      viewport,
-      containerWidth,
-      containerHeight,
+      { zoom: 1, pan: { x: 0, y: 0 } }, // نمرر viewport افتراضي لأن CSS transform يتولى التحويل
+      gridWidth,
+      gridHeight,
       settings.gridEnabled
     );
 
     if (shouldRender || needsResize) {
       gridRenderer.render(
         ctx,
-        viewport,
-        containerWidth,
-        containerHeight,
+        { zoom: 1, pan: { x: 0, y: 0 } }, // World Space مباشرة
+        gridWidth,
+        gridHeight,
         {
           ...config,
           gridSize: settings.gridSize,
@@ -69,7 +71,7 @@ export const CanvasGridLayer: React.FC<CanvasGridLayerProps> = ({ config }) => {
         }
       );
     }
-  }, [viewport, settings.gridEnabled, settings.gridSize, config]);
+  }, [settings.gridEnabled, settings.gridSize, config]);
 
   // استخدام requestAnimationFrame للرسم السلس
   useEffect(() => {
@@ -115,16 +117,21 @@ export const CanvasGridLayer: React.FC<CanvasGridLayerProps> = ({ config }) => {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 pointer-events-none overflow-hidden"
-      style={{ zIndex: 0 }}
+      className="absolute pointer-events-none overflow-visible"
+      style={{ 
+        zIndex: 0,
+        // توسيع منطقة الشبكة لتغطية المساحة المرئية عند الـ pan
+        left: '-5000px',
+        top: '-5000px',
+        width: '10000px',
+        height: '10000px'
+      }}
     >
       <canvas
         ref={canvasRef}
         className="absolute top-0 left-0"
         style={{ 
-          imageRendering: 'pixelated',
-          // منع أي تحويلات CSS على الكانفاس نفسه
-          transform: 'none'
+          imageRendering: 'pixelated'
         }}
       />
     </div>
