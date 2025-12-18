@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { Magnet, Grid3X3, AlignHorizontalJustifyCenter, AlignVerticalJustifyCenter, Columns, Check } from 'lucide-react';
+import { Magnet, Grid3X3, AlignHorizontalJustifyCenter, AlignVerticalJustifyCenter, Columns, Check, Circle, LayoutGrid, Hexagon, Triangle } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 
 const SnapSettingsDropdown: React.FC = () => {
@@ -16,8 +16,19 @@ const SnapSettingsDropdown: React.FC = () => {
 
   const gridSizes = [10, 15, 20, 25, 30, 40, 50];
 
+  const gridTypes = [
+    { id: 'grid' as const, label: 'خطوط', icon: LayoutGrid },
+    { id: 'dots' as const, label: 'نقاط', icon: Circle },
+    { id: 'isometric' as const, label: 'أيزومتري', icon: Triangle },
+    { id: 'hex' as const, label: 'سداسي', icon: Hexagon },
+  ];
+
   const handleGridSizeChange = (size: number) => {
     updateSettings({ gridSize: size });
+  };
+
+  const handleGridTypeChange = (type: 'dots' | 'grid' | 'isometric' | 'hex') => {
+    updateSettings({ gridType: type });
   };
 
   const toggleSnapOption = (option: 'snapToEdges' | 'snapToCenter' | 'snapToDistribution') => {
@@ -45,7 +56,7 @@ const SnapSettingsDropdown: React.FC = () => {
             onClick={() => setIsOpen(false)}
           />
           <div 
-            className="absolute bottom-full right-0 mb-2 bg-white rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border py-3 px-3 z-[9999] min-w-[200px]"
+            className="absolute bottom-full right-0 mb-2 bg-white rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border py-3 px-3 z-[9999] min-w-[220px]"
             dir="rtl"
           >
             {/* تفعيل/تعطيل السناب */}
@@ -65,6 +76,35 @@ const SnapSettingsDropdown: React.FC = () => {
                   }`}
                 />
               </button>
+            </div>
+
+            {/* نمط الشبكة */}
+            <div className="mb-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Grid3X3 size={14} className="text-sb-ink-60" />
+                <span className="text-[12px] text-sb-ink-60">نمط الشبكة</span>
+              </div>
+              <div className="grid grid-cols-4 gap-1">
+                {gridTypes.map((type) => {
+                  const Icon = type.icon;
+                  const isSelected = settings.gridType === type.id;
+                  return (
+                    <button
+                      key={type.id}
+                      onClick={() => handleGridTypeChange(type.id)}
+                      className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                        isSelected
+                          ? 'bg-sb-ink text-white' 
+                          : 'bg-sb-panel-bg text-sb-ink hover:bg-sb-ink-30'
+                      }`}
+                      title={type.label}
+                    >
+                      <Icon size={16} />
+                      <span className="text-[10px]">{type.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* حجم الشبكة */}
