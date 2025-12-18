@@ -47,8 +47,16 @@ function buildTree(
     parentMap.set(data.endNodeId, data.startNodeId);
   });
   
-  // بناء الشجرة بشكل تكراري
-  function buildNode(element: CanvasElement, depth: number, parent: LayoutNode | null): LayoutNode {
+  // بناء الشجرة بشكل تكراري مع منع الدورات
+  const visited = new Set<string>();
+  
+  function buildNode(element: CanvasElement, depth: number, parent: LayoutNode | null): LayoutNode | null {
+    // ✅ منع الدورات اللانهائية
+    if (visited.has(element.id)) {
+      return null;
+    }
+    visited.add(element.id);
+    
     const node: LayoutNode = {
       id: element.id,
       element,
@@ -60,8 +68,9 @@ function buildTree(
     const childIds = childrenMap.get(element.id) || [];
     node.children = childIds
       .map(childId => nodes.find(n => n.id === childId))
-      .filter((n): n is CanvasElement => n !== undefined)
-      .map(childElement => buildNode(childElement, depth + 1, node));
+      .filter((n): n is CanvasElement => n !== undefined && !visited.has(n.id))
+      .map(childElement => buildNode(childElement, depth + 1, node))
+      .filter((n): n is LayoutNode => n !== null);
     
     return node;
   }

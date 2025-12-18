@@ -32,7 +32,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeRef = useRef<HTMLDivElement>(null);
-  const isDraggingRef = useRef(false);
+  const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
   
   const nodeData = element.data as MindMapNodeData;
@@ -54,20 +54,32 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setIsEditing(false);
   }, [element.id, nodeData, editText, updateElement]);
   
-  // إضافة فرع جديد
+  // إضافة فرع جديد مع توزيع تلقائي
   const handleAddBranch = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // إنشاء عقدة جديدة
-    const newNodeId = `mindmap-node-${Date.now()}`;
-    const offset = 200;
+    const state = useCanvasStore.getState();
     
-    // إضافة العقدة الجديدة
+    // ✅ حساب عدد الفروع الموجودة لهذه العقدة
+    const existingConnectors = state.elements.filter(el => 
+      el.type === 'mindmap_connector' && 
+      (el.data as any)?.startNodeId === element.id
+    );
+    const childCount = existingConnectors.length;
+    
+    // ✅ حساب الإزاحة العمودية لتوزيع الفروع
+    const verticalSpacing = 80;
+    const yOffset = (childCount - Math.floor(childCount / 2)) * verticalSpacing;
+    
+    const offset = 200;
+    const newNodeId = `mindmap-node-${Date.now()}`;
+    
+    // إضافة العقدة الجديدة في موقع مختلف
     addElement({
       type: 'mindmap_node',
       position: {
         x: element.position.x + element.size.width + offset,
-        y: element.position.y
+        y: element.position.y + yOffset
       },
       size: { width: 160, height: 60 },
       data: {
@@ -80,9 +92,11 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     
     // إضافة الرابط
     setTimeout(() => {
-      const state = useCanvasStore.getState();
-      const newNode = state.elements.find(el => el.type === 'mindmap_node' && el.id !== element.id);
-      if (newNode) {
+      const updatedState = useCanvasStore.getState();
+      const allNodes = updatedState.elements.filter(el => el.type === 'mindmap_node');
+      const newNode = allNodes[allNodes.length - 1]; // آخر عقدة تمت إضافتها
+      
+      if (newNode && newNode.id !== element.id) {
         addElement({
           type: 'mindmap_connector',
           position: { x: 0, y: 0 },
@@ -119,7 +133,8 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     
     if (activeTool !== 'selection_tool') return;
     
-    isDraggingRef.current = true;
+    // ✅ استخدام useState بدلاً من useRef
+    setIsDragging(true);
     dragStartRef.current = {
       x: e.clientX,
       y: e.clientY,
@@ -129,8 +144,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   }, [element, onSelect, activeTool, isEditing]);
   
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDraggingRef.current) return;
-    
     const deltaX = (e.clientX - dragStartRef.current.x) / viewport.zoom;
     const deltaY = (e.clientY - dragStartRef.current.y) / viewport.zoom;
     
@@ -143,7 +156,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   }, [element.id, viewport.zoom, updateElement]);
   
   const handleMouseUp = useCallback(() => {
-    isDraggingRef.current = false;
+    setIsDragging(false);
   }, []);
   
   // نقاط الربط
@@ -166,17 +179,18 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     }
   }, [element.id, isConnecting, onEndConnection]);
   
-  // إضافة مستمعي الأحداث العامة
+  // ✅ إضافة مستمعي الأحداث العامة - يعمل الآن بشكل صحيح مع useState
   useEffect(() => {
-    if (isDraggingRef.current) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [handleMouseMove, handleMouseUp]);
+    if (!isDragging) return;
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, handleMouseMove, handleMouseUp]);
   
   // التركيز على الإدخال عند التحرير
   useEffect(() => {

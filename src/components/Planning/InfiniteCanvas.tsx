@@ -297,6 +297,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   // Handle Mouse Move (Pan or Drawing or Selection)
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    // ✅ تحديث خط اتصال الخريطة الذهنية أثناء السحب
+    if (mindMapConnection.isConnecting) {
+      updateConnectionPosition(e.clientX, e.clientY);
+    }
+    
     if (isPanningRef.current) {
       const deltaX = e.clientX - lastPanPositionRef.current.x;
       const deltaY = e.clientY - lastPanPositionRef.current.y;
@@ -318,7 +323,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     } else {
       handleCanvasMouseMove(e);
     }
-  }, [viewport, setPan, handleCanvasMouseMove, isSelecting]);
+  }, [viewport, setPan, handleCanvasMouseMove, isSelecting, mindMapConnection.isConnecting, updateConnectionPosition]);
 
   // Handle Mouse Up (Stop Pan or Drawing or Selection)
   const handleMouseUp = useCallback(() => {
