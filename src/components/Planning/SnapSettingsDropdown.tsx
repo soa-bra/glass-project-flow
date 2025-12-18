@@ -65,7 +65,7 @@ const SnapSettingsDropdown: React.FC = () => {
                 onClick={toggleSnapToGrid}
                 className={`w-11 h-6 rounded-full transition-all duration-200 relative shadow-inner ${
                   settings.snapToGrid 
-                    ? 'bg-[#3DBE8B]' 
+                    ? 'bg-sb-ink' 
                     : 'bg-[#D1D5DB]'
                 }`}
               >
@@ -147,7 +147,7 @@ const SnapSettingsDropdown: React.FC = () => {
               >
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                   settings.snapToEdges 
-                    ? 'border-[#3DBE8B] bg-[#3DBE8B]' 
+                    ? 'border-sb-ink bg-sb-ink' 
                     : 'border-[#9CA3AF] bg-white'
                 }`}>
                   {settings.snapToEdges && (
@@ -169,7 +169,7 @@ const SnapSettingsDropdown: React.FC = () => {
               >
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                   settings.snapToCenter 
-                    ? 'border-[#3DA8F5] bg-[#3DA8F5]' 
+                    ? 'border-sb-ink bg-sb-ink' 
                     : 'border-[#9CA3AF] bg-white'
                 }`}>
                   {settings.snapToCenter && (
@@ -191,7 +191,7 @@ const SnapSettingsDropdown: React.FC = () => {
               >
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                   settings.snapToDistribution 
-                    ? 'border-[#F6C445] bg-[#F6C445]' 
+                    ? 'border-sb-ink bg-sb-ink' 
                     : 'border-[#9CA3AF] bg-white'
                 }`}>
                   {settings.snapToDistribution && (
