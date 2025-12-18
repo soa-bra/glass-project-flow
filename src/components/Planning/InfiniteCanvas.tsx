@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
 import { CanvasGridLayer } from './CanvasGridLayer';
 import { RealtimeSyncManager } from './collaboration';
+import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 import type { SnapLine } from '@/core/snapEngine';
 
 interface InfiniteCanvasProps {
@@ -61,6 +62,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   // Enable keyboard shortcuts
   useKeyboardShortcuts();
+  
+  // ✅ Sprint 17: هوية المستخدم المحفوظة للتعاون
+  const collaborationUser = useCollaborationUser();
 
   // Pan State
   const isPanningRef = useRef(false);
@@ -524,8 +528,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       {/* ✅ Sprint 17: Real-time Collaboration Sync Manager */}
       <RealtimeSyncManager
         boardId={boardId}
-        userId={`user-${Date.now()}`}
-        userName="مستخدم سوبرا"
+        userId={collaborationUser.id}
+        userName={collaborationUser.name}
         enabled={true}
         viewport={viewport}
         onSyncStatusChange={(status) => {
