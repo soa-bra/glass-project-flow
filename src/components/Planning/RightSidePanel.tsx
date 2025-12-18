@@ -48,16 +48,16 @@ const RightSidePanel: React.FC<RightSidePanelProps> = ({ activeTool, onClose }) 
   const panelTitle = panelTitles[activeTool];
 
   return (
-    <div className="w-[320px] h-full bg-white border-l border-[#DADCE0] flex flex-col">
+    <div className="w-[320px] h-[calc(100%-32px)] my-4 ml-4 rounded-3xl bg-background/70 backdrop-blur-2xl border border-[hsl(var(--border))] shadow-lg flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-[#DADCE0]">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[hsl(var(--border))]">
         <h3 className="text-[16px] font-semibold text-[hsl(var(--ink))]">
           {panelTitle}
         </h3>
         {onClose && (
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-[hsl(var(--panel))] rounded-lg transition-colors"
+            className="p-1.5 hover:bg-[hsl(var(--ink-30))] rounded-full transition-colors"
           >
             <X size={18} className="text-[hsl(var(--ink-60))]" />
           </button>
