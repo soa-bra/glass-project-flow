@@ -131,11 +131,12 @@ class GridRendererImpl {
   }
 
   /**
-   * رسم خطوط الشبكة
+   * رسم خطوط الشبكة في World Space مباشرة
+   * (CSS transform يتولى التحويل إلى Screen Space)
    */
   private drawGridLines(
     ctx: CanvasRenderingContext2D,
-    camera: Camera,
+    _camera: Camera,
     startX: number,
     startY: number,
     endX: number,
@@ -150,44 +151,30 @@ class GridRendererImpl {
     ctx.strokeStyle = color;
     ctx.lineWidth = lineWidth;
 
-    // رسم الخطوط العمودية
+    // رسم الخطوط العمودية في World Space مباشرة
     for (let worldX = startX; worldX <= endX; worldX += gridSize) {
       // تخطي الخطوط الرئيسية إذا كنا نرسم الثانوية
       if (!isMajor && majorEvery > 1 && Math.abs(worldX % (gridSize * majorEvery)) < 0.01) {
         continue;
       }
 
-      // تحويل من World Space إلى Screen Space
-      const screenX = worldX * camera.zoom + camera.pan.x;
-      
-      // رسم الخط من أعلى الشاشة لأسفلها
-      const screenStartY = startY * camera.zoom + camera.pan.y;
-      const screenEndY = endY * camera.zoom + camera.pan.y;
-      
-      // استخدام 0.5 للحصول على خطوط حادة على البكسل
-      const x = Math.round(screenX) + 0.5;
-      ctx.moveTo(x, screenStartY);
-      ctx.lineTo(x, screenEndY);
+      // رسم مباشر في World Space - CSS transform يتولى التحويل
+      const x = Math.round(worldX) + 0.5;
+      ctx.moveTo(x, startY);
+      ctx.lineTo(x, endY);
     }
 
-    // رسم الخطوط الأفقية
+    // رسم الخطوط الأفقية في World Space مباشرة
     for (let worldY = startY; worldY <= endY; worldY += gridSize) {
       // تخطي الخطوط الرئيسية إذا كنا نرسم الثانوية
       if (!isMajor && majorEvery > 1 && Math.abs(worldY % (gridSize * majorEvery)) < 0.01) {
         continue;
       }
 
-      // تحويل من World Space إلى Screen Space
-      const screenY = worldY * camera.zoom + camera.pan.y;
-      
-      // رسم الخط من يسار الشاشة ليمينها
-      const screenStartX = startX * camera.zoom + camera.pan.x;
-      const screenEndX = endX * camera.zoom + camera.pan.x;
-      
-      // استخدام 0.5 للحصول على خطوط حادة على البكسل
-      const y = Math.round(screenY) + 0.5;
-      ctx.moveTo(screenStartX, y);
-      ctx.lineTo(screenEndX, y);
+      // رسم مباشر في World Space - CSS transform يتولى التحويل
+      const y = Math.round(worldY) + 0.5;
+      ctx.moveTo(startX, y);
+      ctx.lineTo(endX, y);
     }
 
     ctx.stroke();
