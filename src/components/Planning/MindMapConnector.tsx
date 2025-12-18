@@ -1,4 +1,5 @@
 import React, { useMemo, useCallback, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { MindMapConnectorData } from '@/types/mindmap-canvas';
@@ -138,11 +139,15 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
   
   return (
     <>
-      <svg
+      <motion.svg
         className="absolute pointer-events-none"
+        initial={false}
+        animate={{
+          x: bounds.x,
+          y: bounds.y,
+        }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         style={{
-          left: bounds.x,
-          top: bounds.y,
           width: bounds.width,
           height: bounds.height,
           overflow: 'visible',
@@ -150,7 +155,7 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
         }}
       >
         {/* منطقة النقر (شفافة وعريضة) */}
-        <path
+        <motion.path
           d={path}
           fill="none"
           stroke="transparent"
@@ -165,37 +170,48 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
           }}
         />
         
-        {/* الخط المرئي */}
-        <path
+        {/* الخط المرئي مع أنيميشن */}
+        <motion.path
           d={path}
           fill="none"
           stroke={connectorData.color || '#3DA8F5'}
           strokeWidth={connectorData.strokeWidth || 2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={`transition-all ${isHovered || isSelected ? 'filter drop-shadow-md' : ''}`}
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ 
+            pathLength: 1, 
+            opacity: isHovered || isSelected ? 1 : 0.85,
+            filter: isHovered || isSelected ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' : 'none'
+          }}
+          transition={{ 
+            pathLength: { duration: 0.5, ease: 'easeOut' },
+            opacity: { duration: 0.2 },
+            filter: { duration: 0.2 }
+          }}
           style={{
-            transform: `translate(${-bounds.x}px, ${-bounds.y}px)`,
-            opacity: isHovered || isSelected ? 1 : 0.8
+            transform: `translate(${-bounds.x}px, ${-bounds.y}px)`
           }}
         />
         
         {/* تمييز التحديد */}
         {isSelected && (
-          <path
+          <motion.path
             d={path}
             fill="none"
             stroke="hsl(var(--accent-green))"
             strokeWidth={(connectorData.strokeWidth || 2) + 4}
             strokeLinecap="round"
             strokeLinejoin="round"
-            opacity={0.3}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.3 }}
+            transition={{ duration: 0.2 }}
             style={{
               transform: `translate(${-bounds.x}px, ${-bounds.y}px)`
             }}
           />
         )}
-      </svg>
+      </motion.svg>
       
       {/* النص على المسار */}
       {labelPosition && (connectorData.label || isEditingLabel) && (
