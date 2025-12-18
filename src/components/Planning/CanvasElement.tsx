@@ -7,6 +7,8 @@ import { TextEditor } from './TextEditor';
 import { ShapeRenderer } from './ShapeRenderer';
 import { ArrowControlPoints } from './ArrowControlPoints';
 import { ArrowLabels } from './ArrowLabels';
+import MindMapNode from './MindMapNode';
+import MindMapConnector from './MindMapConnector';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { sanitizeHTMLForDisplay } from '@/utils/sanitize';
 import { eventPipeline } from '@/core/eventPipeline';
@@ -31,6 +33,11 @@ interface CanvasElementProps {
   onSelect: (multiSelect: boolean) => void;
   snapToGrid?: (x: number, y: number) => { x: number; y: number };
   activeTool: string;
+  // Mind Map connection props
+  onStartConnection?: (nodeId: string, anchor: 'top' | 'bottom' | 'left' | 'right', position: { x: number; y: number }) => void;
+  onEndConnection?: (nodeId: string, anchor: 'top' | 'bottom' | 'left' | 'right') => void;
+  isConnecting?: boolean;
+  nearestAnchor?: { nodeId: string; anchor: string; position: { x: number; y: number } } | null;
 }
 
 const CanvasElement: React.FC<CanvasElementProps> = ({
@@ -38,8 +45,37 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   isSelected,
   onSelect,
   snapToGrid,
-  activeTool
+  activeTool,
+  onStartConnection,
+  onEndConnection,
+  isConnecting = false,
+  nearestAnchor = null
 }) => {
+  // عرض عناصر الخريطة الذهنية بمكونات خاصة
+  if (element.type === 'mindmap_node') {
+    return (
+      <MindMapNode
+        element={element}
+        isSelected={isSelected}
+        onSelect={onSelect}
+        onStartConnection={onStartConnection || (() => {})}
+        onEndConnection={onEndConnection || (() => {})}
+        isConnecting={isConnecting}
+        nearestAnchor={nearestAnchor as any}
+        activeTool={activeTool}
+      />
+    );
+  }
+  
+  if (element.type === 'mindmap_connector') {
+    return (
+      <MindMapConnector
+        element={element}
+        isSelected={isSelected}
+        onSelect={onSelect}
+      />
+    );
+  }
   const { updateElement, viewport, updateFrameTitle, editingTextId, startEditingText, stopEditingText, updateTextContent } = useCanvasStore();
   const elementRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
