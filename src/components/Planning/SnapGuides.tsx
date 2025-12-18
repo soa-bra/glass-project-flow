@@ -41,17 +41,18 @@ export const SnapGuides: React.FC<SnapGuidesProps> = ({ guides, containerRef }) 
 
   const renderGuide = (guide: SnapLine, index: number) => {
     // تحويل إحداثيات World Space إلى Screen Space
+    // نمرر null بدلاً من containerRect لأن الـ SVG موقعه محدد مسبقاً
     const startScreen = canvasKernel.worldToScreen(
       guide.start.x,
       guide.start.y,
       viewport,
-      containerRect
+      null
     );
     const endScreen = canvasKernel.worldToScreen(
       guide.end.x,
       guide.end.y,
       viewport,
-      containerRect
+      null
     );
 
     const color = getGuideColor(guide.snapType);
@@ -98,7 +99,7 @@ export const SnapGuides: React.FC<SnapGuidesProps> = ({ guides, containerRef }) 
           guide.position,
           (guide.start.y + guide.end.y) / 2,
           viewport,
-          containerRect
+          null
         );
         points.push({ ...screen, color });
       } else {
@@ -106,7 +107,7 @@ export const SnapGuides: React.FC<SnapGuidesProps> = ({ guides, containerRef }) 
           (guide.start.x + guide.end.x) / 2,
           guide.position,
           viewport,
-          containerRect
+          null
         );
         points.push({ ...screen, color });
       }
