@@ -9,6 +9,7 @@ import { MousePointer2 } from 'lucide-react';
 
 interface RemoteCursor {
   odId: string;
+  id?: string;
   x: number;
   y: number;
   color: string;
@@ -35,9 +36,9 @@ export const RemoteCursors: React.FC<RemoteCursorsProps> = ({ cursors, viewport 
           const screenX = cursor.x * viewport.zoom + viewport.pan.x;
           const screenY = cursor.y * viewport.zoom + viewport.pan.y;
 
-          return (
-            <motion.div
-              key={cursor.odId}
+            return (
+              <motion.div
+                key={cursor.odId || cursor.id}
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ 
                 opacity: 1, 
