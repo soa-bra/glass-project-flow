@@ -42,7 +42,7 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
   
   const lastPositionsRef = useRef<{start: {x: number, y: number}, end: {x: number, y: number}} | null>(getInitialPositions());
   
-  // الحصول على العقد المتصلة
+  // ✅ الحصول على العناصر المتصلة (أي نوع وليس فقط mindmap_node)
   const startNode = useMemo(() => 
     elements.find(el => el.id === connectorData.startNodeId),
     [elements, connectorData.startNodeId]
