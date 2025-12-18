@@ -1,5 +1,4 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { MindMapNodeData, NodeAnchorPoint } from '@/types/mindmap-canvas';
@@ -269,28 +268,17 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const isNearestForConnection = nearestAnchor?.nodeId === element.id;
   
   return (
-    <motion.div
+    <div
       ref={nodeRef}
-      className={`absolute select-none ${
+      className={`absolute select-none transition-shadow ${
         activeTool === 'selection_tool' ? 'cursor-move' : 'cursor-default'
       } ${isSelected ? 'ring-2 ring-[hsl(var(--accent-green))] ring-offset-2' : ''}`}
       style={{
+        left: element.position.x,
+        top: element.position.y,
         width: element.size.width,
         height: element.size.height,
         zIndex: isSelected ? 100 : 10,
-      }}
-      // ✅ أنيميشن سلسة عند تغيير الموقع (معطلة أثناء السحب)
-      initial={false}
-      animate={{
-        x: element.position.x,
-        y: element.position.y,
-        scale: isNearestForConnection ? 1.05 : 1,
-      }}
-      transition={isDragging ? { duration: 0 } : { 
-        type: 'spring', 
-        stiffness: 300, 
-        damping: 30,
-        mass: 0.8 
       }}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
@@ -402,7 +390,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           </button>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 
