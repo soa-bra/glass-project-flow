@@ -1,11 +1,26 @@
 /**
  * خوارزميات التخطيط التلقائي للخرائط الذهنية
+ * نظام إعدادات التخطيط الثلاثي: التعامد، التناظر، الاتجاه
  */
 
 import type { CanvasElement } from '@/types/canvas';
 import type { MindMapConnectorData } from '@/types/mindmap-canvas';
 
+// ✅ الأنواع القديمة (للتوافقية)
 export type LayoutType = 'tree' | 'radial' | 'organic';
+
+// ✅ نظام الإعدادات الجديد
+export interface LayoutSettings {
+  orientation: 'horizontal' | 'vertical';  // التعامد: عرضي أو طولي
+  symmetry: 'symmetric' | 'unilateral';     // التناظر: تناظري أو أحادي
+  direction: 'rtl' | 'ltr';                 // الاتجاه: من اليمين أو من اليسار
+}
+
+export const DEFAULT_LAYOUT_SETTINGS: LayoutSettings = {
+  orientation: 'horizontal',
+  symmetry: 'unilateral',
+  direction: 'rtl'
+};
 
 interface LayoutNode {
   id: string;
@@ -13,6 +28,7 @@ interface LayoutNode {
   children: LayoutNode[];
   parent: LayoutNode | null;
   depth: number;
+  side?: 'primary' | 'secondary'; // للتخطيط التناظري
 }
 
 interface LayoutResult {
@@ -29,10 +45,8 @@ function buildTree(
 ): LayoutNode | null {
   if (nodes.length === 0) return null;
 
-  // البحث عن العقدة الجذر
   const rootNode = nodes.find(n => (n.data as any)?.isRoot) || nodes[0];
   
-  // بناء خريطة الاتصالات
   const childrenMap = new Map<string, string[]>();
   const parentMap = new Map<string, string>();
   
@@ -47,11 +61,9 @@ function buildTree(
     parentMap.set(data.endNodeId, data.startNodeId);
   });
   
-  // بناء الشجرة بشكل تكراري مع منع الدورات
   const visited = new Set<string>();
   
-  function buildNode(element: CanvasElement, depth: number, parent: LayoutNode | null): LayoutNode | null {
-    // ✅ منع الدورات اللانهائية
+  function buildNode(element: CanvasElement, depth: number, parent: LayoutNode | null, side?: 'primary' | 'secondary'): LayoutNode | null {
     if (visited.has(element.id)) {
       return null;
     }
@@ -62,14 +74,19 @@ function buildTree(
       element,
       children: [],
       parent,
-      depth
+      depth,
+      side
     };
     
     const childIds = childrenMap.get(element.id) || [];
     node.children = childIds
       .map(childId => nodes.find(n => n.id === childId))
       .filter((n): n is CanvasElement => n !== undefined && !visited.has(n.id))
-      .map(childElement => buildNode(childElement, depth + 1, node))
+      .map((childElement, index) => {
+        // توزيع الأطفال على الجانبين للتخطيط التناظري
+        const childSide = side || (index % 2 === 0 ? 'primary' : 'secondary');
+        return buildNode(childElement, depth + 1, node, childSide);
+      })
       .filter((n): n is LayoutNode => n !== null);
     
     return node;
@@ -79,30 +96,48 @@ function buildTree(
 }
 
 /**
- * تخطيط شجري (الفروع على يمين الجذر - متوافق مع إضافة الفروع يدوياً)
+ * حساب ارتفاع الشجرة الفرعية (للتخطيط الداخلي)
  */
-function calculateTreeLayout(
+function calcLayoutSubtreeHeight(node: LayoutNode, spacing: number): number {
+  if (node.children.length === 0) {
+    return node.element.size.height;
+  }
+  
+  const childrenHeight = node.children.reduce((sum, child) => 
+    sum + calcLayoutSubtreeHeight(child, spacing) + spacing, -spacing);
+  
+  return Math.max(node.element.size.height, childrenHeight);
+}
+
+/**
+ * حساب عرض الشجرة الفرعية (للتخطيط الداخلي)
+ */
+function calcLayoutSubtreeWidth(node: LayoutNode, spacing: number): number {
+  if (node.children.length === 0) {
+    return node.element.size.width;
+  }
+  
+  const childrenWidth = node.children.reduce((sum, child) => 
+    sum + calcLayoutSubtreeWidth(child, spacing) + spacing, -spacing);
+  
+  return Math.max(node.element.size.width, childrenWidth);
+}
+
+/**
+ * تخطيط أفقي أحادي الاتجاه
+ */
+function calculateHorizontalUnilateralLayout(
   root: LayoutNode,
   startX: number,
   startY: number,
+  settings: LayoutSettings,
   horizontalSpacing: number = 250,
   verticalSpacing: number = 100
 ): LayoutResult[] {
   const results: LayoutResult[] = [];
-  
-  function calculateSubtreeHeight(node: LayoutNode): number {
-    if (node.children.length === 0) {
-      return node.element.size.height;
-    }
-    
-    const childrenHeight = node.children.reduce((sum, child) => 
-      sum + calculateSubtreeHeight(child) + verticalSpacing, -verticalSpacing);
-    
-    return Math.max(node.element.size.height, childrenHeight);
-  }
+  const isRTL = settings.direction === 'rtl';
   
   function layoutNode(node: LayoutNode, x: number, y: number): void {
-    // وضع العقدة الحالية
     results.push({
       nodeId: node.id,
       position: { x, y }
@@ -110,15 +145,15 @@ function calculateTreeLayout(
     
     if (node.children.length === 0) return;
     
-    // حساب ارتفاع كل فرع فرعي
-    const subtreeHeights = node.children.map(child => calculateSubtreeHeight(child));
+    const subtreeHeights = node.children.map(child => calcLayoutSubtreeHeight(child, verticalSpacing));
     const totalHeight = subtreeHeights.reduce((sum, h) => sum + h + verticalSpacing, -verticalSpacing);
     
-    // البدء من أعلى المنطقة المخصصة
     let currentY = y - totalHeight / 2 + subtreeHeights[0] / 2;
     
-    // ✅ وضع الأطفال على اليمين (متوافق مع إضافة الفروع يدوياً)
-    const childX = x + node.element.size.width + horizontalSpacing;
+    // الاتجاه: RTL = يمين، LTR = يسار
+    const childX = isRTL 
+      ? x + node.element.size.width + horizontalSpacing
+      : x - horizontalSpacing;
     
     node.children.forEach((child, index) => {
       layoutNode(child, childX, currentY);
@@ -134,58 +169,300 @@ function calculateTreeLayout(
 }
 
 /**
- * تخطيط شعاعي (دائري)
+ * تخطيط أفقي تناظري (فروع على كلا الجانبين)
  */
-function calculateRadialLayout(
+function calculateHorizontalSymmetricLayout(
   root: LayoutNode,
-  centerX: number,
-  centerY: number,
-  initialRadius: number = 200,
-  radiusIncrement: number = 150
+  startX: number,
+  startY: number,
+  settings: LayoutSettings,
+  horizontalSpacing: number = 250,
+  verticalSpacing: number = 100
 ): LayoutResult[] {
   const results: LayoutResult[] = [];
+  const isRTL = settings.direction === 'rtl';
   
   // العقدة الجذر في المركز
   results.push({
     nodeId: root.id,
-    position: { x: centerX, y: centerY }
+    position: { x: startX, y: startY }
   });
   
   if (root.children.length === 0) return results;
   
-  // جمع العقد حسب العمق
-  const nodesByDepth = new Map<number, LayoutNode[]>();
+  // تقسيم الأطفال إلى جانبين
+  const primaryChildren: LayoutNode[] = [];
+  const secondaryChildren: LayoutNode[] = [];
   
-  function collectByDepth(node: LayoutNode): void {
-    const depth = node.depth;
-    if (!nodesByDepth.has(depth)) {
-      nodesByDepth.set(depth, []);
+  root.children.forEach((child, index) => {
+    if (index % 2 === 0) {
+      primaryChildren.push(child);
+    } else {
+      secondaryChildren.push(child);
     }
-    nodesByDepth.get(depth)!.push(node);
-    node.children.forEach(collectByDepth);
-  }
-  
-  root.children.forEach(child => collectByDepth(child));
-  
-  // ترتيب العقد في كل مستوى بشكل دائري
-  nodesByDepth.forEach((nodes, depth) => {
-    const radius = initialRadius + (depth - 1) * radiusIncrement;
-    const angleStep = (2 * Math.PI) / nodes.length;
-    const startAngle = -Math.PI / 2; // البدء من الأعلى
-    
-    nodes.forEach((node, index) => {
-      const angle = startAngle + index * angleStep;
-      results.push({
-        nodeId: node.id,
-        position: {
-          x: centerX + radius * Math.cos(angle),
-          y: centerY + radius * Math.sin(angle)
-        }
-      });
-    });
   });
   
+  // تخطيط الجانب الأساسي (يمين في RTL، يسار في LTR)
+  function layoutSide(children: LayoutNode[], isPrimary: boolean): void {
+    if (children.length === 0) return;
+    
+    const subtreeHeights = children.map(child => calcLayoutSubtreeHeight(child, verticalSpacing));
+    const totalHeight = subtreeHeights.reduce((sum, h) => sum + h + verticalSpacing, -verticalSpacing);
+    
+    let currentY = startY - totalHeight / 2 + subtreeHeights[0] / 2;
+    
+    // الاتجاه حسب الجانب
+    const directionMultiplier = isPrimary 
+      ? (isRTL ? 1 : -1)  // الجانب الأساسي
+      : (isRTL ? -1 : 1); // الجانب الثانوي
+    
+    const childX = startX + directionMultiplier * (root.element.size.width / 2 + horizontalSpacing);
+    
+    children.forEach((child, index) => {
+      layoutBranch(child, childX, currentY, directionMultiplier);
+      
+      if (index < children.length - 1) {
+        currentY += subtreeHeights[index] / 2 + verticalSpacing + subtreeHeights[index + 1] / 2;
+      }
+    });
+  }
+  
+  // تخطيط فرع مع أطفاله (يحافظ على نفس الاتجاه)
+  function layoutBranch(node: LayoutNode, x: number, y: number, directionMultiplier: number): void {
+    results.push({
+      nodeId: node.id,
+      position: { x, y }
+    });
+    
+    if (node.children.length === 0) return;
+    
+    const subtreeHeights = node.children.map(child => calcLayoutSubtreeHeight(child, verticalSpacing));
+    const totalHeight = subtreeHeights.reduce((sum, h) => sum + h + verticalSpacing, -verticalSpacing);
+    
+    let currentY = y - totalHeight / 2 + subtreeHeights[0] / 2;
+    const childX = x + directionMultiplier * (node.element.size.width + horizontalSpacing);
+    
+    node.children.forEach((child, index) => {
+      layoutBranch(child, childX, currentY, directionMultiplier);
+      
+      if (index < node.children.length - 1) {
+        currentY += subtreeHeights[index] / 2 + verticalSpacing + subtreeHeights[index + 1] / 2;
+      }
+    });
+  }
+  
+  layoutSide(primaryChildren, true);
+  layoutSide(secondaryChildren, false);
+  
   return results;
+}
+
+/**
+ * تخطيط عمودي أحادي الاتجاه
+ */
+function calculateVerticalUnilateralLayout(
+  root: LayoutNode,
+  startX: number,
+  startY: number,
+  settings: LayoutSettings,
+  horizontalSpacing: number = 150,
+  verticalSpacing: number = 120
+): LayoutResult[] {
+  const results: LayoutResult[] = [];
+  const isTopDown = settings.direction === 'rtl'; // RTL = من أعلى لأسفل
+  
+  function layoutNode(node: LayoutNode, x: number, y: number): void {
+    results.push({
+      nodeId: node.id,
+      position: { x, y }
+    });
+    
+    if (node.children.length === 0) return;
+    
+    const subtreeWidths = node.children.map(child => calcLayoutSubtreeWidth(child, horizontalSpacing));
+    const totalWidth = subtreeWidths.reduce((sum, w) => sum + w + horizontalSpacing, -horizontalSpacing);
+    
+    let currentX = x - totalWidth / 2 + subtreeWidths[0] / 2;
+    
+    // الاتجاه: RTL = أسفل، LTR = أعلى
+    const childY = isTopDown 
+      ? y + node.element.size.height + verticalSpacing
+      : y - verticalSpacing;
+    
+    node.children.forEach((child, index) => {
+      layoutNode(child, currentX, childY);
+      
+      if (index < node.children.length - 1) {
+        currentX += subtreeWidths[index] / 2 + horizontalSpacing + subtreeWidths[index + 1] / 2;
+      }
+    });
+  }
+  
+  layoutNode(root, startX, startY);
+  return results;
+}
+
+/**
+ * تخطيط عمودي تناظري
+ */
+function calculateVerticalSymmetricLayout(
+  root: LayoutNode,
+  startX: number,
+  startY: number,
+  settings: LayoutSettings,
+  horizontalSpacing: number = 150,
+  verticalSpacing: number = 120
+): LayoutResult[] {
+  const results: LayoutResult[] = [];
+  const isTopDown = settings.direction === 'rtl';
+  
+  results.push({
+    nodeId: root.id,
+    position: { x: startX, y: startY }
+  });
+  
+  if (root.children.length === 0) return results;
+  
+  const primaryChildren: LayoutNode[] = [];
+  const secondaryChildren: LayoutNode[] = [];
+  
+  root.children.forEach((child, index) => {
+    if (index % 2 === 0) {
+      primaryChildren.push(child);
+    } else {
+      secondaryChildren.push(child);
+    }
+  });
+  
+  function layoutSide(children: LayoutNode[], isPrimary: boolean): void {
+    if (children.length === 0) return;
+    
+    const subtreeWidths = children.map(child => calcLayoutSubtreeWidth(child, horizontalSpacing));
+    const totalWidth = subtreeWidths.reduce((sum, w) => sum + w + horizontalSpacing, -horizontalSpacing);
+    
+    let currentX = startX - totalWidth / 2 + subtreeWidths[0] / 2;
+    
+    const directionMultiplier = isPrimary 
+      ? (isTopDown ? 1 : -1)
+      : (isTopDown ? -1 : 1);
+    
+    const childY = startY + directionMultiplier * (root.element.size.height / 2 + verticalSpacing);
+    
+    children.forEach((child, index) => {
+      layoutBranch(child, currentX, childY, directionMultiplier);
+      
+      if (index < children.length - 1) {
+        currentX += subtreeWidths[index] / 2 + horizontalSpacing + subtreeWidths[index + 1] / 2;
+      }
+    });
+  }
+  
+  function layoutBranch(node: LayoutNode, x: number, y: number, directionMultiplier: number): void {
+    results.push({
+      nodeId: node.id,
+      position: { x, y }
+    });
+    
+    if (node.children.length === 0) return;
+    
+    const subtreeWidths = node.children.map(child => calcLayoutSubtreeWidth(child, horizontalSpacing));
+    const totalWidth = subtreeWidths.reduce((sum, w) => sum + w + horizontalSpacing, -horizontalSpacing);
+    
+    let currentX = x - totalWidth / 2 + subtreeWidths[0] / 2;
+    const childY = y + directionMultiplier * (node.element.size.height + verticalSpacing);
+    
+    node.children.forEach((child, index) => {
+      layoutBranch(child, currentX, childY, directionMultiplier);
+      
+      if (index < node.children.length - 1) {
+        currentX += subtreeWidths[index] / 2 + horizontalSpacing + subtreeWidths[index + 1] / 2;
+      }
+    });
+  }
+  
+  layoutSide(primaryChildren, true);
+  layoutSide(secondaryChildren, false);
+  
+  return results;
+}
+
+/**
+ * تطبيق التخطيط الجديد بناءً على الإعدادات
+ */
+export function applyLayoutWithSettings(
+  settings: LayoutSettings,
+  allElements: CanvasElement[],
+  updateElement: (id: string, updates: Partial<CanvasElement>) => void
+): void {
+  const nodes = allElements.filter(el => el.type === 'mindmap_node');
+  const connectors = allElements.filter(el => el.type === 'mindmap_connector');
+  
+  if (nodes.length === 0) return;
+  
+  const centerX = nodes.reduce((sum, n) => sum + n.position.x, 0) / nodes.length;
+  const centerY = nodes.reduce((sum, n) => sum + n.position.y, 0) / nodes.length;
+  
+  const tree = buildTree(nodes, connectors);
+  if (!tree) return;
+  
+  let results: LayoutResult[] = [];
+  
+  if (settings.orientation === 'horizontal') {
+    if (settings.symmetry === 'symmetric') {
+      results = calculateHorizontalSymmetricLayout(tree, centerX, centerY, settings);
+    } else {
+      results = calculateHorizontalUnilateralLayout(tree, centerX, centerY, settings);
+    }
+  } else {
+    if (settings.symmetry === 'symmetric') {
+      results = calculateVerticalSymmetricLayout(tree, centerX, centerY, settings);
+    } else {
+      results = calculateVerticalUnilateralLayout(tree, centerX, centerY, settings);
+    }
+  }
+  
+  results.forEach(result => {
+    updateElement(result.nodeId, {
+      position: result.position
+    });
+  });
+}
+
+/**
+ * تطبيق التخطيط (الواجهة القديمة للتوافقية)
+ */
+export function applyMindMapLayout(
+  layoutType: LayoutType,
+  allElements: CanvasElement[],
+  updateElement: (id: string, updates: Partial<CanvasElement>) => void
+): void {
+  // تحويل النوع القديم إلى الإعدادات الجديدة
+  const settings: LayoutSettings = {
+    orientation: layoutType === 'radial' ? 'horizontal' : 'horizontal',
+    symmetry: layoutType === 'radial' ? 'symmetric' : 'unilateral',
+    direction: 'rtl'
+  };
+  
+  if (layoutType === 'organic') {
+    // التخطيط العضوي يبقى كما هو
+    const nodes = allElements.filter(el => el.type === 'mindmap_node');
+    const connectors = allElements.filter(el => el.type === 'mindmap_connector');
+    
+    if (nodes.length === 0) return;
+    
+    const centerX = nodes.reduce((sum, n) => sum + n.position.x, 0) / nodes.length;
+    const centerY = nodes.reduce((sum, n) => sum + n.position.y, 0) / nodes.length;
+    
+    const results = calculateOrganicLayout(nodes, connectors, centerX, centerY);
+    results.forEach(result => {
+      updateElement(result.nodeId, {
+        position: result.position
+      });
+    });
+    return;
+  }
+  
+  applyLayoutWithSettings(settings, allElements, updateElement);
 }
 
 /**
@@ -200,19 +477,15 @@ function calculateOrganicLayout(
 ): LayoutResult[] {
   if (nodes.length === 0) return [];
   
-  // تهيئة المواقع العشوائية حول المركز
   const positions = new Map<string, { x: number; y: number }>();
   const velocities = new Map<string, { x: number; y: number }>();
   
-  // البحث عن العقدة الجذر
   const rootNode = nodes.find(n => (n.data as any)?.isRoot);
   
   nodes.forEach((node, index) => {
     if (rootNode && node.id === rootNode.id) {
-      // العقدة الجذر في المركز
       positions.set(node.id, { x: centerX, y: centerY });
     } else {
-      // توزيع أولي عشوائي
       const angle = (index / nodes.length) * 2 * Math.PI;
       const radius = 150 + Math.random() * 100;
       positions.set(node.id, {
@@ -223,7 +496,6 @@ function calculateOrganicLayout(
     velocities.set(node.id, { x: 0, y: 0 });
   });
   
-  // بناء خريطة الاتصالات
   const connections = new Set<string>();
   connectors.forEach(conn => {
     const data = conn.data as MindMapConnectorData;
@@ -233,14 +505,12 @@ function calculateOrganicLayout(
     }
   });
   
-  // محاكاة القوى
   const repulsionStrength = 5000;
   const attractionStrength = 0.01;
   const damping = 0.9;
   const minDistance = 100;
   
   for (let iter = 0; iter < iterations; iter++) {
-    // قوى التنافر بين جميع العقد
     nodes.forEach(nodeA => {
       const posA = positions.get(nodeA.id)!;
       let forceX = 0;
@@ -266,7 +536,6 @@ function calculateOrganicLayout(
       vel.y = (vel.y + forceY) * damping;
     });
     
-    // قوى الجذب للعقد المتصلة
     connectors.forEach(conn => {
       const data = conn.data as MindMapConnectorData;
       if (!data.startNodeId || !data.endNodeId) return;
@@ -293,9 +562,7 @@ function calculateOrganicLayout(
       }
     });
     
-    // تطبيق السرعات على المواقع
     nodes.forEach(node => {
-      // العقدة الجذر ثابتة
       if (rootNode && node.id === rootNode.id) return;
       
       const pos = positions.get(node.id)!;
@@ -312,56 +579,7 @@ function calculateOrganicLayout(
 }
 
 /**
- * تطبيق التخطيط على عقد الخريطة الذهنية
- */
-export function applyMindMapLayout(
-  layoutType: LayoutType,
-  allElements: CanvasElement[],
-  updateElement: (id: string, updates: Partial<CanvasElement>) => void
-): void {
-  // فلترة عقد وروابط الخريطة الذهنية
-  const nodes = allElements.filter(el => el.type === 'mindmap_node');
-  const connectors = allElements.filter(el => el.type === 'mindmap_connector');
-  
-  if (nodes.length === 0) return;
-  
-  // حساب مركز العقد الحالية
-  const centerX = nodes.reduce((sum, n) => sum + n.position.x, 0) / nodes.length;
-  const centerY = nodes.reduce((sum, n) => sum + n.position.y, 0) / nodes.length;
-  
-  let results: LayoutResult[] = [];
-  
-  switch (layoutType) {
-    case 'tree': {
-      const tree = buildTree(nodes, connectors);
-      if (tree) {
-        results = calculateTreeLayout(tree, centerX, centerY);
-      }
-      break;
-    }
-    case 'radial': {
-      const tree = buildTree(nodes, connectors);
-      if (tree) {
-        results = calculateRadialLayout(tree, centerX, centerY);
-      }
-      break;
-    }
-    case 'organic': {
-      results = calculateOrganicLayout(nodes, connectors, centerX, centerY);
-      break;
-    }
-  }
-  
-  // تطبيق المواقع الجديدة
-  results.forEach(result => {
-    updateElement(result.nodeId, {
-      position: result.position
-    });
-  });
-}
-
-/**
- * الحصول على اسم التخطيط بالعربية
+ * الحصول على اسم التخطيط بالعربية (للتوافقية)
  */
 export function getLayoutName(type: LayoutType): string {
   switch (type) {
