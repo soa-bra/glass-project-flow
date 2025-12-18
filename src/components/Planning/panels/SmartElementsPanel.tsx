@@ -190,6 +190,20 @@ const SMART_ELEMENTS: SmartElementConfig[] = [
     ]
   },
   {
+    id: 'visual_diagram' as SmartElementType,
+    name: 'Visual Diagram',
+    nameAr: 'مخطط بصري',
+    icon: <Link size={20} />,
+    category: 'analysis',
+    description: 'إنشاء مخططات بصرية مرنة مع عقد وروابط',
+    settings: [
+      { key: 'layout', label: 'التخطيط', type: 'select', options: [
+        { value: 'horizontal', label: 'أفقي' },
+        { value: 'vertical', label: 'عمودي' },
+      ], defaultValue: 'horizontal' },
+    ]
+  },
+  {
     id: 'root_connector',
     name: 'Root Connector',
     nameAr: 'رابط الجذر',
@@ -309,14 +323,13 @@ const SmartElementsPanel: React.FC = () => {
     if (selectedElement.id === 'mind_map') {
       const { addElement } = useCanvasStore.getState();
       
-      // إنشاء عقدة الجذر مباشرة على الكانفس
       addElement({
         type: 'mindmap_node',
         position: { x: centerX - 80, y: centerY - 30 },
         size: { width: 180, height: 60 },
         data: {
           label: elementTitle || 'الفكرة الرئيسية',
-          color: NODE_COLORS[0], // أزرق
+          color: NODE_COLORS[0],
           nodeStyle: 'rounded',
           isRoot: true,
           fontSize: 16,
@@ -325,6 +338,30 @@ const SmartElementsPanel: React.FC = () => {
       });
       
       toast.success('تم إنشاء خريطة ذهنية جديدة - انقر على العقدة واسحب من نقاط الربط لإضافة فروع');
+      setSelectedElement(null);
+      return;
+    }
+
+    // ✅ إنشاء مخطط بصري كعقد مستقلة على الكانفس
+    if (selectedElement.id === 'visual_diagram') {
+      const { addElement } = useCanvasStore.getState();
+      
+      addElement({
+        type: 'visual_node',
+        position: { x: centerX - 80, y: centerY - 30 },
+        size: { width: 180, height: 60 },
+        data: {
+          label: elementTitle || 'العنصر الرئيسي',
+          color: '#3DA8F5',
+          nodeStyle: 'rounded',
+          isRoot: true,
+          fontSize: 16,
+          textColor: '#FFFFFF',
+          diagramType: 'visual_diagram'
+        }
+      });
+      
+      toast.success('تم إنشاء مخطط بصري جديد - انقر على العنصر واسحب من نقاط الربط لإضافة عناصر');
       setSelectedElement(null);
       return;
     }

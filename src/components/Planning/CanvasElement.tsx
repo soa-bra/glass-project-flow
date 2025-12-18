@@ -54,11 +54,10 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
 }) => {
   // عرض عناصر الخريطة الذهنية بمكونات خاصة
   if (element.type === 'mindmap_node') {
-    // ✅ التحقق من الطي التكراري - إخفاء إذا كان أي جد مطوياً
     const elements = useCanvasStore.getState().elements;
     
     if (isAncestorCollapsed(element.id, elements)) {
-      return null; // إخفاء العقدة إذا كان أي جد مطوياً
+      return null;
     }
     
     return (
@@ -78,6 +77,41 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   if (element.type === 'mindmap_connector') {
     return (
       <MindMapConnector
+        element={element}
+        isSelected={isSelected}
+        onSelect={onSelect}
+      />
+    );
+  }
+
+  // عرض عناصر المخطط البصري
+  if (element.type === 'visual_node') {
+    const { isVisualAncestorCollapsed } = require('@/utils/visual-diagram-layout');
+    const elements = useCanvasStore.getState().elements;
+    
+    if (isVisualAncestorCollapsed(element.id, elements)) {
+      return null;
+    }
+    
+    const VisualNode = require('./VisualNode').default;
+    return (
+      <VisualNode
+        element={element}
+        isSelected={isSelected}
+        onSelect={onSelect}
+        onStartConnection={onStartConnection || (() => {})}
+        onEndConnection={onEndConnection || (() => {})}
+        isConnecting={isConnecting}
+        nearestAnchor={nearestAnchor as any}
+        activeTool={activeTool}
+      />
+    );
+  }
+  
+  if (element.type === 'visual_connector') {
+    const VisualConnector = require('./VisualConnector').default;
+    return (
+      <VisualConnector
         element={element}
         isSelected={isSelected}
         onSelect={onSelect}
