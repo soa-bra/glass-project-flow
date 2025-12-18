@@ -20,7 +20,6 @@ const SnapSettingsDropdown: React.FC = () => {
     { id: 'grid' as const, label: 'خطوط', icon: LayoutGrid },
     { id: 'dots' as const, label: 'نقاط', icon: Circle },
     { id: 'isometric' as const, label: 'أيزومتري', icon: Triangle },
-    { id: 'hex' as const, label: 'سداسي', icon: Hexagon },
   ];
 
   const handleGridSizeChange = (size: number) => {
