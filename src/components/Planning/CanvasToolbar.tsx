@@ -144,7 +144,7 @@ const CanvasToolbar: React.FC = () => {
             <Share2 size={18} className="text-sb-ink" />
             <span className="text-[13px] font-medium text-sb-ink">مشاركة</span>
           </button>
-          <SharePopover isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} />
+          <SharePopover isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} boardId={currentBoard?.id} />
         </div>
         
         {/* Layers */}

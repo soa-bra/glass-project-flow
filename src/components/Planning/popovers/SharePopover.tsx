@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { 
   Users, MessageSquare, Phone, UserPlus, Send, 
   Mic, MicOff, PhoneCall, PhoneOff, Volume2,
-  Check, Crown, Eye, Edit3
+  Check, Crown, Eye, Edit3, Loader2
 } from 'lucide-react';
 import { useCollaborationStore, Participant } from '@/stores/collaborationStore';
 import { useCollaborationUser } from '@/hooks/useCollaborationUser';
+import { useWebRTCVoice } from '@/hooks/useWebRTCVoice';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SharePopoverProps {
   isOpen: boolean;
   onClose: () => void;
+  boardId?: string | null;
 }
 
 type TabType = 'participants' | 'comments' | 'voice';
@@ -18,9 +20,11 @@ type TabType = 'participants' | 'comments' | 'voice';
 export const SharePopover: React.FC<SharePopoverProps> = ({ 
   isOpen, 
   onClose,
+  boardId = null,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('participants');
   const [newComment, setNewComment] = useState('');
+  const [isConnecting, setIsConnecting] = useState(false);
   
   const collaborationUser = useCollaborationUser();
   const {
@@ -31,12 +35,21 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
     isConnected,
     addComment,
     resolveComment,
-    startVoiceCall,
-    endVoiceCall,
-    joinVoiceCall,
-    leaveVoiceCall,
-    toggleMute,
   } = useCollaborationStore();
+
+  // WebRTC Voice Hook
+  const {
+    isInCall,
+    isMuted,
+    error: voiceError,
+    speakingParticipants,
+    startCall,
+    joinCall,
+    endCall,
+    leaveCall,
+    toggleMute,
+    isParticipantSpeaking,
+  } = useWebRTCVoice({ boardId, enabled: isOpen });
   
   if (!isOpen) return null;
   
@@ -298,17 +311,29 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
                 className="space-y-4"
               >
                 {/* حالة المكالمة */}
-                {!voiceState.isCallActive ? (
+                {!isInCall && !voiceState.isCallActive ? (
                   <div className="text-center py-6">
                     <Phone size={40} className="mx-auto text-sb-ink-20 mb-3" />
                     <p className="text-[13px] text-sb-ink-60 mb-4">لا توجد مكالمة نشطة</p>
+                    {voiceError && (
+                      <p className="text-[12px] text-[#E5564D] mb-3">{voiceError}</p>
+                    )}
                     {isHost ? (
                       <button 
-                        onClick={startVoiceCall}
-                        className="w-full px-4 py-3 bg-[#3DBE8B] text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                        onClick={async () => {
+                          setIsConnecting(true);
+                          await startCall();
+                          setIsConnecting(false);
+                        }}
+                        disabled={isConnecting}
+                        className="w-full px-4 py-3 bg-[#3DBE8B] text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-50"
                       >
-                        <PhoneCall size={18} />
-                        بدء مكالمة صوتية
+                        {isConnecting ? (
+                          <Loader2 size={18} className="animate-spin" />
+                        ) : (
+                          <PhoneCall size={18} />
+                        )}
+                        {isConnecting ? 'جاري الاتصال...' : 'بدء مكالمة صوتية'}
                       </button>
                     ) : (
                       <p className="text-[12px] text-sb-ink-40">
@@ -325,29 +350,28 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
                         <button
                           onClick={toggleMute}
                           className={`p-3 rounded-full transition-colors ${
-                            voiceState.isMuted
+                            isMuted
                               ? 'bg-sb-ink-20 text-sb-ink-60'
                               : 'bg-[#3DBE8B] text-white'
                           }`}
-                          title={voiceState.isMuted ? 'إلغاء الكتم' : 'كتم'}
-                          disabled={!isHost} // فقط المستضيف يمكنه التحدث
+                          title={isMuted ? 'إلغاء الكتم' : 'كتم'}
                         >
-                          {voiceState.isMuted ? <MicOff size={20} /> : <Mic size={20} />}
+                          {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
                         </button>
                         
                         {/* زر مغادرة/إنهاء */}
                         {isHost ? (
                           <button
-                            onClick={endVoiceCall}
+                            onClick={endCall}
                             className="p-3 rounded-full bg-[#E5564D] text-white transition-colors hover:opacity-90"
                             title="إنهاء المكالمة"
                           >
                             <PhoneOff size={20} />
                           </button>
                         ) : (
-                          voiceState.participants.includes(collaborationUser.id) ? (
+                          isInCall ? (
                             <button
-                              onClick={leaveVoiceCall}
+                              onClick={leaveCall}
                               className="p-3 rounded-full bg-[#E5564D] text-white transition-colors hover:opacity-90"
                               title="مغادرة المكالمة"
                             >
@@ -355,32 +379,41 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
                             </button>
                           ) : (
                             <button
-                              onClick={joinVoiceCall}
-                              className="p-3 rounded-full bg-[#3DBE8B] text-white transition-colors hover:opacity-90"
+                              onClick={async () => {
+                                setIsConnecting(true);
+                                await joinCall();
+                                setIsConnecting(false);
+                              }}
+                              disabled={isConnecting}
+                              className="p-3 rounded-full bg-[#3DBE8B] text-white transition-colors hover:opacity-90 disabled:opacity-50"
                               title="الانضمام للمكالمة"
                             >
-                              <PhoneCall size={20} />
+                              {isConnecting ? (
+                                <Loader2 size={20} className="animate-spin" />
+                              ) : (
+                                <PhoneCall size={20} />
+                              )}
                             </button>
                           )
                         )}
                       </div>
                       
-                      {/* رسالة للمشاركين غير المستضيفين */}
-                      {!isHost && (
-                        <p className="text-center text-[11px] text-sb-ink-40 mt-3">
-                          <Volume2 size={12} className="inline ml-1" />
-                          وضع الاستماع فقط - المستضيف يتحدث
+                      {/* حالة الاتصال */}
+                      <div className="text-center mt-3">
+                        <p className="text-[11px] text-sb-ink-60 flex items-center justify-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-[#3DBE8B] animate-pulse" />
+                          مكالمة نشطة
                         </p>
-                      )}
+                      </div>
                     </div>
                     
                     {/* قائمة المشاركين في المكالمة */}
                     <div className="space-y-2">
                       <p className="text-[12px] text-sb-ink-60 font-medium">
-                        المشاركين في المكالمة ({voiceState.participants.length})
+                        المشاركين في المكالمة ({voiceState.participants.length || (isInCall ? 1 : 0)})
                       </p>
                       {allParticipants
-                        .filter(p => voiceState.participants.includes(p.id))
+                        .filter(p => voiceState.participants.includes(p.id) || (isInCall && p.id === collaborationUser.id))
                         .map(participant => (
                           <div key={participant.id} className="flex items-center gap-3 p-2 bg-sb-panel-bg/50 rounded-lg">
                             <div 
@@ -392,11 +425,11 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
                             <div className="flex-1">
                               <p className="text-[12px] font-medium text-sb-ink">{participant.name}</p>
                               <p className="text-[10px] text-sb-ink-40">
-                                {participant.role === 'host' ? 'مستضيف - يتحدث' : 'مستمع'}
+                                {participant.role === 'host' ? 'مستضيف' : 'مشارك'}
                               </p>
                             </div>
                             <div className="flex items-center gap-2">
-                              {participant.isSpeaking && !participant.isMuted && (
+                              {isParticipantSpeaking(participant.id) && (
                                 <motion.div
                                   animate={{ scale: [1, 1.2, 1] }}
                                   transition={{ repeat: Infinity, duration: 0.8 }}
@@ -404,10 +437,18 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
                                   <Volume2 size={14} className="text-[#3DBE8B]" />
                                 </motion.div>
                               )}
-                              {participant.isMuted ? (
-                                <MicOff size={14} className="text-sb-ink-40" />
+                              {participant.id === collaborationUser.id ? (
+                                isMuted ? (
+                                  <MicOff size={14} className="text-sb-ink-40" />
+                                ) : (
+                                  <Mic size={14} className="text-[#3DBE8B]" />
+                                )
                               ) : (
-                                <Mic size={14} className="text-[#3DBE8B]" />
+                                participant.isMuted ? (
+                                  <MicOff size={14} className="text-sb-ink-40" />
+                                ) : (
+                                  <Mic size={14} className="text-[#3DBE8B]" />
+                                )
                               )}
                             </div>
                           </div>
