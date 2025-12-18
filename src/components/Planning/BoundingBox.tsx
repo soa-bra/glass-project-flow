@@ -40,6 +40,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   const [isResizing, setIsResizing] = useState<string | null>(null);
   const dragStart = useRef<Point>({ x: 0, y: 0 });
   const elementStartPos = useRef<Point>({ x: 0, y: 0 });
+  const lastAppliedPos = useRef<Point>({ x: 0, y: 0 }); // ✅ Fix: تتبع آخر موقع مُطبَّق
   const hasDuplicated = useRef(false);
   
   // ✅ حساب حدود الإطار المحيط في World Space
@@ -97,10 +98,10 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     snapEngine.updateConfig({
       gridEnabled: settings.snapToGrid,
       gridSize: settings.gridSize,
-      elementSnapEnabled: true,
+      elementSnapEnabled: settings.snapToGrid, // ✅ Fix: ربط بتفعيل السناب
       snapThreshold: 8,
-      centerSnapEnabled: true,
-      edgeSnapEnabled: true
+      centerSnapEnabled: settings.snapToGrid,
+      edgeSnapEnabled: settings.snapToGrid
     });
     
     const validElements = elements.filter(el => el.visible !== false && el.locked !== true);
@@ -143,23 +144,39 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
           }
         }
         
-        // ✅ Sprint 5: تطبيق Snap Engine
-        const snapResult = snapEngine.snapBounds(
-          { x: newX, y: newY, width: bounds.width, height: bounds.height },
-          selectedElementIds
-        );
+        // ✅ Fix: تحديد الموقع النهائي
+        let finalX = newX;
+        let finalY = newY;
         
-        // إرسال خطوط الإرشاد للعرض
-        if (onGuidesChange) {
-          onGuidesChange(snapResult.guides);
+        // ✅ Sprint 5: تطبيق Snap Engine فقط إذا مفعّل
+        if (settings.snapToGrid) {
+          const snapResult = snapEngine.snapBounds(
+            { x: newX, y: newY, width: bounds.width, height: bounds.height },
+            selectedElementIds
+          );
+          
+          finalX = snapResult.snappedBounds.x;
+          finalY = snapResult.snappedBounds.y;
+          
+          // إرسال خطوط الإرشاد للعرض
+          if (onGuidesChange) {
+            onGuidesChange(snapResult.guides);
+          }
+        } else {
+          // مسح الخطوط إذا السناب معطل
+          if (onGuidesChange) {
+            onGuidesChange([]);
+          }
         }
         
-        // حساب الفرق الفعلي بعد المحاذاة
-        const finalDeltaX = snapResult.snappedBounds.x - bounds.x;
-        const finalDeltaY = snapResult.snappedBounds.y - bounds.y;
+        // ✅ Fix: حساب Delta من آخر موقع مُطبَّق (لا من bounds الحالية)
+        const finalDeltaX = finalX - lastAppliedPos.current.x;
+        const finalDeltaY = finalY - lastAppliedPos.current.y;
         
         if (finalDeltaX !== 0 || finalDeltaY !== 0) {
           moveElements(selectedElementIds, finalDeltaX, finalDeltaY);
+          // ✅ Fix: تحديث آخر موقع مُطبَّق
+          lastAppliedPos.current = { x: finalX, y: finalY };
         }
       } else if (isResizing) {
         // ✅ استخدام Event Pipeline لتحويل الدلتا
@@ -279,7 +296,8 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     setIsDragging(true);
     dragStart.current = { x: e.clientX, y: e.clientY };
     elementStartPos.current = { x: bounds.x, y: bounds.y };
-  }, []);
+    lastAppliedPos.current = { x: bounds.x, y: bounds.y }; // ✅ Fix: تهيئة آخر موقع
+  }, [bounds.x, bounds.y]);
   
   const handleResizeStart = useCallback((e: React.MouseEvent, corner: string) => {
     e.stopPropagation();
