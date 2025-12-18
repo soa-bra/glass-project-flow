@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   FilePlus, 
   Save, 
-  Download, 
   FolderOpen, 
   FileJson,
   FileImage,
   FileText,
-  Upload
+  Upload,
+  Loader2
 } from 'lucide-react';
 import { usePlanningStore } from '@/stores/planningStore';
+import { useExportImport } from '@/hooks/useExportImport';
 
 interface FileMenuPopoverProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ interface FileMenuPopoverProps {
 
 export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClose }) => {
   const { createBoard, boards } = usePlanningStore();
+  const { exportCanvas, importFromFile, isExporting, isImporting } = useExportImport();
+  const [exportingFormat, setExportingFormat] = useState<string | null>(null);
   
   if (!isOpen) return null;
   
@@ -26,10 +29,33 @@ export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClos
     onClose();
   };
   
-  const handleExport = (format: 'png' | 'jpg' | 'pdf' | 'json' | 'svg') => {
-    console.log(`Exporting as ${format}...`);
-    // TODO: Implement export functionality
-    onClose();
+  const handleExport = async (format: 'png' | 'pdf' | 'json' | 'svg') => {
+    setExportingFormat(format);
+    try {
+      await exportCanvas(format, {
+        filename: `canvas-export-${Date.now()}`,
+        quality: 0.92,
+        scale: 2,
+        background: '#ffffff'
+      });
+    } finally {
+      setExportingFormat(null);
+      onClose();
+    }
+  };
+  
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,.svg';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        await importFromFile(file, { generateNewIds: true, offsetPosition: { x: 20, y: 20 } });
+        onClose();
+      }
+    };
+    input.click();
   };
   
   return (
@@ -63,41 +89,37 @@ export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClos
           
           <button
             onClick={() => handleExport('png')}
-            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right"
+            disabled={isExporting}
+            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right disabled:opacity-50"
           >
-            <FileImage size={16} className="text-sb-ink" />
+            {exportingFormat === 'png' ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <FileImage size={16} className="text-sb-ink" />}
             <span className="text-[13px] text-sb-ink">PNG صورة</span>
           </button>
           
           <button
-            onClick={() => handleExport('jpg')}
-            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right"
-          >
-            <FileImage size={16} className="text-sb-ink" />
-            <span className="text-[13px] text-sb-ink">JPG صورة</span>
-          </button>
-          
-          <button
             onClick={() => handleExport('pdf')}
-            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right"
+            disabled={isExporting}
+            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right disabled:opacity-50"
           >
-            <FileText size={16} className="text-sb-ink" />
+            {exportingFormat === 'pdf' ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <FileText size={16} className="text-sb-ink" />}
             <span className="text-[13px] text-sb-ink">PDF ملف</span>
           </button>
           
           <button
             onClick={() => handleExport('svg')}
-            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right"
+            disabled={isExporting}
+            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right disabled:opacity-50"
           >
-            <FileImage size={16} className="text-sb-ink" />
+            {exportingFormat === 'svg' ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <FileImage size={16} className="text-sb-ink" />}
             <span className="text-[13px] text-sb-ink">SVG متجهات</span>
           </button>
           
           <button
             onClick={() => handleExport('json')}
-            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right"
+            disabled={isExporting}
+            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right disabled:opacity-50"
           >
-            <FileJson size={16} className="text-sb-ink" />
+            {exportingFormat === 'json' ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <FileJson size={16} className="text-sb-ink" />}
             <span className="text-[13px] text-sb-ink">JSON نسخة احتياطية</span>
           </button>
         </div>
@@ -115,10 +137,12 @@ export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClos
         
         {/* Import */}
         <button
-          className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg transition-colors text-right"
+          onClick={handleImport}
+          disabled={isImporting}
+          className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg transition-colors text-right disabled:opacity-50"
         >
-          <Upload size={16} className="text-sb-ink" />
-          <span className="text-[13px] text-sb-ink">استيراد JSON</span>
+          {isImporting ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <Upload size={16} className="text-sb-ink" />}
+          <span className="text-[13px] text-sb-ink">استيراد JSON/SVG</span>
         </button>
         
         {boards.length > 0 && (
