@@ -2,9 +2,10 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { MindMapNodeData, NodeAnchorPoint } from '@/types/mindmap-canvas';
-import { getAnchorPosition, NODE_COLORS, calculateConnectorBounds } from '@/types/mindmap-canvas';
-import { Plus, GripVertical, Trash2, Palette, ChevronDown, ChevronRight } from 'lucide-react';
+import { NODE_COLORS, calculateConnectorBounds } from '@/types/mindmap-canvas';
+import { Plus, Trash2, Palette, ChevronDown, ChevronRight } from 'lucide-react';
 import { redistributeUpwards } from '@/utils/mindmap-layout';
+
 interface MindMapNodeProps {
   element: CanvasElement;
   isSelected: boolean;
@@ -31,13 +32,14 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const [editText, setEditText] = useState('');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  // ✅ ref واحد فقط للحاوية الرئيسية
   const nodeRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const lastSizeRef = useRef({ width: 0, height: 0 }); // ✅ تخزين آخر حجم للمقارنة
   const [isSingleNodeMode, setIsSingleNodeMode] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // ✅ حالة لتخزين الحجم الفعلي للـ anchors
+  const [actualSize, setActualSize] = useState({ width: 80, height: 40 });
   
   const nodeData = element.data as MindMapNodeData;
   
@@ -49,35 +51,24 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     )
   );
   
-  // ✅ ResizeObserver يراقب contentRef (المحتوى الفعلي) وليس nodeRef
+  // ✅ حساب الحجم الفعلي من DOM مباشرة (بدون ResizeObserver معقد)
   useEffect(() => {
-    if (!contentRef.current) return;
+    const updateActualSize = () => {
+      if (!nodeRef.current) return;
+      const rect = nodeRef.current.getBoundingClientRect();
+      const zoom = viewport.zoom || 1;
+      const newWidth = Math.max(80, rect.width / zoom);
+      const newHeight = Math.max(40, rect.height / zoom);
+      setActualSize({ width: newWidth, height: newHeight });
+    };
     
-    const observer = new ResizeObserver(() => {
-      if (!contentRef.current) return;
-      
-      // ✅ getBoundingClientRect يتأثر بالـ zoom (Transform: scale)
-      // لذلك نقسم على viewport.zoom للحصول على حجم العقدة الحقيقي بوحدات الـ canvas
-      const rect = contentRef.current.getBoundingClientRect();
-      const zoom = useCanvasStore.getState().viewport.zoom || 1;
-      const zoomSafe = zoom > 0 ? zoom : 1;
-      const actualWidth = Math.max(80, rect.width / zoomSafe);
-      const actualHeight = Math.max(40, rect.height / zoomSafe);
-
-      // ✅ مقارنة مع آخر حجم مُسجّل (وليس element.size) لمنع infinite loop
-      if (Math.abs(actualWidth - lastSizeRef.current.width) > 2 || 
-          Math.abs(actualHeight - lastSizeRef.current.height) > 2) {
-        lastSizeRef.current = { width: actualWidth, height: actualHeight };
-        updateElement(element.id, {
-          size: { width: actualWidth, height: actualHeight }
-        });
-      }
-    });
+    // تحديث فوري
+    updateActualSize();
     
-    observer.observe(contentRef.current);
-    
-    return () => observer.disconnect();
-  }, [element.id, updateElement]); // ✅ بدون element.size في dependencies
+    // تحديث بعد الـ render
+    const timer = setTimeout(updateActualSize, 50);
+    return () => clearTimeout(timer);
+  }, [nodeData.label, isEditing, viewport.zoom]);
   
   // ✅ بدء التحرير بالنقر المزدوج
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
@@ -241,15 +232,27 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setIsDragging(false);
   }, []);
   
+  // ✅ حساب موقع الـ anchor من الحجم الفعلي
+  const getActualAnchorPosition = useCallback((anchor: 'top' | 'bottom' | 'left' | 'right') => {
+    const { width, height } = actualSize;
+    switch (anchor) {
+      case 'top': return { x: width / 2, y: 0 };
+      case 'bottom': return { x: width / 2, y: height };
+      case 'left': return { x: 0, y: height / 2 };
+      case 'right': return { x: width, y: height / 2 };
+    }
+  }, [actualSize]);
+  
   // نقاط الربط
   const handleAnchorMouseDown = useCallback((
     e: React.MouseEvent,
     anchor: 'top' | 'bottom' | 'left' | 'right'
   ) => {
     e.stopPropagation();
-    const pos = getAnchorPosition(element.position, element.size, anchor);
+    const localPos = getActualAnchorPosition(anchor);
+    const pos = { x: element.position.x + localPos.x, y: element.position.y + localPos.y };
     onStartConnection(element.id, anchor, pos);
-  }, [element, onStartConnection]);
+  }, [element.position, getActualAnchorPosition, onStartConnection]);
   
   const handleAnchorMouseUp = useCallback((
     e: React.MouseEvent,
@@ -322,75 +325,67 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   return (
     <div
       ref={nodeRef}
-      className={`absolute select-none transition-shadow inline-flex ${
+      className={`absolute select-none transition-shadow inline-flex items-center justify-center px-4 py-2 shadow-md ${
         activeTool === 'selection_tool' ? 'cursor-move' : 'cursor-default'
       } ${isSelected ? 'ring-2 ring-[hsl(var(--accent-green))] ring-offset-2' : ''}`}
       style={{
         left: element.position.x,
         top: element.position.y,
-        // ✅ بدون width/height ثابتة - يأخذ حجمه من المحتوى الداخلي
+        // ✅ بدون width/height - الحجم يأتي من المحتوى مباشرة
         zIndex: isSelected ? 100 : 10,
+        ...getNodeStyle(),
+        minWidth: 80,
+        minHeight: 40,
       }}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
     >
-      {/* محتوى العقدة - inline-flex ليأخذ حجمه من النص */}
-      <div
-        ref={contentRef}
-        className="inline-flex items-center justify-center px-4 py-2 shadow-md transition-all relative whitespace-nowrap"
-        style={{
-          ...getNodeStyle(),
-          minWidth: 80,
-          minHeight: 40,
-        }}
-      >
-        {isEditing ? (
-          <input
-            ref={inputRef}
-            type="text"
-            value={editText}
-            onChange={(e) => setEditText(e.target.value)}
-            onBlur={handleSaveEdit}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSaveEdit();
-              if (e.key === 'Escape') setIsEditing(false);
-              e.stopPropagation();
-            }}
-            className="bg-transparent text-center outline-none text-inherit font-medium min-w-[60px]"
-            dir="auto"
-            style={{ width: `${Math.max(60, editText.length * 10)}px` }}
-          />
-        ) : (
-          <span className="font-medium text-center" dir="auto">
-            {nodeData.label || 'عقدة جديدة'}
-          </span>
-        )}
-        
-        {/* أيقونة الجذر */}
-        {nodeData.isRoot && (
-          <div className="absolute -top-2 -right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm">
-            <div className="w-3 h-3 rounded-full bg-[hsl(var(--accent-green))]" />
-          </div>
-        )}
-        
-        {/* ✅ زر الطي - يظهر إذا كان للعقدة فروع */}
-        {hasChildren && (
-          <button
-            onClick={handleToggleCollapse}
-            className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-md border border-[hsl(var(--border))] flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
-            title={nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع"}
-          >
-            {nodeData.isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
-          </button>
-        )}
-      </div>
+      {/* ✅ المحتوى مباشرة بدون حاوية إضافية */}
+      {isEditing ? (
+        <input
+          ref={inputRef}
+          type="text"
+          value={editText}
+          onChange={(e) => setEditText(e.target.value)}
+          onBlur={handleSaveEdit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleSaveEdit();
+            if (e.key === 'Escape') setIsEditing(false);
+            e.stopPropagation();
+          }}
+          className="bg-transparent text-center outline-none text-inherit font-medium min-w-[60px]"
+          dir="auto"
+          style={{ width: `${Math.max(60, editText.length * 10)}px` }}
+        />
+      ) : (
+        <span className="font-medium text-center whitespace-nowrap" dir="auto">
+          {nodeData.label || 'عقدة جديدة'}
+        </span>
+      )}
       
-      {/* نقاط الربط - تظهر عند التحديد أو التوصيل */}
-      {/* ✅ key يعتمد على الحجم لإجبار إعادة حساب المواقع عند تغير الحجم */}
+      {/* أيقونة الجذر */}
+      {nodeData.isRoot && (
+        <div className="absolute -top-2 -right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm">
+          <div className="w-3 h-3 rounded-full bg-[hsl(var(--accent-green))]" />
+        </div>
+      )}
+      
+      {/* ✅ زر الطي - يظهر إذا كان للعقدة فروع */}
+      {hasChildren && (
+        <button
+          onClick={handleToggleCollapse}
+          className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-md border border-[hsl(var(--border))] flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
+          title={nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع"}
+        >
+          {nodeData.isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+        </button>
+      )}
+      
+      {/* ✅ نقاط الربط - تُحسب من الحجم الفعلي */}
       {(isSelected || isConnecting) && (
-        <React.Fragment key={`anchors-${element.size.width}-${element.size.height}`}>
+        <>
           {(['top', 'bottom', 'left', 'right'] as const).map((anchor) => {
-            const pos = getAnchorPosition({ x: 0, y: 0 }, element.size, anchor);
+            const pos = getActualAnchorPosition(anchor);
             const isHighlighted = isNearestForConnection && nearestAnchor?.anchor === anchor;
             
             return (
@@ -410,7 +405,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
               />
             );
           })}
-        </React.Fragment>
+        </>
       )}
       
       {/* شريط أدوات العقدة - يظهر عند التحديد */}
