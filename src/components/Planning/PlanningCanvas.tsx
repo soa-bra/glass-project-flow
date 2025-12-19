@@ -12,6 +12,7 @@ import {
   Command,
   PanelRightClose,
   PanelRightOpen,
+  Workflow,
 } from "lucide-react";
 import { usePlanningStore } from "@/stores/planningStore";
 import { useCanvasStore } from "@/stores/canvasStore";
@@ -29,6 +30,9 @@ import { LayersMenuPopover } from "./popovers/LayersMenuPopover";
 import { AIAssistantPopover } from "./AIAssistantPopover";
 import { SmartCommandBar, useSmartCommandBar } from "./SmartElements/SmartCommandBar";
 import ContextSmartMenu from "./SmartElements/ContextSmartMenu";
+import { CommandBar, SuggestionsPanel, WorkflowGenerator } from "./AI";
+import { FramesNavigator } from "./Frames";
+import type { GeneratedWorkflow } from '@/core/ai/smartWorkflow';
 interface PlanningCanvasProps {
   board: CanvasBoard;
 }
@@ -50,6 +54,12 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   // Smart Command Bar
   const commandBar = useSmartCommandBar();
 
+  // AI Command Bar & Workflow Generator
+  const [isCommandBarOpen, setIsCommandBarOpen] = useState(false);
+  const [isWorkflowGeneratorOpen, setIsWorkflowGeneratorOpen] = useState(false);
+  const [isSuggestionsPanelCollapsed, setIsSuggestionsPanelCollapsed] = useState(false);
+  const [isFramesNavigatorOpen, setIsFramesNavigatorOpen] = useState(false);
+
   // Panel collapse state
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
 
@@ -61,6 +71,19 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       setIsPanelCollapsed(false);
     }
   }, [activeTool]);
+
+  // Keyboard shortcut for Command Bar (Cmd/Ctrl + K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsCommandBarOpen(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Handle AI-generated elements
   const handleElementsGenerated = useCallback(
@@ -91,6 +114,26 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     },
     [addElement, viewport],
   );
+
+  // Handle AI-generated workflow
+  const handleWorkflowGenerated = useCallback((workflow: GeneratedWorkflow) => {
+    workflow.nodes.forEach((node, index) => {
+      addElement({
+        type: "smart",
+        position: node.position || { x: 400, y: 100 + index * 150 },
+        size: { width: 200, height: 100 },
+        content: node.label,
+        style: {
+          backgroundColor: "transparent",
+        },
+        metadata: {
+          smartType: 'workflow_node',
+          workflowNodeType: node.type,
+          workflowNodeData: node,
+        },
+      });
+    });
+  }, [addElement]);
 
   const handleSaveName = () => {
     if (board && boardName.trim()) {
@@ -165,6 +208,24 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
               </button>
             </AIAssistantPopover>
           </div>
+
+          {/* Workflow Generator Button */}
+          <button
+            onClick={() => setIsWorkflowGeneratorOpen(true)}
+            className="flex items-center gap-2 px-3 py-2 hover:bg-[hsl(var(--panel))] rounded-lg transition-colors"
+            title="مولد Workflow"
+          >
+            <Workflow size={18} className="text-[hsl(var(--ink))]" />
+          </button>
+
+          {/* Command Bar Shortcut */}
+          <button
+            onClick={() => setIsCommandBarOpen(true)}
+            className="flex items-center gap-2 px-3 py-2 hover:bg-[hsl(var(--panel))] rounded-lg transition-colors"
+            title="شريط الأوامر (⌘K)"
+          >
+            <Command size={18} className="text-[hsl(var(--ink))]" />
+          </button>
 
           {/* File Menu */}
           <div className="relative">
@@ -294,6 +355,40 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
 
       {/* Context Smart Menu - appears when multiple elements selected */}
       <ContextSmartMenu />
+
+      {/* AI Command Bar */}
+      <CommandBar
+        isOpen={isCommandBarOpen}
+        onClose={() => setIsCommandBarOpen(false)}
+        onWorkflowGenerated={handleWorkflowGenerated}
+      />
+
+      {/* AI Workflow Generator */}
+      <WorkflowGenerator
+        isOpen={isWorkflowGeneratorOpen}
+        onClose={() => setIsWorkflowGeneratorOpen(false)}
+        onGenerate={handleWorkflowGenerated}
+      />
+
+      {/* Frames Navigator - shown in right panel */}
+      {isFramesNavigatorOpen && (
+        <div className="absolute right-4 top-20 w-[280px] z-30 bg-white rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.06)] border border-[hsl(var(--border))] overflow-hidden">
+          <FramesNavigator
+            onFrameSelect={(frameId) => {
+              // Jump to frame
+            }}
+            onStartPresentation={(frameId) => {
+              // Start presentation from frame
+            }}
+          />
+        </div>
+      )}
+
+      {/* Suggestions Panel */}
+      <SuggestionsPanel
+        isCollapsed={isSuggestionsPanelCollapsed}
+        onToggleCollapse={() => setIsSuggestionsPanelCollapsed(prev => !prev)}
+      />
     </div>
   );
 };

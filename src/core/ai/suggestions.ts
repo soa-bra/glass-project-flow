@@ -11,8 +11,12 @@ export interface Suggestion {
   title: string;
   description: string;
   confidence: number;
+  priority: 'low' | 'medium' | 'high';
   apply: () => { nodes?: WorkflowNodeData[]; edges?: WorkflowEdgeData[] };
 }
+
+// Alias for backward compatibility
+export type WorkflowSuggestion = Suggestion;
 
 /**
  * توليد اقتراحات بناءً على العقد الحالية
@@ -32,6 +36,7 @@ export function generateSuggestions(
       title: 'إضافة عقدة نهاية',
       description: 'يجب أن يحتوي كل Workflow على عقدة نهاية',
       confidence: 0.95,
+      priority: 'high',
       apply: () => ({
         nodes: [{
           id: `node-end-${Date.now()}`,
@@ -56,6 +61,7 @@ export function generateSuggestions(
         title: `إضافة شروط لـ "${decision.label}"`,
         description: 'عقد القرار تحتاج شروطاً لتوجيه التدفق',
         confidence: 0.9,
+        priority: 'medium',
         apply: () => ({ edges: [] })
       });
     }
@@ -77,6 +83,7 @@ export function generateSuggestions(
         title: 'إضافة إشعار بعد الموافقة',
         description: 'من الأفضل إرسال إشعار بعد الموافقة',
         confidence: 0.7,
+        priority: 'low',
         apply: () => ({
           nodes: [{
             id: `node-notify-${Date.now()}`,

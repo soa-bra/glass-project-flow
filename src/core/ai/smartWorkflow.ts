@@ -62,7 +62,7 @@ export function inferNodeType(stepDescription: string): WorkflowNodeData['type']
     return 'notification';
   }
   if (lower.includes('انتظار') || lower.includes('تأخير') || lower.includes('wait') || lower.includes('delay')) {
-    return 'delay';
+    return 'timer'; // استخدام timer بدلاً من delay
   }
   if (lower.includes('متوازي') || lower.includes('parallel')) {
     return 'parallel';
