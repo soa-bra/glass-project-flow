@@ -20,8 +20,8 @@ import {
   Square
 } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { Portal } from "@ark-ui/react/portal";
 import { ColorPicker, parseColor } from "@ark-ui/react/color-picker";
+import { toast } from 'sonner';
 
 // Utility colors
 const UTILITY_COLORS = [
@@ -69,15 +69,23 @@ const FloatingEditBar: React.FC = () => {
   const { 
     elements, 
     selectedElementIds, 
-    updateElement 
+    updateElement,
+    deleteElements,
+    copyElements,
+    cutElements,
+    pasteElements,
+    clipboard,
+    groupElements,
+    ungroupElements,
+    alignElements,
+    lockElements,
+    unlockElements
   } = useCanvasStore();
   
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const [colorMode, setColorMode] = useState<'fill' | 'stroke'>('fill');
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [isGrouped, setIsGrouped] = useState(false);
   const [recentColors, setRecentColors] = useState<string[]>([]);
   
   useEffect(() => {
@@ -90,6 +98,21 @@ const FloatingEditBar: React.FC = () => {
   );
   const hasSelection = selectedElements.length > 0;
   const firstElement = selectedElements[0];
+  
+  // Check if selection is a group
+  const isGroup = useMemo(() => {
+    return firstElement?.type === 'frame' && (firstElement as any).children?.length > 0;
+  }, [firstElement]);
+  
+  // Check if elements are visible
+  const areElementsVisible = useMemo(() => {
+    return selectedElements.every(el => el.visible !== false);
+  }, [selectedElements]);
+  
+  // Check if elements are locked
+  const areElementsLocked = useMemo(() => {
+    return selectedElements.some(el => el.locked === true);
+  }, [selectedElements]);
   
   useEffect(() => {
     if (!hasSelection) return;
@@ -165,19 +188,95 @@ const FloatingEditBar: React.FC = () => {
     }
   };
   
-  const toggleLock = () => {
+  // Copy action
+  const handleCopy = () => {
+    copyElements(selectedElementIds);
+    setIsMoreMenuOpen(false);
+    toast.success('تم نسخ العناصر');
+  };
+
+  // Cut action
+  const handleCut = () => {
+    cutElements(selectedElementIds);
+    setIsMoreMenuOpen(false);
+    toast.success('تم قص العناصر');
+  };
+
+  // Paste action
+  const handlePaste = () => {
+    if (clipboard.length > 0) {
+      pasteElements();
+      setIsMoreMenuOpen(false);
+      toast.success('تم لصق العناصر');
+    } else {
+      toast.error('الحافظة فارغة');
+    }
+  };
+
+  // Delete action
+  const handleDelete = () => {
+    deleteElements(selectedElementIds);
+    toast.success('تم حذف العناصر');
+  };
+  
+  // Lock/Unlock action
+  const handleToggleLock = () => {
+    if (areElementsLocked) {
+      unlockElements(selectedElementIds);
+      toast.success('تم إلغاء قفل العناصر');
+    } else {
+      lockElements(selectedElementIds);
+      toast.success('تم قفل العناصر');
+    }
+  };
+
+  // Visibility toggle
+  const handleToggleVisibility = () => {
     selectedElementIds.forEach(id => {
       const current = elements.find(el => el.id === id);
-      updateElement(id, { locked: !current?.locked });
+      updateElement(id, { visible: current?.visible === false ? true : false });
+    });
+    toast.success(areElementsVisible ? 'تم إخفاء العناصر' : 'تم إظهار العناصر');
+  };
+
+  // Group/Ungroup action
+  const handleToggleGroup = () => {
+    if (isGroup && firstElement) {
+      ungroupElements(firstElement.id);
+      toast.success('تم فك التجميع');
+    } else if (selectedElementIds.length > 1) {
+      groupElements(selectedElementIds);
+      toast.success('تم تجميع العناصر');
+    } else {
+      toast.error('حدد عنصرين أو أكثر للتجميع');
+    }
+  };
+
+  // Layer controls
+  const handleBringForward = () => {
+    selectedElementIds.forEach(id => {
+      const current = elements.find(el => el.id === id);
+      const maxZIndex = Math.max(...elements.map(el => el.zIndex || 0));
+      updateElement(id, { zIndex: (current?.zIndex || 0) + 1 });
     });
   };
 
-  const toggleVisibility = () => {
-    setIsVisible(!isVisible);
+  const handleSendBackward = () => {
+    selectedElementIds.forEach(id => {
+      const current = elements.find(el => el.id === id);
+      updateElement(id, { zIndex: Math.max(0, (current?.zIndex || 0) - 1) });
+    });
   };
 
-  const toggleGroup = () => {
-    setIsGrouped(!isGrouped);
+  // Alignment actions
+  const handleAlignVertical = () => {
+    alignElements(selectedElementIds, 'middle');
+    toast.success('تمت المحاذاة العمودية');
+  };
+
+  const handleAlignHorizontal = () => {
+    alignElements(selectedElementIds, 'center');
+    toast.success('تمت المحاذاة الأفقية');
   };
 
   const btnClass = `
@@ -214,15 +313,25 @@ const FloatingEditBar: React.FC = () => {
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setIsMoreMenuOpen(false)} />
                 <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] p-1.5 z-50">
-                  <button className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg">
+                  <button 
+                    onClick={handleCopy}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
                     <Copy size={14} />
                     <span>نسخ</span>
                   </button>
-                  <button className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg">
+                  <button 
+                    onClick={handleCut}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
                     <Scissors size={14} />
                     <span>قص</span>
                   </button>
-                  <button className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg">
+                  <button 
+                    onClick={handlePaste}
+                    disabled={clipboard.length === 0}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     <ClipboardPaste size={14} />
                     <span>لصق</span>
                   </button>
@@ -436,10 +545,18 @@ const FloatingEditBar: React.FC = () => {
           
           {/* Layer Controls */}
           <div className="flex items-center gap-0.5">
-            <button className={btnClass} title="رفع للأمام">
+            <button 
+              onClick={handleBringForward}
+              className={btnClass} 
+              title="رفع للأمام"
+            >
               <ArrowUp size={16} />
             </button>
-            <button className={btnClass} title="خفض للخلف">
+            <button 
+              onClick={handleSendBackward}
+              className={btnClass} 
+              title="خفض للخلف"
+            >
               <ArrowDown size={16} />
             </button>
           </div>
@@ -448,10 +565,18 @@ const FloatingEditBar: React.FC = () => {
 
           {/* Alignment */}
           <div className="flex items-center gap-0.5">
-            <button className={btnClass} title="محاذاة عمودية">
+            <button 
+              onClick={handleAlignVertical}
+              className={btnClass} 
+              title="محاذاة عمودية"
+            >
               <AlignVerticalJustifyCenter size={16} />
             </button>
-            <button className={btnClass} title="محاذاة أفقية">
+            <button 
+              onClick={handleAlignHorizontal}
+              className={btnClass} 
+              title="محاذاة أفقية"
+            >
               <AlignHorizontalJustifyCenter size={16} />
             </button>
           </div>
@@ -460,43 +585,47 @@ const FloatingEditBar: React.FC = () => {
 
           {/* Show/Hide */}
           <button
-            onClick={toggleVisibility}
-            className={btnClass}
-            title={isVisible ? 'إخفاء' : 'إظهار'}
+            onClick={handleToggleVisibility}
+            className={`${btnClass} ${!areElementsVisible ? 'bg-[hsl(var(--panel))]' : ''}`}
+            title={areElementsVisible ? 'إخفاء' : 'إظهار'}
           >
-            {isVisible ? <Eye size={16} /> : <EyeOff size={16} />}
+            {areElementsVisible ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
 
           {/* Group/Ungroup */}
           <button
-            onClick={toggleGroup}
-            className={btnClass}
-            title={isGrouped ? 'فك التجميع' : 'تجميع'}
+            onClick={handleToggleGroup}
+            className={`${btnClass} ${isGroup ? 'bg-[hsl(var(--panel))]' : ''}`}
+            title={isGroup ? 'فك التجميع' : 'تجميع'}
           >
-            {isGrouped ? <Ungroup size={16} /> : <Group size={16} />}
+            {isGroup ? <Ungroup size={16} /> : <Group size={16} />}
           </button>
 
           <div className={separatorClass} />
 
           {/* Delete */}
-          <button className={`${btnClass} hover:text-red-500 hover:bg-red-50`} title="حذف">
+          <button 
+            onClick={handleDelete}
+            className={`${btnClass} hover:text-[#E5564D] hover:bg-red-50`} 
+            title="حذف"
+          >
             <Trash2 size={16} />
           </button>
 
           {/* Lock */}
           <button
-            onClick={toggleLock}
-            className={`${btnClass} ${firstElement?.locked ? 'bg-[hsl(var(--ink))] text-white' : ''}`}
-            title={firstElement?.locked ? 'إلغاء القفل' : 'قفل'}
+            onClick={handleToggleLock}
+            className={`${btnClass} ${areElementsLocked ? 'bg-[hsl(var(--ink))] text-white' : ''}`}
+            title={areElementsLocked ? 'إلغاء القفل' : 'قفل'}
           >
-            {firstElement?.locked ? <Lock size={16} /> : <Unlock size={16} />}
+            {areElementsLocked ? <Lock size={16} /> : <Unlock size={16} />}
           </button>
 
           <div className={separatorClass} />
           
-          {/* AI Button (Disabled, icon only) */}
+          {/* AI Button (Disabled, matching AIAssistantPopover style) */}
           <button
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(var(--accent-green))] to-[hsl(var(--accent-blue))] opacity-50 cursor-not-allowed"
+            className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] opacity-50 cursor-not-allowed"
             title="الذكاء الاصطناعي (قريباً)"
             disabled
           >
