@@ -1842,8 +1842,9 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
   },
   
   refreshSmartCard: async (elementId) => {
-    // This will be implemented when data fetching is connected
-    console.log('Refreshing smart card:', elementId);
+    // TODO: Implement data fetching when connected to backend
+    // Placeholder for future implementation
+    void elementId;
   },
   
   toggleSmartCardMetric: (elementId, metric) => {

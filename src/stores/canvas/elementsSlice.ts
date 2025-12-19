@@ -30,8 +30,16 @@ export interface ElementsSlice {
   ungroupElements: (groupId: string) => void;
 }
 
+// نوع مؤقت للـ Store الكامل - يُستخدم لتجنب circular dependencies
+type CanvasStoreState = ElementsSlice & {
+  activeLayerId: string | null;
+  layers: import('@/types/canvas').LayerInfo[];
+  pushHistory: () => void;
+  moveFrame: (frameId: string, deltaX: number, deltaY: number) => void;
+};
+
 export const createElementsSlice: StateCreator<
-  any,
+  CanvasStoreState,
   [],
   [],
   ElementsSlice
