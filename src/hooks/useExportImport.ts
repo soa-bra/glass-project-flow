@@ -225,7 +225,7 @@ export function useExportImport(options?: UseExportImportOptions) {
   const openImportDialog = useCallback((importOptions?: ImportOptions) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.json,.svg';
+    input.accept = '.json,.svg,.fig';
     input.multiple = false;
 
     input.onchange = async (e) => {
