@@ -16,8 +16,9 @@ import {
   AlignVerticalJustifyEnd,
   RemoveFormatting,
   ChevronDown,
-  Pilcrow,
   Sparkles,
+  ArrowRightLeft,
+  Languages,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 
@@ -626,12 +627,25 @@ export const FloatingToolbar = ({
           {/* Divider */}
           <div className="w-px h-6 bg-[hsl(var(--border))] mx-1" />
 
-          {/* Text Direction */}
+          {/* Text Direction - أزرار RTL/LTR منفصلة */}
           <ToolbarButton
-            label={currentDirection === 'rtl' ? 'من اليمين لليسار' : 'من اليسار لليمين'}
-            icon={Pilcrow}
-            isActive={false}
-            onClick={() => onDirectionChange(currentDirection === 'rtl' ? 'ltr' : 'rtl')}
+            label="من اليمين لليسار (عربي)"
+            icon={() => (
+              <span className="text-[10px] font-bold">RTL</span>
+            )}
+            isActive={currentDirection === 'rtl'}
+            onClick={() => onDirectionChange('rtl')}
+            tooltip={tooltip}
+            showTooltip={showTooltip}
+            hideTooltip={hideTooltip}
+          />
+          <ToolbarButton
+            label="من اليسار لليمين (English)"
+            icon={() => (
+              <span className="text-[10px] font-bold">LTR</span>
+            )}
+            isActive={currentDirection === 'ltr'}
+            onClick={() => onDirectionChange('ltr')}
             tooltip={tooltip}
             showTooltip={showTooltip}
             hideTooltip={hideTooltip}
