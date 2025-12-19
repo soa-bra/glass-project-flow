@@ -244,7 +244,6 @@ const RectangleNode = memo(function RectangleNode({ node, style, IconComponent }
       )}
       <div className="flex-1 min-w-0" style={{ color: style.textColor || '#FFFFFF' }}>
         <h4 className="font-semibold text-sm truncate">
-        >
           {node.label}
         </h4>
         {node.description && (
