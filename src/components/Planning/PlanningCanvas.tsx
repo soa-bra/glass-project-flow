@@ -244,16 +244,16 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       </div>
 
       {/* Main Canvas Area with Panels */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {/* Infinite Canvas */}
-        <div className="flex-1">
+      <div className="flex-1 overflow-hidden relative">
+        {/* Infinite Canvas - Always takes full space */}
+        <div className="absolute inset-0">
           <InfiniteCanvas boardId={board.id} />
         </div>
 
         {/* Panel Toggle Button - Always visible */}
         <button
           onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
-          className="absolute left-4 top-6 z-20 p-2 bg-white border border-[hsl(var(--border))] rounded-lg shadow-sm hover:bg-[hsl(var(--panel))] transition-colors"
+          className="absolute left-4 top-6 z-40 p-2 bg-white border border-[hsl(var(--border))] rounded-lg shadow-sm hover:bg-[hsl(var(--panel))] transition-colors"
           title={isPanelCollapsed ? "توسيع البانل" : "طي البانل"}
         >
           {isPanelCollapsed ? (
@@ -263,10 +263,10 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
           )}
         </button>
 
-        {/* Tool Settings Panel (Right) - Collapsible with smooth animation */}
+        {/* Tool Settings Panel (Right) - Floating over canvas with slide animation */}
         <div
-          className={`transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] transform ${
-            isPanelCollapsed ? "w-0 opacity-0 translate-x-full overflow-hidden" : "w-[320px] opacity-100 translate-x-0"
+          className={`absolute left-0 top-0 h-full z-30 w-[320px] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            isPanelCollapsed ? "-translate-x-full" : "translate-x-0"
           }`}
         >
           <RightSidePanel activeTool={activeTool} />
