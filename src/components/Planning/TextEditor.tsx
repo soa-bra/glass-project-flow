@@ -73,11 +73,29 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     return () => stopTyping();
   }, [startTyping, stopTyping, updateToolbarPosition]);
   
+  // ✅ تطبيق التنسيق على التظليل الداخلي فقط
   const applyFormat = useCallback((command: string, value?: string) => {
-    // ✅ إعادة الـ focus للمحرر قبل تنفيذ الأمر
-    if (editorRef.current) {
+    if (!editorRef.current) return;
+    
+    // ✅ التحقق من أن التظليل داخل المحرر
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      // لا يوجد تظليل - إعادة الـ focus فقط
       editorRef.current.focus();
+      return;
     }
+    
+    const range = selection.getRangeAt(0);
+    
+    // ✅ التأكد من أن التظليل داخل المحرر
+    if (!editorRef.current.contains(range.commonAncestorContainer)) {
+      // التظليل خارج المحرر - تجاهل
+      editorRef.current.focus();
+      return;
+    }
+    
+    // ✅ إعادة الـ focus للمحرر قبل تنفيذ الأمر
+    editorRef.current.focus();
     
     document.execCommand(command, false, value);
     
@@ -327,9 +345,18 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   
   return (
     <>
+      {/* ✅ Wrapper مع Flexbox للمحاذاة العمودية */}
       <div 
         ref={wrapperRef}
-        style={{ width: '100%', height: '100%' }}
+        className="flex flex-col"
+        style={{ 
+          width: '100%', 
+          height: '100%',
+          // ✅ المحاذاة العمودية باستخدام justifyContent
+          justifyContent: element.style?.alignItems === 'center' ? 'center' 
+                        : element.style?.alignItems === 'flex-end' ? 'flex-end' 
+                        : 'flex-start',
+        }}
       >
         <div
           ref={editorRef}
@@ -365,9 +392,10 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
             color: element.style?.color || '#0B0F12',
             textAlign: (element.style?.textAlign as any) || 'right',
             direction: (element.style?.direction as any) || 'rtl',
+            // ✅ RTL صحيح مع unicodeBidi
             unicodeBidi: 'plaintext',
+            WebkitUserModify: 'read-write-plaintext-only',
             width: '100%',
-            height: '100%',
             outline: 'none',
             padding: '8px',
             minHeight: '1em',
