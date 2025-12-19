@@ -297,7 +297,8 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         boxShadow: isElementArrow(element) ? 'none' : (isSelected ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : (element.data?.textType === 'box' ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none')),
         outline: isElementArrow(element) ? 'none' : undefined,
         opacity: isLocked ? 0.6 : 1,
-        pointerEvents: isLocked ? 'none' : 'auto',
+        // ✅ Fix: pointer-events: none للعناصر المحددة - BoundingBox يتولى السحب
+        pointerEvents: isLocked ? 'none' : (isSelected ? 'none' : 'auto'),
         ...(element.type !== 'shape' ? element.style : {})
       }}
     >

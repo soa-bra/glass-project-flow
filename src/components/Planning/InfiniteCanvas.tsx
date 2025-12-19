@@ -1,5 +1,6 @@
 import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { useInteractionStore, selectPanningData, selectBoxSelectData } from '@/stores/interactionStore';
 import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import CanvasElement from './CanvasElement';
 import DrawingPreview from './DrawingPreview';
@@ -12,6 +13,7 @@ import { SnapGuides } from './SnapGuides';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { canvasKernel, getContainerRect } from '@/core/canvasKernel';
+import { getCursorForMode } from '@/core/interactionStateMachine';
 import { toast } from 'sonner';
 import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
 import { CanvasGridLayer } from './CanvasGridLayer';
@@ -25,11 +27,14 @@ import type { SnapLine } from '@/core/snapEngine';
 interface InfiniteCanvasProps {
   boardId: string;
 }
+
 const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   boardId
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Canvas Store
   const {
     elements,
     viewport,
@@ -43,17 +48,23 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     clearSelection,
     selectElement,
     selectElements,
-    undo,
-    redo,
-    toggleGrid,
-    deleteElements,
-    copyElements,
-    pasteElements,
-    cutElements,
-    moveElements,
-    groupElements,
-    ungroupElements
   } = useCanvasStore();
+  
+  // ✅ Interaction Store - استخدام State Machine
+  const { 
+    mode: interactionMode, 
+    cursor: interactionCursor,
+    startPanning,
+    startBoxSelect,
+    updateBoxSelect,
+    resetToIdle,
+    isMode
+  } = useInteractionStore();
+  
+  // بيانات الحالات الخاصة
+  const panningData = useInteractionStore(selectPanningData);
+  const boxSelectData = useInteractionStore(selectBoxSelectData);
+  
   const {
     handleCanvasMouseDown,
     handleCanvasMouseMove,
@@ -69,23 +80,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   // ✅ Sprint 17: هوية المستخدم المحفوظة للتعاون
   const collaborationUser = useCollaborationUser();
 
-  // Pan State
-  const isPanningRef = useRef(false);
-  const lastPanPositionRef = useRef({
-    x: 0,
-    y: 0
-  });
-
-  // Selection Box State
-  const [isSelecting, setIsSelecting] = useState(false);
-  const [selectionStart, setSelectionStart] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
-  const [selectionCurrent, setSelectionCurrent] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
+  // ✅ Refs للـ Panning (للحفاظ على الموقع بين الأحداث)
+  const lastPanPositionRef = useRef({ x: 0, y: 0 });
   
   // ✅ Sprint 5: Snap Guides State
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
@@ -129,12 +125,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     anchor: 'top' | 'bottom' | 'left' | 'right'
   ) => {
     if (!mindMapConnection.isConnecting || !mindMapConnection.sourceNodeId) return;
-    if (mindMapConnection.sourceNodeId === nodeId) return; // لا يمكن الربط بنفس العقدة
+    if (mindMapConnection.sourceNodeId === nodeId) return;
     
     const sourceNode = elements.find(el => el.id === mindMapConnection.sourceNodeId);
     if (!sourceNode) return;
     
-    // ✅ البحث عن العنصر الهدف (أي نوع وليس فقط mindmap_node)
     const targetNode = elements.find(el => el.id === nodeId);
     if (!targetNode) return;
     
@@ -155,7 +150,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       } as MindMapConnectorData
     });
     
-    // إعادة تعيين حالة التوصيل
     setMindMapConnection({
       isConnecting: false,
       sourceNodeId: null,
@@ -175,18 +169,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     
     const canvasPoint = canvasKernel.screenToWorld(clientX, clientY, viewport, containerRect);
     
-    // ✅ البحث عن أقرب عنصر قابل للربط (جميع الأنواع)
     const connectableElements = elements.filter(el => {
-      // استثناء العقدة المصدر
       if (el.id === mindMapConnection.sourceNodeId) return false;
-      // استثناء الـ connectors
       if (el.type === 'mindmap_connector' || el.type === 'visual_connector') return false;
-      // قبول جميع أنواع العناصر الأخرى
       return ['mindmap_node', 'visual_node', 'shape', 'text', 'image', 'sticky', 'frame', 'smart', 'file'].includes(el.type);
     });
     
     let nearest: NodeAnchorPoint | null = null;
-    let nearestDistance = 60; // عتبة الـ snap أكبر للسهولة
+    let nearestDistance = 60;
     
     for (const node of connectableElements) {
       const result = findNearestAnchor(canvasPoint, node.position, node.size);
@@ -236,14 +226,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       const layer = layers.find(l => l.id === el.layerId);
       if (!layer?.visible || !el.visible) return false;
       
-      // ✅ الـ connectors دائماً مرئية - لديها منطق خاص للرؤية داخل المكون
       if (el.type === 'mindmap_connector') return true;
       
-      return el.position.x + el.size.width >= viewportBounds.x - padding && el.position.x <= viewportBounds.x + viewportBounds.width + padding && el.position.y + el.size.height >= viewportBounds.y - padding && el.position.y <= viewportBounds.y + viewportBounds.height + padding;
+      return el.position.x + el.size.width >= viewportBounds.x - padding && 
+             el.position.x <= viewportBounds.x + viewportBounds.width + padding && 
+             el.position.y + el.size.height >= viewportBounds.y - padding && 
+             el.position.y <= viewportBounds.y + viewportBounds.height + padding;
     });
   }, [elements, viewportBounds, layers]);
-
-  // ✅ Grid rendering moved to CanvasGridLayer component (Sprint 2)
 
   // ✅ استخدام Canvas Kernel للمحاذاة
   const snapToGrid = useCallback((x: number, y: number) => {
@@ -254,146 +244,192 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     if (e.ctrlKey || e.metaKey) {
-      // Zoom
       const delta = -e.deltaY * 0.001;
       const newZoom = viewport.zoom * (1 + delta);
       setZoom(newZoom);
     } else {
-      // Pan
       setPan(viewport.pan.x - e.deltaX, viewport.pan.y - e.deltaY);
     }
   }, [viewport, setZoom, setPan]);
 
-  // Handle Mouse Down (Start Pan or Selection)
+  // ✅ Handle Mouse Down - استخدام State Machine
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (e.button === 1 || e.button === 0 && e.altKey) {
-      // Middle mouse or Alt+Click = Pan
-      isPanningRef.current = true;
-      lastPanPositionRef.current = {
-        x: e.clientX,
-        y: e.clientY
-      };
+    // Middle mouse or Alt+Click = Pan
+    if (e.button === 1 || (e.button === 0 && e.altKey)) {
+      startPanning(
+        { x: e.clientX, y: e.clientY },
+        { x: viewport.pan.x, y: viewport.pan.y }
+      );
+      lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
+      
       if (containerRef.current) {
         containerRef.current.style.cursor = 'grabbing';
       }
       e.preventDefault();
-    } else if (e.button === 0 && activeTool === 'selection_tool' && 
-               !(e.target as HTMLElement).closest('[data-canvas-element="true"]') &&
-               !(e.target as HTMLElement).closest('.bounding-box')) {
-      // Selection Box with selection tool on empty space
+      return;
+    }
+    
+    // Selection Box with selection tool on empty space
+    if (e.button === 0 && activeTool === 'selection_tool' && 
+        !(e.target as HTMLElement).closest('[data-canvas-element="true"]') &&
+        !(e.target as HTMLElement).closest('.bounding-box')) {
+      
       if (!e.shiftKey) {
         clearSelection();
       }
-      setIsSelecting(true);
       
-      // حساب الإحداثيات النسبية للـ container
       const containerRect = containerRef.current?.getBoundingClientRect();
       const relativeX = e.clientX - (containerRect?.left || 0);
       const relativeY = e.clientY - (containerRect?.top || 0);
       
-      setSelectionStart({
-        x: relativeX,
-        y: relativeY,
-        shiftKey: e.shiftKey
-      } as any);
-      setSelectionCurrent({
-        x: relativeX,
-        y: relativeY
-      });
-    } else if (e.button === 0 && (activeTool === 'file_uploader' || activeTool === 'frame_tool' || activeTool === 'smart_pen' || activeTool === 'shapes_tool' || activeTool === 'text_tool' || activeTool === 'smart_element_tool')) {
-      // تفويض للأداة النشطة
+      // ✅ استخدام State Machine للـ Box Select
+      const worldPoint = canvasKernel.screenToWorld(
+        e.clientX, 
+        e.clientY, 
+        viewport, 
+        containerRect!
+      );
+      startBoxSelect(worldPoint, e.shiftKey);
+      
+      return;
+    }
+    
+    // تفويض للأداة النشطة
+    if (e.button === 0 && (
+      activeTool === 'file_uploader' || 
+      activeTool === 'frame_tool' || 
+      activeTool === 'smart_pen' || 
+      activeTool === 'shapes_tool' || 
+      activeTool === 'text_tool' || 
+      activeTool === 'smart_element_tool'
+    )) {
       handleCanvasMouseDown(e);
-    } else if (e.button === 0 && !(e.target as HTMLElement).closest('[data-canvas-element="true"]') && !(e.target as HTMLElement).closest('.bounding-box')) {
-      // Left click on empty space = Always clear selection
+      return;
+    }
+    
+    // Left click on empty space = Always clear selection
+    if (e.button === 0 && 
+        !(e.target as HTMLElement).closest('[data-canvas-element="true"]') && 
+        !(e.target as HTMLElement).closest('.bounding-box')) {
       clearSelection();
     }
-  }, [activeTool, handleCanvasMouseDown, clearSelection]);
+  }, [activeTool, handleCanvasMouseDown, clearSelection, viewport, startPanning, startBoxSelect]);
 
-  // Handle Mouse Move (Pan or Drawing or Selection)
+  // ✅ Handle Mouse Move - استخدام State Machine
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    // ✅ تحديث خط اتصال الخريطة الذهنية أثناء السحب
+    // تحديث خط اتصال الخريطة الذهنية أثناء السحب
     if (mindMapConnection.isConnecting) {
       updateConnectionPosition(e.clientX, e.clientY);
     }
     
-    if (isPanningRef.current) {
+    // ✅ Panning باستخدام State Machine
+    if (isMode('panning')) {
       const deltaX = e.clientX - lastPanPositionRef.current.x;
       const deltaY = e.clientY - lastPanPositionRef.current.y;
       setPan(viewport.pan.x + deltaX, viewport.pan.y + deltaY);
-      lastPanPositionRef.current = {
-        x: e.clientX,
-        y: e.clientY
-      };
-    } else if (isSelecting) {
-      // حساب الإحداثيات النسبية للـ container
-      const containerRect = containerRef.current?.getBoundingClientRect();
-      const relativeX = e.clientX - (containerRect?.left || 0);
-      const relativeY = e.clientY - (containerRect?.top || 0);
-      
-      setSelectionCurrent({
-        x: relativeX,
-        y: relativeY
-      });
-    } else {
-      handleCanvasMouseMove(e);
+      lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
+      return;
     }
-  }, [viewport, setPan, handleCanvasMouseMove, isSelecting, mindMapConnection.isConnecting, updateConnectionPosition]);
+    
+    // ✅ Box Select باستخدام State Machine
+    if (isMode('boxSelect') && boxSelectData) {
+      const containerRect = containerRef.current?.getBoundingClientRect();
+      if (containerRect) {
+        const worldPoint = canvasKernel.screenToWorld(
+          e.clientX, 
+          e.clientY, 
+          viewport, 
+          containerRect
+        );
+        updateBoxSelect(worldPoint);
+      }
+      return;
+    }
+    
+    handleCanvasMouseMove(e);
+  }, [
+    viewport, 
+    setPan, 
+    handleCanvasMouseMove, 
+    mindMapConnection.isConnecting, 
+    updateConnectionPosition,
+    isMode,
+    boxSelectData,
+    updateBoxSelect
+  ]);
 
-  // Handle Mouse Up (Stop Pan or Drawing or Selection)
+  // ✅ Handle Mouse Up - استخدام State Machine
   const handleMouseUp = useCallback(() => {
-    // ✅ إلغاء اتصال الخريطة الذهنية عند الإفلات (سواء تم التوصيل أم لا)
+    // إلغاء اتصال الخريطة الذهنية عند الإفلات
     if (mindMapConnection.isConnecting) {
       cancelConnection();
     }
     
-    isPanningRef.current = false;
-    if (containerRef.current) {
-      containerRef.current.style.cursor = 'default';
+    // ✅ إنهاء Panning
+    if (isMode('panning')) {
+      resetToIdle();
+      if (containerRef.current) {
+        containerRef.current.style.cursor = 'default';
+      }
     }
 
-    // ✅ Sprint 4: Handle Selection Box completion using Canvas Kernel
-    if (isSelecting && selectionStart && selectionCurrent) {
-      const boxWidth = Math.abs(selectionCurrent.x - selectionStart.x);
-      const boxHeight = Math.abs(selectionCurrent.y - selectionStart.y);
-
-      // إذا كان الصندوق صغيراً جداً (< 5px)، اعتباره نقرة وليس تحديد
-      if (boxWidth < 5 && boxHeight < 5) {
-        if (!(selectionStart as any).shiftKey) {
-          clearSelection();
-        }
-      } else {
-        // ✅ استخدام finishSelection من useSelectionBox
-        finishSelection(
-          selectionStart.x,
-          selectionStart.y,
-          selectionCurrent.x,
-          selectionCurrent.y,
-          (selectionStart as any).shiftKey
+    // ✅ Handle Selection Box completion using State Machine
+    if (isMode('boxSelect') && boxSelectData) {
+      const containerRect = containerRef.current?.getBoundingClientRect();
+      if (containerRect) {
+        // تحويل من World إلى Screen للـ finishSelection
+        const startScreen = canvasKernel.worldToScreen(
+          boxSelectData.startWorld.x,
+          boxSelectData.startWorld.y,
+          viewport,
+          containerRect
         );
+        const endScreen = canvasKernel.worldToScreen(
+          boxSelectData.currentWorld.x,
+          boxSelectData.currentWorld.y,
+          viewport,
+          containerRect
+        );
+        
+        // حساب الإحداثيات النسبية للـ container
+        const startX = startScreen.x - containerRect.left;
+        const startY = startScreen.y - containerRect.top;
+        const endX = endScreen.x - containerRect.left;
+        const endY = endScreen.y - containerRect.top;
+        
+        const boxWidth = Math.abs(endX - startX);
+        const boxHeight = Math.abs(endY - startY);
+
+        // إذا كان الصندوق صغيراً جداً (< 5px)، اعتباره نقرة
+        if (boxWidth >= 5 || boxHeight >= 5) {
+          finishSelection(startX, startY, endX, endY, boxSelectData.additive);
+        }
       }
       
-      setIsSelecting(false);
-      setSelectionStart(null);
-      setSelectionCurrent(null);
+      resetToIdle();
     }
+    
     handleCanvasMouseUp();
-  }, [handleCanvasMouseUp, isSelecting, selectionStart, selectionCurrent, finishSelection, clearSelection, mindMapConnection.isConnecting, cancelConnection]);
-
-  // ✅ تم نقل جميع Keyboard Shortcuts إلى useKeyboardShortcuts hook
-  // لتجنب التكرار والتعارض - الآن هناك مصدر واحد فقط للاختصارات
+  }, [
+    handleCanvasMouseUp, 
+    mindMapConnection.isConnecting, 
+    cancelConnection,
+    isMode,
+    boxSelectData,
+    resetToIdle,
+    viewport,
+    finishSelection
+  ]);
 
   // Wheel event listener
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    container.addEventListener('wheel', handleWheel, {
-      passive: false
-    });
+    container.addEventListener('wheel', handleWheel, { passive: false });
     return () => container.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
 
   // Handle file drop on canvas
-  // ✅ استخدام Canvas Kernel لإسقاط الملفات والعناصر الذكية
   const handleFileDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     
@@ -401,7 +437,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     if (!containerRect) return;
     const canvasPoint = canvasKernel.screenToWorld(e.clientX, e.clientY, viewport, containerRect);
     
-    // ✅ التحقق من السحب للعناصر الذكية أولاً
+    // التحقق من السحب للعناصر الذكية أولاً
     const smartElementData = e.dataTransfer.getData('application/smart-element');
     if (smartElementData) {
       try {
@@ -415,7 +451,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       }
     }
     
-    // ✅ معالجة إسقاط الملفات
+    // معالجة إسقاط الملفات
     if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
     const file = e.dataTransfer.files[0];
     
@@ -424,10 +460,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       useCanvasStore.getState().addElement({
         type: 'image',
         position: canvasPoint,
-        size: {
-          width: 300,
-          height: 200
-        },
+        size: { width: 300, height: 200 },
         src: imageUrl,
         alt: file.name
       });
@@ -436,10 +469,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       useCanvasStore.getState().addElement({
         type: 'file',
         position: canvasPoint,
-        size: {
-          width: 250,
-          height: 120
-        },
+        size: { width: 250, height: 120 },
         fileName: file.name,
         fileType: file.type,
         fileSize: file.size,
@@ -448,12 +478,19 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       toast.success(`تم إدراج الملف: ${file.name}`);
     }
   }, [viewport]);
+  
   const handleFileDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
   }, []);
 
-  // تحديد نوع المؤشر حسب الأداة النشطة
-  const getCursorStyle = () => {
+  // ✅ تحديد نوع المؤشر حسب الأداة النشطة والحالة
+  const getCursorStyle = useCallback(() => {
+    // إذا كانت هناك حالة تفاعل نشطة، استخدم مؤشرها
+    if (interactionMode.kind !== 'idle') {
+      return getCursorForMode(interactionMode);
+    }
+    
+    // وإلا استخدم مؤشر الأداة
     switch (activeTool) {
       case 'text_tool':
         return 'text';
@@ -470,19 +507,64 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       default:
         return 'default';
     }
-  };
-  return <div ref={containerRef} data-canvas-container="true" className="relative w-full h-full overflow-hidden infinite-canvas-container" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onDrop={handleFileDrop} onDragOver={handleFileDragOver} style={{
-    backgroundColor: settings.background,
-    cursor: getCursorStyle()
-  }}>
-      {/* ✅ Grid Layer - خارج الطبقة المتحركة لتغطية كامل الشاشة */}
+  }, [activeTool, interactionMode]);
+  
+  // ✅ حساب بيانات Selection Box من State Machine
+  const selectionBoxData = useMemo(() => {
+    if (!boxSelectData) return null;
+    
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    if (!containerRect) return null;
+    
+    const startScreen = canvasKernel.worldToScreen(
+      boxSelectData.startWorld.x,
+      boxSelectData.startWorld.y,
+      viewport,
+      containerRect
+    );
+    const currentScreen = canvasKernel.worldToScreen(
+      boxSelectData.currentWorld.x,
+      boxSelectData.currentWorld.y,
+      viewport,
+      containerRect
+    );
+    
+    return {
+      startX: startScreen.x - containerRect.left,
+      startY: startScreen.y - containerRect.top,
+      currentX: currentScreen.x - containerRect.left,
+      currentY: currentScreen.y - containerRect.top
+    };
+  }, [boxSelectData, viewport]);
+
+  return (
+    <div 
+      ref={containerRef} 
+      data-canvas-container="true" 
+      className="relative w-full h-full overflow-hidden infinite-canvas-container" 
+      onMouseDown={handleMouseDown} 
+      onMouseMove={handleMouseMove} 
+      onMouseUp={handleMouseUp} 
+      onMouseLeave={handleMouseUp} 
+      onDrop={handleFileDrop} 
+      onDragOver={handleFileDragOver} 
+      style={{
+        backgroundColor: settings.background,
+        cursor: getCursorStyle()
+      }}
+    >
+      {/* Grid Layer */}
       <CanvasGridLayer />
       
-      {/* Canvas Container - الطبقة المتحركة للعناصر فقط */}
-      <div ref={canvasRef} className="absolute inset-0 origin-top-left" style={{
-      transform: `translate(${viewport.pan.x}px, ${viewport.pan.y}px) scale(${viewport.zoom})`,
-      transition: 'none'
-    }}>
+      {/* Canvas Container - الطبقة المتحركة للعناصر */}
+      <div 
+        ref={canvasRef} 
+        className="absolute inset-0 origin-top-left" 
+        style={{
+          transform: `translate(${viewport.pan.x}px, ${viewport.pan.y}px) scale(${viewport.zoom})`,
+          transition: 'none'
+        }}
+      >
         {/* Pen Strokes Layer */}
         <StrokesLayer />
         
@@ -519,10 +601,17 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         {tempElement && <DrawingPreview element={tempElement} />}
       </div>
       
-      {/* Selection Box */}
-      {isSelecting && selectionStart && selectionCurrent && <SelectionBox startX={selectionStart.x} startY={selectionStart.y} currentX={selectionCurrent.x} currentY={selectionCurrent.y} />}
+      {/* Selection Box - من State Machine */}
+      {isMode('boxSelect') && selectionBoxData && (
+        <SelectionBox 
+          startX={selectionBoxData.startX} 
+          startY={selectionBoxData.startY} 
+          currentX={selectionBoxData.currentX} 
+          currentY={selectionBoxData.currentY} 
+        />
+      )}
       
-      {/* ✅ Sprint 5: Snap Guides */}
+      {/* Snap Guides */}
       <SnapGuides guides={snapGuides} containerRef={containerRef} />
       
       {/* Pen Input Layer */}
@@ -552,7 +641,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         )} />
       )}
       
-      {/* ✅ Sprint 17: Real-time Collaboration Sync Manager */}
+      {/* Real-time Collaboration Sync Manager */}
       <RealtimeSyncManager
         boardId={boardId}
         userId={collaborationUser.id}
@@ -563,7 +652,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           console.log('Sync status:', status);
         }}
       />
-      
-    </div>;
+    </div>
+  );
 };
+
 export default InfiniteCanvas;
