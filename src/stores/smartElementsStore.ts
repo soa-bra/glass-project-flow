@@ -28,6 +28,7 @@ import {
   type MindMapNode,
   type MindMapConnection,
   type SheetCell,
+  type AISuggestion,
   SmartElementDataSchemaMap,
   getDefaultSmartElementData,
   parseSmartElementData,
@@ -568,20 +569,26 @@ interface SmartElementsState {
   toggleSmartCardMetric: (elementId: string, metric: string) => void;
   
   // ═══════════════════════════════════════════════════════════════════════════
-  // Interactive Document Actions - إجراءات المستند التفاعلي
+  // Root Connector Actions - إجراءات الرابط الذكي
   // ═══════════════════════════════════════════════════════════════════════════
   
   /**
-   * Update document content
-   * تحديث محتوى المستند
+   * Set AI suggestions for connector
+   * تعيين اقتراحات الذكاء الاصطناعي للرابط
    */
-  updateDocumentContent: (elementId: string, content: string) => void;
+  setConnectorAISuggestions: (elementId: string, suggestions: AISuggestion[]) => void;
   
   /**
-   * Update document status
-   * تحديث حالة المستند
+   * Apply AI suggestion (convert connector to smart element)
+   * تطبيق اقتراح الذكاء الاصطناعي
    */
-  updateDocumentStatus: (elementId: string, status: 'draft' | 'review' | 'completed') => void;
+  applyConnectorSuggestion: (elementId: string, suggestionId: string) => string | null;
+  
+  /**
+   * Toggle AI panel visibility
+   * تبديل ظهور لوحة الذكاء الاصطناعي
+   */
+  toggleConnectorAIPanel: (elementId: string) => void;
   
   // ═══════════════════════════════════════════════════════════════════════════
   // ThinkingBoard Actions - إجراءات لوحة التفكير
@@ -630,7 +637,7 @@ const DEFAULT_SMART_ELEMENT_SIZES: Record<SmartElementType, { width: number; hei
   finance_card: { width: 320, height: 200 },
   csr_card: { width: 320, height: 200 },
   crm_card: { width: 320, height: 200 },
-  interactive_document: { width: 400, height: 300 },
+  root_connector: { width: 0, height: 0 }, // Connectors don't have fixed size
   visual_diagram: { width: 600, height: 500 },
 };
 
@@ -1857,31 +1864,48 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
   },
   
   // ═══════════════════════════════════════════════════════════════════════════
-  // Interactive Document Actions
+  // Root Connector Actions
   // ═══════════════════════════════════════════════════════════════════════════
   
-  updateDocumentContent: (elementId, content) => {
+  setConnectorAISuggestions: (elementId, suggestions) => {
     const entry = get().smartElements[elementId];
-    if (!entry || entry.smartType !== 'interactive_document') return;
+    if (!entry || entry.smartType !== 'root_connector') return;
     
-    const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
-    const charCount = content.length;
-    
-    get().updateSmartElementData(elementId, { 
-      content, 
-      wordCount,
-      charCount,
-      lastEditedAt: new Date().toISOString() 
-    });
+    get().updateSmartElementData(elementId, { aiSuggestions: suggestions });
   },
   
-  updateDocumentStatus: (elementId, status) => {
+  applyConnectorSuggestion: (elementId, suggestionId) => {
     const entry = get().smartElements[elementId];
-    if (!entry || entry.smartType !== 'interactive_document') return;
+    if (!entry || entry.smartType !== 'root_connector') return null;
     
-    get().updateSmartElementData(elementId, { 
-      status,
-      lastEditedAt: new Date().toISOString() 
+    const data = entry.data as SmartElementDataType<'root_connector'>;
+    const suggestion = data.aiSuggestions.find(s => s.id === suggestionId);
+    if (!suggestion) return null;
+    
+    // Get connector position for new element placement
+    const canvasStore = useCanvasStore.getState();
+    const connectorElement = canvasStore.elements.find(
+      el => el.data?.smartElementId === elementId
+    );
+    if (!connectorElement) return null;
+    
+    // Create new smart element from suggestion
+    const newElementId = get().addSmartElement(
+      suggestion.type as SmartElementType,
+      connectorElement.position,
+      suggestion.previewData as any
+    );
+    
+    return newElementId;
+  },
+  
+  toggleConnectorAIPanel: (elementId) => {
+    const entry = get().smartElements[elementId];
+    if (!entry || entry.smartType !== 'root_connector') return;
+    
+    const data = entry.data as SmartElementDataType<'root_connector'>;
+    get().updateSmartElementData(elementId, {
+      showAIPanel: !data.showAIPanel,
     });
   },
   

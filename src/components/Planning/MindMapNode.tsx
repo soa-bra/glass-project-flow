@@ -2,10 +2,9 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { MindMapNodeData, NodeAnchorPoint } from '@/types/mindmap-canvas';
-import { NODE_COLORS, calculateConnectorBounds } from '@/types/mindmap-canvas';
-import { Plus, Trash2, Palette, ChevronDown, ChevronRight } from 'lucide-react';
+import { getAnchorPosition, NODE_COLORS, calculateConnectorBounds } from '@/types/mindmap-canvas';
+import { Plus, GripVertical, Trash2, Palette, ChevronDown, ChevronRight } from 'lucide-react';
 import { redistributeUpwards } from '@/utils/mindmap-layout';
-
 interface MindMapNodeProps {
   element: CanvasElement;
   isSelected: boolean;
@@ -32,12 +31,12 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const [editText, setEditText] = useState('');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  // ✅ ref واحد فقط للحاوية الرئيسية
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isSingleNodeMode, setIsSingleNodeMode] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   const nodeData = element.data as MindMapNodeData;
   
   // ✅ التحقق من وجود فروع
@@ -153,14 +152,9 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setShowColorPicker(false);
   }, [element.id, nodeData, updateElement]);
   
-  // ✅ سحب العقدة - منطق موحّد مع CanvasElement
+  // سحب العقدة
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    // أثناء التحرير: امنع السحب لكن اسمح بالأحداث الداخلية
-    if (isEditing) {
-      e.stopPropagation();
-      return;
-    }
-    
+    if (isEditing) return;
     e.stopPropagation();
     
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
@@ -210,27 +204,15 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setIsDragging(false);
   }, []);
   
-  // ✅ حساب موقع الـ anchor من element.size مباشرة
-  const getAnchorPosition = useCallback((anchor: 'top' | 'bottom' | 'left' | 'right') => {
-    const { width, height } = element.size;
-    switch (anchor) {
-      case 'top': return { x: width / 2, y: 0 };
-      case 'bottom': return { x: width / 2, y: height };
-      case 'left': return { x: 0, y: height / 2 };
-      case 'right': return { x: width, y: height / 2 };
-    }
-  }, [element.size]);
-  
   // نقاط الربط
   const handleAnchorMouseDown = useCallback((
     e: React.MouseEvent,
     anchor: 'top' | 'bottom' | 'left' | 'right'
   ) => {
     e.stopPropagation();
-    const localPos = getAnchorPosition(anchor);
-    const pos = { x: element.position.x + localPos.x, y: element.position.y + localPos.y };
+    const pos = getAnchorPosition(element.position, element.size, anchor);
     onStartConnection(element.id, anchor, pos);
-  }, [element.position, element.id, getAnchorPosition, onStartConnection]);
+  }, [element, onStartConnection]);
   
   const handleAnchorMouseUp = useCallback((
     e: React.MouseEvent,
@@ -316,9 +298,9 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
     >
-      {/* ✅ الحاوية الداخلية للمحتوى */}
-      <div 
-        className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md"
+      {/* محتوى العقدة */}
+      <div
+        className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md transition-all relative"
         style={getNodeStyle()}
       >
         {isEditing ? (
@@ -333,7 +315,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
               if (e.key === 'Escape') setIsEditing(false);
               e.stopPropagation();
             }}
-            className="bg-transparent text-center outline-none text-inherit font-medium w-full"
+            className="w-full bg-transparent text-center outline-none text-inherit font-medium"
             dir="auto"
           />
         ) : (
@@ -341,31 +323,31 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
             {nodeData.label || 'عقدة جديدة'}
           </span>
         )}
+        
+        {/* أيقونة الجذر */}
+        {nodeData.isRoot && (
+          <div className="absolute -top-2 -right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm">
+            <div className="w-3 h-3 rounded-full bg-[hsl(var(--accent-green))]" />
+          </div>
+        )}
+        
+        {/* ✅ زر الطي - يظهر إذا كان للعقدة فروع */}
+        {hasChildren && (
+          <button
+            onClick={handleToggleCollapse}
+            className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-md border border-[hsl(var(--border))] flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
+            title={nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع"}
+          >
+            {nodeData.isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+          </button>
+        )}
       </div>
       
-      {/* أيقونة الجذر */}
-      {nodeData.isRoot && (
-        <div className="absolute -top-2 -right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm">
-          <div className="w-3 h-3 rounded-full bg-[hsl(var(--accent-green))]" />
-        </div>
-      )}
-      
-      {/* ✅ زر الطي - يظهر إذا كان للعقدة فروع */}
-      {hasChildren && (
-        <button
-          onClick={handleToggleCollapse}
-          className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-md border border-[hsl(var(--border))] flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
-          title={nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع"}
-        >
-          {nodeData.isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
-        </button>
-      )}
-      
-      {/* ✅ نقاط الربط - تُحسب من element.size */}
+      {/* نقاط الربط - تظهر عند التحديد أو التوصيل */}
       {(isSelected || isConnecting) && (
         <>
           {(['top', 'bottom', 'left', 'right'] as const).map((anchor) => {
-            const pos = getAnchorPosition(anchor);
+            const pos = getAnchorPosition({ x: 0, y: 0 }, element.size, anchor);
             const isHighlighted = isNearestForConnection && nearestAnchor?.anchor === anchor;
             
             return (

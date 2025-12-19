@@ -1,69 +1,10 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.52.1";
-import { z } from "https://deno.land/x/zod@v3.23.8/mod.ts";
 
-// SECURITY: Allowed origins for CORS (Defense in Depth)
-const ALLOWED_ORIGINS = [
-  'https://zdqkrrehlivayconjcgm.supabase.co',
-  'https://lovable.dev',
-  'https://www.lovable.dev',
-  'http://localhost:5173',
-  'http://localhost:8080',
-  'http://localhost:3000',
-];
-
-// Dynamic CORS headers based on origin
-function getCorsHeaders(origin: string | null): Record<string, string> {
-  const isAllowed = origin && ALLOWED_ORIGINS.some(allowed => 
-    origin === allowed || origin.endsWith('.lovable.app') || origin.endsWith('.lovable.dev')
-  );
-  
-  return {
-    'Access-Control-Allow-Origin': isAllowed ? origin! : ALLOWED_ORIGINS[0],
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Credentials': 'true',
-    'Access-Control-Max-Age': '86400'
-  };
-}
-
-// Input validation schemas
-const RequestSchema = z.object({
-  prompt: z.string().min(1, 'الأمر مطلوب').max(4000, 'الأمر طويل جداً (الحد الأقصى 4000 حرف)').optional(),
-  action: z.enum(['generate', 'analyze', 'transform']).optional(),
-  selectedElements: z.array(z.any()).max(100, 'الحد الأقصى 100 عنصر').optional(),
-  context: z.object({
-    preferredType: z.string().optional(),
-    targetType: z.string().optional(),
-  }).optional(),
-});
-
-// Rate limiting: Simple in-memory tracking (for edge function)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_REQUESTS = 20; // requests per window
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
-
-function checkRateLimit(userId: string): { allowed: boolean; remaining: number; resetIn: number } {
-  const now = Date.now();
-  const userLimit = rateLimitMap.get(userId);
-  
-  if (!userLimit || userLimit.resetAt < now) {
-    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return { allowed: true, remaining: RATE_LIMIT_REQUESTS - 1, resetIn: RATE_LIMIT_WINDOW_MS };
-  }
-  
-  if (userLimit.count >= RATE_LIMIT_REQUESTS) {
-    return { allowed: false, remaining: 0, resetIn: userLimit.resetAt - now };
-  }
-  
-  userLimit.count++;
-  return { allowed: true, remaining: RATE_LIMIT_REQUESTS - userLimit.count, resetIn: userLimit.resetAt - now };
-}
-
-// Sanitize input to remove control characters
-function sanitizeInput(input: string): string {
-  return input.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
-}
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 // Smart Element Types supported
 const SMART_ELEMENT_TYPES = [
@@ -394,121 +335,18 @@ const systemPrompt = `أنت مساعد ذكي متخصص في نظام سوبر
 
 استخدم الأدوات المتاحة لتوليد هياكل البيانات المطلوبة.`;
 
-// Helper function to authenticate user
-async function authenticateUser(req: Request): Promise<{ user: any; error: string | null }> {
-  const authHeader = req.headers.get('Authorization');
-  if (!authHeader) {
-    return { user: null, error: 'Missing authorization header' };
-  }
-
-  const supabaseUrl = Deno.env.get('SUPABASE_URL');
-  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
-  
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('[smart-elements-ai] Missing Supabase configuration');
-    return { user: null, error: 'Server configuration error' };
-  }
-
-  const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-    global: { headers: { Authorization: authHeader } }
-  });
-
-  const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-  
-  if (authError || !user) {
-    console.error('[smart-elements-ai] Authentication failed:', authError?.message);
-    return { user: null, error: 'Unauthorized' };
-  }
-
-  return { user, error: null };
-}
-
 serve(async (req) => {
-  const origin = req.headers.get('origin');
-  const corsHeaders = getCorsHeaders(origin);
-  
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Authenticate user
-    const { user, error: authError } = await authenticateUser(req);
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: authError || 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    console.log(`[smart-elements-ai] Authenticated user: ${user.id}`);
-
-    // SECURITY: Check rate limit
-    const rateLimit = checkRateLimit(user.id);
-    if (!rateLimit.allowed) {
-      console.warn(`[smart-elements-ai] Rate limit exceeded for user: ${user.id}`);
-      return new Response(
-        JSON.stringify({ 
-          error: 'تجاوزت الحد المسموح. حاول مرة أخرى بعد دقيقة.',
-          code: 'RATE_LIMIT',
-          retryAfter: Math.ceil(rateLimit.resetIn / 1000)
-        }),
-        { 
-          status: 429, 
-          headers: { 
-            ...corsHeaders, 
-            'Content-Type': 'application/json',
-            'Retry-After': String(Math.ceil(rateLimit.resetIn / 1000)),
-            'X-RateLimit-Limit': String(RATE_LIMIT_REQUESTS),
-            'X-RateLimit-Remaining': '0'
-          } 
-        }
-      );
-    }
-
-    // SECURITY: Parse and validate request body
-    let requestBody;
-    try {
-      requestBody = await req.json();
-    } catch {
-      return new Response(
-        JSON.stringify({ error: 'بيانات JSON غير صالحة', code: 'INVALID_JSON' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // SECURITY: Validate input with Zod schema
-    const validationResult = RequestSchema.safeParse(requestBody);
-    if (!validationResult.success) {
-      console.warn(`[smart-elements-ai] Validation failed for user: ${user.id}`, validationResult.error.errors);
-      return new Response(
-        JSON.stringify({ 
-          error: 'بيانات غير صالحة: ' + validationResult.error.errors.map(e => e.message).join(', '),
-          code: 'VALIDATION_ERROR'
-        }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const { prompt: rawPrompt, action, selectedElements, context } = validationResult.data;
-    
-    // SECURITY: Sanitize prompt input
-    const prompt = rawPrompt ? sanitizeInput(rawPrompt) : undefined;
-    
-    // Log token estimation for monitoring
-    const estimatedTokens = prompt ? Math.round(prompt.length * 0.75) : 0;
-    if (estimatedTokens > 2000) {
-      console.warn(`[smart-elements-ai] High token request: ${estimatedTokens} tokens, user: ${user.id}`);
-    }
+    const { prompt, action, selectedElements, context } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
-      console.error('[smart-elements-ai] LOVABLE_API_KEY not configured');
-      return new Response(
-        JSON.stringify({ error: 'خطأ في إعداد الخدمة. يرجى التواصل مع الدعم.', code: 'CONFIG_ERROR' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
     // Build the user message based on action type
@@ -536,7 +374,7 @@ serve(async (req) => {
       userMessage = prompt;
     }
 
-    console.log(`[smart-elements-ai] User: ${user.id}, Action: ${action}, Tool: ${selectedTool}`);
+    console.log(`[smart-elements-ai] Action: ${action}, Tool: ${selectedTool}`);
     console.log(`[smart-elements-ai] User message: ${userMessage.substring(0, 200)}...`);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -614,7 +452,7 @@ serve(async (req) => {
       }));
     }
 
-    console.log(`[smart-elements-ai] User: ${user.id}, Generated ${toolResult.elements?.length || 0} elements`);
+    console.log(`[smart-elements-ai] Generated ${toolResult.elements?.length || 0} elements`);
 
     return new Response(JSON.stringify({
       success: true,
@@ -627,7 +465,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('[smart-elements-ai] Error:', error);
     return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'حدث خطأ غير متوقع',
+      error: error instanceof Error ? error.message : 'خطأ غير متوقع',
       code: 'INTERNAL_ERROR'
     }), {
       status: 500,
@@ -636,12 +474,12 @@ serve(async (req) => {
   }
 });
 
-// Calculate position for elements based on layout
+// Helper function to calculate element positions based on layout
 function calculatePosition(index: number, total: number, layout: string): { x: number; y: number } {
   const baseX = 100;
   const baseY = 100;
-  const spacing = 350;
-  
+  const spacing = 300;
+
   switch (layout) {
     case 'horizontal':
       return { x: baseX + (index * spacing), y: baseY };
@@ -649,16 +487,15 @@ function calculatePosition(index: number, total: number, layout: string): { x: n
       return { x: baseX, y: baseY + (index * spacing) };
     case 'grid': {
       const cols = Math.ceil(Math.sqrt(total));
-      return {
-        x: baseX + (index % cols) * spacing,
-        y: baseY + Math.floor(index / cols) * spacing
-      };
+      const row = Math.floor(index / cols);
+      const col = index % cols;
+      return { x: baseX + (col * spacing), y: baseY + (row * spacing) };
     }
     case 'radial': {
       const angle = (2 * Math.PI * index) / total;
-      const radius = 300;
+      const radius = 250;
       return {
-        x: baseX + 400 + Math.cos(angle) * radius,
+        x: baseX + 300 + Math.cos(angle) * radius,
         y: baseY + 300 + Math.sin(angle) * radius
       };
     }

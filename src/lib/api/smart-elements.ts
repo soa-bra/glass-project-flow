@@ -52,7 +52,7 @@ const DEFAULT_SIZES: Record<SmartElementType, Size> = {
   finance_card: { width: 320, height: 200 },
   csr_card: { width: 320, height: 200 },
   crm_card: { width: 320, height: 200 },
-  interactive_document: { width: 400, height: 300 },
+  root_connector: { width: 200, height: 100 },
   visual_diagram: { width: 600, height: 500 },
 };
 

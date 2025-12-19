@@ -3,7 +3,6 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
 import { ResizeHandle } from './ResizeHandle';
-import { TextResizeHandles } from './TextResizeHandles';
 import { TextEditor } from './TextEditor';
 import { ShapeRenderer } from './ShapeRenderer';
 import { ArrowControlPoints } from './ArrowControlPoints';
@@ -11,12 +10,11 @@ import { ArrowLabels } from './ArrowLabels';
 import MindMapNode from './MindMapNode';
 import MindMapConnector from './MindMapConnector';
 import ElementAnchors from './ElementAnchors';
-import type { CanvasSmartElement, CanvasWorkflowNodeElement, CanvasWorkflowEdgeElement } from '@/types/canvas-elements';
+import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { sanitizeHTMLForDisplay } from '@/utils/sanitize';
 import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel } from '@/core/canvasKernel';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
-import { WorkflowNode, WorkflowEdge } from './Workflow';
 
 // التحقق إذا كان العنصر سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -118,88 +116,6 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         element={element}
         isSelected={isSelected}
         onSelect={onSelect}
-      />
-    );
-  }
-
-  // عرض عناصر Workflow
-  if (element.type === 'workflow_node') {
-    const workflowElement = element as unknown as CanvasWorkflowNodeElement;
-    // تحويل CanvasWorkflowNodeElement إلى WorkflowNodeData
-    const nodeData = {
-      id: workflowElement.id,
-      type: workflowElement.nodeType,
-      label: workflowElement.label,
-      description: workflowElement.description,
-      position: workflowElement.position,
-      size: workflowElement.size,
-      tasks: workflowElement.tasks,
-      assignees: workflowElement.assignees,
-      dueDate: workflowElement.dueDate,
-      entryConditions: workflowElement.conditions,
-      onEnterActions: workflowElement.actions,
-      metadata: workflowElement.metadata
-    };
-    
-    return (
-      <WorkflowNode
-        node={nodeData as any}
-        isSelected={isSelected}
-        onSelect={() => onSelect(false)}
-        onNodeUpdate={(nodeId, updates) => {
-          const { updateElement } = useCanvasStore.getState();
-          updateElement(nodeId, updates as any);
-        }}
-      />
-    );
-  }
-
-  if (element.type === 'workflow_edge') {
-    const edgeElement = element as unknown as CanvasWorkflowEdgeElement;
-    const elements = useCanvasStore.getState().elements;
-    const fromEl = elements.find(el => el.id === edgeElement.fromNodeId) as unknown as CanvasWorkflowNodeElement | undefined;
-    const toEl = elements.find(el => el.id === edgeElement.toNodeId) as unknown as CanvasWorkflowNodeElement | undefined;
-    
-    if (!fromEl || !toEl) return null;
-    
-    // تحويل CanvasWorkflowEdgeElement إلى WorkflowEdgeData
-    const edgeData = {
-      id: edgeElement.id,
-      type: edgeElement.edgeType || 'default',
-      from: edgeElement.fromNodeId,
-      to: edgeElement.toNodeId,
-      fromAnchor: edgeElement.fromAnchor,
-      toAnchor: edgeElement.toAnchor,
-      label: edgeElement.label,
-      pathType: edgeElement.pathType,
-      animated: edgeElement.animated,
-      condition: edgeElement.condition
-    };
-    
-    // تحويل العقد
-    const fromNode = {
-      id: fromEl.id,
-      type: fromEl.nodeType,
-      label: fromEl.label,
-      position: fromEl.position,
-      size: fromEl.size
-    };
-    
-    const toNode = {
-      id: toEl.id,
-      type: toEl.nodeType,
-      label: toEl.label,
-      position: toEl.position,
-      size: toEl.size
-    };
-    
-    return (
-      <WorkflowEdge
-        edge={edgeData as any}
-        fromNode={fromNode as any}
-        toNode={toNode as any}
-        isSelected={isSelected}
-        onSelect={() => onSelect(false)}
       />
     );
   }
@@ -369,11 +285,11 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         width: element.size.width,
         height: element.size.height,
         // إزالة كل أنماط التحديد للأسهم
-        border: (isElementArrow(element) || element.type === 'text') ? 'none' : (isSelected ? '2px solid hsl(var(--accent-green))' : (element.data?.textType === 'box' ? '1px solid hsl(var(--border))' : 'none')),
+        border: isElementArrow(element) ? 'none' : (isSelected ? '2px solid hsl(var(--accent-green))' : (element.data?.textType === 'box' ? '1px solid hsl(var(--border))' : 'none')),
         borderRadius: isElementArrow(element) ? '0' : (element.type === 'shape' ? '0' : (element.data?.textType === 'box' ? '8px' : '0')),
-        padding: isElementArrow(element) ? '0' : (element.type === 'shape' ? '0' : (element.type === 'text' ? '0' : (element.data?.textType === 'box' ? '12px' : '4px'))),
+        padding: isElementArrow(element) ? '0' : (element.type === 'shape' ? '0' : (element.data?.textType === 'box' ? '12px' : '4px')),
         backgroundColor: isElementArrow(element) ? 'transparent' : (element.type === 'shape' ? 'transparent' : (element.data?.textType === 'box' ? (element.style?.backgroundColor || '#FFFFFF') : (element.style?.backgroundColor || 'transparent'))),
-        boxShadow: (isElementArrow(element) || element.type === 'text') ? 'none' : (isSelected ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : (element.data?.textType === 'box' ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none')),
+        boxShadow: isElementArrow(element) ? 'none' : (isSelected ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : (element.data?.textType === 'box' ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none')),
         outline: isElementArrow(element) ? 'none' : undefined,
         opacity: isLocked ? 0.6 : 1,
         pointerEvents: isLocked ? 'none' : 'auto',
@@ -382,74 +298,54 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     >
       {/* Element Content */}
       {element.type === 'text' && (
-        <div className="relative w-full h-full">
-          {/* ✅ نقاط التحكم على حدود العنصر الرئيسية (خارج padding) */}
-          {isSelected && !isLocked && <TextResizeHandles elementId={element.id} />}
-
-          {/* المحتوى الداخلي */}
-          <div
-            className={`w-full h-full ${isEditingThisText ? 'cursor-text' : ''}`}
-            onDoubleClick={handleTextDoubleClick}
-            onMouseDown={(e) => {
-              // أثناء التحرير: امنع أحداث السحب/التحديد من التقاط الـ mousedown
-              if (isEditingThisText) e.stopPropagation();
-            }}
-          >
-            {/* ✅ نقل padding من العنصر الرئيسي إلى div داخلي فقط */}
-            <div
-              className="w-full h-full"
-              style={{ padding: element.data?.textType === 'box' ? '12px' : '4px' }}
-            >
-              {/* مؤشر النص المرتبط */}
-              {element.data?.textType === 'attached' && (
-                <div className="absolute -top-2 -right-2 bg-[hsl(var(--accent-green))] rounded-full p-1">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" />
-                  </svg>
-                </div>
-              )}
-
-              {isEditingThisText ? (
-                <TextEditor
-                  element={element}
-                  onUpdate={(content) => updateTextContent(element.id, content)}
-                  onClose={() => stopEditingText(element.id)}
-                />
-              ) : (
-                <div
-                  dir={element.style?.direction || 'rtl'}
-                  style={{
-                    fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
-                    fontSize: `${element.style?.fontSize || 16}px`,
-                    fontWeight: element.style?.fontWeight || 'normal',
-                    fontStyle: element.style?.fontStyle || 'normal',
-                    textDecoration: element.style?.textDecoration || 'none',
-                    color: element.style?.color || '#0B0F12',
-                    textAlign: (element.style?.textAlign as any) || 'right',
-                    direction: (element.style?.direction as any) || 'rtl',
-                    unicodeBidi: 'plaintext',
-                    whiteSpace:
-                      element.content?.includes('<ul>') ||
-                      element.content?.includes('<ol>') ||
-                      element.data?.textType === 'box'
-                        ? 'pre-wrap'
-                        : 'nowrap',
-                    wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
-                    overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
-                    width: '100%',
-                    height: '100%',
-                    padding: '8px'
-                  }}
-                  dangerouslySetInnerHTML={{
-                    __html: sanitizeHTMLForDisplay(element.content, 'انقر مرتين للكتابة...')
-                  }}
-                />
-              )}
+        <div 
+          className="w-full h-full cursor-text"
+          onDoubleClick={handleTextDoubleClick}
+        >
+          {/* مؤشر النص المرتبط */}
+          {element.data?.textType === 'attached' && (
+            <div className="absolute -top-2 -right-2 bg-[hsl(var(--accent-green))] rounded-full p-1">
+              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"/>
+              </svg>
             </div>
-          </div>
+          )}
+          
+          {isEditingThisText ? (
+            <TextEditor
+              element={element}
+              onUpdate={(content) => updateTextContent(element.id, content)}
+              onClose={() => stopEditingText(element.id)}
+            />
+          ) : (
+            <div
+              dir={element.style?.direction || 'rtl'}
+              style={{
+                fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
+                fontSize: `${element.style?.fontSize || 16}px`,
+                fontWeight: element.style?.fontWeight || 'normal',
+                fontStyle: element.style?.fontStyle || 'normal',
+                textDecoration: element.style?.textDecoration || 'none',
+                color: element.style?.color || '#0B0F12',
+                textAlign: (element.style?.textAlign as any) || 'right',
+                direction: (element.style?.direction as any) || 'rtl',
+                unicodeBidi: 'plaintext',
+                // ✅ السماح بأسطر متعددة عند وجود قوائم
+                whiteSpace: (element.content?.includes('<ul>') || element.content?.includes('<ol>') || element.data?.textType === 'box') ? 'pre-wrap' : 'nowrap',
+                wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
+                overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
+                width: '100%',
+                height: '100%',
+                padding: '8px'
+              }}
+              dangerouslySetInnerHTML={{ 
+                __html: sanitizeHTMLForDisplay(element.content, 'انقر مرتين للكتابة...') 
+              }}
+            />
+          )}
         </div>
       )}
-
+      
       {element.type === 'sticky' && (
         <div className="text-[13px] text-[hsl(var(--ink))] leading-relaxed">
           {element.content || 'ملاحظة لاصقة'}
@@ -583,8 +479,8 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         />
       )}
       
-      {/* Selection Handles (shown only when selected) - للعناصر غير النصية */}
-      {isSelected && !isLocked && element.type !== 'text' && (
+      {/* Selection Handles (shown only when selected) */}
+      {isSelected && !isLocked && (
         <>
           {/* نقاط تحكم خاصة للأسهم */}
           {element.type === 'shape' && isArrowShape(element.shapeType || element.data?.shapeType) ? (

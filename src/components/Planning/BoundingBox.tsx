@@ -305,16 +305,15 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     dragStart.current = { x: e.clientX, y: e.clientY };
   }, []);
   
-  // ✅ التحقق من إظهار BoundingBox - استثناء الأسهم والنصوص
-  const isAllTextOrArrows = useMemo(() => 
+  // ✅ التحقق من إظهار BoundingBox
+  const isAllArrows = useMemo(() => 
     selectedElements.every(el => 
-      el.type === 'text' || 
-      (el.type === 'shape' && isArrowShape(el.shapeType || el.data?.shapeType))
+      el.type === 'shape' && isArrowShape(el.shapeType || el.data?.shapeType)
     ),
     [selectedElements]
   );
   
-  if (activeTool !== 'selection_tool' || selectedElements.length === 0 || isAllTextOrArrows) {
+  if (activeTool !== 'selection_tool' || selectedElements.length === 0 || isAllArrows) {
     return null;
   }
   

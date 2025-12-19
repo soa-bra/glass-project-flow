@@ -204,18 +204,14 @@ const SMART_ELEMENTS: SmartElementConfig[] = [
     ]
   },
   {
-    id: 'interactive_document',
-    name: 'Interactive Document',
-    nameAr: 'مستند تفاعلي',
-    icon: <FileSpreadsheet size={20} />,
+    id: 'root_connector',
+    name: 'Root Connector',
+    nameAr: 'رابط الجذر',
+    icon: <Link size={20} />,
     category: 'analysis',
-    description: 'مستند نصي تفاعلي قابل للتحرير والتصدير',
+    description: 'ربط المكونات بعلاقات بصرية ووظيفية',
     settings: [
-      { key: 'format', label: 'التنسيق', type: 'select', options: [
-        { value: 'plain', label: 'نص عادي' },
-        { value: 'markdown', label: 'Markdown' },
-      ], defaultValue: 'plain' },
-      { key: 'showWordCount', label: 'عرض عدد الكلمات', type: 'checkbox', defaultValue: true },
+      { key: 'showAISuggestions', label: 'اقتراحات AI', type: 'checkbox', defaultValue: true },
     ]
   },
   

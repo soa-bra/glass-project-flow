@@ -60,68 +60,6 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
     onUpdate({ cells: newCells });
   }, [onUpdate]);
 
-  // Safe math expression evaluator - NO eval() for security
-  const safeEvaluateMath = useCallback((expr: string): number => {
-    // Only allow numbers, operators, parentheses, and whitespace
-    const sanitized = expr.replace(/\s+/g, '');
-    if (!/^[\d+\-*/.()]+$/.test(sanitized)) {
-      throw new Error('Invalid expression');
-    }
-    
-    // Parse and evaluate safely using a simple recursive descent parser
-    let pos = 0;
-    
-    const parseNumber = (): number => {
-      let numStr = '';
-      while (pos < sanitized.length && /[\d.]/.test(sanitized[pos])) {
-        numStr += sanitized[pos++];
-      }
-      if (!numStr) throw new Error('Expected number');
-      return parseFloat(numStr);
-    };
-    
-    const parseFactor = (): number => {
-      if (sanitized[pos] === '(') {
-        pos++; // skip '('
-        const result = parseExpression();
-        if (sanitized[pos] !== ')') throw new Error('Missing )');
-        pos++; // skip ')'
-        return result;
-      }
-      if (sanitized[pos] === '-') {
-        pos++;
-        return -parseFactor();
-      }
-      return parseNumber();
-    };
-    
-    const parseTerm = (): number => {
-      let result = parseFactor();
-      while (pos < sanitized.length && (sanitized[pos] === '*' || sanitized[pos] === '/')) {
-        const op = sanitized[pos++];
-        const factor = parseFactor();
-        if (op === '*') result *= factor;
-        else if (factor !== 0) result /= factor;
-        else throw new Error('Division by zero');
-      }
-      return result;
-    };
-    
-    const parseExpression = (): number => {
-      let result = parseTerm();
-      while (pos < sanitized.length && (sanitized[pos] === '+' || sanitized[pos] === '-')) {
-        const op = sanitized[pos++];
-        if (op === '+') result += parseTerm();
-        else result -= parseTerm();
-      }
-      return result;
-    };
-    
-    const result = parseExpression();
-    if (pos !== sanitized.length) throw new Error('Unexpected character');
-    return result;
-  }, []);
-
   const evaluateFormula = useCallback((formula: string): string => {
     try {
       // Simple formula evaluation (SUM, AVG, COUNT)
@@ -187,7 +125,7 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
         return cells[getCellId(ref.row, ref.col)]?.value || '';
       }
 
-      // Basic arithmetic - using safe evaluator instead of eval()
+      // Basic arithmetic
       if (formula.startsWith('=')) {
         let expr = formula.substring(1);
         // Replace cell references with values
@@ -196,9 +134,10 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
           if (!ref) return '0';
           return cells[getCellId(ref.row, ref.col)]?.value || '0';
         });
-        // Evaluate safely (no eval!)
+        // Evaluate (simple cases only)
         try {
-          return safeEvaluateMath(expr).toString();
+          // eslint-disable-next-line no-eval
+          return eval(expr).toString();
         } catch {
           return '#ERROR!';
         }
@@ -208,7 +147,7 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
     } catch {
       return '#ERROR!';
     }
-  }, [cells, safeEvaluateMath]);
+  }, [cells]);
 
   const getCellDisplayValue = useCallback((cellId: string): string => {
     const cell = cells[cellId];
