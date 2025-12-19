@@ -31,7 +31,7 @@ export const SmartElementTypes = [
   'finance_card',
   'csr_card',
   'crm_card',
-  'root_connector',
+  'interactive_document',
 ] as const;
 
 export const SmartElementTypeSchema = z.enum(SmartElementTypes);
@@ -652,65 +652,26 @@ export type CrmMetrics = z.infer<typeof CrmMetricsSchema>;
 export type CrmCardData = z.infer<typeof CrmCardDataSchema>;
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SMART CONNECTORS - عناصر الربط الذكية
+// INTERACTIVE DOCUMENT - المستند التفاعلي
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 14. Root Connector - الجذر
+// 14. Interactive Document - المستند التفاعلي
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const ConnectorAnchorSchema = z.enum([
-  'top', 'right', 'bottom', 'left', 'center',
-  'top-left', 'top-right', 'bottom-left', 'bottom-right'
-]);
-
-export const ConnectorEndpointSchema = z.object({
-  elementId: z.string(),
-  anchor: ConnectorAnchorSchema.default('center'),
-  offset: z.object({ 
-    x: z.number(), 
-    y: z.number() 
-  }).default({ x: 0, y: 0 }),
-  // For partial element selection (e.g., specific part of a frame)
-  partialSelection: z.object({
-    type: z.enum(['text', 'region', 'element']),
-    data: z.unknown(),
-  }).optional(),
+export const InteractiveDocumentDataSchema = z.object({
+  content: z.string().default(''),
+  format: z.enum(['plain', 'markdown']).default('plain'),
+  isReadOnly: z.boolean().default(false),
+  status: z.enum(['draft', 'review', 'completed']).default('draft'),
+  showWordCount: z.boolean().default(true),
+  wordCount: z.number().default(0),
+  charCount: z.number().default(0),
+  lastEditedAt: z.string().default(() => new Date().toISOString()),
+  createdAt: z.string().default(() => new Date().toISOString()),
 });
 
-export const AISuggestionSchema = z.object({
-  id: z.string(),
-  type: z.string(), // smart element type to create
-  label: z.string(),
-  description: z.string().optional(),
-  confidence: z.number().min(0).max(1).default(0.8),
-  previewData: z.unknown().optional(), // preview of what will be created
-});
-
-export const RootConnectorDataSchema = z.object({
-  startPoint: ConnectorEndpointSchema,
-  endPoint: ConnectorEndpointSchema,
-  title: z.string().optional(),
-  description: z.string().optional(),
-  style: z.enum(['solid', 'dashed', 'dotted']).default('solid'),
-  color: z.string().default('#0B0F12'),
-  strokeWidth: z.number().min(1).max(10).default(2),
-  animated: z.boolean().default(false),
-  bidirectional: z.boolean().default(false),
-  // AI suggestions for conversion
-  aiSuggestions: z.array(AISuggestionSchema).default([]),
-  showAIPanel: z.boolean().default(false),
-  // Connection type for semantic meaning
-  connectionType: z.enum([
-    'relates-to', 'leads-to', 'depends-on', 'contains',
-    'derives-from', 'contradicts', 'supports', 'custom'
-  ]).default('relates-to'),
-});
-
-export type ConnectorAnchor = z.infer<typeof ConnectorAnchorSchema>;
-export type ConnectorEndpoint = z.infer<typeof ConnectorEndpointSchema>;
-export type AISuggestion = z.infer<typeof AISuggestionSchema>;
-export type RootConnectorData = z.infer<typeof RootConnectorDataSchema>;
+export type InteractiveDocumentData = z.infer<typeof InteractiveDocumentDataSchema>;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // UNIFIED TYPE MAP & HELPERS
@@ -736,7 +697,7 @@ export const SmartElementDataSchemaMap = {
   finance_card: FinanceCardDataSchema,
   csr_card: CsrCardDataSchema,
   crm_card: CrmCardDataSchema,
-  root_connector: RootConnectorDataSchema,
+  interactive_document: InteractiveDocumentDataSchema,
 } as const;
 
 /**
@@ -762,7 +723,7 @@ export type AnySmartElementData =
   | FinanceCardData
   | CsrCardData
   | CrmCardData
-  | RootConnectorData;
+  | InteractiveDocumentData;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Validation Helpers
@@ -839,7 +800,7 @@ export const SmartElementLabels: Record<SmartElementType, string> = {
   finance_card: 'بطاقة مالية',
   csr_card: 'بطاقة CSR',
   crm_card: 'بطاقة CRM',
-  root_connector: 'رابط ذكي',
+  interactive_document: 'مستند تفاعلي',
 };
 
 /**
@@ -860,5 +821,5 @@ export const SmartElementCategories: Record<SmartElementType, 'collaboration' | 
   finance_card: 'cards',
   csr_card: 'cards',
   crm_card: 'cards',
-  root_connector: 'connectors',
+  interactive_document: 'analysis',
 };

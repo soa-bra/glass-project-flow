@@ -16,11 +16,11 @@ import { ProjectCard } from './ProjectCard';
 import { FinanceCard } from './FinanceCard';
 import { CsrCard } from './CsrCard';
 import { CrmCard } from './CrmCard';
-import { RootConnectorDisplay } from './RootConnectorDisplay';
+import { InteractiveDocument } from './InteractiveDocument';
 import { 
   Brain, Kanban, Vote, Lightbulb, Calendar, Grid3X3, 
   BarChart3, Table, GitBranch, FolderKanban, Wallet,
-  HeartHandshake, Users, Link2, Share2 
+  HeartHandshake, Users, FileText, Share2 
 } from 'lucide-react';
 
 interface SmartElementRendererProps {
@@ -43,7 +43,7 @@ const ICONS: Record<string, React.ElementType> = {
   finance_card: Wallet,
   csr_card: HeartHandshake,
   crm_card: Users,
-  root_connector: Link2,
+  interactive_document: FileText,
 };
 
 export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({ 
@@ -199,10 +199,10 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
     );
   }
 
-  // Root Connector (SVG-based)
-  if (smartType === 'root_connector') {
+  // Interactive Document
+  if (smartType === 'interactive_document') {
     return (
-      <RootConnectorDisplay 
+      <InteractiveDocument 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })}
       />
