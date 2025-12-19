@@ -31,7 +31,6 @@ import { AIAssistantPopover } from "./AIAssistantPopover";
 import { SmartCommandBar, useSmartCommandBar } from "./SmartElements/SmartCommandBar";
 import ContextSmartMenu from "./SmartElements/ContextSmartMenu";
 import { CommandBar, SuggestionsPanel, WorkflowGenerator } from "./AI";
-import { FramesNavigator } from "./Frames";
 import type { GeneratedWorkflow } from '@/core/ai/smartWorkflow';
 interface PlanningCanvasProps {
   board: CanvasBoard;
@@ -58,7 +57,6 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const [isCommandBarOpen, setIsCommandBarOpen] = useState(false);
   const [isWorkflowGeneratorOpen, setIsWorkflowGeneratorOpen] = useState(false);
   const [isSuggestionsPanelCollapsed, setIsSuggestionsPanelCollapsed] = useState(false);
-  const [isFramesNavigatorOpen, setIsFramesNavigatorOpen] = useState(false);
 
   // Panel collapse state
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
@@ -370,19 +368,6 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         onGenerate={handleWorkflowGenerated}
       />
 
-      {/* Frames Navigator - shown in right panel */}
-      {isFramesNavigatorOpen && (
-        <div className="absolute right-4 top-20 w-[280px] z-30 bg-white rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.06)] border border-[hsl(var(--border))] overflow-hidden">
-          <FramesNavigator
-            onFrameSelect={(frameId) => {
-              // Jump to frame
-            }}
-            onStartPresentation={(frameId) => {
-              // Start presentation from frame
-            }}
-          />
-        </div>
-      )}
 
       {/* Suggestions Panel */}
       <SuggestionsPanel
