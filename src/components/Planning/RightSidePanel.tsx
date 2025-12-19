@@ -48,7 +48,7 @@ const RightSidePanel: React.FC<RightSidePanelProps> = ({ activeTool, onClose }) 
   const panelTitle = panelTitles[activeTool];
 
   return (
-    <div className="w-[320px] h-[calc(100%-32px)] my-4 ml-4 rounded-3xl bg-background/70 backdrop-blur-2xl border border-[hsl(var(--border))] shadow-lg flex flex-col overflow-hidden">
+    <div className="w-[320px] h-[calc(100%-32px)] my-4 ml-4 rounded-[18px] bg-white/65 backdrop-blur-[18px] border border-white/60 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_12px_28px_rgba(0,0,0,0.10)] flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-[hsl(var(--border))]">
         <h3 className="text-[16px] font-semibold text-[hsl(var(--ink))]">
