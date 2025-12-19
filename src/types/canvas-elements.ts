@@ -141,6 +141,37 @@ export interface CanvasFileElement extends CanvasElementBase {
   thumbnailUrl?: string;
 }
 
+// Document Status Type
+export type DocumentStatus = 'draft' | 'pending' | 'review' | 'approved' | 'rejected';
+
+// Document Data for Live Documents
+export interface DocumentData {
+  id: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  url?: string;
+  thumbnailUrl?: string;
+  status: DocumentStatus;
+  version?: number;
+  description?: string;
+  tags?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  rejectedBy?: string;
+  rejectedAt?: string;
+  workflowNodeId?: string;
+}
+
+// Canvas Document Element
+export interface CanvasDocumentElement extends CanvasElementBase {
+  type: 'document';
+  documentData: DocumentData;
+}
+
 export type CanvasElementType = 
   | CanvasTextElement 
   | CanvasShapeElement 
@@ -149,6 +180,7 @@ export type CanvasElementType =
   | CanvasSmartElement
   | CanvasFrameElement
   | CanvasFileElement
+  | CanvasDocumentElement
   | CanvasWorkflowNodeElement
   | CanvasWorkflowEdgeElement
   | CanvasElementBase;
