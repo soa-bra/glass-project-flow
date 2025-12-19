@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { ToggleGroup } from '@ark-ui/react/toggle-group';
 import { 
-  Paintbrush, 
-  Type, 
-  Move, 
+  RotateCcw, 
   RotateCw, 
   ArrowUp, 
   ArrowDown,
   Sparkles,
   Lock,
-  Unlock
+  Unlock,
+  Palette,
+  Square,
+  Trash2,
+  Copy,
+  ClipboardPaste
 } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 
@@ -21,6 +25,7 @@ const FloatingEditBar: React.FC = () => {
   
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isAIOpen, setIsAIOpen] = useState(false);
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   
   // Get selected elements (memoized to prevent infinite re-renders)
   const selectedElements = useMemo(
@@ -35,17 +40,18 @@ const FloatingEditBar: React.FC = () => {
     if (!hasSelection) return;
     
     // Find bounds of selected elements
-    let minX = Infinity, minY = Infinity;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity;
     selectedElements.forEach(el => {
       if (el.position.x < minX) minX = el.position.x;
       if (el.position.y < minY) minY = el.position.y;
+      if (el.position.x + (el.size?.width || 200) > maxX) maxX = el.position.x + (el.size?.width || 200);
     });
     
     setPosition({ 
-      x: minX, 
-      y: minY - 80 // 80px above
+      x: (minX + maxX) / 2, 
+      y: minY - 60
     });
-  }, [selectedElementIds, hasSelection]);
+  }, [selectedElementIds, hasSelection, selectedElements]);
   
   if (!hasSelection) return null;
   
@@ -58,17 +64,7 @@ const FloatingEditBar: React.FC = () => {
         }
       });
     });
-  };
-  
-  const handleSizeChange = (dimension: 'width' | 'height', value: number) => {
-    selectedElementIds.forEach(id => {
-      updateElement(id, {
-        size: {
-          ...elements.find(el => el.id === id)?.size || { width: 200, height: 100 },
-          [dimension]: value
-        }
-      });
-    });
+    setIsColorPickerOpen(false);
   };
   
   const handleRotate = (angle: number) => {
@@ -90,185 +86,198 @@ const FloatingEditBar: React.FC = () => {
   
   const quickColors = [
     '#FFFFFF', '#000000', '#3DBE8B', '#F6C445', '#E5564D', 
-    '#3DA8F5', '#D9D2FE', '#F1B5B9'
+    '#3DA8F5', '#9B87F5', '#F1B5B9'
   ];
+
+  const toggleItemClass = `
+    flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200
+    text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))] hover:bg-[hsl(var(--panel))]
+    data-[state=on]:bg-[hsl(var(--ink))] data-[state=on]:text-white
+    focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ink))] focus-visible:ring-offset-1
+  `;
+
+  const separatorClass = "w-px h-6 bg-[hsl(var(--border))] mx-1";
   
   return (
     <div 
-      className="fixed z-50 bg-white rounded-[18px] shadow-[0_1px_1px_rgba(0,0,0,0.04),0_12px_28px_rgba(0,0,0,0.10)] border border-sb-border p-3"
+      className="fixed z-50 pointer-events-auto"
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
         transform: 'translateX(-50%)'
       }}
     >
-      <div className="flex items-center gap-4">
-        {/* Colors Section */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1">
-            <label className="text-[11px] text-sb-ink-40">تعبئة</label>
-            <input
-              type="color"
-              value={firstElement?.style?.backgroundColor || '#FFFFFF'}
-              onChange={(e) => handleColorChange('fill', e.target.value)}
-              className="w-8 h-8 rounded cursor-pointer"
-              title="لون التعبئة"
-            />
-          </div>
-          
-          <div className="flex items-center gap-1">
-            <label className="text-[11px] text-sb-ink-40">حدود</label>
-            <input
-              type="color"
-              value={firstElement?.style?.borderColor || '#000000'}
-              onChange={(e) => handleColorChange('stroke', e.target.value)}
-              className="w-8 h-8 rounded cursor-pointer"
-              title="لون الحدود"
-            />
-          </div>
-          
-          {/* Quick Palette */}
-          <div className="flex gap-1">
-            {quickColors.map(color => (
-              <button
-                key={color}
-                onClick={() => handleColorChange('fill', color)}
-                className="w-6 h-6 rounded border border-sb-border hover:scale-110 transition-transform"
-                style={{ backgroundColor: color }}
-                title={color}
-              />
-            ))}
-          </div>
-        </div>
-        
-        <div className="h-8 w-px bg-sb-border" />
-        
-        {/* Size Section */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1">
-            <label className="text-[11px] text-sb-ink-40">عرض</label>
-            <input
-              type="number"
-              value={Math.round(firstElement?.size?.width || 200)}
-              onChange={(e) => handleSizeChange('width', parseFloat(e.target.value))}
-              className="w-16 h-7 px-2 text-[12px] border border-sb-border rounded"
-            />
-          </div>
-          
-          <div className="flex items-center gap-1">
-            <label className="text-[11px] text-sb-ink-40">ارتفاع</label>
-            <input
-              type="number"
-              value={Math.round(firstElement?.size?.height || 100)}
-              onChange={(e) => handleSizeChange('height', parseFloat(e.target.value))}
-              className="w-16 h-7 px-2 text-[12px] border border-sb-border rounded"
-            />
-          </div>
-        </div>
-        
-        <div className="h-8 w-px bg-sb-border" />
-        
-        {/* Position & Rotation */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => handleRotate(-15)}
-            className="p-2 hover:bg-sb-panel-bg rounded-lg transition-colors"
-            title="تدوير عكس عقارب الساعة"
-          >
-            <RotateCw size={16} className="text-sb-ink transform scale-x-[-1]" />
-          </button>
-          
-          <span className="text-[12px] text-sb-ink-40 min-w-[40px] text-center">
-            {Math.round(typeof firstElement?.rotation === 'number' ? firstElement.rotation : 0)}°
-          </span>
-          
-          <button
-            onClick={() => handleRotate(15)}
-            className="p-2 hover:bg-sb-panel-bg rounded-lg transition-colors"
-            title="تدوير مع عقارب الساعة"
-          >
-            <RotateCw size={16} className="text-sb-ink" />
-          </button>
-        </div>
-        
-        <div className="h-8 w-px bg-sb-border" />
-        
-        {/* Layer Controls */}
+      <div className="relative bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5">
         <div className="flex items-center gap-1">
-          <button
-            className="p-2 hover:bg-sb-panel-bg rounded-lg transition-colors"
-            title="رفع للأمام"
-          >
-            <ArrowUp size={16} className="text-sb-ink" />
-          </button>
           
-          <button
-            className="p-2 hover:bg-sb-panel-bg rounded-lg transition-colors"
-            title="خفض للخلف"
-          >
-            <ArrowDown size={16} className="text-sb-ink" />
-          </button>
-        </div>
-        
-        <div className="h-8 w-px bg-sb-border" />
-        
-        {/* Lock */}
-        <button
-          onClick={toggleLock}
-          className={`p-2 rounded-lg transition-colors ${
-            firstElement?.locked 
-              ? 'bg-sb-panel-bg text-sb-ink' 
-              : 'hover:bg-sb-panel-bg text-sb-ink-40'
-          }`}
-          title={firstElement?.locked ? 'إلغاء القفل' : 'قفل'}
-        >
-          {firstElement?.locked ? <Lock size={16} /> : <Unlock size={16} />}
-        </button>
-        
-        <div className="h-8 w-px bg-sb-border" />
-        
-        {/* Element AI */}
-        <div className="relative">
-          <button
-            onClick={() => setIsAIOpen(!isAIOpen)}
-            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white rounded-lg hover:opacity-90 transition-opacity"
-            title="ذكاء صناعي للعنصر"
-          >
-            <Sparkles size={14} />
-            <span className="text-[12px] font-medium">AI</span>
-          </button>
-          
-          {isAIOpen && (
-            <>
+          {/* Colors Section */}
+          <div className="relative">
+            <button
+              onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
+              className={`${toggleItemClass} relative`}
+              title="الألوان"
+            >
               <div 
-                className="fixed inset-0 z-40" 
-                onClick={() => setIsAIOpen(false)}
+                className="w-4 h-4 rounded border border-[hsl(var(--border))]"
+                style={{ backgroundColor: firstElement?.style?.backgroundColor || '#FFFFFF' }}
               />
-              <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border p-3 z-50">
-                <h4 className="text-[13px] font-semibold text-sb-ink mb-3">
-                  اقتراحات ذكية
-                </h4>
-                
-                <div className="space-y-2">
-                  <button className="w-full px-3 py-2 text-right text-[12px] hover:bg-sb-panel-bg rounded-lg transition-colors">
-                    💡 تحسين التصميم
-                  </button>
-                  <button className="w-full px-3 py-2 text-right text-[12px] hover:bg-sb-panel-bg rounded-lg transition-colors">
-                    🎨 توليد بدائل لونية
-                  </button>
-                  <button className="w-full px-3 py-2 text-right text-[12px] hover:bg-sb-panel-bg rounded-lg transition-colors">
-                    📝 إضافة محتوى مقترح
-                  </button>
-                  <button className="w-full px-3 py-2 text-right text-[12px] hover:bg-sb-panel-bg rounded-lg transition-colors">
-                    🔍 تحليل التباين اللوني
-                  </button>
-                  <button className="w-full px-3 py-2 text-right text-[12px] hover:bg-sb-panel-bg rounded-lg transition-colors">
-                    ♿ اقتراحات إمكانية الوصول
-                  </button>
+            </button>
+            
+            {isColorPickerOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setIsColorPickerOpen(false)}
+                />
+                <div className="absolute top-full right-0 mt-2 p-3 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] z-50">
+                  <div className="grid grid-cols-4 gap-2">
+                    {quickColors.map(color => (
+                      <button
+                        key={color}
+                        onClick={() => handleColorChange('fill', color)}
+                        className="w-8 h-8 rounded-lg border border-[hsl(var(--border))] hover:scale-110 transition-transform shadow-sm"
+                        style={{ backgroundColor: color }}
+                        title={color}
+                      />
+                    ))}
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-[hsl(var(--border))]">
+                    <input
+                      type="color"
+                      value={firstElement?.style?.backgroundColor || '#FFFFFF'}
+                      onChange={(e) => handleColorChange('fill', e.target.value)}
+                      className="w-full h-8 rounded-lg cursor-pointer"
+                    />
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
+
+          <div className={separatorClass} />
+          
+          {/* Rotation Controls */}
+          <ToggleGroup.Root className="flex items-center gap-0.5">
+            <ToggleGroup.Item
+              value="rotate-ccw"
+              className={toggleItemClass}
+              onClick={() => handleRotate(-15)}
+              title="تدوير لليسار"
+            >
+              <RotateCcw size={16} />
+            </ToggleGroup.Item>
+            
+            <span className="text-[11px] text-[hsl(var(--ink-60))] min-w-[32px] text-center font-medium">
+              {Math.round(typeof firstElement?.rotation === 'number' ? firstElement.rotation : 0)}°
+            </span>
+            
+            <ToggleGroup.Item
+              value="rotate-cw"
+              className={toggleItemClass}
+              onClick={() => handleRotate(15)}
+              title="تدوير لليمين"
+            >
+              <RotateCw size={16} />
+            </ToggleGroup.Item>
+          </ToggleGroup.Root>
+
+          <div className={separatorClass} />
+          
+          {/* Layer Controls */}
+          <ToggleGroup.Root className="flex items-center gap-0.5">
+            <ToggleGroup.Item
+              value="bring-forward"
+              className={toggleItemClass}
+              title="رفع للأمام"
+            >
+              <ArrowUp size={16} />
+            </ToggleGroup.Item>
+            
+            <ToggleGroup.Item
+              value="send-backward"
+              className={toggleItemClass}
+              title="خفض للخلف"
+            >
+              <ArrowDown size={16} />
+            </ToggleGroup.Item>
+          </ToggleGroup.Root>
+
+          <div className={separatorClass} />
+
+          {/* Quick Actions */}
+          <ToggleGroup.Root className="flex items-center gap-0.5">
+            <ToggleGroup.Item
+              value="copy"
+              className={toggleItemClass}
+              title="نسخ"
+            >
+              <Copy size={16} />
+            </ToggleGroup.Item>
+            
+            <ToggleGroup.Item
+              value="delete"
+              className={`${toggleItemClass} hover:text-[hsl(var(--accent-red))] hover:bg-red-50`}
+              title="حذف"
+            >
+              <Trash2 size={16} />
+            </ToggleGroup.Item>
+          </ToggleGroup.Root>
+
+          <div className={separatorClass} />
+
+          {/* Lock Toggle */}
+          <button
+            onClick={toggleLock}
+            className={`${toggleItemClass} ${
+              firstElement?.locked 
+                ? 'bg-[hsl(var(--ink))] text-white' 
+                : ''
+            }`}
+            title={firstElement?.locked ? 'إلغاء القفل' : 'قفل'}
+          >
+            {firstElement?.locked ? <Lock size={16} /> : <Unlock size={16} />}
+          </button>
+
+          <div className={separatorClass} />
+          
+          {/* AI Button */}
+          <div className="relative">
+            <button
+              onClick={() => setIsAIOpen(!isAIOpen)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-br from-[hsl(var(--accent-green))] to-[hsl(var(--accent-blue))] text-white rounded-lg hover:opacity-90 transition-all shadow-sm"
+              title="ذكاء صناعي"
+            >
+              <Sparkles size={14} className="animate-pulse" />
+              <span className="text-[11px] font-semibold">AI</span>
+            </button>
+            
+            {isAIOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setIsAIOpen(false)}
+                />
+                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] p-2 z-50">
+                  <div className="space-y-1">
+                    {[
+                      { icon: '💡', label: 'تحسين التصميم' },
+                      { icon: '🎨', label: 'بدائل لونية' },
+                      { icon: '📝', label: 'محتوى مقترح' },
+                      { icon: '🔍', label: 'تحليل التباين' },
+                    ].map((item) => (
+                      <button 
+                        key={item.label}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-right text-[12px] text-[hsl(var(--ink-80))] hover:bg-[hsl(var(--panel))] rounded-lg transition-colors"
+                      >
+                        <span>{item.icon}</span>
+                        <span>{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
