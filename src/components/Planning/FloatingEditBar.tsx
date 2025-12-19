@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ArrowUp, 
   ArrowDown,
+  ChevronsUp,
+  ChevronsDown,
   Sparkles,
   Lock,
   Unlock,
@@ -17,11 +19,32 @@ import {
   Scissors,
   ClipboardPaste,
   PipetteIcon,
-  Square
+  Square,
+  ChevronDown,
+  Loader2,
+  X,
+  LayoutGrid,
+  Network,
+  Calendar,
+  Table2,
+  Zap
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { useSmartElementsStore } from '@/stores/smartElementsStore';
+import { useSmartElementAI } from '@/hooks/useSmartElementAI';
 import { ColorPicker, parseColor } from "@ark-ui/react/color-picker";
 import { toast } from 'sonner';
+import type { SmartElementType } from '@/types/smart-elements';
+
+// Smart element transform options
+const TRANSFORM_OPTIONS = [
+  { type: 'kanban' as SmartElementType, label: 'لوحة كانبان', icon: LayoutGrid, description: 'تحويل إلى أعمدة ومهام' },
+  { type: 'mind_map' as SmartElementType, label: 'خريطة ذهنية', icon: Network, description: 'تنظيم كخريطة مترابطة' },
+  { type: 'timeline' as SmartElementType, label: 'خط زمني', icon: Calendar, description: 'ترتيب على محور زمني' },
+  { type: 'decisions_matrix' as SmartElementType, label: 'مصفوفة قرارات', icon: Table2, description: 'تقييم ومقارنة الخيارات' },
+  { type: 'brainstorming' as SmartElementType, label: 'عصف ذهني', icon: Zap, description: 'تجميع كأفكار للنقاش' },
+];
 
 // Utility colors
 const UTILITY_COLORS = [
@@ -79,14 +102,20 @@ const FloatingEditBar: React.FC = () => {
     ungroupElements,
     alignElements,
     lockElements,
-    unlockElements
+    unlockElements,
+    viewport
   } = useCanvasStore();
+  
+  const { addSmartElement } = useSmartElementsStore();
+  const { analyzeSelection, transformElements, isLoading: isAILoading } = useSmartElementAI();
   
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const [colorMode, setColorMode] = useState<'fill' | 'stroke'>('fill');
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [recentColors, setRecentColors] = useState<string[]>([]);
+  const [isAIMenuOpen, setIsAIMenuOpen] = useState(false);
+  const [isTransforming, setIsTransforming] = useState(false);
   
   useEffect(() => {
     setRecentColors(getRecentColors());
@@ -114,21 +143,32 @@ const FloatingEditBar: React.FC = () => {
     return selectedElements.some(el => el.locked === true);
   }, [selectedElements]);
   
+  // Calculate position centered on selection
   useEffect(() => {
     if (!hasSelection) return;
     
-    let minX = Infinity, minY = Infinity, maxX = -Infinity;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     selectedElements.forEach(el => {
-      if (el.position.x < minX) minX = el.position.x;
-      if (el.position.y < minY) minY = el.position.y;
-      if (el.position.x + (el.size?.width || 200) > maxX) maxX = el.position.x + (el.size?.width || 200);
+      const x = el.position.x;
+      const y = el.position.y;
+      const width = el.size?.width || 200;
+      const height = el.size?.height || 100;
+      
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x + width > maxX) maxX = x + width;
+      if (y + height > maxY) maxY = y + height;
     });
     
+    // Convert to screen coordinates and center
+    const centerX = (minX + maxX) / 2 * viewport.zoom + viewport.pan.x;
+    const topY = minY * viewport.zoom + viewport.pan.y - 60;
+    
     setPosition({ 
-      x: (minX + maxX) / 2, 
-      y: minY - 60
+      x: centerX, 
+      y: Math.max(60, topY)
     });
-  }, [selectedElementIds, hasSelection, selectedElements]);
+  }, [selectedElementIds, hasSelection, selectedElements, viewport]);
   
   if (!hasSelection) return null;
 
@@ -256,9 +296,10 @@ const FloatingEditBar: React.FC = () => {
   const handleBringForward = () => {
     selectedElementIds.forEach(id => {
       const current = elements.find(el => el.id === id);
-      const maxZIndex = Math.max(...elements.map(el => el.zIndex || 0));
       updateElement(id, { zIndex: (current?.zIndex || 0) + 1 });
     });
+    setIsMoreMenuOpen(false);
+    toast.success('تم رفع العنصر');
   };
 
   const handleSendBackward = () => {
@@ -266,6 +307,25 @@ const FloatingEditBar: React.FC = () => {
       const current = elements.find(el => el.id === id);
       updateElement(id, { zIndex: Math.max(0, (current?.zIndex || 0) - 1) });
     });
+    setIsMoreMenuOpen(false);
+    toast.success('تم خفض العنصر');
+  };
+
+  const handleBringToFront = () => {
+    const maxZIndex = Math.max(...elements.map(el => el.zIndex || 0));
+    selectedElementIds.forEach(id => {
+      updateElement(id, { zIndex: maxZIndex + 1 });
+    });
+    setIsMoreMenuOpen(false);
+    toast.success('تم نقل العنصر للأمام');
+  };
+
+  const handleSendToBack = () => {
+    selectedElementIds.forEach(id => {
+      updateElement(id, { zIndex: 0 });
+    });
+    setIsMoreMenuOpen(false);
+    toast.success('تم نقل العنصر للخلف');
   };
 
   // Alignment actions
@@ -279,10 +339,61 @@ const FloatingEditBar: React.FC = () => {
     toast.success('تمت المحاذاة الأفقية');
   };
 
+  // AI Smart Element functions
+  const getSelectionContent = () => {
+    return selectedElements.map(el => ({
+      type: el.type,
+      content: el.content || '',
+      smartType: el.smartType,
+      position: el.position,
+    }));
+  };
+
+  const handleQuickGenerate = async () => {
+    const content = getSelectionContent();
+    const contentText = selectedElements.map(el => el.content || '').filter(Boolean).join('\n');
+
+    const result = await analyzeSelection(content, `حلل هذه العناصر وأنشئ عنصر ذكي مناسب: ${contentText}`);
+
+    if (result?.suggestions && result.suggestions.length > 0) {
+      const suggestion = result.suggestions[0];
+      if (suggestion.targetType) {
+        await handleTransform(suggestion.targetType);
+      }
+    }
+  };
+
+  const handleTransform = async (targetType: SmartElementType) => {
+    setIsTransforming(true);
+    
+    try {
+      const content = getSelectionContent();
+      const contentText = selectedElements.map(el => el.content || '').filter(Boolean).join('\n');
+
+      const result = await transformElements(content, targetType, `حوّل هذه العناصر إلى ${targetType}: ${contentText}`);
+
+      if (result?.elements && result.elements.length > 0) {
+        const centerX = selectedElements.reduce((sum, el) => sum + (el.position?.x || 0), 0) / selectedElements.length;
+        const centerY = selectedElements.reduce((sum, el) => sum + (el.position?.y || 0), 0) / selectedElements.length;
+
+        result.elements.forEach((element, index) => {
+          addSmartElement(element.type as SmartElementType, { x: centerX + index * 30, y: centerY + index * 30 }, element.data);
+        });
+
+        toast.success(`تم تحويل ${selectedElements.length} عنصر إلى ${TRANSFORM_OPTIONS.find(o => o.type === targetType)?.label}`);
+        setIsAIMenuOpen(false);
+      }
+    } catch (error) {
+      toast.error('حدث خطأ أثناء التحويل');
+    } finally {
+      setIsTransforming(false);
+    }
+  };
+
   const btnClass = `
-    flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200
+    flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200
     text-black hover:bg-[hsl(var(--panel))]
-    focus:outline-none
+    focus:outline-none active:bg-transparent
   `;
 
   const separatorClass = "w-px h-6 bg-[hsl(var(--border))]";
@@ -312,7 +423,7 @@ const FloatingEditBar: React.FC = () => {
             {isMoreMenuOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setIsMoreMenuOpen(false)} />
-                <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] p-1.5 z-50">
+                <div className="absolute top-full right-0 mt-2 w-44 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] p-1.5 z-50">
                   <button 
                     onClick={handleCopy}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
@@ -334,6 +445,38 @@ const FloatingEditBar: React.FC = () => {
                   >
                     <ClipboardPaste size={14} />
                     <span>لصق</span>
+                  </button>
+                  
+                  <div className="w-full h-px bg-[hsl(var(--border))] my-1.5" />
+                  
+                  {/* Layer controls in menu */}
+                  <button 
+                    onClick={handleBringToFront}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
+                    <ChevronsUp size={14} />
+                    <span>نقل للأمام</span>
+                  </button>
+                  <button 
+                    onClick={handleBringForward}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
+                    <ArrowUp size={14} />
+                    <span>رفع طبقة</span>
+                  </button>
+                  <button 
+                    onClick={handleSendBackward}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
+                    <ArrowDown size={14} />
+                    <span>خفض طبقة</span>
+                  </button>
+                  <button 
+                    onClick={handleSendToBack}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
+                    <ChevronsDown size={14} />
+                    <span>نقل للخلف</span>
                   </button>
                 </div>
               </>
@@ -542,26 +685,6 @@ const FloatingEditBar: React.FC = () => {
           </div>
 
           <div className={separatorClass} />
-          
-          {/* Layer Controls */}
-          <div className="flex items-center gap-0.5">
-            <button 
-              onClick={handleBringForward}
-              className={btnClass} 
-              title="رفع للأمام"
-            >
-              <ArrowUp size={16} />
-            </button>
-            <button 
-              onClick={handleSendBackward}
-              className={btnClass} 
-              title="خفض للخلف"
-            >
-              <ArrowDown size={16} />
-            </button>
-          </div>
-
-          <div className={separatorClass} />
 
           {/* Alignment */}
           <div className="flex items-center gap-0.5">
@@ -623,14 +746,83 @@ const FloatingEditBar: React.FC = () => {
 
           <div className={separatorClass} />
           
-          {/* AI Button (Disabled, matching AIAssistantPopover style) */}
-          <button
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] opacity-50 cursor-not-allowed"
-            title="الذكاء الاصطناعي (قريباً)"
-            disabled
-          >
-            <Sparkles size={16} className="text-white" />
-          </button>
+          {/* AI Button with Smart Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setIsAIMenuOpen(!isAIMenuOpen)}
+              className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 transition-opacity"
+              title="الذكاء الاصطناعي"
+            >
+              {isAILoading || isTransforming ? (
+                <Loader2 size={16} className="text-white animate-spin" />
+              ) : (
+                <Sparkles size={16} className="text-white" />
+              )}
+            </button>
+            
+            <AnimatePresence>
+              {isAIMenuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsAIMenuOpen(false)} />
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] overflow-hidden z-50"
+                  >
+                    {/* Quick Generate Button */}
+                    <div className="p-2 border-b border-[hsl(var(--border))]">
+                      <button
+                        onClick={handleQuickGenerate}
+                        disabled={isAILoading || isTransforming}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-white bg-gradient-to-r from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 rounded-lg disabled:opacity-50"
+                      >
+                        {isAILoading || isTransforming ? (
+                          <Loader2 size={14} className="animate-spin" />
+                        ) : (
+                          <Sparkles size={14} />
+                        )}
+                        <span>إنشاء عنصر ذكي تلقائياً</span>
+                      </button>
+                    </div>
+                    
+                    {/* Transform Options */}
+                    <div className="p-2 space-y-1">
+                      <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1">
+                        تحويل إلى:
+                      </div>
+                      {TRANSFORM_OPTIONS.map((option) => (
+                        <button
+                          key={option.type}
+                          onClick={() => handleTransform(option.type)}
+                          disabled={isAILoading || isTransforming}
+                          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[hsl(var(--panel))] transition-colors text-right disabled:opacity-50"
+                        >
+                          <span className="text-[#3DBE8B]">
+                            <option.icon size={16} />
+                          </span>
+                          <div className="flex-1">
+                            <div className="text-[12px] font-medium text-black">
+                              {option.label}
+                            </div>
+                            <div className="text-[10px] text-[hsl(var(--ink-60))]">
+                              {option.description}
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {/* Selection Info */}
+                    <div className="px-3 py-2 border-t border-[hsl(var(--border))] text-[10px] text-[hsl(var(--ink-60))] text-center">
+                      {selectedElements.length} عنصر محدد
+                    </div>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>
