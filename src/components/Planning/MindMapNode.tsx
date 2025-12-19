@@ -48,18 +48,17 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     )
   );
   
-  // ✅ ResizeObserver لقياس الحجم الفعلي للنود وتحديث element.size
+  // ✅ ResizeObserver لقياس الحجم الفعلي للـ nodeRef (الـ div الخارجي) باستخدام getBoundingClientRect
   useEffect(() => {
-    if (!contentRef.current) return;
+    if (!nodeRef.current) return;
     
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
+    const observer = new ResizeObserver(() => {
+      if (!nodeRef.current) return;
       
-      const { width, height } = entry.contentRect;
-      // أضف padding (px-4 = 16px * 2 = 32, py-2 = 8px * 2 = 16)
-      const actualWidth = Math.max(80, width + 32);
-      const actualHeight = Math.max(40, height + 16);
+      // ✅ استخدام getBoundingClientRect للحصول على الحجم الحقيقي الكامل
+      const rect = nodeRef.current.getBoundingClientRect();
+      const actualWidth = Math.max(80, rect.width);
+      const actualHeight = Math.max(40, rect.height);
       
       // تحديث الحجم في الـ store فقط إذا تغير بشكل ملحوظ
       if (Math.abs(actualWidth - element.size.width) > 2 || 
@@ -70,7 +69,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       }
     });
     
-    observer.observe(contentRef.current);
+    observer.observe(nodeRef.current);
     
     return () => observer.disconnect();
   }, [element.id, element.size.width, element.size.height, updateElement]);
@@ -318,15 +317,14 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   return (
     <div
       ref={nodeRef}
-      className={`absolute select-none transition-shadow ${
+      className={`absolute select-none transition-shadow inline-flex ${
         activeTool === 'selection_tool' ? 'cursor-move' : 'cursor-default'
       } ${isSelected ? 'ring-2 ring-[hsl(var(--accent-green))] ring-offset-2' : ''}`}
       style={{
         left: element.position.x,
         top: element.position.y,
-        // ✅ استخدام الحجم الديناميكي من element.size (يُحدّث بواسطة ResizeObserver)
-        width: element.size.width,
-        height: element.size.height,
+        // ✅ لا نحدد width/height - الـ div يأخذ حجمه من المحتوى تلقائياً
+        // نقاط الربط تُحسب من element.size الذي يُحدَّث ديناميكياً بواسطة ResizeObserver
         zIndex: isSelected ? 100 : 10,
       }}
       onMouseDown={handleMouseDown}
