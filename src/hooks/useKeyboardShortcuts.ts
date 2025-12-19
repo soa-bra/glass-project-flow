@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { useGraphStore } from '@/stores/graphStore';
 import { toast } from 'sonner';
 
 export const useKeyboardShortcuts = () => {
@@ -38,11 +39,13 @@ export const useKeyboardShortcuts = () => {
       // ✅ الفحص الشامل 2: هل المستخدم داخل input/textarea؟
       const isInInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
       
-      // ✅ الفحص الشامل 3: هل typingMode مفعّل في الـ store؟
-      const typingMode = useCanvasStore.getState().typingMode;
+      // ✅ الفحص الشامل 3: هل typingMode مفعّل في أي من الـ stores؟
+      const canvasTypingMode = useCanvasStore.getState().typingMode;
+      const graphInteractionMode = useGraphStore.getState().interactionMode;
+      const isGraphTyping = graphInteractionMode.kind === 'typing';
       
       // إذا المستخدم في وضع الكتابة بأي شكل
-      const isTyping = isInContentEditable || isInInput || typingMode;
+      const isTyping = isInContentEditable || isInInput || canvasTypingMode || isGraphTyping;
       
       if (isTyping) {
         // السماح بالكتابة العادية (أحرف، أرقام، رموز)
