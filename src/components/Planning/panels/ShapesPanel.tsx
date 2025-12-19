@@ -168,7 +168,7 @@ const ShapesPanel: React.FC = () => {
                 onClick={() => handleShapeSelect(shape.type, shape.name)}
                 className={`group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 transition-all ${
                   shapeType === shape.type
-                    ? "border-[hsl(var(--accent-blue))] bg-[hsl(var(--accent-blue))]/5"
+                    ? "border-[hsl(var(--accent-blue))] bg-white"
                     : "border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-white"
                 }`}
               >
