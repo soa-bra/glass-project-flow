@@ -663,12 +663,19 @@ export const InteractiveDocumentDataSchema = z.object({
   content: z.string().default(''),
   format: z.enum(['plain', 'markdown']).default('plain'),
   isReadOnly: z.boolean().default(false),
-  status: z.enum(['draft', 'review', 'completed']).default('draft'),
+  status: z.enum(['draft', 'review', 'approved', 'rejected', 'completed']).default('draft'),
   showWordCount: z.boolean().default(true),
   wordCount: z.number().default(0),
   charCount: z.number().default(0),
   lastEditedAt: z.string().default(() => new Date().toISOString()),
   createdAt: z.string().default(() => new Date().toISOString()),
+  // Workflow integration
+  linkedWorkflowNodeId: z.string().optional(),
+  workflowStatus: z.enum(['pending', 'in_review', 'approved', 'rejected']).optional(),
+  reviewerId: z.string().uuid().optional(),
+  reviewerName: z.string().optional(),
+  reviewedAt: z.string().optional(),
+  reviewComments: z.string().optional(),
 });
 
 export type InteractiveDocumentData = z.infer<typeof InteractiveDocumentDataSchema>;
