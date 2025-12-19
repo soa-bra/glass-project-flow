@@ -635,7 +635,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       {/* Canvas Container - الطبقة المتحركة للعناصر فقط */}
       <div ref={canvasRef} className="absolute inset-0 origin-top-left" style={{
       transform: `translate(${viewport.pan.x}px, ${viewport.pan.y}px) scale(${viewport.zoom})`,
-      transition: isPanningRef.current ? 'none' : 'transform 0.1s ease-out'
+      transition: 'none'
     }}>
         {/* Pen Strokes Layer */}
         <StrokesLayer />

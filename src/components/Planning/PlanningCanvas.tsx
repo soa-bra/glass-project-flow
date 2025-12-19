@@ -15,7 +15,7 @@ import { FileMenuPopover } from './popovers/FileMenuPopover';
 import { LayersMenuPopover } from './popovers/LayersMenuPopover';
 import { AIAssistantPopover } from './AIAssistantPopover';
 import { SmartCommandBar, useSmartCommandBar } from './SmartElements/SmartCommandBar';
-import ContextSmartMenu from './SmartElements/ContextSmartMenu';
+
 interface PlanningCanvasProps {
   board: CanvasBoard;
 }
@@ -247,8 +247,6 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
         onElementsGenerated={handleElementsGenerated}
       />
       
-      {/* Context Smart Menu - appears when multiple elements selected */}
-      <ContextSmartMenu />
     </div>;
 };
 export default PlanningCanvas;
