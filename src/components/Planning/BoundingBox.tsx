@@ -108,191 +108,216 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     snapEngine.updateTargets(validElements, selectedElementIds);
   }, [elements, selectedElementIds, settings.snapToGrid, settings.gridSize]);
 
-  // ✅ معالجة حركة الماوس باستخدام Event Pipeline و Snap Engine
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      // منع التعارض مع سحب نقاط تحكم السهم
-      if (useCanvasStore.getState().isInternalDrag) return;
+  // ✅ Pointer ID للـ Capture
+  const activePointerIdRef = useRef<number | null>(null);
+  const dragAreaRef = useRef<HTMLDivElement>(null);
+
+  // ✅ معالجة حركة الـ Pointer باستخدام Pointer Capture
+  const handlePointerMove = useCallback((e: PointerEvent) => {
+    // تحقق من أن هذا هو الـ pointer الصحيح
+    if (activePointerIdRef.current !== e.pointerId) return;
+    
+    // منع التعارض مع سحب نقاط تحكم السهم
+    if (useCanvasStore.getState().isInternalDrag) return;
+    
+    if (isDragging) {
+      // تكرار العناصر عند Cmd/Ctrl+Drag
+      if (e.metaKey && e.ctrlKey && !hasDuplicated.current) {
+        selectedElementIds.forEach(id => duplicateElement(id));
+        hasDuplicated.current = true;
+      }
       
-      if (isDragging) {
-        // تكرار العناصر عند Cmd/Ctrl+Drag
-        if (e.metaKey && e.ctrlKey && !hasDuplicated.current) {
-          selectedElementIds.forEach(id => duplicateElement(id));
-          hasDuplicated.current = true;
-        }
+      // ✅ استخدام Event Pipeline لتحويل الدلتا
+      const worldDelta = eventPipeline.screenDeltaToWorld(
+        e.clientX - dragStart.current.x,
+        e.clientY - dragStart.current.y,
+        viewport.zoom
+      );
+      
+      // حساب الموضع الجديد المقترح
+      let newX = elementStartPos.current.x + worldDelta.x;
+      let newY = elementStartPos.current.y + worldDelta.y;
+      
+      // تقييد الحركة بمحور واحد مع Shift
+      if (e.shiftKey) {
+        const absX = Math.abs(worldDelta.x);
+        const absY = Math.abs(worldDelta.y);
         
-        // ✅ استخدام Event Pipeline لتحويل الدلتا
-        const worldDelta = eventPipeline.screenDeltaToWorld(
-          e.clientX - dragStart.current.x,
-          e.clientY - dragStart.current.y,
-          viewport.zoom
+        if (absX > absY) {
+          newY = elementStartPos.current.y;
+        } else {
+          newX = elementStartPos.current.x;
+        }
+      }
+      
+      // ✅ Fix: تحديد الموقع النهائي
+      let finalX = newX;
+      let finalY = newY;
+      
+      // ✅ Sprint 5: تطبيق Snap Engine فقط إذا مفعّل
+      if (settings.snapToGrid) {
+        const snapResult = snapEngine.snapBounds(
+          { x: newX, y: newY, width: bounds.width, height: bounds.height },
+          selectedElementIds
         );
         
-        // حساب الموضع الجديد المقترح
-        let newX = elementStartPos.current.x + worldDelta.x;
-        let newY = elementStartPos.current.y + worldDelta.y;
+        finalX = snapResult.snappedBounds.x;
+        finalY = snapResult.snappedBounds.y;
         
-        // تقييد الحركة بمحور واحد مع Shift
-        if (e.shiftKey) {
-          const absX = Math.abs(worldDelta.x);
-          const absY = Math.abs(worldDelta.y);
-          
-          if (absX > absY) {
-            newY = elementStartPos.current.y;
-          } else {
-            newX = elementStartPos.current.x;
-          }
+        // إرسال خطوط الإرشاد للعرض
+        if (onGuidesChange) {
+          onGuidesChange(snapResult.guides);
+        }
+      } else {
+        // مسح الخطوط إذا السناب معطل
+        if (onGuidesChange) {
+          onGuidesChange([]);
+        }
+      }
+      
+      // ✅ Fix: حساب Delta من آخر موقع مُطبَّق (لا من bounds الحالية)
+      const finalDeltaX = finalX - lastAppliedPos.current.x;
+      const finalDeltaY = finalY - lastAppliedPos.current.y;
+      
+      if (finalDeltaX !== 0 || finalDeltaY !== 0) {
+        moveElements(selectedElementIds, finalDeltaX, finalDeltaY);
+        // ✅ Fix: تحديث آخر موقع مُطبَّق
+        lastAppliedPos.current = { x: finalX, y: finalY };
+      }
+    } else if (isResizing) {
+      // ✅ استخدام Event Pipeline لتحويل الدلتا
+      const resizeDelta = eventPipeline.screenDeltaToWorld(
+        e.clientX - dragStart.current.x,
+        e.clientY - dragStart.current.y,
+        viewport.zoom
+      );
+      
+      const { width, height } = bounds;
+      let scaleX = 1;
+      let scaleY = 1;
+      const origin = getResizeOrigin(isResizing);
+      
+      if (isResizing.includes('e')) scaleX = 1 + resizeDelta.x / width;
+      if (isResizing.includes('w')) scaleX = 1 - resizeDelta.x / width;
+      if (isResizing.includes('s')) scaleY = 1 + resizeDelta.y / height;
+      if (isResizing.includes('n')) scaleY = 1 - resizeDelta.y / height;
+      
+      // منع القيم السالبة أو الصفرية
+      scaleX = Math.max(0.1, scaleX);
+      scaleY = Math.max(0.1, scaleY);
+      
+      if (scaleX !== 1 || scaleY !== 1) {
+        const isFrame = selectedElements.length === 1 && selectedElements[0].type === 'frame';
+        
+        if (isFrame) {
+          const frameId = selectedElements[0].id;
+          const newBounds = {
+            x: origin.x - (origin.x - bounds.x) * scaleX,
+            y: origin.y - (origin.y - bounds.y) * scaleY,
+            width: width * scaleX,
+            height: height * scaleY
+          };
+          resizeFrame(frameId, newBounds);
+        } else {
+          resizeElements(selectedElementIds, scaleX, scaleY, origin);
         }
         
-        // ✅ Fix: تحديد الموقع النهائي
-        let finalX = newX;
-        let finalY = newY;
+        dragStart.current = { x: e.clientX, y: e.clientY };
+      }
+    }
+  }, [isDragging, isResizing, viewport, moveElements, resizeElements, selectedElementIds, bounds, getResizeOrigin, selectedElements, duplicateElement, resizeFrame, onGuidesChange, settings.snapToGrid]);
+  
+  // ✅ معالجة إنهاء السحب
+  const handlePointerUp = useCallback((e: PointerEvent) => {
+    if (activePointerIdRef.current !== e.pointerId) return;
+    
+    // تحرير Pointer Capture
+    if (e.target instanceof Element && e.target.hasPointerCapture(e.pointerId)) {
+      e.target.releasePointerCapture(e.pointerId);
+    }
+    activePointerIdRef.current = null;
+    
+    // التحقق من وجود العناصر داخل إطار عند الإفلات
+    if (isDragging && selectedElements.length > 0) {
+      const frames = elements.filter(el => el.type === 'frame');
+      const { addChildToFrame, removeChildFromFrame } = useCanvasStore.getState();
+      
+      selectedElements.forEach(selectedEl => {
+        let targetFrameId: string | null = null;
         
-        // ✅ Sprint 5: تطبيق Snap Engine فقط إذا مفعّل
-        if (settings.snapToGrid) {
-          const snapResult = snapEngine.snapBounds(
-            { x: newX, y: newY, width: bounds.width, height: bounds.height },
-            selectedElementIds
+        for (const frame of frames) {
+          // ✅ استخدام Canvas Kernel للتحقق من الاحتواء
+          const isInside = canvasKernel.pointInBounds(
+            { 
+              x: selectedEl.position.x + selectedEl.size.width / 2, 
+              y: selectedEl.position.y + selectedEl.size.height / 2 
+            },
+            { 
+              x: frame.position.x, 
+              y: frame.position.y, 
+              width: frame.size.width, 
+              height: frame.size.height 
+            }
           );
           
-          finalX = snapResult.snappedBounds.x;
-          finalY = snapResult.snappedBounds.y;
-          
-          // إرسال خطوط الإرشاد للعرض
-          if (onGuidesChange) {
-            onGuidesChange(snapResult.guides);
-          }
-        } else {
-          // مسح الخطوط إذا السناب معطل
-          if (onGuidesChange) {
-            onGuidesChange([]);
+          if (isInside) {
+            targetFrameId = frame.id;
+            break;
           }
         }
         
-        // ✅ Fix: حساب Delta من آخر موقع مُطبَّق (لا من bounds الحالية)
-        const finalDeltaX = finalX - lastAppliedPos.current.x;
-        const finalDeltaY = finalY - lastAppliedPos.current.y;
-        
-        if (finalDeltaX !== 0 || finalDeltaY !== 0) {
-          moveElements(selectedElementIds, finalDeltaX, finalDeltaY);
-          // ✅ Fix: تحديث آخر موقع مُطبَّق
-          lastAppliedPos.current = { x: finalX, y: finalY };
-        }
-      } else if (isResizing) {
-        // ✅ استخدام Event Pipeline لتحويل الدلتا
-        const resizeDelta = eventPipeline.screenDeltaToWorld(
-          e.clientX - dragStart.current.x,
-          e.clientY - dragStart.current.y,
-          viewport.zoom
-        );
-        
-        const { width, height } = bounds;
-        let scaleX = 1;
-        let scaleY = 1;
-        const origin = getResizeOrigin(isResizing);
-        
-        if (isResizing.includes('e')) scaleX = 1 + resizeDelta.x / width;
-        if (isResizing.includes('w')) scaleX = 1 - resizeDelta.x / width;
-        if (isResizing.includes('s')) scaleY = 1 + resizeDelta.y / height;
-        if (isResizing.includes('n')) scaleY = 1 - resizeDelta.y / height;
-        
-        // منع القيم السالبة أو الصفرية
-        scaleX = Math.max(0.1, scaleX);
-        scaleY = Math.max(0.1, scaleY);
-        
-        if (scaleX !== 1 || scaleY !== 1) {
-          const isFrame = selectedElements.length === 1 && selectedElements[0].type === 'frame';
-          
-          if (isFrame) {
-            const frameId = selectedElements[0].id;
-            const newBounds = {
-              x: origin.x - (origin.x - bounds.x) * scaleX,
-              y: origin.y - (origin.y - bounds.y) * scaleY,
-              width: width * scaleX,
-              height: height * scaleY
-            };
-            resizeFrame(frameId, newBounds);
-          } else {
-            resizeElements(selectedElementIds, scaleX, scaleY, origin);
-          }
-          
-          dragStart.current = { x: e.clientX, y: e.clientY };
-        }
-      }
-    };
-    
-    const handleMouseUp = () => {
-      // التحقق من وجود العناصر داخل إطار عند الإفلات
-      if (isDragging && selectedElements.length > 0) {
-        const frames = elements.filter(el => el.type === 'frame');
-        const { addChildToFrame, removeChildFromFrame } = useCanvasStore.getState();
-        
-        selectedElements.forEach(selectedEl => {
-          let targetFrameId: string | null = null;
-          
-          for (const frame of frames) {
-            // ✅ استخدام Canvas Kernel للتحقق من الاحتواء
-            const isInside = canvasKernel.pointInBounds(
-              { 
-                x: selectedEl.position.x + selectedEl.size.width / 2, 
-                y: selectedEl.position.y + selectedEl.size.height / 2 
-              },
-              { 
-                x: frame.position.x, 
-                y: frame.position.y, 
-                width: frame.size.width, 
-                height: frame.size.height 
-              }
-            );
-            
-            if (isInside) {
-              targetFrameId = frame.id;
-              break;
-            }
-          }
-          
-          // إزالة من الإطارات القديمة
-          frames.forEach(frame => {
-            const children = (frame as any).children || [];
-            if (children.includes(selectedEl.id) && frame.id !== targetFrameId) {
-              removeChildFromFrame(frame.id, selectedEl.id);
-            }
-          });
-          
-          // إضافة للإطار الجديد
-          if (targetFrameId) {
-            const frame = frames.find(f => f.id === targetFrameId);
-            const children = (frame as any)?.children || [];
-            if (!children.includes(selectedEl.id)) {
-              addChildToFrame(targetFrameId, selectedEl.id);
-            }
+        // إزالة من الإطارات القديمة
+        frames.forEach(frame => {
+          const children = (frame as any).children || [];
+          if (children.includes(selectedEl.id) && frame.id !== targetFrameId) {
+            removeChildFromFrame(frame.id, selectedEl.id);
           }
         });
-      }
-      
-      setIsDragging(false);
-      setIsResizing(null);
-      hasDuplicated.current = false;
-      
-      // مسح خطوط الإرشاد
-      if (onGuidesChange) {
-        onGuidesChange([]);
-      }
-    };
+        
+        // إضافة للإطار الجديد
+        if (targetFrameId) {
+          const frame = frames.find(f => f.id === targetFrameId);
+          const children = (frame as any)?.children || [];
+          if (!children.includes(selectedEl.id)) {
+            addChildToFrame(targetFrameId, selectedEl.id);
+          }
+        }
+      });
+    }
     
+    setIsDragging(false);
+    setIsResizing(null);
+    hasDuplicated.current = false;
+    
+    // مسح خطوط الإرشاد
+    if (onGuidesChange) {
+      onGuidesChange([]);
+    }
+  }, [isDragging, selectedElements, elements, onGuidesChange]);
+  
+  // ✅ إضافة مستمعي Pointer Events على الـ window عند السحب
+  useEffect(() => {
     if (isDragging || isResizing) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('pointermove', handlePointerMove);
+      window.addEventListener('pointerup', handlePointerUp);
       return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('pointermove', handlePointerMove);
+        window.removeEventListener('pointerup', handlePointerUp);
       };
     }
-  }, [isDragging, isResizing, viewport, moveElements, resizeElements, selectedElementIds, bounds, getResizeOrigin, selectedElements, elements, duplicateElement, resizeFrame, onGuidesChange, settings.snapToGrid, settings.gridSize]);
+  }, [isDragging, isResizing, handlePointerMove, handlePointerUp]);
   
-  // معالجات الأحداث - استخدام bounds لأنها تمثل الإحداثيات الصحيحة للمجموعة
-  const handleDragStart = useCallback((e: React.MouseEvent) => {
+  // ✅ معالجات الأحداث باستخدام Pointer Events + Capture
+  const handleDragStart = useCallback((e: React.PointerEvent) => {
     e.stopPropagation();
+    e.preventDefault();
+    
+    // ✅ Pointer Capture لضمان استلام جميع الأحداث
+    if (e.currentTarget instanceof Element) {
+      e.currentTarget.setPointerCapture(e.pointerId);
+      activePointerIdRef.current = e.pointerId;
+    }
+    
     setIsDragging(true);
     dragStart.current = { x: e.clientX, y: e.clientY };
     
@@ -301,8 +326,16 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     lastAppliedPos.current = { x: bounds.x, y: bounds.y };
   }, [bounds.x, bounds.y]);
   
-  const handleResizeStart = useCallback((e: React.MouseEvent, corner: string) => {
+  const handleResizeStart = useCallback((e: React.PointerEvent, corner: string) => {
     e.stopPropagation();
+    e.preventDefault();
+    
+    // ✅ Pointer Capture
+    if (e.currentTarget instanceof Element) {
+      e.currentTarget.setPointerCapture(e.pointerId);
+      activePointerIdRef.current = e.pointerId;
+    }
+    
     setIsResizing(corner);
     dragStart.current = { x: e.clientX, y: e.clientY };
   }, []);
@@ -319,11 +352,11 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     return null;
   }
   
-  // مقبض تغيير الحجم
+  // ✅ مقبض تغيير الحجم مع Pointer Events
   const ResizeHandle = ({ position, cursor, onStart }: { 
     position: string; 
     cursor: string; 
-    onStart: (e: React.MouseEvent) => void 
+    onStart: (e: React.PointerEvent) => void 
   }) => {
     const positionStyles: Record<string, React.CSSProperties> = {
       'nw': { top: -8, left: -8 },
@@ -338,9 +371,9 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     
     return (
       <div 
-        className="absolute pointer-events-auto group"
+        className="absolute pointer-events-auto group touch-none"
         style={{ ...positionStyles[position], cursor, width: 16, height: 16 }}
-        onMouseDown={onStart}
+        onPointerDown={onStart}
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border-[1.5px] border-[hsl(var(--accent-blue))] rounded-full group-hover:scale-150 transition-transform shadow-sm" />
       </div>
@@ -371,10 +404,11 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       <ResizeHandle position="w" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'w')} />
       <ResizeHandle position="e" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'e')} />
       
-      {/* منطقة السحب للتحريك */}
+      {/* ✅ منطقة السحب للتحريك مع Pointer Events */}
       <div
-        className="absolute inset-4 pointer-events-auto cursor-move"
-        onMouseDown={handleDragStart}
+        ref={dragAreaRef}
+        className="absolute inset-4 pointer-events-auto cursor-move touch-none"
+        onPointerDown={handleDragStart}
       />
       
       {/* عداد العناصر (إذا أكثر من عنصر) */}
