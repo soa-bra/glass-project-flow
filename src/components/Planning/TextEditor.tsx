@@ -282,6 +282,28 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       return;
     }
     
+    // ✅ Ctrl+Shift+R = RTL (من اليمين لليسار)
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'r') {
+      e.preventDefault();
+      handleDirectionChange('rtl');
+      return;
+    }
+    
+    // ✅ Ctrl+Shift+L = LTR (من اليسار لليمين)
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
+      e.preventDefault();
+      handleDirectionChange('ltr');
+      return;
+    }
+    
+    // ✅ Ctrl+Shift+X = Toggle RTL/LTR (تبديل الاتجاه)
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'x') {
+      e.preventDefault();
+      const currentDir = element.style?.direction || 'rtl';
+      handleDirectionChange(currentDir === 'rtl' ? 'ltr' : 'rtl');
+      return;
+    }
+    
     // Cmd/Ctrl+A = تحديد الكل
     if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
       e.preventDefault();
