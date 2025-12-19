@@ -75,23 +75,31 @@ const CanvasToolbar: React.FC = () => {
   };
   
   return (
-    <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-sb-border">
+    <div 
+      className="flex items-center justify-between px-6 py-3 bg-white border-b border-sb-border"
+      role="toolbar"
+      aria-label="شريط أدوات اللوحة"
+      aria-orientation="horizontal"
+    >
       {/* Left: File Menu & Board Info */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4" role="group" aria-label="قائمة الملفات ومعلومات اللوحة">
         {/* File Menu */}
         <div className="relative">
           <button
             onClick={() => setIsFileMenuOpen(!isFileMenuOpen)}
             className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors"
-            title="قائمة الملف"
+            aria-label="قائمة الملف"
+            aria-haspopup="menu"
+            aria-expanded={isFileMenuOpen}
+            aria-keyshortcuts="Alt+F"
           >
-            <File size={18} className="text-sb-ink" />
+            <File size={18} className="text-sb-ink" aria-hidden="true" />
             <span className="text-[13px] font-medium text-sb-ink">ملف</span>
           </button>
           <FileMenuPopover isOpen={isFileMenuOpen} onClose={() => setIsFileMenuOpen(false)} />
         </div>
         
-        <div className="h-6 w-px bg-sb-border" />
+        <div className="h-6 w-px bg-sb-border" role="separator" aria-orientation="vertical" />
         
         {/* Editable Board Name */}
         {isEditingName ? (
@@ -103,32 +111,38 @@ const CanvasToolbar: React.FC = () => {
             onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
             autoFocus
             className="text-[16px] font-bold text-sb-ink px-2 py-1 border border-sb-ink rounded focus:outline-none"
+            aria-label="اسم اللوحة"
           />
         ) : (
           <h2 
             className="text-[16px] font-bold text-sb-ink cursor-pointer hover:bg-sb-panel-bg px-2 py-1 rounded"
             onDoubleClick={() => setIsEditingName(true)}
-            title="انقر مرتين للتعديل"
+            tabIndex={0}
+            role="button"
+            aria-label={`اسم اللوحة: ${currentBoard?.name || 'لوحة جديدة'}. انقر مرتين للتعديل`}
+            onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(true)}
           >
             {currentBoard?.name || 'لوحة جديدة'}
           </h2>
         )}
         
-        <span className="text-[11px] text-sb-ink-40">
+        <span className="text-[11px] text-sb-ink-40" aria-live="polite">
           آخر حفظ: الآن
         </span>
       </div>
       
       {/* Center: Control Buttons */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" role="group" aria-label="أدوات التحكم">
         {/* History Log */}
         <div className="relative">
           <button
             onClick={() => setIsHistoryOpen(!isHistoryOpen)}
             className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors"
-            title="سجل العمليات"
+            aria-label="سجل العمليات"
+            aria-haspopup="dialog"
+            aria-expanded={isHistoryOpen}
           >
-            <Clock size={18} className="text-sb-ink" />
+            <Clock size={18} className="text-sb-ink" aria-hidden="true" />
             <span className="text-[13px] font-medium text-sb-ink">السجل</span>
           </button>
           <HistoryPopover isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
@@ -139,9 +153,11 @@ const CanvasToolbar: React.FC = () => {
           <button
             onClick={() => setIsShareOpen(!isShareOpen)}
             className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors"
-            title="المشاركة"
+            aria-label="مشاركة اللوحة"
+            aria-haspopup="dialog"
+            aria-expanded={isShareOpen}
           >
-            <Share2 size={18} className="text-sb-ink" />
+            <Share2 size={18} className="text-sb-ink" aria-hidden="true" />
             <span className="text-[13px] font-medium text-sb-ink">مشاركة</span>
           </button>
           <SharePopover isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} boardId={currentBoard?.id} />
@@ -152,9 +168,11 @@ const CanvasToolbar: React.FC = () => {
           <button
             onClick={() => setIsLayersOpen(!isLayersOpen)}
             className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors"
-            title="الطبقات"
+            aria-label="إدارة الطبقات"
+            aria-haspopup="dialog"
+            aria-expanded={isLayersOpen}
           >
-            <Layers size={18} className="text-sb-ink" />
+            <Layers size={18} className="text-sb-ink" aria-hidden="true" />
             <span className="text-[13px] font-medium text-sb-ink">الطبقات</span>
           </button>
           <LayersMenuPopover isOpen={isLayersOpen} onClose={() => setIsLayersOpen(false)} />
@@ -166,9 +184,12 @@ const CanvasToolbar: React.FC = () => {
             <button
               onClick={() => setIsAIOpen(!isAIOpen)}
               className="flex items-center gap-2 px-3 py-2 bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white rounded-lg hover:opacity-90 transition-opacity"
-              title="مساعد الذكاء الصناعي (Cmd/Ctrl+K)"
+              aria-label="مساعد الذكاء الصناعي"
+              aria-haspopup="dialog"
+              aria-expanded={isAIOpen}
+              aria-keyshortcuts="Control+K Meta+K"
             >
-              <Sparkles size={18} className="animate-pulse" />
+              <Sparkles size={18} className="animate-pulse" aria-hidden="true" />
               <span className="text-[13px] font-medium">AI</span>
             </button>
           </AIAssistantPopover>
@@ -179,27 +200,30 @@ const CanvasToolbar: React.FC = () => {
           <button
             onClick={() => setIsPropertiesOpen(!isPropertiesOpen)}
             className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors"
-            title="خصائص الكانفاس"
+            aria-label="خصائص اللوحة"
+            aria-haspopup="dialog"
+            aria-expanded={isPropertiesOpen}
           >
-            <Settings size={18} className="text-sb-ink" />
+            <Settings size={18} className="text-sb-ink" aria-hidden="true" />
           </button>
           <CanvasPropertiesPopover isOpen={isPropertiesOpen} onClose={() => setIsPropertiesOpen(false)} />
         </div>
         
-        <div className="h-6 w-px bg-sb-border mx-2" />
+        <div className="h-6 w-px bg-sb-border mx-2" role="separator" aria-orientation="vertical" />
+        
         {/* Demo: Add Test Element */}
         <button
           onClick={handleAddTestElement}
           className="flex items-center gap-1 px-3 py-2 bg-[hsl(var(--accent-green))] text-white rounded-lg hover:opacity-90 transition-opacity text-[12px] font-medium"
-          title="إضافة عنصر تجريبي"
+          aria-label="إضافة عنصر تجريبي للوحة"
         >
-          <Plus size={14} />
+          <Plus size={14} aria-hidden="true" />
           <span>عنصر تجريبي</span>
         </button>
         
-        <div className="h-6 w-px bg-[hsl(var(--border))] mx-2" />
+        <div className="h-6 w-px bg-[hsl(var(--border))] mx-2" role="separator" aria-orientation="vertical" />
         
-        
+        {/* Undo */}
         <button
           onClick={undo}
           disabled={!canUndo}
@@ -208,11 +232,14 @@ const CanvasToolbar: React.FC = () => {
               ? 'hover:bg-sb-panel-bg text-sb-ink'
               : 'text-sb-ink-20 cursor-not-allowed'
           }`}
-          title="تراجع (Ctrl + Z)"
+          aria-label="تراجع عن آخر إجراء"
+          aria-disabled={!canUndo}
+          aria-keyshortcuts="Control+Z"
         >
-          <RotateCcw size={18} />
+          <RotateCcw size={18} aria-hidden="true" />
         </button>
         
+        {/* Redo */}
         <button
           onClick={redo}
           disabled={!canRedo}
@@ -221,15 +248,21 @@ const CanvasToolbar: React.FC = () => {
               ? 'hover:bg-sb-panel-bg text-sb-ink'
               : 'text-sb-ink-20 cursor-not-allowed'
           }`}
-          title="إعادة (Ctrl + Shift + Z)"
+          aria-label="إعادة الإجراء الملغي"
+          aria-disabled={!canRedo}
+          aria-keyshortcuts="Control+Shift+Z Control+Y"
         >
-          <RotateCw size={18} />
+          <RotateCw size={18} aria-hidden="true" />
         </button>
       </div>
       
       {/* Right: Save Button */}
-      <button className="flex items-center gap-2 px-4 py-2 bg-[#3DBE8B] text-white rounded-[10px] hover:opacity-90 transition-opacity">
-        <Save size={16} />
+      <button 
+        className="flex items-center gap-2 px-4 py-2 bg-[#3DBE8B] text-white rounded-[10px] hover:opacity-90 transition-opacity"
+        aria-label="حفظ اللوحة"
+        aria-keyshortcuts="Control+S"
+      >
+        <Save size={16} aria-hidden="true" />
         <span className="text-[13px] font-medium">حفظ</span>
       </button>
     </div>

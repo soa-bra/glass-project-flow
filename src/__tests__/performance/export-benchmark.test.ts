@@ -5,12 +5,11 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useCanvasStore } from '@/stores/canvas';
-import { ExportEngine } from '@/core/exportEngine';
+import { ExportEngine, type ExportableElement } from '@/core/exportEngine';
 import { ImportEngine } from '@/core/importEngine';
-import type { CanvasElement } from '@/types/canvas';
 
 // Helper to generate test elements
-const generateElements = (count: number): CanvasElement[] => {
+const generateElements = (count: number): ExportableElement[] => {
   const types = ['shape', 'text', 'sticky'] as const;
   return Array.from({ length: count }, (_, i) => ({
     id: `el-${i}`,
@@ -22,7 +21,8 @@ const generateElements = (count: number): CanvasElement[] => {
       backgroundColor: i % 3 === 2 ? '#FFF4CC' : '#FFFFFF',
       shapeType: i % 3 === 0 ? 'rectangle' : undefined,
       fontSize: i % 3 === 1 ? 14 : undefined
-    }
+    },
+    rotation: 0
   }));
 };
 
@@ -53,7 +53,7 @@ describe('Export Performance Benchmarks', () => {
       const elements = generateElements(100);
       
       const time = await measureTime(async () => {
-        await exportEngine.export(elements, 'test-json');
+        await exportEngine.export(elements, { format: 'json', filename: 'test-json' });
       });
       
       console.log(`JSON export 100 elements: ${time.toFixed(2)}ms`);
@@ -64,7 +64,7 @@ describe('Export Performance Benchmarks', () => {
       const elements = generateElements(500);
       
       const time = await measureTime(async () => {
-        await exportEngine.export(elements, 'test-json');
+        await exportEngine.export(elements, { format: 'json', filename: 'test-json' });
       });
       
       console.log(`JSON export 500 elements: ${time.toFixed(2)}ms`);
@@ -77,7 +77,7 @@ describe('Export Performance Benchmarks', () => {
       const elements = generateElements(100);
       
       const time = await measureTime(async () => {
-        await exportEngine.export(elements, 'test-svg');
+        await exportEngine.export(elements, { format: 'svg', filename: 'test-svg' });
       });
       
       console.log(`SVG export 100 elements: ${time.toFixed(2)}ms`);
@@ -103,47 +103,6 @@ describe('Export Performance Benchmarks', () => {
       
       console.log(`JSON import 100 elements: ${time.toFixed(2)}ms`);
       expect(time).toBeLessThan(100);
-    });
-
-    it('should import 500 elements in < 200ms', async () => {
-      const elements = generateElements(500);
-      const jsonData = JSON.stringify({
-        version: '1.0',
-        elements,
-        metadata: { exportedAt: new Date().toISOString() }
-      });
-      
-      const blob = new Blob([jsonData], { type: 'application/json' });
-      const file = new File([blob], 'test.json', { type: 'application/json' });
-      
-      const time = await measureTime(async () => {
-        await importEngine.importFromFile(file);
-      });
-      
-      console.log(`JSON import 500 elements: ${time.toFixed(2)}ms`);
-      expect(time).toBeLessThan(200);
-    });
-  });
-});
-
-  describe('Import Performance', () => {
-    it('should validate 100 elements in < 50ms', async () => {
-      const elements = generateElements(100);
-      const jsonData = JSON.stringify({
-        version: '1.0',
-        elements,
-        metadata: { exportedAt: new Date().toISOString() }
-      });
-      
-      const blob = new Blob([jsonData], { type: 'application/json' });
-      const file = new File([blob], 'test.json', { type: 'application/json' });
-      
-      const time = await measureTime(async () => {
-        await importEngine.importFromFile(file);
-      });
-      
-      console.log(`JSON import 100 elements: ${time.toFixed(2)}ms`);
-      expect(time).toBeLessThan(50);
     });
 
     it('should import 500 elements in < 200ms', async () => {
@@ -195,7 +154,6 @@ describe('Export Performance Benchmarks', () => {
       
       expect(result.success).toBe(true);
       if (result.elements) {
-        // New IDs should not match original
         result.elements.forEach((el, i) => {
           expect(el.id).not.toBe(`el-${i}`);
         });
@@ -205,13 +163,12 @@ describe('Export Performance Benchmarks', () => {
 
   describe('Error Recovery Performance', () => {
     it('should recover from corrupted data efficiently', async () => {
-      // Corrupted but recoverable data
       const corruptedData = {
         version: '1.0',
         elements: [
-          { id: 'el-1', type: 'shape' }, // Missing position and size
-          { id: 'el-2', type: 'text', position: { x: 100, y: 100 } }, // Missing size
-          { id: 'el-3', position: { x: 200, y: 200 }, size: { width: 100, height: 100 } } // Missing type
+          { id: 'el-1', type: 'shape' },
+          { id: 'el-2', type: 'text', position: { x: 100, y: 100 } },
+          { id: 'el-3', position: { x: 200, y: 200 }, size: { width: 100, height: 100 } }
         ]
       };
       
@@ -234,7 +191,7 @@ describe('Export Performance Benchmarks', () => {
       const file = new File([blob], 'test.json', { type: 'application/json' });
       
       const time = await measureTime(async () => {
-        await importEngine.importFromFile(file); // No format specified
+        await importEngine.importFromFile(file);
       });
       
       console.log(`Auto-detect format time: ${time.toFixed(2)}ms`);
@@ -250,13 +207,12 @@ describe('Export Performance Benchmarks', () => {
       
       for (const format of ['json', 'svg', 'pdf'] as const) {
         times[format] = await measureTime(async () => {
-          await exportEngine.export(elements, 'batch-test', format);
+          await exportEngine.export(elements, { format, filename: 'batch-test' });
         });
       }
       
       console.log('Batch export times:', Object.entries(times).map(([f, t]) => `${f}: ${t.toFixed(2)}ms`).join(', '));
       
-      // Total should be reasonable
       const total = Object.values(times).reduce((a, b) => a + b, 0);
       expect(total).toBeLessThan(3000);
     });
@@ -268,14 +224,13 @@ describe('Export Performance Benchmarks', () => {
       
       const memBefore = (performance as any).memory?.usedJSHeapSize || 0;
       
-      await exportEngine.export(elements, 'large-test', 'json');
+      await exportEngine.export(elements, { format: 'json', filename: 'large-test' });
       
       const memAfter = (performance as any).memory?.usedJSHeapSize || 0;
       const memUsed = (memAfter - memBefore) / 1024 / 1024;
       
       console.log(`Memory for 2000 element export: ${memUsed.toFixed(2)}MB`);
       
-      // Should not use excessive memory
       expect(memUsed).toBeLessThan(50);
     });
   });
