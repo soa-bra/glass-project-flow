@@ -27,6 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/BaseBadge';
 import {
   Select,
   SelectContent,
@@ -35,7 +36,6 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import type {

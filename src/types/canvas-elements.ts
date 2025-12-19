@@ -74,6 +74,55 @@ export interface CanvasSmartElement extends CanvasElementBase {
   data: any;
 }
 
+// Workflow Node Element
+export interface CanvasWorkflowNodeElement extends CanvasElementBase {
+  type: 'workflow_node';
+  nodeType: 'start' | 'end' | 'process_step' | 'task_stage' | 'decision' | 'approval' | 'notification' | 'delay' | 'parallel' | 'merge';
+  label: string;
+  description?: string;
+  assignees?: string[];
+  dueDate?: string;
+  status?: 'idle' | 'active' | 'completed' | 'blocked' | 'skipped';
+  workflowId?: string;
+  conditions?: Array<{
+    id: string;
+    type: 'document_status' | 'task_complete' | 'approval' | 'custom';
+    operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than';
+    value: any;
+    targetElementId?: string;
+  }>;
+  actions?: Array<{
+    id: string;
+    type: 'notify' | 'assign' | 'update_status' | 'create_task' | 'send_email' | 'webhook' | 'custom';
+    config: Record<string, any>;
+  }>;
+  tasks?: Array<{
+    id: string;
+    title: string;
+    status: 'todo' | 'in_progress' | 'done';
+    assignee?: string;
+  }>;
+}
+
+// Workflow Edge Element
+export interface CanvasWorkflowEdgeElement extends CanvasElementBase {
+  type: 'workflow_edge';
+  fromNodeId: string;
+  toNodeId: string;
+  fromAnchor?: 'top' | 'right' | 'bottom' | 'left';
+  toAnchor?: 'top' | 'right' | 'bottom' | 'left';
+  label?: string;
+  edgeType?: 'default' | 'conditional' | 'parallel' | 'loop';
+  pathType?: 'straight' | 'curved' | 'orthogonal';
+  animated?: boolean;
+  workflowId?: string;
+  condition?: {
+    id: string;
+    expression: string;
+    label?: string;
+  };
+}
+
 export interface CanvasFrameElement extends CanvasElementBase {
   type: 'frame';
   title?: string;
@@ -100,6 +149,8 @@ export type CanvasElementType =
   | CanvasSmartElement
   | CanvasFrameElement
   | CanvasFileElement
+  | CanvasWorkflowNodeElement
+  | CanvasWorkflowEdgeElement
   | CanvasElementBase;
 
 export interface CanvasEventHandlers {
