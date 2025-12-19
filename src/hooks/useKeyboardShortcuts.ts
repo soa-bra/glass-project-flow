@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { toast } from 'sonner';
 
@@ -22,6 +22,10 @@ export const useKeyboardShortcuts = () => {
     unlockElements,
     moveElements
   } = useCanvasStore();
+
+  // ✅ حفظ الأداة السابقة للتبديل المؤقت
+  const previousToolRef = useRef<string | null>(null);
+  const isHoldingModifierRef = useRef(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -57,6 +61,17 @@ export const useKeyboardShortcuts = () => {
       const isTypingInInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
       
       if (isTypingInInput) {
+        return;
+      }
+
+      // ✅ التبديل المؤقت لأداة التحديد عند الضغط على Command/Ctrl
+      if ((e.key === 'Meta' || e.key === 'Control') && !isHoldingModifierRef.current) {
+        const currentTool = useCanvasStore.getState().activeTool;
+        if (currentTool !== 'selection_tool') {
+          previousToolRef.current = currentTool;
+          isHoldingModifierRef.current = true;
+          setActiveTool('selection_tool');
+        }
         return;
       }
 
@@ -235,8 +250,23 @@ export const useKeyboardShortcuts = () => {
       }
     };
 
+    // ✅ العودة للأداة السابقة عند إفلات Command/Ctrl
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if ((e.key === 'Meta' || e.key === 'Control') && isHoldingModifierRef.current) {
+        isHoldingModifierRef.current = false;
+        if (previousToolRef.current) {
+          setActiveTool(previousToolRef.current as any);
+          previousToolRef.current = null;
+        }
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
   }, [
     selectedElementIds,
     activeTool,
