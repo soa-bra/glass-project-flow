@@ -56,11 +56,14 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     const observer = new ResizeObserver(() => {
       if (!nodeRef.current) return;
       
-      // ✅ استخدام getBoundingClientRect للحصول على الحجم الحقيقي الكامل
+      // ✅ getBoundingClientRect يتأثر بالـ zoom (Transform: scale)
+      // لذلك نقسم على viewport.zoom للحصول على حجم العقدة الحقيقي بوحدات الـ canvas
       const rect = nodeRef.current.getBoundingClientRect();
-      const actualWidth = Math.max(80, rect.width);
-      const actualHeight = Math.max(40, rect.height);
-      
+      const zoom = useCanvasStore.getState().viewport.zoom || 1;
+      const zoomSafe = zoom > 0 ? zoom : 1;
+      const actualWidth = Math.max(80, rect.width / zoomSafe);
+      const actualHeight = Math.max(40, rect.height / zoomSafe);
+
       // ✅ مقارنة مع آخر حجم مُسجّل (وليس element.size) لمنع infinite loop
       if (Math.abs(actualWidth - lastSizeRef.current.width) > 2 || 
           Math.abs(actualHeight - lastSizeRef.current.height) > 2) {
