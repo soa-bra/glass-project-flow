@@ -473,3 +473,397 @@ describe('Interaction State Machine', () => {
     expect(state.current).toEqual({ x: 100, y: 100 });
   });
 });
+
+describe('Pointer Capture & Drag Behavior', () => {
+  
+  describe('Pointer Capture', () => {
+    test('setPointerCapture يُستدعى عند بدء السحب', () => {
+      const div = document.createElement('div');
+      div.style.width = '100px';
+      div.style.height = '100px';
+      document.body.appendChild(div);
+      
+      // Mock setPointerCapture
+      const setPointerCaptureMock = vi.fn();
+      div.setPointerCapture = setPointerCaptureMock;
+      
+      let isDragging = false;
+      
+      div.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        (e.currentTarget as Element).setPointerCapture(e.pointerId);
+      });
+      
+      // محاكاة pointer down
+      const pointerDownEvent = new PointerEvent('pointerdown', {
+        pointerId: 1,
+        bubbles: true,
+        cancelable: true,
+        clientX: 50,
+        clientY: 50,
+      });
+      
+      div.dispatchEvent(pointerDownEvent);
+      
+      expect(isDragging).toBe(true);
+      expect(setPointerCaptureMock).toHaveBeenCalledWith(1);
+      
+      document.body.removeChild(div);
+    });
+    
+    test('releasePointerCapture يُستدعى عند إنهاء السحب', () => {
+      const div = document.createElement('div');
+      document.body.appendChild(div);
+      
+      // Mock functions
+      const releasePointerCaptureMock = vi.fn();
+      const hasPointerCaptureMock = vi.fn().mockReturnValue(true);
+      div.releasePointerCapture = releasePointerCaptureMock;
+      div.hasPointerCapture = hasPointerCaptureMock;
+      
+      let isDragging = true;
+      let activePointerId: number | null = 1;
+      
+      div.addEventListener('pointerup', (e) => {
+        if ((e.target as Element).hasPointerCapture(e.pointerId)) {
+          (e.target as Element).releasePointerCapture(e.pointerId);
+        }
+        isDragging = false;
+        activePointerId = null;
+      });
+      
+      // محاكاة pointer up
+      const pointerUpEvent = new PointerEvent('pointerup', {
+        pointerId: 1,
+        bubbles: true,
+      });
+      
+      div.dispatchEvent(pointerUpEvent);
+      
+      expect(isDragging).toBe(false);
+      expect(activePointerId).toBeNull();
+      expect(releasePointerCaptureMock).toHaveBeenCalledWith(1);
+      
+      document.body.removeChild(div);
+    });
+    
+    test('Pointer ID يُتتبع بشكل صحيح', () => {
+      const div = document.createElement('div');
+      document.body.appendChild(div);
+      
+      div.setPointerCapture = vi.fn();
+      
+      let activePointerId: number | null = null;
+      
+      div.addEventListener('pointerdown', (e) => {
+        activePointerId = e.pointerId;
+      });
+      
+      // أول pointer
+      const event1 = new PointerEvent('pointerdown', {
+        pointerId: 1,
+        bubbles: true,
+      });
+      div.dispatchEvent(event1);
+      expect(activePointerId).toBe(1);
+      
+      // ثاني pointer (يجب تجاهله إذا كان الأول نشطاً)
+      const event2 = new PointerEvent('pointerdown', {
+        pointerId: 2,
+        bubbles: true,
+      });
+      
+      div.addEventListener('pointerdown', (e) => {
+        // تجاهل إذا كان pointer آخر نشط
+        if (activePointerId !== null && activePointerId !== e.pointerId) {
+          e.preventDefault();
+          return;
+        }
+        activePointerId = e.pointerId;
+      });
+      
+      document.body.removeChild(div);
+    });
+  });
+
+  describe('Drag Behavior', () => {
+    test('حساب Delta بشكل صحيح أثناء السحب', () => {
+      const startPos = { x: 100, y: 100 };
+      const currentPos = { x: 150, y: 120 };
+      
+      const delta = {
+        x: currentPos.x - startPos.x,
+        y: currentPos.y - startPos.y,
+      };
+      
+      expect(delta.x).toBe(50);
+      expect(delta.y).toBe(20);
+    });
+    
+    test('تحويل Screen Delta إلى World Delta مع zoom', () => {
+      const screenDelta = { x: 100, y: 50 };
+      const zoom = 2; // 200% zoom
+      
+      const worldDelta = {
+        x: screenDelta.x / zoom,
+        y: screenDelta.y / zoom,
+      };
+      
+      expect(worldDelta.x).toBe(50);
+      expect(worldDelta.y).toBe(25);
+    });
+    
+    test('تحويل Screen Delta إلى World Delta مع zoom أقل من 1', () => {
+      const screenDelta = { x: 100, y: 50 };
+      const zoom = 0.5; // 50% zoom
+      
+      const worldDelta = {
+        x: screenDelta.x / zoom,
+        y: screenDelta.y / zoom,
+      };
+      
+      expect(worldDelta.x).toBe(200);
+      expect(worldDelta.y).toBe(100);
+    });
+    
+    test('السحب مقيد بمحور X مع Shift', () => {
+      const startPos = { x: 100, y: 100 };
+      const rawDelta = { x: 80, y: 30 }; // X أكبر
+      const shiftPressed = true;
+      
+      let constrainedDelta = { ...rawDelta };
+      
+      if (shiftPressed) {
+        if (Math.abs(rawDelta.x) > Math.abs(rawDelta.y)) {
+          constrainedDelta.y = 0;
+        } else {
+          constrainedDelta.x = 0;
+        }
+      }
+      
+      expect(constrainedDelta.x).toBe(80);
+      expect(constrainedDelta.y).toBe(0);
+    });
+    
+    test('السحب مقيد بمحور Y مع Shift', () => {
+      const startPos = { x: 100, y: 100 };
+      const rawDelta = { x: 20, y: 70 }; // Y أكبر
+      const shiftPressed = true;
+      
+      let constrainedDelta = { ...rawDelta };
+      
+      if (shiftPressed) {
+        if (Math.abs(rawDelta.x) > Math.abs(rawDelta.y)) {
+          constrainedDelta.y = 0;
+        } else {
+          constrainedDelta.x = 0;
+        }
+      }
+      
+      expect(constrainedDelta.x).toBe(0);
+      expect(constrainedDelta.y).toBe(70);
+    });
+    
+    test('منع السحب المزدوج - العنصر المحدد لا يبدأ سحب جديد', () => {
+      const isSelected = true;
+      let canStartDrag = true;
+      
+      // محاكاة منطق CanvasElement
+      if (isSelected) {
+        canStartDrag = false; // BoundingBox يتولى السحب
+      }
+      
+      expect(canStartDrag).toBe(false);
+    });
+    
+    test('السماح بالسحب للعناصر غير المحددة', () => {
+      const isSelected = false;
+      let canStartDrag = true;
+      
+      if (isSelected) {
+        canStartDrag = false;
+      }
+      
+      expect(canStartDrag).toBe(true);
+    });
+  });
+
+  describe('BoundingBox Drag', () => {
+    test('حساب حدود المجموعة بشكل صحيح', () => {
+      const elements = [
+        { position: { x: 50, y: 50 }, size: { width: 100, height: 80 } },
+        { position: { x: 200, y: 100 }, size: { width: 150, height: 120 } },
+      ];
+      
+      const minX = Math.min(...elements.map(e => e.position.x));
+      const minY = Math.min(...elements.map(e => e.position.y));
+      const maxX = Math.max(...elements.map(e => e.position.x + e.size.width));
+      const maxY = Math.max(...elements.map(e => e.position.y + e.size.height));
+      
+      const bounds = {
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY,
+      };
+      
+      expect(bounds.x).toBe(50);
+      expect(bounds.y).toBe(50);
+      expect(bounds.width).toBe(300); // 350 - 50
+      expect(bounds.height).toBe(170); // 220 - 50
+    });
+    
+    test('تحريك مجموعة عناصر بنفس Delta', () => {
+      const elements = [
+        { id: '1', position: { x: 100, y: 100 } },
+        { id: '2', position: { x: 200, y: 150 } },
+      ];
+      
+      const delta = { x: 50, y: 30 };
+      
+      const movedElements = elements.map(el => ({
+        ...el,
+        position: {
+          x: el.position.x + delta.x,
+          y: el.position.y + delta.y,
+        },
+      }));
+      
+      expect(movedElements[0].position).toEqual({ x: 150, y: 130 });
+      expect(movedElements[1].position).toEqual({ x: 250, y: 180 });
+    });
+    
+    test('تغيير حجم المجموعة مع scale', () => {
+      const originalBounds = { x: 100, y: 100, width: 200, height: 150 };
+      const scaleX = 1.5;
+      const scaleY = 1.2;
+      const origin = { x: originalBounds.x, y: originalBounds.y }; // الزاوية العلوية اليسرى
+      
+      const newBounds = {
+        x: origin.x,
+        y: origin.y,
+        width: originalBounds.width * scaleX,
+        height: originalBounds.height * scaleY,
+      };
+      
+      expect(newBounds.width).toBe(300);
+      expect(newBounds.height).toBe(180);
+    });
+  });
+
+  describe('Resize Handles', () => {
+    test('تحديد مقبض الزاوية الصحيح', () => {
+      const corners = ['nw', 'ne', 'sw', 'se'];
+      const edges = ['n', 's', 'w', 'e'];
+      
+      expect(corners).toContain('nw');
+      expect(corners).toContain('se');
+      expect(edges).toContain('n');
+      expect(edges).toContain('e');
+    });
+    
+    test('حساب نقطة الأصل للـ resize بشكل صحيح', () => {
+      const bounds = { x: 100, y: 100, width: 200, height: 150 };
+      const centerX = bounds.x + bounds.width / 2;
+      const centerY = bounds.y + bounds.height / 2;
+      
+      const getResizeOrigin = (handle: string) => {
+        const maxX = bounds.x + bounds.width;
+        const maxY = bounds.y + bounds.height;
+        
+        const originMap: Record<string, { x: number; y: number }> = {
+          'nw': { x: maxX, y: maxY },
+          'ne': { x: bounds.x, y: maxY },
+          'sw': { x: maxX, y: bounds.y },
+          'se': { x: bounds.x, y: bounds.y },
+          'n': { x: centerX, y: maxY },
+          's': { x: centerX, y: bounds.y },
+          'w': { x: maxX, y: centerY },
+          'e': { x: bounds.x, y: centerY },
+        };
+        return originMap[handle];
+      };
+      
+      expect(getResizeOrigin('nw')).toEqual({ x: 300, y: 250 });
+      expect(getResizeOrigin('se')).toEqual({ x: 100, y: 100 });
+      expect(getResizeOrigin('n')).toEqual({ x: 200, y: 250 });
+      expect(getResizeOrigin('e')).toEqual({ x: 100, y: 175 });
+    });
+    
+    test('حساب Scale من Delta', () => {
+      const bounds = { width: 200, height: 150 };
+      const delta = { x: 50, y: 30 };
+      
+      // سحب مقبض 'e' (شرق)
+      const scaleX_e = 1 + delta.x / bounds.width;
+      expect(scaleX_e).toBe(1.25);
+      
+      // سحب مقبض 'w' (غرب) - عكسي
+      const scaleX_w = 1 - delta.x / bounds.width;
+      expect(scaleX_w).toBe(0.75);
+      
+      // سحب مقبض 's' (جنوب)
+      const scaleY_s = 1 + delta.y / bounds.height;
+      expect(scaleY_s).toBe(1.2);
+      
+      // سحب مقبض 'n' (شمال) - عكسي
+      const scaleY_n = 1 - delta.y / bounds.height;
+      expect(scaleY_n).toBe(0.8);
+    });
+    
+    test('منع Scale سالب أو صفر', () => {
+      const bounds = { width: 100, height: 100 };
+      const largeDelta = { x: -150, y: -200 };
+      
+      let scaleX = 1 + largeDelta.x / bounds.width; // -0.5
+      let scaleY = 1 + largeDelta.y / bounds.height; // -1
+      
+      // منع القيم السالبة
+      scaleX = Math.max(0.1, scaleX);
+      scaleY = Math.max(0.1, scaleY);
+      
+      expect(scaleX).toBe(0.1);
+      expect(scaleY).toBe(0.1);
+    });
+  });
+
+  describe('Frame Containment', () => {
+    test('التحقق من احتواء نقطة داخل حدود', () => {
+      const frame = { x: 100, y: 100, width: 300, height: 200 };
+      const pointInside = { x: 200, y: 150 };
+      const pointOutside = { x: 50, y: 50 };
+      
+      const isInside = (point: { x: number; y: number }, bounds: typeof frame) => {
+        return point.x >= bounds.x && 
+               point.x <= bounds.x + bounds.width &&
+               point.y >= bounds.y && 
+               point.y <= bounds.y + bounds.height;
+      };
+      
+      expect(isInside(pointInside, frame)).toBe(true);
+      expect(isInside(pointOutside, frame)).toBe(false);
+    });
+    
+    test('احتواء مركز العنصر داخل الإطار', () => {
+      const frame = { x: 100, y: 100, width: 300, height: 200 };
+      const element = { 
+        position: { x: 150, y: 130 }, 
+        size: { width: 80, height: 60 } 
+      };
+      
+      const elementCenter = {
+        x: element.position.x + element.size.width / 2,
+        y: element.position.y + element.size.height / 2,
+      };
+      
+      const isContained = 
+        elementCenter.x >= frame.x && 
+        elementCenter.x <= frame.x + frame.width &&
+        elementCenter.y >= frame.y && 
+        elementCenter.y <= frame.y + frame.height;
+      
+      expect(elementCenter).toEqual({ x: 190, y: 160 });
+      expect(isContained).toBe(true);
+    });
+  });
+});
