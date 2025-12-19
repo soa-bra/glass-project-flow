@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ToggleGroup } from '@ark-ui/react/toggle-group';
 import { 
   RotateCcw, 
   RotateCw, 
@@ -8,11 +7,8 @@ import {
   Sparkles,
   Lock,
   Unlock,
-  Palette,
-  Square,
   Trash2,
-  Copy,
-  ClipboardPaste
+  Copy
 } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 
@@ -27,7 +23,6 @@ const FloatingEditBar: React.FC = () => {
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   
-  // Get selected elements (memoized to prevent infinite re-renders)
   const selectedElements = useMemo(
     () => elements.filter(el => selectedElementIds.includes(el.id)),
     [elements, selectedElementIds]
@@ -35,11 +30,9 @@ const FloatingEditBar: React.FC = () => {
   const hasSelection = selectedElements.length > 0;
   const firstElement = selectedElements[0];
   
-  // Calculate position above selected elements
   useEffect(() => {
     if (!hasSelection) return;
     
-    // Find bounds of selected elements
     let minX = Infinity, minY = Infinity, maxX = -Infinity;
     selectedElements.forEach(el => {
       if (el.position.x < minX) minX = el.position.x;
@@ -55,12 +48,12 @@ const FloatingEditBar: React.FC = () => {
   
   if (!hasSelection) return null;
   
-  const handleColorChange = (type: 'fill' | 'stroke', color: string) => {
+  const handleColorChange = (color: string) => {
     selectedElementIds.forEach(id => {
       updateElement(id, {
         style: {
           ...elements.find(el => el.id === id)?.style,
-          [type === 'fill' ? 'backgroundColor' : 'borderColor']: color
+          backgroundColor: color
         }
       });
     });
@@ -89,14 +82,13 @@ const FloatingEditBar: React.FC = () => {
     '#3DA8F5', '#9B87F5', '#F1B5B9'
   ];
 
-  const toggleItemClass = `
+  const btnClass = `
     flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200
     text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))] hover:bg-[hsl(var(--panel))]
-    data-[state=on]:bg-[hsl(var(--ink))] data-[state=on]:text-white
-    focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ink))] focus-visible:ring-offset-1
+    focus:outline-none
   `;
 
-  const separatorClass = "w-px h-6 bg-[hsl(var(--border))] mx-1";
+  const separatorClass = "w-px h-6 bg-[hsl(var(--border))]";
   
   return (
     <div 
@@ -107,14 +99,14 @@ const FloatingEditBar: React.FC = () => {
         transform: 'translateX(-50%)'
       }}
     >
-      <div className="relative bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5">
+      <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5">
         <div className="flex items-center gap-1">
           
-          {/* Colors Section */}
+          {/* Color Picker */}
           <div className="relative">
             <button
               onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
-              className={`${toggleItemClass} relative`}
+              className={btnClass}
               title="الألوان"
             >
               <div 
@@ -125,19 +117,15 @@ const FloatingEditBar: React.FC = () => {
             
             {isColorPickerOpen && (
               <>
-                <div 
-                  className="fixed inset-0 z-40" 
-                  onClick={() => setIsColorPickerOpen(false)}
-                />
+                <div className="fixed inset-0 z-40" onClick={() => setIsColorPickerOpen(false)} />
                 <div className="absolute top-full right-0 mt-2 p-3 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] z-50">
                   <div className="grid grid-cols-4 gap-2">
                     {quickColors.map(color => (
                       <button
                         key={color}
-                        onClick={() => handleColorChange('fill', color)}
-                        className="w-8 h-8 rounded-lg border border-[hsl(var(--border))] hover:scale-110 transition-transform shadow-sm"
+                        onClick={() => handleColorChange(color)}
+                        className="w-8 h-8 rounded-lg border border-[hsl(var(--border))] hover:scale-110 transition-transform"
                         style={{ backgroundColor: color }}
-                        title={color}
                       />
                     ))}
                   </div>
@@ -145,7 +133,7 @@ const FloatingEditBar: React.FC = () => {
                     <input
                       type="color"
                       value={firstElement?.style?.backgroundColor || '#FFFFFF'}
-                      onChange={(e) => handleColorChange('fill', e.target.value)}
+                      onChange={(e) => handleColorChange(e.target.value)}
                       className="w-full h-8 rounded-lg cursor-pointer"
                     />
                   </div>
@@ -156,83 +144,49 @@ const FloatingEditBar: React.FC = () => {
 
           <div className={separatorClass} />
           
-          {/* Rotation Controls */}
-          <ToggleGroup.Root className="flex items-center gap-0.5">
-            <ToggleGroup.Item
-              value="rotate-ccw"
-              className={toggleItemClass}
-              onClick={() => handleRotate(-15)}
-              title="تدوير لليسار"
-            >
+          {/* Rotation */}
+          <div className="flex items-center gap-0.5">
+            <button onClick={() => handleRotate(-15)} className={btnClass} title="تدوير لليسار">
               <RotateCcw size={16} />
-            </ToggleGroup.Item>
-            
+            </button>
             <span className="text-[11px] text-[hsl(var(--ink-60))] min-w-[32px] text-center font-medium">
               {Math.round(typeof firstElement?.rotation === 'number' ? firstElement.rotation : 0)}°
             </span>
-            
-            <ToggleGroup.Item
-              value="rotate-cw"
-              className={toggleItemClass}
-              onClick={() => handleRotate(15)}
-              title="تدوير لليمين"
-            >
+            <button onClick={() => handleRotate(15)} className={btnClass} title="تدوير لليمين">
               <RotateCw size={16} />
-            </ToggleGroup.Item>
-          </ToggleGroup.Root>
+            </button>
+          </div>
 
           <div className={separatorClass} />
           
           {/* Layer Controls */}
-          <ToggleGroup.Root className="flex items-center gap-0.5">
-            <ToggleGroup.Item
-              value="bring-forward"
-              className={toggleItemClass}
-              title="رفع للأمام"
-            >
+          <div className="flex items-center gap-0.5">
+            <button className={btnClass} title="رفع للأمام">
               <ArrowUp size={16} />
-            </ToggleGroup.Item>
-            
-            <ToggleGroup.Item
-              value="send-backward"
-              className={toggleItemClass}
-              title="خفض للخلف"
-            >
+            </button>
+            <button className={btnClass} title="خفض للخلف">
               <ArrowDown size={16} />
-            </ToggleGroup.Item>
-          </ToggleGroup.Root>
+            </button>
+          </div>
 
           <div className={separatorClass} />
 
           {/* Quick Actions */}
-          <ToggleGroup.Root className="flex items-center gap-0.5">
-            <ToggleGroup.Item
-              value="copy"
-              className={toggleItemClass}
-              title="نسخ"
-            >
+          <div className="flex items-center gap-0.5">
+            <button className={btnClass} title="نسخ">
               <Copy size={16} />
-            </ToggleGroup.Item>
-            
-            <ToggleGroup.Item
-              value="delete"
-              className={`${toggleItemClass} hover:text-[hsl(var(--accent-red))] hover:bg-red-50`}
-              title="حذف"
-            >
+            </button>
+            <button className={`${btnClass} hover:text-red-500 hover:bg-red-50`} title="حذف">
               <Trash2 size={16} />
-            </ToggleGroup.Item>
-          </ToggleGroup.Root>
+            </button>
+          </div>
 
           <div className={separatorClass} />
 
-          {/* Lock Toggle */}
+          {/* Lock */}
           <button
             onClick={toggleLock}
-            className={`${toggleItemClass} ${
-              firstElement?.locked 
-                ? 'bg-[hsl(var(--ink))] text-white' 
-                : ''
-            }`}
+            className={`${btnClass} ${firstElement?.locked ? 'bg-[hsl(var(--ink))] text-white' : ''}`}
             title={firstElement?.locked ? 'إلغاء القفل' : 'قفل'}
           >
             {firstElement?.locked ? <Lock size={16} /> : <Unlock size={16} />}
@@ -244,8 +198,7 @@ const FloatingEditBar: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setIsAIOpen(!isAIOpen)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-br from-[hsl(var(--accent-green))] to-[hsl(var(--accent-blue))] text-white rounded-lg hover:opacity-90 transition-all shadow-sm"
-              title="ذكاء صناعي"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-br from-[hsl(var(--accent-green))] to-[hsl(var(--accent-blue))] text-white rounded-lg hover:opacity-90 transition-all"
             >
               <Sparkles size={14} className="animate-pulse" />
               <span className="text-[11px] font-semibold">AI</span>
@@ -253,27 +206,21 @@ const FloatingEditBar: React.FC = () => {
             
             {isAIOpen && (
               <>
-                <div 
-                  className="fixed inset-0 z-40" 
-                  onClick={() => setIsAIOpen(false)}
-                />
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] p-2 z-50">
-                  <div className="space-y-1">
-                    {[
-                      { icon: '💡', label: 'تحسين التصميم' },
-                      { icon: '🎨', label: 'بدائل لونية' },
-                      { icon: '📝', label: 'محتوى مقترح' },
-                      { icon: '🔍', label: 'تحليل التباين' },
-                    ].map((item) => (
-                      <button 
-                        key={item.label}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-right text-[12px] text-[hsl(var(--ink-80))] hover:bg-[hsl(var(--panel))] rounded-lg transition-colors"
-                      >
-                        <span>{item.icon}</span>
-                        <span>{item.label}</span>
-                      </button>
-                    ))}
-                  </div>
+                <div className="fixed inset-0 z-40" onClick={() => setIsAIOpen(false)} />
+                <div className="absolute top-full left-0 mt-2 w-52 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] p-2 z-50">
+                  {[
+                    { icon: '💡', label: 'تحسين التصميم' },
+                    { icon: '🎨', label: 'بدائل لونية' },
+                    { icon: '📝', label: 'محتوى مقترح' },
+                  ].map((item) => (
+                    <button 
+                      key={item.label}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-[hsl(var(--ink-80))] hover:bg-[hsl(var(--panel))] rounded-lg"
+                    >
+                      <span>{item.icon}</span>
+                      <span>{item.label}</span>
+                    </button>
+                  ))}
                 </div>
               </>
             )}
