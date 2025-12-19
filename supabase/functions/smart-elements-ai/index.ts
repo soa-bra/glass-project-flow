@@ -1,11 +1,69 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.52.1";
+import { z } from "https://deno.land/x/zod@v3.23.8/mod.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// SECURITY: Allowed origins for CORS (Defense in Depth)
+const ALLOWED_ORIGINS = [
+  'https://zdqkrrehlivayconjcgm.supabase.co',
+  'https://lovable.dev',
+  'https://www.lovable.dev',
+  'http://localhost:5173',
+  'http://localhost:8080',
+  'http://localhost:3000',
+];
+
+// Dynamic CORS headers based on origin
+function getCorsHeaders(origin: string | null): Record<string, string> {
+  const isAllowed = origin && ALLOWED_ORIGINS.some(allowed => 
+    origin === allowed || origin.endsWith('.lovable.app') || origin.endsWith('.lovable.dev')
+  );
+  
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? origin! : ALLOWED_ORIGINS[0],
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Max-Age': '86400'
+  };
+}
+
+// Input validation schemas
+const RequestSchema = z.object({
+  prompt: z.string().min(1, 'الأمر مطلوب').max(4000, 'الأمر طويل جداً (الحد الأقصى 4000 حرف)').optional(),
+  action: z.enum(['generate', 'analyze', 'transform']).optional(),
+  selectedElements: z.array(z.any()).max(100, 'الحد الأقصى 100 عنصر').optional(),
+  context: z.object({
+    preferredType: z.string().optional(),
+    targetType: z.string().optional(),
+  }).optional(),
+});
+
+// Rate limiting: Simple in-memory tracking (for edge function)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_REQUESTS = 20; // requests per window
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+
+function checkRateLimit(userId: string): { allowed: boolean; remaining: number; resetIn: number } {
+  const now = Date.now();
+  const userLimit = rateLimitMap.get(userId);
+  
+  if (!userLimit || userLimit.resetAt < now) {
+    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return { allowed: true, remaining: RATE_LIMIT_REQUESTS - 1, resetIn: RATE_LIMIT_WINDOW_MS };
+  }
+  
+  if (userLimit.count >= RATE_LIMIT_REQUESTS) {
+    return { allowed: false, remaining: 0, resetIn: userLimit.resetAt - now };
+  }
+  
+  userLimit.count++;
+  return { allowed: true, remaining: RATE_LIMIT_REQUESTS - userLimit.count, resetIn: userLimit.resetAt - now };
+}
+
+// Sanitize input to remove control characters
+function sanitizeInput(input: string): string {
+  return input.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+}
 
 // Smart Element Types supported
 const SMART_ELEMENT_TYPES = [
@@ -366,6 +424,9 @@ async function authenticateUser(req: Request): Promise<{ user: any; error: strin
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+  
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -383,11 +444,71 @@ serve(async (req) => {
 
     console.log(`[smart-elements-ai] Authenticated user: ${user.id}`);
 
-    const { prompt, action, selectedElements, context } = await req.json();
+    // SECURITY: Check rate limit
+    const rateLimit = checkRateLimit(user.id);
+    if (!rateLimit.allowed) {
+      console.warn(`[smart-elements-ai] Rate limit exceeded for user: ${user.id}`);
+      return new Response(
+        JSON.stringify({ 
+          error: 'تجاوزت الحد المسموح. حاول مرة أخرى بعد دقيقة.',
+          code: 'RATE_LIMIT',
+          retryAfter: Math.ceil(rateLimit.resetIn / 1000)
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': String(Math.ceil(rateLimit.resetIn / 1000)),
+            'X-RateLimit-Limit': String(RATE_LIMIT_REQUESTS),
+            'X-RateLimit-Remaining': '0'
+          } 
+        }
+      );
+    }
+
+    // SECURITY: Parse and validate request body
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'بيانات JSON غير صالحة', code: 'INVALID_JSON' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // SECURITY: Validate input with Zod schema
+    const validationResult = RequestSchema.safeParse(requestBody);
+    if (!validationResult.success) {
+      console.warn(`[smart-elements-ai] Validation failed for user: ${user.id}`, validationResult.error.errors);
+      return new Response(
+        JSON.stringify({ 
+          error: 'بيانات غير صالحة: ' + validationResult.error.errors.map(e => e.message).join(', '),
+          code: 'VALIDATION_ERROR'
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { prompt: rawPrompt, action, selectedElements, context } = validationResult.data;
+    
+    // SECURITY: Sanitize prompt input
+    const prompt = rawPrompt ? sanitizeInput(rawPrompt) : undefined;
+    
+    // Log token estimation for monitoring
+    const estimatedTokens = prompt ? Math.round(prompt.length * 0.75) : 0;
+    if (estimatedTokens > 2000) {
+      console.warn(`[smart-elements-ai] High token request: ${estimatedTokens} tokens, user: ${user.id}`);
+    }
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+      console.error('[smart-elements-ai] LOVABLE_API_KEY not configured');
+      return new Response(
+        JSON.stringify({ error: 'خطأ في إعداد الخدمة. يرجى التواصل مع الدعم.', code: 'CONFIG_ERROR' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Build the user message based on action type
