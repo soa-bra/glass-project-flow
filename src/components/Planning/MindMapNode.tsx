@@ -322,24 +322,22 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   return (
     <div
       ref={nodeRef}
-      className={`absolute select-none transition-shadow ${
+      className={`absolute select-none transition-shadow inline-flex ${
         activeTool === 'selection_tool' ? 'cursor-move' : 'cursor-default'
       } ${isSelected ? 'ring-2 ring-[hsl(var(--accent-green))] ring-offset-2' : ''}`}
       style={{
         left: element.position.x,
         top: element.position.y,
-        // ✅ الآن nodeRef يأخذ حجمه من element.size (الذي يُحدَّث من contentRef)
-        width: element.size.width,
-        height: element.size.height,
+        // ✅ بدون width/height ثابتة - يأخذ حجمه من المحتوى الداخلي
         zIndex: isSelected ? 100 : 10,
       }}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
     >
-      {/* محتوى العقدة - w-full h-full ليملأ الـ parent */}
+      {/* محتوى العقدة - inline-flex ليأخذ حجمه من النص */}
       <div
         ref={contentRef}
-        className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md transition-all relative whitespace-nowrap"
+        className="inline-flex items-center justify-center px-4 py-2 shadow-md transition-all relative whitespace-nowrap"
         style={{
           ...getNodeStyle(),
           minWidth: 80,
