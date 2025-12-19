@@ -82,6 +82,19 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
     return false;
   }, [startNode, connectorData.startNodeId, elements]);
   
+  // ✅ حالة الإظهار/الإخفاء مع animation
+  const [isVisible, setIsVisible] = useState(!isHiddenByCollapse);
+  
+  useEffect(() => {
+    if (isHiddenByCollapse) {
+      // تأخير قصير للسماح بالـ animation
+      const timer = setTimeout(() => setIsVisible(false), 200);
+      return () => clearTimeout(timer);
+    } else {
+      setIsVisible(true);
+    }
+  }, [isHiddenByCollapse]);
+  
   // ✅ حساب مواقع نقاط الربط مع offset للروابط المتعددة
   const positions = useMemo(() => {
     // ✅ حساب من العقد إذا كانت متاحة
@@ -232,8 +245,8 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
     setLabelText(connectorData.label || '');
   }, [connectorData.label]);
   
-  // ✅ إخفاء إذا كان مطوياً
-  if (isHiddenByCollapse) {
+  // ✅ إخفاء إذا كان مطوياً (مع animation)
+  if (!isVisible && isHiddenByCollapse) {
     return null;
   }
   
@@ -242,17 +255,22 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
     return null;
   }
   
+  // ✅ حساب opacity للـ animation
+  const animationOpacity = isHiddenByCollapse ? 0 : 1;
+  
   return (
     <>
       <svg
-        className="absolute pointer-events-none"
+        className="absolute pointer-events-none transition-all duration-300 ease-out"
         style={{
           left: bounds.x,
           top: bounds.y,
           width: bounds.width,
           height: bounds.height,
           overflow: 'visible',
-          zIndex: isSelected ? 50 : 5
+          zIndex: isSelected ? 50 : 5,
+          opacity: animationOpacity,
+          transform: isHiddenByCollapse ? 'scale(0.8)' : 'scale(1)',
         }}
       >
         {/* ✅ منطقة النقر (شفافة وعريضة جداً للسهولة) */}

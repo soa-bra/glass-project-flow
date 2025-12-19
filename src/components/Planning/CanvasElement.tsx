@@ -56,22 +56,26 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   // عرض عناصر الخريطة الذهنية بمكونات خاصة
   if (element.type === 'mindmap_node') {
     const elements = useCanvasStore.getState().elements;
+    const isCollapsedByAncestor = isAncestorCollapsed(element.id, elements);
     
-    if (isAncestorCollapsed(element.id, elements)) {
+    // ✅ إخفاء مع animation
+    if (isCollapsedByAncestor) {
       return null;
     }
     
     return (
-      <MindMapNode
-        element={element}
-        isSelected={isSelected}
-        onSelect={onSelect}
-        onStartConnection={onStartConnection || (() => {})}
-        onEndConnection={onEndConnection || (() => {})}
-        isConnecting={isConnecting}
-        nearestAnchor={nearestAnchor as any}
-        activeTool={activeTool}
-      />
+      <div className="animate-scale-in">
+        <MindMapNode
+          element={element}
+          isSelected={isSelected}
+          onSelect={onSelect}
+          onStartConnection={onStartConnection || (() => {})}
+          onEndConnection={onEndConnection || (() => {})}
+          isConnecting={isConnecting}
+          nearestAnchor={nearestAnchor as any}
+          activeTool={activeTool}
+        />
+      </div>
     );
   }
   
