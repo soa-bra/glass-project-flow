@@ -89,13 +89,50 @@ export function evaluateExpression(
 }
 
 /**
+ * تقييم شرط حالة مستند
+ * يدعم التحقق من حالة مستند مرتبط بعقدة
+ */
+export function evaluateDocumentCondition(
+  documentId: string,
+  expectedStatus: string,
+  documents: Map<string, { status: string }> | Record<string, { status: string }>
+): boolean {
+  const docMap = documents instanceof Map ? documents : new Map(Object.entries(documents));
+  const doc = docMap.get(documentId);
+  
+  if (!doc) {
+    console.warn(`Document not found: ${documentId}`);
+    return false;
+  }
+  
+  return doc.status === expectedStatus;
+}
+
+/**
  * حل قيمة حقل من السياق
+ * يدعم المسارات المنقطة والتحقق من حالة المستندات
  */
 export function resolveFieldValue(
   field: string,
   context: ConditionContext
 ): unknown {
-  // دعم المسارات المنقطة: variables.status, nodeStates.node1.status
+  // دعم شرط document.status
+  if (field.startsWith('document.') || field.startsWith('documents.')) {
+    const parts = field.split('.');
+    // documents.{docId}.status
+    if (parts.length >= 3 && parts[2] === 'status') {
+      const docId = parts[1];
+      const documents = (context.variables?.documents || {}) as Record<string, { status: string }>;
+      return documents[docId]?.status;
+    }
+    // document.status (للمستند الحالي المرتبط بالعقدة)
+    if (parts.length === 2 && parts[1] === 'status') {
+      const currentDoc = context.variables?.currentDocument as { status?: string } | undefined;
+      return currentDoc?.status;
+    }
+  }
+
+  // دعم المسارات المنقطة العادية: variables.status, nodeStates.node1.status
   const parts = field.split('.');
   let current: unknown = context;
   
