@@ -404,10 +404,10 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       <ResizeHandle position="w" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'w')} />
       <ResizeHandle position="e" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'e')} />
       
-      {/* ✅ منطقة السحب للتحريك مع Pointer Events */}
+      {/* ✅ منطقة السحب للتحريك - تغطي كامل المنطقة */}
       <div
         ref={dragAreaRef}
-        className="absolute inset-4 pointer-events-auto cursor-move touch-none"
+        className="absolute inset-0 pointer-events-auto cursor-move touch-none"
         onPointerDown={handleDragStart}
       />
       

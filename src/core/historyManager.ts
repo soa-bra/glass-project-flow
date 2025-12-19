@@ -1,6 +1,8 @@
 /**
  * History Manager - نظام إدارة التاريخ المتقدم
  * يدعم Undo/Redo مع تفرعات ومجموعات العمليات
+ * 
+ * ✅ محسّن: دعم الضغط وإدارة الذاكرة الديناميكية
  */
 
 import { Operation, otEngine } from './operationalTransform';
@@ -14,6 +16,10 @@ export interface HistoryState {
   label?: string;
   parentId?: string;
   branchId?: string;
+  /** حجم البيانات التقديري بالبايت */
+  estimatedSize?: number;
+  /** هل تم ضغط هذه الحالة؟ */
+  compressed?: boolean;
 }
 
 // إعدادات مدير التاريخ
@@ -22,6 +28,14 @@ export interface HistoryConfig {
   snapshotInterval: number;
   enableBranching: boolean;
   composeTimeout: number;
+  /** تفعيل ضغط الحالات القديمة */
+  compressionEnabled: boolean;
+  /** الحد الأقصى للذاكرة بالميجابايت */
+  maxMemoryMB: number;
+  /** عتبة بدء التنظيف التلقائي (عدد الحالات) */
+  autoCleanupThreshold: number;
+  /** عدد الحالات التي يتم الاحتفاظ بها بدون ضغط */
+  recentStatesCount: number;
 }
 
 // معلومات الفرع
@@ -37,6 +51,16 @@ export interface HistoryBranch {
 export interface HistoryListener {
   onStateChange: (canUndo: boolean, canRedo: boolean) => void;
   onBranchChange?: (branches: HistoryBranch[]) => void;
+  onMemoryWarning?: (usedMB: number, maxMB: number) => void;
+}
+
+// إحصائيات الذاكرة
+export interface MemoryStats {
+  totalStates: number;
+  compressedStates: number;
+  estimatedSizeMB: number;
+  maxSizeMB: number;
+  usagePercentage: number;
 }
 
 class HistoryManager {
@@ -54,7 +78,12 @@ class HistoryManager {
     maxHistorySize: 100,
     snapshotInterval: 10,
     enableBranching: true,
-    composeTimeout: 500
+    composeTimeout: 500,
+    // ✅ إعدادات جديدة للضغط وإدارة الذاكرة
+    compressionEnabled: true,
+    maxMemoryMB: 50,
+    autoCleanupThreshold: 80,
+    recentStatesCount: 20
   };
   
   constructor() {
@@ -73,6 +102,133 @@ class HistoryManager {
       states: []
     };
     this.branches.set('main', mainBranch);
+  }
+  
+  /**
+   * تقدير حجم كائن بالبايت
+   */
+  private estimateObjectSize(obj: any): number {
+    try {
+      const str = JSON.stringify(obj);
+      // تقدير: كل حرف = 2 بايت (UTF-16)
+      return str.length * 2;
+    } catch {
+      return 0;
+    }
+  }
+  
+  /**
+   * تقدير إجمالي استخدام الذاكرة بالميجابايت
+   */
+  private estimateMemoryUsage(): number {
+    let totalSize = 0;
+    
+    this.states.forEach(state => {
+      if (state.estimatedSize) {
+        totalSize += state.estimatedSize;
+      } else {
+        totalSize += this.estimateObjectSize(state);
+      }
+    });
+    
+    return totalSize / (1024 * 1024);
+  }
+  
+  /**
+   * الحصول على إحصائيات الذاكرة
+   */
+  getMemoryStats(): MemoryStats {
+    let compressedCount = 0;
+    this.states.forEach(state => {
+      if (state.compressed) compressedCount++;
+    });
+    
+    const estimatedSizeMB = this.estimateMemoryUsage();
+    
+    return {
+      totalStates: this.states.size,
+      compressedStates: compressedCount,
+      estimatedSizeMB,
+      maxSizeMB: this.config.maxMemoryMB,
+      usagePercentage: (estimatedSizeMB / this.config.maxMemoryMB) * 100
+    };
+  }
+  
+  /**
+   * ضغط حالة قديمة (تحويل العمليات إلى snapshot مختصر)
+   */
+  private compressState(state: HistoryState): void {
+    if (state.compressed || state.operations.length === 0) return;
+    
+    // إنشاء ملخص للعمليات بدلاً من تخزينها كاملة
+    const summary = {
+      operationCount: state.operations.length,
+      operationTypes: [...new Set(state.operations.map(op => op.type))],
+      affectedElements: [...new Set(state.operations.map(op => (op as any).elementId || (op as any).id))],
+      timestamp: state.timestamp
+    };
+    
+    // استبدال العمليات التفصيلية بالملخص
+    state.snapshot = summary;
+    state.operations = []; // مسح العمليات التفصيلية
+    state.compressed = true;
+    
+    // تحديث الحجم التقديري
+    state.estimatedSize = this.estimateObjectSize(state);
+  }
+  
+  /**
+   * ضغط الحالات القديمة تلقائياً
+   */
+  private compressOldStates(): void {
+    if (!this.config.compressionEnabled) return;
+    
+    const branch = this.branches.get(this.currentBranchId);
+    if (!branch || branch.states.length <= this.config.recentStatesCount) return;
+    
+    // ضغط جميع الحالات ما عدا الأحدث
+    const statesToCompress = branch.states.slice(
+      0, 
+      branch.states.length - this.config.recentStatesCount
+    );
+    
+    for (const stateId of statesToCompress) {
+      const state = this.states.get(stateId);
+      if (state && !state.compressed) {
+        this.compressState(state);
+      }
+    }
+  }
+  
+  /**
+   * تنظيف الذاكرة عند تجاوز الحد
+   */
+  private cleanupMemoryIfNeeded(): void {
+    const currentUsage = this.estimateMemoryUsage();
+    
+    if (currentUsage > this.config.maxMemoryMB) {
+      // إشعار المستمعين بتحذير الذاكرة
+      this.listeners.forEach(listener => {
+        listener.onMemoryWarning?.(currentUsage, this.config.maxMemoryMB);
+      });
+      
+      // ضغط الحالات القديمة أولاً
+      this.compressOldStates();
+      
+      // إذا لا زالت الذاكرة مرتفعة، احذف الحالات الأقدم
+      const branch = this.branches.get(this.currentBranchId);
+      if (branch) {
+        while (
+          this.estimateMemoryUsage() > this.config.maxMemoryMB * 0.8 && 
+          branch.states.length > 10
+        ) {
+          const oldStateId = branch.states.shift();
+          if (oldStateId) {
+            this.states.delete(oldStateId);
+          }
+        }
+      }
+    }
   }
   
   /**
@@ -114,8 +270,9 @@ class HistoryManager {
     // إنشاء حالة جديدة
     this.createState(composed, label);
     
-    // تنظيف التاريخ القديم
+    // تنظيف التاريخ القديم وإدارة الذاكرة
     this.pruneHistory();
+    this.cleanupMemoryIfNeeded();
     
     // إشعار المستمعين
     this.notifyListeners();
@@ -136,6 +293,7 @@ class HistoryManager {
     this.composeTimer = null;
     
     this.pruneHistory();
+    this.cleanupMemoryIfNeeded();
     this.notifyListeners();
   }
   
@@ -151,8 +309,12 @@ class HistoryManager {
       operations,
       label,
       parentId: this.currentStateId || undefined,
-      branchId: this.currentBranchId
+      branchId: this.currentBranchId,
+      compressed: false
     };
+    
+    // تقدير حجم الحالة
+    state.estimatedSize = this.estimateObjectSize(state);
     
     // إضافة snapshot كل فترة
     const branch = this.branches.get(this.currentBranchId);
@@ -278,7 +440,7 @@ class HistoryManager {
     // جمع كل العمليات من الفرع المصدر
     for (const stateId of sourceBranch.states) {
       const state = this.states.get(stateId);
-      if (state) {
+      if (state && !state.compressed) {
         operations.push(...state.operations);
       }
     }
@@ -310,6 +472,12 @@ class HistoryManager {
     const targetState = this.states.get(stateId);
     if (!targetState) return [];
     
+    // لا يمكن الانتقال لحالة مضغوطة
+    if (targetState.compressed) {
+      console.warn('[HistoryManager] Cannot go to compressed state');
+      return [];
+    }
+    
     const branch = this.branches.get(this.currentBranchId);
     if (!branch) return [];
     
@@ -326,7 +494,7 @@ class HistoryManager {
       // نحتاج للتراجع
       for (let i = currentIndex; i > targetIndex; i--) {
         const state = this.states.get(branch.states[i]);
-        if (state) {
+        if (state && !state.compressed) {
           const inverted = state.operations.map(op => otEngine.invertOperation(op)).reverse();
           operations.push(...inverted);
         }
@@ -335,7 +503,7 @@ class HistoryManager {
       // نحتاج للإعادة
       for (let i = currentIndex + 1; i <= targetIndex; i++) {
         const state = this.states.get(branch.states[i]);
-        if (state) {
+        if (state && !state.compressed) {
           operations.push(...state.operations);
         }
       }
@@ -354,6 +522,7 @@ class HistoryManager {
     const branch = this.branches.get(this.currentBranchId);
     if (!branch) return;
     
+    // التنظيف بناءً على العدد
     while (branch.states.length > this.config.maxHistorySize) {
       const oldStateId = branch.states.shift();
       if (oldStateId) {
@@ -364,6 +533,11 @@ class HistoryManager {
     // تنظيف مكدس العمليات أيضاً
     while (this.operationStack.length > this.config.maxHistorySize) {
       this.operationStack.shift();
+    }
+    
+    // ضغط الحالات القديمة عند تجاوز العتبة
+    if (branch.states.length > this.config.autoCleanupThreshold) {
+      this.compressOldStates();
     }
   }
   
@@ -421,6 +595,13 @@ class HistoryManager {
    */
   updateConfig(config: Partial<HistoryConfig>): void {
     this.config = { ...this.config, ...config };
+  }
+  
+  /**
+   * الحصول على الإعدادات الحالية
+   */
+  getConfig(): HistoryConfig {
+    return { ...this.config };
   }
   
   /**
@@ -494,6 +675,14 @@ class HistoryManager {
     
     // العودة للفرع الرئيسي
     this.switchBranch('main');
+  }
+  
+  /**
+   * فرض ضغط جميع الحالات القديمة (للاستخدام اليدوي)
+   */
+  forceCompression(): void {
+    this.compressOldStates();
+    this.notifyListeners();
   }
 }
 
