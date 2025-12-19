@@ -25,12 +25,15 @@ import {
   Columns,
   ArrowLeftRight,
   ArrowRightToLine,
-  ArrowLeftToLine
+  ArrowLeftToLine,
+  Bug
 } from 'lucide-react';
 
 interface MindMapToolbarProps {
   selectedNodeIds: string[];
   onClose?: () => void;
+  debugEnabled?: boolean;
+  onToggleDebug?: () => void;
 }
 
 const NODE_STYLES: { type: string; icon: React.ReactNode; label: string }[] = [
@@ -60,7 +63,7 @@ const RadioOption: React.FC<{
   </button>
 );
 
-const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClose }) => {
+const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClose, debugEnabled, onToggleDebug }) => {
   const { elements, updateElement, deleteElement, addElement, viewport } = useCanvasStore();
   
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -398,6 +401,23 @@ const MindMapToolbar: React.FC<MindMapToolbarProps> = ({ selectedNodeIds, onClos
             )}
           </AnimatePresence>
         </div>
+        
+        <div className="w-px h-6 bg-[hsl(var(--border))]" />
+        
+        {/* Debug Mode Toggle */}
+        {onToggleDebug && (
+          <button
+            onClick={onToggleDebug}
+            className={`p-1.5 rounded-lg transition-colors ${
+              debugEnabled 
+                ? 'bg-[hsl(var(--accent-yellow)/0.2)] text-[hsl(var(--accent-yellow))]' 
+                : 'hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink-80))]'
+            }`}
+            title={debugEnabled ? "إيقاف وضع Debug" : "تفعيل وضع Debug"}
+          >
+            <Bug size={16} />
+          </button>
+        )}
         
         <div className="w-px h-6 bg-[hsl(var(--border))]" />
         

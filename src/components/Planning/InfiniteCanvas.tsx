@@ -19,6 +19,7 @@ import { RealtimeSyncManager } from './collaboration';
 import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 import MindMapConnectionLine from './MindMapConnectionLine';
 import MindMapToolbar from './MindMapToolbar';
+import MindMapDebugOverlay from './MindMapDebugOverlay';
 import { findNearestAnchor, calculateConnectorBounds, type NodeAnchorPoint, type MindMapConnectorData } from '@/types/mindmap-canvas';
 import type { SnapLine } from '@/core/snapEngine';
 
@@ -89,6 +90,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   
   // ✅ Sprint 5: Snap Guides State
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
+  
+  // ✅ Debug Mode State للـ MindMap
+  const [mindMapDebugEnabled, setMindMapDebugEnabled] = useState(false);
   
   // ✅ Mind Map Connection State
   const [mindMapConnection, setMindMapConnection] = useState<{
@@ -701,10 +705,17 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       {selectedElementIds.length > 0 && elements.some(el => 
         selectedElementIds.includes(el.id) && el.type === 'mindmap_node'
       ) && (
-        <MindMapToolbar selectedNodeIds={selectedElementIds.filter(id => 
-          elements.find(el => el.id === id)?.type === 'mindmap_node'
-        )} />
+        <MindMapToolbar 
+          selectedNodeIds={selectedElementIds.filter(id => 
+            elements.find(el => el.id === id)?.type === 'mindmap_node'
+          )}
+          debugEnabled={mindMapDebugEnabled}
+          onToggleDebug={() => setMindMapDebugEnabled(prev => !prev)}
+        />
       )}
+      
+      {/* ✅ MindMap Debug Overlay */}
+      <MindMapDebugOverlay enabled={mindMapDebugEnabled} />
       
       {/* ✅ Sprint 17: Real-time Collaboration Sync Manager */}
       <RealtimeSyncManager
