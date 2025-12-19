@@ -290,20 +290,16 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     }
   }, [isDragging, isResizing, viewport, moveElements, resizeElements, selectedElementIds, bounds, getResizeOrigin, selectedElements, elements, duplicateElement, resizeFrame, onGuidesChange, settings.snapToGrid, settings.gridSize]);
   
-  // معالجات الأحداث - حفظ مواقع العناصر الفعلية لمنع القفز
+  // معالجات الأحداث - استخدام bounds لأنها تمثل الإحداثيات الصحيحة للمجموعة
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDragging(true);
     dragStart.current = { x: e.clientX, y: e.clientY };
     
-    // ✅ Fix: حفظ الموقع الفعلي لأول عنصر محدد (ليس bounds)
-    const firstSelected = selectedElements[0];
-    const startX = firstSelected ? firstSelected.position.x : bounds.x;
-    const startY = firstSelected ? firstSelected.position.y : bounds.y;
-    
-    elementStartPos.current = { x: startX, y: startY };
-    lastAppliedPos.current = { x: startX, y: startY };
-  }, [selectedElements, bounds.x, bounds.y]);
+    // ✅ Fix: استخدام bounds.x و bounds.y لأنها تمثل الموقع الفعلي للمجموعة
+    elementStartPos.current = { x: bounds.x, y: bounds.y };
+    lastAppliedPos.current = { x: bounds.x, y: bounds.y };
+  }, [bounds.x, bounds.y]);
   
   const handleResizeStart = useCallback((e: React.MouseEvent, corner: string) => {
     e.stopPropagation();
