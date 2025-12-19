@@ -32,6 +32,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isSingleNodeMode, setIsSingleNodeMode] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
@@ -46,6 +47,33 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       (el.data as any)?.startNodeId === element.id
     )
   );
+  
+  // ✅ ResizeObserver لقياس الحجم الفعلي للنود وتحديث element.size
+  useEffect(() => {
+    if (!contentRef.current) return;
+    
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      
+      const { width, height } = entry.contentRect;
+      // أضف padding (px-4 = 16px * 2 = 32, py-2 = 8px * 2 = 16)
+      const actualWidth = Math.max(80, width + 32);
+      const actualHeight = Math.max(40, height + 16);
+      
+      // تحديث الحجم في الـ store فقط إذا تغير بشكل ملحوظ
+      if (Math.abs(actualWidth - element.size.width) > 2 || 
+          Math.abs(actualHeight - element.size.height) > 2) {
+        updateElement(element.id, {
+          size: { width: actualWidth, height: actualHeight }
+        });
+      }
+    });
+    
+    observer.observe(contentRef.current);
+    
+    return () => observer.disconnect();
+  }, [element.id, element.size.width, element.size.height, updateElement]);
   
   // ✅ بدء التحرير بالنقر المزدوج
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
@@ -296,6 +324,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       style={{
         left: element.position.x,
         top: element.position.y,
+        // ✅ استخدام الحجم الديناميكي من element.size (يُحدّث بواسطة ResizeObserver)
         width: element.size.width,
         height: element.size.height,
         zIndex: isSelected ? 100 : 10,
@@ -303,10 +332,15 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
     >
-      {/* محتوى العقدة */}
+      {/* محتوى العقدة - مع ref للقياس */}
       <div
-        className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md transition-all relative"
-        style={getNodeStyle()}
+        ref={contentRef}
+        className="inline-flex items-center justify-center px-4 py-2 shadow-md transition-all relative whitespace-nowrap"
+        style={{
+          ...getNodeStyle(),
+          minWidth: 80,
+          minHeight: 40,
+        }}
       >
         {isEditing ? (
           <input
@@ -320,11 +354,12 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
               if (e.key === 'Escape') setIsEditing(false);
               e.stopPropagation();
             }}
-            className="w-full bg-transparent text-center outline-none text-inherit font-medium"
+            className="bg-transparent text-center outline-none text-inherit font-medium min-w-[60px]"
             dir="auto"
+            style={{ width: `${Math.max(60, editText.length * 10)}px` }}
           />
         ) : (
-          <span className="font-medium text-center truncate" dir="auto">
+          <span className="font-medium text-center" dir="auto">
             {nodeData.label || 'عقدة جديدة'}
           </span>
         )}
