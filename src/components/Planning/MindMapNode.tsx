@@ -38,9 +38,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const [isSingleNodeMode, setIsSingleNodeMode] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  // ✅ حالة لتخزين الحجم الفعلي للـ anchors
-  const [actualSize, setActualSize] = useState({ width: 80, height: 40 });
-  
   const nodeData = element.data as MindMapNodeData;
   
   // ✅ التحقق من وجود فروع
@@ -50,25 +47,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       (el.data as any)?.startNodeId === element.id
     )
   );
-  
-  // ✅ حساب الحجم الفعلي من DOM مباشرة (بدون ResizeObserver معقد)
-  useEffect(() => {
-    const updateActualSize = () => {
-      if (!nodeRef.current) return;
-      const rect = nodeRef.current.getBoundingClientRect();
-      const zoom = viewport.zoom || 1;
-      const newWidth = Math.max(80, rect.width / zoom);
-      const newHeight = Math.max(40, rect.height / zoom);
-      setActualSize({ width: newWidth, height: newHeight });
-    };
-    
-    // تحديث فوري
-    updateActualSize();
-    
-    // تحديث بعد الـ render
-    const timer = setTimeout(updateActualSize, 50);
-    return () => clearTimeout(timer);
-  }, [nodeData.label, isEditing, viewport.zoom]);
   
   // ✅ بدء التحرير بالنقر المزدوج
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
@@ -232,16 +210,16 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setIsDragging(false);
   }, []);
   
-  // ✅ حساب موقع الـ anchor من الحجم الفعلي
-  const getActualAnchorPosition = useCallback((anchor: 'top' | 'bottom' | 'left' | 'right') => {
-    const { width, height } = actualSize;
+  // ✅ حساب موقع الـ anchor من element.size مباشرة
+  const getAnchorPosition = useCallback((anchor: 'top' | 'bottom' | 'left' | 'right') => {
+    const { width, height } = element.size;
     switch (anchor) {
       case 'top': return { x: width / 2, y: 0 };
       case 'bottom': return { x: width / 2, y: height };
       case 'left': return { x: 0, y: height / 2 };
       case 'right': return { x: width, y: height / 2 };
     }
-  }, [actualSize]);
+  }, [element.size]);
   
   // نقاط الربط
   const handleAnchorMouseDown = useCallback((
@@ -249,10 +227,10 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     anchor: 'top' | 'bottom' | 'left' | 'right'
   ) => {
     e.stopPropagation();
-    const localPos = getActualAnchorPosition(anchor);
+    const localPos = getAnchorPosition(anchor);
     const pos = { x: element.position.x + localPos.x, y: element.position.y + localPos.y };
     onStartConnection(element.id, anchor, pos);
-  }, [element.position, getActualAnchorPosition, onStartConnection]);
+  }, [element.position, element.id, getAnchorPosition, onStartConnection]);
   
   const handleAnchorMouseUp = useCallback((
     e: React.MouseEvent,
@@ -325,43 +303,45 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   return (
     <div
       ref={nodeRef}
-      className={`absolute select-none transition-shadow inline-flex items-center justify-center px-4 py-2 shadow-md ${
+      className={`absolute select-none transition-shadow ${
         activeTool === 'selection_tool' ? 'cursor-move' : 'cursor-default'
       } ${isSelected ? 'ring-2 ring-[hsl(var(--accent-green))] ring-offset-2' : ''}`}
       style={{
         left: element.position.x,
         top: element.position.y,
-        // ✅ بدون width/height - الحجم يأتي من المحتوى مباشرة
+        width: element.size.width,
+        height: element.size.height,
         zIndex: isSelected ? 100 : 10,
-        ...getNodeStyle(),
-        minWidth: 80,
-        minHeight: 40,
       }}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
     >
-      {/* ✅ المحتوى مباشرة بدون حاوية إضافية */}
-      {isEditing ? (
-        <input
-          ref={inputRef}
-          type="text"
-          value={editText}
-          onChange={(e) => setEditText(e.target.value)}
-          onBlur={handleSaveEdit}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSaveEdit();
-            if (e.key === 'Escape') setIsEditing(false);
-            e.stopPropagation();
-          }}
-          className="bg-transparent text-center outline-none text-inherit font-medium min-w-[60px]"
-          dir="auto"
-          style={{ width: `${Math.max(60, editText.length * 10)}px` }}
-        />
-      ) : (
-        <span className="font-medium text-center whitespace-nowrap" dir="auto">
-          {nodeData.label || 'عقدة جديدة'}
-        </span>
-      )}
+      {/* ✅ الحاوية الداخلية للمحتوى */}
+      <div 
+        className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md"
+        style={getNodeStyle()}
+      >
+        {isEditing ? (
+          <input
+            ref={inputRef}
+            type="text"
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            onBlur={handleSaveEdit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSaveEdit();
+              if (e.key === 'Escape') setIsEditing(false);
+              e.stopPropagation();
+            }}
+            className="bg-transparent text-center outline-none text-inherit font-medium w-full"
+            dir="auto"
+          />
+        ) : (
+          <span className="font-medium text-center truncate" dir="auto">
+            {nodeData.label || 'عقدة جديدة'}
+          </span>
+        )}
+      </div>
       
       {/* أيقونة الجذر */}
       {nodeData.isRoot && (
@@ -381,11 +361,11 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         </button>
       )}
       
-      {/* ✅ نقاط الربط - تُحسب من الحجم الفعلي */}
+      {/* ✅ نقاط الربط - تُحسب من element.size */}
       {(isSelected || isConnecting) && (
         <>
           {(['top', 'bottom', 'left', 'right'] as const).map((anchor) => {
-            const pos = getActualAnchorPosition(anchor);
+            const pos = getAnchorPosition(anchor);
             const isHighlighted = isNearestForConnection && nearestAnchor?.anchor === anchor;
             
             return (
