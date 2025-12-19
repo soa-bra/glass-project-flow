@@ -870,19 +870,19 @@ const FloatingEditBar: React.FC = () => {
 
           <div className={separatorClass} />
 
-          {/* Show/Hide */}
+          {/* Show/Hide - نفس نمط القفل */}
           <button
             onClick={handleToggleVisibility}
-            className={`${btnClass} ${!areElementsVisible ? 'bg-[hsl(var(--panel))]' : ''}`}
+            className={`${!areElementsVisible ? btnClassNoHover : btnClass} ${!areElementsVisible ? 'bg-[hsl(var(--ink))] text-white' : ''}`}
             title={areElementsVisible ? 'إخفاء' : 'إظهار'}
           >
             {areElementsVisible ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
 
-          {/* Group/Ungroup */}
+          {/* Group/Ungroup - نفس نمط القفل */}
           <button
             onClick={handleToggleGroup}
-            className={`${btnClass} ${areElementsGrouped ? 'bg-[hsl(var(--ink))] text-white hover:bg-[hsl(var(--ink))]' : ''}`}
+            className={`${areElementsGrouped ? btnClassNoHover : btnClass} ${areElementsGrouped ? 'bg-[hsl(var(--ink))] text-white' : ''}`}
             title={isGroup ? 'فك التجميع' : 'تجميع'}
           >
             {isGroup ? <Ungroup size={16} /> : <Group size={16} />}

@@ -166,6 +166,11 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     
     onSelect(multiSelect);
     
+    // ✅ Fix: لا تبدأ السحب إذا العنصر محدد - BoundingBox سيتولى السحب
+    if (isSelected) {
+      return;
+    }
+    
     // لا تبدأ السحب إذا كان في وضع التحرير للنص
     if (isEditingThisText) {
       return;
