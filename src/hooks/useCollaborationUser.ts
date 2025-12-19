@@ -31,24 +31,34 @@ export function useCollaborationUser(): CollaborationUser & {
   updateName: (name: string) => void;
   updateColor: (color: string) => void;
 } {
-  const [user, setUser] = useState<CollaborationUser>(() => {
-    // محاولة استرجاع البيانات المحفوظة
+  // ✅ تهيئة القيم الافتراضية أولاً
+  const [user, setUser] = useState<CollaborationUser>({
+    id: '',
+    name: 'مستخدم سوبرا',
+    color: USER_COLORS[0],
+  });
+  
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // ✅ قراءة localStorage في useEffect لتجنب مشاكل SSR
+  useEffect(() => {
+    if (isInitialized) return;
+    
     const savedId = localStorage.getItem(USER_ID_KEY);
     const savedName = localStorage.getItem(USER_NAME_KEY);
     const savedColor = localStorage.getItem(USER_COLOR_KEY);
 
-    // إنشاء معرف جديد إذا لم يوجد
     const id = savedId || `user-${nanoid(8)}`;
     const name = savedName || 'مستخدم سوبرا';
     const color = savedColor || USER_COLORS[Math.floor(Math.random() * USER_COLORS.length)];
 
-    // حفظ القيم الجديدة
     if (!savedId) localStorage.setItem(USER_ID_KEY, id);
     if (!savedName) localStorage.setItem(USER_NAME_KEY, name);
     if (!savedColor) localStorage.setItem(USER_COLOR_KEY, color);
 
-    return { id, name, color };
-  });
+    setUser({ id, name, color });
+    setIsInitialized(true);
+  }, [isInitialized]);
 
   const updateName = (name: string) => {
     localStorage.setItem(USER_NAME_KEY, name);
