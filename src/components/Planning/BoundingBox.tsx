@@ -116,7 +116,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       
       if (isDragging) {
         // تكرار العناصر عند Cmd/Ctrl+Drag
-        if ((e.metaKey || e.ctrlKey) && !hasDuplicated.current) {
+        if (e.metaKey && e.ctrlKey && !hasDuplicated.current) {
           selectedElementIds.forEach(id => duplicateElement(id));
           hasDuplicated.current = true;
         }

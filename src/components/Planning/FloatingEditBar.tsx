@@ -13,7 +13,11 @@ import {
   Group,
   Ungroup,
   AlignVerticalJustifyCenter,
+  AlignVerticalJustifyStart,
+  AlignVerticalJustifyEnd,
   AlignHorizontalJustifyCenter,
+  AlignHorizontalJustifyStart,
+  AlignHorizontalJustifyEnd,
   MoreHorizontal,
   Copy,
   Scissors,
@@ -27,7 +31,8 @@ import {
   Network,
   Calendar,
   Table2,
-  Zap
+  Zap,
+  Files
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCanvasStore } from '@/stores/canvasStore';
@@ -102,6 +107,7 @@ const FloatingEditBar: React.FC = () => {
     ungroupElements,
     alignElements,
     lockElements,
+    duplicateElement,
     unlockElements,
     viewport
   } = useCanvasStore();
@@ -116,6 +122,8 @@ const FloatingEditBar: React.FC = () => {
   const [recentColors, setRecentColors] = useState<string[]>([]);
   const [isAIMenuOpen, setIsAIMenuOpen] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
+  const [isVerticalAlignOpen, setIsVerticalAlignOpen] = useState(false);
+  const [isHorizontalAlignOpen, setIsHorizontalAlignOpen] = useState(false);
   
   useEffect(() => {
     setRecentColors(getRecentColors());
@@ -329,14 +337,46 @@ const FloatingEditBar: React.FC = () => {
   };
 
   // Alignment actions
-  const handleAlignVertical = () => {
-    alignElements(selectedElementIds, 'middle');
-    toast.success('تمت المحاذاة العمودية');
+  const handleAlignVerticalTop = () => {
+    alignElements(selectedElementIds, 'top');
+    setIsVerticalAlignOpen(false);
+    toast.success('تمت المحاذاة للأعلى');
   };
 
-  const handleAlignHorizontal = () => {
+  const handleAlignVerticalMiddle = () => {
+    alignElements(selectedElementIds, 'middle');
+    setIsVerticalAlignOpen(false);
+    toast.success('تمت المحاذاة للوسط عمودياً');
+  };
+
+  const handleAlignVerticalBottom = () => {
+    alignElements(selectedElementIds, 'bottom');
+    setIsVerticalAlignOpen(false);
+    toast.success('تمت المحاذاة للأسفل');
+  };
+
+  const handleAlignHorizontalLeft = () => {
+    alignElements(selectedElementIds, 'left');
+    setIsHorizontalAlignOpen(false);
+    toast.success('تمت المحاذاة لليسار');
+  };
+
+  const handleAlignHorizontalCenter = () => {
     alignElements(selectedElementIds, 'center');
-    toast.success('تمت المحاذاة الأفقية');
+    setIsHorizontalAlignOpen(false);
+    toast.success('تمت المحاذاة للوسط أفقياً');
+  };
+
+  const handleAlignHorizontalRight = () => {
+    alignElements(selectedElementIds, 'right');
+    setIsHorizontalAlignOpen(false);
+    toast.success('تمت المحاذاة لليمين');
+  };
+
+  // Duplicate action
+  const handleDuplicate = () => {
+    selectedElementIds.forEach(id => duplicateElement(id));
+    toast.success('تم تكرار العناصر');
   };
 
   // AI Smart Element functions
@@ -686,22 +726,101 @@ const FloatingEditBar: React.FC = () => {
 
           <div className={separatorClass} />
 
-          {/* Alignment */}
-          <div className="flex items-center gap-0.5">
+          {/* Duplicate Button */}
+          <button
+            onClick={handleDuplicate}
+            className={btnClass}
+            title="تكرار"
+          >
+            <Files size={16} />
+          </button>
+
+          <div className={separatorClass} />
+
+          {/* Vertical Alignment Dropdown */}
+          <div className="relative">
             <button 
-              onClick={handleAlignVertical}
-              className={btnClass} 
+              onClick={() => {
+                setIsVerticalAlignOpen(!isVerticalAlignOpen);
+                setIsHorizontalAlignOpen(false);
+              }}
+              className={`${btnClass} ${isVerticalAlignOpen ? 'bg-[hsl(var(--panel))]' : ''}`}
               title="محاذاة عمودية"
             >
               <AlignVerticalJustifyCenter size={16} />
             </button>
+            
+            {isVerticalAlignOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsVerticalAlignOpen(false)} />
+                <div className="absolute top-full right-0 mt-2 w-36 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] p-1.5 z-50">
+                  <button 
+                    onClick={handleAlignVerticalTop}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
+                    <AlignVerticalJustifyStart size={14} />
+                    <span>للأعلى</span>
+                  </button>
+                  <button 
+                    onClick={handleAlignVerticalMiddle}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
+                    <AlignVerticalJustifyCenter size={14} />
+                    <span>للوسط</span>
+                  </button>
+                  <button 
+                    onClick={handleAlignVerticalBottom}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
+                    <AlignVerticalJustifyEnd size={14} />
+                    <span>للأسفل</span>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Horizontal Alignment Dropdown */}
+          <div className="relative">
             <button 
-              onClick={handleAlignHorizontal}
-              className={btnClass} 
+              onClick={() => {
+                setIsHorizontalAlignOpen(!isHorizontalAlignOpen);
+                setIsVerticalAlignOpen(false);
+              }}
+              className={`${btnClass} ${isHorizontalAlignOpen ? 'bg-[hsl(var(--panel))]' : ''}`}
               title="محاذاة أفقية"
             >
               <AlignHorizontalJustifyCenter size={16} />
             </button>
+            
+            {isHorizontalAlignOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsHorizontalAlignOpen(false)} />
+                <div className="absolute top-full right-0 mt-2 w-36 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] p-1.5 z-50">
+                  <button 
+                    onClick={handleAlignHorizontalRight}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
+                    <AlignHorizontalJustifyEnd size={14} />
+                    <span>لليمين</span>
+                  </button>
+                  <button 
+                    onClick={handleAlignHorizontalCenter}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
+                    <AlignHorizontalJustifyCenter size={14} />
+                    <span>للوسط</span>
+                  </button>
+                  <button 
+                    onClick={handleAlignHorizontalLeft}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
+                    <AlignHorizontalJustifyStart size={14} />
+                    <span>لليسار</span>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
 
           <div className={separatorClass} />
