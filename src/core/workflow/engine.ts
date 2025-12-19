@@ -142,8 +142,8 @@ class WorkflowEngine {
       const nodeState = instance.nodeStates[nodeId];
       
       if (nodeState.status === 'active') {
-        // البحث عن الحواف الخارجة (استخدام source بدلاً من from)
-        const outEdges = definition.edges.filter(e => e.source === nodeId);
+        // البحث عن الحواف الخارجة
+        const outEdges = definition.edges.filter(e => e.fromNodeId === nodeId);
         
         // محاولة الانتقال
         await this.tryTransition(instanceId, nodeId, outEdges);
@@ -312,10 +312,10 @@ class WorkflowEngine {
           instance.nodeStates[fromNodeId]
         );
         
-        // استخدام conditions بدلاً من condition
-        const condExpr = edge.conditions?.[0]?.value as string | undefined;
+        // استخدام conditions
+        const condExpr = edge.conditions?.[0]?.expression;
         if (evaluateEdgeCondition(condExpr, context)) {
-          await this.transition(instanceId, fromNodeId, edge.target, edge.id);
+          await this.transition(instanceId, fromNodeId, edge.toNodeId, edge.id);
           return true;
         }
       }
@@ -329,7 +329,8 @@ class WorkflowEngine {
     // للعقد العادية، الانتقال للحافة الأولى
     if (edges.length > 0) {
       const edge = edges[0];
-      await this.transition(instanceId, fromNodeId, edge.target, edge.id);
+      await this.transition(instanceId, fromNodeId, edge.toNodeId, edge.id);
+      return true;
       return true;
     }
     
