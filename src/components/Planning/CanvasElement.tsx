@@ -11,11 +11,12 @@ import { ArrowLabels } from './ArrowLabels';
 import MindMapNode from './MindMapNode';
 import MindMapConnector from './MindMapConnector';
 import ElementAnchors from './ElementAnchors';
-import type { CanvasSmartElement } from '@/types/canvas-elements';
+import type { CanvasSmartElement, CanvasWorkflowNodeElement, CanvasWorkflowEdgeElement } from '@/types/canvas-elements';
 import { sanitizeHTMLForDisplay } from '@/utils/sanitize';
 import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel } from '@/core/canvasKernel';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
+import { WorkflowNode, WorkflowEdge } from './Workflow';
 
 // التحقق إذا كان العنصر سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -117,6 +118,88 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         element={element}
         isSelected={isSelected}
         onSelect={onSelect}
+      />
+    );
+  }
+
+  // عرض عناصر Workflow
+  if (element.type === 'workflow_node') {
+    const workflowElement = element as unknown as CanvasWorkflowNodeElement;
+    // تحويل CanvasWorkflowNodeElement إلى WorkflowNodeData
+    const nodeData = {
+      id: workflowElement.id,
+      type: workflowElement.nodeType,
+      label: workflowElement.label,
+      description: workflowElement.description,
+      position: workflowElement.position,
+      size: workflowElement.size,
+      tasks: workflowElement.tasks,
+      assignees: workflowElement.assignees,
+      dueDate: workflowElement.dueDate,
+      entryConditions: workflowElement.conditions,
+      onEnterActions: workflowElement.actions,
+      metadata: workflowElement.metadata
+    };
+    
+    return (
+      <WorkflowNode
+        node={nodeData as any}
+        isSelected={isSelected}
+        onSelect={() => onSelect(false)}
+        onNodeUpdate={(nodeId, updates) => {
+          const { updateElement } = useCanvasStore.getState();
+          updateElement(nodeId, updates as any);
+        }}
+      />
+    );
+  }
+
+  if (element.type === 'workflow_edge') {
+    const edgeElement = element as unknown as CanvasWorkflowEdgeElement;
+    const elements = useCanvasStore.getState().elements;
+    const fromEl = elements.find(el => el.id === edgeElement.fromNodeId) as unknown as CanvasWorkflowNodeElement | undefined;
+    const toEl = elements.find(el => el.id === edgeElement.toNodeId) as unknown as CanvasWorkflowNodeElement | undefined;
+    
+    if (!fromEl || !toEl) return null;
+    
+    // تحويل CanvasWorkflowEdgeElement إلى WorkflowEdgeData
+    const edgeData = {
+      id: edgeElement.id,
+      type: edgeElement.edgeType || 'default',
+      from: edgeElement.fromNodeId,
+      to: edgeElement.toNodeId,
+      fromAnchor: edgeElement.fromAnchor,
+      toAnchor: edgeElement.toAnchor,
+      label: edgeElement.label,
+      pathType: edgeElement.pathType,
+      animated: edgeElement.animated,
+      condition: edgeElement.condition
+    };
+    
+    // تحويل العقد
+    const fromNode = {
+      id: fromEl.id,
+      type: fromEl.nodeType,
+      label: fromEl.label,
+      position: fromEl.position,
+      size: fromEl.size
+    };
+    
+    const toNode = {
+      id: toEl.id,
+      type: toEl.nodeType,
+      label: toEl.label,
+      position: toEl.position,
+      size: toEl.size
+    };
+    
+    return (
+      <WorkflowEdge
+        edge={edgeData as any}
+        fromNode={fromNode as any}
+        toNode={toNode as any}
+        isSelected={isSelected}
+        onSelect={() => onSelect(false)}
       />
     );
   }
