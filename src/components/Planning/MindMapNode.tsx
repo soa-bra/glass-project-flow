@@ -324,21 +324,22 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           </span>
         )}
         
-        {/* أيقونة الجذر */}
-        {nodeData.isRoot && (
-          <div className="absolute -top-2 -right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm">
-            <div className="w-3 h-3 rounded-full bg-[hsl(var(--accent-green))]" />
-          </div>
-        )}
-        
-        {/* ✅ زر الطي - يظهر إذا كان للعقدة فروع */}
-        {hasChildren && (
+        {/* ✅ زر الطي/أيقونة الجذر - أعلى يمين العقدة */}
+        {(nodeData.isRoot || hasChildren) && (
           <button
-            onClick={handleToggleCollapse}
-            className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-md border border-[hsl(var(--border))] flex items-center justify-center text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
-            title={nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع"}
+            onClick={hasChildren ? handleToggleCollapse : undefined}
+            className={`absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md border border-[hsl(var(--border))] transition-all ${
+              hasChildren 
+                ? 'cursor-pointer hover:scale-110 text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))]' 
+                : 'cursor-default'
+            }`}
+            title={hasChildren ? (nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع") : "العقدة الجذر"}
           >
-            {nodeData.isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+            {hasChildren ? (
+              nodeData.isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />
+            ) : (
+              <div className="w-3 h-3 rounded-full bg-[hsl(var(--accent-green))]" />
+            )}
           </button>
         )}
       </div>
