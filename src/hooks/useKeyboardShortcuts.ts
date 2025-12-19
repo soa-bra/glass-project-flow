@@ -28,41 +28,60 @@ export const useKeyboardShortcuts = () => {
   const isHoldingModifierRef = useRef(false);
 
   useEffect(() => {
+    // ✅ Capture Phase Handler - يعمل قبل أي event handler آخر
     const handleKeyDown = (e: KeyboardEvent) => {
-      // ✅ الفحص الأول والأهم: هل المستخدم في وضع الكتابة؟
+      const target = e.target as HTMLElement;
+      
+      // ✅ الفحص الشامل 1: هل المستخدم داخل عنصر contenteditable؟
+      const isInContentEditable = target.closest('[contenteditable="true"]') !== null;
+      
+      // ✅ الفحص الشامل 2: هل المستخدم داخل input/textarea؟
+      const isInInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+      
+      // ✅ الفحص الشامل 3: هل typingMode مفعّل في الـ store؟
       const typingMode = useCanvasStore.getState().typingMode;
       
-      if (typingMode) {
-        // السماح فقط بالأحرف العادية واختصارات النص
+      // إذا المستخدم في وضع الكتابة بأي شكل
+      const isTyping = isInContentEditable || isInInput || typingMode;
+      
+      if (isTyping) {
+        // السماح بالكتابة العادية (أحرف، أرقام، رموز)
         if (!e.ctrlKey && !e.metaKey && e.key.length === 1) {
-          return; // ✅ السماح بالكتابة العادية
+          return; // ✅ لا تمنع الكتابة
         }
 
+        // السماح باختصارات تحرير النص (Ctrl+A/B/I/U/Z/C/X/V)
         const allowedCtrl = ['a', 'b', 'i', 'u', 'z', 'v', 'c', 'x'];
         if ((e.ctrlKey || e.metaKey) && allowedCtrl.includes(e.key.toLowerCase())) {
-          return; // ✅ اختصارات تحرير النص
+          return; // ✅ اختصارات تحرير النص مسموحة
         }
         
-        // السماح بمفاتيح التنقل
+        // السماح بمفاتيح التنقل والتحكم
         const controlKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 
-                            'ArrowUp', 'ArrowDown', 'Home', 'End', 'Tab', 'Escape', 'Enter'];
+                            'ArrowUp', 'ArrowDown', 'Home', 'End', 'Tab', 'Enter', 'Shift', 'CapsLock'];
         if (controlKeys.includes(e.key)) {
+          return; // ✅ مفاتيح التحكم مسموحة
+        }
+
+        // ✅ Escape يخرج من وضع الكتابة
+        if (e.key === 'Escape') {
+          useCanvasStore.getState().stopTyping();
           return;
         }
 
-        // ✅ منع أي اختصار أداة
-        e.preventDefault();
-        e.stopPropagation();
-        return;
+        // ✅ منع جميع اختصارات الأدوات أثناء الكتابة (مثل U, T, V, P, F, R, S, G)
+        const toolShortcuts = ['u', 't', 'v', 'p', 'f', 'r', 's', 'g'];
+        if (!e.ctrlKey && !e.metaKey && toolShortcuts.includes(e.key.toLowerCase())) {
+          // لا تفعل شيئاً - لا تمنع الحدث لأنه قد يكون حرف كتابة
+          return;
+        }
+
+        return; // ✅ باقي المفاتيح تُترك للـ contenteditable
       }
-      
-      // ✅ فحص إضافي للحقول العادية (INPUT/TEXTAREA)
-      const target = e.target as HTMLElement;
-      const isTypingInInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
-      
-      if (isTypingInInput) {
-        return;
-      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // ✅ من هنا وما بعد: المستخدم ليس في وضع الكتابة - اختصارات الأدوات تعمل
+      // ═══════════════════════════════════════════════════════════════
 
       // ✅ التبديل المؤقت لأداة التحديد عند الضغط على Command/Ctrl
       if ((e.key === 'Meta' || e.key === 'Control') && !isHoldingModifierRef.current) {
@@ -132,47 +151,43 @@ export const useKeyboardShortcuts = () => {
         useCanvasStore.getState().selectElements(allElementIds);
       }
 
-      // Grid toggle (G)
-      if (e.key === 'g' && !e.ctrlKey && !e.metaKey) {
+      // Grid toggle (G without modifiers)
+      if (e.key === 'g' && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
         e.preventDefault();
         toggleGrid();
       }
 
-      // Tool shortcuts
+      // ═══════════════════════════════════════════════════════════════
+      // ✅ Tool shortcuts - تعمل فقط خارج وضع الكتابة
+      // ═══════════════════════════════════════════════════════════════
+      
       if (e.key === 'v' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('selection_tool');
-        toast.info('أداة التحديد');
       }
       if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('text_tool');
-        toast.info('أداة النص - انقر لإضافة نص');
       }
       if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('shapes_tool');
-        toast.info('أداة الأشكال');
       }
       if (e.key === 'p' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('smart_pen');
-        toast.info('القلم الذكي');
       }
       if (e.key === 'f' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('frame_tool');
-        toast.info('أداة الإطار');
       }
       if (e.key === 'u' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('file_uploader');
-        toast.info('رفع الملفات');
       }
       if (e.key === 's' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('smart_element_tool');
-        toast.info('العناصر الذكية');
       }
 
       // Group/Ungroup (Ctrl+G / Ctrl+Shift+G)
@@ -219,7 +234,7 @@ export const useKeyboardShortcuts = () => {
       }
 
       // Arrow keys for precise movement
-      if (selectedElementIds.length > 0 && !e.ctrlKey && !e.metaKey) {
+      if (selectedElementIds.length > 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
         let dx = 0;
         let dy = 0;
         const step = e.shiftKey ? 10 : 1;
@@ -247,6 +262,7 @@ export const useKeyboardShortcuts = () => {
       if (e.key === 'Escape') {
         e.preventDefault();
         useCanvasStore.getState().clearSelection();
+        setActiveTool('selection_tool');
       }
     };
 
@@ -261,11 +277,12 @@ export const useKeyboardShortcuts = () => {
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    // ✅ استخدام capture: true ليعمل قبل أي event handler آخر
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    window.addEventListener('keyup', handleKeyUp, { capture: true });
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('keydown', handleKeyDown, { capture: true });
+      window.removeEventListener('keyup', handleKeyUp, { capture: true });
     };
   }, [
     selectedElementIds,
