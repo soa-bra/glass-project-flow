@@ -168,8 +168,8 @@ const ShapesPanel: React.FC = () => {
                 onClick={() => handleShapeSelect(shape.type, shape.name)}
                 className={`group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 transition-all ${
                   shapeType === shape.type
-                    ? "border-[hsl(var(--accent-blue))] bg-[hsl(var(--accent-blue))]/5"
-                    : "border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-white"
+                    ? "border-[hsl(var(--accent-blue))] bg-bg-[hsl(var(--panel))]"
+                    : "border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-[hsl(var(--panel))]"
                 }`}
               >
                 <span
@@ -212,7 +212,7 @@ const ShapesPanel: React.FC = () => {
                     max={50}
                     value={strokeWidth}
                     onChange={(e) => updateToolSettings("shapes", { strokeWidth: Math.max(0, Number(e.target.value)) })}
-                    className="w-12 px-2 py-1 text-[12px] border border-[hsl(var(--border))] rounded-[8px] bg-white text-[hsl(var(--ink))] text-center focus:outline-none focus:border-[hsl(var(--accent-blue))] transition-colors"
+                    className="w-12 px-2 py-1 text-[12px] border border-[hsl(var(--border))] rounded-[8px] bg-[hsl(var(--panel))] text-[hsl(var(--ink))] text-center focus:outline-none focus:border-[hsl(var(--accent-blue))] transition-colors"
                   />
                   <span className="text-[11px] text-[hsl(var(--ink-60))]">px</span>
                 </div>
@@ -291,8 +291,8 @@ const ShapesPanel: React.FC = () => {
                     onClick={() => handleIconSelect(iconName, icon.name)}
                     className={`group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 transition-all ${
                       isSelected
-                        ? "border-[hsl(var(--accent-blue))] bg-[hsl(var(--accent-blue))]/5"
-                        : "border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-white"
+                        ? "border-[hsl(var(--accent-blue))] bg-[hsl(var(--panel))]"
+                        : "border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-[hsl(var(--panel))]"
                     }`}
                   >
                     <span
@@ -339,7 +339,7 @@ const ShapesPanel: React.FC = () => {
                   onChange={(e) =>
                     updateToolSettings("shapes", { strokeWidth: Math.max(1, Math.min(10, Number(e.target.value))) })
                   }
-                  className="w-12 px-2 py-1 text-[12px] border border-[hsl(var(--border))] rounded-[8px] bg-white text-[hsl(var(--ink))] text-center focus:outline-none focus:border-[hsl(var(--accent-blue))] transition-colors"
+                  className="w-12 px-2 py-1 text-[12px] border border-[hsl(var(--border))] rounded-[8px] bg-[hsl(var(--panel))] text-[hsl(var(--ink))] text-center focus:outline-none focus:border-[hsl(var(--accent-blue))] transition-colors"
                 />
                 <span className="text-[11px] text-[hsl(var(--ink-60))]">px</span>
               </div>
@@ -384,8 +384,8 @@ const ShapesPanel: React.FC = () => {
                     onClick={() => handleArrowSelect(arrow.type, arrow.name)}
                     className={`group flex flex-col items-center gap-1.5 p-3 rounded-[12px] border-2 transition-all ${
                       isSelected
-                        ? "border-[hsl(var(--accent-blue))] bg-[hsl(var(--accent-blue))]/5"
-                        : "border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-white"
+                        ? "border-[hsl(var(--accent-blue))] bg-[hsl(var(--panel))]"
+                        : "border-[hsl(var(--border))] hover:border-[hsl(var(--ink-30))] bg-[hsl(var(--panel))]"
                     }`}
                   >
                     <span
@@ -463,7 +463,7 @@ const ShapesPanel: React.FC = () => {
           {/* Add Button */}
           <button
             onClick={handleAddStickyNote}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-[hsl(var(--ink-60))] text-white rounded-[12px] hover:bg-[hsl(var(--ink))] transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-3 bg-[hsl(var(--ink-60))] text-white rounded-[12px] hover:bg-[hsl(var(--panel))] transition-colors"
           >
             <FileText size={18} />
             <span className="text-[13px] font-medium">إضافة ستيكي نوت</span>
