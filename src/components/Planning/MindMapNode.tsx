@@ -328,17 +328,15 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         {(nodeData.isRoot || hasChildren) && (
           <button
             onClick={hasChildren ? handleToggleCollapse : undefined}
-            className={`group absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md border border-[hsl(var(--border))] transition-all duration-300 ${
+            className={`absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md border border-[hsl(var(--border))] transition-all ${
               hasChildren 
-                ? 'cursor-pointer hover:scale-110 hover:bg-[hsl(var(--accent-blue))] hover:border-[hsl(var(--accent-blue))]' 
+                ? 'cursor-pointer hover:scale-110 text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))]' 
                 : 'cursor-default'
             }`}
             title={hasChildren ? (nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع") : "العقدة الجذر"}
           >
             {hasChildren ? (
-              nodeData.isCollapsed 
-                ? <ChevronRight size={14} className="text-[hsl(var(--ink-60))] group-hover:text-white transition-colors duration-300" /> 
-                : <ChevronDown size={14} className="text-[hsl(var(--ink-60))] group-hover:text-white transition-colors duration-300" />
+              nodeData.isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />
             ) : (
               <div className="w-3 h-3 rounded-full bg-[hsl(var(--accent-green))]" />
             )}

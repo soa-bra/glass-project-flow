@@ -1,5 +1,4 @@
 import React, { useMemo, useCallback, useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { MindMapConnectorData, MindMapNodeData } from '@/types/mindmap-canvas';
@@ -10,7 +9,7 @@ import {
   createElbowPath 
 } from '@/types/mindmap-canvas';
 import { Trash2, Type } from 'lucide-react';
-import { isAncestorCollapsed, getNodeDepthFromRoot } from '@/utils/mindmap-layout';
+import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 
 interface MindMapConnectorProps {
   element: CanvasElement;
@@ -233,11 +232,10 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
     setLabelText(connectorData.label || '');
   }, [connectorData.label]);
   
-  // ✅ حساب عمق العقدة للـ animation delay
-  const nodeDepth = useMemo(() => {
-    if (!connectorData.endNodeId) return 0;
-    return getNodeDepthFromRoot(connectorData.endNodeId, elements);
-  }, [connectorData.endNodeId, elements]);
+  // ✅ إخفاء إذا كان مطوياً
+  if (isHiddenByCollapse) {
+    return null;
+  }
   
   // ✅ لا نرجع null حتى لو لم تتوفر المواقع - نستخدم آخر موقع معروف
   if (!positions) {
@@ -245,182 +243,158 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
   }
   
   return (
-    <AnimatePresence mode="wait">
-      {!isHiddenByCollapse && (
-        <motion.div
-          key={element.id}
-          initial={{ opacity: 0, scale: 0.3 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.2 }}
-          transition={{
-            duration: 0.4,
-            delay: nodeDepth * 0.06,
-            ease: [0.22, 1, 0.36, 1]
+    <>
+      <svg
+        className="absolute pointer-events-none"
+        style={{
+          left: bounds.x,
+          top: bounds.y,
+          width: bounds.width,
+          height: bounds.height,
+          overflow: 'visible',
+          zIndex: isSelected ? 50 : 5
+        }}
+      >
+        {/* ✅ منطقة النقر (شفافة وعريضة جداً للسهولة) */}
+        <path
+          d={path}
+          fill="none"
+          stroke="transparent"
+          strokeWidth={30}
+          className="cursor-pointer pointer-events-stroke"
+          onClick={handleClick}
+          onDoubleClick={handleDoubleClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{
+            transform: `translate(${-bounds.x}px, ${-bounds.y}px)`
           }}
-          style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }}
-        >
-          <svg
-            className="absolute pointer-events-none"
+        />
+        
+        {/* ✅ الخط المرئي مع تأثير hover قوي */}
+        <path
+          d={path}
+          fill="none"
+          stroke={connectorData.color || '#3DA8F5'}
+          strokeWidth={(connectorData.strokeWidth || 2) * (isHovered ? 1.5 : 1)}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="transition-all duration-200"
+          style={{
+            transform: `translate(${-bounds.x}px, ${-bounds.y}px)`,
+            opacity: isHovered || isSelected ? 1 : 0.7,
+            filter: isHovered ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' : 'none'
+          }}
+        />
+        
+        {/* تمييز التحديد */}
+        {isSelected && (
+          <path
+            d={path}
+            fill="none"
+            stroke="hsl(var(--accent-green))"
+            strokeWidth={(connectorData.strokeWidth || 2) + 4}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity={0.3}
             style={{
-              left: bounds.x,
-              top: bounds.y,
-              width: bounds.width,
-              height: bounds.height,
-              overflow: 'visible',
-              zIndex: isSelected ? 50 : 5
+              transform: `translate(${-bounds.x}px, ${-bounds.y}px)`
             }}
-          >
-            {/* ✅ منطقة النقر (شفافة وعريضة جداً للسهولة) */}
-            <path
-              d={path}
-              fill="none"
-              stroke="transparent"
-              strokeWidth={30}
-              className="cursor-pointer pointer-events-stroke"
+          />
+        )}
+      </svg>
+      
+      {/* النص على المسار */}
+      {labelPosition && (connectorData.label || isEditingLabel) && (
+        <div
+          className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
+          style={{
+            left: labelPosition.x,
+            top: labelPosition.y,
+            zIndex: isSelected ? 51 : 6
+          }}
+        >
+          {isEditingLabel ? (
+            <input
+              type="text"
+              value={labelText}
+              onChange={(e) => setLabelText(e.target.value)}
+              onBlur={handleSaveLabel}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSaveLabel();
+                if (e.key === 'Escape') setIsEditingLabel(false);
+                e.stopPropagation();
+              }}
+              className="px-2 py-1 text-xs bg-white border border-[hsl(var(--border))] rounded shadow-sm outline-none focus:border-[hsl(var(--accent-green))]"
+              autoFocus
+              dir="auto"
+            />
+          ) : (
+            <span
+              className="px-2 py-1 text-xs bg-white/90 backdrop-blur-sm rounded shadow-sm border border-[hsl(var(--border))] cursor-pointer"
               onClick={handleClick}
               onDoubleClick={handleDoubleClick}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              style={{
-                transform: `translate(${-bounds.x}px, ${-bounds.y}px)`
-              }}
-            />
-            
-            {/* ✅ الخط المرئي مع تأثير حركي للشعيرات المرجانية */}
-            <motion.path
-              d={path}
-              fill="none"
-              stroke={connectorData.color || '#3DA8F5'}
-              strokeWidth={(connectorData.strokeWidth || 2) * (isHovered ? 1.5 : 1)}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: isHovered || isSelected ? 1 : 0.7 }}
-              exit={{ pathLength: 0, opacity: 0 }}
-              transition={{
-                pathLength: { duration: 0.6, delay: nodeDepth * 0.08, ease: [0.22, 1, 0.36, 1] },
-                opacity: { duration: 0.2 }
-              }}
-              style={{
-                transform: `translate(${-bounds.x}px, ${-bounds.y}px)`,
-                filter: isHovered ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' : 'none'
-              }}
-            />
-            
-            {/* تمييز التحديد */}
-            {isSelected && (
-              <path
-                d={path}
-                fill="none"
-                stroke="hsl(var(--accent-green))"
-                strokeWidth={(connectorData.strokeWidth || 2) + 4}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                opacity={0.3}
-                style={{
-                  transform: `translate(${-bounds.x}px, ${-bounds.y}px)`
-                }}
-              />
-            )}
-          </svg>
-          
-          {/* النص على المسار */}
-          {labelPosition && (connectorData.label || isEditingLabel) && (
-            <div
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
-              style={{
-                left: labelPosition.x,
-                top: labelPosition.y,
-                zIndex: isSelected ? 51 : 6
-              }}
+              dir="auto"
             >
-              {isEditingLabel ? (
-                <input
-                  type="text"
-                  value={labelText}
-                  onChange={(e) => setLabelText(e.target.value)}
-                  onBlur={handleSaveLabel}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleSaveLabel();
-                    if (e.key === 'Escape') setIsEditingLabel(false);
-                    e.stopPropagation();
-                  }}
-                  className="px-2 py-1 text-xs bg-white border border-[hsl(var(--border))] rounded shadow-sm outline-none focus:border-[hsl(var(--accent-green))]"
-                  autoFocus
-                  dir="auto"
-                />
-              ) : (
-                <span
-                  className="px-2 py-1 text-xs bg-white/90 backdrop-blur-sm rounded shadow-sm border border-[hsl(var(--border))] cursor-pointer"
-                  onClick={handleClick}
-                  onDoubleClick={handleDoubleClick}
-                  dir="auto"
-                >
-                  {connectorData.label}
-                </span>
-              )}
-            </div>
+              {connectorData.label}
+            </span>
           )}
-          
-          {/* ✅ نقطة وسطى للتفاعل - تظهر دائماً للإشارة لقابلية النقر */}
-          {labelPosition && !connectorData.label && !isEditingLabel && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              transition={{ delay: nodeDepth * 0.08 + 0.3, duration: 0.3, type: 'spring' }}
-              className={`absolute w-4 h-4 rounded-full border-2 cursor-pointer transition-all pointer-events-auto ${
-                isHovered || isSelected 
-                  ? 'bg-[hsl(var(--accent-blue))] border-white scale-125 shadow-lg' 
-                  : 'bg-white border-[hsl(var(--border))] hover:scale-110 hover:border-[hsl(var(--accent-blue))]'
-              }`}
-              style={{
-                left: labelPosition.x - 8,
-                top: labelPosition.y - 8,
-                zIndex: 10
-              }}
-              onClick={handleClick}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              title="انقر للتحديد أو أضف نصاً"
-            />
-          )}
-          
-          {/* ✅ أزرار التحكم - تظهر في منتصف الـ connector بشكل واضح */}
-          {(isHovered || isSelected) && labelPosition && (
-            <div
-              className="absolute flex items-center gap-3 pointer-events-auto bg-white rounded-xl shadow-xl p-2 border-2 border-[hsl(var(--border))]"
-              style={{
-                left: labelPosition.x,
-                top: labelPosition.y + 25,
-                transform: 'translateX(-50%)',
-                zIndex: 100
-              }}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
-              {/* زر إضافة/تحرير النص */}
-              <button
-                className="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-50 text-[hsl(var(--accent-blue))] hover:bg-blue-100 transition-all"
-                onClick={handleStartAddLabel}
-                title={connectorData.label ? "تحرير النص" : "إضافة نص"}
-              >
-                <Type size={18} />
-              </button>
-              
-              {/* زر الحذف */}
-              <button
-                className="w-9 h-9 rounded-lg flex items-center justify-center bg-red-50 text-[hsl(var(--accent-red))] hover:bg-red-100 transition-all"
-                onClick={() => deleteElement(element.id)}
-                title="حذف الرابط"
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
-          )}
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+      
+      {/* ✅ نقطة وسطى للتفاعل - تظهر دائماً للإشارة لقابلية النقر */}
+      {labelPosition && !connectorData.label && !isEditingLabel && (
+        <div
+          className={`absolute w-4 h-4 rounded-full border-2 cursor-pointer transition-all pointer-events-auto ${
+            isHovered || isSelected 
+              ? 'bg-[hsl(var(--accent-blue))] border-white scale-125 shadow-lg' 
+              : 'bg-white border-[hsl(var(--border))] hover:scale-110 hover:border-[hsl(var(--accent-blue))]'
+          }`}
+          style={{
+            left: labelPosition.x - 8,
+            top: labelPosition.y - 8,
+            zIndex: 10
+          }}
+          onClick={handleClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          title="انقر للتحديد أو أضف نصاً"
+        />
+      )}
+      
+      {/* ✅ أزرار التحكم - تظهر في منتصف الـ connector بشكل واضح */}
+      {(isHovered || isSelected) && labelPosition && (
+        <div
+          className="absolute flex items-center gap-3 pointer-events-auto bg-white rounded-xl shadow-xl p-2 border-2 border-[hsl(var(--border))]"
+          style={{
+            left: labelPosition.x,
+            top: labelPosition.y + 25,
+            transform: 'translateX(-50%)',
+            zIndex: 100
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          {/* زر إضافة/تحرير النص */}
+          <button
+            className="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-50 text-[hsl(var(--accent-blue))] hover:bg-blue-100 transition-all"
+            onClick={handleStartAddLabel}
+            title={connectorData.label ? "تحرير النص" : "إضافة نص"}
+          >
+            <Type size={18} />
+          </button>
+          
+          {/* زر الحذف */}
+          <button
+            className="w-9 h-9 rounded-lg flex items-center justify-center bg-red-50 text-[hsl(var(--accent-red))] hover:bg-red-100 transition-all"
+            onClick={() => deleteElement(element.id)}
+            title="حذف الرابط"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
+      )}
+    </>
   );
 };
 

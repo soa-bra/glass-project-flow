@@ -1,5 +1,4 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
@@ -15,51 +14,7 @@ import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { sanitizeHTMLForDisplay } from '@/utils/sanitize';
 import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel } from '@/core/canvasKernel';
-import { isAncestorCollapsed, getNodeDepthFromRoot } from '@/utils/mindmap-layout';
-
-// ✅ تأثير حركي يحاكي شعيرات المرجان
-const coralPolyAnimation = {
-  initial: { 
-    opacity: 0, 
-    scale: 0.3,
-    y: -20,
-    rotate: -15,
-    filter: 'blur(4px)'
-  },
-  animate: { 
-    opacity: 1, 
-    scale: 1,
-    y: 0,
-    rotate: 0,
-    filter: 'blur(0px)'
-  },
-  exit: { 
-    opacity: 0, 
-    scale: 0.2,
-    y: -30,
-    rotate: 15,
-    filter: 'blur(6px)'
-  }
-};
-
-// ✅ تأثير للـ connectors
-const connectorAnimation = {
-  initial: { 
-    opacity: 0,
-    pathLength: 0,
-    scale: 0.5
-  },
-  animate: { 
-    opacity: 1,
-    pathLength: 1,
-    scale: 1
-  },
-  exit: { 
-    opacity: 0,
-    pathLength: 0,
-    scale: 0.3
-  }
-};
+import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 
 // التحقق إذا كان العنصر سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -101,39 +56,22 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   // عرض عناصر الخريطة الذهنية بمكونات خاصة
   if (element.type === 'mindmap_node') {
     const elements = useCanvasStore.getState().elements;
-    const isCollapsed = isAncestorCollapsed(element.id, elements);
-    const depth = getNodeDepthFromRoot(element.id, elements);
+    
+    if (isAncestorCollapsed(element.id, elements)) {
+      return null;
+    }
     
     return (
-      <AnimatePresence mode="wait">
-        {!isCollapsed && (
-          <motion.div
-            key={element.id}
-            initial={coralPolyAnimation.initial}
-            animate={coralPolyAnimation.animate}
-            exit={coralPolyAnimation.exit}
-            transition={{
-              duration: 0.5,
-              delay: depth * 0.08,
-              ease: [0.22, 1, 0.36, 1],
-              scale: { type: 'spring', stiffness: 300, damping: 20 },
-              rotate: { type: 'spring', stiffness: 200, damping: 15 }
-            }}
-            style={{ position: 'absolute', left: 0, top: 0 }}
-          >
-            <MindMapNode
-              element={element}
-              isSelected={isSelected}
-              onSelect={onSelect}
-              onStartConnection={onStartConnection || (() => {})}
-              onEndConnection={onEndConnection || (() => {})}
-              isConnecting={isConnecting}
-              nearestAnchor={nearestAnchor as any}
-              activeTool={activeTool}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <MindMapNode
+        element={element}
+        isSelected={isSelected}
+        onSelect={onSelect}
+        onStartConnection={onStartConnection || (() => {})}
+        onEndConnection={onEndConnection || (() => {})}
+        isConnecting={isConnecting}
+        nearestAnchor={nearestAnchor as any}
+        activeTool={activeTool}
+      />
     );
   }
   
