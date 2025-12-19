@@ -34,6 +34,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const nodeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const lastSizeRef = useRef({ width: 0, height: 0 }); // ✅ تخزين آخر حجم للمقارنة
   const [isSingleNodeMode, setIsSingleNodeMode] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -48,7 +49,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     )
   );
   
-  // ✅ ResizeObserver لقياس الحجم الفعلي للـ nodeRef (الـ div الخارجي) باستخدام getBoundingClientRect
+  // ✅ ResizeObserver لقياس الحجم الفعلي للـ nodeRef باستخدام lastSizeRef للمقارنة
   useEffect(() => {
     if (!nodeRef.current) return;
     
@@ -60,9 +61,10 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       const actualWidth = Math.max(80, rect.width);
       const actualHeight = Math.max(40, rect.height);
       
-      // تحديث الحجم في الـ store فقط إذا تغير بشكل ملحوظ
-      if (Math.abs(actualWidth - element.size.width) > 2 || 
-          Math.abs(actualHeight - element.size.height) > 2) {
+      // ✅ مقارنة مع آخر حجم مُسجّل (وليس element.size) لمنع infinite loop
+      if (Math.abs(actualWidth - lastSizeRef.current.width) > 2 || 
+          Math.abs(actualHeight - lastSizeRef.current.height) > 2) {
+        lastSizeRef.current = { width: actualWidth, height: actualHeight };
         updateElement(element.id, {
           size: { width: actualWidth, height: actualHeight }
         });
@@ -72,7 +74,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     observer.observe(nodeRef.current);
     
     return () => observer.disconnect();
-  }, [element.id, element.size.width, element.size.height, updateElement]);
+  }, [element.id, updateElement]); // ✅ بدون element.size في dependencies
   
   // ✅ بدء التحرير بالنقر المزدوج
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
@@ -382,8 +384,9 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       </div>
       
       {/* نقاط الربط - تظهر عند التحديد أو التوصيل */}
+      {/* ✅ key يعتمد على الحجم لإجبار إعادة حساب المواقع عند تغير الحجم */}
       {(isSelected || isConnecting) && (
-        <>
+        <React.Fragment key={`anchors-${element.size.width}-${element.size.height}`}>
           {(['top', 'bottom', 'left', 'right'] as const).map((anchor) => {
             const pos = getAnchorPosition({ x: 0, y: 0 }, element.size, anchor);
             const isHighlighted = isNearestForConnection && nearestAnchor?.anchor === anchor;
@@ -405,7 +408,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
               />
             );
           })}
-        </>
+        </React.Fragment>
       )}
       
       {/* شريط أدوات العقدة - يظهر عند التحديد */}
