@@ -162,9 +162,9 @@ const FloatingEditBar: React.FC = () => {
     return selectedElements.some(el => el.locked === true);
   }, [selectedElements]);
   
-  // Calculate position centered on selection
-  useEffect(() => {
-    if (!hasSelection) return;
+  // Calculate selection bounds with useMemo for performance
+  const selectionBounds = useMemo(() => {
+    if (!hasSelection) return null;
     
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     selectedElements.forEach(el => {
@@ -179,18 +179,28 @@ const FloatingEditBar: React.FC = () => {
       if (y + height > maxY) maxY = y + height;
     });
     
+    return { minX, minY, maxX, maxY };
+  }, [selectedElements, hasSelection]);
+  
+  // Calculate position centered on selection - only update when significant change
+  useEffect(() => {
+    if (!selectionBounds) return;
+    
     // Calculate center of selection in canvas coordinates
-    const selectionCenterX = (minX + maxX) / 2;
+    const selectionCenterX = (selectionBounds.minX + selectionBounds.maxX) / 2;
     
     // Convert to screen coordinates
     const screenCenterX = selectionCenterX * viewport.zoom + viewport.pan.x;
-    const screenTopY = minY * viewport.zoom + viewport.pan.y - 60;
+    const screenTopY = selectionBounds.minY * viewport.zoom + viewport.pan.y - 60;
     
-    setPosition({ 
-      x: screenCenterX, 
-      y: Math.max(70, screenTopY)
-    });
-  }, [selectedElementIds, hasSelection, selectedElements, viewport]);
+    const newX = screenCenterX;
+    const newY = Math.max(70, screenTopY);
+    
+    // Only update if change is significant (> 2px) to prevent jitter
+    if (Math.abs(newX - position.x) > 2 || Math.abs(newY - position.y) > 2) {
+      setPosition({ x: newX, y: newY });
+    }
+  }, [selectionBounds, viewport.zoom, viewport.pan.x, viewport.pan.y]);
   
   if (!hasSelection) return null;
 
