@@ -49,16 +49,16 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     )
   );
   
-  // ✅ ResizeObserver لقياس الحجم الفعلي للـ nodeRef باستخدام lastSizeRef للمقارنة
+  // ✅ ResizeObserver يراقب contentRef (المحتوى الفعلي) وليس nodeRef
   useEffect(() => {
-    if (!nodeRef.current) return;
+    if (!contentRef.current) return;
     
     const observer = new ResizeObserver(() => {
-      if (!nodeRef.current) return;
+      if (!contentRef.current) return;
       
       // ✅ getBoundingClientRect يتأثر بالـ zoom (Transform: scale)
       // لذلك نقسم على viewport.zoom للحصول على حجم العقدة الحقيقي بوحدات الـ canvas
-      const rect = nodeRef.current.getBoundingClientRect();
+      const rect = contentRef.current.getBoundingClientRect();
       const zoom = useCanvasStore.getState().viewport.zoom || 1;
       const zoomSafe = zoom > 0 ? zoom : 1;
       const actualWidth = Math.max(80, rect.width / zoomSafe);
@@ -74,7 +74,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       }
     });
     
-    observer.observe(nodeRef.current);
+    observer.observe(contentRef.current);
     
     return () => observer.disconnect();
   }, [element.id, updateElement]); // ✅ بدون element.size في dependencies
@@ -322,23 +322,24 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   return (
     <div
       ref={nodeRef}
-      className={`absolute select-none transition-shadow inline-flex ${
+      className={`absolute select-none transition-shadow ${
         activeTool === 'selection_tool' ? 'cursor-move' : 'cursor-default'
       } ${isSelected ? 'ring-2 ring-[hsl(var(--accent-green))] ring-offset-2' : ''}`}
       style={{
         left: element.position.x,
         top: element.position.y,
-        // ✅ لا نحدد width/height - الـ div يأخذ حجمه من المحتوى تلقائياً
-        // نقاط الربط تُحسب من element.size الذي يُحدَّث ديناميكياً بواسطة ResizeObserver
+        // ✅ الآن nodeRef يأخذ حجمه من element.size (الذي يُحدَّث من contentRef)
+        width: element.size.width,
+        height: element.size.height,
         zIndex: isSelected ? 100 : 10,
       }}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
     >
-      {/* محتوى العقدة - مع ref للقياس */}
+      {/* محتوى العقدة - w-full h-full ليملأ الـ parent */}
       <div
         ref={contentRef}
-        className="inline-flex items-center justify-center px-4 py-2 shadow-md transition-all relative whitespace-nowrap"
+        className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md transition-all relative whitespace-nowrap"
         style={{
           ...getNodeStyle(),
           minWidth: 80,
