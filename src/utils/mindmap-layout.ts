@@ -1061,3 +1061,29 @@ export function redistributeUpwards(
   
   return allAdjustments;
 }
+
+/**
+ * حساب عمق العقدة من الجذر
+ * يُستخدم لتأخير الـ animation بشكل تدريجي
+ */
+export function getNodeDepthFromRoot(
+  nodeId: string,
+  elements: CanvasElement[]
+): number {
+  let depth = 0;
+  let currentId: string | null = nodeId;
+  
+  while (currentId) {
+    const parentConnector = elements.find(el => 
+      el.type === 'mindmap_connector' && 
+      (el.data as MindMapConnectorData)?.endNodeId === currentId
+    );
+    
+    if (!parentConnector) break;
+    
+    depth++;
+    currentId = (parentConnector.data as MindMapConnectorData)?.startNodeId || null;
+  }
+  
+  return depth;
+}
