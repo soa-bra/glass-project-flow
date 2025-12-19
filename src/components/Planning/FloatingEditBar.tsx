@@ -141,6 +141,17 @@ const FloatingEditBar: React.FC = () => {
     return firstElement?.type === 'frame' && (firstElement as any).children?.length > 0;
   }, [firstElement]);
   
+  // Check if elements are grouped (belong to same parent or are a frame)
+  const areElementsGrouped = useMemo(() => {
+    if (selectedElements.length === 1) {
+      return firstElement?.type === 'frame' && (firstElement as any).children?.length > 0;
+    }
+    // Check if all selected elements have the same parentId
+    const firstParent = selectedElements[0]?.parentId;
+    if (!firstParent) return false;
+    return selectedElements.every(el => el.parentId && el.parentId === firstParent);
+  }, [selectedElements, firstElement]);
+  
   // Check if elements are visible
   const areElementsVisible = useMemo(() => {
     return selectedElements.every(el => el.visible !== false);
@@ -168,13 +179,16 @@ const FloatingEditBar: React.FC = () => {
       if (y + height > maxY) maxY = y + height;
     });
     
-    // Convert to screen coordinates and center
-    const centerX = (minX + maxX) / 2 * viewport.zoom + viewport.pan.x;
-    const topY = minY * viewport.zoom + viewport.pan.y - 60;
+    // Calculate center of selection in canvas coordinates
+    const selectionCenterX = (minX + maxX) / 2;
+    
+    // Convert to screen coordinates
+    const screenCenterX = selectionCenterX * viewport.zoom + viewport.pan.x;
+    const screenTopY = minY * viewport.zoom + viewport.pan.y - 60;
     
     setPosition({ 
-      x: centerX, 
-      y: Math.max(60, topY)
+      x: screenCenterX, 
+      y: Math.max(70, screenTopY)
     });
   }, [selectedElementIds, hasSelection, selectedElements, viewport]);
   
@@ -300,38 +314,53 @@ const FloatingEditBar: React.FC = () => {
     }
   };
 
-  // Layer controls
+  // Layer controls - reorder elements in array for proper rendering order
   const handleBringForward = () => {
-    selectedElementIds.forEach(id => {
-      const current = elements.find(el => el.id === id);
-      updateElement(id, { zIndex: (current?.zIndex || 0) + 1 });
+    const { elements: currentElements } = useCanvasStore.getState();
+    const newElements = [...currentElements];
+    // Process in reverse to handle multiple selections correctly
+    [...selectedElementIds].reverse().forEach(id => {
+      const idx = newElements.findIndex(el => el.id === id);
+      if (idx >= 0 && idx < newElements.length - 1) {
+        [newElements[idx], newElements[idx + 1]] = [newElements[idx + 1], newElements[idx]];
+      }
     });
+    useCanvasStore.setState({ elements: newElements });
     setIsMoreMenuOpen(false);
     toast.success('تم رفع العنصر');
   };
 
   const handleSendBackward = () => {
+    const { elements: currentElements } = useCanvasStore.getState();
+    const newElements = [...currentElements];
+    // Process in order to handle multiple selections correctly
     selectedElementIds.forEach(id => {
-      const current = elements.find(el => el.id === id);
-      updateElement(id, { zIndex: Math.max(0, (current?.zIndex || 0) - 1) });
+      const idx = newElements.findIndex(el => el.id === id);
+      if (idx > 0) {
+        [newElements[idx], newElements[idx - 1]] = [newElements[idx - 1], newElements[idx]];
+      }
     });
+    useCanvasStore.setState({ elements: newElements });
     setIsMoreMenuOpen(false);
     toast.success('تم خفض العنصر');
   };
 
   const handleBringToFront = () => {
-    const maxZIndex = Math.max(...elements.map(el => el.zIndex || 0));
-    selectedElementIds.forEach(id => {
-      updateElement(id, { zIndex: maxZIndex + 1 });
-    });
+    const { elements: currentElements } = useCanvasStore.getState();
+    const selectedSet = new Set(selectedElementIds);
+    const selected = currentElements.filter(el => selectedSet.has(el.id));
+    const others = currentElements.filter(el => !selectedSet.has(el.id));
+    useCanvasStore.setState({ elements: [...others, ...selected] });
     setIsMoreMenuOpen(false);
     toast.success('تم نقل العنصر للأمام');
   };
 
   const handleSendToBack = () => {
-    selectedElementIds.forEach(id => {
-      updateElement(id, { zIndex: 0 });
-    });
+    const { elements: currentElements } = useCanvasStore.getState();
+    const selectedSet = new Set(selectedElementIds);
+    const selected = currentElements.filter(el => selectedSet.has(el.id));
+    const others = currentElements.filter(el => !selectedSet.has(el.id));
+    useCanvasStore.setState({ elements: [...selected, ...others] });
     setIsMoreMenuOpen(false);
     toast.success('تم نقل العنصر للخلف');
   };
@@ -433,6 +462,12 @@ const FloatingEditBar: React.FC = () => {
   const btnClass = `
     flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200
     text-black hover:bg-[hsl(var(--panel))]
+    focus:outline-none active:bg-transparent
+  `;
+  
+  // Button class without hover (for locked state)
+  const btnClassNoHover = `
+    flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200
     focus:outline-none active:bg-transparent
   `;
 
@@ -837,7 +872,7 @@ const FloatingEditBar: React.FC = () => {
           {/* Group/Ungroup */}
           <button
             onClick={handleToggleGroup}
-            className={`${btnClass} ${isGroup ? 'bg-[hsl(var(--panel))]' : ''}`}
+            className={`${btnClass} ${areElementsGrouped ? 'bg-[hsl(var(--ink))] text-white hover:bg-[hsl(var(--ink))]' : ''}`}
             title={isGroup ? 'فك التجميع' : 'تجميع'}
           >
             {isGroup ? <Ungroup size={16} /> : <Group size={16} />}
@@ -857,7 +892,7 @@ const FloatingEditBar: React.FC = () => {
           {/* Lock */}
           <button
             onClick={handleToggleLock}
-            className={`${btnClass} ${areElementsLocked ? 'bg-[hsl(var(--ink))] text-white' : ''}`}
+            className={`${areElementsLocked ? btnClassNoHover : btnClass} ${areElementsLocked ? 'bg-[hsl(var(--ink))] text-white' : ''}`}
             title={areElementsLocked ? 'إلغاء القفل' : 'قفل'}
           >
             {areElementsLocked ? <Lock size={16} /> : <Unlock size={16} />}
