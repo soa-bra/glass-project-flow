@@ -106,4 +106,102 @@ test.describe('Canvas MindMap Node Interactions', () => {
     const anchors = node.locator('.rounded-full.border-2');
     await expect(anchors).toHaveCount(4);
   });
+
+  test('should move anchor points when text size changes', async ({ page }) => {
+    await createMindMapNode(page);
+    
+    const node = await getMindMapNode(page);
+    await node.click();
+    
+    // Get initial anchor positions
+    const anchors = node.locator('.rounded-full.border-2');
+    await expect(anchors).toHaveCount(4);
+    
+    // Get the right anchor (should be on the right edge)
+    const rightAnchor = anchors.nth(3); // right is typically last
+    const initialAnchorBox = await rightAnchor.boundingBox();
+    const initialNodeBox = await node.boundingBox();
+    
+    if (!initialAnchorBox || !initialNodeBox) {
+      test.skip();
+      return;
+    }
+    
+    // Double-click to edit and add longer text
+    await node.dblclick();
+    const input = node.locator('input');
+    await expect(input).toBeVisible({ timeout: 2000 });
+    
+    // Type a much longer text to expand the node
+    await input.fill('نص طويل جداً لاختبار تمدد العقدة وتحريك نقاط الربط معها بشكل ديناميكي');
+    await page.keyboard.press('Enter');
+    
+    // Wait for ResizeObserver to update
+    await page.waitForTimeout(300);
+    
+    // Click to show anchors again
+    await node.click();
+    
+    // Get new positions
+    const newNodeBox = await node.boundingBox();
+    const newRightAnchor = node.locator('.rounded-full.border-2').nth(3);
+    const newAnchorBox = await newRightAnchor.boundingBox();
+    
+    expect(newNodeBox).toBeTruthy();
+    expect(newAnchorBox).toBeTruthy();
+    
+    // Node should be wider now
+    expect(newNodeBox!.width).toBeGreaterThan(initialNodeBox.width);
+    
+    // Right anchor should have moved further right
+    expect(newAnchorBox!.x).toBeGreaterThan(initialAnchorBox.x);
+  });
+
+  test('anchor points should align with node edges after resize', async ({ page }) => {
+    await createMindMapNode(page);
+    
+    const node = await getMindMapNode(page);
+    
+    // Edit with long text
+    await node.dblclick();
+    const input = node.locator('input');
+    await input.fill('اختبار محاذاة النقاط على الحواف الحقيقية للعقدة');
+    await page.keyboard.press('Enter');
+    
+    await page.waitForTimeout(300);
+    await node.click();
+    
+    // Get node and anchor positions
+    const nodeBox = await node.boundingBox();
+    const anchors = node.locator('.rounded-full.border-2');
+    
+    if (!nodeBox) {
+      test.skip();
+      return;
+    }
+    
+    // Check right anchor is at right edge (with tolerance for anchor size)
+    const rightAnchor = anchors.nth(3);
+    const rightAnchorBox = await rightAnchor.boundingBox();
+    
+    if (rightAnchorBox) {
+      const anchorCenterX = rightAnchorBox.x + rightAnchorBox.width / 2;
+      const nodeRightEdge = nodeBox.x + nodeBox.width;
+      
+      // Anchor center should be within 10px of node's right edge
+      expect(Math.abs(anchorCenterX - nodeRightEdge)).toBeLessThan(10);
+    }
+    
+    // Check bottom anchor is at bottom edge
+    const bottomAnchor = anchors.nth(1);
+    const bottomAnchorBox = await bottomAnchor.boundingBox();
+    
+    if (bottomAnchorBox) {
+      const anchorCenterY = bottomAnchorBox.y + bottomAnchorBox.height / 2;
+      const nodeBottomEdge = nodeBox.y + nodeBox.height;
+      
+      // Anchor center should be within 10px of node's bottom edge
+      expect(Math.abs(anchorCenterY - nodeBottomEdge)).toBeLessThan(10);
+    }
+  });
 });
