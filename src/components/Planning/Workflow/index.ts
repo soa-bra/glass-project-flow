@@ -6,3 +6,4 @@
 export { WorkflowNode } from './WorkflowNode';
 export { WorkflowEdge } from './WorkflowEdge';
 export { WorkflowInspectorPanel } from './WorkflowInspectorPanel';
+export { WorkflowToolbar } from './WorkflowToolbar';

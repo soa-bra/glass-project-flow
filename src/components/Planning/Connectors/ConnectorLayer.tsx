@@ -212,7 +212,8 @@ export const ConnectorLayer: React.FC<ConnectorLayerProps> = memo(({
     return pathRouter.calculatePath(dragState.fromAnchor, tempTarget);
   }, [dragState]);
 
-  const isConnectorTool = activeTool === 'line_tool' || activeTool === 'arrow_tool';
+  // أدوات الربط - تظهر نقاط الارتكاز عند استخدام أداة الأشكال أو التحديد
+  const isConnectorTool = activeTool === 'shapes_tool' || activeTool === 'selection_tool';
 
   return (
     <svg
