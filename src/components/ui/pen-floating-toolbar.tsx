@@ -1,3 +1,4 @@
+// PenFloatingToolbar v3 - force reload
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
