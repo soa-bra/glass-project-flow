@@ -652,3 +652,22 @@
   padding-inline-start: 0 !important;
   padding-inline-end: 24px !important;
 }
+
+/* ✅ Text Tool Placeholder */
+[contenteditable="true"].empty-editor:empty::before,
+[contenteditable="true"].empty-editor:has(br:only-child)::before {
+  content: attr(data-placeholder);
+  color: hsl(var(--ink-30));
+  pointer-events: none;
+  position: absolute;
+  font-style: italic;
+}
+
+/* ✅ Text Tool Cursor - I-beam when active */
+.text-tool-active {
+  cursor: text !important;
+}
+
+.text-tool-active * {
+  cursor: text !important;
+}
