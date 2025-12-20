@@ -572,8 +572,8 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         />
       )}
       
-      {/* Selection Handles (shown only when selected) */}
-      {isSelected && !isLocked && (
+      {/* Selection Handles (shown only when selected) - لا تظهر للنصوص */}
+      {isSelected && !isLocked && element.type !== 'text' && (
         <>
           {/* نقاط تحكم خاصة للأسهم */}
           {element.type === 'shape' && isArrowShape(element.shapeType || element.data?.shapeType) ? (
