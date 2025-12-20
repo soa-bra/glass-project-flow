@@ -171,6 +171,37 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         break;
 
       case 'shapes_tool':
+        // ✅ قراءة أحدث القيم من الـ store مباشرة
+        const { toolSettings: currentSettings } = useCanvasStore.getState();
+        const currentShapeType = currentSettings.shapes.shapeType;
+        
+        // ✅ إذا كان الشكل ستيكي نوت، أضفه فوراً بحجم ثابت
+        if (currentShapeType === 'sticky') {
+          const STICKY_DEFAULT_SIZE = { width: 200, height: 200 };
+          
+          addElement({
+            type: 'shape',
+            shapeType: 'sticky',
+            position: {
+              x: snappedPoint.x - STICKY_DEFAULT_SIZE.width / 2,
+              y: snappedPoint.y - STICKY_DEFAULT_SIZE.height / 2
+            },
+            size: STICKY_DEFAULT_SIZE,
+            style: {
+              backgroundColor: currentSettings.shapes.fillColor || '#FEF9C3'
+            },
+            stickyText: '',
+            data: {
+              shapeType: 'sticky',
+              stickyText: ''
+            }
+          });
+          
+          toast.success('تم إضافة ستيكي نوت - انقر مرتين للكتابة');
+          return;
+        }
+        
+        // باقي الأشكال تستخدم المنطق الحالي (سحب)
         handleShapesToolStart(snappedPoint);
         break;
 

@@ -5,6 +5,7 @@ import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
 import { ResizeHandle } from './ResizeHandle';
 import { TextEditor } from './TextEditor';
+import { StickyNoteEditor } from './StickyNoteEditor';
 import { ShapeRenderer } from './ShapeRenderer';
 import { ArrowControlPoints } from './ArrowControlPoints';
 import { ArrowLabels } from './ArrowLabels';
@@ -291,6 +292,20 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     }
   }, [element, isLocked, startEditingText]);
 
+  // ✅ معالج النقر المزدوج على الستيكي نوت
+  const handleStickyDoubleClick = useCallback((e: React.MouseEvent) => {
+    const shapeType = element.shapeType || element.data?.shapeType;
+    if (element.type === 'shape' && shapeType === 'sticky' && !isLocked) {
+      e.stopPropagation();
+      startEditingText(element.id);
+    }
+  }, [element, isLocked, startEditingText]);
+  
+  // التحقق إذا كان الستيكي نوت في وضع التحرير
+  const isEditingStickyNote = element.type === 'shape' && 
+    (element.shapeType === 'sticky' || element.data?.shapeType === 'sticky') && 
+    editingTextId === element.id;
+
   const handleTitleSave = useCallback(() => {
     if (element.type === 'frame') {
       updateFrameTitle(element.id, editedTitle);
@@ -422,7 +437,17 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       )}
       
       {element.type === 'shape' && (
-        <>
+        <div onDoubleClick={handleStickyDoubleClick} className="w-full h-full">
+          {isEditingStickyNote ? (
+            <StickyNoteEditor
+              element={element}
+              onUpdate={(text) => updateElement(element.id, { 
+                stickyText: text,
+                data: { ...element.data, stickyText: text } 
+              })}
+              onClose={() => stopEditingText(element.id)}
+            />
+          ) : null}
           <ShapeRenderer
             shapeType={element.shapeType || element.data?.shapeType || 'rectangle'}
             width={element.size.width}
@@ -433,14 +458,14 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
             opacity={element.style?.opacity || 1}
             borderRadius={element.style?.borderRadius || 0}
             iconName={element.iconName || element.data?.iconName}
-            stickyText={element.stickyText || element.data?.stickyText}
+            stickyText={isEditingStickyNote ? '' : (element.stickyText || element.data?.stickyText)}
             arrowData={element.data?.arrowData}
           />
           {/* عرض النصوص على نقاط السهم دائماً */}
           {isElementArrow(element) && element.data?.arrowData && (
             <ArrowLabels arrowData={element.data.arrowData} />
           )}
-        </>
+        </div>
       )}
       
       {element.type === 'frame' && (
