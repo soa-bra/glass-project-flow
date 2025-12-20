@@ -3,14 +3,14 @@
  * يدعم: العناصر الفردية، النصوص، الصور، والعناصر المتعددة
  */
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { createPortal } from 'react-dom';
-import { useCanvasStore } from '@/stores/canvasStore';
-import { useSmartElementsStore } from '@/stores/smartElementsStore';
-import { useSmartElementAI } from '@/hooks/useSmartElementAI';
-import { toast } from 'sonner';
-import { ColorPickerInput } from '@/components/ui/color-picker';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
+import { useCanvasStore } from "@/stores/canvasStore";
+import { useSmartElementsStore } from "@/stores/smartElementsStore";
+import { useSmartElementAI } from "@/hooks/useSmartElementAI";
+import { toast } from "sonner";
+import { ColorPickerInput } from "@/components/ui/color-picker";
 import {
   Copy,
   Scissors,
@@ -60,8 +60,8 @@ import {
   Calendar,
   Table2,
   Zap,
-} from 'lucide-react';
-import { SmartElementType } from '@/types/smart-elements';
+} from "lucide-react";
+import { SmartElementType } from "@/types/smart-elements";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,34 +71,39 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Separator } from '@/components/ui/separator';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 // قائمة الخطوط المتاحة
 const FONT_FAMILIES = [
-  { value: 'IBM Plex Sans Arabic', label: 'IBM Plex Sans Arabic' },
-  { value: 'Cairo', label: 'Cairo' },
-  { value: 'Tajawal', label: 'Tajawal' },
-  { value: 'Amiri', label: 'Amiri' },
-  { value: 'Noto Sans Arabic', label: 'Noto Sans Arabic' },
-  { value: 'Arial', label: 'Arial' },
-  { value: 'Times New Roman', label: 'Times New Roman' },
+  { value: "IBM Plex Sans Arabic", label: "IBM Plex Sans Arabic" },
+  { value: "Cairo", label: "Cairo" },
+  { value: "Tajawal", label: "Tajawal" },
+  { value: "Amiri", label: "Amiri" },
+  { value: "Noto Sans Arabic", label: "Noto Sans Arabic" },
+  { value: "Arial", label: "Arial" },
+  { value: "Times New Roman", label: "Times New Roman" },
 ];
 
 // أحجام الخطوط المتاحة
 const FONT_SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72];
 
-type SelectionType = 'element' | 'text' | 'image' | 'multiple' | null;
+type SelectionType = "element" | "text" | "image" | "multiple" | null;
 
 // خيارات التحويل للعناصر الذكية
 const TRANSFORM_OPTIONS = [
-  { type: 'kanban' as SmartElementType, label: 'لوحة كانبان', icon: LayoutGrid, description: 'تحويل إلى أعمدة ومهام' },
-  { type: 'mind_map' as SmartElementType, label: 'خريطة ذهنية', icon: Network, description: 'تنظيم كخريطة مترابطة' },
-  { type: 'timeline' as SmartElementType, label: 'خط زمني', icon: Calendar, description: 'ترتيب على محور زمني' },
-  { type: 'decisions_matrix' as SmartElementType, label: 'مصفوفة قرارات', icon: Table2, description: 'تقييم ومقارنة الخيارات' },
-  { type: 'brainstorming' as SmartElementType, label: 'عصف ذهني', icon: Zap, description: 'تجميع كأفكار للنقاش' },
+  { type: "kanban" as SmartElementType, label: "لوحة كانبان", icon: LayoutGrid, description: "تحويل إلى أعمدة ومهام" },
+  { type: "mind_map" as SmartElementType, label: "خريطة ذهنية", icon: Network, description: "تنظيم كخريطة مترابطة" },
+  { type: "timeline" as SmartElementType, label: "خط زمني", icon: Calendar, description: "ترتيب على محور زمني" },
+  {
+    type: "decisions_matrix" as SmartElementType,
+    label: "مصفوفة قرارات",
+    icon: Table2,
+    description: "تقييم ومقارنة الخيارات",
+  },
+  { type: "brainstorming" as SmartElementType, label: "عصف ذهني", icon: Zap, description: "تجميع كأفكار للنقاش" },
 ];
 
 // ===== Enhanced ToolbarButton with Tooltips =====
@@ -107,7 +112,7 @@ interface ToolbarButtonProps {
   onClick: () => void;
   title: string;
   isActive?: boolean;
-  variant?: 'default' | 'destructive' | 'ai';
+  variant?: "default" | "destructive" | "ai";
   disabled?: boolean;
 }
 
@@ -116,24 +121,23 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   onClick,
   title,
   isActive = false,
-  variant = 'default',
+  variant = "default",
   disabled = false,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  
-  const baseClass = "flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed relative";
-  
+
+  const baseClass =
+    "flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed relative";
+
   const variantClasses = {
-    default: isActive 
-      ? "bg-[hsl(var(--ink))] text-white" 
-      : "text-[hsl(var(--ink))] hover:bg-[hsl(var(--ink)/0.1)]",
+    default: isActive ? "bg-[hsl(var(--ink))] text-white" : "text-[hsl(var(--ink))] hover:bg-[hsl(var(--ink)/0.1)]",
     destructive: "text-[hsl(var(--ink))] hover:text-[#E5564D] hover:bg-red-50",
     ai: "bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white hover:opacity-90",
   };
 
   // Render icon - support both ReactNode and Component
   const renderIcon = () => {
-    if (typeof icon === 'function') {
+    if (typeof icon === "function") {
       const IconComponent = icon as React.ComponentType<{ className?: string }>;
       return <IconComponent className="h-4 w-4" />;
     }
@@ -141,11 +145,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   };
 
   return (
-    <div
-      className="relative"
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
+    <div className="relative" onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
       <button
         onClick={(e) => {
           e.preventDefault();
@@ -193,14 +193,14 @@ const FontFamilyDropdown: React.FC<{
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const currentFont = FONT_FAMILIES.find(f => f.value === value) || FONT_FAMILIES[0];
+  const currentFont = FONT_FAMILIES.find((f) => f.value === value) || FONT_FAMILIES[0];
 
   return (
-    <div 
+    <div
       ref={dropdownRef}
       className="relative"
       onMouseEnter={() => setShowTooltip(true)}
@@ -223,7 +223,7 @@ const FontFamilyDropdown: React.FC<{
         </span>
         <ChevronDown className="h-3 w-3 opacity-60" />
       </button>
-      
+
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -236,7 +236,7 @@ const FontFamilyDropdown: React.FC<{
               <button
                 key={font.value}
                 className={`w-full text-right px-3 py-1.5 text-sm hover:bg-[hsl(var(--ink)/0.05)] ${
-                  value === font.value ? 'bg-[hsl(var(--ink)/0.1)]' : ''
+                  value === font.value ? "bg-[hsl(var(--ink)/0.1)]" : ""
                 }`}
                 style={{ fontFamily: font.value }}
                 onMouseDown={(e) => {
@@ -256,7 +256,7 @@ const FontFamilyDropdown: React.FC<{
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {showTooltip && !isOpen && (
         <motion.div
           initial={{ opacity: 0, y: 5 }}
@@ -290,8 +290,8 @@ const FontSizeInput: React.FC<{
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -308,13 +308,13 @@ const FontSizeInput: React.FC<{
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleInputBlur();
     }
   };
 
   return (
-    <div 
+    <div
       ref={dropdownRef}
       className="relative"
       onMouseEnter={() => setShowTooltip(true)}
@@ -346,7 +346,7 @@ const FontSizeInput: React.FC<{
           <ChevronDown className="h-3 w-3 opacity-60" />
         </button>
       </div>
-      
+
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -359,7 +359,7 @@ const FontSizeInput: React.FC<{
               <button
                 key={size}
                 className={`w-full text-center px-3 py-1 text-sm hover:bg-[hsl(var(--ink)/0.05)] ${
-                  value === size ? 'bg-[hsl(var(--ink)/0.1)]' : ''
+                  value === size ? "bg-[hsl(var(--ink)/0.1)]" : ""
                 }`}
                 onMouseDown={(e) => {
                   e.preventDefault();
@@ -378,7 +378,7 @@ const FontSizeInput: React.FC<{
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {showTooltip && !isOpen && (
         <motion.div
           initial={{ opacity: 0, y: 5 }}
@@ -407,12 +407,12 @@ const TextColorPicker: React.FC<{
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
-    <div 
+    <div
       ref={dropdownRef}
       className="relative"
       onMouseEnter={() => setShowTooltip(true)}
@@ -432,13 +432,10 @@ const TextColorPicker: React.FC<{
       >
         <div className="flex flex-col items-center justify-center gap-0.5">
           <Type className="h-4 w-4" />
-          <div 
-            className="w-4 h-1 rounded-sm"
-            style={{ backgroundColor: value }}
-          />
+          <div className="w-4 h-1 rounded-sm" style={{ backgroundColor: value }} />
         </div>
       </button>
-      
+
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -457,7 +454,7 @@ const TextColorPicker: React.FC<{
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {showTooltip && !isOpen && (
         <motion.div
           initial={{ opacity: 0, y: 5 }}
@@ -497,16 +494,16 @@ const UnifiedFloatingToolbar: React.FC = () => {
   const { analyzeSelection, transformElements, isLoading: isAILoading } = useSmartElementAI();
 
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [imageName, setImageName] = useState('');
+  const [imageName, setImageName] = useState("");
   const [activeFormats, setActiveFormats] = useState<Record<string, boolean>>({});
   const [isAIMenuOpen, setIsAIMenuOpen] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
-  const [customPrompt, setCustomPrompt] = useState('');
-  
+  const [customPrompt, setCustomPrompt] = useState("");
+
   // حساب العناصر المحددة
   const selectedElements = useMemo(
-    () => elements.filter(el => selectedElementIds.includes(el.id)),
-    [elements, selectedElementIds]
+    () => elements.filter((el) => selectedElementIds.includes(el.id)),
+    [elements, selectedElementIds],
   );
 
   const hasSelection = selectedElements.length > 0;
@@ -516,12 +513,12 @@ const UnifiedFloatingToolbar: React.FC = () => {
   // تحديد نوع التحديد
   const selectionType = useMemo((): SelectionType => {
     if (!hasSelection) return null;
-    if (selectionCount > 1) return 'multiple';
-    
+    if (selectionCount > 1) return "multiple";
+
     const type = firstElement?.type;
-    if (type === 'text') return 'text';
-    if (type === 'image') return 'image';
-    return 'element';
+    if (type === "text") return "text";
+    if (type === "image") return "image";
+    return "element";
   }, [hasSelection, selectionCount, firstElement?.type]);
 
   // حالات العناصر
@@ -533,63 +530,66 @@ const UnifiedFloatingToolbar: React.FC = () => {
   }, [selectedElements]);
 
   const areElementsGrouped = !!groupId;
-  const areElementsVisible = selectedElements.every(el => el.visible !== false);
-  const areElementsLocked = selectedElements.some(el => el.locked === true);
+  const areElementsVisible = selectedElements.every((el) => el.visible !== false);
+  const areElementsLocked = selectedElements.some((el) => el.locked === true);
 
   // تتبع حالة التنسيقات النشطة
   useEffect(() => {
-    if (selectionType !== 'text') return;
-    
+    if (selectionType !== "text") return;
+
     const updateActiveFormats = () => {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0) return;
 
       setActiveFormats({
-        bold: document.queryCommandState('bold'),
-        italic: document.queryCommandState('italic'),
-        underline: document.queryCommandState('underline'),
-        strikeThrough: document.queryCommandState('strikeThrough'),
-        insertUnorderedList: document.queryCommandState('insertUnorderedList'),
-        insertOrderedList: document.queryCommandState('insertOrderedList'),
+        bold: document.queryCommandState("bold"),
+        italic: document.queryCommandState("italic"),
+        underline: document.queryCommandState("underline"),
+        strikeThrough: document.queryCommandState("strikeThrough"),
+        insertUnorderedList: document.queryCommandState("insertUnorderedList"),
+        insertOrderedList: document.queryCommandState("insertOrderedList"),
       });
     };
 
-    document.addEventListener('selectionchange', updateActiveFormats);
+    document.addEventListener("selectionchange", updateActiveFormats);
     updateActiveFormats();
 
-    return () => document.removeEventListener('selectionchange', updateActiveFormats);
+    return () => document.removeEventListener("selectionchange", updateActiveFormats);
   }, [selectionType]);
 
   // حساب موقع الشريط
   const selectionBounds = useMemo(() => {
     if (!hasSelection) return null;
-    
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    selectedElements.forEach(el => {
+
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity;
+    selectedElements.forEach((el) => {
       const x = el.position.x;
       const y = el.position.y;
       const width = el.size?.width || 200;
       const height = el.size?.height || 100;
-      
+
       if (x < minX) minX = x;
       if (y < minY) minY = y;
       if (x + width > maxX) maxX = x + width;
       if (y + height > maxY) maxY = y + height;
     });
-    
+
     return { minX, minY, maxX, maxY };
   }, [selectedElements, hasSelection]);
 
   useEffect(() => {
     if (!selectionBounds) return;
-    
+
     const selectionCenterX = (selectionBounds.minX + selectionBounds.maxX) / 2;
     const screenCenterX = selectionCenterX * viewport.zoom + viewport.pan.x;
     const screenTopY = selectionBounds.minY * viewport.zoom + viewport.pan.y - 60;
-    
+
     const newX = screenCenterX;
     const newY = Math.max(70, screenTopY);
-    
+
     if (Math.abs(newX - position.x) > 2 || Math.abs(newY - position.y) > 2) {
       setPosition({ x: newX, y: newY });
     }
@@ -597,8 +597,8 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   // تحديث اسم الصورة عند التحديد
   useEffect(() => {
-    if (selectionType === 'image' && firstElement) {
-      setImageName(firstElement.content || 'صورة');
+    if (selectionType === "image" && firstElement) {
+      setImageName(firstElement.content || "صورة");
     }
   }, [selectionType, firstElement]);
 
@@ -606,42 +606,42 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   // ===== الإجراءات المشتركة =====
   const handleDuplicate = () => {
-    selectedElementIds.forEach(id => duplicateElement(id));
-    toast.success('تم تكرار العناصر');
+    selectedElementIds.forEach((id) => duplicateElement(id));
+    toast.success("تم تكرار العناصر");
   };
 
   const handleToggleVisibility = () => {
-    selectedElementIds.forEach(id => {
-      const current = elements.find(el => el.id === id);
+    selectedElementIds.forEach((id) => {
+      const current = elements.find((el) => el.id === id);
       updateElement(id, { visible: current?.visible === false ? true : false });
     });
-    toast.success(areElementsVisible ? 'تم إخفاء العناصر' : 'تم إظهار العناصر');
+    toast.success(areElementsVisible ? "تم إخفاء العناصر" : "تم إظهار العناصر");
   };
 
   const handleToggleLock = () => {
     if (areElementsLocked) {
       unlockElements(selectedElementIds);
-      toast.success('تم إلغاء قفل العناصر');
+      toast.success("تم إلغاء قفل العناصر");
     } else {
       lockElements(selectedElementIds);
-      toast.success('تم قفل العناصر');
+      toast.success("تم قفل العناصر");
     }
   };
 
   const handleComment = () => {
-    toast.info('قريباً: إضافة تعليق');
+    toast.info("قريباً: إضافة تعليق");
   };
 
   const handleDelete = () => {
     deleteElements(selectedElementIds);
-    toast.success('تم حذف العناصر');
+    toast.success("تم حذف العناصر");
   };
 
   // ===== وظائف الذكاء الاصطناعي =====
   const getSelectionContent = () => {
-    return selectedElements.map(el => ({
+    return selectedElements.map((el) => ({
       type: el.type,
-      content: el.content || '',
+      content: el.content || "",
       smartType: el.smartType,
       position: el.position,
     }));
@@ -649,7 +649,10 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   const handleQuickGenerate = async () => {
     const content = getSelectionContent();
-    const contentText = selectedElements.map(el => el.content || '').filter(Boolean).join('\n');
+    const contentText = selectedElements
+      .map((el) => el.content || "")
+      .filter(Boolean)
+      .join("\n");
     const result = await analyzeSelection(content, `حلل هذه العناصر وأنشئ عنصر ذكي مناسب: ${contentText}`);
     if (result?.suggestions && result.suggestions.length > 0) {
       const suggestion = result.suggestions[0];
@@ -661,22 +664,31 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   const handleTransform = async (targetType: SmartElementType) => {
     setIsTransforming(true);
-    
+
     try {
       const content = getSelectionContent();
-      const contentText = selectedElements.map(el => el.content || '').filter(Boolean).join('\n');
+      const contentText = selectedElements
+        .map((el) => el.content || "")
+        .filter(Boolean)
+        .join("\n");
       const result = await transformElements(content, targetType, `حوّل هذه العناصر إلى ${targetType}: ${contentText}`);
       if (result?.elements && result.elements.length > 0) {
         const centerX = selectedElements.reduce((sum, el) => sum + (el.position?.x || 0), 0) / selectedElements.length;
         const centerY = selectedElements.reduce((sum, el) => sum + (el.position?.y || 0), 0) / selectedElements.length;
         result.elements.forEach((element, index) => {
-          addSmartElement(element.type as SmartElementType, { x: centerX + index * 30, y: centerY + index * 30 }, element.data);
+          addSmartElement(
+            element.type as SmartElementType,
+            { x: centerX + index * 30, y: centerY + index * 30 },
+            element.data,
+          );
         });
-        toast.success(`تم تحويل ${selectedElements.length} عنصر إلى ${TRANSFORM_OPTIONS.find(o => o.type === targetType)?.label}`);
+        toast.success(
+          `تم تحويل ${selectedElements.length} عنصر إلى ${TRANSFORM_OPTIONS.find((o) => o.type === targetType)?.label}`,
+        );
         setIsAIMenuOpen(false);
       }
     } catch (error) {
-      toast.error('حدث خطأ أثناء التحويل');
+      toast.error("حدث خطأ أثناء التحويل");
     } finally {
       setIsTransforming(false);
     }
@@ -684,37 +696,50 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   const handleCustomTransform = async () => {
     if (!customPrompt.trim()) {
-      toast.error('يرجى إدخال وصف التحويل');
+      toast.error("يرجى إدخال وصف التحويل");
       return;
     }
-    
+
     setIsTransforming(true);
-    
+
     try {
       const content = getSelectionContent();
-      const contentText = selectedElements.map(el => el.content || '').filter(Boolean).join('\n');
+      const contentText = selectedElements
+        .map((el) => el.content || "")
+        .filter(Boolean)
+        .join("\n");
       const result = await analyzeSelection(content, `${customPrompt}: ${contentText}`);
-      
+
       if (result?.suggestions && result.suggestions.length > 0) {
         const suggestion = result.suggestions[0];
         if (suggestion.targetType) {
-          const transformResult = await transformElements(content, suggestion.targetType, `${customPrompt}: ${contentText}`);
+          const transformResult = await transformElements(
+            content,
+            suggestion.targetType,
+            `${customPrompt}: ${contentText}`,
+          );
           if (transformResult?.elements && transformResult.elements.length > 0) {
-            const centerX = selectedElements.reduce((sum, el) => sum + (el.position?.x || 0), 0) / selectedElements.length;
-            const centerY = selectedElements.reduce((sum, el) => sum + (el.position?.y || 0), 0) / selectedElements.length;
+            const centerX =
+              selectedElements.reduce((sum, el) => sum + (el.position?.x || 0), 0) / selectedElements.length;
+            const centerY =
+              selectedElements.reduce((sum, el) => sum + (el.position?.y || 0), 0) / selectedElements.length;
             transformResult.elements.forEach((element, index) => {
-              addSmartElement(element.type as SmartElementType, { x: centerX + index * 30, y: centerY + index * 30 }, element.data);
+              addSmartElement(
+                element.type as SmartElementType,
+                { x: centerX + index * 30, y: centerY + index * 30 },
+                element.data,
+              );
             });
-            toast.success('تم التحويل المخصص بنجاح');
+            toast.success("تم التحويل المخصص بنجاح");
             setIsAIMenuOpen(false);
-            setCustomPrompt('');
+            setCustomPrompt("");
           }
         }
       } else {
-        toast.info('لم يتم العثور على تحويل مناسب');
+        toast.info("لم يتم العثور على تحويل مناسب");
       }
     } catch (error) {
-      toast.error('حدث خطأ أثناء التحويل المخصص');
+      toast.error("حدث خطأ أثناء التحويل المخصص");
     } finally {
       setIsTransforming(false);
     }
@@ -722,92 +747,92 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   const handleCopy = () => {
     copyElements(selectedElementIds);
-    toast.success('تم نسخ العناصر');
+    toast.success("تم نسخ العناصر");
   };
 
   const handleCut = () => {
     cutElements(selectedElementIds);
-    toast.success('تم قص العناصر');
+    toast.success("تم قص العناصر");
   };
 
   const handlePaste = () => {
     if (clipboard.length > 0) {
       pasteElements();
-      toast.success('تم لصق العناصر');
+      toast.success("تم لصق العناصر");
     } else {
-      toast.error('الحافظة فارغة');
+      toast.error("الحافظة فارغة");
     }
   };
 
   const handleAddText = () => {
     const centerX = selectionBounds ? (selectionBounds.minX + selectionBounds.maxX) / 2 : 100;
     const centerY = selectionBounds ? selectionBounds.maxY + 50 : 100;
-    
+
     addElement({
-      type: 'text',
+      type: "text",
       position: { x: centerX, y: centerY },
       size: { width: 200, height: 40 },
-      content: 'نص جديد',
+      content: "نص جديد",
       style: { fontSize: 16 },
     });
-    toast.success('تم إضافة نص جديد');
+    toast.success("تم إضافة نص جديد");
   };
 
   const handleChangeLayer = (layerId: string) => {
-    if (layerId === 'new') {
+    if (layerId === "new") {
       const newLayerName = `طبقة ${layers.length + 1}`;
       addLayer(newLayerName);
       toast.success(`تم إنشاء ${newLayerName}`);
     } else {
-      selectedElementIds.forEach(id => {
+      selectedElementIds.forEach((id) => {
         updateElement(id, { layerId });
       });
-      toast.success('تم نقل العناصر إلى الطبقة');
+      toast.success("تم نقل العناصر إلى الطبقة");
     }
   };
 
   const handleBringToFront = () => {
     const currentElements = useCanvasStore.getState().elements;
     const selectedSet = new Set(selectedElementIds);
-    const selected = currentElements.filter(el => selectedSet.has(el.id));
-    const others = currentElements.filter(el => !selectedSet.has(el.id));
+    const selected = currentElements.filter((el) => selectedSet.has(el.id));
+    const others = currentElements.filter((el) => !selectedSet.has(el.id));
     useCanvasStore.setState({ elements: [...others, ...selected] });
-    toast.success('تم نقل العنصر للأمام');
+    toast.success("تم نقل العنصر للأمام");
   };
 
   const handleBringForward = () => {
     const currentElements = useCanvasStore.getState().elements;
     const newElements = [...currentElements];
-    [...selectedElementIds].reverse().forEach(id => {
-      const idx = newElements.findIndex(el => el.id === id);
+    [...selectedElementIds].reverse().forEach((id) => {
+      const idx = newElements.findIndex((el) => el.id === id);
       if (idx >= 0 && idx < newElements.length - 1) {
         [newElements[idx], newElements[idx + 1]] = [newElements[idx + 1], newElements[idx]];
       }
     });
     useCanvasStore.setState({ elements: newElements });
-    toast.success('تم رفع العنصر');
+    toast.success("تم رفع العنصر");
   };
 
   const handleSendBackward = () => {
     const currentElements = useCanvasStore.getState().elements;
     const newElements = [...currentElements];
-    selectedElementIds.forEach(id => {
-      const idx = newElements.findIndex(el => el.id === id);
+    selectedElementIds.forEach((id) => {
+      const idx = newElements.findIndex((el) => el.id === id);
       if (idx > 0) {
         [newElements[idx], newElements[idx - 1]] = [newElements[idx - 1], newElements[idx]];
       }
     });
     useCanvasStore.setState({ elements: newElements });
-    toast.success('تم خفض العنصر');
+    toast.success("تم خفض العنصر");
   };
 
   const handleSendToBack = () => {
     const currentElements = useCanvasStore.getState().elements;
     const selectedSet = new Set(selectedElementIds);
-    const selected = currentElements.filter(el => selectedSet.has(el.id));
-    const others = currentElements.filter(el => !selectedSet.has(el.id));
+    const selected = currentElements.filter((el) => selectedSet.has(el.id));
+    const others = currentElements.filter((el) => !selectedSet.has(el.id));
     useCanvasStore.setState({ elements: [...selected, ...others] });
-    toast.success('تم نقل العنصر للخلف');
+    toast.success("تم نقل العنصر للخلف");
   };
 
   // ===== إجراءات النص =====
@@ -816,56 +841,56 @@ const UnifiedFloatingToolbar: React.FC = () => {
   };
 
   const handleFontFamilyChange = (fontFamily: string) => {
-    selectedElementIds.forEach(id => {
+    selectedElementIds.forEach((id) => {
       updateElement(id, { style: { ...firstElement?.style, fontFamily } });
     });
   };
 
   const handleFontSizeChange = (fontSize: number) => {
-    selectedElementIds.forEach(id => {
+    selectedElementIds.forEach((id) => {
       updateElement(id, { style: { ...firstElement?.style, fontSize } });
     });
   };
 
   const handleColorChange = (color: string) => {
-    selectedElementIds.forEach(id => {
+    selectedElementIds.forEach((id) => {
       updateElement(id, { style: { ...firstElement?.style, color } });
     });
   };
 
-  const handleTextAlign = (align: 'left' | 'center' | 'right' | 'justify') => {
-    selectedElementIds.forEach(id => {
+  const handleTextAlign = (align: "left" | "center" | "right" | "justify") => {
+    selectedElementIds.forEach((id) => {
       updateElement(id, { style: { ...firstElement?.style, textAlign: align } });
     });
   };
 
-  const handleVerticalAlign = (align: 'flex-start' | 'center' | 'flex-end') => {
-    selectedElementIds.forEach(id => {
+  const handleVerticalAlign = (align: "flex-start" | "center" | "flex-end") => {
+    selectedElementIds.forEach((id) => {
       updateElement(id, { style: { ...firstElement?.style, alignItems: align } });
     });
   };
 
-  const handleTextDirection = (direction: 'rtl' | 'ltr') => {
-    selectedElementIds.forEach(id => {
+  const handleTextDirection = (direction: "rtl" | "ltr") => {
+    selectedElementIds.forEach((id) => {
       updateElement(id, { style: { ...firstElement?.style, direction } });
     });
   };
 
   const handleClearFormatting = () => {
-    document.execCommand('removeFormat', false);
-    toast.success('تم مسح التنسيقات');
+    document.execCommand("removeFormat", false);
+    toast.success("تم مسح التنسيقات");
   };
 
   const handleAddLink = () => {
-    const url = prompt('أدخل الرابط:');
+    const url = prompt("أدخل الرابط:");
     if (url) {
-      document.execCommand('createLink', false, url);
-      toast.success('تم إضافة الرابط');
+      document.execCommand("createLink", false, url);
+      toast.success("تم إضافة الرابط");
     }
   };
 
-  const handleToggleList = (listType: 'ul' | 'ol') => {
-    const command = listType === 'ul' ? 'insertUnorderedList' : 'insertOrderedList';
+  const handleToggleList = (listType: "ul" | "ol") => {
+    const command = listType === "ul" ? "insertUnorderedList" : "insertOrderedList";
     document.execCommand(command, false);
   };
 
@@ -878,20 +903,20 @@ const UnifiedFloatingToolbar: React.FC = () => {
   };
 
   const handleCrop = () => {
-    toast.info('قريباً: أداة الكروب');
+    toast.info("قريباً: أداة الكروب");
   };
 
   const handleReplaceImage = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file && firstElement) {
         const reader = new FileReader();
         reader.onload = () => {
           updateElement(firstElement.id, { src: reader.result as string });
-          toast.success('تم تبديل الصورة');
+          toast.success("تم تبديل الصورة");
         };
         reader.readAsDataURL(file);
       }
@@ -900,66 +925,67 @@ const UnifiedFloatingToolbar: React.FC = () => {
   };
 
   // ===== إجراءات التحديد المتعدد =====
-  const handleHorizontalAlign = (align: 'right' | 'center' | 'left') => {
+  const handleHorizontalAlign = (align: "right" | "center" | "left") => {
     alignElements(selectedElementIds, align);
-    toast.success(`تمت المحاذاة ${align === 'right' ? 'لليمين' : align === 'center' ? 'للوسط' : 'لليسار'}`);
+    toast.success(`تمت المحاذاة ${align === "right" ? "لليمين" : align === "center" ? "للوسط" : "لليسار"}`);
   };
 
-  const handleVerticalAlignMultiple = (align: 'top' | 'middle' | 'bottom') => {
+  const handleVerticalAlignMultiple = (align: "top" | "middle" | "bottom") => {
     alignElements(selectedElementIds, align);
-    toast.success(`تمت المحاذاة ${align === 'top' ? 'للأعلى' : align === 'middle' ? 'للوسط' : 'للأسفل'}`);
+    toast.success(`تمت المحاذاة ${align === "top" ? "للأعلى" : align === "middle" ? "للوسط" : "للأسفل"}`);
   };
 
   const handleToggleGroup = () => {
     if (groupId) {
       ungroupElements(groupId);
-      toast.success('تم فك التجميع');
+      toast.success("تم فك التجميع");
     } else if (selectedElementIds.length > 1) {
       groupElements(selectedElementIds);
-      toast.success('تم تجميع العناصر');
+      toast.success("تم تجميع العناصر");
     } else {
-      toast.error('حدد عنصرين أو أكثر للتجميع');
+      toast.error("حدد عنصرين أو أكثر للتجميع");
     }
   };
 
   // Get current text styles
-  const currentFontFamily = firstElement?.style?.fontFamily || 'IBM Plex Sans Arabic';
+  const currentFontFamily = firstElement?.style?.fontFamily || "IBM Plex Sans Arabic";
   const currentFontSize = firstElement?.style?.fontSize || 16;
-  const currentColor = firstElement?.style?.color || '#0B0F12';
-  const currentAlign = (firstElement?.style?.textAlign as 'left' | 'center' | 'right') || 'right';
-  const currentVerticalAlign = (firstElement?.style?.alignItems as 'flex-start' | 'center' | 'flex-end') || 'flex-start';
-  const currentDirection = (firstElement?.style?.direction as 'rtl' | 'ltr') || 'rtl';
+  const currentColor = firstElement?.style?.color || "#0B0F12";
+  const currentAlign = (firstElement?.style?.textAlign as "left" | "center" | "right") || "right";
+  const currentVerticalAlign =
+    (firstElement?.style?.alignItems as "flex-start" | "center" | "flex-end") || "flex-start";
+  const currentDirection = (firstElement?.style?.direction as "rtl" | "ltr") || "rtl";
 
   // ===== الأزرار المشتركة =====
   const CommonActions = () => (
     <>
       {/* تكرار */}
       <ToolbarButton icon={<Files size={16} />} onClick={handleDuplicate} title="تكرار" />
-      
+
       {/* إظهار/إخفاء */}
-      <ToolbarButton 
-        icon={areElementsVisible ? <Eye size={16} /> : <EyeOff size={16} />} 
-        onClick={handleToggleVisibility} 
-        title={areElementsVisible ? 'إخفاء' : 'إظهار'}
+      <ToolbarButton
+        icon={areElementsVisible ? <Eye size={16} /> : <EyeOff size={16} />}
+        onClick={handleToggleVisibility}
+        title={areElementsVisible ? "إخفاء" : "إظهار"}
         isActive={!areElementsVisible}
       />
-      
+
       {/* قفل/فك القفل */}
-      <ToolbarButton 
-        icon={areElementsLocked ? <Lock size={16} /> : <Unlock size={16} />} 
-        onClick={handleToggleLock} 
-        title={areElementsLocked ? 'فك القفل' : 'قفل'}
+      <ToolbarButton
+        icon={areElementsLocked ? <Lock size={16} /> : <Unlock size={16} />}
+        onClick={handleToggleLock}
+        title={areElementsLocked ? "فك القفل" : "قفل"}
         isActive={areElementsLocked}
       />
-      
+
       {/* تعليق */}
       <ToolbarButton icon={<MessageSquare size={16} />} onClick={handleComment} title="ترك تعليق" />
-      
+
       {/* حذف */}
       <ToolbarButton icon={<Trash2 size={16} />} onClick={handleDelete} title="حذف" variant="destructive" />
-      
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* زر الذكاء الاصطناعي مع القائمة المنسدلة */}
       <div className="relative">
         <button
@@ -973,12 +999,12 @@ const UnifiedFloatingToolbar: React.FC = () => {
             <Sparkles size={16} className="text-white" />
           )}
         </button>
-        
+
         <AnimatePresence>
           {isAIMenuOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsAIMenuOpen(false)} />
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: -10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -1000,12 +1026,10 @@ const UnifiedFloatingToolbar: React.FC = () => {
                     <span>إنشاء عنصر ذكي تلقائياً</span>
                   </button>
                 </div>
-                
+
                 {/* خيارات التحويل */}
                 <div className="p-2 space-y-1">
-                  <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1">
-                    تحويل إلى:
-                  </div>
+                  <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1">تحويل إلى:</div>
                   {TRANSFORM_OPTIONS.map((option) => (
                     <button
                       key={option.type}
@@ -1017,22 +1041,16 @@ const UnifiedFloatingToolbar: React.FC = () => {
                         <option.icon size={16} />
                       </span>
                       <div className="flex-1">
-                        <div className="text-[12px] font-medium text-black">
-                          {option.label}
-                        </div>
-                        <div className="text-[10px] text-[hsl(var(--ink-60))]">
-                          {option.description}
-                        </div>
+                        <div className="text-[12px] font-medium text-black">{option.label}</div>
+                        <div className="text-[10px] text-[hsl(var(--ink-60))]">{option.description}</div>
                       </div>
                     </button>
                   ))}
                 </div>
-                
+
                 {/* تحويل مخصص */}
                 <div className="p-2 border-t border-[hsl(var(--border))]">
-                  <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1 mb-1">
-                    تحويل مخصص:
-                  </div>
+                  <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1 mb-1">تحويل مخصص:</div>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -1042,12 +1060,12 @@ const UnifiedFloatingToolbar: React.FC = () => {
                       onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => {
                         e.stopPropagation();
-                        if (e.key === 'Enter' && !isAILoading && !isTransforming) {
+                        if (e.key === "Enter" && !isAILoading && !isTransforming) {
                           handleCustomTransform();
                         }
                       }}
                       placeholder="وصف التحويل..."
-                      className="w-[160px] h-8 px-2 text-[11px] rounded-lg border border-[hsl(var(--border))] bg-white focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
+                      className="w-[180px] h-8 px-2 text-[11px] rounded-lg border border-[hsl(var(--border))] bg-white focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
                       disabled={isAILoading || isTransforming}
                     />
                     <button
@@ -1063,7 +1081,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 {/* معلومات التحديد */}
                 <div className="px-3 py-2 border-t border-[hsl(var(--border))] text-[10px] text-[hsl(var(--ink-60))] text-center">
                   {selectedElements.length} عنصر محدد
@@ -1073,9 +1091,9 @@ const UnifiedFloatingToolbar: React.FC = () => {
           )}
         </AnimatePresence>
       </div>
-      
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* قائمة المزيد */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -1096,16 +1114,16 @@ const UnifiedFloatingToolbar: React.FC = () => {
             <ClipboardPaste size={14} className="ml-2" />
             لصق
           </DropdownMenuItem>
-          
+
           <DropdownMenuSeparator />
-          
+
           <DropdownMenuItem onClick={handleAddText}>
             <Type size={14} className="ml-2" />
             إضافة نص
           </DropdownMenuItem>
-          
+
           <DropdownMenuSeparator />
-          
+
           {/* تغيير الطبقة */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
@@ -1119,15 +1137,15 @@ const UnifiedFloatingToolbar: React.FC = () => {
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleChangeLayer('new')}>
+              <DropdownMenuItem onClick={() => handleChangeLayer("new")}>
                 <Plus size={14} className="ml-2" />
                 طبقة جديدة
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-          
+
           <DropdownMenuSeparator />
-          
+
           <DropdownMenuItem onClick={handleBringToFront}>
             <ChevronsUp size={14} className="ml-2" />
             إحضار إلى الأمام
@@ -1153,153 +1171,136 @@ const UnifiedFloatingToolbar: React.FC = () => {
   const TextActions = () => (
     <>
       {/* نوع الخط مع preview */}
-      <FontFamilyDropdown
-        value={currentFontFamily}
-        onChange={handleFontFamilyChange}
-      />
-      
+      <FontFamilyDropdown value={currentFontFamily} onChange={handleFontFamilyChange} />
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* حجم الخط مع إدخال يدوي */}
-      <FontSizeInput
-        value={currentFontSize}
-        onChange={handleFontSizeChange}
-      />
-      
+      <FontSizeInput value={currentFontSize} onChange={handleFontSizeChange} />
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* لون النص */}
-      <TextColorPicker
-        value={currentColor}
-        onChange={handleColorChange}
-      />
-      
+      <TextColorPicker value={currentColor} onChange={handleColorChange} />
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* عريض */}
-      <ToolbarButton 
-        icon={<Bold size={16} />} 
-        onClick={() => handleTextFormat('bold')} 
-        title="غامق" 
+      <ToolbarButton
+        icon={<Bold size={16} />}
+        onClick={() => handleTextFormat("bold")}
+        title="غامق"
         isActive={activeFormats.bold}
       />
-      
+
       {/* مائل */}
-      <ToolbarButton 
-        icon={<Italic size={16} />} 
-        onClick={() => handleTextFormat('italic')} 
-        title="مائل" 
+      <ToolbarButton
+        icon={<Italic size={16} />}
+        onClick={() => handleTextFormat("italic")}
+        title="مائل"
         isActive={activeFormats.italic}
       />
-      
+
       {/* تحته خط */}
-      <ToolbarButton 
-        icon={<Underline size={16} />} 
-        onClick={() => handleTextFormat('underline')} 
-        title="تسطير" 
+      <ToolbarButton
+        icon={<Underline size={16} />}
+        onClick={() => handleTextFormat("underline")}
+        title="تسطير"
         isActive={activeFormats.underline}
       />
-      
+
       {/* يتوسطه خط */}
-      <ToolbarButton 
-        icon={<Strikethrough size={16} />} 
-        onClick={() => handleTextFormat('strikeThrough')} 
-        title="يتوسطه خط" 
+      <ToolbarButton
+        icon={<Strikethrough size={16} />}
+        onClick={() => handleTextFormat("strikeThrough")}
+        title="يتوسطه خط"
         isActive={activeFormats.strikeThrough}
       />
-      
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* قوائم */}
-      <ToolbarButton 
-        icon={<List size={16} />} 
-        onClick={() => handleToggleList('ul')} 
-        title="قائمة نقطية" 
+      <ToolbarButton
+        icon={<List size={16} />}
+        onClick={() => handleToggleList("ul")}
+        title="قائمة نقطية"
         isActive={activeFormats.insertUnorderedList}
       />
-      <ToolbarButton 
-        icon={<ListOrdered size={16} />} 
-        onClick={() => handleToggleList('ol')} 
-        title="قائمة مرقمة" 
+      <ToolbarButton
+        icon={<ListOrdered size={16} />}
+        onClick={() => handleToggleList("ol")}
+        title="قائمة مرقمة"
         isActive={activeFormats.insertOrderedList}
       />
-      
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* اتجاه النص - أزرار منفصلة */}
-      <ToolbarButton 
-        icon={() => <span className="text-[10px] font-bold">RTL</span>} 
-        onClick={() => handleTextDirection('rtl')} 
-        title="من اليمين لليسار (عربي)" 
-        isActive={currentDirection === 'rtl'}
+      <ToolbarButton
+        icon={() => <span className="text-[10px] font-bold">RTL</span>}
+        onClick={() => handleTextDirection("rtl")}
+        title="من اليمين لليسار (عربي)"
+        isActive={currentDirection === "rtl"}
       />
-      <ToolbarButton 
-        icon={() => <span className="text-[10px] font-bold">LTR</span>} 
-        onClick={() => handleTextDirection('ltr')} 
-        title="من اليسار لليمين (English)" 
-        isActive={currentDirection === 'ltr'}
+      <ToolbarButton
+        icon={() => <span className="text-[10px] font-bold">LTR</span>}
+        onClick={() => handleTextDirection("ltr")}
+        title="من اليسار لليمين (English)"
+        isActive={currentDirection === "ltr"}
       />
-      
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* محاذاة النص */}
-      <ToolbarButton 
-        icon={<AlignRight size={16} />} 
-        onClick={() => handleTextAlign('right')} 
-        title="محاذاة يمين" 
-        isActive={currentAlign === 'right'}
+      <ToolbarButton
+        icon={<AlignRight size={16} />}
+        onClick={() => handleTextAlign("right")}
+        title="محاذاة يمين"
+        isActive={currentAlign === "right"}
       />
-      <ToolbarButton 
-        icon={<AlignCenter size={16} />} 
-        onClick={() => handleTextAlign('center')} 
-        title="محاذاة وسط" 
-        isActive={currentAlign === 'center'}
+      <ToolbarButton
+        icon={<AlignCenter size={16} />}
+        onClick={() => handleTextAlign("center")}
+        title="محاذاة وسط"
+        isActive={currentAlign === "center"}
       />
-      <ToolbarButton 
-        icon={<AlignLeft size={16} />} 
-        onClick={() => handleTextAlign('left')} 
-        title="محاذاة يسار" 
-        isActive={currentAlign === 'left'}
+      <ToolbarButton
+        icon={<AlignLeft size={16} />}
+        onClick={() => handleTextAlign("left")}
+        title="محاذاة يسار"
+        isActive={currentAlign === "left"}
       />
-      
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* المحاذاة الرأسية - أزرار منفصلة */}
-      <ToolbarButton 
-        icon={<AlignVerticalJustifyStart size={16} />} 
-        onClick={() => handleVerticalAlign('flex-start')} 
-        title="محاذاة أعلى" 
-        isActive={currentVerticalAlign === 'flex-start'}
+      <ToolbarButton
+        icon={<AlignVerticalJustifyStart size={16} />}
+        onClick={() => handleVerticalAlign("flex-start")}
+        title="محاذاة أعلى"
+        isActive={currentVerticalAlign === "flex-start"}
       />
-      <ToolbarButton 
-        icon={<AlignVerticalJustifyCenter size={16} />} 
-        onClick={() => handleVerticalAlign('center')} 
-        title="محاذاة وسط عمودي" 
-        isActive={currentVerticalAlign === 'center'}
+      <ToolbarButton
+        icon={<AlignVerticalJustifyCenter size={16} />}
+        onClick={() => handleVerticalAlign("center")}
+        title="محاذاة وسط عمودي"
+        isActive={currentVerticalAlign === "center"}
       />
-      <ToolbarButton 
-        icon={<AlignVerticalJustifyEnd size={16} />} 
-        onClick={() => handleVerticalAlign('flex-end')} 
-        title="محاذاة أسفل" 
-        isActive={currentVerticalAlign === 'flex-end'}
+      <ToolbarButton
+        icon={<AlignVerticalJustifyEnd size={16} />}
+        onClick={() => handleVerticalAlign("flex-end")}
+        title="محاذاة أسفل"
+        isActive={currentVerticalAlign === "flex-end"}
       />
-      
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* مسح التنسيقات */}
-      <ToolbarButton 
-        icon={<RemoveFormatting size={16} />} 
-        onClick={handleClearFormatting} 
-        title="إزالة التنسيق" 
-      />
-      
+      <ToolbarButton icon={<RemoveFormatting size={16} />} onClick={handleClearFormatting} title="إزالة التنسيق" />
+
       {/* إضافة رابط */}
-      <ToolbarButton 
-        icon={<Link size={16} />} 
-        onClick={handleAddLink} 
-        title="إضافة رابط" 
-      />
-      
+      <ToolbarButton icon={<Link size={16} />} onClick={handleAddLink} title="إضافة رابط" />
+
       <Separator orientation="vertical" className="h-6 mx-1" />
     </>
   );
@@ -1314,18 +1315,18 @@ const UnifiedFloatingToolbar: React.FC = () => {
         className="h-8 w-[120px] text-xs"
         placeholder="اسم الصورة"
       />
-      
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* كروب */}
       <ToolbarButton icon={<Crop size={16} />} onClick={handleCrop} title="كروب" />
-      
+
       {/* تبديل الصورة */}
       <ToolbarButton icon={<Replace size={16} />} onClick={handleReplaceImage} title="تبديل الصورة" />
-      
+
       {/* إضافة رابط */}
       <ToolbarButton icon={<Link size={16} />} onClick={handleAddLink} title="إضافة رابط" />
-      
+
       <Separator orientation="vertical" className="h-6 mx-1" />
     </>
   );
@@ -1334,24 +1335,24 @@ const UnifiedFloatingToolbar: React.FC = () => {
   const ElementActions = () => {
     const [isColorOpen, setIsColorOpen] = useState(false);
     const colorDropdownRef = useRef<HTMLDivElement>(null);
-    const currentBg = firstElement?.style?.backgroundColor || '#FFFFFF';
-    
+    const currentBg = firstElement?.style?.backgroundColor || "#FFFFFF";
+
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
         if (colorDropdownRef.current && !colorDropdownRef.current.contains(e.target as Node)) {
           setIsColorOpen(false);
         }
       };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
-    
+
     const handleBgColorChange = (color: string) => {
-      selectedElementIds.forEach(id => {
+      selectedElementIds.forEach((id) => {
         updateElement(id, { style: { ...firstElement?.style, backgroundColor: color } });
       });
     };
-    
+
     return (
       <>
         {/* لون الخلفية */}
@@ -1370,13 +1371,13 @@ const UnifiedFloatingToolbar: React.FC = () => {
             title="لون الخلفية"
           >
             <div className="flex flex-col items-center justify-center gap-0.5">
-              <div 
+              <div
                 className="w-5 h-5 rounded border border-[hsl(var(--border))]"
                 style={{ backgroundColor: currentBg }}
               />
             </div>
           </button>
-          
+
           <AnimatePresence>
             {isColorOpen && (
               <motion.div
@@ -1386,15 +1387,12 @@ const UnifiedFloatingToolbar: React.FC = () => {
                 className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[280px]"
                 onMouseDown={(e) => e.stopPropagation()}
               >
-                <ColorPickerInput
-                  value={currentBg}
-                  onChange={(newColor) => handleBgColorChange(newColor)}
-                />
+                <ColorPickerInput value={currentBg} onChange={(newColor) => handleBgColorChange(newColor)} />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-        
+
         <Separator orientation="vertical" className="h-6 mx-1" />
       </>
     );
@@ -1408,63 +1406,69 @@ const UnifiedFloatingToolbar: React.FC = () => {
         <span>{selectionCount}</span>
         <span>عناصر محددة</span>
       </div>
-      
+
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
+
       {/* المحاذاة الأفقية */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]" title="المحاذاة الأفقية">
+          <button
+            className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]"
+            title="المحاذاة الأفقية"
+          >
             <AlignHorizontalJustifyCenter size={16} />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="bg-white z-[100]">
-          <DropdownMenuItem onClick={() => handleHorizontalAlign('right')}>
+          <DropdownMenuItem onClick={() => handleHorizontalAlign("right")}>
             <AlignHorizontalJustifyEnd size={14} className="ml-2" />
             محاذاة لليمين
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleHorizontalAlign('center')}>
+          <DropdownMenuItem onClick={() => handleHorizontalAlign("center")}>
             <AlignHorizontalJustifyCenter size={14} className="ml-2" />
             محاذاة للوسط
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleHorizontalAlign('left')}>
+          <DropdownMenuItem onClick={() => handleHorizontalAlign("left")}>
             <AlignHorizontalJustifyStart size={14} className="ml-2" />
             محاذاة لليسار
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       {/* المحاذاة العمودية */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]" title="المحاذاة العمودية">
+          <button
+            className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]"
+            title="المحاذاة العمودية"
+          >
             <AlignVerticalJustifyCenter size={16} />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="bg-white z-[100]">
-          <DropdownMenuItem onClick={() => handleVerticalAlignMultiple('top')}>
+          <DropdownMenuItem onClick={() => handleVerticalAlignMultiple("top")}>
             <AlignVerticalJustifyStart size={14} className="ml-2" />
             محاذاة للأعلى
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleVerticalAlignMultiple('middle')}>
+          <DropdownMenuItem onClick={() => handleVerticalAlignMultiple("middle")}>
             <AlignVerticalJustifyCenter size={14} className="ml-2" />
             محاذاة للوسط
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleVerticalAlignMultiple('bottom')}>
+          <DropdownMenuItem onClick={() => handleVerticalAlignMultiple("bottom")}>
             <AlignVerticalJustifyEnd size={14} className="ml-2" />
             محاذاة للأسفل
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       {/* تجميع/فك التجميع */}
-      <ToolbarButton 
-        icon={areElementsGrouped ? <Ungroup size={16} /> : <Group size={16} />} 
-        onClick={handleToggleGroup} 
-        title={areElementsGrouped ? 'فك التجميع' : 'تجميع'}
+      <ToolbarButton
+        icon={areElementsGrouped ? <Ungroup size={16} /> : <Group size={16} />}
+        onClick={handleToggleGroup}
+        title={areElementsGrouped ? "فك التجميع" : "تجميع"}
         isActive={areElementsGrouped}
       />
-      
+
       <Separator orientation="vertical" className="h-6 mx-1" />
     </>
   );
@@ -1478,24 +1482,24 @@ const UnifiedFloatingToolbar: React.FC = () => {
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
-        transform: 'translateX(-50%)'
+        transform: "translateX(-50%)",
       }}
       data-floating-toolbar
     >
       <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5">
         <div className="flex items-center gap-1">
           {/* أزرار خاصة بالنوع */}
-          {selectionType === 'element' && <ElementActions />}
-          {selectionType === 'text' && <TextActions />}
-          {selectionType === 'image' && <ImageActions />}
-          {selectionType === 'multiple' && <MultipleActions />}
-          
+          {selectionType === "element" && <ElementActions />}
+          {selectionType === "text" && <TextActions />}
+          {selectionType === "image" && <ImageActions />}
+          {selectionType === "multiple" && <MultipleActions />}
+
           {/* الأزرار المشتركة */}
           <CommonActions />
         </div>
       </div>
     </motion.div>,
-    document.body
+    document.body,
   );
 };
 
