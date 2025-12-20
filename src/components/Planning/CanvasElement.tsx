@@ -139,8 +139,11 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   
   if (!isVisible) return null;
   
-  // ✅ دوال السحب - معرّفة أولاً لتجنب circular dependency
-  const handleMouseMove = useCallback((e: MouseEvent) => {
+  // ✅ دوال السحب مع refs لتجنب circular dependency
+  const handleMouseMoveRef = useRef<(e: MouseEvent) => void>();
+  const handleMouseUpRef = useRef<() => void>();
+  
+  handleMouseMoveRef.current = (e: MouseEvent) => {
     // ✅ منع التعارض مع سحب نقاط تحكم السهم - استخدام interactionStore
     if (!isDraggingRef.current || isLocked || useInteractionStore.getState().isInternalDrag()) return;
     
@@ -166,16 +169,25 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     updateElement(element.id, {
       position: { x: newX, y: newY }
     });
-  }, [element.id, updateElement, snapToGrid, viewport.zoom, isLocked]);
+  };
   
-  const handleMouseUp = useCallback(() => {
+  handleMouseUpRef.current = () => {
     if (isDraggingRef.current) {
       isDraggingRef.current = false;
-      // ✅ إزالة الـ listeners عند انتهاء السحب
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
     }
-  }, [handleMouseMove]);
+  };
+
+  // ✅ Stable event handlers that use refs
+  const stableMouseMove = useCallback((e: MouseEvent) => {
+    handleMouseMoveRef.current?.(e);
+  }, []);
+  
+  const stableMouseUp = useCallback(() => {
+    handleMouseUpRef.current?.();
+    // ✅ إزالة الـ listeners عند انتهاء السحب
+    window.removeEventListener('mousemove', stableMouseMove);
+    window.removeEventListener('mouseup', stableMouseUp);
+  }, []);
 
   // ✅ إضافة listeners في startDrag وإزالتها في handleMouseUp
   const startDrag = useCallback((e: React.MouseEvent) => {
@@ -187,9 +199,9 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       elementY: element.position.y
     };
     // إضافة listeners مباشرة عند بدء السحب
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-  }, [element.position.x, element.position.y, handleMouseMove, handleMouseUp]);
+    window.addEventListener('mousemove', stableMouseMove);
+    window.addEventListener('mouseup', stableMouseUp);
+  }, [element.position.x, element.position.y, stableMouseMove, stableMouseUp]);
 
   /**
    * ✅ المرحلة 1: معالجة محسّنة للنقر
@@ -285,12 +297,12 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   useEffect(() => {
     return () => {
       if (isDraggingRef.current) {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('mousemove', stableMouseMove);
+        window.removeEventListener('mouseup', stableMouseUp);
         isDraggingRef.current = false;
       }
     };
-  }, [handleMouseMove, handleMouseUp]);
+  }, [stableMouseMove, stableMouseUp]);
   
   return (
     <div
