@@ -445,6 +445,13 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
                 stickyText: text,
                 data: { ...element.data, stickyText: text } 
               })}
+              onUpdateSize={(newHeight) => {
+                if (newHeight > element.size.height) {
+                  updateElement(element.id, {
+                    size: { ...element.size, height: newHeight }
+                  });
+                }
+              }}
               onClose={() => stopEditingText(element.id)}
             />
           ) : null}
