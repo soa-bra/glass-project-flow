@@ -1,3 +1,4 @@
+// FloatingEditBar - v2.0 - Updated grouping logic
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ArrowUp, 
