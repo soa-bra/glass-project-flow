@@ -3,6 +3,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel, type Bounds, type Point } from '@/core/canvasKernel';
 import { snapEngine, type SnapLine } from '@/core/snapEngine';
+import { selectionCoordinator } from '@/core/selectionCoordinator';
 
 // التحقق إذا كان الشكل سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -237,6 +238,9 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     }
     activePointerIdRef.current = null;
     
+    // ✅ المرحلة 3: تحرير قفل Selection Coordinator
+    selectionCoordinator.releaseEvent();
+    
     // التحقق من وجود العناصر داخل إطار عند الإفلات
     if (isDragging && selectedElements.length > 0) {
       const frames = elements.filter(el => el.type === 'frame');
@@ -307,10 +311,16 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     }
   }, [isDragging, isResizing, handlePointerMove, handlePointerUp]);
   
-  // ✅ معالجات الأحداث باستخدام Pointer Events + Capture
+  // ✅ المرحلة 3: معالجات الأحداث باستخدام Selection Coordinator
   const handleDragStart = useCallback((e: React.PointerEvent) => {
     e.stopPropagation();
     e.preventDefault();
+    
+    // ✅ التحقق من Selection Coordinator
+    const event = selectionCoordinator.createSelectionEvent('bounding-box-drag', e);
+    if (!selectionCoordinator.lockEvent('bounding-box-drag')) {
+      return; // حدث آخر له أولوية أعلى
+    }
     
     // ✅ Pointer Capture لضمان استلام جميع الأحداث
     if (e.currentTarget instanceof Element) {
@@ -329,6 +339,11 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   const handleResizeStart = useCallback((e: React.PointerEvent, corner: string) => {
     e.stopPropagation();
     e.preventDefault();
+    
+    // ✅ المرحلة 3: التحقق من Selection Coordinator
+    if (!selectionCoordinator.lockEvent('resize-start')) {
+      return; // حدث آخر له أولوية أعلى
+    }
     
     // ✅ Pointer Capture
     if (e.currentTarget instanceof Element) {
