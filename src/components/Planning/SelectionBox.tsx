@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useCallback } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { canvasKernel, type Bounds } from '@/core/canvasKernel';
+import { selectLayerVisibilityMap } from '@/stores/canvas/selectors';
 
 interface SelectionBoxProps {
   /** إحداثي X لنقطة البداية (Screen Space نسبي للحاوية) */
@@ -16,9 +17,23 @@ interface SelectionBoxProps {
  * 
  * ✅ Sprint 4: يعمل في Screen Space للعرض
  * ✅ يحسب التقاطع في World Space لتحديد العناصر
+ * ✅ المرحلة 2: تحسين الأداء باستخدام Layer Visibility Map
  */
 export default function SelectionBox({ startX, startY, currentX, currentY }: SelectionBoxProps) {
-  const { viewport, elements, selectElements, layers } = useCanvasStore();
+  const { viewport, elements, layers } = useCanvasStore();
+  
+  // ✅ استخدام Layer Visibility Map للأداء O(1)
+  const layerVisibilityMap = useMemo(() => {
+    return selectLayerVisibilityMap({ 
+      elements, 
+      layers, 
+      selectedElementIds: [], 
+      viewport, 
+      history: { past: [], future: [] },
+      activeTool: 'select',
+      activeLayerId: null
+    });
+  }, [layers]);
   
   // حساب أبعاد الصندوق في Screen Space (للعرض)
   const screenBounds = useMemo(() => {
@@ -52,15 +67,16 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
     };
   }, [startX, startY, currentX, currentY, viewport]);
 
-  // ✅ حساب العناصر المتقاطعة مع صندوق التحديد (في World Space)
+  // ✅ حساب العناصر المتقاطعة مع صندوق التحديد (محسّن)
   const intersectingElementIds = useMemo(() => {
     const selectionBounds = worldBounds;
     
+    // ✅ تحسين: استخدام Map بدلاً من find (O(1) vs O(n))
     return elements
       .filter(el => {
-        // تجاهل العناصر غير المرئية
-        const layer = layers.find(l => l.id === el.layerId);
-        if (!layer?.visible || !el.visible) return false;
+        // ✅ O(1) lookup بدلاً من O(n) find
+        const layerVisible = layerVisibilityMap.get(el.layerId) ?? true;
+        if (!layerVisible || !el.visible) return false;
         
         // حساب حدود العنصر في World Space
         const elementBounds: Bounds = {
@@ -74,7 +90,7 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
         return canvasKernel.boundsIntersect(selectionBounds, elementBounds);
       })
       .map(el => el.id);
-  }, [worldBounds, elements, layers]);
+  }, [worldBounds, elements, layerVisibilityMap]);
 
   // إظهار معلومات التحديد (للتطوير)
   const showDebugInfo = false;
@@ -93,10 +109,10 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
           backdropFilter: 'blur(1px)'
         }}
       >
-        {/* عداد العناصر المحددة */}
+        {/* عداد العناصر المحددة - مثل Miro */}
         {intersectingElementIds.length > 0 && (
           <div 
-            className="absolute -top-6 left-0 px-2 py-0.5 text-xs font-medium rounded bg-[hsl(var(--accent-blue))] text-white"
+            className="absolute -top-7 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-semibold rounded-full bg-[hsl(var(--accent-blue))] text-white shadow-md"
             style={{ direction: 'rtl' }}
           >
             {intersectingElementIds.length} عنصر
@@ -122,21 +138,32 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
 
 /**
  * Hook مساعد لاستخدام SelectionBox مع تحديد تلقائي
+ * ✅ محسّن باستخدام Layer Visibility Map
  */
 export function useSelectionBox() {
-  const { selectElements, viewport } = useCanvasStore();
+  const { selectElements, viewport, layers } = useCanvasStore();
+  
+  // ✅ Cache للـ visibility map
+  const layerVisibilityMapRef = useRef<Map<string, boolean>>(new Map());
+  
+  // تحديث الـ cache عند تغير الطبقات
+  useMemo(() => {
+    const map = new Map<string, boolean>();
+    layers.forEach((l) => map.set(l.id, l.visible));
+    layerVisibilityMapRef.current = map;
+  }, [layers]);
 
   /**
    * إنهاء التحديد وتحديد العناصر المتقاطعة
    */
-  const finishSelection = (
+  const finishSelection = useCallback((
     startX: number,
     startY: number,
     endX: number,
     endY: number,
     addToSelection: boolean = false
   ) => {
-    const { elements, layers, selectedElementIds } = useCanvasStore.getState();
+    const { elements, selectedElementIds } = useCanvasStore.getState();
 
     // تحويل إلى World Space
     const worldStart = canvasKernel.screenToWorld(startX, startY, viewport, null);
@@ -149,11 +176,15 @@ export function useSelectionBox() {
       height: Math.abs(worldEnd.y - worldStart.y)
     };
 
+    // ✅ استخدام الـ cached map
+    const visibilityMap = layerVisibilityMapRef.current;
+
     // العثور على العناصر المتقاطعة
     const intersectingIds = elements
       .filter(el => {
-        const layer = layers.find(l => l.id === el.layerId);
-        if (!layer?.visible || !el.visible) return false;
+        // ✅ O(1) lookup
+        const layerVisible = visibilityMap.get(el.layerId) ?? true;
+        if (!layerVisible || !el.visible) return false;
 
         const elementBounds: Bounds = {
           x: el.position.x,
@@ -175,7 +206,7 @@ export function useSelectionBox() {
     }
 
     return intersectingIds;
-  };
+  }, [selectElements, viewport]);
 
   return { finishSelection };
 }
