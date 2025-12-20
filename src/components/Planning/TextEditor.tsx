@@ -4,6 +4,7 @@ import type { CanvasElement } from '@/stores/canvasStore';
 import { FloatingToolbar } from '@/components/ui/floating-toolbar';
 import { createPortal } from 'react-dom';
 import { sanitizeHTML } from '@/utils/sanitize';
+import { Check } from 'lucide-react';
 
 interface TextEditorProps {
   element: CanvasElement;
@@ -17,6 +18,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   const { updateTextStyle, startTyping, stopTyping, updateElement } = useCanvasStore();
   const [toolbarPosition, setToolbarPosition] = useState({ x: 0, y: 0 });
   const [showToolbar, setShowToolbar] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(!element.content || element.content.trim() === '');
   
   // حساب موضع الـ toolbar - مع هامش كافٍ فوق النص
   const updateToolbarPosition = useCallback(() => {
@@ -365,12 +367,22 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   
   const currentAlign = (element.style?.textAlign as 'left' | 'center' | 'right') || 'right';
   
+  // ✅ دالة حفظ وإغلاق المحرر
+  const handleDone = useCallback(() => {
+    if (editorRef.current) {
+      onUpdate(sanitizeHTML(editorRef.current.innerHTML));
+    }
+    setShowToolbar(false);
+    stopTyping();
+    onClose();
+  }, [onUpdate, stopTyping, onClose]);
+  
   return (
     <>
       {/* ✅ Wrapper مع Flexbox للمحاذاة العمودية */}
       <div 
         ref={wrapperRef}
-        className="flex flex-col"
+        className="flex flex-col relative"
         style={{ 
           width: '100%', 
           height: '100%',
@@ -380,23 +392,57 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
                         : 'flex-start',
         }}
       >
+        {/* ✅ زر Done للحفظ */}
+        <button
+          data-done-button
+          onClick={handleDone}
+          className="absolute -top-8 left-1/2 -translate-x-1/2 z-50 
+            bg-[hsl(var(--accent-green))] hover:bg-[hsl(var(--accent-green))]/90
+            text-white rounded-full p-1.5 shadow-lg
+            transition-all duration-200 hover:scale-110"
+          title="حفظ (Enter)"
+        >
+          <Check className="w-4 h-4" />
+        </button>
         <div
           ref={editorRef}
           contentEditable
           suppressContentEditableWarning
           dir={element.style?.direction || 'rtl'}
+          data-placeholder="اكتب شيئاً..."
           onInput={(e) => {
             const newContent = sanitizeHTML(e.currentTarget.innerHTML || '');
             onUpdate(newContent);
+            
+            // ✅ تحديث حالة isEmpty للـ placeholder
+            const textContent = e.currentTarget.textContent?.trim() || '';
+            setIsEmpty(textContent.length === 0);
+            
+            // ✅ Auto-grow: تحديث ارتفاع العنصر تلقائياً
+            if (element.data?.textType === 'box' && editorRef.current) {
+              const scrollHeight = editorRef.current.scrollHeight;
+              const currentHeight = element.size.height;
+              
+              // زيادة الارتفاع إذا كان المحتوى أكبر
+              if (scrollHeight > currentHeight - 20) {
+                updateElement(element.id, {
+                  size: {
+                    ...element.size,
+                    height: scrollHeight + 24 // padding إضافي
+                  }
+                });
+              }
+            }
           }}
           onKeyDown={handleKeyDown}
           onBlur={(e) => {
-            // ✅ تحسين: فقط أغلق إذا كان blur خارج TextPanel أو FloatingToolbar
+            // ✅ تحسين: فقط أغلق إذا كان blur خارج TextPanel أو FloatingToolbar أو Done button
             const relatedTarget = e.relatedTarget as HTMLElement;
             const isClickingPanel = relatedTarget?.closest('[data-text-panel]');
             const isClickingToolbar = relatedTarget?.closest('[data-floating-toolbar]');
+            const isClickingDone = relatedTarget?.closest('[data-done-button]');
             
-            if (!isClickingPanel && !isClickingToolbar) {
+            if (!isClickingPanel && !isClickingToolbar && !isClickingDone) {
               if (editorRef.current) {
                 onUpdate(sanitizeHTML(editorRef.current.innerHTML));
               }
@@ -405,6 +451,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
               onClose();
             }
           }}
+          className={`${isEmpty ? 'empty-editor' : ''}`}
           style={{
             fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
             fontSize: `${element.style?.fontSize || 14}px`,

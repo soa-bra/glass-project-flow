@@ -558,7 +558,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     <div 
       ref={containerRef} 
       data-canvas-container="true" 
-      className="relative w-full h-full overflow-hidden infinite-canvas-container" 
+      className={`relative w-full h-full overflow-hidden infinite-canvas-container ${
+        activeTool === 'text_tool' ? 'text-tool-active' : ''
+      }`}
       onMouseDown={handleMouseDown} 
       onMouseMove={handleMouseMove} 
       onMouseUp={handleMouseUp} 
