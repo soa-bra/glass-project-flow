@@ -5,6 +5,7 @@ import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel, type Bounds, type Point } from '@/core/canvasKernel';
 import { snapEngine, type SnapLine } from '@/core/snapEngine';
 import { selectionCoordinator } from '@/core/selectionCoordinator';
+import { Frame } from 'lucide-react';
 
 // التحقق إذا كان الشكل سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -35,7 +36,8 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     resizeElements, 
     duplicateElement, 
     resizeFrame, 
-    activeTool 
+    activeTool,
+    createFrameFromSelection
   } = useCanvasStore();
   
   const [isDragging, setIsDragging] = useState(false);
@@ -495,6 +497,23 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
           style={{ direction: 'rtl' }}
         >
           {displayCount} عنصر
+        </div>
+      )}
+      
+      {/* ✅ زر تحويل إلى إطار (يظهر عند تحديد عناصر غير إطارات) */}
+      {displayCount >= 1 && !selectedElements.some(el => el.type === 'frame') && (
+        <div className="absolute -top-9 right-0 flex gap-1.5 pointer-events-auto" style={{ direction: 'rtl' }}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              createFrameFromSelection();
+            }}
+            className="flex items-center gap-1 px-2 py-1 bg-[hsl(var(--ink))] hover:bg-[hsl(var(--ink-80))] text-white rounded-lg text-[11px] font-medium shadow-lg transition-colors"
+            title="تحويل إلى إطار"
+          >
+            <Frame className="w-3.5 h-3.5" />
+            <span>إطار</span>
+          </button>
         </div>
       )}
     </div>
