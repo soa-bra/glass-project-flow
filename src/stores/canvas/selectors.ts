@@ -1,9 +1,11 @@
 /**
  * Canvas Store Selectors - Memoized selectors للأداء
  * ✅ المرحلة 2: Layer Visibility Cache + تحسينات الأداء
+ * ✅ المرحلة 3: Spatial Index Integration + Enhanced Caching
  */
 
 import type { CanvasElement, LayerInfo } from '@/types/canvas';
+import { spatialIndex, queryIntersectingElements } from '@/core/spatialIndex';
 
 export interface CanvasState {
   elements: CanvasElement[];
@@ -16,25 +18,55 @@ export interface CanvasState {
 }
 
 // ============================================
-// 🔧 Memoization Cache System
+// 🔧 Enhanced Memoization Cache System
 // ============================================
 
 interface CacheEntry<T> {
   deps: any[];
   value: T;
+  timestamp: number;
 }
 
 const selectorCache = new Map<string, CacheEntry<any>>();
+const CACHE_TTL = 5000; // 5 seconds TTL for stale entries
 
 function memoize<T>(key: string, deps: any[], compute: () => T): T {
+  const now = Date.now();
   const cached = selectorCache.get(key);
   
-  if (cached && deps.every((dep, i) => Object.is(dep, cached.deps[i]))) {
-    return cached.value;
+  // التحقق من صلاحية الـ cache
+  if (cached) {
+    const depsMatch = deps.length === cached.deps.length && 
+      deps.every((dep, i) => Object.is(dep, cached.deps[i]));
+    
+    if (depsMatch) {
+      return cached.value;
+    }
   }
   
   const value = compute();
-  selectorCache.set(key, { deps, value });
+  selectorCache.set(key, { deps, value, timestamp: now });
+  return value;
+}
+
+/**
+ * ✅ Weak memoization for object references
+ */
+const weakCache = new WeakMap<object, Map<string, any>>();
+
+function weakMemoize<T>(obj: object, key: string, compute: () => T): T {
+  let objCache = weakCache.get(obj);
+  if (!objCache) {
+    objCache = new Map();
+    weakCache.set(obj, objCache);
+  }
+  
+  if (objCache.has(key)) {
+    return objCache.get(key);
+  }
+  
+  const value = compute();
+  objCache.set(key, value);
   return value;
 }
 
@@ -42,44 +74,62 @@ function memoize<T>(key: string, deps: any[], compute: () => T): T {
 // 🗺️ Layer Visibility Map - O(1) lookup
 // ============================================
 
+// ✅ Singleton cache for layer maps - يتجنب إعادة الإنشاء
+let cachedLayerVisibilityMap: Map<string, boolean> | null = null;
+let cachedLayerLockMap: Map<string, boolean> | null = null;
+let lastLayersRef: LayerInfo[] | null = null;
+
 /**
  * ✅ Layer Visibility Map - يحوّل O(n) find إلى O(1) lookup
  * هذا هو التحسين الأساسي للأداء في SelectionBox
  */
 export function selectLayerVisibilityMap(state: CanvasState): Map<string, boolean> {
-  return memoize(
-    'layerVisibilityMap',
-    [state.layers],
-    () => {
-      const map = new Map<string, boolean>();
-      state.layers.forEach((layer) => {
-        map.set(layer.id, layer.visible);
-      });
-      return map;
-    }
-  );
+  // ✅ تحسين: استخدام مرجع الـ layers للتحقق السريع
+  if (state.layers === lastLayersRef && cachedLayerVisibilityMap) {
+    return cachedLayerVisibilityMap;
+  }
+  
+  const map = new Map<string, boolean>();
+  state.layers.forEach((layer) => {
+    map.set(layer.id, layer.visible);
+  });
+  
+  cachedLayerVisibilityMap = map;
+  lastLayersRef = state.layers;
+  
+  return map;
 }
 
 /**
  * Layer Lock Map - للتحقق السريع من قفل الطبقات
  */
 export function selectLayerLockMap(state: CanvasState): Map<string, boolean> {
-  return memoize(
-    'layerLockMap',
-    [state.layers],
-    () => {
-      const map = new Map<string, boolean>();
-      state.layers.forEach((layer) => {
-        map.set(layer.id, layer.locked);
-      });
-      return map;
-    }
-  );
+  if (state.layers === lastLayersRef && cachedLayerLockMap) {
+    return cachedLayerLockMap;
+  }
+  
+  const map = new Map<string, boolean>();
+  state.layers.forEach((layer) => {
+    map.set(layer.id, layer.locked);
+  });
+  
+  cachedLayerLockMap = map;
+  
+  return map;
 }
 
 // ============================================
-// 📦 Element Selectors
+// 📦 Element Selectors with Spatial Index
 // ============================================
+
+/**
+ * ✅ تحديث الفهرس المكاني عند تغير العناصر
+ */
+export function updateSpatialIndex(elements: CanvasElement[]): void {
+  if (spatialIndex.needsRebuild(elements)) {
+    spatialIndex.rebuild(elements);
+  }
+}
 
 /**
  * Selector للعناصر المرئية (حسب الطبقات)
@@ -90,7 +140,7 @@ export const selectVisibleElements = (state: CanvasState): CanvasElement[] => {
   
   return memoize(
     'visibleElements',
-    [state.elements, visibilityMap],
+    [state.elements, state.layers],
     () => {
       return state.elements.filter(el => {
         const layerVisible = visibilityMap.get(el.layerId) ?? true;
@@ -115,35 +165,44 @@ export const selectSelectedElements = (state: CanvasState): CanvasElement[] => {
 };
 
 /**
- * Selector للعناصر في viewport
- * ✅ محسّن لتقليل الرسم غير الضروري
+ * ✅ Selector للعناصر في viewport باستخدام Spatial Index
+ * محسّن لتقليل الرسم غير الضروري
  */
 export const selectElementsInViewport = (
   state: CanvasState,
   viewportBounds: { x: number; y: number; width: number; height: number }
 ): CanvasElement[] => {
-  const visibleElements = selectVisibleElements(state);
+  const visibilityMap = selectLayerVisibilityMap(state);
+  
+  // ✅ تحويل viewport bounds إلى world space
+  const { zoom, pan } = state.viewport;
+  const worldBounds = {
+    x: (viewportBounds.x - pan.x) / zoom,
+    y: (viewportBounds.y - pan.y) / zoom,
+    width: viewportBounds.width / zoom,
+    height: viewportBounds.height / zoom
+  };
   
   return memoize(
-    `elementsInViewport-${viewportBounds.x}-${viewportBounds.y}-${viewportBounds.width}-${viewportBounds.height}`,
-    [visibleElements, viewportBounds],
-    () => visibleElements.filter(el => {
-      const { zoom, pan } = state.viewport;
-      const elementBounds = {
-        left: el.position.x * zoom + pan.x,
-        top: el.position.y * zoom + pan.y,
-        right: (el.position.x + el.size.width) * zoom + pan.x,
-        bottom: (el.position.y + el.size.height) * zoom + pan.y
-      };
-      
-      return !(
-        elementBounds.right < viewportBounds.x ||
-        elementBounds.left > viewportBounds.x + viewportBounds.width ||
-        elementBounds.bottom < viewportBounds.y ||
-        elementBounds.top > viewportBounds.y + viewportBounds.height
-      );
-    })
+    `elementsInViewport-${worldBounds.x.toFixed(0)}-${worldBounds.y.toFixed(0)}-${worldBounds.width.toFixed(0)}-${worldBounds.height.toFixed(0)}`,
+    [state.elements, worldBounds, state.layers],
+    () => {
+      // ✅ استخدام Spatial Index للبحث السريع
+      return queryIntersectingElements(worldBounds, state.elements, visibilityMap);
+    }
   );
+};
+
+/**
+ * ✅ Selector سريع للتحقق من وجود عناصر في منطقة
+ */
+export const selectHasElementsInBounds = (
+  state: CanvasState,
+  bounds: { x: number; y: number; width: number; height: number }
+): boolean => {
+  updateSpatialIndex(state.elements);
+  const candidateIds = spatialIndex.queryBounds(bounds);
+  return candidateIds.size > 0;
 };
 
 /**
@@ -155,6 +214,25 @@ export const selectElementsByType = (state: CanvasState, type: string): CanvasEl
     [state.elements, type],
     () => state.elements.filter(el => el.type === type)
   );
+};
+
+/**
+ * ✅ Element Map للبحث السريع O(1)
+ */
+export const selectElementMap = (state: CanvasState): Map<string, CanvasElement> => {
+  return memoize(
+    'elementMap',
+    [state.elements],
+    () => new Map(state.elements.map(el => [el.id, el]))
+  );
+};
+
+/**
+ * ✅ البحث السريع عن عنصر بالـ ID
+ */
+export const selectElementById = (state: CanvasState, id: string): CanvasElement | undefined => {
+  const elementMap = selectElementMap(state);
+  return elementMap.get(id);
 };
 
 /**
@@ -170,7 +248,8 @@ export const selectCanvasStats = (state: CanvasState) => {
       layersCount: state.layers.length,
       zoom: state.viewport.zoom,
       canUndo: state.history.past.length > 0,
-      canRedo: state.history.future.length > 0
+      canRedo: state.history.future.length > 0,
+      spatialIndexStats: spatialIndex.getStats()
     })
   );
 };
@@ -231,6 +310,9 @@ export const selectFrames = (state: CanvasState): CanvasElement[] => {
  */
 export const clearSelectorCache = () => {
   selectorCache.clear();
+  cachedLayerVisibilityMap = null;
+  cachedLayerLockMap = null;
+  lastLayersRef = null;
 };
 
 /**
@@ -241,11 +323,41 @@ export function getSelectorCacheSize(): number {
 }
 
 /**
- * تنظيف cache entries قديمة (للذاكرة)
+ * ✅ تنظيف cache entries قديمة (للذاكرة)
  */
 export function pruneSelectorCache(maxSize: number = 50): void {
+  const now = Date.now();
+  
+  // حذف الـ entries القديمة أولاً
+  for (const [key, entry] of selectorCache.entries()) {
+    if (now - entry.timestamp > CACHE_TTL) {
+      selectorCache.delete(key);
+    }
+  }
+  
+  // إذا لا يزال الحجم كبيراً، احذف الأقدم
   if (selectorCache.size > maxSize) {
-    const keysToDelete = Array.from(selectorCache.keys()).slice(0, selectorCache.size - maxSize);
-    keysToDelete.forEach((key) => selectorCache.delete(key));
+    const entries = Array.from(selectorCache.entries())
+      .sort((a, b) => a[1].timestamp - b[1].timestamp);
+    
+    const toDelete = entries.slice(0, selectorCache.size - maxSize);
+    toDelete.forEach(([key]) => selectorCache.delete(key));
+  }
+}
+
+/**
+ * ✅ تشغيل تنظيف دوري للـ cache
+ */
+let cleanupInterval: ReturnType<typeof setInterval> | null = null;
+
+export function startCacheCleanup(intervalMs: number = 30000): void {
+  if (cleanupInterval) return;
+  cleanupInterval = setInterval(() => pruneSelectorCache(), intervalMs);
+}
+
+export function stopCacheCleanup(): void {
+  if (cleanupInterval) {
+    clearInterval(cleanupInterval);
+    cleanupInterval = null;
   }
 }
