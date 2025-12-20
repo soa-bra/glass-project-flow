@@ -395,6 +395,12 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     [selectedElements]
   );
   
+  // ✅ التحقق مما إذا كانت جميع العناصر نصوص (لا نعرض BoundingBox للنصوص)
+  const isAllText = useMemo(() => 
+    selectedElements.length > 0 && selectedElements.every(el => el.type === 'text'),
+    [selectedElements]
+  );
+  
   // ✅ التحقق مما إذا كانت العناصر مجمّعة
   const isGrouped = useMemo(() => {
     if (selectedElements.length === 0) return false;
@@ -406,7 +412,8 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     return groupIds.size > 0;
   }, [selectedElements]);
   
-  if (activeTool !== 'selection_tool' || selectedElements.length === 0 || isAllArrows) {
+  // ✅ لا نعرض BoundingBox للنصوص أو الأسهم
+  if (activeTool !== 'selection_tool' || selectedElements.length === 0 || isAllArrows || isAllText) {
     return null;
   }
   
