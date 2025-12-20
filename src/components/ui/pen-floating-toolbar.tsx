@@ -1,9 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Trash2, ChevronDown, Pen, Eraser } from "lucide-react";
+import { Trash2, ChevronDown, Pen, Eraser } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useCanvasStore } from "@/stores/canvasStore";
+import { ColorPickerInput } from "@/components/ui/color-picker";
 
 interface PenFloatingToolbarProps {
   position: {
@@ -13,17 +14,6 @@ interface PenFloatingToolbarProps {
   isVisible: boolean;
 }
 
-// ألوان سريعة للاختيار
-const QUICK_COLORS = [
-  "#0B0F12", // أسود
-  "#E5564D", // أحمر
-  "#3DBE8B", // أخضر
-  "#3DA8F5", // أزرق
-  "#F6C445", // أصفر
-  "#9B59B6", // بنفسجي
-  "#E67E22", // برتقالي
-  "#1ABC9C", // فيروزي
-];
 
 // أحجام الفرشاة
 const BRUSH_SIZES = [1, 2, 4, 6, 8, 12, 16, 20];
@@ -191,8 +181,8 @@ const BrushSizeDropdown = ({
   );
 };
 
-// Color Picker
-const ColorPicker = ({
+// Compact Color Picker for Toolbar
+const CompactColorPicker = ({
   value,
   onChange,
   tooltip,
@@ -205,99 +195,18 @@ const ColorPicker = ({
   showTooltip: (label: string) => void;
   hideTooltip: () => void;
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
     <div
-      ref={dropdownRef}
       className="relative"
       onMouseEnter={() => showTooltip("لون الفرشاة")}
       onMouseLeave={hideTooltip}
     >
-      <button
-        className="h-5 w-5 flex items-center justify-center rounded hover:bg-[hsl(var(--ink)/0.1)] transition-colors"
-        onMouseDown={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-        }}
-      >
-        <div className="w-3.5 h-3.5 rounded border border-[hsl(var(--border))]" style={{ backgroundColor: value }} />
-      </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-2 z-[10000]"
-          >
-            <div className="grid grid-cols-4 gap-1 mb-2">
-              {QUICK_COLORS.map((color) => (
-                <button
-                  key={color}
-                  className={`w-5 h-5 rounded border-2 transition-transform hover:scale-110 ${value === color ? "border-[hsl(var(--ink))]" : "border-transparent"}`}
-                  style={{ backgroundColor: color }}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onChange(color);
-                    setIsOpen(false);
-                  }}
-                />
-              ))}
-            </div>
-            <button
-              className="w-full text-center text-[10px] text-[hsl(var(--ink)/0.6)] hover:text-[hsl(var(--ink))] py-0.5"
-              onMouseDown={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                inputRef.current?.click();
-              }}
-            >
-              المزيد...
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <input
-        ref={inputRef}
-        type="color"
+      <ColorPickerInput
         value={value}
-        onChange={(e) => {
-          onChange(e.target.value);
-          setIsOpen(false);
-        }}
-        className="absolute opacity-0 w-0 h-0"
+        onChange={onChange}
+        className="[&_button]:h-5 [&_button]:w-5 [&_button]:rounded [&_input]:hidden"
       />
-
-      {tooltip === "لون الفرشاة" && !isOpen && (
+      {tooltip === "لون الفرشاة" && (
         <motion.div
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
@@ -410,7 +319,7 @@ export const PenFloatingToolbar = ({ position, isVisible }: PenFloatingToolbarPr
           <div className="w-px h-4 bg-[hsl(var(--border))]" />
 
           {/* لون الفرشاة */}
-          <ColorPicker
+          <CompactColorPicker
             value={penSettings.color}
             onChange={handleColorChange}
             tooltip={tooltip}
