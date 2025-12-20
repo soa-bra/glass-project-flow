@@ -501,6 +501,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
   const [activeFormats, setActiveFormats] = useState<Record<string, boolean>>({});
   const [isAIMenuOpen, setIsAIMenuOpen] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState('');
   
   // حساب العناصر المحددة
   const selectedElements = useMemo(
@@ -676,6 +677,44 @@ const UnifiedFloatingToolbar: React.FC = () => {
       }
     } catch (error) {
       toast.error('حدث خطأ أثناء التحويل');
+    } finally {
+      setIsTransforming(false);
+    }
+  };
+
+  const handleCustomTransform = async () => {
+    if (!customPrompt.trim()) {
+      toast.error('يرجى إدخال وصف التحويل');
+      return;
+    }
+    
+    setIsTransforming(true);
+    
+    try {
+      const content = getSelectionContent();
+      const contentText = selectedElements.map(el => el.content || '').filter(Boolean).join('\n');
+      const result = await analyzeSelection(content, `${customPrompt}: ${contentText}`);
+      
+      if (result?.suggestions && result.suggestions.length > 0) {
+        const suggestion = result.suggestions[0];
+        if (suggestion.targetType) {
+          const transformResult = await transformElements(content, suggestion.targetType, `${customPrompt}: ${contentText}`);
+          if (transformResult?.elements && transformResult.elements.length > 0) {
+            const centerX = selectedElements.reduce((sum, el) => sum + (el.position?.x || 0), 0) / selectedElements.length;
+            const centerY = selectedElements.reduce((sum, el) => sum + (el.position?.y || 0), 0) / selectedElements.length;
+            transformResult.elements.forEach((element, index) => {
+              addSmartElement(element.type as SmartElementType, { x: centerX + index * 30, y: centerY + index * 30 }, element.data);
+            });
+            toast.success('تم التحويل المخصص بنجاح');
+            setIsAIMenuOpen(false);
+            setCustomPrompt('');
+          }
+        }
+      } else {
+        toast.info('لم يتم العثور على تحويل مناسب');
+      }
+    } catch (error) {
+      toast.error('حدث خطأ أثناء التحويل المخصص');
     } finally {
       setIsTransforming(false);
     }
@@ -987,6 +1026,39 @@ const UnifiedFloatingToolbar: React.FC = () => {
                       </div>
                     </button>
                   ))}
+                </div>
+                
+                {/* تحويل مخصص */}
+                <div className="p-2 border-t border-[hsl(var(--border))]">
+                  <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1 mb-1">
+                    تحويل مخصص:
+                  </div>
+                  <div className="flex gap-1">
+                    <input
+                      type="text"
+                      value={customPrompt}
+                      onChange={(e) => setCustomPrompt(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !isAILoading && !isTransforming) {
+                          handleCustomTransform();
+                        }
+                      }}
+                      placeholder="مثال: حوّل إلى جدول مقارنة..."
+                      className="flex-1 h-8 px-2 text-[11px] rounded-lg border border-[hsl(var(--border))] focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
+                      disabled={isAILoading || isTransforming}
+                    />
+                    <button
+                      onClick={handleCustomTransform}
+                      disabled={isAILoading || isTransforming || !customPrompt.trim()}
+                      className="h-8 w-8 flex items-center justify-center rounded-lg bg-gradient-to-r from-[#3DBE8B] to-[#3DA8F5] text-white hover:opacity-90 disabled:opacity-50"
+                    >
+                      {isAILoading || isTransforming ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        <Sparkles size={14} />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 
                 {/* معلومات التحديد */}
