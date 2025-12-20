@@ -1038,13 +1038,16 @@ const UnifiedFloatingToolbar: React.FC = () => {
                       type="text"
                       value={customPrompt}
                       onChange={(e) => setCustomPrompt(e.target.value)}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => {
+                        e.stopPropagation();
                         if (e.key === 'Enter' && !isAILoading && !isTransforming) {
                           handleCustomTransform();
                         }
                       }}
                       placeholder="وصف التحويل..."
-                      className="w-[140px] h-8 px-2 text-[11px] rounded-lg border border-[hsl(var(--border))] bg-white focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
+                      className="w-[160px] h-8 px-2 text-[11px] rounded-lg border border-[hsl(var(--border))] bg-white focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
                       disabled={isAILoading || isTransforming}
                     />
                     <button
@@ -1327,6 +1330,76 @@ const UnifiedFloatingToolbar: React.FC = () => {
     </>
   );
 
+  // ===== أزرار العنصر الفردي (غير النص/الصورة) =====
+  const ElementActions = () => {
+    const [isColorOpen, setIsColorOpen] = useState(false);
+    const colorDropdownRef = useRef<HTMLDivElement>(null);
+    const currentBg = firstElement?.style?.backgroundColor || '#FFFFFF';
+    
+    useEffect(() => {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (colorDropdownRef.current && !colorDropdownRef.current.contains(e.target as Node)) {
+          setIsColorOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+    
+    const handleBgColorChange = (color: string) => {
+      selectedElementIds.forEach(id => {
+        updateElement(id, { style: { ...firstElement?.style, backgroundColor: color } });
+      });
+    };
+    
+    return (
+      <>
+        {/* لون الخلفية */}
+        <div ref={colorDropdownRef} className="relative">
+          <button
+            className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-[hsl(var(--ink)/0.1)] transition-colors"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsColorOpen(!isColorOpen);
+            }}
+            title="لون الخلفية"
+          >
+            <div className="flex flex-col items-center justify-center gap-0.5">
+              <div 
+                className="w-5 h-5 rounded border border-[hsl(var(--border))]"
+                style={{ backgroundColor: currentBg }}
+              />
+            </div>
+          </button>
+          
+          <AnimatePresence>
+            {isColorOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[280px]"
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <ColorPickerInput
+                  value={currentBg}
+                  onChange={(newColor) => handleBgColorChange(newColor)}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+      </>
+    );
+  };
+
   // ===== أزرار التحديد المتعدد =====
   const MultipleActions = () => (
     <>
@@ -1412,6 +1485,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
       <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5">
         <div className="flex items-center gap-1">
           {/* أزرار خاصة بالنوع */}
+          {selectionType === 'element' && <ElementActions />}
           {selectionType === 'text' && <TextActions />}
           {selectionType === 'image' && <ImageActions />}
           {selectionType === 'multiple' && <MultipleActions />}
