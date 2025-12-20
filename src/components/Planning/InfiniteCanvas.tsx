@@ -9,8 +9,6 @@ import StrokesLayer from './StrokesLayer';
 import PenInputLayer from './PenInputLayer';
 import FrameInputLayer from './FrameInputLayer';
 import { BoundingBox } from './BoundingBox';
-import { SelectionTooltip } from './SelectionTooltip';
-
 import { SnapGuides } from './SnapGuides';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -311,6 +309,16 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     // ✅ تجاهل إذا كان على BoundingBox (يتولى السحب بنفسه)
     if (target.type === 'bounding-box' || target.type === 'resize-handle') {
       return;
+    }
+    
+    // ✅ إصلاح: إغلاق محرر النص عند النقر على الكانفس
+    if (e.button === 0 && activeTool === 'text_tool' && target.type === 'canvas') {
+      const { editingTextId, stopEditingText } = useCanvasStore.getState();
+      if (editingTextId) {
+        // إغلاق المحرر الحالي فقط، لا ننشئ عنصراً جديداً
+        stopEditingText();
+        return;
+      }
     }
     
     // تفويض للأداة النشطة
@@ -630,18 +638,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         />
       )}
       
-      {/* Selection Tooltip - معلومات العناصر المحددة */}
-      {selectedElementIds.length > 0 && !isMode('boxSelect') && (
-        <SelectionTooltip
-          selectedElements={elements.filter(el => selectedElementIds.includes(el.id))}
-          viewport={{
-            x: -viewport.pan.x / viewport.zoom,
-            y: -viewport.pan.y / viewport.zoom,
-            zoom: viewport.zoom,
-          }}
-          position="top"
-        />
-      )}
       
       {/* Snap Guides */}
       <SnapGuides guides={snapGuides} containerRef={containerRef} />

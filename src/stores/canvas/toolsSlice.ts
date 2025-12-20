@@ -92,6 +92,11 @@ export const createToolsSlice: StateCreator<
       locked: false,
       style: {},
       layerId: get().activeLayerId || 'default',
+      // ✅ إضافة textType في data أيضاً للتوافق مع TextEditor و CanvasElement
+      data: {
+        textType: textData.textType || 'line',
+        ...textData.data
+      },
       ...textData
     };
     
