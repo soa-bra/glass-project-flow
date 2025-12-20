@@ -7,6 +7,7 @@ import { ResizeHandle } from './ResizeHandle';
 import { TextEditor } from './TextEditor';
 import { StickyNoteEditor } from './StickyNoteEditor';
 import { ShapeRenderer } from './ShapeRenderer';
+import { TextRenderer } from './renderers/TextRenderer';
 import { ArrowControlPoints } from './ArrowControlPoints';
 import { ArrowLabels } from './ArrowLabels';
 import MindMapNode from './MindMapNode';
@@ -394,29 +395,10 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
               onClose={() => stopEditingText(element.id)}
             />
           ) : (
-            <div
-              dir={element.style?.direction || 'rtl'}
-              style={{
-                fontFamily: element.style?.fontFamily || 'IBM Plex Sans Arabic',
-                fontSize: `${element.style?.fontSize || 16}px`,
-                fontWeight: element.style?.fontWeight || 'normal',
-                fontStyle: element.style?.fontStyle || 'normal',
-                textDecoration: element.style?.textDecoration || 'none',
-                color: element.style?.color || '#0B0F12',
-                textAlign: (element.style?.textAlign as any) || 'right',
-                direction: (element.style?.direction as any) || 'rtl',
-                unicodeBidi: 'plaintext',
-                // ✅ السماح بأسطر متعددة عند وجود قوائم
-                whiteSpace: (element.content?.includes('<ul>') || element.content?.includes('<ol>') || element.data?.textType === 'box') ? 'pre-wrap' : 'nowrap',
-                wordWrap: element.data?.textType === 'box' ? 'break-word' : 'normal',
-                overflow: element.data?.textType === 'box' ? 'auto' : 'visible',
-                width: '100%',
-                height: '100%',
-                padding: '8px'
-              }}
-              dangerouslySetInnerHTML={{ 
-                __html: sanitizeHTMLForDisplay(element.content, 'انقر مرتين للكتابة...') 
-              }}
+            <TextRenderer
+              element={element}
+              width={element.size.width}
+              height={element.size.height}
             />
           )}
         </div>
