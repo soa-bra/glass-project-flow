@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { nanoid } from 'nanoid';
 
 const USER_ID_KEY = 'supra_collab_user_id';
@@ -24,6 +24,39 @@ interface CollaborationUser {
 }
 
 /**
+ * دالة للحصول على بيانات المستخدم من localStorage أو إنشاء بيانات جديدة
+ */
+function getOrCreateUserData(): CollaborationUser {
+  try {
+    let id = localStorage.getItem(USER_ID_KEY);
+    let name = localStorage.getItem(USER_NAME_KEY);
+    let color = localStorage.getItem(USER_COLOR_KEY);
+
+    if (!id) {
+      id = `user-${nanoid(8)}`;
+      localStorage.setItem(USER_ID_KEY, id);
+    }
+    if (!name) {
+      name = 'مستخدم سوبرا';
+      localStorage.setItem(USER_NAME_KEY, name);
+    }
+    if (!color) {
+      color = USER_COLORS[Math.floor(Math.random() * USER_COLORS.length)];
+      localStorage.setItem(USER_COLOR_KEY, color);
+    }
+
+    return { id, name, color };
+  } catch {
+    // Fallback for SSR or localStorage errors
+    return {
+      id: `user-${nanoid(8)}`,
+      name: 'مستخدم سوبرا',
+      color: USER_COLORS[0],
+    };
+  }
+}
+
+/**
  * Hook لإدارة هوية المستخدم في التعاون المباشر
  * يحفظ الهوية في localStorage لثباتها عبر الجلسات
  */
@@ -31,44 +64,22 @@ export function useCollaborationUser(): CollaborationUser & {
   updateName: (name: string) => void;
   updateColor: (color: string) => void;
 } {
-  // ✅ تهيئة القيم الافتراضية أولاً
-  const [user, setUser] = useState<CollaborationUser>({
-    id: '',
-    name: 'مستخدم سوبرا',
-    color: USER_COLORS[0],
-  });
-  
-  const [isInitialized, setIsInitialized] = useState(false);
+  // استخدام lazy initialization لتجنب مشاكل React
+  const [user, setUser] = useState<CollaborationUser>(getOrCreateUserData);
 
-  // ✅ قراءة localStorage في useEffect لتجنب مشاكل SSR
-  useEffect(() => {
-    if (isInitialized) return;
-    
-    const savedId = localStorage.getItem(USER_ID_KEY);
-    const savedName = localStorage.getItem(USER_NAME_KEY);
-    const savedColor = localStorage.getItem(USER_COLOR_KEY);
-
-    const id = savedId || `user-${nanoid(8)}`;
-    const name = savedName || 'مستخدم سوبرا';
-    const color = savedColor || USER_COLORS[Math.floor(Math.random() * USER_COLORS.length)];
-
-    if (!savedId) localStorage.setItem(USER_ID_KEY, id);
-    if (!savedName) localStorage.setItem(USER_NAME_KEY, name);
-    if (!savedColor) localStorage.setItem(USER_COLOR_KEY, color);
-
-    setUser({ id, name, color });
-    setIsInitialized(true);
-  }, [isInitialized]);
-
-  const updateName = (name: string) => {
-    localStorage.setItem(USER_NAME_KEY, name);
+  const updateName = useCallback((name: string) => {
+    try {
+      localStorage.setItem(USER_NAME_KEY, name);
+    } catch { /* ignore */ }
     setUser(prev => ({ ...prev, name }));
-  };
+  }, []);
 
-  const updateColor = (color: string) => {
-    localStorage.setItem(USER_COLOR_KEY, color);
+  const updateColor = useCallback((color: string) => {
+    try {
+      localStorage.setItem(USER_COLOR_KEY, color);
+    } catch { /* ignore */ }
     setUser(prev => ({ ...prev, color }));
-  };
+  }, []);
 
   return {
     ...user,
