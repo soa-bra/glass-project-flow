@@ -4,6 +4,7 @@ import type { CanvasElement } from '@/types/canvas';
 interface StickyNoteEditorProps {
   element: CanvasElement;
   onUpdate: (text: string) => void;
+  onUpdateSize?: (newHeight: number) => void;
   onClose: () => void;
 }
 
@@ -13,6 +14,7 @@ interface StickyNoteEditorProps {
 export const StickyNoteEditor: React.FC<StickyNoteEditorProps> = ({
   element,
   onUpdate,
+  onUpdateSize,
   onClose
 }) => {
   const initialText = element.stickyText || element.data?.stickyText || '';
@@ -26,6 +28,32 @@ export const StickyNoteEditor: React.FC<StickyNoteEditorProps> = ({
       textareaRef.current.select();
     }
   }, []);
+
+  // حساب وتحديث الحجم عند تغيير النص
+  const calculateNewHeight = useCallback((newText: string) => {
+    const fontSize = Math.max(12, Math.min(element.size.width, element.size.height) * 0.08);
+    const paddingInner = 16;
+    const availableWidth = element.size.width - (paddingInner * 2);
+    const charsPerLine = Math.floor(availableWidth / (fontSize * 0.6));
+    const estimatedLines = Math.ceil(newText.length / Math.max(charsPerLine, 1));
+    const lineHeight = fontSize * 1.6;
+    const estimatedTextHeight = estimatedLines * lineHeight + (paddingInner * 2) + 16;
+    
+    return Math.max(element.size.height, estimatedTextHeight);
+  }, [element.size]);
+
+  const handleTextChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value;
+    setText(newText);
+    
+    // تحديث الحجم تلقائياً
+    if (onUpdateSize) {
+      const newHeight = calculateNewHeight(newText);
+      if (newHeight > element.size.height) {
+        onUpdateSize(newHeight);
+      }
+    }
+  }, [calculateNewHeight, element.size.height, onUpdateSize]);
 
   // حفظ عند فقدان التركيز
   const handleBlur = useCallback(() => {
@@ -55,7 +83,7 @@ export const StickyNoteEditor: React.FC<StickyNoteEditorProps> = ({
       <textarea
         ref={textareaRef}
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={handleTextChange}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         placeholder="اكتب ملاحظتك..."
@@ -63,9 +91,9 @@ export const StickyNoteEditor: React.FC<StickyNoteEditorProps> = ({
         className="w-full h-full bg-transparent resize-none outline-none text-center"
         style={{ 
           fontFamily: 'IBM Plex Sans Arabic, sans-serif',
-          fontSize: Math.max(12, Math.min(element.size.width, element.size.height) * 0.1),
+          fontSize: Math.max(12, Math.min(element.size.width, element.size.height) * 0.08),
           color: '#0B0F12',
-          lineHeight: 1.5
+          lineHeight: 1.6
         }}
       />
     </div>

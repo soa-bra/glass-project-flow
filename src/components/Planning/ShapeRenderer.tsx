@@ -359,9 +359,9 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         );
 
       case 'sticky':
-        // رسم ستيكي نوت مع دعم التمدد التلقائي
+        // رسم ستيكي نوت واقعي مع ظل وبدون حدود
         const stickyFontSize = Math.max(12, Math.min(w, h) * 0.08);
-        const textContent = stickyText || 'ملاحظة';
+        const textContent = stickyText || '';
         const paddingInner = 16;
         const availableWidth = w - (paddingInner * 2);
         
@@ -374,20 +374,54 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         // الارتفاع النهائي: الأكبر بين الارتفاع الأصلي والارتفاع المحسوب
         const finalHeight = Math.max(h - strokeWidth, estimatedTextHeight);
         
+        // ألوان الستيكي نوت الواقعية
+        const stickyColors: Record<string, string> = {
+          '#F6C445': '#FEF9C3', // أصفر فاتح
+          '#FEF9C3': '#FEF9C3',
+          '#3DBE8B': '#D1FAE5', // أخضر فاتح
+          '#D1FAE5': '#D1FAE5',
+          '#3DA8F5': '#DBEAFE', // أزرق فاتح
+          '#DBEAFE': '#DBEAFE',
+          '#E5564D': '#FEE2E2', // وردي فاتح
+          '#FEE2E2': '#FEE2E2',
+          '#A78BFA': '#EDE9FE', // بنفسجي فاتح
+          '#EDE9FE': '#EDE9FE',
+        };
+        const stickyBgColor = stickyColors[fillColor || '#F6C445'] || fillColor || '#FEF9C3';
+        
         return (
-          <g>
+          <g filter="url(#stickyNoteShadow)">
+            {/* تعريف الظل */}
+            <defs>
+              <filter id="stickyNoteShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="2" dy="4" stdDeviation="4" floodColor="#0B0F12" floodOpacity="0.15"/>
+                <feDropShadow dx="1" dy="2" stdDeviation="2" floodColor="#0B0F12" floodOpacity="0.1"/>
+              </filter>
+            </defs>
+            
+            {/* الورقة الملتصقة */}
             <rect
               x={padding}
               y={padding}
               width={w - strokeWidth}
               height={finalHeight}
-              rx={8}
-              fill={fillColor || '#F6C445'}
-              stroke={strokeColor}
-              strokeWidth={strokeWidth}
+              rx={4}
+              fill={stickyBgColor}
               opacity={opacity}
             />
-            <foreignObject x={paddingInner} y={paddingInner} width={availableWidth} height={finalHeight - (paddingInner * 2)}>
+            
+            {/* شريط لاصق علوي (اختياري - يعطي مظهر واقعي) */}
+            <rect
+              x={w / 2 - 20}
+              y={0}
+              width={40}
+              height={8}
+              rx={1}
+              fill="rgba(255,255,255,0.5)"
+            />
+            
+            {/* النص */}
+            <foreignObject x={paddingInner} y={paddingInner} width={availableWidth} height={finalHeight - paddingInner}>
               <div style={{ 
                 fontSize: stickyFontSize, 
                 color: '#0B0F12',
