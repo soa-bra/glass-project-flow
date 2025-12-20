@@ -9,6 +9,7 @@ import StrokesLayer from './StrokesLayer';
 import PenInputLayer from './PenInputLayer';
 import FrameInputLayer from './FrameInputLayer';
 import { BoundingBox } from './BoundingBox';
+import { SelectionTooltip } from './SelectionTooltip';
 
 import { SnapGuides } from './SnapGuides';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
@@ -624,6 +625,19 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           startY={selectionBoxData.startY} 
           currentX={selectionBoxData.currentX} 
           currentY={selectionBoxData.currentY} 
+        />
+      )}
+      
+      {/* Selection Tooltip - معلومات العناصر المحددة */}
+      {selectedElementIds.length > 0 && !isMode('boxSelect') && (
+        <SelectionTooltip
+          selectedElements={elements.filter(el => selectedElementIds.includes(el.id))}
+          viewport={{
+            x: -viewport.pan.x / viewport.zoom,
+            y: -viewport.pan.y / viewport.zoom,
+            zoom: viewport.zoom,
+          }}
+          position="top"
         />
       )}
       
