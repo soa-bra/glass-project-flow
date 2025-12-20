@@ -476,45 +476,69 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       )}
       
       {element.type === 'frame' && (
-        <div className="relative w-full h-full pointer-events-none">
-          {/* عنوان الإطار */}
-          {((element as any).title || isEditingTitle) && (
-            <div 
-              className="absolute top-2 right-2 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[11px] font-medium text-[hsl(var(--ink))] shadow-sm border border-[hsl(var(--border))] pointer-events-auto"
-              onDoubleClick={handleTitleDoubleClick}
-            >
-              {isEditingTitle ? (
-                <input
-                  ref={titleInputRef}
-                  type="text"
-                  value={editedTitle}
-                  onChange={(e) => setEditedTitle(e.target.value)}
-                  onBlur={handleTitleSave}
-                  onKeyDown={handleTitleKeyDown}
-                  className="outline-none bg-transparent min-w-[80px] text-[11px]"
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                />
-              ) : (
-                <span className="cursor-text">{(element as any).title}</span>
-              )}
-            </div>
-          )}
+        <>
+          {/* ✅ Header Band فوق الإطار - Miro Style */}
+          <div 
+            className="absolute -top-8 right-0 left-0 h-7 flex items-center justify-between px-3 
+                       bg-[hsl(var(--ink))] text-white rounded-t-lg pointer-events-auto z-10"
+            style={{ transform: 'translateY(0)' }}
+            onDoubleClick={handleTitleDoubleClick}
+            onMouseDown={(e) => e.stopPropagation()}
+            aria-label={`إطار: ${(element as any).title || 'بدون عنوان'}. يحتوي على ${(element as any).children?.length || 0} عناصر`}
+          >
+            {isEditingTitle ? (
+              <input
+                ref={titleInputRef}
+                type="text"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                onBlur={handleTitleSave}
+                onKeyDown={handleTitleKeyDown}
+                className="outline-none bg-transparent min-w-[80px] text-[12px] text-white font-medium"
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                placeholder="عنوان الإطار"
+              />
+            ) : (
+              <span className="text-[12px] font-medium cursor-text">
+                {(element as any).title || 'إطار'}
+              </span>
+            )}
+            
+            {/* عداد العناصر في الـ Header */}
+            <span className="text-[10px] opacity-70">
+              {(element as any).children?.length || 0} عنصر
+            </span>
+          </div>
           
-          {/* عدد العناصر المجمّعة */}
-          {(element as any).children && (element as any).children.length > 0 && (
-            <div className="absolute bottom-2 left-2 px-2 py-1 bg-[hsl(var(--ink))]/90 backdrop-blur-sm text-white rounded-lg text-[10px] font-medium shadow-sm">
-              {(element as any).children.length} عنصر
-            </div>
-          )}
+          {/* ✅ محتوى الإطار */}
+          <div 
+            className="relative w-full h-full"
+            style={{
+              border: `${(element as any).strokeWidth || 2}px solid ${(element as any).strokeColor || 'hsl(var(--ink))'}`,
+              borderRadius: '0 0 8px 8px',
+              backgroundColor: (element as any).fillColor || 'transparent',
+              pointerEvents: 'none'  // السماح للأحداث بالمرور للعناصر الداخلية
+            }}
+          >
+            {/* Placeholder للإطار الفارغ */}
+            {(!(element as any).children || (element as any).children.length === 0) && (
+              <div className="absolute inset-0 flex items-center justify-center text-[hsl(var(--ink-30))] text-[11px]">
+                إطار فارغ
+              </div>
+            )}
+          </div>
           
-          {/* أيقونة الإطار في المنتصف */}
-          {(!(element as any).children || (element as any).children.length === 0) && (
-            <div className="absolute inset-0 flex items-center justify-center text-[hsl(var(--ink-30))] text-[11px]">
-              إطار فارغ
-            </div>
-          )}
-        </div>
+          {/* ✅ Hit area لحدود الإطار - للتحديد من الحدود */}
+          <div 
+            className="absolute inset-0 pointer-events-auto"
+            style={{
+              // فقط الحدود قابلة للنقر (10px من كل جانب)
+              clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 0, 10px 10px, 10px calc(100% - 10px), calc(100% - 10px) calc(100% - 10px), calc(100% - 10px) 10px, 10px 10px)'
+            }}
+            onMouseDown={handleMouseDown}
+          />
+        </>
       )}
       
       {element.type === 'file' && (
