@@ -125,9 +125,20 @@ export function ColorPickerInput({
 
                 {/* Eye Dropper and Sliders */}
                 <div className="flex items-center gap-3">
-                  <ColorPicker.EyeDropperTrigger className="p-2 text-muted-foreground hover:text-foreground border border-border hover:bg-muted transition-colors rounded-lg">
-                    <PipetteIcon className="w-4 h-4" />
-                  </ColorPicker.EyeDropperTrigger>
+                  {'EyeDropper' in window ? (
+                    <ColorPicker.EyeDropperTrigger className="p-2 text-muted-foreground hover:text-foreground border border-border hover:bg-muted transition-colors rounded-lg cursor-pointer">
+                      <PipetteIcon className="w-4 h-4" />
+                    </ColorPicker.EyeDropperTrigger>
+                  ) : (
+                    <button
+                      type="button"
+                      className="p-2 text-muted-foreground/50 border border-border rounded-lg cursor-not-allowed"
+                      title="Eye Dropper غير مدعوم في هذا المتصفح"
+                      disabled
+                    >
+                      <PipetteIcon className="w-4 h-4" />
+                    </button>
+                  )}
 
                   <div className="flex-1 space-y-3 pr-[14px] pb-0 mb-0 mt-0 pl-[6px] pt-0">
                     {/* Hue Slider */}
