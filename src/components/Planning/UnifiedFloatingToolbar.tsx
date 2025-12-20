@@ -10,6 +10,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import { useSmartElementAI } from '@/hooks/useSmartElementAI';
 import { toast } from 'sonner';
+import { ColorPickerInput } from '@/components/ui/color-picker';
 import {
   Copy,
   Scissors,
@@ -32,6 +33,7 @@ import {
   Bold,
   Italic,
   Underline,
+  Strikethrough,
   AlignLeft,
   AlignCenter,
   AlignRight,
@@ -46,15 +48,12 @@ import {
   ListOrdered,
   RemoveFormatting,
   Link,
-  Image,
   Crop,
   Replace,
   Group,
   Ungroup,
   ChevronDown,
   Plus,
-  Loader2,
-  ArrowRightLeft,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -66,13 +65,6 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -82,6 +74,8 @@ const FONT_FAMILIES = [
   { value: 'IBM Plex Sans Arabic', label: 'IBM Plex Sans Arabic' },
   { value: 'Cairo', label: 'Cairo' },
   { value: 'Tajawal', label: 'Tajawal' },
+  { value: 'Amiri', label: 'Amiri' },
+  { value: 'Noto Sans Arabic', label: 'Noto Sans Arabic' },
   { value: 'Arial', label: 'Arial' },
   { value: 'Times New Roman', label: 'Times New Roman' },
 ];
@@ -91,8 +85,9 @@ const FONT_SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72];
 
 type SelectionType = 'element' | 'text' | 'image' | 'multiple' | null;
 
+// ===== Enhanced ToolbarButton with Tooltips =====
 interface ToolbarButtonProps {
-  icon: React.ReactNode;
+  icon: React.ReactNode | React.ComponentType<{ className?: string }>;
   onClick: () => void;
   title: string;
   isActive?: boolean;
@@ -108,25 +103,355 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   variant = 'default',
   disabled = false,
 }) => {
-  const baseClass = "flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
+  const [showTooltip, setShowTooltip] = useState(false);
+  
+  const baseClass = "flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed relative";
   
   const variantClasses = {
     default: isActive 
       ? "bg-[hsl(var(--ink))] text-white" 
-      : "text-[hsl(var(--ink))] hover:bg-[hsl(var(--panel))]",
+      : "text-[hsl(var(--ink))] hover:bg-[hsl(var(--ink)/0.1)]",
     destructive: "text-[hsl(var(--ink))] hover:text-[#E5564D] hover:bg-red-50",
     ai: "bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white hover:opacity-90",
   };
 
+  // Render icon - support both ReactNode and Component
+  const renderIcon = () => {
+    if (typeof icon === 'function') {
+      const IconComponent = icon as React.ComponentType<{ className?: string }>;
+      return <IconComponent className="h-4 w-4" />;
+    }
+    return icon;
+  };
+
   return (
-    <button
-      onClick={onClick}
-      className={cn(baseClass, variantClasses[variant])}
-      title={title}
-      disabled={disabled}
+    <div
+      className="relative"
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
     >
-      {icon}
-    </button>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onClick();
+        }}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        className={cn(baseClass, variantClasses[variant])}
+        disabled={disabled}
+      >
+        {renderIcon()}
+      </button>
+      <AnimatePresence>
+        {showTooltip && (
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 5 }}
+            transition={{ duration: 0.15 }}
+            className="text-nowrap font-medium absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-xs rounded-md px-2 py-1 shadow-lg z-[9999] pointer-events-none"
+          >
+            {title}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// ===== FontFamilyDropdown with Preview =====
+const FontFamilyDropdown: React.FC<{
+  value: string;
+  onChange: (value: string) => void;
+}> = ({ value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const currentFont = FONT_FAMILIES.find(f => f.value === value) || FONT_FAMILIES[0];
+
+  return (
+    <div 
+      ref={dropdownRef}
+      className="relative"
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      <button
+        className="h-8 px-2 flex items-center gap-1 rounded-md hover:bg-[hsl(var(--ink)/0.1)] transition-colors text-xs font-medium min-w-[100px] justify-between"
+        onMouseDown={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
+      >
+        <span className="truncate max-w-[80px]" style={{ fontFamily: currentFont.value }}>
+          {currentFont.label}
+        </span>
+        <ChevronDown className="h-3 w-3 opacity-60" />
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] py-1 min-w-[150px] z-[10000] max-h-[200px] overflow-y-auto"
+          >
+            {FONT_FAMILIES.map((font) => (
+              <button
+                key={font.value}
+                className={`w-full text-right px-3 py-1.5 text-sm hover:bg-[hsl(var(--ink)/0.05)] ${
+                  value === font.value ? 'bg-[hsl(var(--ink)/0.1)]' : ''
+                }`}
+                style={{ fontFamily: font.value }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onChange(font.value);
+                  setIsOpen(false);
+                }}
+              >
+                {font.label}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {showTooltip && !isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-nowrap font-medium absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-xs rounded-md px-2 py-1 shadow-lg z-[9999] pointer-events-none"
+        >
+          نوع الخط
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+// ===== FontSizeInput with Manual Input =====
+const FontSizeInput: React.FC<{
+  value: number;
+  onChange: (value: number) => void;
+}> = ({ value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [inputValue, setInputValue] = useState(value.toString());
+  const [showTooltip, setShowTooltip] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setInputValue(value.toString());
+  }, [value]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputBlur = () => {
+    const num = parseInt(inputValue);
+    if (!isNaN(num) && num >= 8 && num <= 200) {
+      onChange(num);
+    } else {
+      setInputValue(value.toString());
+    }
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleInputBlur();
+    }
+  };
+
+  return (
+    <div 
+      ref={dropdownRef}
+      className="relative"
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      <div className="flex items-center gap-0.5">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
+          onKeyDown={handleInputKeyDown}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+          className="h-8 w-10 text-center rounded-md border border-[hsl(var(--border))] text-xs font-medium focus:outline-none focus:border-[hsl(var(--ink))]"
+        />
+        <button
+          className="h-8 w-5 flex items-center justify-center rounded-md hover:bg-[hsl(var(--ink)/0.1)]"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }}
+        >
+          <ChevronDown className="h-3 w-3 opacity-60" />
+        </button>
+      </div>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] py-1 min-w-[60px] z-[10000] max-h-[200px] overflow-y-auto"
+          >
+            {FONT_SIZES.map((size) => (
+              <button
+                key={size}
+                className={`w-full text-center px-3 py-1 text-sm hover:bg-[hsl(var(--ink)/0.05)] ${
+                  value === size ? 'bg-[hsl(var(--ink)/0.1)]' : ''
+                }`}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onChange(size);
+                  setIsOpen(false);
+                }}
+              >
+                {size}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {showTooltip && !isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-nowrap font-medium absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-xs rounded-md px-2 py-1 shadow-lg z-[9999] pointer-events-none"
+        >
+          حجم الخط
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+// ===== TextColorPicker with ColorPickerInput =====
+const TextColorPicker: React.FC<{
+  value: string;
+  onChange: (value: string) => void;
+}> = ({ value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div 
+      ref={dropdownRef}
+      className="relative"
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      <button
+        className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-[hsl(var(--ink)/0.1)] transition-colors"
+        onMouseDown={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
+      >
+        <div className="flex flex-col items-center justify-center gap-0.5">
+          <Type className="h-4 w-4" />
+          <div 
+            className="w-4 h-1 rounded-sm"
+            style={{ backgroundColor: value }}
+          />
+        </div>
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[280px]"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <ColorPickerInput
+              value={value}
+              onChange={(newColor) => {
+                onChange(newColor);
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {showTooltip && !isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-nowrap font-medium absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-xs rounded-md px-2 py-1 shadow-lg z-[9999] pointer-events-none"
+        >
+          لون النص
+        </motion.div>
+      )}
+    </div>
   );
 };
 
@@ -157,6 +482,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [imageName, setImageName] = useState('');
+  const [activeFormats, setActiveFormats] = useState<Record<string, boolean>>({});
   
   // حساب العناصر المحددة
   const selectedElements = useMemo(
@@ -190,6 +516,30 @@ const UnifiedFloatingToolbar: React.FC = () => {
   const areElementsGrouped = !!groupId;
   const areElementsVisible = selectedElements.every(el => el.visible !== false);
   const areElementsLocked = selectedElements.some(el => el.locked === true);
+
+  // تتبع حالة التنسيقات النشطة
+  useEffect(() => {
+    if (selectionType !== 'text') return;
+    
+    const updateActiveFormats = () => {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return;
+
+      setActiveFormats({
+        bold: document.queryCommandState('bold'),
+        italic: document.queryCommandState('italic'),
+        underline: document.queryCommandState('underline'),
+        strikeThrough: document.queryCommandState('strikeThrough'),
+        insertUnorderedList: document.queryCommandState('insertUnorderedList'),
+        insertOrderedList: document.queryCommandState('insertOrderedList'),
+      });
+    };
+
+    document.addEventListener('selectionchange', updateActiveFormats);
+    updateActiveFormats();
+
+    return () => document.removeEventListener('selectionchange', updateActiveFormats);
+  }, [selectionType]);
 
   // حساب موقع الشريط
   const selectionBounds = useMemo(() => {
@@ -373,9 +723,15 @@ const UnifiedFloatingToolbar: React.FC = () => {
     });
   };
 
-  const handleFontSizeChange = (fontSize: string) => {
+  const handleFontSizeChange = (fontSize: number) => {
     selectedElementIds.forEach(id => {
-      updateElement(id, { style: { ...firstElement?.style, fontSize: parseInt(fontSize) } });
+      updateElement(id, { style: { ...firstElement?.style, fontSize } });
+    });
+  };
+
+  const handleColorChange = (color: string) => {
+    selectedElementIds.forEach(id => {
+      updateElement(id, { style: { ...firstElement?.style, color } });
     });
   };
 
@@ -387,7 +743,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   const handleVerticalAlign = (align: 'flex-start' | 'center' | 'flex-end') => {
     selectedElementIds.forEach(id => {
-      updateElement(id, { style: { ...firstElement?.style, justifyContent: align } });
+      updateElement(id, { style: { ...firstElement?.style, alignItems: align } });
     });
   };
 
@@ -408,6 +764,11 @@ const UnifiedFloatingToolbar: React.FC = () => {
       document.execCommand('createLink', false, url);
       toast.success('تم إضافة الرابط');
     }
+  };
+
+  const handleToggleList = (listType: 'ul' | 'ol') => {
+    const command = listType === 'ul' ? 'insertUnorderedList' : 'insertOrderedList';
+    document.execCommand(command, false);
   };
 
   // ===== إجراءات الصور =====
@@ -463,6 +824,14 @@ const UnifiedFloatingToolbar: React.FC = () => {
     }
   };
 
+  // Get current text styles
+  const currentFontFamily = firstElement?.style?.fontFamily || 'IBM Plex Sans Arabic';
+  const currentFontSize = firstElement?.style?.fontSize || 16;
+  const currentColor = firstElement?.style?.color || '#0B0F12';
+  const currentAlign = (firstElement?.style?.textAlign as 'left' | 'center' | 'right') || 'right';
+  const currentVerticalAlign = (firstElement?.style?.alignItems as 'flex-start' | 'center' | 'flex-end') || 'flex-start';
+  const currentDirection = (firstElement?.style?.direction as 'rtl' | 'ltr') || 'rtl';
+
   // ===== الأزرار المشتركة =====
   const CommonActions = () => (
     <>
@@ -501,7 +870,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
       {/* قائمة المزيد */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--panel))] text-[hsl(var(--ink))]">
+          <button className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]">
             <MoreVertical size={16} />
           </button>
         </DropdownMenuTrigger>
@@ -571,117 +940,156 @@ const UnifiedFloatingToolbar: React.FC = () => {
     </>
   );
 
-  // ===== أزرار النص =====
+  // ===== أزرار النص المحسنة =====
   const TextActions = () => (
     <>
-      {/* نوع الخط */}
-      <Select 
-        value={firstElement?.style?.fontFamily || 'IBM Plex Sans Arabic'} 
-        onValueChange={handleFontFamilyChange}
-      >
-        <SelectTrigger className="h-8 w-[120px] text-xs">
-          <SelectValue placeholder="الخط" />
-        </SelectTrigger>
-        <SelectContent className="bg-white z-[100]">
-          {FONT_FAMILIES.map((font) => (
-            <SelectItem key={font.value} value={font.value} style={{ fontFamily: font.value }}>
-              {font.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {/* نوع الخط مع preview */}
+      <FontFamilyDropdown
+        value={currentFontFamily}
+        onChange={handleFontFamilyChange}
+      />
       
-      {/* حجم الخط */}
-      <Select 
-        value={String(firstElement?.style?.fontSize || 16)} 
-        onValueChange={handleFontSizeChange}
-      >
-        <SelectTrigger className="h-8 w-[70px] text-xs">
-          <SelectValue placeholder="16" />
-        </SelectTrigger>
-        <SelectContent className="bg-white z-[100]">
-          {FONT_SIZES.map((size) => (
-            <SelectItem key={size} value={String(size)}>
-              {size}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Separator orientation="vertical" className="h-6 mx-1" />
+      
+      {/* حجم الخط مع إدخال يدوي */}
+      <FontSizeInput
+        value={currentFontSize}
+        onChange={handleFontSizeChange}
+      />
+      
+      <Separator orientation="vertical" className="h-6 mx-1" />
+      
+      {/* لون النص */}
+      <TextColorPicker
+        value={currentColor}
+        onChange={handleColorChange}
+      />
       
       <Separator orientation="vertical" className="h-6 mx-1" />
       
       {/* عريض */}
-      <ToolbarButton icon={<Bold size={16} />} onClick={() => handleTextFormat('bold')} title="عريض" />
+      <ToolbarButton 
+        icon={<Bold size={16} />} 
+        onClick={() => handleTextFormat('bold')} 
+        title="غامق" 
+        isActive={activeFormats.bold}
+      />
       
       {/* مائل */}
-      <ToolbarButton icon={<Italic size={16} />} onClick={() => handleTextFormat('italic')} title="مائل" />
+      <ToolbarButton 
+        icon={<Italic size={16} />} 
+        onClick={() => handleTextFormat('italic')} 
+        title="مائل" 
+        isActive={activeFormats.italic}
+      />
       
       {/* تحته خط */}
-      <ToolbarButton icon={<Underline size={16} />} onClick={() => handleTextFormat('underline')} title="تحته خط" />
+      <ToolbarButton 
+        icon={<Underline size={16} />} 
+        onClick={() => handleTextFormat('underline')} 
+        title="تسطير" 
+        isActive={activeFormats.underline}
+      />
+      
+      {/* يتوسطه خط */}
+      <ToolbarButton 
+        icon={<Strikethrough size={16} />} 
+        onClick={() => handleTextFormat('strikeThrough')} 
+        title="يتوسطه خط" 
+        isActive={activeFormats.strikeThrough}
+      />
+      
+      <Separator orientation="vertical" className="h-6 mx-1" />
+      
+      {/* قوائم */}
+      <ToolbarButton 
+        icon={<List size={16} />} 
+        onClick={() => handleToggleList('ul')} 
+        title="قائمة نقطية" 
+        isActive={activeFormats.insertUnorderedList}
+      />
+      <ToolbarButton 
+        icon={<ListOrdered size={16} />} 
+        onClick={() => handleToggleList('ol')} 
+        title="قائمة مرقمة" 
+        isActive={activeFormats.insertOrderedList}
+      />
+      
+      <Separator orientation="vertical" className="h-6 mx-1" />
+      
+      {/* اتجاه النص - أزرار منفصلة */}
+      <ToolbarButton 
+        icon={() => <span className="text-[10px] font-bold">RTL</span>} 
+        onClick={() => handleTextDirection('rtl')} 
+        title="من اليمين لليسار (عربي)" 
+        isActive={currentDirection === 'rtl'}
+      />
+      <ToolbarButton 
+        icon={() => <span className="text-[10px] font-bold">LTR</span>} 
+        onClick={() => handleTextDirection('ltr')} 
+        title="من اليسار لليمين (English)" 
+        isActive={currentDirection === 'ltr'}
+      />
       
       <Separator orientation="vertical" className="h-6 mx-1" />
       
       {/* محاذاة النص */}
-      <ToolbarButton icon={<AlignRight size={16} />} onClick={() => handleTextAlign('right')} title="محاذاة لليمين" />
-      <ToolbarButton icon={<AlignCenter size={16} />} onClick={() => handleTextAlign('center')} title="محاذاة للوسط" />
-      <ToolbarButton icon={<AlignLeft size={16} />} onClick={() => handleTextAlign('left')} title="محاذاة لليسار" />
-      <ToolbarButton icon={<AlignJustify size={16} />} onClick={() => handleTextAlign('justify')} title="ضبط" />
+      <ToolbarButton 
+        icon={<AlignRight size={16} />} 
+        onClick={() => handleTextAlign('right')} 
+        title="محاذاة يمين" 
+        isActive={currentAlign === 'right'}
+      />
+      <ToolbarButton 
+        icon={<AlignCenter size={16} />} 
+        onClick={() => handleTextAlign('center')} 
+        title="محاذاة وسط" 
+        isActive={currentAlign === 'center'}
+      />
+      <ToolbarButton 
+        icon={<AlignLeft size={16} />} 
+        onClick={() => handleTextAlign('left')} 
+        title="محاذاة يسار" 
+        isActive={currentAlign === 'left'}
+      />
       
       <Separator orientation="vertical" className="h-6 mx-1" />
       
-      {/* المحاذاة الرأسية */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--panel))] text-[hsl(var(--ink))]" title="المحاذاة الرأسية">
-            <AlignVerticalJustifyCenter size={16} />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-white z-[100]">
-          <DropdownMenuItem onClick={() => handleVerticalAlign('flex-start')}>
-            <AlignVerticalJustifyStart size={14} className="ml-2" />
-            أعلى
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleVerticalAlign('center')}>
-            <AlignVerticalJustifyCenter size={14} className="ml-2" />
-            وسط
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleVerticalAlign('flex-end')}>
-            <AlignVerticalJustifyEnd size={14} className="ml-2" />
-            أسفل
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      
-      {/* اتجاه النص */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--panel))] text-[hsl(var(--ink))]" title="اتجاه النص">
-            <ArrowRightLeft size={16} />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-white z-[100]">
-          <DropdownMenuItem onClick={() => handleTextDirection('rtl')}>
-            من اليمين لليسار (RTL)
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleTextDirection('ltr')}>
-            من اليسار لليمين (LTR)
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {/* المحاذاة الرأسية - أزرار منفصلة */}
+      <ToolbarButton 
+        icon={<AlignVerticalJustifyStart size={16} />} 
+        onClick={() => handleVerticalAlign('flex-start')} 
+        title="محاذاة أعلى" 
+        isActive={currentVerticalAlign === 'flex-start'}
+      />
+      <ToolbarButton 
+        icon={<AlignVerticalJustifyCenter size={16} />} 
+        onClick={() => handleVerticalAlign('center')} 
+        title="محاذاة وسط عمودي" 
+        isActive={currentVerticalAlign === 'center'}
+      />
+      <ToolbarButton 
+        icon={<AlignVerticalJustifyEnd size={16} />} 
+        onClick={() => handleVerticalAlign('flex-end')} 
+        title="محاذاة أسفل" 
+        isActive={currentVerticalAlign === 'flex-end'}
+      />
       
       <Separator orientation="vertical" className="h-6 mx-1" />
-      
-      {/* قائمة نقطية */}
-      <ToolbarButton icon={<List size={16} />} onClick={() => document.execCommand('insertUnorderedList')} title="قائمة نقطية" />
-      
-      {/* قائمة رقمية */}
-      <ToolbarButton icon={<ListOrdered size={16} />} onClick={() => document.execCommand('insertOrderedList')} title="قائمة رقمية" />
       
       {/* مسح التنسيقات */}
-      <ToolbarButton icon={<RemoveFormatting size={16} />} onClick={handleClearFormatting} title="مسح التنسيقات" />
+      <ToolbarButton 
+        icon={<RemoveFormatting size={16} />} 
+        onClick={handleClearFormatting} 
+        title="إزالة التنسيق" 
+      />
       
       {/* إضافة رابط */}
-      <ToolbarButton icon={<Link size={16} />} onClick={handleAddLink} title="إضافة رابط" />
+      <ToolbarButton 
+        icon={<Link size={16} />} 
+        onClick={handleAddLink} 
+        title="إضافة رابط" 
+      />
       
       <Separator orientation="vertical" className="h-6 mx-1" />
     </>
@@ -727,7 +1135,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
       {/* المحاذاة الأفقية */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--panel))] text-[hsl(var(--ink))]" title="المحاذاة الأفقية">
+          <button className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]" title="المحاذاة الأفقية">
             <AlignHorizontalJustifyCenter size={16} />
           </button>
         </DropdownMenuTrigger>
@@ -750,7 +1158,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
       {/* المحاذاة العمودية */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--panel))] text-[hsl(var(--ink))]" title="المحاذاة العمودية">
+          <button className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]" title="المحاذاة العمودية">
             <AlignVerticalJustifyCenter size={16} />
           </button>
         </DropdownMenuTrigger>
@@ -793,6 +1201,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
         top: `${position.y}px`,
         transform: 'translateX(-50%)'
       }}
+      data-floating-toolbar
     >
       <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5">
         <div className="flex items-center gap-1">
