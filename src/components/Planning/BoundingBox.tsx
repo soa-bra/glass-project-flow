@@ -27,7 +27,7 @@ interface BoundingBoxProps {
 
 export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   // ✅ جميع الـ Hooks أولاً (قبل أي return)
-  const { 
+const { 
     selectedElementIds, 
     elements, 
     viewport, 
@@ -37,7 +37,8 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     duplicateElement, 
     resizeFrame, 
     activeTool,
-    createFrameFromSelection
+    createFrameFromSelection,
+    moveFrame
   } = useCanvasStore();
   
   const [isDragging, setIsDragging] = useState(false);
@@ -215,7 +216,13 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       const finalDeltaY = finalY - lastAppliedPos.current.y;
       
       if (finalDeltaX !== 0 || finalDeltaY !== 0) {
-        moveElements(expandedSelectedIds, finalDeltaX, finalDeltaY);
+        // ✅ Fix: استخدام moveFrame للإطارات لتحريك الأطفال معها
+        const selectedFrame = selectedElements.find(el => el.type === 'frame');
+        if (selectedFrame && expandedSelectedIds.length === 1) {
+          moveFrame(selectedFrame.id, finalDeltaX, finalDeltaY);
+        } else {
+          moveElements(expandedSelectedIds, finalDeltaX, finalDeltaY);
+        }
         // ✅ Fix: تحديث آخر موقع مُطبَّق
         lastAppliedPos.current = { x: finalX, y: finalY };
       }
