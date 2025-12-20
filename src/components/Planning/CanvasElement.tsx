@@ -139,6 +139,58 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   
   if (!isVisible) return null;
   
+  // ✅ دوال السحب - معرّفة أولاً لتجنب circular dependency
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    // ✅ منع التعارض مع سحب نقاط تحكم السهم - استخدام interactionStore
+    if (!isDraggingRef.current || isLocked || useInteractionStore.getState().isInternalDrag()) return;
+    
+    // ✅ استخدام Canvas Kernel لتحويل الدلتا
+    const worldDelta = canvasKernel.screenDeltaToWorld(
+      e.clientX - dragStartRef.current.x,
+      e.clientY - dragStartRef.current.y,
+      viewport.zoom
+    );
+    const deltaX = worldDelta.x;
+    const deltaY = worldDelta.y;
+    
+    let newX = dragStartRef.current.elementX + deltaX;
+    let newY = dragStartRef.current.elementY + deltaY;
+    
+    // Apply snap to grid if enabled
+    if (snapToGrid) {
+      const snapped = snapToGrid(newX, newY);
+      newX = snapped.x;
+      newY = snapped.y;
+    }
+    
+    updateElement(element.id, {
+      position: { x: newX, y: newY }
+    });
+  }, [element.id, updateElement, snapToGrid, viewport.zoom, isLocked]);
+  
+  const handleMouseUp = useCallback(() => {
+    if (isDraggingRef.current) {
+      isDraggingRef.current = false;
+      // ✅ إزالة الـ listeners عند انتهاء السحب
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    }
+  }, [handleMouseMove]);
+
+  // ✅ إضافة listeners في startDrag وإزالتها في handleMouseUp
+  const startDrag = useCallback((e: React.MouseEvent) => {
+    isDraggingRef.current = true;
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      elementX: element.position.x,
+      elementY: element.position.y
+    };
+    // إضافة listeners مباشرة عند بدء السحب
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  }, [element.position.x, element.position.y, handleMouseMove, handleMouseUp]);
+
   /**
    * ✅ المرحلة 1: معالجة محسّنة للنقر
    * - العناصر المحددة: BoundingBox يتولى السحب، لكن نسمح بالنقر للتفاعلات الأخرى
@@ -183,47 +235,9 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       return;
     }
     
-    // بدء السحب للعنصر الذي تم تحديده للتو
-    isDraggingRef.current = true;
-    dragStartRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-      elementX: element.position.x,
-      elementY: element.position.y
-    };
-  }, [element, onSelect, isLocked, isSelected, activeTool, isEditingThisText]);
-  
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    // ✅ منع التعارض مع سحب نقاط تحكم السهم - استخدام interactionStore
-    if (!isDraggingRef.current || isLocked || useInteractionStore.getState().isInternalDrag()) return;
-    
-    // ✅ استخدام Canvas Kernel لتحويل الدلتا
-    const worldDelta = canvasKernel.screenDeltaToWorld(
-      e.clientX - dragStartRef.current.x,
-      e.clientY - dragStartRef.current.y,
-      viewport.zoom
-    );
-    const deltaX = worldDelta.x;
-    const deltaY = worldDelta.y;
-    
-    let newX = dragStartRef.current.elementX + deltaX;
-    let newY = dragStartRef.current.elementY + deltaY;
-    
-    // Apply snap to grid if enabled
-    if (snapToGrid) {
-      const snapped = snapToGrid(newX, newY);
-      newX = snapped.x;
-      newY = snapped.y;
-    }
-    
-    updateElement(element.id, {
-      position: { x: newX, y: newY }
-    });
-  }, [element, updateElement, snapToGrid, viewport, isLocked]);
-  
-  const handleMouseUp = useCallback(() => {
-    isDraggingRef.current = false;
-  }, []);
+    // ✅ بدء السحب للعنصر الذي تم تحديده للتو
+    startDrag(e);
+  }, [element, onSelect, isLocked, isSelected, activeTool, isEditingThisText, startDrag]);
 
   const handleTitleDoubleClick = useCallback((e: React.MouseEvent) => {
     if (element.type === 'frame' && !isLocked) {
@@ -267,17 +281,15 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     }
   }, [isEditingTitle]);
   
-  // Add global mouse listeners when dragging
+  // ✅ تنظيف listeners عند unmount
   useEffect(() => {
-    if (isDraggingRef.current) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-      
-      return () => {
+    return () => {
+      if (isDraggingRef.current) {
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
+        isDraggingRef.current = false;
+      }
+    };
   }, [handleMouseMove, handleMouseUp]);
   
   return (
