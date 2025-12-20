@@ -136,21 +136,20 @@ const FloatingEditBar: React.FC = () => {
   const hasSelection = selectedElements.length > 0;
   const firstElement = selectedElements[0];
   
-  // Check if selection is a group
-  const isGroup = useMemo(() => {
-    return firstElement?.type === 'frame' && (firstElement as any).children?.length > 0;
-  }, [firstElement]);
-  
-  // Check if elements are grouped (belong to same parent or are a frame)
-  const areElementsGrouped = useMemo(() => {
-    if (selectedElements.length === 1) {
-      return firstElement?.type === 'frame' && (firstElement as any).children?.length > 0;
+  // Check if any selected element has a groupId (is part of a group)
+  const groupId = useMemo(() => {
+    for (const el of selectedElements) {
+      if (el.metadata?.groupId) {
+        return el.metadata.groupId as string;
+      }
     }
-    // Check if all selected elements have the same parentId
-    const firstParent = selectedElements[0]?.parentId;
-    if (!firstParent) return false;
-    return selectedElements.every(el => el.parentId && el.parentId === firstParent);
-  }, [selectedElements, firstElement]);
+    return null;
+  }, [selectedElements]);
+  
+  // Check if elements are grouped
+  const areElementsGrouped = useMemo(() => {
+    return !!groupId;
+  }, [groupId]);
   
   // Check if elements are visible
   const areElementsVisible = useMemo(() => {
@@ -313,10 +312,12 @@ const FloatingEditBar: React.FC = () => {
 
   // Group/Ungroup action
   const handleToggleGroup = () => {
-    if (isGroup && firstElement) {
-      ungroupElements(firstElement.id);
+    if (groupId) {
+      // فك تجميع العناصر المجمّعة
+      ungroupElements(groupId);
       toast.success('تم فك التجميع');
     } else if (selectedElementIds.length > 1) {
+      // تجميع العناصر المحددة
       groupElements(selectedElementIds);
       toast.success('تم تجميع العناصر');
     } else {
@@ -883,9 +884,9 @@ const FloatingEditBar: React.FC = () => {
           <button
             onClick={handleToggleGroup}
             className={`${areElementsGrouped ? btnClassNoHover : btnClass} ${areElementsGrouped ? 'bg-[hsl(var(--ink))] text-white' : ''}`}
-            title={isGroup ? 'فك التجميع' : 'تجميع'}
+            title={areElementsGrouped ? 'فك التجميع' : 'تجميع'}
           >
-            {isGroup ? <Ungroup size={16} /> : <Group size={16} />}
+            {areElementsGrouped ? <Ungroup size={16} /> : <Group size={16} />}
           </button>
 
           <div className={separatorClass} />
