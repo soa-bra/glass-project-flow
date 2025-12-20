@@ -341,15 +341,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
 
       const newId = addText(textData);
       
-      // ✅ الدخول مباشرة في وضع الكتابة مع ضمان وجود العنصر
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const el = useCanvasStore.getState().elements.find(e => e.id === newId);
-          if (el) {
-            startEditingText(newId);
-          }
-        });
-      });
+      // ✅ الدخول مباشرة في وضع الكتابة
+      setTimeout(() => {
+        startEditingText(newId);
+      }, 10);
     } 
     // إذا كان السحب كبير → مربع نص
     else {
@@ -368,15 +363,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       
       const newId = addText(textBoxElement);
       
-      // ✅ الدخول مباشرة في وضع الكتابة مع ضمان وجود العنصر
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const el = useCanvasStore.getState().elements.find(e => e.id === newId);
-          if (el) {
-            startEditingText(newId);
-          }
-        });
-      });
+      // ✅ الدخول مباشرة في وضع الكتابة
+      setTimeout(() => {
+        startEditingText(newId);
+      }, 10);
     }
     
     // إعادة تعيين الحالة

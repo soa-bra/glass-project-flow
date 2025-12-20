@@ -313,16 +313,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       return;
     }
     
-    // ✅ إصلاح: إغلاق محرر النص عند النقر على الكانفس
-    if (e.button === 0 && activeTool === 'text_tool' && target.type === 'canvas') {
-      const { editingTextId, stopEditingText } = useCanvasStore.getState();
-      if (editingTextId) {
-        // إغلاق المحرر الحالي فقط، لا ننشئ عنصراً جديداً
-        stopEditingText();
-        return;
-      }
-    }
-    
     // تفويض للأداة النشطة
     if (e.button === 0 && (
       activeTool === 'file_uploader' || 
