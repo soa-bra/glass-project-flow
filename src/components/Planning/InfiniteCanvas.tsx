@@ -14,6 +14,7 @@ import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { canvasKernel, getContainerRect } from '@/core/canvasKernel';
 import { getCursorForMode } from '@/core/interactionStateMachine';
+import { selectionCoordinator } from '@/core/selectionCoordinator';
 import { toast } from 'sonner';
 import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
 import { CanvasGridLayer } from './CanvasGridLayer';
@@ -252,7 +253,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     }
   }, [viewport, setZoom, setPan]);
 
-  // ✅ Handle Mouse Down - استخدام State Machine
+  // ✅ Handle Mouse Down - استخدام State Machine + Selection Coordinator
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     // Middle mouse or Alt+Click = Pan
     if (e.button === 1 || (e.button === 0 && e.altKey)) {
@@ -269,28 +270,34 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       return;
     }
     
+    // ✅ المرحلة 3: استخدام Selection Coordinator لتحديد نوع الهدف
+    const target = selectionCoordinator.identifyTarget(e.target as HTMLElement);
+    
     // Selection Box with selection tool on empty space
     if (e.button === 0 && activeTool === 'selection_tool' && 
-        !(e.target as HTMLElement).closest('[data-canvas-element="true"]') &&
-        !(e.target as HTMLElement).closest('.bounding-box')) {
+        target.type === 'canvas') {
       
       if (!e.shiftKey) {
         clearSelection();
       }
       
       const containerRect = containerRef.current?.getBoundingClientRect();
-      const relativeX = e.clientX - (containerRect?.left || 0);
-      const relativeY = e.clientY - (containerRect?.top || 0);
+      if (!containerRect) return;
       
       // ✅ استخدام State Machine للـ Box Select
       const worldPoint = canvasKernel.screenToWorld(
         e.clientX, 
         e.clientY, 
         viewport, 
-        containerRect!
+        containerRect
       );
       startBoxSelect(worldPoint, e.shiftKey);
       
+      return;
+    }
+    
+    // ✅ تجاهل إذا كان على BoundingBox (يتولى السحب بنفسه)
+    if (target.type === 'bounding-box' || target.type === 'resize-handle') {
       return;
     }
     
@@ -308,9 +315,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     }
     
     // Left click on empty space = Always clear selection
-    if (e.button === 0 && 
-        !(e.target as HTMLElement).closest('[data-canvas-element="true"]') && 
-        !(e.target as HTMLElement).closest('.bounding-box')) {
+    if (e.button === 0 && target.type === 'canvas') {
       clearSelection();
     }
   }, [activeTool, handleCanvasMouseDown, clearSelection, viewport, startPanning, startBoxSelect]);

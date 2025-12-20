@@ -276,6 +276,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     <div
       ref={elementRef}
       data-canvas-element="true"
+      data-element-id={element.id}
       onMouseDown={handleMouseDown}
       className={`absolute select-none ${
         isLocked 
@@ -297,8 +298,9 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         boxShadow: isElementArrow(element) ? 'none' : (isSelected ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : (element.data?.textType === 'box' ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none')),
         outline: isElementArrow(element) ? 'none' : undefined,
         opacity: isLocked ? 0.6 : 1,
-        // ✅ Fix: pointer-events: none للعناصر المحددة - BoundingBox يتولى السحب
-        pointerEvents: isLocked ? 'none' : (isSelected ? 'none' : 'auto'),
+        // ✅ المرحلة 3: تحسين pointer-events - السماح بالتفاعل للعناصر المحددة
+        // BoundingBox يتولى السحب، لكن العنصر يستقبل النقر المزدوج والتفاعلات الأخرى
+        pointerEvents: isLocked ? 'none' : (isSelected && activeTool === 'selection_tool' ? 'none' : 'auto'),
         ...(element.type !== 'shape' ? element.style : {})
       }}
     >
