@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/stores/canvasStore';
-import { FloatingToolbar } from '@/components/ui/floating-toolbar';
-import { createPortal } from 'react-dom';
 import { sanitizeHTML } from '@/utils/sanitize';
 import { Check } from 'lucide-react';
 
@@ -475,30 +473,6 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
           }}
         />
       </div>
-      
-      {/* Floating Toolbar - rendered via portal */}
-      {createPortal(
-        <FloatingToolbar
-          position={toolbarPosition}
-          onApplyFormat={applyFormat}
-          onToggleList={toggleList}
-          onRemoveFormatting={removeFormatting}
-          onAlignChange={handleAlignChange}
-          onVerticalAlignChange={handleVerticalAlignChange}
-          onDirectionChange={handleDirectionChange}
-          onFontFamilyChange={handleFontFamilyChange}
-          onFontSizeChange={handleFontSizeChange}
-          onColorChange={handleColorChange}
-          currentAlign={currentAlign}
-          currentVerticalAlign={(element.style?.alignItems as 'flex-start' | 'center' | 'flex-end') || 'flex-start'}
-          currentDirection={(element.style?.direction as 'rtl' | 'ltr') || 'rtl'}
-          currentFontFamily={element.style?.fontFamily || 'IBM Plex Sans Arabic'}
-          currentFontSize={element.style?.fontSize || 16}
-          currentColor={element.style?.color || '#0B0F12'}
-          isVisible={showToolbar}
-        />,
-        document.body
-      )}
     </>
   );
 };
