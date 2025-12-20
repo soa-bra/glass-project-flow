@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import type { CanvasElement } from '@/types/canvas';
 import { getAnchorPosition } from '@/types/mindmap-canvas';
-import { useCanvasStore } from '@/stores/canvasStore';
 
 interface ElementAnchorsProps {
   element: CanvasElement;
@@ -20,67 +19,21 @@ const ElementAnchors: React.FC<ElementAnchorsProps> = ({
   onStartConnection,
   onEndConnection
 }) => {
-  const selectedElementIds = useCanvasStore(state => state.selectedElementIds);
-  const elements = useCanvasStore(state => state.elements);
-  
-  // ✅ التحقق من التحديد المتعدد أو العناصر المجمعة
-  const shouldHide = useMemo(() => {
-    // لا تظهر للتحديد المتعدد
-    if (selectedElementIds.length > 1) return true;
-    
-    // لا تظهر للعناصر المجمعة
-    if (element.metadata?.groupId) {
-      const groupElements = elements.filter(el => el.metadata?.groupId === element.metadata?.groupId);
-      if (groupElements.length > 1) return true;
-    }
-    
-    return false;
-  }, [selectedElementIds, element.metadata?.groupId, elements]);
-  
-  // ✅ تحديد ما إذا كان العنصر من نوع خريطة ذهنية
-  const isMindMapElement = element.type === 'mindmap_node' || element.type === 'visual_node';
-  
-  // ✅ حساب موقع نقطة التوصيل الواحدة للعناصر العادية (خارج الزاوية العلوية اليمنى)
-  const singleAnchorOffset = 20; // المسافة خارج العنصر
-  
-  // حساب موقع كل anchor للعرض (نسبة للعنصر)
+  // حساب موقع كل anchor
   const anchorPositions = useMemo(() => {
-    // ✅ للعناصر العادية: نقطة واحدة خارج الزاوية العلوية اليمنى
-    if (!isMindMapElement) {
-      return [{
-        anchor: 'right' as const, // نستخدم 'right' كمعرف
-        x: element.size.width + singleAnchorOffset, // خارج العنصر من اليمين
-        y: -singleAnchorOffset // فوق العنصر
-      }];
-    }
-    
-    // ✅ لعناصر الخريطة الذهنية: 4 نقاط
     return ANCHORS.map(anchor => {
       const pos = getAnchorPosition({ x: 0, y: 0 }, element.size, anchor);
       return { anchor, ...pos };
     });
-  }, [element.size, isMindMapElement, singleAnchorOffset]);
-
-  // ✅ حساب الموقع الفعلي في الـ canvas عند بدء الاتصال
-  const getActualAnchorPosition = useCallback((anchor: 'top' | 'bottom' | 'left' | 'right') => {
-    // للعناصر العادية: الموقع خارج الزاوية العلوية اليمنى
-    if (!isMindMapElement) {
-      return {
-        x: element.position.x + element.size.width + singleAnchorOffset,
-        y: element.position.y - singleAnchorOffset
-      };
-    }
-    // للخرائط الذهنية: استخدام الدالة القياسية
-    return getAnchorPosition(element.position, element.size, anchor);
-  }, [element.position, element.size, isMindMapElement, singleAnchorOffset]);
+  }, [element.size]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent, anchor: 'top' | 'bottom' | 'left' | 'right') => {
     e.stopPropagation();
     e.preventDefault();
     
-    const anchorPos = getActualAnchorPosition(anchor);
+    const anchorPos = getAnchorPosition(element.position, element.size, anchor);
     onStartConnection(element.id, anchor, anchorPos);
-  }, [element.id, getActualAnchorPosition, onStartConnection]);
+  }, [element, onStartConnection]);
 
   const handleMouseUp = useCallback((e: React.MouseEvent, anchor: 'top' | 'bottom' | 'left' | 'right') => {
     e.stopPropagation();
@@ -89,9 +42,6 @@ const ElementAnchors: React.FC<ElementAnchorsProps> = ({
       onEndConnection(element.id, anchor);
     }
   }, [element.id, isConnecting, onEndConnection]);
-
-  // ✅ إخفاء للتحديد المتعدد والعناصر المجمعة
-  if (shouldHide) return null;
 
   return (
     <>
@@ -115,10 +65,7 @@ const ElementAnchors: React.FC<ElementAnchorsProps> = ({
             }}
             onMouseDown={(e) => handleMouseDown(e, anchor)}
             onMouseUp={(e) => handleMouseUp(e, anchor)}
-            title={isMindMapElement 
-              ? `نقطة ربط: ${anchor === 'top' ? 'أعلى' : anchor === 'bottom' ? 'أسفل' : anchor === 'left' ? 'يسار' : 'يمين'}`
-              : 'نقطة توصيل'
-            }
+            title={`نقطة ربط: ${anchor === 'top' ? 'أعلى' : anchor === 'bottom' ? 'أسفل' : anchor === 'left' ? 'يسار' : 'يمين'}`}
           />
         );
       })}
