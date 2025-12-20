@@ -359,33 +359,51 @@ export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
         );
 
       case 'sticky':
-        // رسم ستيكي نوت
+        // رسم ستيكي نوت مع دعم التمدد التلقائي
+        const stickyFontSize = Math.max(12, Math.min(w, h) * 0.08);
+        const textContent = stickyText || 'ملاحظة';
+        const paddingInner = 16;
+        const availableWidth = w - (paddingInner * 2);
+        
+        // حساب تقريبي لعدد الأسطر المطلوبة
+        const charsPerLine = Math.floor(availableWidth / (stickyFontSize * 0.6));
+        const estimatedLines = Math.ceil(textContent.length / Math.max(charsPerLine, 1));
+        const lineHeight = stickyFontSize * 1.6;
+        const estimatedTextHeight = estimatedLines * lineHeight + (paddingInner * 2);
+        
+        // الارتفاع النهائي: الأكبر بين الارتفاع الأصلي والارتفاع المحسوب
+        const finalHeight = Math.max(h - strokeWidth, estimatedTextHeight);
+        
         return (
           <g>
             <rect
               x={padding}
               y={padding}
               width={w - strokeWidth}
-              height={h - strokeWidth}
+              height={finalHeight}
               rx={8}
               fill={fillColor || '#F6C445'}
               stroke={strokeColor}
               strokeWidth={strokeWidth}
               opacity={opacity}
             />
-            <foreignObject x={12} y={12} width={w - 24} height={h - 24}>
+            <foreignObject x={paddingInner} y={paddingInner} width={availableWidth} height={finalHeight - (paddingInner * 2)}>
               <div style={{ 
-                fontSize: Math.max(12, Math.min(w, h) * 0.12), 
+                fontSize: stickyFontSize, 
                 color: '#0B0F12',
                 textAlign: 'center',
                 wordBreak: 'break-word',
+                whiteSpace: 'pre-wrap',
                 fontFamily: 'IBM Plex Sans Arabic, sans-serif',
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 justifyContent: 'center',
+                paddingTop: 8,
+                lineHeight: 1.6,
+                width: '100%',
                 height: '100%'
               }}>
-                {stickyText || 'ملاحظة'}
+                {textContent}
               </div>
             </foreignObject>
           </g>
