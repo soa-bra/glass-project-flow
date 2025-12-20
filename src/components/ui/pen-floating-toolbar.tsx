@@ -22,7 +22,7 @@ const QUICK_COLORS = [
   "#F6C445", // أصفر
   "#9B59B6", // بنفسجي
   "#E67E22", // برتقالي
-  "#1ABC9C"  // فيروزي
+  "#1ABC9C", // فيروزي
 ];
 
 // أحجام الفرشاة
@@ -48,17 +48,17 @@ const ToolbarButton = ({
   onClick,
   tooltip,
   showTooltip,
-  hideTooltip
+  hideTooltip,
 }: ToolbarButtonProps) => (
   <div className="relative" onMouseEnter={() => showTooltip(label)} onMouseLeave={hideTooltip}>
-    <button 
-      className={`h-5 w-5 flex items-center justify-center rounded transition-colors duration-200 ${isActive ? "bg-[hsl(var(--ink))] text-white" : "hover:bg-[hsl(var(--ink)/0.1)]"} focus:outline-none`} 
-      aria-label={label} 
-      onMouseDown={e => {
+    <button
+      className={`h-5 w-5 flex items-center justify-center rounded transition-colors duration-200 ${isActive ? "bg-[hsl(var(--ink))] text-white" : "hover:bg-[hsl(var(--ink)/0.1)]"} focus:outline-none`}
+      aria-label={label}
+      onMouseDown={(e) => {
         e.preventDefault();
         e.stopPropagation();
-      }} 
-      onClick={e => {
+      }}
+      onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
         onClick();
@@ -68,11 +68,11 @@ const ToolbarButton = ({
     </button>
     <AnimatePresence>
       {tooltip === label && (
-        <motion.div 
-          initial={{ opacity: 0, y: 5 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          exit={{ opacity: 0, y: 5 }} 
-          transition={{ duration: 0.15 }} 
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 5 }}
+          transition={{ duration: 0.15 }}
           className="text-nowrap font-medium absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-[10px] rounded px-1.5 py-0.5 shadow-lg z-[9999] pointer-events-none"
         >
           {label}
@@ -88,7 +88,7 @@ const BrushSizeDropdown = ({
   onChange,
   tooltip,
   showTooltip,
-  hideTooltip
+  hideTooltip,
 }: {
   value: number;
   onChange: (value: number) => void;
@@ -98,79 +98,90 @@ const BrushSizeDropdown = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  
+
   return (
-    <div ref={dropdownRef} className="relative" onMouseEnter={() => showTooltip('حجم الفرشاة')} onMouseLeave={hideTooltip}>
-      <button 
-        className="h-5 px-1.5 flex items-center gap-1 rounded hover:bg-[hsl(var(--ink)/0.1)] transition-colors text-[10px] font-medium min-w-[40px] justify-between" 
-        onMouseDown={e => {
+    <div
+      ref={dropdownRef}
+      className="relative"
+      onMouseEnter={() => showTooltip("حجم الفرشاة")}
+      onMouseLeave={hideTooltip}
+    >
+      <button
+        className="h-5 px-1.5 flex items-center gap-1 rounded hover:bg-[hsl(var(--ink)/0.1)] transition-colors text-[10px] font-medium min-w-[40px] justify-between"
+        onMouseDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
-        }} 
-        onClick={e => {
+        }}
+        onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
       >
         <div className="flex items-center gap-1">
-          <div className="rounded-full bg-[hsl(var(--ink))]" style={{
-            width: Math.min(value, 8),
-            height: Math.min(value, 8)
-          }} />
+          <div
+            className="rounded-full bg-[hsl(var(--ink))]"
+            style={{
+              width: Math.min(value, 8),
+              height: Math.min(value, 8),
+            }}
+          />
           <span>{value}px</span>
         </div>
         <ChevronDown className="h-2.5 w-2.5 opacity-60" />
       </button>
-      
+
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -5 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            exit={{ opacity: 0, y: -5 }} 
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
             className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] py-1 min-w-[70px] z-[10000]"
           >
-            {BRUSH_SIZES.map(size => (
-              <button 
-                key={size} 
-                className={`w-full flex items-center gap-2 px-2 py-1 text-[11px] hover:bg-[hsl(var(--ink)/0.05)] ${value === size ? 'bg-[hsl(var(--ink)/0.1)]' : ''}`} 
-                onMouseDown={e => {
+            {BRUSH_SIZES.map((size) => (
+              <button
+                key={size}
+                className={`w-full flex items-center gap-2 px-2 py-1 text-[11px] hover:bg-[hsl(var(--ink)/0.05)] ${value === size ? "bg-[hsl(var(--ink)/0.1)]" : ""}`}
+                onMouseDown={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                }} 
-                onClick={e => {
+                }}
+                onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   onChange(size);
                   setIsOpen(false);
                 }}
               >
-                <div className="rounded-full bg-[hsl(var(--ink))]" style={{
-                  width: Math.min(size, 8),
-                  height: Math.min(size, 8)
-                }} />
+                <div
+                  className="rounded-full bg-[hsl(var(--ink))]"
+                  style={{
+                    width: Math.min(size, 8),
+                    height: Math.min(size, 8),
+                  }}
+                />
                 <span>{size}px</span>
               </button>
             ))}
           </motion.div>
         )}
       </AnimatePresence>
-      
-      {tooltip === 'حجم الفرشاة' && !isOpen && (
-        <motion.div 
-          initial={{ opacity: 0, y: 5 }} 
-          animate={{ opacity: 1, y: 0 }} 
+
+      {tooltip === "حجم الفرشاة" && !isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
           className="text-nowrap font-medium absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-[10px] rounded px-1.5 py-0.5 shadow-lg z-[9999] pointer-events-none"
         >
           حجم الفرشاة
@@ -186,7 +197,7 @@ const ColorPicker = ({
   onChange,
   tooltip,
   showTooltip,
-  hideTooltip
+  hideTooltip,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -197,26 +208,31 @@ const ColorPicker = ({
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  
+
   return (
-    <div ref={dropdownRef} className="relative" onMouseEnter={() => showTooltip('لون الفرشاة')} onMouseLeave={hideTooltip}>
-      <button 
-        className="h-5 w-5 flex items-center justify-center rounded hover:bg-[hsl(var(--ink)/0.1)] transition-colors" 
-        onMouseDown={e => {
+    <div
+      ref={dropdownRef}
+      className="relative"
+      onMouseEnter={() => showTooltip("لون الفرشاة")}
+      onMouseLeave={hideTooltip}
+    >
+      <button
+        className="h-5 w-5 flex items-center justify-center rounded hover:bg-[hsl(var(--ink)/0.1)] transition-colors"
+        onMouseDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
-        }} 
-        onClick={e => {
+        }}
+        onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           setIsOpen(!isOpen);
@@ -224,41 +240,41 @@ const ColorPicker = ({
       >
         <div className="w-3.5 h-3.5 rounded border border-[hsl(var(--border))]" style={{ backgroundColor: value }} />
       </button>
-      
+
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -5 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            exit={{ opacity: 0, y: -5 }} 
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
             className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-2 z-[10000]"
           >
             <div className="grid grid-cols-4 gap-1 mb-2">
-              {QUICK_COLORS.map(color => (
-                <button 
-                  key={color} 
-                  className={`w-5 h-5 rounded border-2 transition-transform hover:scale-110 ${value === color ? 'border-[hsl(var(--ink))]' : 'border-transparent'}`} 
-                  style={{ backgroundColor: color }} 
-                  onMouseDown={e => {
+              {QUICK_COLORS.map((color) => (
+                <button
+                  key={color}
+                  className={`w-5 h-5 rounded border-2 transition-transform hover:scale-110 ${value === color ? "border-[hsl(var(--ink))]" : "border-transparent"}`}
+                  style={{ backgroundColor: color }}
+                  onMouseDown={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                  }} 
-                  onClick={e => {
+                  }}
+                  onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     onChange(color);
                     setIsOpen(false);
-                  }} 
+                  }}
                 />
               ))}
             </div>
-            <button 
-              className="w-full text-center text-[10px] text-[hsl(var(--ink)/0.6)] hover:text-[hsl(var(--ink))] py-0.5" 
-              onMouseDown={e => {
+            <button
+              className="w-full text-center text-[10px] text-[hsl(var(--ink)/0.6)] hover:text-[hsl(var(--ink))] py-0.5"
+              onMouseDown={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-              }} 
-              onClick={e => {
+              }}
+              onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 inputRef.current?.click();
@@ -269,16 +285,22 @@ const ColorPicker = ({
           </motion.div>
         )}
       </AnimatePresence>
-      
-      <input ref={inputRef} type="color" value={value} onChange={e => {
-        onChange(e.target.value);
-        setIsOpen(false);
-      }} className="absolute opacity-0 w-0 h-0" />
-      
-      {tooltip === 'لون الفرشاة' && !isOpen && (
-        <motion.div 
-          initial={{ opacity: 0, y: 5 }} 
-          animate={{ opacity: 1, y: 0 }} 
+
+      <input
+        ref={inputRef}
+        type="color"
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+          setIsOpen(false);
+        }}
+        className="absolute opacity-0 w-0 h-0"
+      />
+
+      {tooltip === "لون الفرشاة" && !isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
           className="text-nowrap font-medium absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-[10px] rounded px-1.5 py-0.5 shadow-lg z-[9999] pointer-events-none"
         >
           لون الفرشاة
@@ -287,19 +309,11 @@ const ColorPicker = ({
     </div>
   );
 };
-export const PenFloatingToolbar = ({
-  position,
-  isVisible
-}: PenFloatingToolbarProps) => {
+export const PenFloatingToolbar = ({ position, isVisible }: PenFloatingToolbarProps) => {
   const [tooltip, setTooltip] = useState<string | null>(null);
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [isEraserMode, setIsEraserMode] = useState(false);
-  const {
-    toolSettings,
-    setPenSettings,
-    toggleSmartMode,
-    clearAllStrokes
-  } = useCanvasStore();
+  const { toolSettings, setPenSettings, toggleSmartMode, clearAllStrokes } = useCanvasStore();
   const penSettings = toolSettings.pen;
   const showTooltip = useCallback((label: string) => setTooltip(label), []);
   const hideTooltip = useCallback(() => setTooltip(null), []);
@@ -323,26 +337,29 @@ export const PenFloatingToolbar = ({
     const centeredX = position.x - TOOLBAR_WIDTH / 2;
     return {
       left: Math.max(minX, Math.min(centeredX, maxX)),
-      top: Math.max(minY, Math.min(position.y, maxY))
+      top: Math.max(minY, Math.min(position.y, maxY)),
     };
   }, [position.x, position.y]);
   const safePos = getSafePosition();
 
   // التحكم اليدوي في حدود السحب
-  const handleDrag = useCallback((event: any, info: { offset: { x: number; y: number } }) => {
-    const minX = PADDING;
-    const maxX = window.innerWidth - TOOLBAR_WIDTH - PADDING;
-    const minY = TOP_OFFSET;
-    const maxY = window.innerHeight - TOOLBAR_HEIGHT - BOTTOM_OFFSET;
-    let newX = safePos.left + info.offset.x;
-    let newY = safePos.top + info.offset.y;
-    newX = Math.max(minX, Math.min(newX, maxX));
-    newY = Math.max(minY, Math.min(newY, maxY));
-    setDragOffset({
-      x: newX - safePos.left,
-      y: newY - safePos.top
-    });
-  }, [safePos.left, safePos.top]);
+  const handleDrag = useCallback(
+    (event: any, info: { offset: { x: number; y: number } }) => {
+      const minX = PADDING;
+      const maxX = window.innerWidth - TOOLBAR_WIDTH - PADDING;
+      const minY = TOP_OFFSET;
+      const maxY = window.innerHeight - TOOLBAR_HEIGHT - BOTTOM_OFFSET;
+      let newX = safePos.left + info.offset.x;
+      let newY = safePos.top + info.offset.y;
+      newX = Math.max(minX, Math.min(newX, maxX));
+      newY = Math.max(minY, Math.min(newY, maxY));
+      setDragOffset({
+        x: newX - safePos.left,
+        y: newY - safePos.top,
+      });
+    },
+    [safePos.left, safePos.top],
+  );
 
   const handleStrokeWidthChange = (width: number) => {
     setPenSettings({ strokeWidth: width });
@@ -360,149 +377,87 @@ export const PenFloatingToolbar = ({
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div 
-          drag 
-          dragMomentum={false} 
-          dragElastic={0} 
-          dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }} 
-          onDrag={handleDrag} 
-          initial={{ opacity: 0, y: 10, scale: 0.95 }} 
-          animate={{ opacity: 1, y: 0, scale: 1 }} 
-          exit={{ opacity: 0, y: 10, scale: 0.95 }} 
-          transition={{ type: "spring", damping: 25, stiffness: 400 }} 
-          className="fixed z-[9999] bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] flex items-center gap-1 px-1.5 py-1 cursor-grab active:cursor-grabbing" 
+        <motion.div
+          drag
+          dragMomentum={false}
+          dragElastic={0}
+          dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+          onDrag={handleDrag}
+          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+          transition={{ type: "spring", damping: 25, stiffness: 400 }}
+          className="fixed z-[9999] bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] flex items-center gap-1 px-1.5 py-1 cursor-grab active:cursor-grabbing"
           style={{
             left: safePos.left,
             top: safePos.top,
             x: dragOffset.x,
-            y: dragOffset.y
-          }} 
-          data-pen-floating-toolbar 
-          onMouseDown={e => e.stopPropagation()}
+            y: dragOffset.y,
+          }}
+          data-pen-floating-toolbar
+          onMouseDown={(e) => e.stopPropagation()}
         >
           {/* حجم الفرشاة */}
-          <BrushSizeDropdown 
-            value={penSettings.strokeWidth} 
-            onChange={handleStrokeWidthChange} 
-            tooltip={tooltip} 
-            showTooltip={showTooltip} 
-            hideTooltip={hideTooltip} 
+          <BrushSizeDropdown
+            value={penSettings.strokeWidth}
+            onChange={handleStrokeWidthChange}
+            tooltip={tooltip}
+            showTooltip={showTooltip}
+            hideTooltip={hideTooltip}
           />
 
           {/* Divider */}
           <div className="w-px h-4 bg-[hsl(var(--border))]" />
 
           {/* لون الفرشاة */}
-          <ColorPicker 
-            value={penSettings.color} 
-            onChange={handleColorChange} 
-            tooltip={tooltip} 
-            showTooltip={showTooltip} 
-            hideTooltip={hideTooltip} 
+          <ColorPicker
+            value={penSettings.color}
+            onChange={handleColorChange}
+            tooltip={tooltip}
+            showTooltip={showTooltip}
+            hideTooltip={hideTooltip}
           />
 
           {/* Divider */}
           <div className="w-px h-4 bg-[hsl(var(--border))]" />
 
           {/* التبديل بين القلم والممحاة */}
-          <ToolbarButton 
-            label="قلم" 
-            icon={Pen} 
-            isActive={!isEraserMode} 
-            onClick={() => { if (isEraserMode) toggleEraserMode(); }} 
-            tooltip={tooltip} 
-            showTooltip={showTooltip} 
-            hideTooltip={hideTooltip} 
+          <ToolbarButton
+            label="قلم"
+            icon={Pen}
+            isActive={!isEraserMode}
+            onClick={() => {
+              if (isEraserMode) toggleEraserMode();
+            }}
+            tooltip={tooltip}
+            showTooltip={showTooltip}
+            hideTooltip={hideTooltip}
           />
-          <ToolbarButton 
-            label="ممحاة" 
-            icon={Eraser} 
-            isActive={isEraserMode} 
-            onClick={() => { if (!isEraserMode) toggleEraserMode(); }} 
-            tooltip={tooltip} 
-            showTooltip={showTooltip} 
-            hideTooltip={hideTooltip} 
-          />
-
-          {/* Divider */}
-          <div className="w-px h-4 bg-[hsl(var(--border))]" />
-
-          {/* الوضع الذكي */}
-          <ToolbarButton 
-            label={penSettings.smartMode ? "الوضع الذكي (مُفعّل)" : "الوضع الذكي (معطّل)"} 
-            icon={Sparkles} 
-            isActive={penSettings.smartMode} 
-            onClick={toggleSmartMode} 
-            tooltip={tooltip} 
-            showTooltip={showTooltip} 
-            hideTooltip={hideTooltip} 
+          <ToolbarButton
+            label="ممحاة"
+            icon={Eraser}
+            isActive={isEraserMode}
+            onClick={() => {
+              if (!isEraserMode) toggleEraserMode();
+            }}
+            tooltip={tooltip}
+            showTooltip={showTooltip}
+            hideTooltip={hideTooltip}
           />
 
           {/* Divider */}
           <div className="w-px h-4 bg-[hsl(var(--border))]" />
 
           {/* مسح كل الرسومات */}
-          <ToolbarButton 
-            label="مسح الكل" 
-            icon={Trash2} 
-            isActive={false} 
-            onClick={clearAllStrokes} 
-            tooltip={tooltip} 
-            showTooltip={showTooltip} 
-            hideTooltip={hideTooltip} 
+          <ToolbarButton
+            label="مسح الكل"
+            icon={Trash2}
+            isActive={false}
+            onClick={clearAllStrokes}
+            tooltip={tooltip}
+            showTooltip={showTooltip}
+            hideTooltip={hideTooltip}
           />
-
-          {/* Divider */}
-          <div className="w-px h-4 bg-[hsl(var(--border))]" />
-
-          {/* AI Button */}
-          <div className="relative">
-            <button 
-              onClick={e => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsAIOpen(!isAIOpen);
-              }} 
-              onMouseDown={e => {
-                e.preventDefault();
-                e.stopPropagation();
-              }} 
-              title="ذكاء صناعي للرسم" 
-              className="flex items-center gap-1 bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white transition-opacity rounded-full h-5 px-2"
-            >
-              <Sparkles size={10} />
-              <span className="text-[10px] font-medium">AI</span>
-            </button>
-            
-            {isAIOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsAIOpen(false)} />
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-2 z-50">
-                  <h4 className="text-[11px] font-semibold text-[hsl(var(--ink))] mb-2">
-                    اقتراحات ذكية للرسم
-                  </h4>
-                  
-                  <div className="space-y-1">
-                    <button className="w-full px-2 py-1.5 text-right text-[11px] hover:bg-[hsl(var(--panel))] rounded transition-colors">
-                      تحسين الخطوط
-                    </button>
-                    <button className="w-full px-2 py-1.5 text-right text-[11px] hover:bg-[hsl(var(--panel))] rounded transition-colors">
-                      تحويل إلى شكل هندسي
-                    </button>
-                    <button className="w-full px-2 py-1.5 text-right text-[11px] hover:bg-[hsl(var(--panel))] rounded transition-colors">
-                      اقتراح ألوان متناسقة
-                    </button>
-                    <button className="w-full px-2 py-1.5 text-right text-[11px] hover:bg-[hsl(var(--panel))] rounded transition-colors">
-                      تنظيف الرسم
-                    </button>
-                    <button className="w-full px-2 py-1.5 text-right text-[11px] hover:bg-[hsl(var(--panel))] rounded transition-colors">
-                      توليد رسم مشابه
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
         </motion.div>
       )}
     </AnimatePresence>
