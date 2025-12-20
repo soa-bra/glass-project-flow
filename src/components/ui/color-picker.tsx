@@ -116,7 +116,12 @@ export function ColorPickerInput({
           {/* Color Picker Content */}
           <Portal>
             <ColorPicker.Positioner>
-              <ColorPicker.Content className="bg-background border border-border rounded-lg p-4 shadow-lg space-y-4 z-50 w-80">
+              <ColorPicker.Content 
+                className="bg-background border border-border rounded-lg p-4 shadow-lg space-y-4 z-50 w-80"
+                onPointerDown={(e) => e.stopPropagation()}
+                onPointerMove={(e) => e.stopPropagation()}
+                onPointerUp={(e) => e.stopPropagation()}
+              >
                 {/* Color Area */}
                 <ColorPicker.Area className="w-full h-36 rounded-md overflow-hidden relative">
                   <ColorPicker.AreaBackground className="w-full h-full" />
