@@ -392,11 +392,13 @@ const FontSizeInput: React.FC<{
   );
 };
 
-// ===== TextColorPicker with ColorPickerInput =====
-const TextColorPicker: React.FC<{
+// ===== DirectColorPicker - يظهر أداة الاختيار مباشرة =====
+const DirectColorPicker: React.FC<{
   value: string;
   onChange: (value: string) => void;
-}> = ({ value, onChange }) => {
+  icon?: React.ReactNode;
+  title: string;
+}> = ({ value, onChange, icon, title }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -410,6 +412,26 @@ const TextColorPicker: React.FC<{
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Preset colors
+  const UTILITY_COLORS = [
+    { color: "transparent", label: "شفاف" },
+    { color: "#000000", label: "أسود" },
+    { color: "#FFFFFF", label: "أبيض" },
+    { color: "#808080", label: "رمادي" },
+  ];
+  
+  const SUPRA_COLORS = [
+    { color: "#3DBE8B", label: "أخضر" },
+    { color: "#F6C445", label: "أصفر" },
+    { color: "#E5564D", label: "أحمر" },
+    { color: "#3DA8F5", label: "أزرق" },
+  ];
+  
+  const EXTENDED_COLORS = [
+    "#FFB5BA", "#FFDAB5", "#FFF3B5", "#D4FFB5", "#B5FFE0",
+    "#B5F0FF", "#B5D4FF", "#D4B5FF", "#FFB5E8", "#E0E0E0",
+  ];
 
   return (
     <div 
@@ -430,13 +452,15 @@ const TextColorPicker: React.FC<{
           setIsOpen(!isOpen);
         }}
       >
-        <div className="flex flex-col items-center justify-center gap-0.5">
-          <Type className="h-4 w-4" />
-          <div 
-            className="w-4 h-1 rounded-sm"
-            style={{ backgroundColor: value }}
-          />
-        </div>
+        {icon || (
+          <div className="flex flex-col items-center justify-center gap-0.5">
+            <Type className="h-4 w-4" />
+            <div 
+              className="w-4 h-1 rounded-sm"
+              style={{ backgroundColor: value }}
+            />
+          </div>
+        )}
       </button>
       
       <AnimatePresence>
@@ -445,15 +469,94 @@ const TextColorPicker: React.FC<{
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[280px]"
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-xl shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[220px]"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <ColorPickerInput
-              value={value}
-              onChange={(newColor) => {
-                onChange(newColor);
-              }}
-            />
+            {/* Utility Colors Row */}
+            <div className="flex justify-start gap-2 mb-2">
+              {UTILITY_COLORS.map(({ color, label }) => {
+                const isSelected = value?.toLowerCase() === color.toLowerCase();
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    title={label}
+                    onClick={() => {
+                      onChange(color);
+                      setIsOpen(false);
+                    }}
+                    className="w-7 h-7 rounded-full cursor-pointer hover:scale-110 transition-transform relative overflow-hidden flex items-center justify-center"
+                    style={{
+                      backgroundColor: color === "transparent" ? undefined : color,
+                      border: isSelected ? "2px solid #0B0F12" : "2px solid #F0F0F0",
+                    }}
+                  >
+                    {color === "transparent" && (
+                      <div
+                        className="absolute inset-0 rounded-full"
+                        style={{
+                          backgroundImage: "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
+                          backgroundSize: "6px 6px",
+                          backgroundPosition: "0 0, 0 3px, 3px -3px, -3px 0px",
+                        }}
+                      />
+                    )}
+                    {isSelected && (
+                      <div className="w-2 h-2 rounded-full z-10" style={{ backgroundColor: color === "#000000" ? "#FFF" : "#000" }} />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Supra Brand Colors Row */}
+            <div className="flex justify-start gap-2 mb-2">
+              {SUPRA_COLORS.map(({ color, label }) => {
+                const isSelected = value?.toLowerCase() === color.toLowerCase();
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    title={label}
+                    onClick={() => {
+                      onChange(color);
+                      setIsOpen(false);
+                    }}
+                    className="w-7 h-7 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                    style={{
+                      backgroundColor: color,
+                      border: isSelected ? "2px solid #0B0F12" : "2px solid #F0F0F0",
+                    }}
+                  >
+                    {isSelected && <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#FFF" }} />}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Extended Colors Row */}
+            <div className="flex flex-wrap justify-start gap-2">
+              {EXTENDED_COLORS.map((color) => {
+                const isSelected = value?.toLowerCase() === color.toLowerCase();
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => {
+                      onChange(color);
+                      setIsOpen(false);
+                    }}
+                    className="w-7 h-7 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                    style={{
+                      backgroundColor: color,
+                      border: isSelected ? "2px solid #0B0F12" : "2px solid #F0F0F0",
+                    }}
+                  >
+                    {isSelected && <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#000" }} />}
+                  </button>
+                );
+              })}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -464,10 +567,33 @@ const TextColorPicker: React.FC<{
           animate={{ opacity: 1, y: 0 }}
           className="text-nowrap font-medium absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-xs rounded-md px-2 py-1 shadow-lg z-[9999] pointer-events-none"
         >
-          لون النص
+          {title}
         </motion.div>
       )}
     </div>
+  );
+};
+
+// ===== TextColorPicker =====
+const TextColorPicker: React.FC<{
+  value: string;
+  onChange: (value: string) => void;
+}> = ({ value, onChange }) => {
+  return (
+    <DirectColorPicker
+      value={value}
+      onChange={onChange}
+      title="لون النص"
+      icon={
+        <div className="flex flex-col items-center justify-center gap-0.5">
+          <Type className="h-4 w-4" />
+          <div 
+            className="w-4 h-1 rounded-sm"
+            style={{ backgroundColor: value }}
+          />
+        </div>
+      }
+    />
   );
 };
 
@@ -1332,19 +1458,8 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   // ===== أزرار العنصر الفردي (غير النص/الصورة) =====
   const ElementActions = () => {
-    const [isColorOpen, setIsColorOpen] = useState(false);
-    const colorDropdownRef = useRef<HTMLDivElement>(null);
     const currentBg = firstElement?.style?.backgroundColor || '#FFFFFF';
-    
-    useEffect(() => {
-      const handleClickOutside = (e: MouseEvent) => {
-        if (colorDropdownRef.current && !colorDropdownRef.current.contains(e.target as Node)) {
-          setIsColorOpen(false);
-        }
-      };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    const currentBorder = firstElement?.style?.borderColor || '#DADCE0';
     
     const handleBgColorChange = (color: string) => {
       selectedElementIds.forEach(id => {
@@ -1352,48 +1467,48 @@ const UnifiedFloatingToolbar: React.FC = () => {
       });
     };
     
+    const handleBorderColorChange = (color: string) => {
+      selectedElementIds.forEach(id => {
+        updateElement(id, { 
+          style: { 
+            ...firstElement?.style, 
+            borderColor: color,
+            borderWidth: firstElement?.style?.borderWidth || 1,
+            borderStyle: firstElement?.style?.borderStyle || 'solid',
+          } 
+        });
+      });
+    };
+    
     return (
       <>
         {/* لون الخلفية */}
-        <div ref={colorDropdownRef} className="relative">
-          <button
-            className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-[hsl(var(--ink)/0.1)] transition-colors"
-            onMouseDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsColorOpen(!isColorOpen);
-            }}
-            title="لون الخلفية"
-          >
-            <div className="flex flex-col items-center justify-center gap-0.5">
-              <div 
-                className="w-5 h-5 rounded border border-[hsl(var(--border))]"
-                style={{ backgroundColor: currentBg }}
-              />
-            </div>
-          </button>
-          
-          <AnimatePresence>
-            {isColorOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[280px]"
-                onMouseDown={(e) => e.stopPropagation()}
-              >
-                <ColorPickerInput
-                  value={currentBg}
-                  onChange={(newColor) => handleBgColorChange(newColor)}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <DirectColorPicker
+          value={currentBg}
+          onChange={handleBgColorChange}
+          title="لون الخلفية"
+          icon={
+            <div 
+              className="w-5 h-5 rounded border border-[hsl(var(--border))]"
+              style={{ backgroundColor: currentBg }}
+            />
+          }
+        />
+        
+        {/* لون الحد */}
+        <DirectColorPicker
+          value={currentBorder}
+          onChange={handleBorderColorChange}
+          title="لون الحد"
+          icon={
+            <div 
+              className="w-5 h-5 rounded bg-transparent"
+              style={{ 
+                border: `2px solid ${currentBorder}`,
+              }}
+            />
+          }
+        />
         
         <Separator orientation="vertical" className="h-6 mx-1" />
       </>
