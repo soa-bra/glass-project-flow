@@ -93,6 +93,19 @@ export interface RotatingMode {
   startRotations: Map<string, number>;
 }
 
+/**
+ * حالة السحب الداخلي - لسحب نقاط تحكم السهم أو عناصر داخلية
+ */
+export interface InternalDragMode {
+  kind: 'internalDrag';
+  /** نوع السحب الداخلي */
+  dragType: 'arrow-control' | 'connector-anchor' | 'custom';
+  /** معرف العنصر المرتبط */
+  elementId: string;
+  /** بيانات إضافية */
+  data?: Record<string, unknown>;
+}
+
 export type InteractionMode =
   | IdleMode
   | PanningMode
@@ -102,7 +115,8 @@ export type InteractionMode =
   | DrawingMode
   | ConnectingMode
   | ResizingMode
-  | RotatingMode;
+  | RotatingMode
+  | InternalDragMode;
 
 // =============================================================================
 // State Machine Transitions
@@ -128,6 +142,7 @@ export const ALLOWED_TRANSITIONS: InteractionTransition[] = [
   { from: 'idle', to: 'connecting' },
   { from: 'idle', to: 'resizing' },
   { from: 'idle', to: 'rotating' },
+  { from: 'idle', to: 'internalDrag' },
   
   // العودة إلى idle
   { from: 'panning', to: 'idle' },
@@ -138,6 +153,7 @@ export const ALLOWED_TRANSITIONS: InteractionTransition[] = [
   { from: 'connecting', to: 'idle' },
   { from: 'resizing', to: 'idle' },
   { from: 'rotating', to: 'idle' },
+  { from: 'internalDrag', to: 'idle' },
   
   // انتقالات خاصة
   { from: 'typing', to: 'typing' }, // الانتقال بين حقول نص مختلفة
@@ -187,7 +203,8 @@ export function requiresPointerCapture(mode: InteractionMode): boolean {
     mode.kind === 'boxSelect' ||
     mode.kind === 'resizing' ||
     mode.kind === 'rotating' ||
-    mode.kind === 'connecting'
+    mode.kind === 'connecting' ||
+    mode.kind === 'internalDrag'
   );
 }
 
@@ -214,6 +231,8 @@ export function getCursorForMode(mode: InteractionMode): string {
       return getResizeCursor(mode.handle);
     case 'rotating':
       return 'grab';
+    case 'internalDrag':
+      return 'grabbing';
     default:
       return 'default';
   }
@@ -334,6 +353,17 @@ export const createRotatingMode = (
   centerWorld,
   startAngle,
   startRotations
+});
+
+export const createInternalDragMode = (
+  dragType: InternalDragMode['dragType'],
+  elementId: string,
+  data?: Record<string, unknown>
+): InternalDragMode => ({
+  kind: 'internalDrag',
+  dragType,
+  elementId,
+  data
 });
 
 // =============================================================================

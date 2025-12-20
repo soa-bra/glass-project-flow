@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { useInteractionStore } from '@/stores/interactionStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { 
   ArrowPoint, 
@@ -364,7 +365,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     e.preventDefault();
 
     // ✅ تفعيل Internal Drag لمنع تعارض السحب مع CanvasElement
-    useCanvasStore.getState().setInternalDrag(true);
+    useInteractionStore.getState().startInternalDrag('arrow-control', element.id);
     const controlPointType = cp.id === 'start' || (cp.type === 'endpoint' && displayControlPoints.indexOf(cp as ArrowCP) === 0)
       ? 'start'
       : cp.id === 'end' || (cp.type === 'endpoint' && displayControlPoints.indexOf(cp as ArrowCP) === displayControlPoints.length - 1)
@@ -1204,7 +1205,7 @@ export const ArrowControlPoints: React.FC<ArrowControlPointsProps> = ({
     }
     
     // ✅ إيقاف Internal Drag
-    useCanvasStore.getState().setInternalDrag(false);
+    useInteractionStore.getState().resetToIdle();
     
     setDragState({
       isDragging: false,

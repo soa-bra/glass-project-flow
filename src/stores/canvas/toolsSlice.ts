@@ -19,9 +19,6 @@ export interface ToolsSlice {
   editingTextId: string | null;
   typingMode: boolean;
   
-  // Internal Drag Management
-  isInternalDrag: boolean;
-  
   // Tool Actions
   setActiveTool: (tool: ToolId) => void;
   updateToolSettings: (tool: keyof ToolSettings, settings: Partial<ToolSettings[keyof ToolSettings]>) => void;
@@ -29,7 +26,6 @@ export interface ToolsSlice {
   setDrawStartPoint: (point: { x: number; y: number } | null) => void;
   setTempElement: (element: CanvasElement | null) => void;
   setSelectedSmartElement: (elementType: string | null) => void;
-  setInternalDrag: (value: boolean) => void;
   
   // Text Actions
   addText: (textData: Partial<TextElement>) => string;
@@ -55,7 +51,6 @@ export const createToolsSlice: StateCreator<
   selectedSmartElement: null,
   editingTextId: null,
   typingMode: false,
-  isInternalDrag: false,
   
   setActiveTool: (tool) => {
     set({ activeTool: tool, isDrawing: false, drawStartPoint: null, tempElement: null });
@@ -74,7 +69,6 @@ export const createToolsSlice: StateCreator<
   setDrawStartPoint: (point) => set({ drawStartPoint: point }),
   setTempElement: (element) => set({ tempElement: element }),
   setSelectedSmartElement: (elementType) => set({ selectedSmartElement: elementType }),
-  setInternalDrag: (value) => set({ isInternalDrag: value }),
   
   addText: (textData) => {
     const id = textData.id || nanoid();
