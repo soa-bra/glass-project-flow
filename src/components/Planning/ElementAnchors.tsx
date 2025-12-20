@@ -40,14 +40,17 @@ const ElementAnchors: React.FC<ElementAnchorsProps> = ({
   // ✅ تحديد ما إذا كان العنصر من نوع خريطة ذهنية
   const isMindMapElement = element.type === 'mindmap_node' || element.type === 'visual_node';
   
-  // حساب موقع كل anchor
+  // ✅ حساب موقع نقطة التوصيل الواحدة للعناصر العادية (خارج الزاوية العلوية اليمنى)
+  const singleAnchorOffset = 20; // المسافة خارج العنصر
+  
+  // حساب موقع كل anchor للعرض (نسبة للعنصر)
   const anchorPositions = useMemo(() => {
-    // ✅ للعناصر العادية: نقطة واحدة تحت الزاوية العلوية اليمنى
+    // ✅ للعناصر العادية: نقطة واحدة خارج الزاوية العلوية اليمنى
     if (!isMindMapElement) {
       return [{
-        anchor: 'top' as const,
-        x: element.size.width - 12, // تحت الزاوية العلوية اليمنى
-        y: -12 // فوق العنصر
+        anchor: 'right' as const, // نستخدم 'right' كمعرف
+        x: element.size.width + singleAnchorOffset, // خارج العنصر من اليمين
+        y: -singleAnchorOffset // فوق العنصر
       }];
     }
     
@@ -56,15 +59,28 @@ const ElementAnchors: React.FC<ElementAnchorsProps> = ({
       const pos = getAnchorPosition({ x: 0, y: 0 }, element.size, anchor);
       return { anchor, ...pos };
     });
-  }, [element.size, isMindMapElement]);
+  }, [element.size, isMindMapElement, singleAnchorOffset]);
+
+  // ✅ حساب الموقع الفعلي في الـ canvas عند بدء الاتصال
+  const getActualAnchorPosition = useCallback((anchor: 'top' | 'bottom' | 'left' | 'right') => {
+    // للعناصر العادية: الموقع خارج الزاوية العلوية اليمنى
+    if (!isMindMapElement) {
+      return {
+        x: element.position.x + element.size.width + singleAnchorOffset,
+        y: element.position.y - singleAnchorOffset
+      };
+    }
+    // للخرائط الذهنية: استخدام الدالة القياسية
+    return getAnchorPosition(element.position, element.size, anchor);
+  }, [element.position, element.size, isMindMapElement, singleAnchorOffset]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent, anchor: 'top' | 'bottom' | 'left' | 'right') => {
     e.stopPropagation();
     e.preventDefault();
     
-    const anchorPos = getAnchorPosition(element.position, element.size, anchor);
+    const anchorPos = getActualAnchorPosition(anchor);
     onStartConnection(element.id, anchor, anchorPos);
-  }, [element, onStartConnection]);
+  }, [element.id, getActualAnchorPosition, onStartConnection]);
 
   const handleMouseUp = useCallback((e: React.MouseEvent, anchor: 'top' | 'bottom' | 'left' | 'right') => {
     e.stopPropagation();
