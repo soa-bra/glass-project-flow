@@ -1483,6 +1483,12 @@ const UnifiedFloatingToolbar: React.FC = () => {
           : firstElement.style.opacity) * 100 
       : 100;
     
+    const currentStrokeWidth = firstElement?.style?.borderWidth !== undefined
+      ? (typeof firstElement.style.borderWidth === 'string'
+          ? parseFloat(firstElement.style.borderWidth)
+          : firstElement.style.borderWidth)
+      : 1;
+    
     const handleBgColorChange = (color: string) => {
       selectedElementIds.forEach(id => {
         updateElement(id, { style: { ...firstElement?.style, backgroundColor: color } });
@@ -1491,7 +1497,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
     
     const handleStrokeColorChange = (color: string) => {
       selectedElementIds.forEach(id => {
-        updateElement(id, { style: { ...firstElement?.style, borderColor: color, borderWidth: 1, borderStyle: 'solid' } });
+        updateElement(id, { style: { ...firstElement?.style, borderColor: color, borderWidth: currentStrokeWidth || 1, borderStyle: 'solid' } });
       });
     };
     
@@ -1499,6 +1505,13 @@ const UnifiedFloatingToolbar: React.FC = () => {
       const opacityValue = value[0] / 100;
       selectedElementIds.forEach(id => {
         updateElement(id, { style: { ...firstElement?.style, opacity: opacityValue } });
+      });
+    };
+    
+    const handleStrokeWidthChange = (value: number[]) => {
+      const strokeValue = value[0];
+      selectedElementIds.forEach(id => {
+        updateElement(id, { style: { ...firstElement?.style, borderWidth: strokeValue, borderStyle: 'solid' } });
       });
     };
     
@@ -1520,13 +1533,13 @@ const UnifiedFloatingToolbar: React.FC = () => {
         
         <Separator orientation="vertical" className="h-6 mx-1" />
         
-        {/* Opacity Slider */}
+        {/* Opacity & Stroke Width Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button 
               type="button"
               className="flex items-center gap-1 px-2 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))] text-xs pointer-events-auto" 
-              title="الشفافية"
+              title="الشفافية وسمك الحد"
               onMouseDown={(e) => e.stopPropagation()}
             >
               <Blend size={14} />
@@ -1534,26 +1547,52 @@ const UnifiedFloatingToolbar: React.FC = () => {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent 
-            className="bg-white z-[10001] p-3 w-48 pointer-events-auto" 
+            className="bg-white z-[10001] p-3 w-52 pointer-events-auto" 
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-xs text-[hsl(var(--ink-60))]">
-                <span>الشفافية</span>
-                <span className="font-medium text-[hsl(var(--ink))]">{Math.round(currentOpacity)}%</span>
+            <div className="flex flex-col gap-4">
+              {/* Opacity Slider */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between text-xs text-[hsl(var(--ink-60))]">
+                  <span>الشفافية</span>
+                  <span className="font-medium text-[hsl(var(--ink))]">{Math.round(currentOpacity)}%</span>
+                </div>
+                <Slider
+                  value={[currentOpacity]}
+                  onValueChange={handleOpacityChange}
+                  min={0}
+                  max={100}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-[10px] text-[hsl(var(--ink-30))]">
+                  <span>0%</span>
+                  <span>50%</span>
+                  <span>100%</span>
+                </div>
               </div>
-              <Slider
-                value={[currentOpacity]}
-                onValueChange={handleOpacityChange}
-                min={0}
-                max={100}
-                step={1}
-                className="w-full"
-              />
-              <div className="flex justify-between text-[10px] text-[hsl(var(--ink-30))]">
-                <span>0%</span>
-                <span>50%</span>
-                <span>100%</span>
+              
+              <Separator className="my-1" />
+              
+              {/* Stroke Width Slider */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between text-xs text-[hsl(var(--ink-60))]">
+                  <span>سمك الحد</span>
+                  <span className="font-medium text-[hsl(var(--ink))]">{currentStrokeWidth}px</span>
+                </div>
+                <Slider
+                  value={[currentStrokeWidth]}
+                  onValueChange={handleStrokeWidthChange}
+                  min={0}
+                  max={20}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-[10px] text-[hsl(var(--ink-30))]">
+                  <span>0</span>
+                  <span>10</span>
+                  <span>20px</span>
+                </div>
               </div>
             </div>
           </DropdownMenuContent>
