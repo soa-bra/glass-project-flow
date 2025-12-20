@@ -9,7 +9,7 @@ import StrokesLayer from './StrokesLayer';
 import PenInputLayer from './PenInputLayer';
 import FrameInputLayer from './FrameInputLayer';
 import { BoundingBox } from './BoundingBox';
-import { SelectionBadge } from './SelectionBadge';
+
 import { SnapGuides } from './SnapGuides';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -612,9 +612,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         
         {/* BoundingBox for selected elements with Snap Engine */}
         <BoundingBox onGuidesChange={setSnapGuides} />
-        
-        {/* Selection Badge - شارة التحديد المحسّنة */}
-        <SelectionBadge viewport={viewport} />
         
         {/* Drawing Preview */}
         {tempElement && <DrawingPreview element={tempElement} />}
