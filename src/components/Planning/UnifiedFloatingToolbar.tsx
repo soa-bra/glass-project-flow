@@ -161,13 +161,18 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 
   return (
     <div
-      className="relative"
+      className="relative pointer-events-auto"
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
       <button
         type="button"
-        onClick={onClick}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onClick(e);
+        }}
+        onMouseDown={(e) => e.stopPropagation()}
         className={cn(baseClass, variantClasses[variant])}
         disabled={disabled}
       >
@@ -212,13 +217,15 @@ const ColorButton: React.FC<ColorButtonProps> = ({ value, onChange, icon, title 
 
   return (
     <div
-      className="relative"
+      className="relative pointer-events-auto"
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
     >
       <ColorPicker.Root value={parseColor(safeValue)} onValueChange={handleValueChange}>
         <ColorPicker.Control>
-          <ColorPicker.Trigger className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-[hsl(var(--ink)/0.1)] transition-colors cursor-pointer">
+          <ColorPicker.Trigger className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-[hsl(var(--ink)/0.1)] transition-colors cursor-pointer pointer-events-auto">
             <div className="flex flex-col items-center justify-center gap-0.5">
               {icon}
               <div 
@@ -655,6 +662,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
     layers,
     addLayer,
     addElement,
+    editingTextId,
   } = useCanvasStore();
 
   const { addSmartElement } = useSmartElementsStore();
@@ -665,18 +673,42 @@ const UnifiedFloatingToolbar: React.FC = () => {
   const [activeFormats, setActiveFormats] = useState<Record<string, boolean>>({});
   const [isTransforming, setIsTransforming] = useState(false);
   
-  // حساب العناصر المحددة
+  // حساب العناصر المحددة + العنصر الذي يتم تحريره
   const selectedElements = useMemo(
     () => elements.filter(el => selectedElementIds.includes(el.id)),
     [elements, selectedElementIds]
   );
 
-  const hasSelection = selectedElements.length > 0;
-  const firstElement = selectedElements[0];
-  const selectionCount = selectedElements.length;
+  // العنصر النصي الذي يتم تحريره
+  const editingElement = useMemo(
+    () => editingTextId ? elements.find(el => el.id === editingTextId) : null,
+    [elements, editingTextId]
+  );
 
-  // تحديد نوع التحديد
+  // هل يوجد تحديد أو تحرير نص؟
+  const hasSelection = selectedElements.length > 0 || !!editingTextId;
+  
+  // العناصر الفعلية للعمل معها (أولوية للنص الذي يتم تحريره)
+  const activeElements = useMemo(() => {
+    if (editingTextId && editingElement) {
+      return [editingElement];
+    }
+    return selectedElements;
+  }, [editingTextId, editingElement, selectedElements]);
+
+  const firstElement = activeElements[0];
+  const selectionCount = activeElements.length;
+
+  // تحديد نوع التحديد (أولوية لتحرير النص)
   const selectionType = useMemo((): SelectionType => {
+    // إذا كان هناك نص قيد التحرير
+    if (editingTextId && editingElement) {
+      const type = editingElement.type;
+      if (type === 'text') return 'text';
+      // sticky notes تعامل كنص
+      if (type === 'shape' && editingElement.shapeType === 'sticky') return 'text';
+    }
+    
     if (!hasSelection) return null;
     if (selectionCount > 1) return 'multiple';
     
@@ -684,36 +716,37 @@ const UnifiedFloatingToolbar: React.FC = () => {
     if (type === 'text') return 'text';
     if (type === 'image') return 'image';
     return 'element';
-  }, [hasSelection, selectionCount, firstElement?.type]);
+  }, [hasSelection, selectionCount, firstElement?.type, editingTextId, editingElement]);
 
   // حالات العناصر
   const groupId = useMemo(() => {
-    for (const el of selectedElements) {
+    for (const el of activeElements) {
       if (el.metadata?.groupId) return el.metadata.groupId as string;
     }
     return null;
-  }, [selectedElements]);
+  }, [activeElements]);
 
   const areElementsGrouped = !!groupId;
-  const areElementsVisible = selectedElements.every(el => el.visible !== false);
-  const areElementsLocked = selectedElements.some(el => el.locked === true);
+  const areElementsVisible = activeElements.every(el => el.visible !== false);
+  const areElementsLocked = activeElements.some(el => el.locked === true);
 
   // تتبع حالة التنسيقات النشطة
   useEffect(() => {
     if (selectionType !== 'text') return;
     
     const updateActiveFormats = () => {
-      const selection = window.getSelection();
-      if (!selection || selection.rangeCount === 0) return;
-
-      setActiveFormats({
-        bold: document.queryCommandState('bold'),
-        italic: document.queryCommandState('italic'),
-        underline: document.queryCommandState('underline'),
-        strikeThrough: document.queryCommandState('strikeThrough'),
-        insertUnorderedList: document.queryCommandState('insertUnorderedList'),
-        insertOrderedList: document.queryCommandState('insertOrderedList'),
-      });
+      try {
+        setActiveFormats({
+          bold: document.queryCommandState('bold'),
+          italic: document.queryCommandState('italic'),
+          underline: document.queryCommandState('underline'),
+          strikeThrough: document.queryCommandState('strikeThrough'),
+          insertUnorderedList: document.queryCommandState('insertUnorderedList'),
+          insertOrderedList: document.queryCommandState('insertOrderedList'),
+        });
+      } catch (e) {
+        // ignore queryCommandState errors
+      }
     };
 
     document.addEventListener('selectionchange', updateActiveFormats);
@@ -722,40 +755,62 @@ const UnifiedFloatingToolbar: React.FC = () => {
     return () => document.removeEventListener('selectionchange', updateActiveFormats);
   }, [selectionType]);
 
-  // حساب موقع الشريط
-  const selectionBounds = useMemo(() => {
-    if (!hasSelection) return null;
-    
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    selectedElements.forEach(el => {
-      const x = el.position.x;
-      const y = el.position.y;
-      const width = el.size?.width || 200;
-      const height = el.size?.height || 100;
-      
-      if (x < minX) minX = x;
-      if (y < minY) minY = y;
-      if (x + width > maxX) maxX = x + width;
-      if (y + height > maxY) maxY = y + height;
-    });
-    
-    return { minX, minY, maxX, maxY };
-  }, [selectedElements, hasSelection]);
-
+  // حساب موقع البار بناءً على عنصر DOM مباشرة (مثل TextEditor السابق)
   useEffect(() => {
-    if (!selectionBounds) return;
+    if (!hasSelection) return;
     
-    const selectionCenterX = (selectionBounds.minX + selectionBounds.maxX) / 2;
-    const screenCenterX = selectionCenterX * viewport.zoom + viewport.pan.x;
-    const screenTopY = selectionBounds.minY * viewport.zoom + viewport.pan.y - 60;
+    const calculatePosition = () => {
+      const targetId = editingTextId || (activeElements.length === 1 ? activeElements[0]?.id : null);
+      
+      if (targetId) {
+        // محاولة الحصول على الـ DOM element مباشرة
+        const domElement = document.querySelector(`[data-element-id="${targetId}"]`);
+        if (domElement) {
+          const rect = domElement.getBoundingClientRect();
+          const newX = rect.left + rect.width / 2;
+          const newY = Math.max(70, rect.top - 60);
+          
+          if (Math.abs(newX - position.x) > 2 || Math.abs(newY - position.y) > 2) {
+            setPosition({ x: newX, y: newY });
+          }
+          return;
+        }
+      }
+      
+      // Fallback: حساب من بيانات العناصر
+      if (activeElements.length === 0) return;
+      
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      activeElements.forEach(el => {
+        const x = el.position.x;
+        const y = el.position.y;
+        const width = el.size?.width || 200;
+        const height = el.size?.height || 100;
+        
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x + width > maxX) maxX = x + width;
+        if (y + height > maxY) maxY = y + height;
+      });
+      
+      const selectionCenterX = (minX + maxX) / 2;
+      const screenCenterX = selectionCenterX * viewport.zoom + viewport.pan.x;
+      const screenTopY = minY * viewport.zoom + viewport.pan.y - 60;
+      
+      const newX = screenCenterX;
+      const newY = Math.max(70, screenTopY);
+      
+      if (Math.abs(newX - position.x) > 2 || Math.abs(newY - position.y) > 2) {
+        setPosition({ x: newX, y: newY });
+      }
+    };
     
-    const newX = screenCenterX;
-    const newY = Math.max(70, screenTopY);
+    calculatePosition();
     
-    if (Math.abs(newX - position.x) > 2 || Math.abs(newY - position.y) > 2) {
-      setPosition({ x: newX, y: newY });
-    }
-  }, [selectionBounds, viewport.zoom, viewport.pan.x, viewport.pan.y]);
+    // تحديث الموقع عند تغير الـ viewport
+    const interval = setInterval(calculatePosition, 100);
+    return () => clearInterval(interval);
+  }, [hasSelection, activeElements, editingTextId, viewport.zoom, viewport.pan.x, viewport.pan.y]);
 
   // تحديث اسم الصورة عند التحديد
   useEffect(() => {
@@ -899,12 +954,17 @@ const UnifiedFloatingToolbar: React.FC = () => {
   };
 
   const handleAddText = () => {
-    const centerX = selectionBounds ? (selectionBounds.minX + selectionBounds.maxX) / 2 : 100;
-    const centerY = selectionBounds ? selectionBounds.maxY + 50 : 100;
+    // حساب المركز من العناصر النشطة
+    const centerX = activeElements.length > 0 
+      ? activeElements.reduce((sum, el) => sum + (el.position.x + (el.size?.width || 200) / 2), 0) / activeElements.length 
+      : 100;
+    const maxY = activeElements.length > 0 
+      ? Math.max(...activeElements.map(el => el.position.y + (el.size?.height || 100))) 
+      : 50;
     
     addElement({
       type: 'text',
-      position: { x: centerX, y: centerY },
+      position: { x: centerX, y: maxY + 50 },
       size: { width: 200, height: 40 },
       content: 'نص جديد',
       style: { fontSize: 16 },
@@ -969,13 +1029,29 @@ const UnifiedFloatingToolbar: React.FC = () => {
     toast.success('تم نقل العنصر للخلف');
   };
 
+  // ===== دالة مساعدة لاستعادة الـ focus للمحرر =====
+  const restoreEditorFocus = useCallback(() => {
+    const editor = (window as any).__currentTextEditor;
+    if (editor?.editorRef) {
+      editor.editorRef.focus();
+      return true;
+    }
+    return false;
+  }, []);
+
   // ===== إجراءات النص =====
   const handleTextFormat = (format: string) => {
-    document.execCommand(format, false);
+    // أولاً: استعادة الـ focus للمحرر
+    restoreEditorFocus();
+    // ثم تنفيذ الأمر
+    requestAnimationFrame(() => {
+      document.execCommand(format, false);
+    });
   };
 
   const handleFontFamilyChange = (fontFamily: string) => {
-    selectedElementIds.forEach(id => {
+    const targetIds = editingTextId ? [editingTextId] : selectedElementIds;
+    targetIds.forEach(id => {
       const el = elements.find(e => e.id === id);
       if (el) {
         updateElement(id, { style: { ...el.style, fontFamily } });
@@ -984,7 +1060,8 @@ const UnifiedFloatingToolbar: React.FC = () => {
   };
 
   const handleFontSizeChange = (fontSize: number) => {
-    selectedElementIds.forEach(id => {
+    const targetIds = editingTextId ? [editingTextId] : selectedElementIds;
+    targetIds.forEach(id => {
       const el = elements.find(e => e.id === id);
       if (el) {
         updateElement(id, { style: { ...el.style, fontSize } });
@@ -993,7 +1070,8 @@ const UnifiedFloatingToolbar: React.FC = () => {
   };
 
   const handleColorChange = (color: string) => {
-    selectedElementIds.forEach(id => {
+    const targetIds = editingTextId ? [editingTextId] : selectedElementIds;
+    targetIds.forEach(id => {
       const el = elements.find(e => e.id === id);
       if (el) {
         updateElement(id, { style: { ...el.style, color } });
@@ -1002,7 +1080,8 @@ const UnifiedFloatingToolbar: React.FC = () => {
   };
 
   const handleTextAlign = (align: string) => {
-    selectedElementIds.forEach(id => {
+    const targetIds = editingTextId ? [editingTextId] : selectedElementIds;
+    targetIds.forEach(id => {
       const el = elements.find(e => e.id === id);
       if (el) {
         updateElement(id, { style: { ...el.style, textAlign: align } });
@@ -1011,7 +1090,8 @@ const UnifiedFloatingToolbar: React.FC = () => {
   };
 
   const handleVerticalAlign = (align: string) => {
-    selectedElementIds.forEach(id => {
+    const targetIds = editingTextId ? [editingTextId] : selectedElementIds;
+    targetIds.forEach(id => {
       const el = elements.find(e => e.id === id);
       if (el) {
         updateElement(id, { style: { ...el.style, alignItems: align } });
@@ -1020,7 +1100,8 @@ const UnifiedFloatingToolbar: React.FC = () => {
   };
 
   const handleTextDirection = (direction: 'rtl' | 'ltr') => {
-    selectedElementIds.forEach(id => {
+    const targetIds = editingTextId ? [editingTextId] : selectedElementIds;
+    targetIds.forEach(id => {
       const el = elements.find(e => e.id === id);
       if (el) {
         updateElement(id, { style: { ...el.style, direction } });
@@ -1029,21 +1110,30 @@ const UnifiedFloatingToolbar: React.FC = () => {
   };
 
   const handleClearFormatting = () => {
-    document.execCommand('removeFormat', false);
-    toast.success('تم إزالة التنسيق');
+    restoreEditorFocus();
+    requestAnimationFrame(() => {
+      document.execCommand('removeFormat', false);
+      toast.success('تم إزالة التنسيق');
+    });
   };
 
   const handleAddLink = () => {
     const url = prompt('أدخل الرابط:');
     if (url) {
-      document.execCommand('createLink', false, url);
-      toast.success('تم إضافة الرابط');
+      restoreEditorFocus();
+      requestAnimationFrame(() => {
+        document.execCommand('createLink', false, url);
+        toast.success('تم إضافة الرابط');
+      });
     }
   };
 
   const handleToggleList = (listType: 'ul' | 'ol') => {
-    const command = listType === 'ul' ? 'insertUnorderedList' : 'insertOrderedList';
-    document.execCommand(command, false);
+    restoreEditorFocus();
+    requestAnimationFrame(() => {
+      const command = listType === 'ul' ? 'insertUnorderedList' : 'insertOrderedList';
+      document.execCommand(command, false);
+    });
   };
 
   // ===== إجراءات الصور =====
@@ -1144,11 +1234,15 @@ const UnifiedFloatingToolbar: React.FC = () => {
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button type="button" className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]">
+          <button 
+            type="button" 
+            className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))] pointer-events-auto"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
             <MoreVertical size={16} />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48 bg-white z-[10001]">
+        <DropdownMenuContent align="end" className="w-48 bg-white z-[10001] pointer-events-auto" onMouseDown={(e) => e.stopPropagation()}>
           <DropdownMenuItem onClick={handleCopy}>
             <Copy size={14} className="ml-2" />
             نسخ
@@ -1263,8 +1357,9 @@ const UnifiedFloatingToolbar: React.FC = () => {
         <DropdownMenuTrigger asChild>
           <button 
             type="button"
-            className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]" 
+            className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))] pointer-events-auto" 
             title="محاذاة النص"
+            onMouseDown={(e) => e.stopPropagation()}
           >
             {currentAlign === 'right' && <AlignRight size={16} />}
             {currentAlign === 'center' && <AlignCenter size={16} />}
@@ -1272,7 +1367,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
             {currentAlign === 'justify' && <AlignJustify size={16} />}
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-white z-[10001] min-w-0 p-1">
+        <DropdownMenuContent className="bg-white z-[10001] min-w-0 p-1 pointer-events-auto" onMouseDown={(e) => e.stopPropagation()}>
           <div className="flex gap-1">
             <button 
               type="button"
@@ -1311,15 +1406,16 @@ const UnifiedFloatingToolbar: React.FC = () => {
         <DropdownMenuTrigger asChild>
           <button 
             type="button"
-            className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]" 
+            className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))] pointer-events-auto" 
             title="المحاذاة الرأسية"
+            onMouseDown={(e) => e.stopPropagation()}
           >
             {currentVerticalAlign === 'flex-start' && <AlignVerticalJustifyStart size={16} />}
             {currentVerticalAlign === 'center' && <AlignVerticalJustifyCenter size={16} />}
             {currentVerticalAlign === 'flex-end' && <AlignVerticalJustifyEnd size={16} />}
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-white z-[10001] min-w-0 p-1">
+        <DropdownMenuContent className="bg-white z-[10001] min-w-0 p-1 pointer-events-auto" onMouseDown={(e) => e.stopPropagation()}>
           <div className="flex gap-1">
             <button 
               type="button"
@@ -1480,16 +1576,18 @@ const UnifiedFloatingToolbar: React.FC = () => {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="fixed z-50"
+      className="fixed z-[9999] pointer-events-auto"
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
         transform: 'translateX(-50%)'
       }}
       data-floating-toolbar
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
     >
-      <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5">
-        <div className="flex items-center gap-1">
+      <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5 pointer-events-auto">
+        <div className="flex items-center gap-1 pointer-events-auto">
           {selectionType === 'element' && <ElementActions />}
           {selectionType === 'text' && <TextActions />}
           {selectionType === 'image' && <ImageActions />}
