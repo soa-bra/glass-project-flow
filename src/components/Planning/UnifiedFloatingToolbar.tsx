@@ -65,6 +65,7 @@ import {
   PaintBucket,
   ArrowRightLeft,
   PipetteIcon,
+  Blend,
 } from 'lucide-react';
 import { SmartElementType } from '@/types/smart-elements';
 import {
@@ -79,6 +80,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 
 // قائمة الخطوط المتاحة
@@ -1475,6 +1477,12 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   // ===== أزرار العنصر الفردي =====
   const ElementActions = () => {
+    const currentOpacity = firstElement?.style?.opacity !== undefined 
+      ? (typeof firstElement.style.opacity === 'string' 
+          ? parseFloat(firstElement.style.opacity) 
+          : firstElement.style.opacity) * 100 
+      : 100;
+    
     const handleBgColorChange = (color: string) => {
       selectedElementIds.forEach(id => {
         updateElement(id, { style: { ...firstElement?.style, backgroundColor: color } });
@@ -1484,6 +1492,13 @@ const UnifiedFloatingToolbar: React.FC = () => {
     const handleStrokeColorChange = (color: string) => {
       selectedElementIds.forEach(id => {
         updateElement(id, { style: { ...firstElement?.style, borderColor: color, borderWidth: 1, borderStyle: 'solid' } });
+      });
+    };
+    
+    const handleOpacityChange = (value: number[]) => {
+      const opacityValue = value[0] / 100;
+      selectedElementIds.forEach(id => {
+        updateElement(id, { style: { ...firstElement?.style, opacity: opacityValue } });
       });
     };
     
@@ -1502,6 +1517,47 @@ const UnifiedFloatingToolbar: React.FC = () => {
           icon={<Palette size={14} />}
           title="لون الحد"
         />
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+        
+        {/* Opacity Slider */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button 
+              type="button"
+              className="flex items-center gap-1 px-2 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))] text-xs pointer-events-auto" 
+              title="الشفافية"
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              <Blend size={14} />
+              <span className="min-w-[28px] text-center">{Math.round(currentOpacity)}%</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            className="bg-white z-[10001] p-3 w-48 pointer-events-auto" 
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between text-xs text-[hsl(var(--ink-60))]">
+                <span>الشفافية</span>
+                <span className="font-medium text-[hsl(var(--ink))]">{Math.round(currentOpacity)}%</span>
+              </div>
+              <Slider
+                value={[currentOpacity]}
+                onValueChange={handleOpacityChange}
+                min={0}
+                max={100}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-[10px] text-[hsl(var(--ink-30))]">
+                <span>0%</span>
+                <span>50%</span>
+                <span>100%</span>
+              </div>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
         
         <Separator orientation="vertical" className="h-6 mx-1" />
       </>
