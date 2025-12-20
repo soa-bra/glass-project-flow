@@ -5,7 +5,6 @@ import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel, type Bounds, type Point } from '@/core/canvasKernel';
 import { snapEngine, type SnapLine } from '@/core/snapEngine';
 import { selectionCoordinator } from '@/core/selectionCoordinator';
-import { Frame } from 'lucide-react';
 
 // التحقق إذا كان الشكل سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -27,7 +26,7 @@ interface BoundingBoxProps {
 
 export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   // ✅ جميع الـ Hooks أولاً (قبل أي return)
-const { 
+  const { 
     selectedElementIds, 
     elements, 
     viewport, 
@@ -36,9 +35,7 @@ const {
     resizeElements, 
     duplicateElement, 
     resizeFrame, 
-    activeTool,
-    createFrameFromSelection,
-    moveFrame
+    activeTool 
   } = useCanvasStore();
   
   const [isDragging, setIsDragging] = useState(false);
@@ -216,13 +213,7 @@ const {
       const finalDeltaY = finalY - lastAppliedPos.current.y;
       
       if (finalDeltaX !== 0 || finalDeltaY !== 0) {
-        // ✅ Fix: استخدام moveFrame للإطارات لتحريك الأطفال معها
-        const selectedFrame = selectedElements.find(el => el.type === 'frame');
-        if (selectedFrame && expandedSelectedIds.length === 1) {
-          moveFrame(selectedFrame.id, finalDeltaX, finalDeltaY);
-        } else {
-          moveElements(expandedSelectedIds, finalDeltaX, finalDeltaY);
-        }
+        moveElements(expandedSelectedIds, finalDeltaX, finalDeltaY);
         // ✅ Fix: تحديث آخر موقع مُطبَّق
         lastAppliedPos.current = { x: finalX, y: finalY };
       }
@@ -504,23 +495,6 @@ const {
           style={{ direction: 'rtl' }}
         >
           {displayCount} عنصر
-        </div>
-      )}
-      
-      {/* ✅ زر تحويل إلى إطار (يظهر عند تحديد عناصر غير إطارات) */}
-      {displayCount >= 1 && !selectedElements.some(el => el.type === 'frame') && (
-        <div className="absolute -top-9 right-0 flex gap-1.5 pointer-events-auto" style={{ direction: 'rtl' }}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              createFrameFromSelection();
-            }}
-            className="flex items-center gap-1 px-2 py-1 bg-[hsl(var(--ink))] hover:bg-[hsl(var(--ink-80))] text-white rounded-lg text-[11px] font-medium shadow-lg transition-colors"
-            title="تحويل إلى إطار"
-          >
-            <Frame className="w-3.5 h-3.5" />
-            <span>إطار</span>
-          </button>
         </div>
       )}
     </div>
