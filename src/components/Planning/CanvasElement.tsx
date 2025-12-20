@@ -162,6 +162,9 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   const handleMouseMoveRef = useRef<(e: MouseEvent) => void>();
   const handleMouseUpRef = useRef<() => void>();
   
+  // ✅ مرجع لتخزين المواضع الأصلية لعناصر المجموعة
+  const groupElementsStartRef = useRef<Map<string, { x: number; y: number }>>(new Map());
+  
   handleMouseMoveRef.current = (e: MouseEvent) => {
     // ✅ منع التعارض مع سحب نقاط تحكم السهم - استخدام interactionStore
     if (!isDraggingRef.current || isLocked || useInteractionStore.getState().isInternalDrag()) return;
@@ -175,19 +178,46 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     const deltaX = worldDelta.x;
     const deltaY = worldDelta.y;
     
-    let newX = dragStartRef.current.elementX + deltaX;
-    let newY = dragStartRef.current.elementY + deltaY;
-    
-    // Apply snap to grid if enabled
-    if (snapToGrid) {
-      const snapped = snapToGrid(newX, newY);
-      newX = snapped.x;
-      newY = snapped.y;
+    // ✅ إذا كان العنصر مجمّع، حرّك جميع عناصر المجموعة
+    const currentGroupId = element.metadata?.groupId;
+    if (currentGroupId && groupElementsStartRef.current.size > 0) {
+      const allElements = useCanvasStore.getState().elements;
+      const groupElements = allElements.filter(el => el.metadata?.groupId === currentGroupId);
+      
+      groupElements.forEach(groupEl => {
+        const startPos = groupElementsStartRef.current.get(groupEl.id);
+        if (startPos) {
+          let newX = startPos.x + deltaX;
+          let newY = startPos.y + deltaY;
+          
+          // Apply snap to grid if enabled (only for the dragged element)
+          if (groupEl.id === element.id && snapToGrid) {
+            const snapped = snapToGrid(newX, newY);
+            newX = snapped.x;
+            newY = snapped.y;
+          }
+          
+          updateElement(groupEl.id, {
+            position: { x: newX, y: newY }
+          });
+        }
+      });
+    } else {
+      // عنصر غير مجمّع - تحريك عادي
+      let newX = dragStartRef.current.elementX + deltaX;
+      let newY = dragStartRef.current.elementY + deltaY;
+      
+      // Apply snap to grid if enabled
+      if (snapToGrid) {
+        const snapped = snapToGrid(newX, newY);
+        newX = snapped.x;
+        newY = snapped.y;
+      }
+      
+      updateElement(element.id, {
+        position: { x: newX, y: newY }
+      });
     }
-    
-    updateElement(element.id, {
-      position: { x: newX, y: newY }
-    });
   };
   
   handleMouseUpRef.current = () => {
@@ -217,10 +247,22 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       elementX: element.position.x,
       elementY: element.position.y
     };
+    
+    // ✅ تخزين المواضع الأصلية لجميع عناصر المجموعة
+    const currentGroupId = element.metadata?.groupId;
+    groupElementsStartRef.current.clear();
+    if (currentGroupId) {
+      const allElements = useCanvasStore.getState().elements;
+      const groupElements = allElements.filter(el => el.metadata?.groupId === currentGroupId);
+      groupElements.forEach(el => {
+        groupElementsStartRef.current.set(el.id, { x: el.position.x, y: el.position.y });
+      });
+    }
+    
     // إضافة listeners مباشرة عند بدء السحب
     window.addEventListener('mousemove', stableMouseMove);
     window.addEventListener('mouseup', stableMouseUp);
-  }, [element.position.x, element.position.y, stableMouseMove, stableMouseUp]);
+  }, [element.position.x, element.position.y, element.metadata?.groupId, stableMouseMove, stableMouseUp]);
 
   /**
    * ✅ المرحلة 1: معالجة محسّنة للنقر
