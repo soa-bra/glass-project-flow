@@ -511,7 +511,10 @@ export const createElementsSlice: StateCreator<
   },
   
   groupElements: (elementIds) => {
+    if (elementIds.length < 2) return;
+    
     const groupId = nanoid();
+    
     set((state: any) => ({
       elements: state.elements.map((el: CanvasElement) =>
         elementIds.includes(el.id)
@@ -519,6 +522,8 @@ export const createElementsSlice: StateCreator<
           : el
       )
     }));
+    
+    get().pushHistory();
   },
   
   ungroupElements: (groupId) => {
