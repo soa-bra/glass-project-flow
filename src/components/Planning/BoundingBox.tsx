@@ -45,10 +45,41 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   const lastAppliedPos = useRef<Point>({ x: 0, y: 0 }); // ✅ Fix: تتبع آخر موقع مُطبَّق
   const hasDuplicated = useRef(false);
   
+  // ✅ دالة للحصول على جميع عناصر المجموعة
+  const getGroupElementIds = useCallback((elementIds: string[]): string[] => {
+    const result = new Set<string>(elementIds);
+    
+    // للبحث عن groupIds للعناصر المحددة
+    const groupIds = new Set<string>();
+    elementIds.forEach(id => {
+      const element = elements.find(el => el.id === id);
+      if (element?.metadata?.groupId) {
+        groupIds.add(element.metadata.groupId);
+      }
+    });
+    
+    // إضافة جميع العناصر التي تنتمي لنفس المجموعات
+    if (groupIds.size > 0) {
+      elements.forEach(el => {
+        if (el.metadata?.groupId && groupIds.has(el.metadata.groupId)) {
+          result.add(el.id);
+        }
+      });
+    }
+    
+    return Array.from(result);
+  }, [elements]);
+  
+  // ✅ حساب حدود الإطار المحيط في World Space (مع المجموعات)
+  const expandedSelectedIds = useMemo(() => 
+    getGroupElementIds(selectedElementIds),
+    [selectedElementIds, getGroupElementIds]
+  );
+  
   // ✅ حساب حدود الإطار المحيط في World Space
   const selectedElements = useMemo(() => 
-    elements.filter(el => selectedElementIds.includes(el.id)),
-    [elements, selectedElementIds]
+    elements.filter(el => expandedSelectedIds.includes(el.id)),
+    [elements, expandedSelectedIds]
   );
   
   // حساب عدد العناصر الفعلية (بدون تكرار الأطفال)
@@ -125,7 +156,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     if (isDragging) {
       // تكرار العناصر عند Cmd/Ctrl+Drag
       if (e.metaKey && e.ctrlKey && !hasDuplicated.current) {
-        selectedElementIds.forEach(id => duplicateElement(id));
+        expandedSelectedIds.forEach(id => duplicateElement(id));
         hasDuplicated.current = true;
       }
       
@@ -160,7 +191,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       if (settings.snapToGrid) {
         const snapResult = snapEngine.snapBounds(
           { x: newX, y: newY, width: bounds.width, height: bounds.height },
-          selectedElementIds
+          expandedSelectedIds
         );
         
         finalX = snapResult.snappedBounds.x;
@@ -182,7 +213,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       const finalDeltaY = finalY - lastAppliedPos.current.y;
       
       if (finalDeltaX !== 0 || finalDeltaY !== 0) {
-        moveElements(selectedElementIds, finalDeltaX, finalDeltaY);
+        moveElements(expandedSelectedIds, finalDeltaX, finalDeltaY);
         // ✅ Fix: تحديث آخر موقع مُطبَّق
         lastAppliedPos.current = { x: finalX, y: finalY };
       }
@@ -221,7 +252,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
           };
           resizeFrame(frameId, newBounds);
         } else {
-          resizeElements(selectedElementIds, scaleX, scaleY, origin);
+          resizeElements(expandedSelectedIds, scaleX, scaleY, origin);
         }
         
         dragStart.current = { x: e.clientX, y: e.clientY };

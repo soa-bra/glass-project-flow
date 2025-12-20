@@ -120,7 +120,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       />
     );
   }
-  const { updateElement, viewport, updateFrameTitle, editingTextId, startEditingText, stopEditingText, updateTextContent } = useCanvasStore();
+  const { updateElement, viewport, updateFrameTitle, editingTextId, startEditingText, stopEditingText, updateTextContent, elements, moveElements } = useCanvasStore();
   const elementRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
@@ -136,6 +136,16 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   const elementLayer = layers.find(l => l.id === element.layerId);
   const isVisible = element.visible !== false && (elementLayer?.visible !== false);
   const isLocked = element.locked || elementLayer?.locked;
+  
+  // ✅ الحصول على جميع عناصر المجموعة
+  const getGroupElementIds = useCallback((): string[] => {
+    const groupId = element.metadata?.groupId;
+    if (!groupId) return [element.id];
+    
+    return elements
+      .filter(el => el.metadata?.groupId === groupId)
+      .map(el => el.id);
+  }, [element.id, element.metadata?.groupId, elements]);
   
   if (!isVisible) return null;
   
@@ -166,9 +176,19 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       newY = snapped.y;
     }
     
-    updateElement(element.id, {
-      position: { x: newX, y: newY }
-    });
+    // ✅ تحريك جميع عناصر المجموعة معاً
+    const groupIds = getGroupElementIds();
+    if (groupIds.length > 1) {
+      const finalDeltaX = newX - element.position.x;
+      const finalDeltaY = newY - element.position.y;
+      if (finalDeltaX !== 0 || finalDeltaY !== 0) {
+        moveElements(groupIds, finalDeltaX, finalDeltaY);
+      }
+    } else {
+      updateElement(element.id, {
+        position: { x: newX, y: newY }
+      });
+    }
   };
   
   handleMouseUpRef.current = () => {
