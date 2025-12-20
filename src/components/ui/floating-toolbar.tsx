@@ -19,10 +19,8 @@ import {
   Sparkles,
   ArrowRightLeft,
   Languages,
-  Type,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { ColorPickerInput } from "@/components/ui/color-picker";
 
 // قائمة الخطوط المتاحة
 const FONT_FAMILIES = [
@@ -347,8 +345,8 @@ const FontSizeInput = ({
   );
 };
 
-// Color Picker using ColorPickerInput component
-const TextColorPicker = ({
+// Color Picker
+const ColorPicker = ({
   value,
   onChange,
   tooltip,
@@ -361,22 +359,10 @@ const TextColorPicker = ({
   showTooltip: (label: string) => void;
   hideTooltip: () => void;
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div 
-      ref={dropdownRef}
       className="relative"
       onMouseEnter={() => showTooltip('لون النص')}
       onMouseLeave={hideTooltip}
@@ -390,38 +376,23 @@ const TextColorPicker = ({
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          setIsOpen(!isOpen);
+          inputRef.current?.click();
         }}
       >
-        <div className="flex flex-col items-center justify-center gap-0.5">
-          <Type className="h-4 w-4" />
-          <div 
-            className="w-4 h-1 rounded-sm"
-            style={{ backgroundColor: value }}
-          />
-        </div>
+        <div 
+          className="w-5 h-5 rounded border border-[hsl(var(--border))]"
+          style={{ backgroundColor: value }}
+        />
       </button>
+      <input
+        ref={inputRef}
+        type="color"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute opacity-0 w-0 h-0"
+      />
       
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[280px]"
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <ColorPickerInput
-              value={value}
-              onChange={(newColor) => {
-                onChange(newColor);
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
-      {tooltip === 'لون النص' && !isOpen && (
+      {tooltip === 'لون النص' && (
         <motion.div
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
@@ -581,7 +552,7 @@ export const FloatingToolbar = ({
           <div className="w-px h-6 bg-[hsl(var(--border))] mx-1" />
 
           {/* Text Color */}
-          <TextColorPicker
+          <ColorPicker
             value={currentColor}
             onChange={onColorChange}
             tooltip={tooltip}
