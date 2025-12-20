@@ -375,65 +375,47 @@ const ShapesPanel: React.FC = () => {
           {/* Sticky Color Selection */}
           <div>
             <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block text-right">
-              اللون
+              اختر اللون ثم انقر على الكانفس
             </label>
             <div className="flex flex-wrap gap-2">
               {stickyColors.map((color) => (
                 <button
                   key={color}
-                  onClick={() => setSelectedStickyColor(color)}
-                  className={`w-7 h-7 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center`}
+                  onClick={() => {
+                    setSelectedStickyColor(color);
+                    updateToolSettings('shapes', { 
+                      shapeType: 'sticky' as ShapeType,
+                      fillColor: color
+                    });
+                    setActiveTool('shapes_tool');
+                    toast.success('انقر على الكانفس لإضافة ستيكي نوت');
+                  }}
+                  className={`w-9 h-9 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center`}
                   style={{
                     backgroundColor: color,
-                    border: "2px solid #F0F0F0",
+                    border: selectedStickyColor === color ? "3px solid hsl(var(--ink))" : "2px solid #F0F0F0",
                   }}
                 >
                   {selectedStickyColor === color && (
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#F0F0F0" }} />
+                    <div className="w-2 h-2 rounded-full bg-white" />
                   )}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Sticky Text Input */}
-          <div>
-            <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block text-right">
-              النص
-            </label>
-            <input
-              type="text"
-              value={stickyText}
-              onChange={(e) => setStickyText(e.target.value)}
-              placeholder="اكتب نص الستيكي نوت..."
-              className="w-full px-4 py-3 text-[13px] border border-[hsl(var(--border))] rounded-[12px] outline-none focus:border-[hsl(var(--accent-green))] transition-colors text-right"
-              dir="rtl"
-            />
+          {/* Instructions */}
+          <div className="bg-[hsl(var(--accent-yellow))]/10 rounded-[12px] p-4 space-y-2">
+            <p className="text-[12px] text-[hsl(var(--ink-80))] text-center">
+              ✨ <strong>نقرة واحدة</strong> على الكانفس = ستيكي نوت جديد
+            </p>
+            <p className="text-[12px] text-[hsl(var(--ink-80))] text-center">
+              ✏️ <strong>نقرة مزدوجة</strong> على الستيكي نوت = تحرير النص
+            </p>
+            <p className="text-[12px] text-[hsl(var(--ink-80))] text-center">
+              📐 الحجم الافتراضي: 200×200 بكسل
+            </p>
           </div>
-
-          {/* Preview */}
-          <div>
-            <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block text-right">
-              معاينة:
-            </label>
-            <div 
-              className="w-full p-4 rounded-[12px] min-h-[80px] flex items-center justify-center"
-              style={{ backgroundColor: selectedStickyColor }}
-            >
-              <span className="text-[14px] font-medium text-[hsl(var(--ink))]">
-                {stickyText || 'نص تجريبي'}
-              </span>
-            </div>
-          </div>
-
-          {/* Add Button */}
-          <button
-            onClick={handleAddStickyNote}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-[hsl(var(--ink-60))] text-white rounded-[12px] hover:bg-[hsl(var(--ink))] transition-colors"
-          >
-            <FileText size={18} />
-            <span className="text-[13px] font-medium">إضافة ستيكي نوت</span>
-          </button>
         </div>
       )}
 
