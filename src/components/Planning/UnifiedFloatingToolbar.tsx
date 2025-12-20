@@ -819,6 +819,16 @@ const UnifiedFloatingToolbar: React.FC = () => {
     }
   }, [selectionType, firstElement]);
 
+  // ===== دالة مساعدة لاستعادة الـ focus للمحرر =====
+  const restoreEditorFocus = useCallback(() => {
+    const editor = (window as any).__currentTextEditor;
+    if (editor?.editorRef) {
+      editor.editorRef.focus();
+      return true;
+    }
+    return false;
+  }, []);
+
   if (!hasSelection) return null;
 
   // ===== الإجراءات المشتركة =====
@@ -1029,15 +1039,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
     toast.success('تم نقل العنصر للخلف');
   };
 
-  // ===== دالة مساعدة لاستعادة الـ focus للمحرر =====
-  const restoreEditorFocus = useCallback(() => {
-    const editor = (window as any).__currentTextEditor;
-    if (editor?.editorRef) {
-      editor.editorRef.focus();
-      return true;
-    }
-    return false;
-  }, []);
+  // ===== إجراءات النص =====
 
   // ===== إجراءات النص =====
   const handleTextFormat = (format: string) => {
