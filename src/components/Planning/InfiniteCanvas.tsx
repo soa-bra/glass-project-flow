@@ -9,9 +9,11 @@ import StrokesLayer from './StrokesLayer';
 import PenInputLayer from './PenInputLayer';
 import FrameInputLayer from './FrameInputLayer';
 import { BoundingBox } from './BoundingBox';
+import { SelectionBadge } from './SelectionBadge';
 import { SnapGuides } from './SnapGuides';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useTouchGestures } from '@/hooks/useTouchGestures';
 import { canvasKernel, getContainerRect } from '@/core/canvasKernel';
 import { getCursorForMode } from '@/core/interactionStateMachine';
 import { selectionCoordinator } from '@/core/selectionCoordinator';
@@ -77,6 +79,15 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   // Enable keyboard shortcuts
   useKeyboardShortcuts();
+  
+  // ✅ Sprint 18: Touch Gestures للأجهزة اللمسية
+  useTouchGestures({
+    containerRef: containerRef as React.RefObject<HTMLElement>,
+    onLongPress: (point) => {
+      // يمكن إضافة قائمة سياقية هنا
+      console.log('Long press at:', point);
+    }
+  });
   
   // ✅ Sprint 17: هوية المستخدم المحفوظة للتعاون
   const collaborationUser = useCollaborationUser();
@@ -601,6 +612,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         
         {/* BoundingBox for selected elements with Snap Engine */}
         <BoundingBox onGuidesChange={setSnapGuides} />
+        
+        {/* Selection Badge - شارة التحديد المحسّنة */}
+        <SelectionBadge viewport={viewport} />
         
         {/* Drawing Preview */}
         {tempElement && <DrawingPreview element={tempElement} />}
