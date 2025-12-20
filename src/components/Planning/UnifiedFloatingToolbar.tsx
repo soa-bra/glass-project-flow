@@ -1033,7 +1033,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
                   <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1 mb-1">
                     تحويل مخصص:
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-2">
                     <input
                       type="text"
                       value={customPrompt}
@@ -1043,14 +1043,14 @@ const UnifiedFloatingToolbar: React.FC = () => {
                           handleCustomTransform();
                         }
                       }}
-                      placeholder="مثال: حوّل إلى جدول مقارنة..."
-                      className="flex-1 h-8 px-2 text-[11px] rounded-lg border border-[hsl(var(--border))] focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
+                      placeholder="وصف التحويل..."
+                      className="w-[140px] h-8 px-2 text-[11px] rounded-lg border border-[hsl(var(--border))] bg-white focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
                       disabled={isAILoading || isTransforming}
                     />
                     <button
                       onClick={handleCustomTransform}
                       disabled={isAILoading || isTransforming || !customPrompt.trim()}
-                      className="h-8 w-8 flex items-center justify-center rounded-lg bg-gradient-to-r from-[#3DBE8B] to-[#3DA8F5] text-white hover:opacity-90 disabled:opacity-50"
+                      className="h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
                     >
                       {isAILoading || isTransforming ? (
                         <Loader2 size={14} className="animate-spin" />
