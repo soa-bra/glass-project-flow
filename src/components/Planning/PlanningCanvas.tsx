@@ -7,7 +7,7 @@ import InfiniteCanvas from './InfiniteCanvas';
 import BottomToolbar from './BottomToolbar';
 import RightSidePanel from './RightSidePanel';
 import NavigationBar from './NavigationBar';
-import FloatingEditBar from './FloatingEditBar';
+import UnifiedFloatingToolbar from './UnifiedFloatingToolbar';
 import Minimap from './Minimap';
 import { HistoryPopover } from './popovers/HistoryPopover';
 import { SharePopover } from './popovers/SharePopover';
@@ -234,8 +234,8 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
       {/* Navigation Bar */}
       <NavigationBar />
       
-      {/* Floating Edit Bar */}
-      <FloatingEditBar />
+      {/* Unified Floating Toolbar */}
+      <UnifiedFloatingToolbar />
       
       {/* Minimap */}
       <Minimap />
