@@ -3,7 +3,7 @@
  * يظهر عدد العناصر وأبعادها وموقعها
  */
 
-import { memo, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Square, 
@@ -52,7 +52,7 @@ const typeLabels: Record<string, string> = {
   smart: 'عنصر ذكي',
 };
 
-export const SelectionTooltip = memo(function SelectionTooltip({
+export function SelectionTooltip({
   selectedElements,
   viewport,
   position = 'top',
@@ -78,7 +78,6 @@ export const SelectionTooltip = memo(function SelectionTooltip({
 
     // تحويل للشاشة
     const screenCenterX = (centerX - viewport.x) * viewport.zoom;
-    const screenCenterY = (centerY - viewport.y) * viewport.zoom;
     const screenTop = (minY - viewport.y) * viewport.zoom;
     const screenBottom = (maxY - viewport.y) * viewport.zoom;
 
@@ -95,7 +94,6 @@ export const SelectionTooltip = memo(function SelectionTooltip({
       centerX: Math.round(centerX),
       centerY: Math.round(centerY),
       screenCenterX,
-      screenCenterY,
       screenTop,
       screenBottom,
       typeCounts,
@@ -133,7 +131,7 @@ export const SelectionTooltip = memo(function SelectionTooltip({
         >
           {/* عدد العناصر */}
           <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-            <Layers className="h-3.5 w-3.5 text-accent-blue" />
+            <Layers className="h-3.5 w-3.5 text-[#3DA8F5]" />
             <span>{selectionInfo.count}</span>
             <span className="text-muted-foreground">
               {selectionInfo.count === 1 ? 'عنصر' : 'عناصر'}
@@ -203,102 +201,4 @@ export const SelectionTooltip = memo(function SelectionTooltip({
       </motion.div>
     </AnimatePresence>
   );
-});
-
-/**
- * Quick Action Tooltip - أزرار سريعة للتحديد
- */
-interface QuickActionsTooltipProps {
-  selectedElements: CanvasElement[];
-  viewport: {
-    x: number;
-    y: number;
-    zoom: number;
-  };
-  onDelete?: () => void;
-  onDuplicate?: () => void;
-  onGroup?: () => void;
-  onAlign?: (direction: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
 }
-
-export const QuickActionsTooltip = memo(function QuickActionsTooltip({
-  selectedElements,
-  viewport,
-  onDelete,
-  onDuplicate,
-  onGroup,
-}: QuickActionsTooltipProps) {
-  const bounds = useMemo(() => {
-    if (selectedElements.length === 0) return null;
-
-    let minX = Infinity, maxX = -Infinity, maxY = -Infinity;
-
-    for (const el of selectedElements) {
-      minX = Math.min(minX, el.x);
-      maxX = Math.max(maxX, el.x + el.width);
-      maxY = Math.max(maxY, el.y + el.height);
-    }
-
-    return {
-      centerX: (minX + maxX) / 2,
-      bottom: maxY,
-    };
-  }, [selectedElements]);
-
-  if (!bounds || selectedElements.length === 0) return null;
-
-  const screenX = (bounds.centerX - viewport.x) * viewport.zoom;
-  const screenY = (bounds.bottom - viewport.y) * viewport.zoom + 16;
-
-  return (
-    <motion.div
-      className="pointer-events-auto absolute z-50"
-      style={{
-        left: screenX,
-        top: screenY,
-        transform: 'translateX(-50%)',
-      }}
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.15 }}
-    >
-      <div className="flex items-center gap-1 rounded-lg border border-border bg-background p-1 shadow-lg">
-        {onDuplicate && (
-          <button
-            onClick={onDuplicate}
-            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            title="نسخ"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" />
-              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-            </svg>
-          </button>
-        )}
-
-        {onGroup && selectedElements.length > 1 && (
-          <button
-            onClick={onGroup}
-            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            title="تجميع"
-          >
-            <Layers className="h-4 w-4" />
-          </button>
-        )}
-
-        {onDelete && (
-          <button
-            onClick={onDelete}
-            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent-red/10 hover:text-accent-red"
-            title="حذف"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-            </svg>
-          </button>
-        )}
-      </div>
-    </motion.div>
-  );
-});
