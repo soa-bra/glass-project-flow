@@ -54,7 +54,14 @@ import {
   Ungroup,
   ChevronDown,
   Plus,
+  Loader2,
+  LayoutGrid,
+  Network,
+  Calendar,
+  Table2,
+  Zap,
 } from 'lucide-react';
+import { SmartElementType } from '@/types/smart-elements';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -84,6 +91,15 @@ const FONT_FAMILIES = [
 const FONT_SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72];
 
 type SelectionType = 'element' | 'text' | 'image' | 'multiple' | null;
+
+// خيارات التحويل للعناصر الذكية
+const TRANSFORM_OPTIONS = [
+  { type: 'kanban' as SmartElementType, label: 'لوحة كانبان', icon: LayoutGrid, description: 'تحويل إلى أعمدة ومهام' },
+  { type: 'mind_map' as SmartElementType, label: 'خريطة ذهنية', icon: Network, description: 'تنظيم كخريطة مترابطة' },
+  { type: 'timeline' as SmartElementType, label: 'خط زمني', icon: Calendar, description: 'ترتيب على محور زمني' },
+  { type: 'decisions_matrix' as SmartElementType, label: 'مصفوفة قرارات', icon: Table2, description: 'تقييم ومقارنة الخيارات' },
+  { type: 'brainstorming' as SmartElementType, label: 'عصف ذهني', icon: Zap, description: 'تجميع كأفكار للنقاش' },
+];
 
 // ===== Enhanced ToolbarButton with Tooltips =====
 interface ToolbarButtonProps {
@@ -483,6 +499,8 @@ const UnifiedFloatingToolbar: React.FC = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [imageName, setImageName] = useState('');
   const [activeFormats, setActiveFormats] = useState<Record<string, boolean>>({});
+  const [isAIMenuOpen, setIsAIMenuOpen] = useState(false);
+  const [isTransforming, setIsTransforming] = useState(false);
   
   // حساب العناصر المحددة
   const selectedElements = useMemo(
@@ -618,8 +636,49 @@ const UnifiedFloatingToolbar: React.FC = () => {
     toast.success('تم حذف العناصر');
   };
 
-  const handleAI = () => {
-    toast.info('قريباً: الذكاء الاصطناعي');
+  // ===== وظائف الذكاء الاصطناعي =====
+  const getSelectionContent = () => {
+    return selectedElements.map(el => ({
+      type: el.type,
+      content: el.content || '',
+      smartType: el.smartType,
+      position: el.position,
+    }));
+  };
+
+  const handleQuickGenerate = async () => {
+    const content = getSelectionContent();
+    const contentText = selectedElements.map(el => el.content || '').filter(Boolean).join('\n');
+    const result = await analyzeSelection(content, `حلل هذه العناصر وأنشئ عنصر ذكي مناسب: ${contentText}`);
+    if (result?.suggestions && result.suggestions.length > 0) {
+      const suggestion = result.suggestions[0];
+      if (suggestion.targetType) {
+        await handleTransform(suggestion.targetType);
+      }
+    }
+  };
+
+  const handleTransform = async (targetType: SmartElementType) => {
+    setIsTransforming(true);
+    
+    try {
+      const content = getSelectionContent();
+      const contentText = selectedElements.map(el => el.content || '').filter(Boolean).join('\n');
+      const result = await transformElements(content, targetType, `حوّل هذه العناصر إلى ${targetType}: ${contentText}`);
+      if (result?.elements && result.elements.length > 0) {
+        const centerX = selectedElements.reduce((sum, el) => sum + (el.position?.x || 0), 0) / selectedElements.length;
+        const centerY = selectedElements.reduce((sum, el) => sum + (el.position?.y || 0), 0) / selectedElements.length;
+        result.elements.forEach((element, index) => {
+          addSmartElement(element.type as SmartElementType, { x: centerX + index * 30, y: centerY + index * 30 }, element.data);
+        });
+        toast.success(`تم تحويل ${selectedElements.length} عنصر إلى ${TRANSFORM_OPTIONS.find(o => o.type === targetType)?.label}`);
+        setIsAIMenuOpen(false);
+      }
+    } catch (error) {
+      toast.error('حدث خطأ أثناء التحويل');
+    } finally {
+      setIsTransforming(false);
+    }
   };
 
   const handleCopy = () => {
@@ -862,8 +921,83 @@ const UnifiedFloatingToolbar: React.FC = () => {
       
       <Separator orientation="vertical" className="h-6 mx-1" />
       
-      {/* زر الذكاء الاصطناعي */}
-      <ToolbarButton icon={<Sparkles size={16} />} onClick={handleAI} title="الذكاء الاصطناعي" variant="ai" />
+      {/* زر الذكاء الاصطناعي مع القائمة المنسدلة */}
+      <div className="relative">
+        <button
+          onClick={() => setIsAIMenuOpen(!isAIMenuOpen)}
+          className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 transition-opacity"
+          title="الذكاء الاصطناعي"
+        >
+          {isAILoading || isTransforming ? (
+            <Loader2 size={16} className="text-white animate-spin" />
+          ) : (
+            <Sparkles size={16} className="text-white" />
+          )}
+        </button>
+        
+        <AnimatePresence>
+          {isAIMenuOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setIsAIMenuOpen(false)} />
+              <motion.div 
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] overflow-hidden z-50"
+              >
+                {/* زر الإنشاء التلقائي */}
+                <div className="p-2 border-b border-[hsl(var(--border))]">
+                  <button
+                    onClick={handleQuickGenerate}
+                    disabled={isAILoading || isTransforming}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-white bg-gradient-to-r from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 rounded-lg disabled:opacity-50"
+                  >
+                    {isAILoading || isTransforming ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Sparkles size={14} />
+                    )}
+                    <span>إنشاء عنصر ذكي تلقائياً</span>
+                  </button>
+                </div>
+                
+                {/* خيارات التحويل */}
+                <div className="p-2 space-y-1">
+                  <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1">
+                    تحويل إلى:
+                  </div>
+                  {TRANSFORM_OPTIONS.map((option) => (
+                    <button
+                      key={option.type}
+                      onClick={() => handleTransform(option.type)}
+                      disabled={isAILoading || isTransforming}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[hsl(var(--panel))] transition-colors text-right disabled:opacity-50"
+                    >
+                      <span className="text-[#3DBE8B]">
+                        <option.icon size={16} />
+                      </span>
+                      <div className="flex-1">
+                        <div className="text-[12px] font-medium text-black">
+                          {option.label}
+                        </div>
+                        <div className="text-[10px] text-[hsl(var(--ink-60))]">
+                          {option.description}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                
+                {/* معلومات التحديد */}
+                <div className="px-3 py-2 border-t border-[hsl(var(--border))] text-[10px] text-[hsl(var(--ink-60))] text-center">
+                  {selectedElements.length} عنصر محدد
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </div>
       
       <Separator orientation="vertical" className="h-6 mx-1" />
       
