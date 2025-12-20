@@ -341,11 +341,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
 
       const newId = addText(textData);
       
+      // ✅ الدخول مباشرة في وضع الكتابة
       setTimeout(() => {
         startEditingText(newId);
-      }, 50);
-      
-      toast.success('انقر وابدأ الكتابة');
+      }, 10);
     } 
     // إذا كان السحب كبير → مربع نص
     else {
@@ -364,11 +363,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       
       const newId = addText(textBoxElement);
       
+      // ✅ الدخول مباشرة في وضع الكتابة
       setTimeout(() => {
         startEditingText(newId);
-      }, 50);
-      
-      toast.success('تم إنشاء مربع نص - ابدأ الكتابة');
+      }, 10);
     }
     
     // إعادة تعيين الحالة

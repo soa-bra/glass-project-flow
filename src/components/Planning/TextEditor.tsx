@@ -231,9 +231,9 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   }, [element.id, element.style, updateElement]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Enter = حفظ (لنص السطر فقط، في مربع النص نسمح بأسطر متعددة)
+    // ✅ Enter = حفظ وإغلاق (لنص السطر فقط - line type)
     if (e.key === 'Enter' && !e.shiftKey && element.data?.textType === 'line') {
-      // ✅ التحقق من وجود قائمة نشطة
+      // التحقق من وجود قائمة نشطة
       const selection = window.getSelection();
       const isInsideList = selection?.anchorNode?.parentElement?.closest('ul, ol');
       
@@ -250,8 +250,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       return;
     }
     
-    // Shift+Enter = سطر جديد في مربع النص
-    if (e.key === 'Enter' && e.shiftKey && element.data?.textType === 'box') {
+    // ✅ Enter العادي في مربع النص (box) = سطر جديد
+    if (e.key === 'Enter' && !e.shiftKey && element.data?.textType === 'box') {
       // السماح بالسلوك الافتراضي (إضافة سطر جديد)
       return;
     }
