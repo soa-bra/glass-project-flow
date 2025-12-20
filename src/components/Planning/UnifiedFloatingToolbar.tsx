@@ -392,81 +392,81 @@ const FontSizeInput: React.FC<{
   );
 };
 
-// ===== Compact Color Picker Button - Like Pen Toolbar =====
-const CompactColorButton: React.FC<{
-  value: string;
-  onChange: (value: string) => void;
-  tooltip: string;
-}> = ({ value, onChange, tooltip }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
-  
-  return (
-    <div
-      className="relative"
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <ColorPickerInput
-        value={value}
-        onChange={onChange}
-        className="[&>div]:space-y-0 [&_button]:h-8 [&_button]:w-8 [&_button]:rounded-lg [&_input]:hidden [&>div>div:first-child]:hidden [&_button]:border-[hsl(var(--border))]"
-      />
-      <AnimatePresence>
-        {showTooltip && (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 5 }}
-            transition={{ duration: 0.15 }}
-            className="text-nowrap font-medium absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-xs rounded-md px-2 py-1 shadow-lg z-[9999] pointer-events-none"
-          >
-            {tooltip}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
-// ===== TextColorPicker with Type Icon and Color Underline =====
+// ===== TextColorPicker with ColorPickerInput =====
 const TextColorPicker: React.FC<{
   value: string;
   onChange: (value: string) => void;
 }> = ({ value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <div
+    <div 
+      ref={dropdownRef}
       className="relative"
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
-      <ColorPickerInput
-        value={value}
-        onChange={onChange}
-        className="[&>div]:space-y-0 [&_input]:hidden [&>div>div:first-child]:gap-0 [&>div>div:first-child]:flex-col [&>div>div:first-child>div:first-child]:hidden [&_button]:h-8 [&_button]:w-8 [&_button]:rounded-lg [&_button]:border-0 [&_button]:hover:bg-[hsl(var(--ink)/0.1)] [&_button>div]:hidden [&_button]:relative [&_button]:flex [&_button]:items-center [&_button]:justify-center"
-      />
-      {/* Custom icon overlay */}
-      <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center gap-0.5">
-        <Type className="h-4 w-4" />
-        <div 
-          className="w-4 h-1 rounded-sm"
-          style={{ backgroundColor: value }}
-        />
-      </div>
+      <button
+        className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-[hsl(var(--ink)/0.1)] transition-colors"
+        onMouseDown={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
+      >
+        <div className="flex flex-col items-center justify-center gap-0.5">
+          <Type className="h-4 w-4" />
+          <div 
+            className="w-4 h-1 rounded-sm"
+            style={{ backgroundColor: value }}
+          />
+        </div>
+      </button>
+      
       <AnimatePresence>
-        {showTooltip && (
+        {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 5 }}
+            initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 5 }}
-            transition={{ duration: 0.15 }}
-            className="text-nowrap font-medium absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-xs rounded-md px-2 py-1 shadow-lg z-[9999] pointer-events-none"
+            exit={{ opacity: 0, y: -5 }}
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[280px]"
+            onMouseDown={(e) => e.stopPropagation()}
           >
-            لون النص
+            <ColorPickerInput
+              value={value}
+              onChange={(newColor) => {
+                onChange(newColor);
+              }}
+            />
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {showTooltip && !isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-nowrap font-medium absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-xs rounded-md px-2 py-1 shadow-lg z-[9999] pointer-events-none"
+        >
+          لون النص
+        </motion.div>
+      )}
     </div>
   );
 };
@@ -1332,8 +1332,19 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   // ===== أزرار العنصر الفردي (غير النص/الصورة) =====
   const ElementActions = () => {
+    const [isColorOpen, setIsColorOpen] = useState(false);
+    const colorDropdownRef = useRef<HTMLDivElement>(null);
     const currentBg = firstElement?.style?.backgroundColor || '#FFFFFF';
-    const currentStroke = firstElement?.style?.borderColor || firstElement?.style?.stroke || '#000000';
+    
+    useEffect(() => {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (colorDropdownRef.current && !colorDropdownRef.current.contains(e.target as Node)) {
+          setIsColorOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
     
     const handleBgColorChange = (color: string) => {
       selectedElementIds.forEach(id => {
@@ -1341,40 +1352,47 @@ const UnifiedFloatingToolbar: React.FC = () => {
       });
     };
     
-    const handleStrokeColorChange = (color: string) => {
-      selectedElementIds.forEach(id => {
-        updateElement(id, { 
-          style: { 
-            ...firstElement?.style, 
-            borderColor: color,
-            stroke: color,
-            borderWidth: firstElement?.style?.borderWidth || 1
-          } 
-        });
-      });
-    };
-    
     return (
       <>
         {/* لون الخلفية */}
-        <CompactColorButton
-          value={currentBg}
-          onChange={handleBgColorChange}
-          tooltip="لون الخلفية"
-        />
-        
-        {/* لون الحد */}
-        <div className="relative">
-          <CompactColorButton
-            value={currentStroke}
-            onChange={handleStrokeColorChange}
-            tooltip="لون الحد"
-          />
-          {/* Stroke indicator ring */}
-          <div 
-            className="absolute inset-0 pointer-events-none rounded-lg border-2"
-            style={{ borderColor: currentStroke }}
-          />
+        <div ref={colorDropdownRef} className="relative">
+          <button
+            className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-[hsl(var(--ink)/0.1)] transition-colors"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsColorOpen(!isColorOpen);
+            }}
+            title="لون الخلفية"
+          >
+            <div className="flex flex-col items-center justify-center gap-0.5">
+              <div 
+                className="w-5 h-5 rounded border border-[hsl(var(--border))]"
+                style={{ backgroundColor: currentBg }}
+              />
+            </div>
+          </button>
+          
+          <AnimatePresence>
+            {isColorOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[280px]"
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <ColorPickerInput
+                  value={currentBg}
+                  onChange={(newColor) => handleBgColorChange(newColor)}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         
         <Separator orientation="vertical" className="h-6 mx-1" />
