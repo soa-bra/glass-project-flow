@@ -60,6 +60,10 @@ import {
   Calendar,
   Table2,
   Zap,
+  Palette,
+  PaintBucket,
+  TextCursor,
+  ArrowRightLeft,
 } from 'lucide-react';
 import { SmartElementType } from '@/types/smart-elements';
 import {
@@ -467,6 +471,141 @@ const TextColorPicker: React.FC<{
           لون النص
         </motion.div>
       )}
+    </div>
+  );
+};
+
+// ===== AI Menu Dropdown - مكون منفصل لإصلاح مشكلة الإدخال =====
+interface AIMenuDropdownProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  isLoading: boolean;
+  customPrompt: string;
+  onCustomPromptChange: (value: string) => void;
+  onQuickGenerate: () => void;
+  onTransform: (type: SmartElementType) => void;
+  onCustomTransform: () => void;
+  selectedCount: number;
+}
+
+const AIMenuDropdown: React.FC<AIMenuDropdownProps> = ({
+  isOpen,
+  onOpenChange,
+  isLoading,
+  customPrompt,
+  onCustomPromptChange,
+  onQuickGenerate,
+  onTransform,
+  onCustomTransform,
+  selectedCount,
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        onOpenChange(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, onOpenChange]);
+
+  return (
+    <div ref={menuRef} className="relative">
+      <button
+        onClick={() => onOpenChange(!isOpen)}
+        className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 transition-opacity"
+        title="الذكاء الاصطناعي"
+      >
+        {isLoading ? (
+          <Loader2 size={16} className="text-white animate-spin" />
+        ) : (
+          <Sparkles size={16} className="text-white" />
+        )}
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] overflow-hidden z-[9999]"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="p-2 border-b border-[hsl(var(--border))]">
+              <button
+                onClick={onQuickGenerate}
+                disabled={isLoading}
+                className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-white bg-gradient-to-r from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 rounded-lg disabled:opacity-50"
+              >
+                {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                <span>إنشاء عنصر ذكي تلقائياً</span>
+              </button>
+            </div>
+            
+            <div className="p-2 space-y-1">
+              <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1">تحويل إلى:</div>
+              {TRANSFORM_OPTIONS.map((option) => (
+                <button
+                  key={option.type}
+                  onClick={() => onTransform(option.type)}
+                  disabled={isLoading}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[hsl(var(--panel))] transition-colors text-right disabled:opacity-50"
+                >
+                  <span className="text-[#3DBE8B]"><option.icon size={16} /></span>
+                  <div className="flex-1">
+                    <div className="text-[12px] font-medium text-black">{option.label}</div>
+                    <div className="text-[10px] text-[hsl(var(--ink-60))]">{option.description}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+            
+            <div className="p-2 border-t border-[hsl(var(--border))]">
+              <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1 mb-1">تحويل مخصص:</div>
+              <div className="flex gap-2">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={customPrompt}
+                  onChange={(e) => onCustomPromptChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !isLoading && customPrompt.trim()) {
+                      onCustomTransform();
+                    }
+                  }}
+                  placeholder="وصف التحويل..."
+                  className="flex-1 h-8 px-2 text-[11px] rounded-lg border border-[hsl(var(--border))] bg-white focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
+                  disabled={isLoading}
+                />
+                <button
+                  onClick={onCustomTransform}
+                  disabled={isLoading || !customPrompt.trim()}
+                  className="h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
+                >
+                  {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                </button>
+              </div>
+            </div>
+            
+            <div className="px-3 py-2 border-t border-[hsl(var(--border))] text-[10px] text-[hsl(var(--ink-60))] text-center">
+              {selectedCount} عنصر محدد
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -926,7 +1065,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
   const currentFontFamily = firstElement?.style?.fontFamily || 'IBM Plex Sans Arabic';
   const currentFontSize = firstElement?.style?.fontSize || 16;
   const currentColor = firstElement?.style?.color || '#0B0F12';
-  const currentAlign = (firstElement?.style?.textAlign as 'left' | 'center' | 'right') || 'right';
+  const currentAlign = (firstElement?.style?.textAlign as 'left' | 'center' | 'right' | 'justify') || 'right';
   const currentVerticalAlign = (firstElement?.style?.alignItems as 'flex-start' | 'center' | 'flex-end') || 'flex-start';
   const currentDirection = (firstElement?.style?.direction as 'rtl' | 'ltr') || 'rtl';
 
@@ -961,118 +1100,17 @@ const UnifiedFloatingToolbar: React.FC = () => {
       <Separator orientation="vertical" className="h-6 mx-1" />
       
       {/* زر الذكاء الاصطناعي مع القائمة المنسدلة */}
-      <div className="relative">
-        <button
-          onClick={() => setIsAIMenuOpen(!isAIMenuOpen)}
-          className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 transition-opacity"
-          title="الذكاء الاصطناعي"
-        >
-          {isAILoading || isTransforming ? (
-            <Loader2 size={16} className="text-white animate-spin" />
-          ) : (
-            <Sparkles size={16} className="text-white" />
-          )}
-        </button>
-        
-        <AnimatePresence>
-          {isAIMenuOpen && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setIsAIMenuOpen(false)} />
-              <motion.div 
-                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-                className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] overflow-hidden z-50"
-              >
-                {/* زر الإنشاء التلقائي */}
-                <div className="p-2 border-b border-[hsl(var(--border))]">
-                  <button
-                    onClick={handleQuickGenerate}
-                    disabled={isAILoading || isTransforming}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-white bg-gradient-to-r from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 rounded-lg disabled:opacity-50"
-                  >
-                    {isAILoading || isTransforming ? (
-                      <Loader2 size={14} className="animate-spin" />
-                    ) : (
-                      <Sparkles size={14} />
-                    )}
-                    <span>إنشاء عنصر ذكي تلقائياً</span>
-                  </button>
-                </div>
-                
-                {/* خيارات التحويل */}
-                <div className="p-2 space-y-1">
-                  <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1">
-                    تحويل إلى:
-                  </div>
-                  {TRANSFORM_OPTIONS.map((option) => (
-                    <button
-                      key={option.type}
-                      onClick={() => handleTransform(option.type)}
-                      disabled={isAILoading || isTransforming}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[hsl(var(--panel))] transition-colors text-right disabled:opacity-50"
-                    >
-                      <span className="text-[#3DBE8B]">
-                        <option.icon size={16} />
-                      </span>
-                      <div className="flex-1">
-                        <div className="text-[12px] font-medium text-black">
-                          {option.label}
-                        </div>
-                        <div className="text-[10px] text-[hsl(var(--ink-60))]">
-                          {option.description}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-                
-                {/* تحويل مخصص */}
-                <div className="p-2 border-t border-[hsl(var(--border))]">
-                  <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1 mb-1">
-                    تحويل مخصص:
-                  </div>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={customPrompt}
-                      onChange={(e) => setCustomPrompt(e.target.value)}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => {
-                        e.stopPropagation();
-                        if (e.key === 'Enter' && !isAILoading && !isTransforming) {
-                          handleCustomTransform();
-                        }
-                      }}
-                      placeholder="وصف التحويل..."
-                      className="w-[160px] h-8 px-2 text-[11px] rounded-lg border border-[hsl(var(--border))] bg-white focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
-                      disabled={isAILoading || isTransforming}
-                    />
-                    <button
-                      onClick={handleCustomTransform}
-                      disabled={isAILoading || isTransforming || !customPrompt.trim()}
-                      className="h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
-                    >
-                      {isAILoading || isTransforming ? (
-                        <Loader2 size={14} className="animate-spin" />
-                      ) : (
-                        <Sparkles size={14} />
-                      )}
-                    </button>
-                  </div>
-                </div>
-                
-                {/* معلومات التحديد */}
-                <div className="px-3 py-2 border-t border-[hsl(var(--border))] text-[10px] text-[hsl(var(--ink-60))] text-center">
-                  {selectedElements.length} عنصر محدد
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-      </div>
+      <AIMenuDropdown
+        isOpen={isAIMenuOpen}
+        onOpenChange={setIsAIMenuOpen}
+        isLoading={isAILoading || isTransforming}
+        customPrompt={customPrompt}
+        onCustomPromptChange={setCustomPrompt}
+        onQuickGenerate={handleQuickGenerate}
+        onTransform={handleTransform}
+        onCustomTransform={handleCustomTransform}
+        selectedCount={selectedElements.length}
+      />
       
       <Separator orientation="vertical" className="h-6 mx-1" />
       
@@ -1150,159 +1188,180 @@ const UnifiedFloatingToolbar: React.FC = () => {
   );
 
   // ===== أزرار النص المحسنة =====
-  const TextActions = () => (
-    <>
-      {/* نوع الخط مع preview */}
-      <FontFamilyDropdown
-        value={currentFontFamily}
-        onChange={handleFontFamilyChange}
-      />
-      
-      <Separator orientation="vertical" className="h-6 mx-1" />
-      
-      {/* حجم الخط مع إدخال يدوي */}
-      <FontSizeInput
-        value={currentFontSize}
-        onChange={handleFontSizeChange}
-      />
-      
-      <Separator orientation="vertical" className="h-6 mx-1" />
-      
-      {/* لون النص */}
-      <TextColorPicker
-        value={currentColor}
-        onChange={handleColorChange}
-      />
-      
-      <Separator orientation="vertical" className="h-6 mx-1" />
-      
-      {/* عريض */}
-      <ToolbarButton 
-        icon={<Bold size={16} />} 
-        onClick={() => handleTextFormat('bold')} 
-        title="غامق" 
-        isActive={activeFormats.bold}
-      />
-      
-      {/* مائل */}
-      <ToolbarButton 
-        icon={<Italic size={16} />} 
-        onClick={() => handleTextFormat('italic')} 
-        title="مائل" 
-        isActive={activeFormats.italic}
-      />
-      
-      {/* تحته خط */}
-      <ToolbarButton 
-        icon={<Underline size={16} />} 
-        onClick={() => handleTextFormat('underline')} 
-        title="تسطير" 
-        isActive={activeFormats.underline}
-      />
-      
-      {/* يتوسطه خط */}
-      <ToolbarButton 
-        icon={<Strikethrough size={16} />} 
-        onClick={() => handleTextFormat('strikeThrough')} 
-        title="يتوسطه خط" 
-        isActive={activeFormats.strikeThrough}
-      />
-      
-      <Separator orientation="vertical" className="h-6 mx-1" />
-      
-      {/* قوائم */}
-      <ToolbarButton 
-        icon={<List size={16} />} 
-        onClick={() => handleToggleList('ul')} 
-        title="قائمة نقطية" 
-        isActive={activeFormats.insertUnorderedList}
-      />
-      <ToolbarButton 
-        icon={<ListOrdered size={16} />} 
-        onClick={() => handleToggleList('ol')} 
-        title="قائمة مرقمة" 
-        isActive={activeFormats.insertOrderedList}
-      />
-      
-      <Separator orientation="vertical" className="h-6 mx-1" />
-      
-      {/* اتجاه النص - أزرار منفصلة */}
-      <ToolbarButton 
-        icon={() => <span className="text-[10px] font-bold">RTL</span>} 
-        onClick={() => handleTextDirection('rtl')} 
-        title="من اليمين لليسار (عربي)" 
-        isActive={currentDirection === 'rtl'}
-      />
-      <ToolbarButton 
-        icon={() => <span className="text-[10px] font-bold">LTR</span>} 
-        onClick={() => handleTextDirection('ltr')} 
-        title="من اليسار لليمين (English)" 
-        isActive={currentDirection === 'ltr'}
-      />
-      
-      <Separator orientation="vertical" className="h-6 mx-1" />
-      
-      {/* محاذاة النص */}
-      <ToolbarButton 
-        icon={<AlignRight size={16} />} 
-        onClick={() => handleTextAlign('right')} 
-        title="محاذاة يمين" 
-        isActive={currentAlign === 'right'}
-      />
-      <ToolbarButton 
-        icon={<AlignCenter size={16} />} 
-        onClick={() => handleTextAlign('center')} 
-        title="محاذاة وسط" 
-        isActive={currentAlign === 'center'}
-      />
-      <ToolbarButton 
-        icon={<AlignLeft size={16} />} 
-        onClick={() => handleTextAlign('left')} 
-        title="محاذاة يسار" 
-        isActive={currentAlign === 'left'}
-      />
-      
-      <Separator orientation="vertical" className="h-6 mx-1" />
-      
-      {/* المحاذاة الرأسية - أزرار منفصلة */}
-      <ToolbarButton 
-        icon={<AlignVerticalJustifyStart size={16} />} 
-        onClick={() => handleVerticalAlign('flex-start')} 
-        title="محاذاة أعلى" 
-        isActive={currentVerticalAlign === 'flex-start'}
-      />
-      <ToolbarButton 
-        icon={<AlignVerticalJustifyCenter size={16} />} 
-        onClick={() => handleVerticalAlign('center')} 
-        title="محاذاة وسط عمودي" 
-        isActive={currentVerticalAlign === 'center'}
-      />
-      <ToolbarButton 
-        icon={<AlignVerticalJustifyEnd size={16} />} 
-        onClick={() => handleVerticalAlign('flex-end')} 
-        title="محاذاة أسفل" 
-        isActive={currentVerticalAlign === 'flex-end'}
-      />
-      
-      <Separator orientation="vertical" className="h-6 mx-1" />
-      
-      {/* مسح التنسيقات */}
-      <ToolbarButton 
-        icon={<RemoveFormatting size={16} />} 
-        onClick={handleClearFormatting} 
-        title="إزالة التنسيق" 
-      />
-      
-      {/* إضافة رابط */}
-      <ToolbarButton 
-        icon={<Link size={16} />} 
-        onClick={handleAddLink} 
-        title="إضافة رابط" 
-      />
-      
-      <Separator orientation="vertical" className="h-6 mx-1" />
-    </>
-  );
+  const TextActions = () => {
+    const [isTextColorOpen, setIsTextColorOpen] = useState(false);
+    const textColorRef = useRef<HTMLDivElement>(null);
+    
+    useEffect(() => {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (textColorRef.current && !textColorRef.current.contains(e.target as Node)) {
+          setIsTextColorOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+    
+    return (
+      <>
+        {/* نوع الخط */}
+        <FontFamilyDropdown value={currentFontFamily} onChange={handleFontFamilyChange} />
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+        
+        {/* حجم الخط */}
+        <FontSizeInput value={currentFontSize} onChange={handleFontSizeChange} />
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+        
+        {/* لون النص - مع color picker */}
+        <div ref={textColorRef} className="relative">
+          <button
+            className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-[hsl(var(--ink)/0.1)] transition-colors"
+            onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsTextColorOpen(!isTextColorOpen); }}
+            title="لون النص"
+          >
+            <div className="flex flex-col items-center justify-center gap-0.5">
+              <Type size={14} />
+              <div className="w-4 h-1 rounded-sm" style={{ backgroundColor: currentColor }} />
+            </div>
+          </button>
+          
+          <AnimatePresence>
+            {isTextColorOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[280px]"
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <ColorPickerInput value={currentColor} onChange={handleColorChange} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+        
+        {/* تنسيق النص */}
+        <ToolbarButton icon={<Bold size={16} />} onClick={() => handleTextFormat('bold')} title="غامق" isActive={activeFormats.bold} />
+        <ToolbarButton icon={<Italic size={16} />} onClick={() => handleTextFormat('italic')} title="مائل" isActive={activeFormats.italic} />
+        <ToolbarButton icon={<Underline size={16} />} onClick={() => handleTextFormat('underline')} title="تسطير" isActive={activeFormats.underline} />
+        <ToolbarButton icon={<Strikethrough size={16} />} onClick={() => handleTextFormat('strikeThrough')} title="يتوسطه خط" isActive={activeFormats.strikeThrough} />
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+        
+        {/* قوائم */}
+        <ToolbarButton icon={<List size={16} />} onClick={() => handleToggleList('ul')} title="قائمة نقطية" isActive={activeFormats.insertUnorderedList} />
+        <ToolbarButton icon={<ListOrdered size={16} />} onClick={() => handleToggleList('ol')} title="قائمة مرقمة" isActive={activeFormats.insertOrderedList} />
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+        
+        {/* اتجاه النص - زر toggle واحد */}
+        <ToolbarButton 
+          icon={<ArrowRightLeft size={16} />} 
+          onClick={() => handleTextDirection(currentDirection === 'rtl' ? 'ltr' : 'rtl')} 
+          title={currentDirection === 'rtl' ? 'تبديل إلى LTR' : 'تبديل إلى RTL'} 
+          isActive={currentDirection === 'ltr'}
+        />
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+        
+        {/* محاذاة النص الأفقية - قائمة منسدلة */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button 
+              className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]" 
+              title="محاذاة النص"
+              onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            >
+              {currentAlign === 'right' && <AlignRight size={16} />}
+              {currentAlign === 'center' && <AlignCenter size={16} />}
+              {currentAlign === 'left' && <AlignLeft size={16} />}
+              {currentAlign === 'justify' && <AlignJustify size={16} />}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-white z-[10000] min-w-0 p-1">
+            <div className="flex gap-1">
+              <button 
+                onClick={() => handleTextAlign('right')} 
+                className={cn("w-8 h-8 flex items-center justify-center rounded hover:bg-[hsl(var(--ink)/0.1)]", currentAlign === 'right' && "bg-[hsl(var(--ink)/0.1)]")}
+              >
+                <AlignRight size={16} />
+              </button>
+              <button 
+                onClick={() => handleTextAlign('center')} 
+                className={cn("w-8 h-8 flex items-center justify-center rounded hover:bg-[hsl(var(--ink)/0.1)]", currentAlign === 'center' && "bg-[hsl(var(--ink)/0.1)]")}
+              >
+                <AlignCenter size={16} />
+              </button>
+              <button 
+                onClick={() => handleTextAlign('left')} 
+                className={cn("w-8 h-8 flex items-center justify-center rounded hover:bg-[hsl(var(--ink)/0.1)]", currentAlign === 'left' && "bg-[hsl(var(--ink)/0.1)]")}
+              >
+                <AlignLeft size={16} />
+              </button>
+              <button 
+                onClick={() => handleTextAlign('justify')} 
+                className={cn("w-8 h-8 flex items-center justify-center rounded hover:bg-[hsl(var(--ink)/0.1)]", currentAlign === 'justify' && "bg-[hsl(var(--ink)/0.1)]")}
+              >
+                <AlignJustify size={16} />
+              </button>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
+        {/* المحاذاة الرأسية - قائمة منسدلة */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button 
+              className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))]" 
+              title="المحاذاة الرأسية"
+              onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            >
+              {currentVerticalAlign === 'flex-start' && <AlignVerticalJustifyStart size={16} />}
+              {currentVerticalAlign === 'center' && <AlignVerticalJustifyCenter size={16} />}
+              {currentVerticalAlign === 'flex-end' && <AlignVerticalJustifyEnd size={16} />}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-white z-[10000] min-w-0 p-1">
+            <div className="flex gap-1">
+              <button 
+                onClick={() => handleVerticalAlign('flex-start')} 
+                className={cn("w-8 h-8 flex items-center justify-center rounded hover:bg-[hsl(var(--ink)/0.1)]", currentVerticalAlign === 'flex-start' && "bg-[hsl(var(--ink)/0.1)]")}
+              >
+                <AlignVerticalJustifyStart size={16} />
+              </button>
+              <button 
+                onClick={() => handleVerticalAlign('center')} 
+                className={cn("w-8 h-8 flex items-center justify-center rounded hover:bg-[hsl(var(--ink)/0.1)]", currentVerticalAlign === 'center' && "bg-[hsl(var(--ink)/0.1)]")}
+              >
+                <AlignVerticalJustifyCenter size={16} />
+              </button>
+              <button 
+                onClick={() => handleVerticalAlign('flex-end')} 
+                className={cn("w-8 h-8 flex items-center justify-center rounded hover:bg-[hsl(var(--ink)/0.1)]", currentVerticalAlign === 'flex-end' && "bg-[hsl(var(--ink)/0.1)]")}
+              >
+                <AlignVerticalJustifyEnd size={16} />
+              </button>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+        
+        {/* مسح التنسيقات */}
+        <ToolbarButton icon={<RemoveFormatting size={16} />} onClick={handleClearFormatting} title="إزالة التنسيق" />
+        
+        {/* إضافة رابط */}
+        <ToolbarButton icon={<Link size={16} />} onClick={handleAddLink} title="إضافة رابط" />
+        
+        <Separator orientation="vertical" className="h-6 mx-1" />
+      </>
+    );
+  };
 
   // ===== أزرار الصور =====
   const ImageActions = () => (
@@ -1332,14 +1391,20 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   // ===== أزرار العنصر الفردي (غير النص/الصورة) =====
   const ElementActions = () => {
-    const [isColorOpen, setIsColorOpen] = useState(false);
-    const colorDropdownRef = useRef<HTMLDivElement>(null);
+    const [isFillOpen, setIsFillOpen] = useState(false);
+    const [isStrokeOpen, setIsStrokeOpen] = useState(false);
+    const fillDropdownRef = useRef<HTMLDivElement>(null);
+    const strokeDropdownRef = useRef<HTMLDivElement>(null);
     const currentBg = firstElement?.style?.backgroundColor || '#FFFFFF';
+    const currentStroke = firstElement?.style?.borderColor || '#0B0F12';
     
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
-        if (colorDropdownRef.current && !colorDropdownRef.current.contains(e.target as Node)) {
-          setIsColorOpen(false);
+        if (fillDropdownRef.current && !fillDropdownRef.current.contains(e.target as Node)) {
+          setIsFillOpen(false);
+        }
+        if (strokeDropdownRef.current && !strokeDropdownRef.current.contains(e.target as Node)) {
+          setIsStrokeOpen(false);
         }
       };
       document.addEventListener('mousedown', handleClickOutside);
@@ -1352,33 +1417,30 @@ const UnifiedFloatingToolbar: React.FC = () => {
       });
     };
     
+    const handleStrokeColorChange = (color: string) => {
+      selectedElementIds.forEach(id => {
+        updateElement(id, { style: { ...firstElement?.style, borderColor: color, borderWidth: 1, borderStyle: 'solid' } });
+      });
+    };
+    
     return (
       <>
-        {/* لون الخلفية */}
-        <div ref={colorDropdownRef} className="relative">
+        {/* لون التعبئة */}
+        <div ref={fillDropdownRef} className="relative">
           <button
             className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-[hsl(var(--ink)/0.1)] transition-colors"
-            onMouseDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsColorOpen(!isColorOpen);
-            }}
-            title="لون الخلفية"
+            onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFillOpen(!isFillOpen); setIsStrokeOpen(false); }}
+            title="لون التعبئة"
           >
             <div className="flex flex-col items-center justify-center gap-0.5">
-              <div 
-                className="w-5 h-5 rounded border border-[hsl(var(--border))]"
-                style={{ backgroundColor: currentBg }}
-              />
+              <PaintBucket size={14} />
+              <div className="w-4 h-1 rounded-sm" style={{ backgroundColor: currentBg }} />
             </div>
           </button>
           
           <AnimatePresence>
-            {isColorOpen && (
+            {isFillOpen && (
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1386,10 +1448,36 @@ const UnifiedFloatingToolbar: React.FC = () => {
                 className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[280px]"
                 onMouseDown={(e) => e.stopPropagation()}
               >
-                <ColorPickerInput
-                  value={currentBg}
-                  onChange={(newColor) => handleBgColorChange(newColor)}
-                />
+                <ColorPickerInput value={currentBg} onChange={handleBgColorChange} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        
+        {/* لون الحد */}
+        <div ref={strokeDropdownRef} className="relative">
+          <button
+            className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-[hsl(var(--ink)/0.1)] transition-colors"
+            onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsStrokeOpen(!isStrokeOpen); setIsFillOpen(false); }}
+            title="لون الحد"
+          >
+            <div className="flex flex-col items-center justify-center gap-0.5">
+              <Palette size={14} />
+              <div className="w-4 h-1 rounded-sm" style={{ backgroundColor: currentStroke }} />
+            </div>
+          </button>
+          
+          <AnimatePresence>
+            {isStrokeOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] p-3 z-[10000] min-w-[280px]"
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <ColorPickerInput value={currentStroke} onChange={handleStrokeColorChange} />
               </motion.div>
             )}
           </AnimatePresence>
