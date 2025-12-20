@@ -13,14 +13,37 @@ interface SelectionBoxProps {
 }
 
 /**
+ * ✅ نوع التحديد:
+ * - containment: العنصر يجب أن يكون داخل الصندوق بالكامل (السحب من اليسار لليمين)
+ * - intersection: العنصر يجب أن يتقاطع مع الصندوق (السحب من اليمين لليسار)
+ */
+type SelectionMode = 'containment' | 'intersection';
+
+/**
+ * التحقق مما إذا كان العنصر محتوى بالكامل داخل الصندوق
+ */
+function boundsContains(container: Bounds, element: Bounds): boolean {
+  return (
+    element.x >= container.x &&
+    element.y >= container.y &&
+    element.x + element.width <= container.x + container.width &&
+    element.y + element.height <= container.y + container.height
+  );
+}
+
+/**
  * مكون لعرض صندوق التحديد المتعدد عند السحب على الكانفاس
  * 
  * ✅ Sprint 4: يعمل في Screen Space للعرض
  * ✅ يحسب التقاطع في World Space لتحديد العناصر
- * ✅ المرحلة 2: تحسين الأداء باستخدام Layer Visibility Map
+ * ✅ المرحلة 2: دعم التحديد العكسي (من اليمين لليسار)
  */
 export default function SelectionBox({ startX, startY, currentX, currentY }: SelectionBoxProps) {
   const { viewport, elements, layers } = useCanvasStore();
+  
+  // ✅ تحديد وضع التحديد بناءً على اتجاه السحب
+  const selectionMode: SelectionMode = currentX < startX ? 'intersection' : 'containment';
+  const isInverseSelection = selectionMode === 'intersection';
   
   // ✅ استخدام Layer Visibility Map للأداء O(1)
   const layerVisibilityMap = useMemo(() => {
@@ -67,7 +90,7 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
     };
   }, [startX, startY, currentX, currentY, viewport]);
 
-  // ✅ حساب العناصر المتقاطعة مع صندوق التحديد (محسّن)
+  // ✅ حساب العناصر المتقاطعة مع صندوق التحديد (محسّن + دعم التحديد العكسي)
   const intersectingElementIds = useMemo(() => {
     const selectionBounds = worldBounds;
     
@@ -86,20 +109,27 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
           height: el.size.height
         };
 
-        // ✅ استخدام Canvas Kernel للتحقق من التقاطع
-        return canvasKernel.boundsIntersect(selectionBounds, elementBounds);
+        // ✅ اختيار طريقة التحقق بناءً على وضع التحديد
+        if (selectionMode === 'containment') {
+          // السحب من اليسار لليمين: العنصر يجب أن يكون داخل الصندوق بالكامل
+          return boundsContains(selectionBounds, elementBounds);
+        } else {
+          // السحب من اليمين لليسار: العنصر يجب أن يتقاطع مع الصندوق
+          return canvasKernel.boundsIntersect(selectionBounds, elementBounds);
+        }
       })
       .map(el => el.id);
-  }, [worldBounds, elements, layerVisibilityMap]);
-
-  // إظهار معلومات التحديد (للتطوير)
-  const showDebugInfo = false;
+  }, [worldBounds, elements, layerVisibilityMap, selectionMode]);
 
   return (
     <>
       {/* صندوق التحديد المرئي (Screen Space) */}
       <div
-        className="absolute pointer-events-none border-2 border-[hsl(var(--accent-blue)/0.6)] bg-[hsl(var(--accent-blue)/0.08)] rounded"
+        className={`absolute pointer-events-none border-2 rounded transition-colors duration-100 ${
+          isInverseSelection 
+            ? 'border-dashed border-[hsl(var(--accent-green)/0.7)] bg-[hsl(var(--accent-green)/0.06)]' 
+            : 'border-solid border-[hsl(var(--accent-blue)/0.6)] bg-[hsl(var(--accent-blue)/0.08)]'
+        }`}
         style={{
           left: `${screenBounds.x}px`,
           top: `${screenBounds.y}px`,
@@ -109,29 +139,21 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
           backdropFilter: 'blur(1px)'
         }}
       >
-        {/* عداد العناصر المحددة - مثل Miro */}
+        {/* عداد العناصر المحددة */}
         {intersectingElementIds.length > 0 && (
           <div 
-            className="absolute -top-7 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-semibold rounded-full bg-[hsl(var(--accent-blue))] text-white shadow-md"
+            className={`absolute -top-7 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-semibold rounded-full text-white shadow-md ${
+              isInverseSelection 
+                ? 'bg-[hsl(var(--accent-green))]' 
+                : 'bg-[hsl(var(--accent-blue))]'
+            }`}
             style={{ direction: 'rtl' }}
           >
             {intersectingElementIds.length} عنصر
+            {isInverseSelection && <span className="mr-1 opacity-80">⚡</span>}
           </div>
         )}
       </div>
-
-      {/* معلومات التصحيح (اختياري) */}
-      {showDebugInfo && (
-        <div 
-          className="fixed top-4 left-4 p-2 bg-black/80 text-white text-xs font-mono rounded z-[10000]"
-          style={{ direction: 'ltr' }}
-        >
-          <div>Screen: {screenBounds.x.toFixed(0)}, {screenBounds.y.toFixed(0)}</div>
-          <div>World: {worldBounds.x.toFixed(0)}, {worldBounds.y.toFixed(0)}</div>
-          <div>Size: {worldBounds.width.toFixed(0)} x {worldBounds.height.toFixed(0)}</div>
-          <div>Elements: {intersectingElementIds.length}</div>
-        </div>
-      )}
     </>
   );
 }
@@ -139,6 +161,7 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
 /**
  * Hook مساعد لاستخدام SelectionBox مع تحديد تلقائي
  * ✅ محسّن باستخدام Layer Visibility Map
+ * ✅ دعم التحديد العكسي
  */
 export function useSelectionBox() {
   const { selectElements, viewport, layers } = useCanvasStore();
@@ -155,6 +178,7 @@ export function useSelectionBox() {
 
   /**
    * إنهاء التحديد وتحديد العناصر المتقاطعة
+   * ✅ يدعم التحديد العكسي (من اليمين لليسار)
    */
   const finishSelection = useCallback((
     startX: number,
@@ -164,6 +188,9 @@ export function useSelectionBox() {
     addToSelection: boolean = false
   ) => {
     const { elements, selectedElementIds } = useCanvasStore.getState();
+
+    // ✅ تحديد وضع التحديد
+    const selectionMode: SelectionMode = endX < startX ? 'intersection' : 'containment';
 
     // تحويل إلى World Space
     const worldStart = canvasKernel.screenToWorld(startX, startY, viewport, null);
@@ -193,7 +220,12 @@ export function useSelectionBox() {
           height: el.size.height
         };
 
-        return canvasKernel.boundsIntersect(selectionBounds, elementBounds);
+        // ✅ اختيار طريقة التحقق بناءً على وضع التحديد
+        if (selectionMode === 'containment') {
+          return boundsContains(selectionBounds, elementBounds);
+        } else {
+          return canvasKernel.boundsIntersect(selectionBounds, elementBounds);
+        }
       })
       .map(el => el.id);
 
