@@ -194,16 +194,20 @@ export const useKeyboardShortcuts = () => {
       }
 
       // Group/Ungroup (Ctrl+G / Ctrl+Shift+G)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'g' && !e.shiftKey && selectedElementIds.length > 1) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'g' && !e.shiftKey && selectedElementIds.length > 1) {
         e.preventDefault();
         groupElements(selectedElementIds);
+        toast.success('تم تجميع العناصر');
       }
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'g' && selectedElementIds.length > 0) {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'g' && selectedElementIds.length > 0) {
         e.preventDefault();
         const groupId = useCanvasStore.getState().elements.find(el => 
           selectedElementIds.includes(el.id)
         )?.metadata?.groupId;
-        if (groupId) ungroupElements(groupId);
+        if (groupId) {
+          ungroupElements(groupId);
+          toast.success('تم فك تجميع العناصر');
+        }
       }
 
       // Alignment shortcuts (Ctrl+Shift+Arrow)

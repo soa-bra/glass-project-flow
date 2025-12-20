@@ -395,6 +395,17 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     [selectedElements]
   );
   
+  // ✅ التحقق مما إذا كانت العناصر مجمّعة
+  const isGrouped = useMemo(() => {
+    if (selectedElements.length === 0) return false;
+    const groupIds = new Set(
+      selectedElements
+        .map(el => el.metadata?.groupId)
+        .filter(Boolean)
+    );
+    return groupIds.size > 0;
+  }, [selectedElements]);
+  
   if (activeTool !== 'selection_tool' || selectedElements.length === 0 || isAllArrows) {
     return null;
   }
@@ -435,12 +446,29 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         top: bounds.y,
         width: bounds.width,
         height: bounds.height,
-        border: '2px dashed hsl(var(--accent-blue) / 0.8)',
+        border: isGrouped 
+          ? '2px solid hsl(var(--accent-green) / 0.9)' 
+          : '2px dashed hsl(var(--accent-blue) / 0.8)',
         borderRadius: '4px',
+        // ✅ خلفية خفيفة للمجموعات
+        backgroundColor: isGrouped ? 'hsl(var(--accent-green) / 0.05)' : 'transparent',
         // ✅ المرحلة 1: z-index عالي لضمان استقبال أحداث السحب
         zIndex: 9998
       }}
     >
+      {/* ✅ مؤشر المجموعة */}
+      {isGrouped && (
+        <div 
+          className="absolute -top-7 right-0 px-2 py-0.5 text-xs font-medium rounded bg-[hsl(var(--accent-green))] text-white flex items-center gap-1"
+          style={{ direction: 'rtl' }}
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          مجموعة
+        </div>
+      )}
+      
       {/* مقابض الزوايا */}
       <ResizeHandle position="nw" cursor="nwse-resize" onStart={(e) => handleResizeStart(e, 'nw')} />
       <ResizeHandle position="ne" cursor="nesw-resize" onStart={(e) => handleResizeStart(e, 'ne')} />
@@ -460,8 +488,8 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         onPointerDown={handleDragStart}
       />
       
-      {/* عداد العناصر (إذا أكثر من عنصر) */}
-      {displayCount > 1 && (
+      {/* عداد العناصر (إذا أكثر من عنصر وليست مجموعة) */}
+      {displayCount > 1 && !isGrouped && (
         <div 
           className="absolute -top-7 left-0 px-2 py-0.5 text-xs font-medium rounded bg-[hsl(var(--accent-blue))] text-white"
           style={{ direction: 'rtl' }}
