@@ -30,25 +30,6 @@ const isElementArrow = (element: CanvasElementType): boolean => {
   return isArrowShape(shapeType);
 };
 
-// ✅ ألوان مميزة للمجموعات المختلفة
-const GROUP_COLORS = [
-  { border: 'hsl(var(--accent-blue))', bg: 'rgba(61, 168, 245, 0.08)' },
-  { border: 'hsl(var(--accent-green))', bg: 'rgba(61, 190, 139, 0.08)' },
-  { border: 'hsl(var(--accent-yellow))', bg: 'rgba(246, 196, 69, 0.08)' },
-  { border: 'hsl(var(--accent-red))', bg: 'rgba(229, 86, 77, 0.08)' },
-  { border: '#9b87f5', bg: 'rgba(155, 135, 245, 0.08)' },
-  { border: '#F97316', bg: 'rgba(249, 115, 22, 0.08)' },
-];
-
-// دالة لتحويل groupId إلى index لون
-const getGroupColorIndex = (groupId: string): number => {
-  let hash = 0;
-  for (let i = 0; i < groupId.length; i++) {
-    hash = groupId.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return Math.abs(hash) % GROUP_COLORS.length;
-};
-
 interface CanvasElementProps {
   element: CanvasElementType;
   isSelected: boolean;
@@ -162,9 +143,6 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   const handleMouseMoveRef = useRef<(e: MouseEvent) => void>();
   const handleMouseUpRef = useRef<() => void>();
   
-  // ✅ مرجع لتخزين المواضع الأصلية لعناصر المجموعة
-  const groupElementsStartRef = useRef<Map<string, { x: number; y: number }>>(new Map());
-  
   handleMouseMoveRef.current = (e: MouseEvent) => {
     // ✅ منع التعارض مع سحب نقاط تحكم السهم - استخدام interactionStore
     if (!isDraggingRef.current || isLocked || useInteractionStore.getState().isInternalDrag()) return;
@@ -178,46 +156,19 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     const deltaX = worldDelta.x;
     const deltaY = worldDelta.y;
     
-    // ✅ إذا كان العنصر مجمّع، حرّك جميع عناصر المجموعة
-    const currentGroupId = element.metadata?.groupId;
-    if (currentGroupId && groupElementsStartRef.current.size > 0) {
-      const allElements = useCanvasStore.getState().elements;
-      const groupElements = allElements.filter(el => el.metadata?.groupId === currentGroupId);
-      
-      groupElements.forEach(groupEl => {
-        const startPos = groupElementsStartRef.current.get(groupEl.id);
-        if (startPos) {
-          let newX = startPos.x + deltaX;
-          let newY = startPos.y + deltaY;
-          
-          // Apply snap to grid if enabled (only for the dragged element)
-          if (groupEl.id === element.id && snapToGrid) {
-            const snapped = snapToGrid(newX, newY);
-            newX = snapped.x;
-            newY = snapped.y;
-          }
-          
-          updateElement(groupEl.id, {
-            position: { x: newX, y: newY }
-          });
-        }
-      });
-    } else {
-      // عنصر غير مجمّع - تحريك عادي
-      let newX = dragStartRef.current.elementX + deltaX;
-      let newY = dragStartRef.current.elementY + deltaY;
-      
-      // Apply snap to grid if enabled
-      if (snapToGrid) {
-        const snapped = snapToGrid(newX, newY);
-        newX = snapped.x;
-        newY = snapped.y;
-      }
-      
-      updateElement(element.id, {
-        position: { x: newX, y: newY }
-      });
+    let newX = dragStartRef.current.elementX + deltaX;
+    let newY = dragStartRef.current.elementY + deltaY;
+    
+    // Apply snap to grid if enabled
+    if (snapToGrid) {
+      const snapped = snapToGrid(newX, newY);
+      newX = snapped.x;
+      newY = snapped.y;
     }
+    
+    updateElement(element.id, {
+      position: { x: newX, y: newY }
+    });
   };
   
   handleMouseUpRef.current = () => {
@@ -247,22 +198,10 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       elementX: element.position.x,
       elementY: element.position.y
     };
-    
-    // ✅ تخزين المواضع الأصلية لجميع عناصر المجموعة
-    const currentGroupId = element.metadata?.groupId;
-    groupElementsStartRef.current.clear();
-    if (currentGroupId) {
-      const allElements = useCanvasStore.getState().elements;
-      const groupElements = allElements.filter(el => el.metadata?.groupId === currentGroupId);
-      groupElements.forEach(el => {
-        groupElementsStartRef.current.set(el.id, { x: el.position.x, y: el.position.y });
-      });
-    }
-    
     // إضافة listeners مباشرة عند بدء السحب
     window.addEventListener('mousemove', stableMouseMove);
     window.addEventListener('mouseup', stableMouseUp);
-  }, [element.position.x, element.position.y, element.metadata?.groupId, stableMouseMove, stableMouseUp]);
+  }, [element.position.x, element.position.y, stableMouseMove, stableMouseUp]);
 
   /**
    * ✅ المرحلة 1: معالجة محسّنة للنقر
@@ -365,17 +304,11 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     };
   }, [stableMouseMove, stableMouseUp]);
   
-  // ✅ التحقق من وجود مجموعة وحساب لونها
-  const groupId = element.metadata?.groupId;
-  const groupColor = groupId ? GROUP_COLORS[getGroupColorIndex(groupId)] : null;
-  const isGrouped = !!groupId;
-  
   return (
     <div
       ref={elementRef}
       data-canvas-element="true"
       data-element-id={element.id}
-      data-group-id={groupId || undefined}
       onMouseDown={handleMouseDown}
       className={`absolute select-none ${
         isLocked 
@@ -383,31 +316,17 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
           : activeTool === 'selection_tool' 
             ? 'cursor-move' 
             : 'cursor-default'
-      } ${isElementArrow(element) ? 'arrow-element' : ''} ${isGrouped ? 'grouped-element' : ''}`}
+      } ${isElementArrow(element) ? 'arrow-element' : ''}`}
       style={{
         left: element.position.x,
         top: element.position.y,
         width: element.size.width,
         height: element.size.height,
-        // ✅ إطار ملون للمجموعات أو التحديد
-        border: isElementArrow(element) 
-          ? 'none' 
-          : isSelected 
-            ? '2px solid hsl(var(--accent-green))' 
-            : isGrouped 
-              ? `2px dashed ${groupColor?.border}` 
-              : (element.data?.textType === 'box' ? '1px solid hsl(var(--border))' : 'none'),
-        borderRadius: isElementArrow(element) ? '0' : (element.type === 'shape' ? '0' : (element.data?.textType === 'box' ? '8px' : isGrouped ? '4px' : '0')),
+        // إزالة كل أنماط التحديد للأسهم
+        border: isElementArrow(element) ? 'none' : (isSelected ? '2px solid hsl(var(--accent-green))' : (element.data?.textType === 'box' ? '1px solid hsl(var(--border))' : 'none')),
+        borderRadius: isElementArrow(element) ? '0' : (element.type === 'shape' ? '0' : (element.data?.textType === 'box' ? '8px' : '0')),
         padding: isElementArrow(element) ? '0' : (element.type === 'shape' ? '0' : (element.data?.textType === 'box' ? '12px' : '4px')),
-        backgroundColor: isElementArrow(element) 
-          ? 'transparent' 
-          : element.type === 'shape' 
-            ? 'transparent' 
-            : element.data?.textType === 'box' 
-              ? (element.style?.backgroundColor || '#FFFFFF') 
-              : isGrouped && !isSelected
-                ? groupColor?.bg
-                : (element.style?.backgroundColor || 'transparent'),
+        backgroundColor: isElementArrow(element) ? 'transparent' : (element.type === 'shape' ? 'transparent' : (element.data?.textType === 'box' ? (element.style?.backgroundColor || '#FFFFFF') : (element.style?.backgroundColor || 'transparent'))),
         boxShadow: isElementArrow(element) ? 'none' : (isSelected ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : (element.data?.textType === 'box' ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none')),
         outline: isElementArrow(element) ? 'none' : undefined,
         opacity: isLocked ? 0.6 : 1,
@@ -418,18 +337,6 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         ...(element.type !== 'shape' ? element.style : {})
       }}
     >
-      {/* ✅ مؤشر المجموعة */}
-      {isGrouped && !isSelected && (
-        <div 
-          className="absolute -top-3 -right-3 rounded-full p-1 shadow-sm z-10"
-          style={{ backgroundColor: groupColor?.border }}
-          title="عنصر مجمّع"
-        >
-          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z" />
-          </svg>
-        </div>
-      )}
       {/* Element Content */}
       {element.type === 'text' && (
         <div 
