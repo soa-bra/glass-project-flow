@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState, useEffect, useMemo } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { useInteractionStore } from '@/stores/interactionStore';
 import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel, type Bounds, type Point } from '@/core/canvasKernel';
 import { snapEngine, type SnapLine } from '@/core/snapEngine';
@@ -118,8 +119,8 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     // تحقق من أن هذا هو الـ pointer الصحيح
     if (activePointerIdRef.current !== e.pointerId) return;
     
-    // منع التعارض مع سحب نقاط تحكم السهم
-    if (useCanvasStore.getState().isInternalDrag) return;
+    // منع التعارض مع سحب نقاط تحكم السهم - استخدام interactionStore
+    if (useInteractionStore.getState().isInternalDrag()) return;
     
     if (isDragging) {
       // تكرار العناصر عند Cmd/Ctrl+Drag

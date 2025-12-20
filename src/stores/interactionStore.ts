@@ -25,6 +25,7 @@ import {
   type ConnectingMode,
   type ResizingMode,
   type RotatingMode,
+  type InternalDragMode,
   createIdleMode,
   createPanningMode,
   createDraggingMode,
@@ -34,6 +35,7 @@ import {
   createConnectingMode,
   createResizingMode,
   createRotatingMode,
+  createInternalDragMode,
   canTransition,
   getCursorForMode,
   shouldBlockToolShortcuts,
@@ -125,6 +127,16 @@ interface InteractionState {
     startAngle: number,
     startRotations: Map<string, number>
   ) => void;
+  
+  // بدء السحب الداخلي (نقاط تحكم السهم، الموصلات، إلخ)
+  startInternalDrag: (
+    dragType: InternalDragMode['dragType'],
+    elementId: string,
+    data?: Record<string, unknown>
+  ) => void;
+  
+  // التحقق من السحب الداخلي
+  isInternalDrag: () => boolean;
   
   // ============= Helpers =============
   
@@ -268,6 +280,15 @@ export const useInteractionStore = create<InteractionState>((set, get) => ({
     get().transitionTo(mode);
   },
   
+  startInternalDrag: (dragType, elementId, data) => {
+    const mode = createInternalDragMode(dragType, elementId, data);
+    get().transitionTo(mode);
+  },
+  
+  isInternalDrag: () => {
+    return get().mode.kind === 'internalDrag';
+  },
+  
   // ============= Helpers Implementation =============
   
   shouldBlockShortcuts: () => {
@@ -319,4 +340,11 @@ export const selectDraggingData = (state: InteractionState): DraggingMode | null
  */
 export const selectConnectingData = (state: InteractionState): ConnectingMode | null => {
   return state.mode.kind === 'connecting' ? state.mode : null;
+};
+
+/**
+ * Selector للحصول على بيانات حالة InternalDrag
+ */
+export const selectInternalDragData = (state: InteractionState): InternalDragMode | null => {
+  return state.mode.kind === 'internalDrag' ? state.mode : null;
 };

@@ -1,5 +1,6 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { useInteractionStore } from '@/stores/interactionStore';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
 import { ResizeHandle } from './ResizeHandle';
@@ -186,8 +187,8 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   }, [element, onSelect, isLocked, isSelected, activeTool, isEditingThisText]);
   
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    // ✅ منع التعارض مع سحب نقاط تحكم السهم
-    if (!isDraggingRef.current || isLocked || useCanvasStore.getState().isInternalDrag) return;
+    // ✅ منع التعارض مع سحب نقاط تحكم السهم - استخدام interactionStore
+    if (!isDraggingRef.current || isLocked || useInteractionStore.getState().isInternalDrag()) return;
     
     // ✅ استخدام Canvas Kernel لتحويل الدلتا
     const worldDelta = canvasKernel.screenDeltaToWorld(
