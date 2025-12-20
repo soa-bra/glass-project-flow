@@ -11,7 +11,7 @@ import { ArrowControlPoints } from './ArrowControlPoints';
 import { ArrowLabels } from './ArrowLabels';
 import MindMapNode from './MindMapNode';
 import MindMapConnector from './MindMapConnector';
-import ElementAnchors from './ElementAnchors';
+
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { sanitizeHTMLForDisplay } from '@/utils/sanitize';
 import { eventPipeline } from '@/core/eventPipeline';
@@ -597,16 +597,6 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         </>
       )}
       
-      {/* ✅ نقاط الربط للتوصيل بالخرائط الذهنية - تظهر عند التحديد أو أثناء التوصيل */}
-      {(isSelected || isConnecting) && !isLocked && element.type !== 'mindmap_node' && element.type !== 'visual_node' && (
-        <ElementAnchors
-          element={element}
-          isConnecting={isConnecting}
-          nearestAnchor={nearestAnchor}
-          onStartConnection={onStartConnection || (() => {})}
-          onEndConnection={onEndConnection || (() => {})}
-        />
-      )}
     </div>
   );
 };
