@@ -405,7 +405,9 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         width: bounds.width,
         height: bounds.height,
         border: '2px dashed hsl(var(--accent-blue) / 0.8)',
-        borderRadius: '4px'
+        borderRadius: '4px',
+        // ✅ المرحلة 1: z-index عالي لضمان استقبال أحداث السحب
+        zIndex: 9998
       }}
     >
       {/* مقابض الزوايا */}

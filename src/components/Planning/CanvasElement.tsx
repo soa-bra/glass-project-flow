@@ -139,14 +139,17 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
   
   if (!isVisible) return null;
   
+  /**
+   * ✅ المرحلة 1: معالجة محسّنة للنقر
+   * - العناصر المحددة: BoundingBox يتولى السحب، لكن نسمح بالنقر للتفاعلات الأخرى
+   * - العناصر غير المحددة: نحددها ونبدأ السحب إذا لزم الأمر
+   */
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (isLocked) return;
     
-    e.stopPropagation();
-    
     // Handle resize handles
     const target = e.target as HTMLElement;
-    if (target.classList.contains('resize-handle')) {
+    if (target.classList.contains('resize-handle') || target.hasAttribute('data-resize-handle')) {
       return; // Let resize logic handle this
     }
     
@@ -155,28 +158,32 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
       return;
     }
     
+    e.stopPropagation();
+    
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
     
-    // إذا كان Shift مضغوطاً والعنصر محدد بالفعل، قم بإلغاء تحديده
-    if (multiSelect && isSelected) {
-      const currentSelection = useCanvasStore.getState().selectedElementIds;
-      const newSelection = currentSelection.filter(id => id !== element.id);
-      useCanvasStore.getState().selectElements(newSelection);
-      return; // لا تبدأ السحب
-    }
-    
-    onSelect(multiSelect);
-    
-    // ✅ Fix: لا تبدأ السحب إذا العنصر محدد - BoundingBox سيتولى السحب
+    // ✅ إذا كان العنصر محدد بالفعل
     if (isSelected) {
+      // إذا كان Shift/Ctrl/Meta مضغوطاً، قم بإلغاء التحديد
+      if (multiSelect) {
+        const currentSelection = useCanvasStore.getState().selectedElementIds;
+        const newSelection = currentSelection.filter(id => id !== element.id);
+        useCanvasStore.getState().selectElements(newSelection);
+      }
+      // ✅ لا تبدأ السحب هنا - BoundingBox سيتولى السحب
+      // لكن لا نمنع الحدث حتى يصل للـ BoundingBox
       return;
     }
+    
+    // ✅ العنصر غير محدد - قم بتحديده
+    onSelect(multiSelect);
     
     // لا تبدأ السحب إذا كان في وضع التحرير للنص
     if (isEditingThisText) {
       return;
     }
     
+    // بدء السحب للعنصر الذي تم تحديده للتو
     isDraggingRef.current = true;
     dragStartRef.current = {
       x: e.clientX,
@@ -299,9 +306,10 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         boxShadow: isElementArrow(element) ? 'none' : (isSelected ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : (element.data?.textType === 'box' ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none')),
         outline: isElementArrow(element) ? 'none' : undefined,
         opacity: isLocked ? 0.6 : 1,
-        // ✅ المرحلة 3: تحسين pointer-events - السماح بالتفاعل للعناصر المحددة
-        // BoundingBox يتولى السحب، لكن العنصر يستقبل النقر المزدوج والتفاعلات الأخرى
-        pointerEvents: isLocked ? 'none' : (isSelected && activeTool === 'selection_tool' ? 'none' : 'auto'),
+        // ✅ المرحلة 1: إصلاح pointer-events
+        // السماح بالتفاعل دائماً (إلا إذا مقفل)
+        // BoundingBox يتولى السحب عبر طبقة علوية، لكن العنصر يستقبل النقر المزدوج
+        pointerEvents: isLocked ? 'none' : 'auto',
         ...(element.type !== 'shape' ? element.style : {})
       }}
     >

@@ -113,7 +113,7 @@ class SelectionCoordinator {
   // ============================================
 
   /**
-   * معالجة النقر على عنصر
+   * ✅ المرحلة 1: معالجة محسّنة للنقر على عنصر
    */
   handleElementClick(event: SelectionEvent): void {
     if (!this.canProcessEvent('element-click')) return;
@@ -123,19 +123,53 @@ class SelectionCoordinator {
     
     const { selectElement, selectedElementIds, selectElements } = useCanvasStore.getState();
     const isMultiSelect = modifiers.shift || modifiers.ctrl || modifiers.meta;
+    const isSelected = selectedElementIds.includes(elementId);
     
     if (isMultiSelect) {
-      // Toggle selection
-      const isSelected = selectedElementIds.includes(elementId);
+      // Toggle selection with Shift/Ctrl/Meta
       if (isSelected) {
         selectElements(selectedElementIds.filter(id => id !== elementId));
       } else {
         selectElements([...selectedElementIds, elementId]);
       }
-    } else {
-      // Single selection
+    } else if (!isSelected) {
+      // Single selection - only if not already selected
       selectElement(elementId, false);
     }
+    // ✅ إذا كان محدد بالفعل وبدون Shift، لا تفعل شيء (السماح للسحب)
+  }
+
+  /**
+   * ✅ المرحلة 1: معالجة تحديد عنصر جديد (من CanvasElement)
+   */
+  handleElementSelect(
+    elementId: string,
+    isCurrentlySelected: boolean,
+    modifiers: { shift: boolean; ctrl: boolean; meta: boolean }
+  ): { shouldStartDrag: boolean; wasSelectionChanged: boolean } {
+    const { selectElement, selectedElementIds, selectElements } = useCanvasStore.getState();
+    const isMultiSelect = modifiers.shift || modifiers.ctrl || modifiers.meta;
+    
+    // إذا كان العنصر محدد بالفعل
+    if (isCurrentlySelected) {
+      if (isMultiSelect) {
+        // إلغاء التحديد
+        selectElements(selectedElementIds.filter(id => id !== elementId));
+        return { shouldStartDrag: false, wasSelectionChanged: true };
+      }
+      // محدد بالفعل بدون Shift - لا تغير شيء، BoundingBox سيتولى السحب
+      return { shouldStartDrag: false, wasSelectionChanged: false };
+    }
+    
+    // العنصر غير محدد - قم بتحديده
+    if (isMultiSelect) {
+      selectElements([...selectedElementIds, elementId]);
+    } else {
+      selectElement(elementId, false);
+    }
+    
+    // ✅ بدء السحب للعنصر الجديد
+    return { shouldStartDrag: true, wasSelectionChanged: true };
   }
 
   /**
@@ -315,37 +349,46 @@ export const selectionCoordinator = new SelectionCoordinator();
 import { useCallback, useRef } from 'react';
 
 /**
- * Hook لاستخدام Selection Coordinator في المكونات
+ * ✅ المرحلة 1: Hook محسّن لاستخدام Selection Coordinator في المكونات
  */
 export function useSelectionCoordinator() {
   const isProcessingRef = useRef(false);
   
   /**
-   * معالجة حدث Pointer Down على عنصر
+   * ✅ معالجة حدث Pointer Down على عنصر
    */
   const handleElementPointerDown = useCallback((
-    e: React.PointerEvent,
+    e: React.PointerEvent | React.MouseEvent,
     elementId: string,
     isSelected: boolean
-  ) => {
-    e.stopPropagation();
-    
+  ): { action: 'selected' | 'deselected' | 'drag-ready' | 'resize' | 'passthrough'; handle?: string } => {
     const target = selectionCoordinator.identifyTarget(e.target as HTMLElement);
-    const event = selectionCoordinator.createSelectionEvent('element-click', e, elementId);
     
     // إذا كان مقبض تغيير الحجم
     if (target.type === 'resize-handle') {
       return { action: 'resize', handle: target.handle };
     }
     
-    // إذا كان العنصر محدد بالفعل، انتظر للتفريق بين النقر والسحب
-    if (isSelected && !event.modifiers.shift) {
-      return { action: 'maybe-drag' };
+    const modifiers = {
+      shift: e.shiftKey,
+      ctrl: e.ctrlKey,
+      meta: e.metaKey
+    };
+    
+    // ✅ استخدام المنطق المحسّن
+    const result = selectionCoordinator.handleElementSelect(elementId, isSelected, modifiers);
+    
+    if (result.wasSelectionChanged) {
+      if (isSelected && modifiers.shift) {
+        return { action: 'deselected' };
+      }
+      if (result.shouldStartDrag) {
+        return { action: 'selected' };
+      }
     }
     
-    // تحديد العنصر
-    selectionCoordinator.handleElementClick(event);
-    return { action: 'selected' };
+    // العنصر محدد بالفعل - جاهز للسحب من BoundingBox
+    return { action: 'drag-ready' };
   }, []);
   
   /**
@@ -354,7 +397,7 @@ export function useSelectionCoordinator() {
   const handleCanvasPointerDown = useCallback((
     e: React.PointerEvent | React.MouseEvent,
     containerRect: DOMRect | null
-  ) => {
+  ): { action: 'box-select' | 'passthrough' | 'none' } => {
     const target = selectionCoordinator.identifyTarget(e.target as HTMLElement);
     
     // إذا كان على عنصر أو BoundingBox، تجاهل
@@ -390,10 +433,19 @@ export function useSelectionCoordinator() {
     selectionCoordinator.handleEventEnd();
   }, []);
   
+  /**
+   * ✅ التحقق من إمكانية بدء السحب
+   */
+  const canStartDrag = useCallback(() => {
+    return !selectionCoordinator.isLocked() || 
+           selectionCoordinator.canProcessEvent('bounding-box-drag');
+  }, []);
+  
   return {
     handleElementPointerDown,
     handleCanvasPointerDown,
     handlePointerUp,
+    canStartDrag,
     isLocked: () => selectionCoordinator.isLocked(),
     getActiveEvent: () => selectionCoordinator.getActiveEvent(),
     coordinator: selectionCoordinator
