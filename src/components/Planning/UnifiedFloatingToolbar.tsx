@@ -757,128 +757,51 @@ const UnifiedFloatingToolbar: React.FC = () => {
     return () => document.removeEventListener('selectionchange', updateActiveFormats);
   }, [selectionType]);
 
-  // حساب حدود منطقة الكانفس الرئيسية
-  const getCanvasBounds = useCallback(() => {
-    // البحث عن عنصر الكانفس الرئيسي
-    const canvasContainer = document.querySelector('[data-canvas-container]') || 
-                           document.querySelector('.flex-1.flex.overflow-hidden.relative');
-    
-    if (canvasContainer) {
-      const rect = canvasContainer.getBoundingClientRect();
-      return {
-        left: rect.left,
-        top: rect.top,
-        right: rect.right,
-        bottom: rect.bottom,
-        width: rect.width,
-        height: rect.height
-      };
-    }
-    
-    // Fallback: استخدام نافذة المتصفح مع هامش
-    return {
-      left: 0,
-      top: 60, // هامش للـ header
-      right: window.innerWidth,
-      bottom: window.innerHeight,
-      width: window.innerWidth,
-      height: window.innerHeight - 60
-    };
-  }, []);
-
-  // التحقق مما إذا كانت العناصر المحددة مرئية داخل الكانفس
-  const [isSelectionVisible, setIsSelectionVisible] = useState(true);
-
   // حساب موقع البار بناءً على عنصر DOM مباشرة (مثل TextEditor السابق)
   useEffect(() => {
     if (!hasSelection) return;
     
     const calculatePosition = () => {
-      const canvasBounds = getCanvasBounds();
-      const TOOLBAR_WIDTH = 400; // عرض تقريبي للبار
-      const TOOLBAR_HEIGHT = 50; // ارتفاع تقريبي للبار
-      const PADDING = 10; // هامش من الحواف
+      const targetId = editingTextId || (activeElements.length === 1 ? activeElements[0]?.id : null);
       
-      // حساب bounding box للعناصر المحددة في إحداثيات الشاشة
-      let selectionMinX = Infinity, selectionMinY = Infinity;
-      let selectionMaxX = -Infinity, selectionMaxY = -Infinity;
-      let hasValidBounds = false;
-      
-      // محاولة الحصول على الـ bounds من DOM أولاً
-      for (const el of activeElements) {
-        const domElement = document.querySelector(`[data-element-id="${el.id}"]`);
+      if (targetId) {
+        // محاولة الحصول على الـ DOM element مباشرة
+        const domElement = document.querySelector(`[data-element-id="${targetId}"]`);
         if (domElement) {
           const rect = domElement.getBoundingClientRect();
-          selectionMinX = Math.min(selectionMinX, rect.left);
-          selectionMinY = Math.min(selectionMinY, rect.top);
-          selectionMaxX = Math.max(selectionMaxX, rect.right);
-          selectionMaxY = Math.max(selectionMaxY, rect.bottom);
-          hasValidBounds = true;
+          const newX = rect.left + rect.width / 2;
+          const newY = Math.max(70, rect.top - 60);
+          
+          if (Math.abs(newX - position.x) > 2 || Math.abs(newY - position.y) > 2) {
+            setPosition({ x: newX, y: newY });
+          }
+          return;
         }
       }
       
       // Fallback: حساب من بيانات العناصر
-      if (!hasValidBounds && activeElements.length > 0) {
-        activeElements.forEach(el => {
-          const x = el.position.x;
-          const y = el.position.y;
-          const width = el.size?.width || 200;
-          const height = el.size?.height || 100;
-          
-          const screenLeft = x * viewport.zoom + viewport.pan.x;
-          const screenTop = y * viewport.zoom + viewport.pan.y;
-          const screenRight = (x + width) * viewport.zoom + viewport.pan.x;
-          const screenBottom = (y + height) * viewport.zoom + viewport.pan.y;
-          
-          selectionMinX = Math.min(selectionMinX, screenLeft);
-          selectionMinY = Math.min(selectionMinY, screenTop);
-          selectionMaxX = Math.max(selectionMaxX, screenRight);
-          selectionMaxY = Math.max(selectionMaxY, screenBottom);
-        });
-        hasValidBounds = true;
-      }
+      if (activeElements.length === 0) return;
       
-      if (!hasValidBounds) return;
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      activeElements.forEach(el => {
+        const x = el.position.x;
+        const y = el.position.y;
+        const width = el.size?.width || 200;
+        const height = el.size?.height || 100;
+        
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x + width > maxX) maxX = x + width;
+        if (y + height > maxY) maxY = y + height;
+      });
       
-      // التحقق من وجود أي جزء من العناصر داخل الكانفس
-      const isAnyPartVisible = !(
-        selectionMaxX < canvasBounds.left ||
-        selectionMinX > canvasBounds.right ||
-        selectionMaxY < canvasBounds.top ||
-        selectionMinY > canvasBounds.bottom
-      );
+      const selectionCenterX = (minX + maxX) / 2;
+      const screenCenterX = selectionCenterX * viewport.zoom + viewport.pan.x;
+      const screenTopY = minY * viewport.zoom + viewport.pan.y - 60;
       
-      setIsSelectionVisible(isAnyPartVisible);
+      const newX = screenCenterX;
+      const newY = Math.max(70, screenTopY);
       
-      if (!isAnyPartVisible) return;
-      
-      // حساب موضع البار (فوق العناصر في المنتصف)
-      const selectionCenterX = (selectionMinX + selectionMaxX) / 2;
-      let newX = selectionCenterX;
-      let newY = selectionMinY - 60;
-      
-      // تقييد البار داخل حدود الكانفس
-      const halfToolbar = TOOLBAR_WIDTH / 2;
-      
-      // تقييد أفقي
-      if (newX - halfToolbar < canvasBounds.left + PADDING) {
-        newX = canvasBounds.left + PADDING + halfToolbar;
-      } else if (newX + halfToolbar > canvasBounds.right - PADDING) {
-        newX = canvasBounds.right - PADDING - halfToolbar;
-      }
-      
-      // تقييد عمودي (من الأعلى)
-      if (newY < canvasBounds.top + PADDING) {
-        // إذا لم يكن هناك مساحة أعلى، ضعه أسفل العناصر
-        newY = Math.min(selectionMaxY + 10, canvasBounds.bottom - TOOLBAR_HEIGHT - PADDING);
-      }
-      
-      // تأكد أن البار لا يخرج من الأسفل
-      if (newY + TOOLBAR_HEIGHT > canvasBounds.bottom - PADDING) {
-        newY = canvasBounds.bottom - TOOLBAR_HEIGHT - PADDING;
-      }
-      
-      // تحديث الموضع فقط إذا تغير بشكل ملحوظ
       if (Math.abs(newX - position.x) > 2 || Math.abs(newY - position.y) > 2) {
         setPosition({ x: newX, y: newY });
       }
@@ -889,7 +812,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
     // تحديث الموقع عند تغير الـ viewport
     const interval = setInterval(calculatePosition, 100);
     return () => clearInterval(interval);
-  }, [hasSelection, activeElements, editingTextId, viewport.zoom, viewport.pan.x, viewport.pan.y, getCanvasBounds]);
+  }, [hasSelection, activeElements, editingTextId, viewport.zoom, viewport.pan.x, viewport.pan.y]);
 
   // تحديث اسم الصورة عند التحديد
   useEffect(() => {
@@ -908,7 +831,7 @@ const UnifiedFloatingToolbar: React.FC = () => {
     return false;
   }, []);
 
-  if (!hasSelection || !isSelectionVisible) return null;
+  if (!hasSelection) return null;
 
   // ===== الإجراءات المشتركة =====
   const handleDuplicate = () => {
