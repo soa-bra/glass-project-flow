@@ -38,6 +38,31 @@ type CanvasStoreState = ElementsSlice & {
   moveFrame: (frameId: string, deltaX: number, deltaY: number) => void;
 };
 
+// دالة مساعدة للحصول على جميع عناصر المجموعة
+const getGroupElementIds = (elementIds: string[], elements: CanvasElement[]): string[] => {
+  const result = new Set<string>(elementIds);
+  
+  // للبحث عن groupIds للعناصر المحددة
+  const groupIds = new Set<string>();
+  elementIds.forEach(id => {
+    const element = elements.find(el => el.id === id);
+    if (element?.metadata?.groupId) {
+      groupIds.add(element.metadata.groupId);
+    }
+  });
+  
+  // إضافة جميع العناصر التي تنتمي لنفس المجموعات
+  if (groupIds.size > 0) {
+    elements.forEach(el => {
+      if (el.metadata?.groupId && groupIds.has(el.metadata.groupId)) {
+        result.add(el.id);
+      }
+    });
+  }
+  
+  return Array.from(result);
+};
+
 export const createElementsSlice: StateCreator<
   CanvasStoreState,
   [],
@@ -256,8 +281,10 @@ export const createElementsSlice: StateCreator<
   },
   
   moveElements: (elementIds, deltaX, deltaY) => {
-    const uniqueIds = Array.from(new Set(elementIds));
     const state = get();
+    // ✅ توسيع التحديد ليشمل جميع عناصر المجموعة
+    const expandedIds = getGroupElementIds(elementIds, state.elements);
+    const uniqueIds = Array.from(new Set(expandedIds));
     const frameIds: string[] = [];
     const nonFrameIds: string[] = [];
     
@@ -372,9 +399,13 @@ export const createElementsSlice: StateCreator<
   },
   
   resizeElements: (elementIds, scaleX, scaleY, origin) => {
+    const state = get();
+    // ✅ توسيع التحديد ليشمل جميع عناصر المجموعة
+    const expandedIds = getGroupElementIds(elementIds, state.elements);
+    
     set((state: any) => ({
       elements: state.elements.map((el: CanvasElement) => {
-        if (!elementIds.includes(el.id) || el.locked) return el;
+        if (!expandedIds.includes(el.id) || el.locked) return el;
         
         const relX = el.position.x - origin.x;
         const relY = el.position.y - origin.y;
