@@ -1,10 +1,10 @@
-import React from 'react';
-import { createBezierPath } from '@/types/mindmap-canvas';
+import React from "react";
+import { createBezierPath } from "@/types/mindmap-canvas";
 
 interface MindMapConnectionLineProps {
   startPosition: { x: number; y: number };
   endPosition: { x: number; y: number };
-  startAnchor: 'top' | 'bottom' | 'left' | 'right';
+  startAnchor: "top" | "bottom" | "left" | "right";
   color?: string;
   isSnapped?: boolean; // ✅ هل الموصل في حالة snap مع anchor
 }
@@ -18,8 +18,8 @@ const MindMapConnectionLine: React.FC<MindMapConnectionLineProps> = ({
   startPosition,
   endPosition,
   startAnchor,
-  color = '#3DA8F5',
-  isSnapped = false
+  color = "#3DA8F5",
+  isSnapped = false,
 }) => {
   // حساب حدود SVG
   const padding = 50;
@@ -27,20 +27,20 @@ const MindMapConnectionLine: React.FC<MindMapConnectionLineProps> = ({
   const minY = Math.min(startPosition.y, endPosition.y) - padding;
   const maxX = Math.max(startPosition.x, endPosition.x) + padding;
   const maxY = Math.max(startPosition.y, endPosition.y) + padding;
-  
+
   // تحديد نقطة الربط المفترضة للنهاية بناءً على الاتجاه
   const dx = endPosition.x - startPosition.x;
   const dy = endPosition.y - startPosition.y;
-  let endAnchor: 'top' | 'bottom' | 'left' | 'right' = 'left';
-  
+  let endAnchor: "top" | "bottom" | "left" | "right" = "left";
+
   if (Math.abs(dx) > Math.abs(dy)) {
-    endAnchor = dx > 0 ? 'left' : 'right';
+    endAnchor = dx > 0 ? "left" : "right";
   } else {
-    endAnchor = dy > 0 ? 'top' : 'bottom';
+    endAnchor = dy > 0 ? "top" : "bottom";
   }
-  
+
   const path = createBezierPath(startPosition, endPosition, startAnchor, endAnchor);
-  
+
   return (
     <svg
       className="absolute pointer-events-none"
@@ -49,8 +49,8 @@ const MindMapConnectionLine: React.FC<MindMapConnectionLineProps> = ({
         top: minY,
         width: maxX - minX,
         height: maxY - minY,
-        overflow: 'visible',
-        zIndex: 1000
+        overflow: "visible",
+        zIndex: 1000,
       }}
     >
       {/* ✅ توهج الخلفية عند snap */}
@@ -59,16 +59,16 @@ const MindMapConnectionLine: React.FC<MindMapConnectionLineProps> = ({
           d={path}
           fill="none"
           stroke={color}
-          strokeWidth={12}
+          strokeWidth={6}
           strokeLinecap="round"
-          opacity={0.3}
+          opacity={0.2}
           style={{
             transform: `translate(${-minX}px, ${-minY}px)`,
-            filter: `blur(4px)`
+            filter: `blur(2px)`,
           }}
         />
       )}
-      
+
       {/* ✅ الخط الرئيسي - شفاف أثناء السحب، متوهج عند snap */}
       <path
         d={path}
@@ -81,11 +81,11 @@ const MindMapConnectionLine: React.FC<MindMapConnectionLineProps> = ({
         style={{
           transform: `translate(${-minX}px, ${-minY}px)`,
           opacity: isSnapped ? 1 : 0.5,
-          filter: isSnapped ? `drop-shadow(0 0 6px ${color})` : 'none',
-          transition: 'all 0.15s ease-out'
+          filter: isSnapped ? `drop-shadow(0 0 6px ${color})` : "none",
+          transition: "all 0.15s ease-out",
         }}
       />
-      
+
       {/* ✅ نقطة النهاية - تتوهج عند snap */}
       <circle
         cx={endPosition.x - minX}
@@ -95,23 +95,23 @@ const MindMapConnectionLine: React.FC<MindMapConnectionLineProps> = ({
         className={isSnapped ? "" : "animate-pulse"}
         style={{
           opacity: isSnapped ? 1 : 0.6,
-          filter: isSnapped ? `drop-shadow(0 0 8px ${color})` : 'none',
-          transition: 'all 0.15s ease-out'
+          filter: isSnapped ? `drop-shadow(0 0 8px ${color})` : "none",
+          transition: "all 0.15s ease-out",
         }}
       />
-      
+
       {/* ✅ حلقة التوهج الخارجية عند snap */}
       {isSnapped && (
         <circle
           cx={endPosition.x - minX}
           cy={endPosition.y - minY}
-          r={14}
+          r={8}
           fill="none"
           stroke={color}
           strokeWidth={2}
-          opacity={0.4}
+          opacity={0.2}
           style={{
-            animation: 'pulse 1s ease-in-out infinite'
+            animation: "pulse 1s ease-in-out infinite",
           }}
         />
       )}
