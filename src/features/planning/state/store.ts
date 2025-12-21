@@ -1,12 +1,10 @@
 /**
- * Canvas Store - التوافق الخلفي
- * يُعاد تصدير كل شيء من البنية الجديدة
+ * Planning Store - تجميع جميع الـ Slices
  */
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-// إعادة استيراد من البنية الجديدة
 import {
   createElementsSlice,
   createViewportSlice,
@@ -26,10 +24,10 @@ import {
   type PenSlice,
   type FrameSlice,
   type MindmapSlice,
-} from '@/features/planning/state/slices';
+} from './slices';
 
 // النوع المُجمّع
-export type CanvasStore = 
+export type PlanningStore = 
   ElementsSlice & 
   ViewportSlice & 
   SelectionSlice & 
@@ -40,8 +38,8 @@ export type CanvasStore =
   FrameSlice &
   MindmapSlice;
 
-// إنشاء الـ Store - التوافق الخلفي
-export const useCanvasStore = create<CanvasStore>()(
+// إنشاء الـ Store
+export const usePlanningStore = create<PlanningStore>()(
   devtools(
     (...args) => ({
       ...createElementsSlice(...args),
@@ -54,16 +52,11 @@ export const useCanvasStore = create<CanvasStore>()(
       ...createFrameSlice(...args),
       ...createMindmapSlice(...args),
     }),
-    { name: 'canvas-store' }
+    { name: 'planning-store' }
   )
 );
 
-// إعادة تصدير الأنواع
-export * from '@/features/planning/state/types';
-export * from '@/features/planning/state/selectors';
-export * from '@/features/planning/state/helpers';
-
-// تصدير الـ slices للاستخدام الفردي
+// تصدير الأنواع للاستخدام الخارجي
 export type {
   ElementsSlice,
   ViewportSlice,
