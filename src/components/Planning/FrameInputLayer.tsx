@@ -159,7 +159,16 @@ export default function FrameInputLayer({ containerRef, active }: Props) {
       
       const tempEl = useCanvasStore.getState().tempElement;
       if (tempEl && tempEl.size.width > 10 && tempEl.size.height > 10) {
-        const finalElement = { ...tempEl };
+        const finalElement = { 
+          ...tempEl,
+          zIndex: -1000, // ✅ إرسال الإطار إلى الخلف دائماً
+          style: {
+            ...(tempEl.style || {}),
+            backgroundColor: '#FFFFFF',
+            border: '1px solid hsl(var(--ink-30))',
+            borderRadius: '8px'
+          }
+        };
         delete (finalElement as any).id;
         
         addElement(finalElement);
