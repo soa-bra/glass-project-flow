@@ -3,17 +3,17 @@ import { ArrowRight, Save, RotateCcw, RotateCw, Clock, Share2, File, Layers, Spa
 import { usePlanningStore } from '@/stores/planningStore';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasBoard } from '@/types/planning';
-import InfiniteCanvas from './InfiniteCanvas';
-import BottomToolbar from './BottomToolbar';
+import InfiniteCanvas from '@/features/planning/canvas/viewport/InfiniteCanvas';
+import BottomToolbar from '@/features/planning/ui/toolbars/BottomToolbar';
 import RightSidePanel from './RightSidePanel';
-import NavigationBar from './NavigationBar';
-import UnifiedFloatingToolbar from './UnifiedFloatingToolbar';
-import Minimap from './Minimap';
+import NavigationBar from '@/features/planning/ui/toolbars/NavigationBar';
+import UnifiedFloatingToolbar from '@/features/planning/ui/toolbars/UnifiedFloatingToolbar';
+import Minimap from '@/features/planning/ui/widgets/Minimap';
 import { HistoryPopover } from './popovers/HistoryPopover';
 import { SharePopover } from './popovers/SharePopover';
 import { FileMenuPopover } from './popovers/FileMenuPopover';
 import { LayersMenuPopover } from './popovers/LayersMenuPopover';
-import { AIAssistantPopover } from './AIAssistantPopover';
+import { AIAssistantPopover } from '@/features/planning/ui/widgets/AIAssistantPopover';
 import { SmartCommandBar, useSmartCommandBar } from './SmartElements/SmartCommandBar';
 
 interface PlanningCanvasProps {

@@ -3,6 +3,9 @@
  * أشرطة الأدوات الرئيسية
  */
 
-// سيتم إضافة الـ toolbars هنا
-// export { MainToolbar } from './MainToolbar';
-// export { FormatToolbar } from './FormatToolbar';
+export { default as BottomToolbar } from './BottomToolbar';
+export { default as CanvasToolbar } from './CanvasToolbar';
+export { default as FloatingEditBar } from './FloatingEditBar';
+export { default as NavigationBar } from './NavigationBar';
+export { default as UnifiedFloatingToolbar } from './UnifiedFloatingToolbar';
+export { default as VisualDiagramToolbar } from './VisualDiagramToolbar';

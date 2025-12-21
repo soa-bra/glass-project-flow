@@ -2,17 +2,17 @@ import React, { useRef, useCallback, useEffect, useState, useMemo } from 'react'
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useInteractionStore } from '@/stores/interactionStore';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
-import { SmartElementRenderer } from './SmartElements/SmartElementRenderer';
-import { ResizeHandle } from './ResizeHandle';
-import { TextEditor } from './TextEditor';
-import { StickyNoteEditor } from './StickyNoteEditor';
-import { ShapeRenderer } from './ShapeRenderer';
-import { TextRenderer } from './renderers/TextRenderer';
-import { ArrowControlPoints } from './ArrowControlPoints';
-import { ArrowLabels } from './ArrowLabels';
-import { FrameDropZone } from './FrameDropZone';
-import MindMapNode from './MindMapNode';
-import MindMapConnector from './MindMapConnector';
+import { SmartElementRenderer } from '@/features/planning/elements/smart/SmartElementRenderer';
+import { ResizeHandle } from '@/features/planning/canvas/selection/ResizeHandle';
+import { TextEditor } from '@/features/planning/elements/text/TextEditor';
+import { StickyNoteEditor } from '@/features/planning/elements/text/StickyNoteEditor';
+import { ShapeRenderer } from '@/features/planning/elements/diagram/ShapeRenderer';
+import { TextRenderer } from '@/features/planning/elements/text/TextRenderer';
+import { ArrowControlPoints } from '@/features/planning/elements/diagram/ArrowControlPoints';
+import { ArrowLabels } from '@/features/planning/elements/diagram/ArrowLabels';
+import { FrameDropZone } from '@/features/planning/canvas/gestures/FrameDropZone';
+import MindMapNode from '@/features/planning/elements/mindmap/MindMapNode';
+import MindMapConnector from '@/features/planning/elements/mindmap/MindMapConnector';
 
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { sanitizeHTMLForDisplay } from '@/utils/sanitize';

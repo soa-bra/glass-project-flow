@@ -1,6 +1,6 @@
 import React from 'react';
 import type { CanvasElement } from '@/types/canvas';
-import { ShapeRenderer } from './ShapeRenderer';
+import { ShapeRenderer } from '@/features/planning/elements/diagram/ShapeRenderer';
 
 interface DrawingPreviewProps {
   element: CanvasElement | null;

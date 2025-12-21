@@ -17,12 +17,12 @@ import {
 } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { usePlanningStore } from '@/stores/planningStore';
-import { HistoryPopover } from './popovers/HistoryPopover';
-import { SharePopover } from './popovers/SharePopover';
-import { CanvasPropertiesPopover } from './popovers/CanvasPropertiesPopover';
-import { FileMenuPopover } from './popovers/FileMenuPopover';
-import { LayersMenuPopover } from './popovers/LayersMenuPopover';
-import { AIAssistantPopover } from './AIAssistantPopover';
+import { HistoryPopover } from '../overlays/HistoryPopover';
+import { SharePopover } from '../overlays/SharePopover';
+import { CanvasPropertiesPopover } from '../overlays/CanvasPropertiesPopover';
+import { FileMenuPopover } from '../overlays/FileMenuPopover';
+import { LayersMenuPopover } from '../overlays/LayersMenuPopover';
+import { AIAssistantPopover } from '../widgets/AIAssistantPopover';
 
 const CanvasToolbar: React.FC = () => {
   const {
