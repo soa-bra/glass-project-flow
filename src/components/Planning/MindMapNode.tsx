@@ -37,6 +37,11 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     selectMindMapTree,
     moveElementWithChildren,
     autoResolveOverlapsForMindMap,
+    setActiveTool,
+    setLastSmartSelectedMindMapNode,
+    lastSmartSelectedMindMapNode,
+    selectedElementIds,
+    selectElement,
   } = useCanvasStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState("");
@@ -60,7 +65,8 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     state.elements.some((el) => el.type === "mindmap_connector" && (el.data as any)?.startNodeId === element.id),
   );
 
-  // ✅ بدء التحرير بالنقر المزدوج
+  // ✅ النقر المزدوج: إذا كانت الشجرة محددة بأداة التحديد → التبديل إلى أداة العناصر الذكية وتحديد هذه العقدة
+  // أو بدء التحرير إذا كنا بالفعل على أداة العناصر الذكية
   const handleDoubleClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -70,12 +76,21 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         clickTimeoutRef.current = null;
       }
 
+      // ✅ إذا كانت الشجرة محددة بأداة التحديد، حوّل إلى أداة العناصر الذكية وحدد هذه العقدة
+      if (activeTool === 'selection_tool' && selectedElementIds.length > 1) {
+        setActiveTool('smart_element_tool');
+        selectElement(element.id, false);
+        setLastSmartSelectedMindMapNode(element.id);
+        return;
+      }
+
+      // السلوك العادي: بدء التحرير
       setIsSingleNodeMode(true);
       onSelect(false);
       setIsEditing(true);
       setEditText(nodeData.label || "");
     },
-    [nodeData.label, onSelect],
+    [nodeData.label, onSelect, activeTool, selectedElementIds, setActiveTool, selectElement, element.id, setLastSmartSelectedMindMapNode],
   );
 
   // حفظ التعديل
@@ -190,7 +205,11 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         return;
       }
 
-      if (activeTool === "selection_tool" && !isSingleNodeMode && !multiSelect) {
+      // ✅ عند استخدام أداة العناصر الذكية، سجّل آخر عقدة محددة
+      if (activeTool === "smart_element_tool") {
+        setLastSmartSelectedMindMapNode(element.id);
+        onSelect(multiSelect);
+      } else if (activeTool === "selection_tool" && !isSingleNodeMode && !multiSelect) {
         clickTimeoutRef.current = setTimeout(() => {
           selectMindMapTree(element.id);
         }, 200);
@@ -206,7 +225,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         elementY: element.position.y,
       };
     },
-    [element, onSelect, activeTool, isEditing, isSingleNodeMode, selectMindMapTree],
+    [element, onSelect, activeTool, isEditing, isSingleNodeMode, selectMindMapTree, setLastSmartSelectedMindMapNode],
   );
 
   // تحريك العقدة - مع الفروع فقط عند استخدام أداة التحديد
@@ -325,11 +344,22 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   }, [isSelected]);
 
   // ✅ عند التحويل من أداة العناصر الذكية إلى أداة التحديد: حدد كامل الشجرة
+  // ✅ عند التحويل من أداة التحديد إلى أداة العناصر الذكية: حدد آخر عقدة محددة أو العقدة الحالية
   useEffect(() => {
-    if (isSelected && activeTool === 'selection_tool') {
+    if (!isSelected) return;
+    
+    if (activeTool === 'selection_tool') {
+      // تحويل إلى أداة التحديد → حدد كامل الشجرة
       selectMindMapTree(element.id);
+    } else if (activeTool === 'smart_element_tool' && selectedElementIds.length > 1) {
+      // تحويل إلى أداة العناصر الذكية من شجرة محددة
+      // حدد آخر عقدة تم تحديدها أو أول عقدة في التحديد
+      const nodeToSelect = lastSmartSelectedMindMapNode && selectedElementIds.includes(lastSmartSelectedMindMapNode)
+        ? lastSmartSelectedMindMapNode
+        : element.id;
+      selectElement(nodeToSelect, false);
     }
-  }, [activeTool, isSelected, element.id, selectMindMapTree]);
+  }, [activeTool]);
 
   // التركيز على الإدخال عند التحرير
   useEffect(() => {

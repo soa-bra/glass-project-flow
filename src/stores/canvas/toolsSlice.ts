@@ -19,6 +19,9 @@ export interface ToolsSlice {
   editingTextId: string | null;
   typingMode: boolean;
   
+  // ✅ آخر عقدة خريطة ذهنية محددة بأداة العناصر الذكية
+  lastSmartSelectedMindMapNode: string | null;
+  
   // Tool Actions
   setActiveTool: (tool: ToolId) => void;
   updateToolSettings: (tool: keyof ToolSettings, settings: Partial<ToolSettings[keyof ToolSettings]>) => void;
@@ -26,6 +29,7 @@ export interface ToolsSlice {
   setDrawStartPoint: (point: { x: number; y: number } | null) => void;
   setTempElement: (element: CanvasElement | null) => void;
   setSelectedSmartElement: (elementType: string | null) => void;
+  setLastSmartSelectedMindMapNode: (nodeId: string | null) => void;
   
   // Text Actions
   addText: (textData: Partial<TextElement>) => string;
@@ -51,6 +55,7 @@ export const createToolsSlice: StateCreator<
   selectedSmartElement: null,
   editingTextId: null,
   typingMode: false,
+  lastSmartSelectedMindMapNode: null,
   
   setActiveTool: (tool) => {
     set({ activeTool: tool, isDrawing: false, drawStartPoint: null, tempElement: null });
@@ -69,6 +74,7 @@ export const createToolsSlice: StateCreator<
   setDrawStartPoint: (point) => set({ drawStartPoint: point }),
   setTempElement: (element) => set({ tempElement: element }),
   setSelectedSmartElement: (elementType) => set({ selectedSmartElement: elementType }),
+  setLastSmartSelectedMindMapNode: (nodeId) => set({ lastSmartSelectedMindMapNode: nodeId }),
   
   addText: (textData) => {
     const id = textData.id || nanoid();
