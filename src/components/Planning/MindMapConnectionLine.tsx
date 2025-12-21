@@ -6,16 +6,20 @@ interface MindMapConnectionLineProps {
   endPosition: { x: number; y: number };
   startAnchor: 'top' | 'bottom' | 'left' | 'right';
   color?: string;
+  isSnapped?: boolean; // ✅ هل الموصل في حالة snap مع anchor
 }
 
 /**
  * خط التوصيل المؤقت أثناء السحب
+ * - شفاف أثناء السحب العادي
+ * - متوهج عند الاقتراب من anchor (snap)
  */
 const MindMapConnectionLine: React.FC<MindMapConnectionLineProps> = ({
   startPosition,
   endPosition,
   startAnchor,
-  color = '#3DA8F5'
+  color = '#3DA8F5',
+  isSnapped = false
 }) => {
   // حساب حدود SVG
   const padding = 50;
@@ -49,28 +53,68 @@ const MindMapConnectionLine: React.FC<MindMapConnectionLineProps> = ({
         zIndex: 1000
       }}
     >
-      {/* خط منقط أثناء السحب */}
+      {/* ✅ توهج الخلفية عند snap */}
+      {isSnapped && (
+        <path
+          d={path}
+          fill="none"
+          stroke={color}
+          strokeWidth={12}
+          strokeLinecap="round"
+          opacity={0.3}
+          style={{
+            transform: `translate(${-minX}px, ${-minY}px)`,
+            filter: `blur(4px)`
+          }}
+        />
+      )}
+      
+      {/* ✅ الخط الرئيسي - شفاف أثناء السحب، متوهج عند snap */}
       <path
         d={path}
         fill="none"
         stroke={color}
-        strokeWidth={2}
-        strokeDasharray="8 4"
+        strokeWidth={isSnapped ? 3 : 2}
+        strokeDasharray={isSnapped ? "none" : "8 4"}
         strokeLinecap="round"
-        className="animate-pulse"
+        className={isSnapped ? "" : "animate-pulse"}
         style={{
-          transform: `translate(${-minX}px, ${-minY}px)`
+          transform: `translate(${-minX}px, ${-minY}px)`,
+          opacity: isSnapped ? 1 : 0.5,
+          filter: isSnapped ? `drop-shadow(0 0 6px ${color})` : 'none',
+          transition: 'all 0.15s ease-out'
         }}
       />
       
-      {/* نقطة النهاية */}
+      {/* ✅ نقطة النهاية - تتوهج عند snap */}
       <circle
         cx={endPosition.x - minX}
         cy={endPosition.y - minY}
-        r={6}
+        r={isSnapped ? 8 : 6}
         fill={color}
-        className="animate-pulse"
+        className={isSnapped ? "" : "animate-pulse"}
+        style={{
+          opacity: isSnapped ? 1 : 0.6,
+          filter: isSnapped ? `drop-shadow(0 0 8px ${color})` : 'none',
+          transition: 'all 0.15s ease-out'
+        }}
       />
+      
+      {/* ✅ حلقة التوهج الخارجية عند snap */}
+      {isSnapped && (
+        <circle
+          cx={endPosition.x - minX}
+          cy={endPosition.y - minY}
+          r={14}
+          fill="none"
+          stroke={color}
+          strokeWidth={2}
+          opacity={0.4}
+          style={{
+            animation: 'pulse 1s ease-in-out infinite'
+          }}
+        />
+      )}
     </svg>
   );
 };
