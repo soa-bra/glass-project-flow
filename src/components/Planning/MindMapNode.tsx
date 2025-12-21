@@ -496,7 +496,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         }} className="p-1.5 rounded hover:bg-[hsl(var(--muted))] transition-colors" title="تغيير اللون">
               <div style={{
             backgroundColor: nodeData.color || '#3DA8F5'
-          }} className="w-5 h-5 rounded-sm border-2 border-white shadow-sm" />
+          }} className="w-4 h-4 rounded-sm border-2 border-white shadow-sm" />
             </button>
 
             {showColorPicker && <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-lg p-2 border border-[hsl(var(--border))] grid grid-cols-4 gap-1">
