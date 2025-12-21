@@ -45,7 +45,11 @@ interface CanvasElementProps {
   nearestAnchor?: { nodeId: string; anchor: string; position: { x: number; y: number } } | null;
 }
 
-const CanvasElement: React.FC<CanvasElementProps> = ({
+/**
+ * ✅ CanvasElement Component - محسّن للأداء باستخدام React.memo
+ * يتجنب re-render إذا لم تتغير الـ props
+ */
+const CanvasElementInner: React.FC<CanvasElementProps> = ({
   element,
   isSelected,
   onSelect,
@@ -581,5 +585,38 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
     </div>
   );
 };
+
+/**
+ * ✅ React.memo wrapper لتجنب re-renders غير ضرورية
+ * يقارن فقط الخصائص المهمة للأداء
+ */
+const CanvasElement = React.memo(CanvasElementInner, (prevProps, nextProps) => {
+  // ✅ مقارنة سريعة للخصائص الأساسية
+  if (prevProps.isSelected !== nextProps.isSelected) return false;
+  if (prevProps.activeTool !== nextProps.activeTool) return false;
+  if (prevProps.isConnecting !== nextProps.isConnecting) return false;
+  
+  // ✅ مقارنة العنصر - تجنب مقارنة عميقة
+  const prevEl = prevProps.element;
+  const nextEl = nextProps.element;
+  
+  if (prevEl.id !== nextEl.id) return false;
+  if (prevEl.position.x !== nextEl.position.x) return false;
+  if (prevEl.position.y !== nextEl.position.y) return false;
+  if (prevEl.size.width !== nextEl.size.width) return false;
+  if (prevEl.size.height !== nextEl.size.height) return false;
+  if (prevEl.rotation !== nextEl.rotation) return false;
+  if (prevEl.visible !== nextEl.visible) return false;
+  if (prevEl.locked !== nextEl.locked) return false;
+  
+  // ✅ مقارنة nearestAnchor
+  if (prevProps.nearestAnchor?.nodeId !== nextProps.nearestAnchor?.nodeId) return false;
+  if (prevProps.nearestAnchor?.anchor !== nextProps.nearestAnchor?.anchor) return false;
+  
+  // إذا وصلنا هنا، لا حاجة لـ re-render
+  return true;
+});
+
+CanvasElement.displayName = 'CanvasElement';
 
 export default CanvasElement;

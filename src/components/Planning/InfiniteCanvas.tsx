@@ -37,21 +37,21 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   const canvasRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Canvas Store
-  const {
-    elements,
-    viewport,
-    settings,
-    selectedElementIds,
-    layers,
-    activeTool,
-    tempElement,
-    setPan,
-    setZoom,
-    clearSelection,
-    selectElement,
-    selectElements,
-  } = useCanvasStore();
+  // ✅ Canvas Store - استخدام selectors محددة للأداء
+  const elements = useCanvasStore(state => state.elements);
+  const viewport = useCanvasStore(state => state.viewport);
+  const settings = useCanvasStore(state => state.settings);
+  const selectedElementIds = useCanvasStore(state => state.selectedElementIds);
+  const layers = useCanvasStore(state => state.layers);
+  const activeTool = useCanvasStore(state => state.activeTool);
+  const tempElement = useCanvasStore(state => state.tempElement);
+  
+  // ✅ استخدام الدوال المركزية من ViewportSlice
+  const panBy = useCanvasStore(state => state.panBy);
+  const zoomByWheel = useCanvasStore(state => state.zoomByWheel);
+  const clearSelection = useCanvasStore(state => state.clearSelection);
+  const selectElement = useCanvasStore(state => state.selectElement);
+  const selectElements = useCanvasStore(state => state.selectElements);
   
   // ✅ Interaction Store - استخدام State Machine
   const { 
@@ -266,6 +266,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     return canvasKernel.getVisibleBounds(viewport, containerWidth, containerHeight);
   }, [viewport]);
 
+  // ✅ تحسين: تحويل selectedElementIds إلى Set للبحث السريع O(1)
+  const selectedIdsSet = useMemo(() => new Set(selectedElementIds), [selectedElementIds]);
+
   // Virtualized elements (only render visible ones)
   const visibleElements = useMemo(() => {
     const padding = 200;
@@ -287,17 +290,17 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     return canvasKernel.snapToGrid({ x, y }, settings.gridSize, settings.snapToGrid);
   }, [settings.snapToGrid, settings.gridSize]);
 
-  // Handle Wheel (Zoom)
+  // ✅ Handle Wheel (Zoom) - استخدام الدالة المركزية
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     if (e.ctrlKey || e.metaKey) {
-      const delta = -e.deltaY * 0.001;
-      const newZoom = viewport.zoom * (1 + delta);
-      setZoom(newZoom);
+      // ✅ تكبير حول موقع المؤشر (pointer-centered zoom)
+      zoomByWheel(e.deltaY, e.clientX, e.clientY);
     } else {
-      setPan(viewport.pan.x - e.deltaX, viewport.pan.y - e.deltaY);
+      // ✅ تحريك نسبي
+      panBy(-e.deltaX, -e.deltaY);
     }
-  }, [viewport, setZoom, setPan]);
+  }, [zoomByWheel, panBy]);
 
   // ✅ Handle Mouse Down - استخدام State Machine + Selection Coordinator
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -383,11 +386,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       updateConnectionPosition(e.clientX, e.clientY);
     }
     
-    // ✅ Panning باستخدام State Machine
+    // ✅ Panning باستخدام State Machine والدالة المركزية
     if (isMode('panning')) {
       const deltaX = e.clientX - lastPanPositionRef.current.x;
       const deltaY = e.clientY - lastPanPositionRef.current.y;
-      setPan(viewport.pan.x + deltaX, viewport.pan.y + deltaY);
+      panBy(deltaX, deltaY);
       lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
       return;
     }
@@ -409,13 +412,13 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     
     handleCanvasMouseMove(e);
   }, [
-    viewport, 
-    setPan, 
+    panBy, 
     handleCanvasMouseMove, 
     updateConnectionPosition,
     isMode,
     boxSelectData,
-    updateBoxSelect
+    updateBoxSelect,
+    viewport
   ]);
 
   // ✅ Handle Mouse Up - استخدام State Machine
@@ -635,7 +638,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         className="absolute inset-0 origin-top-left" 
         style={{
           transform: `translate(${viewport.pan.x}px, ${viewport.pan.y}px) scale(${viewport.zoom})`,
-          transition: 'none'
+          transition: 'none',
+          willChange: 'transform' // ✅ تحسين الأداء للـ GPU
         }}
       >
         {/* Pen Strokes Layer */}
@@ -646,7 +650,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           <CanvasElement 
             key={element.id} 
             element={element} 
-            isSelected={selectedElementIds.includes(element.id)} 
+            isSelected={selectedIdsSet.has(element.id)} // ✅ O(1) بدلاً من O(n)
             onSelect={multiSelect => selectElement(element.id, multiSelect)} 
             snapToGrid={settings.snapToGrid ? snapToGrid : undefined} 
             activeTool={activeTool}
