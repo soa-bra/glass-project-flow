@@ -1059,6 +1059,118 @@ const UnifiedFloatingToolbar: React.FC = () => {
     return false;
   }, []);
 
+  // ===== إجراءات الخريطة الذهنية (يجب أن تكون قبل أي return) =====
+  const handleLayoutSettingChange = useCallback((newSettings: Partial<LayoutSettings>) => {
+    const updatedSettings = { ...layoutSettings, ...newSettings };
+    setLayoutSettings(updatedSettings);
+    applyLayoutWithSettings(updatedSettings, elements, updateElement);
+  }, [layoutSettings, elements, updateElement]);
+
+  // إضافة فرع جديد للعقدة المحددة
+  const handleAddBranch = useCallback(() => {
+    if (!mindMapInfo || mindMapInfo.selectedNodes.length === 0) return;
+    
+    const selectedNode = mindMapInfo.selectedNodes[0];
+    const nodeData = selectedNode.data as MindMapNodeData;
+    
+    const existingConnectors = elements.filter(el => 
+      el.type === 'mindmap_connector' && 
+      (el.data as any)?.startNodeId === selectedNode.id
+    );
+    const childCount = existingConnectors.length;
+    
+    const verticalSpacing = 80;
+    const direction = childCount % 2 === 0 ? 1 : -1;
+    const step = Math.ceil((childCount + 1) / 2);
+    const yOffset = direction * step * verticalSpacing;
+    
+    const offset = 220;
+    
+    const newNodeId = `mindmap-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    const newNodeData: MindMapNodeData = {
+      label: 'فرع جديد',
+      color: NODE_COLORS[Math.floor(Math.random() * NODE_COLORS.length)],
+      nodeStyle: 'rounded',
+      isRoot: false
+    };
+    
+    addElement({
+      id: newNodeId,
+      type: 'mindmap_node',
+      position: {
+        x: selectedNode.position.x + selectedNode.size.width + offset,
+        y: selectedNode.position.y + yOffset
+      },
+      size: { width: 160, height: 60 },
+      data: newNodeData
+    });
+    
+    const newNodePos = { x: selectedNode.position.x + selectedNode.size.width + offset, y: selectedNode.position.y + yOffset };
+    const newNodeSize = { width: 160, height: 60 };
+    const connectorBounds = calculateConnectorBounds(
+      { position: selectedNode.position, size: selectedNode.size },
+      { position: newNodePos, size: newNodeSize }
+    );
+    
+    addElement({
+      type: 'mindmap_connector',
+      position: connectorBounds.position,
+      size: connectorBounds.size,
+      data: {
+        startNodeId: selectedNode.id,
+        endNodeId: newNodeId,
+        startAnchor: { nodeId: selectedNode.id, anchor: 'right' },
+        endAnchor: { nodeId: newNodeId, anchor: 'left' },
+        curveStyle: 'bezier',
+        color: nodeData?.color || '#3DA8F5',
+        strokeWidth: 2
+      }
+    });
+    
+    toast.success('تمت إضافة فرع جديد');
+  }, [mindMapInfo, elements, addElement]);
+
+  // تغيير لون العقدة
+  const handleNodeColorChange = useCallback((color: string) => {
+    if (!mindMapInfo) return;
+    mindMapInfo.selectedNodes.forEach(node => {
+      updateElement(node.id, {
+        data: { ...node.data, color }
+      });
+    });
+  }, [mindMapInfo, updateElement]);
+
+  // تغيير شكل العقدة
+  const handleNodeStyleChange = useCallback((style: string) => {
+    if (!mindMapInfo) return;
+    mindMapInfo.selectedNodes.forEach(node => {
+      updateElement(node.id, {
+        data: { ...node.data, nodeStyle: style }
+      });
+    });
+    setShowNodeStyleMenu(false);
+  }, [mindMapInfo, updateElement]);
+
+  // حذف العقد المحددة
+  const handleDeleteSelectedNodes = useCallback(() => {
+    if (!mindMapInfo) return;
+    
+    const selectedNodeIds = mindMapInfo.selectedNodes.map(n => n.id);
+    
+    // حذف الموصلات المتصلة أيضاً
+    const connectorIds = elements
+      .filter(el => el.type === 'mindmap_connector')
+      .filter(el => {
+        const data = el.data as any;
+        return selectedNodeIds.includes(data.startNodeId) || selectedNodeIds.includes(data.endNodeId);
+      })
+      .map(el => el.id);
+    
+    [...selectedNodeIds, ...connectorIds].forEach(id => deleteElement(id));
+    toast.success('تم حذف العقد المحددة');
+  }, [mindMapInfo, elements, deleteElement]);
+
   if (!hasSelection) return null;
 
   // ===== الإجراءات المشتركة =====
@@ -1417,13 +1529,6 @@ const UnifiedFloatingToolbar: React.FC = () => {
     }
   };
 
-  // ===== إجراءات الخريطة الذهنية =====
-  const handleLayoutSettingChange = useCallback((newSettings: Partial<LayoutSettings>) => {
-    const updatedSettings = { ...layoutSettings, ...newSettings };
-    setLayoutSettings(updatedSettings);
-    applyLayoutWithSettings(updatedSettings, elements, updateElement);
-  }, [layoutSettings, elements, updateElement]);
-
   const handleDuplicateTree = () => {
     if (mindMapInfo) {
       mindMapInfo.allTreeElementIds.forEach(id => duplicateElement(id));
@@ -1460,111 +1565,6 @@ const UnifiedFloatingToolbar: React.FC = () => {
       toast.success('تم حذف الخريطة الذهنية');
     }
   };
-
-  // إضافة فرع جديد للعقدة المحددة
-  const handleAddBranch = useCallback(() => {
-    if (!mindMapInfo || mindMapInfo.selectedNodes.length === 0) return;
-    
-    const selectedNode = mindMapInfo.selectedNodes[0];
-    const nodeData = selectedNode.data as MindMapNodeData;
-    
-    const existingConnectors = elements.filter(el => 
-      el.type === 'mindmap_connector' && 
-      (el.data as any)?.startNodeId === selectedNode.id
-    );
-    const childCount = existingConnectors.length;
-    
-    const verticalSpacing = 80;
-    const direction = childCount % 2 === 0 ? 1 : -1;
-    const step = Math.ceil((childCount + 1) / 2);
-    const yOffset = direction * step * verticalSpacing;
-    
-    const offset = 220;
-    
-    const newNodeId = `mindmap-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    const newNodeData: MindMapNodeData = {
-      label: 'فرع جديد',
-      color: NODE_COLORS[Math.floor(Math.random() * NODE_COLORS.length)],
-      nodeStyle: 'rounded',
-      isRoot: false
-    };
-    
-    addElement({
-      id: newNodeId,
-      type: 'mindmap_node',
-      position: {
-        x: selectedNode.position.x + selectedNode.size.width + offset,
-        y: selectedNode.position.y + yOffset
-      },
-      size: { width: 160, height: 60 },
-      data: newNodeData
-    });
-    
-    const newNodePos = { x: selectedNode.position.x + selectedNode.size.width + offset, y: selectedNode.position.y + yOffset };
-    const newNodeSize = { width: 160, height: 60 };
-    const connectorBounds = calculateConnectorBounds(
-      { position: selectedNode.position, size: selectedNode.size },
-      { position: newNodePos, size: newNodeSize }
-    );
-    
-    addElement({
-      type: 'mindmap_connector',
-      position: connectorBounds.position,
-      size: connectorBounds.size,
-      data: {
-        startNodeId: selectedNode.id,
-        endNodeId: newNodeId,
-        startAnchor: { nodeId: selectedNode.id, anchor: 'right' },
-        endAnchor: { nodeId: newNodeId, anchor: 'left' },
-        curveStyle: 'bezier',
-        color: nodeData?.color || '#3DA8F5',
-        strokeWidth: 2
-      }
-    });
-    
-    toast.success('تمت إضافة فرع جديد');
-  }, [mindMapInfo, elements, addElement]);
-
-  // تغيير لون العقدة
-  const handleNodeColorChange = useCallback((color: string) => {
-    if (!mindMapInfo) return;
-    mindMapInfo.selectedNodes.forEach(node => {
-      updateElement(node.id, {
-        data: { ...node.data, color }
-      });
-    });
-  }, [mindMapInfo, updateElement]);
-
-  // تغيير شكل العقدة
-  const handleNodeStyleChange = useCallback((style: string) => {
-    if (!mindMapInfo) return;
-    mindMapInfo.selectedNodes.forEach(node => {
-      updateElement(node.id, {
-        data: { ...node.data, nodeStyle: style }
-      });
-    });
-    setShowNodeStyleMenu(false);
-  }, [mindMapInfo, updateElement]);
-
-  // حذف العقد المحددة
-  const handleDeleteSelectedNodes = useCallback(() => {
-    if (!mindMapInfo) return;
-    
-    const selectedNodeIds = mindMapInfo.selectedNodes.map(n => n.id);
-    
-    // حذف الموصلات المتصلة أيضاً
-    const connectorIds = elements
-      .filter(el => el.type === 'mindmap_connector')
-      .filter(el => {
-        const data = el.data as any;
-        return selectedNodeIds.includes(data.startNodeId) || selectedNodeIds.includes(data.endNodeId);
-      })
-      .map(el => el.id);
-    
-    [...selectedNodeIds, ...connectorIds].forEach(id => deleteElement(id));
-    toast.success('تم حذف العقد المحددة');
-  }, [mindMapInfo, elements, deleteElement]);
 
   // Get current text styles
   const currentFontFamily = firstElement?.style?.fontFamily || 'IBM Plex Sans Arabic';
