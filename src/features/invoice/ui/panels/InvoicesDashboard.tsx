@@ -34,7 +34,7 @@ import {
   Download
 } from 'lucide-react';
 
-import { useInvoices } from '../../state';
+import { useInvoices, useInvoiceFilters } from '../../state';
 import { 
   statusColors, 
   statusLabels, 
@@ -42,6 +42,8 @@ import {
   validateInvoiceLines
 } from '../../domain';
 import type { Invoice, InvoiceFormData, InvoiceStatus } from '../../domain';
+import { InvoiceFilters, defaultFilters } from '../widgets/InvoiceFilters';
+import { InvoiceDetail } from '../widgets/InvoiceDetail';
 
 const statusIcons: Record<InvoiceStatus, React.ReactNode> = {
   draft: <FileText className="w-4 h-4" />,
@@ -62,8 +64,17 @@ export const InvoicesDashboard: React.FC = () => {
     payInvoice 
   } = useInvoices();
 
+  // Filtering
+  const { 
+    filters, 
+    setFilters, 
+    filteredInvoices, 
+    resetFilters 
+  } = useInvoiceFilters(invoices);
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [detailInvoice, setDetailInvoice] = useState<Invoice | null>(null);
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
 
@@ -351,10 +362,22 @@ export const InvoicesDashboard: React.FC = () => {
         </div>
       )}
 
+      {/* Filters */}
+      <InvoiceFilters 
+        filters={filters} 
+        onFiltersChange={setFilters} 
+        onReset={resetFilters} 
+      />
+
       {/* Invoices Table */}
       <Card>
         <CardHeader>
-          <CardTitle>قائمة الفواتير</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>قائمة الفواتير</CardTitle>
+            <span className="text-sm text-muted-foreground">
+              {filteredInvoices.length} من {invoices.length} فاتورة
+            </span>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -369,7 +392,14 @@ export const InvoicesDashboard: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {invoices.map((invoice) => (
+              {filteredInvoices.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    لا توجد فواتير مطابقة للفلاتر المحددة
+                  </TableCell>
+                </TableRow>
+              ) : (
+              filteredInvoices.map((invoice) => (
                 <TableRow key={invoice.id}>
                   <TableCell className="font-medium">{invoice.number}</TableCell>
                   <TableCell>{invoice.accountName || `عميل ${invoice.accountId}`}</TableCell>
@@ -407,7 +437,11 @@ export const InvoicesDashboard: React.FC = () => {
                           تسجيل دفعة
                         </Button>
                       )}
-                      <Button size="sm" variant="ghost">
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => setDetailInvoice(invoice)}
+                      >
                         <Eye className="w-4 h-4" />
                       </Button>
                       <Button size="sm" variant="ghost">
@@ -419,11 +453,19 @@ export const InvoicesDashboard: React.FC = () => {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      {/* Invoice Detail Modal */}
+      <InvoiceDetail 
+        invoice={detailInvoice} 
+        open={!!detailInvoice} 
+        onClose={() => setDetailInvoice(null)} 
+      />
 
       {/* Payment Modal */}
       <Dialog open={!!selectedInvoice} onOpenChange={() => setSelectedInvoice(null)}>

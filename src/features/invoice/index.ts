@@ -19,10 +19,14 @@ export {
   InvoiceStatsWidget,
   InvoiceForm,
   PaymentModal,
+  InvoiceFilters,
+  defaultFilters,
+  InvoiceDetail,
 } from './ui';
+export type { InvoiceFiltersState } from './ui';
 
 // Hooks
-export { useInvoices } from './state';
+export { useInvoices, useInvoiceFilters } from './state';
 
 // Types (re-export from domain)
 export type { 
