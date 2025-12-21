@@ -3,7 +3,7 @@ import { useCanvasStore } from "@/stores/canvasStore";
 import type { CanvasElement } from "@/types/canvas";
 import type { MindMapNodeData, NodeAnchorPoint } from "@/types/mindmap-canvas";
 import { getAnchorPosition, NODE_COLORS, calculateConnectorBounds } from "@/types/mindmap-canvas";
-import { Plus, Trash2, Palette, ChevronDown, ChevronRight, RectangleHorizontal, Square, Circle, Pill, Edit } from "lucide-react";
+import { Plus, Trash2, Palette, ChevronDown, ChevronRight, RectangleHorizontal, Square, Circle, Pill, Edit, Diamond, Hexagon } from "lucide-react";
 import { redistributeUpwards } from "@/utils/mindmap-layout";
 interface MindMapNodeProps {
   element: CanvasElement;
@@ -384,6 +384,18 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           ...baseStyle,
           borderRadius: "50%"
         };
+      case "diamond":
+        return {
+          ...baseStyle,
+          borderRadius: "4px",
+          transform: "rotate(45deg)",
+          clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)"
+        };
+      case "hexagon":
+        return {
+          ...baseStyle,
+          clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)"
+        };
       case "rounded":
       default:
         return {
@@ -449,10 +461,12 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           setShowStylePicker(!showStylePicker);
           setShowColorPicker(false);
         }} className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors" title="شكل العقدة">
-              {nodeData.nodeStyle === 'rounded' && <Edit size={16} />}
+              {nodeData.nodeStyle === 'rounded' && <RectangleHorizontal size={16} />}
               {nodeData.nodeStyle === 'pill' && <Pill size={16} />}
               {nodeData.nodeStyle === 'rectangle' && <Square size={16} />}
               {nodeData.nodeStyle === 'circle' && <Circle size={16} />}
+              {nodeData.nodeStyle === 'diamond' && <Diamond size={16} />}
+              {nodeData.nodeStyle === 'hexagon' && <Hexagon size={16} />}
               {!nodeData.nodeStyle && <RectangleHorizontal size={16} />}
             </button>
 
@@ -473,6 +487,14 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
             type: 'circle',
             icon: <Circle size={14} />,
             label: 'دائري'
+          }, {
+            type: 'diamond',
+            icon: <Diamond size={14} />,
+            label: 'معين'
+          }, {
+            type: 'hexagon',
+            icon: <Hexagon size={14} />,
+            label: 'سداسي'
           }].map(style => <button key={style.type} onClick={() => {
             updateElement(element.id, {
               data: {

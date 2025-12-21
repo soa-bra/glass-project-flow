@@ -4,7 +4,7 @@
 export interface MindMapNodeData {
   label: string;
   color: string;
-  nodeStyle: 'rounded' | 'pill' | 'rectangle' | 'circle';
+  nodeStyle: 'rounded' | 'pill' | 'rectangle' | 'circle' | 'diamond' | 'hexagon';
   isRoot?: boolean;
   isCollapsed?: boolean; // ✅ لطي/توسيع الفروع
   icon?: string;
@@ -65,6 +65,8 @@ export const NODE_STYLES: { id: MindMapNodeData['nodeStyle']; label: string }[] 
   { id: 'pill', label: 'كبسولة' },
   { id: 'rectangle', label: 'مستطيل' },
   { id: 'circle', label: 'دائري' },
+  { id: 'diamond', label: 'معين' },
+  { id: 'hexagon', label: 'سداسي' },
 ];
 
 // أنماط الروابط
