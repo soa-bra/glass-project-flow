@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { usePlanningStore } from '@/stores/planningStore';
 import BoardsGrid from '@/features/planning/ui/widgets/BoardsGrid';
 import TemplateSelector from '@/features/planning/ui/widgets/TemplateSelector';
-import FileUploadModal from './FileUploadModal';
+import FileUploadModal from './overlays/FileUploadModal';
 
 const PlanningEntryScreen = () => {
   const [showTemplates, setShowTemplates] = useState(false);

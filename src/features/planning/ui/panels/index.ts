@@ -11,3 +11,5 @@ export { default as ShapesPanel } from './ShapesPanel';
 export { default as SmartElementsPanel } from './SmartElementsPanel';
 export { default as SmartPenPanel } from './SmartPenPanel';
 export { default as TextPanel } from './TextPanel';
+export { default as LayersPanel } from './LayersPanel';
+export { default as RightSidePanel } from './RightSidePanel';

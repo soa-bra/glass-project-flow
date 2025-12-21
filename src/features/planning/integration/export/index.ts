@@ -3,4 +3,5 @@
  * تكامل التصدير والاستيراد
  */
 
-// سيتم نقل ملفات التصدير هنا
+export { ExportDialog } from './ExportDialog';
+export { ImportDialog } from './ImportDialog';

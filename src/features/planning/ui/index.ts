@@ -14,3 +14,8 @@ export * from './toolbars';
 
 // Widgets
 export * from './widgets';
+
+// Main Pages
+export { default as PlanningCanvas } from './PlanningCanvas';
+export { default as PlanningEntryScreen } from './PlanningEntryScreen';
+export { default as PlanningCommandDeck } from './PlanningCommandDeck';
