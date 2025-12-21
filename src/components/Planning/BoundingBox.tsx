@@ -386,6 +386,32 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     dragStart.current = { x: e.clientX, y: e.clientY };
   }, []);
   
+  // ✅ معالج النقر المزدوج - تمرير الحدث لعقد الخريطة الذهنية
+  const handleDoubleClick = useCallback((e: React.MouseEvent) => {
+    // الحصول على الموقع في World Space
+    const worldPoint = eventPipeline.screenToWorld(e.clientX, e.clientY);
+    
+    // البحث عن عنصر mindmap_node تحت المؤشر
+    const mindmapNodes = selectedElements.filter(el => el.type === 'mindmap_node');
+    
+    for (const node of mindmapNodes) {
+      const isInside = 
+        worldPoint.x >= node.position.x &&
+        worldPoint.x <= node.position.x + node.size.width &&
+        worldPoint.y >= node.position.y &&
+        worldPoint.y <= node.position.y + node.size.height;
+      
+      if (isInside) {
+        // التبديل إلى أداة العناصر الذكية وتحديد هذه العقدة
+        const { setActiveTool, selectElement, setLastSmartSelectedMindMapNode } = useCanvasStore.getState();
+        setActiveTool('smart_element_tool');
+        selectElement(node.id, false);
+        setLastSmartSelectedMindMapNode(node.id);
+        return;
+      }
+    }
+  }, [selectedElements]);
+  
   // ✅ التحقق من إظهار BoundingBox
   const isAllArrows = useMemo(() => 
     selectedElements.every(el => 
@@ -492,6 +518,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         ref={dragAreaRef}
         className="absolute inset-0 pointer-events-auto cursor-move touch-none"
         onPointerDown={handleDragStart}
+        onDoubleClick={handleDoubleClick}
       />
       
       {/* عداد العناصر (إذا أكثر من عنصر وليست مجموعة) */}
