@@ -342,58 +342,7 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
         </div>
       )}
       
-      {/* ✅ نقطة وسطى للتفاعل - تظهر دائماً للإشارة لقابلية النقر (مخفية عند تحديد الشجرة بالكامل) */}
-      {labelPosition && !connectorData.label && !isEditingLabel && !(activeTool === 'selection_tool' && selectedElementIds.length > 1) && (
-        <div
-          className={`absolute w-4 h-4 rounded-full border-2 cursor-pointer transition-all pointer-events-auto ${
-            isHovered || isSelected 
-              ? 'bg-[hsl(var(--accent-blue))] border-white scale-125 shadow-lg' 
-              : 'bg-white border-[hsl(var(--border))] hover:scale-110 hover:border-[hsl(var(--accent-blue))]'
-          }`}
-          style={{
-            left: labelPosition.x - 8,
-            top: labelPosition.y - 8,
-            zIndex: 10
-          }}
-          onClick={handleClick}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          title="انقر للتحديد أو أضف نصاً"
-        />
-      )}
-      
-      {/* ✅ أزرار التحكم - تظهر في منتصف الـ connector بشكل واضح (مخفية عند تحديد الشجرة بالكامل) */}
-      {(isHovered || isSelected) && labelPosition && !(activeTool === 'selection_tool' && selectedElementIds.length > 1) && (
-        <div
-          className="absolute flex items-center gap-3 pointer-events-auto bg-white rounded-xl shadow-xl p-2 border-2 border-[hsl(var(--border))]"
-          style={{
-            left: labelPosition.x,
-            top: labelPosition.y + 25,
-            transform: 'translateX(-50%)',
-            zIndex: 100
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          {/* زر إضافة/تحرير النص */}
-          <button
-            className="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-50 text-[hsl(var(--accent-blue))] hover:bg-blue-100 transition-all"
-            onClick={handleStartAddLabel}
-            title={connectorData.label ? "تحرير النص" : "إضافة نص"}
-          >
-            <Type size={18} />
-          </button>
-          
-          {/* زر الحذف */}
-          <button
-            className="w-9 h-9 rounded-lg flex items-center justify-center bg-red-50 text-[hsl(var(--accent-red))] hover:bg-red-100 transition-all"
-            onClick={() => deleteElement(element.id)}
-            title="حذف الرابط"
-          >
-            <Trash2 size={18} />
-          </button>
-        </div>
-      )}
+      {/* ✅ تم حذف الدوائر الوسطى - النقر المباشر على الموصل متاح عبر منطقة النقر الشفافة */}
     </>
   );
 };
