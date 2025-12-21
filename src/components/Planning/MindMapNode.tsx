@@ -324,6 +324,13 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     };
   }, [isSelected]);
 
+  // ✅ عند التحويل من أداة العناصر الذكية إلى أداة التحديد: حدد كامل الشجرة
+  useEffect(() => {
+    if (isSelected && activeTool === 'selection_tool') {
+      selectMindMapTree(element.id);
+    }
+  }, [activeTool, isSelected, element.id, selectMindMapTree]);
+
   // التركيز على الإدخال عند التحرير
   useEffect(() => {
     if (isEditing && inputRef.current) {
