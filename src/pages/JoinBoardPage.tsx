@@ -36,19 +36,22 @@ export const JoinBoardPage: React.FC = () => {
         return;
       }
 
+      // Use secure RPC function to validate token (prevents token enumeration)
       const { data, error } = await supabase
-        .from('board_invite_links')
-        .select('*')
-        .eq('token', token)
-        .eq('is_active', true)
+        .rpc('validate_board_invite_token', { token_input: token })
         .maybeSingle();
 
-      if (error || !data) {
+      if (error || !data || !data.is_valid) {
         setStatus('invalid');
         return;
       }
 
-      setInviteLink(data);
+      // Construct invite link from validated RPC response
+      setInviteLink({
+        id: data.invite_link_id,
+        board_id: data.board_id,
+        is_active: true
+      });
       setStatus('input');
     };
 
