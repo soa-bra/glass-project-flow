@@ -437,6 +437,12 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     return groupIds.size > 0;
   }, [selectedElements]);
   
+  // ✅ الحصول على بيانات الإطار المستهدف للوهج (يجب أن يكون قبل الـ return)
+  const hoverFrame = useMemo(() => {
+    if (!hoverFrameId || !isDragging) return null;
+    return elements.find(el => el.id === hoverFrameId);
+  }, [hoverFrameId, isDragging, elements]);
+  
   // ✅ لا نعرض BoundingBox للنصوص أو الأسهم
   if (activeTool !== 'selection_tool' || selectedElements.length === 0 || isAllArrows || isAllText) {
     return null;
@@ -469,12 +475,6 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       </div>
     );
   };
-  
-  // ✅ الحصول على بيانات الإطار المستهدف للوهج
-  const hoverFrame = useMemo(() => {
-    if (!hoverFrameId || !isDragging) return null;
-    return elements.find(el => el.id === hoverFrameId);
-  }, [hoverFrameId, isDragging, elements]);
   
   return (
     <>
