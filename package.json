@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ark-ui/react": "^5.30.0",
+    "@commitlint/config-conventional": "^20.2.0",
     "@headlessui/react": "^2.2.4",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^3.9.0",
