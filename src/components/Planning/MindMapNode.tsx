@@ -199,6 +199,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
 
   // تغيير اللون
   const handleColorChange = useCallback((color: string) => {
+    console.log('🎨 Changing color to:', color, 'for node:', element.id);
     updateElement(element.id, {
       data: {
         ...nodeData,
@@ -467,6 +468,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
             icon: <Circle size={16} />,
             label: 'دائري'
           }].map(style => <button key={style.type} onClick={() => {
+            console.log('🔷 Changing style to:', style.type, 'for node:', element.id);
             updateElement(element.id, {
               data: {
                 ...nodeData,
