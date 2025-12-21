@@ -447,11 +447,12 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       )}
       
       {element.type === 'frame' && (
-        <div className="relative w-full h-full pointer-events-none">
-          {/* عنوان الإطار */}
+        <>
+          {/* عنوان الإطار وعداد العناصر - فوق الإطار */}
           {((element as any).title || isEditingTitle) && (
             <div 
-              className="absolute top-2 right-2 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[11px] font-medium text-[hsl(var(--ink))] shadow-sm border border-[hsl(var(--border))] pointer-events-auto"
+              className="absolute right-0 flex items-center gap-2 px-2 py-1 text-[11px] font-medium text-[hsl(var(--ink-80))] pointer-events-auto"
+              style={{ top: '-24px' }}
               onDoubleClick={handleTitleDoubleClick}
             >
               {isEditingTitle ? (
@@ -469,23 +470,32 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
               ) : (
                 <span className="cursor-text">{(element as any).title}</span>
               )}
+              {/* عداد العناصر بجانب العنوان */}
+              {(element as any).children && (element as any).children.length > 0 && (
+                <span className="text-[hsl(var(--ink-60))] text-[10px]">
+                  ({(element as any).children.length})
+                </span>
+              )}
             </div>
           )}
           
-          {/* عدد العناصر المجمّعة */}
-          {(element as any).children && (element as any).children.length > 0 && (
-            <div className="absolute bottom-2 left-2 px-2 py-1 bg-[hsl(var(--ink))]/90 backdrop-blur-sm text-white rounded-lg text-[10px] font-medium shadow-sm">
-              {(element as any).children.length} عنصر
-            </div>
-          )}
-          
-          {/* أيقونة الإطار في المنتصف */}
-          {(!(element as any).children || (element as any).children.length === 0) && (
-            <div className="absolute inset-0 flex items-center justify-center text-[hsl(var(--ink-30))] text-[11px]">
-              إطار فارغ
-            </div>
-          )}
-        </div>
+          {/* محتوى الإطار */}
+          <div 
+            className="relative w-full h-full pointer-events-none rounded-lg"
+            style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid hsl(var(--ink-30))',
+              borderRadius: '8px'
+            }}
+          >
+            {/* أيقونة الإطار في المنتصف إذا فارغ */}
+            {(!(element as any).children || (element as any).children.length === 0) && (
+              <div className="absolute inset-0 flex items-center justify-center text-[hsl(var(--ink-30))] text-[11px]">
+                إطار فارغ
+              </div>
+            )}
+          </div>
+        </>
       )}
       
       {element.type === 'file' && (
