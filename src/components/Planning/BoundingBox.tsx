@@ -267,6 +267,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         const isFrame = selectedElements.length === 1 && selectedElements[0].type === 'frame';
         
         if (isFrame) {
+          // ✅ تغيير حجم الإطار فقط دون الأطفال
           const frameId = selectedElements[0].id;
           const newBounds = {
             x: origin.x - (origin.x - bounds.x) * scaleX,
@@ -274,7 +275,8 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
             width: width * scaleX,
             height: height * scaleY
           };
-          resizeFrame(frameId, newBounds);
+          // استخدام resizeFrame الذي يغير حجم الإطار فقط
+          resizeFrame(frameId, newBounds, false); // false = لا تغيير حجم الأطفال
         } else {
           resizeElements(expandedSelectedIds, scaleX, scaleY, origin);
         }
@@ -478,7 +480,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   
   return (
     <>
-      {/* ✅ وهج الإطار المستهدف */}
+      {/* ✅ وهج الإطار المستهدف - ناعم جداً */}
       {hoverFrame && (
         <div
           className="absolute pointer-events-none"
@@ -488,10 +490,10 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
             width: hoverFrame.size.width,
             height: hoverFrame.size.height,
             borderRadius: '8px',
-            boxShadow: '0 0 20px 8px rgba(0, 0, 0, 0.25), inset 0 0 15px rgba(0, 0, 0, 0.1)',
-            border: '2px solid rgba(0, 0, 0, 0.4)',
+            boxShadow: '0 0 40px 15px rgba(0, 0, 0, 0.08), 0 0 20px 8px rgba(0, 0, 0, 0.05)',
+            border: '1.5px solid rgba(0, 0, 0, 0.15)',
             zIndex: 9997,
-            transition: 'box-shadow 0.2s ease-out, border 0.2s ease-out'
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         />
       )}

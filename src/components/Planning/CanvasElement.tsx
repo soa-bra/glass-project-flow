@@ -448,36 +448,39 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       
       {element.type === 'frame' && (
         <>
-          {/* عنوان الإطار وعداد العناصر - فوق الإطار */}
-          {((element as any).title || isEditingTitle) && (
-            <div 
-              className="absolute right-0 flex items-center gap-2 px-2 py-1 text-[11px] font-medium text-[hsl(var(--ink-80))] pointer-events-auto"
-              style={{ top: '-24px' }}
-              onDoubleClick={handleTitleDoubleClick}
-            >
-              {isEditingTitle ? (
-                <input
-                  ref={titleInputRef}
-                  type="text"
-                  value={editedTitle}
-                  onChange={(e) => setEditedTitle(e.target.value)}
-                  onBlur={handleTitleSave}
-                  onKeyDown={handleTitleKeyDown}
-                  className="outline-none bg-transparent min-w-[80px] text-[11px]"
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                />
-              ) : (
-                <span className="cursor-text">{(element as any).title}</span>
-              )}
-              {/* عداد العناصر بجانب العنوان */}
-              {(element as any).children && (element as any).children.length > 0 && (
-                <span className="text-[hsl(var(--ink-60))] text-[10px]">
-                  ({(element as any).children.length})
-                </span>
-              )}
-            </div>
-          )}
+          {/* عنوان الإطار وعداد العناصر - فوق الإطار في مستطيل أبيض */}
+          <div 
+            className="absolute right-0 flex items-center gap-2 px-3 py-1.5 pointer-events-auto rounded-lg shadow-sm"
+            style={{ 
+              top: '-32px',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid hsl(var(--ink-30))',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)'
+            }}
+            onDoubleClick={handleTitleDoubleClick}
+          >
+            {isEditingTitle ? (
+              <input
+                ref={titleInputRef}
+                type="text"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                onBlur={handleTitleSave}
+                onKeyDown={handleTitleKeyDown}
+                className="outline-none bg-transparent min-w-[80px] text-[11px] font-medium text-[hsl(var(--ink-80))]"
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <span className="cursor-text text-[11px] font-medium text-[hsl(var(--ink-80))]">
+                {(element as any).title || 'إطار'}
+              </span>
+            )}
+            {/* عداد العناصر - يُحسب لحظياً من elements */}
+            <span className="text-[hsl(var(--ink-60))] text-[10px] font-medium">
+              ({(element as any).children?.length || 0})
+            </span>
+          </div>
           
           {/* محتوى الإطار */}
           <div 
