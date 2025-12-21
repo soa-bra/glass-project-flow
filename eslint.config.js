@@ -19,18 +19,16 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
+
   // ═══════════════════════════════════════════════════════════
   // قواعد حوكمة معمارية Planning Feature
   // ═══════════════════════════════════════════════════════════
-  
-  // قاعدة 1: UI Layer لا تستورد من engine مباشرة
+
+  // قاعدة 1: UI Layer لا تستورد من engine أو core مباشرة
   {
     files: ["src/features/planning/ui/**/*.{ts,tsx}"],
     rules: {
@@ -39,19 +37,20 @@ export default tseslint.config(
         {
           patterns: [
             {
-              group: ["**/engine/**", "@/engine/**", "../../../engine/**"],
-              message: "❌ UI layer لا يمكنها استيراد من engine مباشرة. استخدم canvas/ أو adapters/ بدلاً من ذلك."
+              group: ["**/engine/**", "@/engine/**"],
+              message:
+                "❌ UI layer لا يمكنها استيراد من engine مباشرة. استخدم canvas/ أو adapters/ بدلاً من ذلك.",
             },
             {
-              group: ["**/core/**", "@/core/**"],
-              message: "❌ UI layer لا يمكنها استيراد من core مباشرة. استخدم طبقة canvas/ أو state/."
-            }
-          ]
-        }
-      ]
-    }
+              group: ["**/core/**", "@/core/**", "src/core/**"],
+              message: "❌ UI layer لا يمكنها استيراد من core مباشرة. استخدم canvas/ أو state/.",
+            },
+          ],
+        },
+      ],
+    },
   },
-  
+
   // قاعدة 2: Engine Layer لا تستخدم React
   {
     files: ["src/engine/**/*.{ts,tsx}"],
@@ -62,15 +61,16 @@ export default tseslint.config(
           patterns: [
             {
               group: ["react", "react-dom", "react-*", "@radix-ui/*", "framer-motion"],
-              message: "❌ Engine layer يجب أن تكون خالية من React. استخدم TypeScript/JavaScript فقط."
-            }
-          ]
-        }
-      ]
-    }
+              message:
+                "❌ Engine layer يجب أن تكون خالية من React. استخدم TypeScript/JavaScript فقط.",
+            },
+          ],
+        },
+      ],
+    },
   },
-  
-  // قاعدة 3: State Layer (slices) تحتوي reducers فقط - لا business logic
+
+  // قاعدة 3: State Layer (slices) reducers فقط - لا business logic ولا engine imports
   {
     files: ["src/features/planning/state/slices/**/*.{ts,tsx}"],
     rules: {
@@ -80,14 +80,15 @@ export default tseslint.config(
           patterns: [
             {
               group: ["**/engine/**", "@/engine/**"],
-              message: "❌ State slices يجب أن تحتوي على reducers فقط. ضع business logic في domain/."
-            }
-          ]
-        }
-      ]
-    }
+              message:
+                "❌ State slices يجب أن تكون reducers فقط. ضع business logic في domain/commands و domain/policies.",
+            },
+          ],
+        },
+      ],
+    },
   },
-  
+
   // قاعدة 4: Elements Layer لا تستورد من UI
   {
     files: ["src/features/planning/elements/**/*.{ts,tsx}"],
@@ -97,15 +98,22 @@ export default tseslint.config(
         {
           patterns: [
             {
-              group: ["**/ui/panels/**", "**/ui/toolbars/**", "**/ui/overlays/**"],
-              message: "❌ Elements layer لا يمكنها استيراد من UI panels/toolbars. استخدم props أو context."
-            }
-          ]
-        }
-      ]
-    }
+              group: [
+                "**/features/planning/ui/**",
+                "@/features/planning/ui/**",
+                "**/ui/panels/**",
+                "**/ui/toolbars/**",
+                "**/ui/overlays/**",
+              ],
+              message:
+                "❌ Elements layer لا يمكنها استيراد من UI (panels/toolbars/overlays). استخدم props أو callbacks أو context.",
+            },
+          ],
+        },
+      ],
+    },
   },
-  
+
   // قاعدة 5: Canvas Layer لا تستورد من Integration
   {
     files: ["src/features/planning/canvas/**/*.{ts,tsx}"],
@@ -115,15 +123,16 @@ export default tseslint.config(
         {
           patterns: [
             {
-              group: ["**/integration/**"],
-              message: "❌ Canvas layer لا يمكنها استيراد من integration مباشرة. استخدم state/ أو hooks."
-            }
-          ]
-        }
-      ]
-    }
+              group: ["**/features/planning/integration/**", "@/features/planning/integration/**", "**/integration/**"],
+              message:
+                "❌ Canvas layer لا يمكنها استيراد من integration مباشرة. استخدم state/ أو hooks/adapters.",
+            },
+          ],
+        },
+      ],
+    },
   },
-  
+
   // قاعدة 6: منع استيراد من components/Planning القديم
   {
     files: ["src/**/*.{ts,tsx}"],
@@ -134,11 +143,11 @@ export default tseslint.config(
           patterns: [
             {
               group: ["**/components/Planning/**", "@/components/Planning/**"],
-              message: "⚠️ مسار قديم! استخدم @/features/planning/ بدلاً من @/components/Planning/"
-            }
-          ]
-        }
-      ]
-    }
+              message: "⚠️ مسار قديم! استخدم @/features/planning/ بدلاً من @/components/Planning/",
+            },
+          ],
+        },
+      ],
+    },
   }
 );
