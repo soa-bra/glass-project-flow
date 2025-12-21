@@ -470,44 +470,36 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
               {!nodeData.nodeStyle && <RectangleHorizontal size={16} />}
             </button>
 
-            {showStylePicker && <div className="absolute bottom-full left-0 mb-2 bg-white shadow-lg p-1.5 border border-[hsl(var(--border))] min-w-[100px] flex-row gap-px px-[5px] py-[5px] rounded-md flex items-start justify-end">
-                {[{
-            type: 'rounded',
-            icon: <RectangleHorizontal size={14} />,
-            label: 'مستدير'
-          }, {
-            type: 'pill',
-            icon: <Pill size={14} />,
-            label: 'كبسولة'
-          }, {
-            type: 'rectangle',
-            icon: <Square size={14} />,
-            label: 'مستطيل'
-          }, {
-            type: 'circle',
-            icon: <Circle size={14} />,
-            label: 'دائري'
-          }, {
-            type: 'diamond',
-            icon: <Diamond size={14} />,
-            label: 'معين'
-          }, {
-            type: 'hexagon',
-            icon: <Hexagon size={14} />,
-            label: 'سداسي'
-          }].map(style => <button key={style.type} onClick={() => {
-            updateElement(element.id, {
-              data: {
-                ...nodeData,
-                nodeStyle: style.type
-              }
-            });
-            setShowStylePicker(false);
-          }} className={`flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors ${nodeData.nodeStyle === style.type ? 'bg-[hsl(var(--accent-blue)/0.1)] text-[hsl(var(--accent-blue))]' : 'hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))]'}`}>
+            {showStylePicker && (
+              <div className="absolute top-full left-0 mt-2 bg-white shadow-lg p-1.5 border border-[hsl(var(--border))] rounded-md flex gap-1 z-50">
+                {[
+                  { type: 'rounded', icon: <RectangleHorizontal size={16} /> },
+                  { type: 'pill', icon: <Pill size={16} /> },
+                  { type: 'rectangle', icon: <Square size={16} /> },
+                  { type: 'circle', icon: <Circle size={16} /> },
+                  { type: 'diamond', icon: <Diamond size={16} /> },
+                  { type: 'hexagon', icon: <Hexagon size={16} /> }
+                ].map(style => (
+                  <button
+                    key={style.type}
+                    onClick={() => {
+                      updateElement(element.id, {
+                        data: { ...nodeData, nodeStyle: style.type }
+                      });
+                      setShowStylePicker(false);
+                    }}
+                    className={`p-1.5 rounded transition-colors ${
+                      nodeData.nodeStyle === style.type
+                        ? 'bg-[hsl(var(--accent-blue)/0.1)] text-[hsl(var(--accent-blue))]'
+                        : 'hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))]'
+                    }`}
+                    title={style.type}
+                  >
                     {style.icon}
-                    <span>{style.label}</span>
-                  </button>)}
-              </div>}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* تغيير اللون */}
