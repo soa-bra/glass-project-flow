@@ -3,5 +3,4 @@
  * مكونات العرض الرئيسية للوحة
  */
 
-// سيتم نقل InfiniteCanvas هنا
-// export { InfiniteCanvas } from './InfiniteCanvas';
+export { default as InfiniteCanvas } from './InfiniteCanvas';
