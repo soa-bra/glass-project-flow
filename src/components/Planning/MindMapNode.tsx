@@ -14,7 +14,7 @@ interface MindMapNodeProps {
     anchor: "top" | "bottom" | "left" | "right",
     position: { x: number; y: number },
   ) => void;
-  onEndConnection: (nodeId: string, anchor: "top" | "bottom" | "left" | "right") => void;
+  // تم إزالة onEndConnection - التوصيل يتم فقط عبر السحب والإفلات في InfiniteCanvas
   isConnecting: boolean;
   nearestAnchor: NodeAnchorPoint | null;
   activeTool: string;
@@ -25,7 +25,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   isSelected,
   onSelect,
   onStartConnection,
-  onEndConnection,
   isConnecting,
   nearestAnchor,
   activeTool,
@@ -284,22 +283,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     [element, onStartConnection],
   );
 
-  const handleAnchorMouseUp = useCallback(
-    (e: React.MouseEvent, anchor: "top" | "bottom" | "left" | "right") => {
-      e.stopPropagation();
-      
-      // إلغاء المؤقت إذا كان نشطاً
-      if (longPressTimerRef.current) {
-        clearTimeout(longPressTimerRef.current);
-        longPressTimerRef.current = null;
-      }
-      
-      if (isConnecting) {
-        onEndConnection(element.id, anchor);
-      }
-    },
-    [element.id, isConnecting, onEndConnection],
-  );
+  // تم إزالة handleAnchorMouseUp - التوصيل يتم فقط عبر handleMouseUp في InfiniteCanvas
   
   // تنظيف المؤقت عند unmount
   useEffect(() => {
@@ -454,7 +438,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
                   top: pos.y - 8,
                 }}
                 onMouseDown={(e) => handleAnchorMouseDown(e, anchor)}
-                onMouseUp={(e) => handleAnchorMouseUp(e, anchor)}
               />
             );
           })}

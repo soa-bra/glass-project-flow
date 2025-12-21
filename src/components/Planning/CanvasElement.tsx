@@ -70,7 +70,6 @@ const CanvasElement: React.FC<CanvasElementProps> = ({
         isSelected={isSelected}
         onSelect={onSelect}
         onStartConnection={onStartConnection || (() => {})}
-        onEndConnection={onEndConnection || (() => {})}
         isConnecting={isConnecting}
         nearestAnchor={nearestAnchor as any}
         activeTool={activeTool}
