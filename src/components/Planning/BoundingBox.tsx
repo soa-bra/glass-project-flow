@@ -40,7 +40,6 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<string | null>(null);
-  const [hoverFrameId, setHoverFrameId] = useState<string | null>(null); // ✅ تتبع الإطار المستهدف
   const dragStart = useRef<Point>({ x: 0, y: 0 });
   const elementStartPos = useRef<Point>({ x: 0, y: 0 });
   const lastAppliedPos = useRef<Point>({ x: 0, y: 0 }); // ✅ Fix: تتبع آخر موقع مُطبَّق
@@ -218,29 +217,6 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         // ✅ Fix: تحديث آخر موقع مُطبَّق
         lastAppliedPos.current = { x: finalX, y: finalY };
       }
-      
-      // ✅ تحديث الإطار المستهدف للوهج
-      const frames = elements.filter(el => el.type === 'frame' && !expandedSelectedIds.includes(el.id));
-      let foundFrameId: string | null = null;
-      
-      for (const frame of frames) {
-        const elementCenter = {
-          x: finalX + bounds.width / 2,
-          y: finalY + bounds.height / 2
-        };
-        
-        const isInside = canvasKernel.pointInBounds(
-          elementCenter,
-          { x: frame.position.x, y: frame.position.y, width: frame.size.width, height: frame.size.height }
-        );
-        
-        if (isInside) {
-          foundFrameId = frame.id;
-          break;
-        }
-      }
-      
-      setHoverFrameId(foundFrameId);
     } else if (isResizing) {
       // ✅ استخدام Event Pipeline لتحويل الدلتا
       const resizeDelta = eventPipeline.screenDeltaToWorld(
@@ -267,7 +243,6 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         const isFrame = selectedElements.length === 1 && selectedElements[0].type === 'frame';
         
         if (isFrame) {
-          // ✅ تغيير حجم الإطار فقط دون الأطفال
           const frameId = selectedElements[0].id;
           const newBounds = {
             x: origin.x - (origin.x - bounds.x) * scaleX,
@@ -275,8 +250,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
             width: width * scaleX,
             height: height * scaleY
           };
-          // استخدام resizeFrame الذي يغير حجم الإطار فقط
-          resizeFrame(frameId, newBounds, false); // false = لا تغيير حجم الأطفال
+          resizeFrame(frameId, newBounds);
         } else {
           resizeElements(expandedSelectedIds, scaleX, scaleY, origin);
         }
@@ -349,7 +323,6 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     
     setIsDragging(false);
     setIsResizing(null);
-    setHoverFrameId(null); // ✅ مسح حالة الوهج
     hasDuplicated.current = false;
     
     // مسح خطوط الإرشاد
@@ -439,12 +412,6 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     return groupIds.size > 0;
   }, [selectedElements]);
   
-  // ✅ الحصول على بيانات الإطار المستهدف للوهج (يجب أن يكون قبل الـ return)
-  const hoverFrame = useMemo(() => {
-    if (!hoverFrameId || !isDragging) return null;
-    return elements.find(el => el.id === hoverFrameId);
-  }, [hoverFrameId, isDragging, elements]);
-  
   // ✅ لا نعرض BoundingBox للنصوص أو الأسهم
   if (activeTool !== 'selection_tool' || selectedElements.length === 0 || isAllArrows || isAllText) {
     return null;
@@ -479,84 +446,64 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   };
   
   return (
-    <>
-      {/* ✅ وهج الإطار المستهدف - ناعم جداً */}
-      {hoverFrame && (
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            left: hoverFrame.position.x,
-            top: hoverFrame.position.y,
-            width: hoverFrame.size.width,
-            height: hoverFrame.size.height,
-            borderRadius: '8px',
-            boxShadow: '0 0 40px 15px rgba(0, 0, 0, 0.08), 0 0 20px 8px rgba(0, 0, 0, 0.05)',
-            border: '1.5px solid rgba(0, 0, 0, 0.15)',
-            zIndex: 9997,
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-          }}
-        />
+    <div
+      className="absolute pointer-events-none bounding-box"
+      style={{
+        left: bounds.x,
+        top: bounds.y,
+        width: bounds.width,
+        height: bounds.height,
+        border: isGrouped 
+          ? '2px solid hsl(var(--accent-green) / 0.9)' 
+          : '2px dashed hsl(var(--accent-blue) / 0.8)',
+        borderRadius: '4px',
+        // ✅ خلفية خفيفة للمجموعات
+        backgroundColor: isGrouped ? 'hsl(var(--accent-green) / 0.05)' : 'transparent',
+        // ✅ المرحلة 1: z-index عالي لضمان استقبال أحداث السحب
+        zIndex: 9998
+      }}
+    >
+      {/* ✅ مؤشر المجموعة */}
+      {isGrouped && (
+        <div 
+          className="absolute -top-7 right-0 px-2 py-0.5 text-xs font-medium rounded bg-[hsl(var(--accent-green))] text-white flex items-center gap-1"
+          style={{ direction: 'rtl' }}
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          مجموعة
+        </div>
       )}
       
+      {/* مقابض الزوايا */}
+      <ResizeHandle position="nw" cursor="nwse-resize" onStart={(e) => handleResizeStart(e, 'nw')} />
+      <ResizeHandle position="ne" cursor="nesw-resize" onStart={(e) => handleResizeStart(e, 'ne')} />
+      <ResizeHandle position="sw" cursor="nesw-resize" onStart={(e) => handleResizeStart(e, 'sw')} />
+      <ResizeHandle position="se" cursor="nwse-resize" onStart={(e) => handleResizeStart(e, 'se')} />
+      
+      {/* مقابض الأضلاع */}
+      <ResizeHandle position="n" cursor="ns-resize" onStart={(e) => handleResizeStart(e, 'n')} />
+      <ResizeHandle position="s" cursor="ns-resize" onStart={(e) => handleResizeStart(e, 's')} />
+      <ResizeHandle position="w" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'w')} />
+      <ResizeHandle position="e" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'e')} />
+      
+      {/* ✅ منطقة السحب للتحريك - تغطي كامل المنطقة */}
       <div
-        className="absolute pointer-events-none bounding-box"
-        style={{
-          left: bounds.x,
-          top: bounds.y,
-          width: bounds.width,
-          height: bounds.height,
-          border: isGrouped 
-            ? '2px solid hsl(var(--accent-green) / 0.9)' 
-            : '2px dashed hsl(var(--accent-blue) / 0.8)',
-          borderRadius: '4px',
-          // ✅ خلفية خفيفة للمجموعات
-          backgroundColor: isGrouped ? 'hsl(var(--accent-green) / 0.05)' : 'transparent',
-          // ✅ المرحلة 1: z-index عالي لضمان استقبال أحداث السحب
-          zIndex: 9998
-        }}
-      >
-        {/* ✅ مؤشر المجموعة */}
-        {isGrouped && (
-          <div 
-            className="absolute -top-7 right-0 px-2 py-0.5 text-xs font-medium rounded bg-[hsl(var(--accent-green))] text-white flex items-center gap-1"
-            style={{ direction: 'rtl' }}
-          >
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            مجموعة
-          </div>
-        )}
-        
-        {/* مقابض الزوايا */}
-        <ResizeHandle position="nw" cursor="nwse-resize" onStart={(e) => handleResizeStart(e, 'nw')} />
-        <ResizeHandle position="ne" cursor="nesw-resize" onStart={(e) => handleResizeStart(e, 'ne')} />
-        <ResizeHandle position="sw" cursor="nesw-resize" onStart={(e) => handleResizeStart(e, 'sw')} />
-        <ResizeHandle position="se" cursor="nwse-resize" onStart={(e) => handleResizeStart(e, 'se')} />
-        
-        {/* مقابض الأضلاع */}
-        <ResizeHandle position="n" cursor="ns-resize" onStart={(e) => handleResizeStart(e, 'n')} />
-        <ResizeHandle position="s" cursor="ns-resize" onStart={(e) => handleResizeStart(e, 's')} />
-        <ResizeHandle position="w" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'w')} />
-        <ResizeHandle position="e" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'e')} />
-        
-        {/* ✅ منطقة السحب للتحريك - تغطي كامل المنطقة */}
-        <div
-          ref={dragAreaRef}
-          className="absolute inset-0 pointer-events-auto cursor-move touch-none"
-          onPointerDown={handleDragStart}
-        />
-        
-        {/* عداد العناصر (إذا أكثر من عنصر وليست مجموعة) */}
-        {displayCount > 1 && !isGrouped && (
-          <div 
-            className="absolute -top-7 left-0 px-2 py-0.5 text-xs font-medium rounded bg-[hsl(var(--accent-blue))] text-white"
-            style={{ direction: 'rtl' }}
-          >
-            {displayCount} عنصر
-          </div>
-        )}
-      </div>
-    </>
+        ref={dragAreaRef}
+        className="absolute inset-0 pointer-events-auto cursor-move touch-none"
+        onPointerDown={handleDragStart}
+      />
+      
+      {/* عداد العناصر (إذا أكثر من عنصر وليست مجموعة) */}
+      {displayCount > 1 && !isGrouped && (
+        <div 
+          className="absolute -top-7 left-0 px-2 py-0.5 text-xs font-medium rounded bg-[hsl(var(--accent-blue))] text-white"
+          style={{ direction: 'rtl' }}
+        >
+          {displayCount} عنصر
+        </div>
+      )}
+    </div>
   );
 };

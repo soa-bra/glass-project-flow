@@ -12,7 +12,7 @@ export interface FrameSlice {
   getFrameChildren: (frameId: string) => CanvasElement[];
   assignElementsToFrame: (frameId: string) => void;
   moveFrame: (frameId: string, dx: number, dy: number) => void;
-  resizeFrame: (frameId: string, newBounds: { x: number; y: number; width: number; height: number }, resizeChildren?: boolean) => void;
+  resizeFrame: (frameId: string, newBounds: { x: number; y: number; width: number; height: number }) => void;
   ungroupFrame: (frameId: string) => void;
   updateFrameTitle: (frameId: string, newTitle: string) => void;
 }
@@ -118,7 +118,7 @@ export const createFrameSlice: StateCreator<
     get().pushHistory();
   },
 
-  resizeFrame: (frameId, newBounds, resizeChildren = true) => {
+  resizeFrame: (frameId, newBounds) => {
     const state = get();
     const frame = state.elements.find((el: CanvasElement) => el.id === frameId);
     if (!frame || frame.type !== 'frame') return;
@@ -145,8 +145,7 @@ export const createFrameSlice: StateCreator<
           };
         }
         
-        // ✅ تغيير حجم الأطفال فقط إذا resizeChildren = true
-        if (resizeChildren && childIds.includes(el.id)) {
+        if (childIds.includes(el.id)) {
           const relativeX = el.position.x - oldBounds.x;
           const relativeY = el.position.y - oldBounds.y;
           
