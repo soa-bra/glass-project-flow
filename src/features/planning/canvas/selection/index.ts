@@ -3,6 +3,5 @@
  * مكونات التحديد والاختيار
  */
 
-// سيتم نقل BoundingBox, SelectionBox هنا
-// export { BoundingBox } from './BoundingBox';
-// export { SelectionBox } from './SelectionBox';
+export { BoundingBox } from './BoundingBox';
+export { default as SelectionBox, useSelectionBox } from './SelectionBox';

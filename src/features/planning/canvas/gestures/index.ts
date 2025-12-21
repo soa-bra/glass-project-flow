@@ -3,5 +3,4 @@
  * مكونات التفاعل باللمس والماوس
  */
 
-// سيتم نقل PenInputLayer هنا
-// export { PenInputLayer } from './PenInputLayer';
+export { default as PenInputLayer } from './PenInputLayer';

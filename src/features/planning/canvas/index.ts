@@ -4,16 +4,16 @@
  */
 
 // Viewport
-export * from './viewport';
+export { InfiniteCanvas } from './viewport';
 
 // Selection
-export * from './selection';
+export { BoundingBox, SelectionBox, useSelectionBox } from './selection';
 
 // Gestures
-export * from './gestures';
+export { PenInputLayer } from './gestures';
 
 // Transforms
-export * from './transforms';
+export { SnapGuides } from './transforms';
 
 // Layers
 export * from './layers';
