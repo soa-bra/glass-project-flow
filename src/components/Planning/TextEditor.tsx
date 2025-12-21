@@ -8,9 +8,10 @@ interface TextEditorProps {
   element: CanvasElement;
   onUpdate: (content: string) => void;
   onClose: () => void;
+  onDoubleClick?: (e: React.MouseEvent) => void;
 }
 
-export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClose }) => {
+export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClose, onDoubleClick }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { updateTextStyle, startTyping, stopTyping, updateElement } = useCanvasStore();
