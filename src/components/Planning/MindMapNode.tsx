@@ -209,13 +209,17 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     [element, onSelect, activeTool, isEditing, isSingleNodeMode, selectMindMapTree],
   );
 
-  // تحريك العقدة مع الفروع
+  // تحريك العقدة - مع الفروع فقط عند استخدام أداة التحديد
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       const deltaX = (e.clientX - dragStartRef.current.x) / viewport.zoom;
       const deltaY = (e.clientY - dragStartRef.current.y) / viewport.zoom;
 
-      if (isSingleNodeMode) {
+      // ✅ أداة العناصر الذكية: تحريك العقدة فقط
+      // ✅ أداة التحديد: تحريك كامل الشجرة (الأصول والفروع)
+      const shouldMoveOnlyNode = activeTool === 'smart_element_tool' || isSingleNodeMode;
+
+      if (shouldMoveOnlyNode) {
         updateElement(element.id, {
           position: {
             x: dragStartRef.current.elementX + deltaX,
@@ -228,7 +232,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         moveElementWithChildren(element.id, totalDeltaX, totalDeltaY);
       }
     },
-    [element.id, element.position, viewport.zoom, updateElement, isSingleNodeMode, moveElementWithChildren],
+    [element.id, element.position, viewport.zoom, updateElement, isSingleNodeMode, moveElementWithChildren, activeTool],
   );
 
   const handleMouseUp = useCallback(() => {
