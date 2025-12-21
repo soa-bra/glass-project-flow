@@ -1,6 +1,11 @@
 /**
  * FrameDropZone - مكون منطقة الإفلات للإطار
  * يوفر تأثيرات بصرية أثناء السحب والإفلات
+ * 
+ * ✅ التحديثات:
+ * - خلفية بيضاء وحد أسود خفيف
+ * - عنوان الإطار وعداد العناصر خارج الإطار (فوقه)
+ * - تأثير وهج أسود ناعم عند السحب
  */
 
 import React from 'react';
@@ -35,73 +40,100 @@ export const FrameDropZone: React.FC<FrameDropZoneProps> = ({
   const hoveredFrameId = useCanvasStore(state => state.hoveredFrameId);
   const draggedElementIds = useCanvasStore(state => state.draggedElementIds);
   
+  // ✅ الحصول على عدد الأطفال الفعلي من الـ store مباشرة (تحديث لحظي)
+  const elements = useCanvasStore(state => state.elements);
+  const frame = elements.find(el => el.id === frameId);
+  const actualChildrenCount = (frame as any)?.children?.length || 0;
+  
   const isHovered = hoveredFrameId === frameId;
   const isDragging = draggedElementIds.length > 0;
   const isDropTarget = isHovered && isDragging;
   
   return (
-    <div 
-      className={cn(
-        "relative w-full h-full transition-all duration-200 rounded-lg",
-        // تأثير الإبراز عند السحب فوق الإطار
-        isDropTarget && "ring-2 ring-[hsl(var(--accent-green))] bg-[hsl(var(--accent-green))]/10"
-      )}
-      style={{
-        pointerEvents: 'auto'
-      }}
-    >
-      {/* عنوان الإطار */}
-      {(title || isEditingTitle) && (
+    <>
+      {/* ✅ عنوان الإطار وعداد العناصر - خارج الإطار (فوقه) */}
+      {(title || isEditingTitle || actualChildrenCount > 0) && (
         <div 
-          className={cn(
-            "absolute top-2 right-2 px-2 py-1 backdrop-blur-sm rounded-lg text-[11px] font-medium shadow-sm border pointer-events-auto transition-colors duration-200",
-            isDropTarget 
-              ? "bg-[hsl(var(--accent-green))]/20 border-[hsl(var(--accent-green))] text-[hsl(var(--accent-green))]"
-              : "bg-white/90 border-[hsl(var(--border))] text-[hsl(var(--ink))]"
-          )}
-          onDoubleClick={onTitleDoubleClick}
+          className="absolute pointer-events-auto flex items-center gap-2"
+          style={{
+            top: -28,
+            right: 0,
+            zIndex: 10
+          }}
         >
-          {isEditingTitle ? (
-            <input
-              ref={titleInputRef}
-              type="text"
-              value={editedTitle}
-              onChange={(e) => onTitleChange?.(e.target.value)}
-              onBlur={onTitleSave}
-              onKeyDown={onTitleKeyDown}
-              className="outline-none bg-transparent min-w-[80px] text-[11px]"
-              onClick={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-            />
-          ) : (
-            <span className="cursor-text">{title}</span>
-          )}
+          <div 
+            className={cn(
+              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200",
+              "bg-white border border-[hsl(var(--border))] shadow-sm",
+              isDropTarget && "border-[hsl(var(--ink))] shadow-md"
+            )}
+          >
+            {/* عنوان الإطار */}
+            {isEditingTitle ? (
+              <input
+                ref={titleInputRef}
+                type="text"
+                value={editedTitle}
+                onChange={(e) => onTitleChange?.(e.target.value)}
+                onBlur={onTitleSave}
+                onKeyDown={onTitleKeyDown}
+                className="outline-none bg-transparent min-w-[80px] text-[11px] text-[hsl(var(--ink))]"
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <span 
+                className="cursor-text text-[hsl(var(--ink))]"
+                onDoubleClick={onTitleDoubleClick}
+              >
+                {title || 'إطار'}
+              </span>
+            )}
+            
+            {/* فاصل */}
+            {actualChildrenCount > 0 && (
+              <span className="text-[hsl(var(--ink-30))]">|</span>
+            )}
+            
+            {/* عداد العناصر */}
+            {actualChildrenCount > 0 && (
+              <span className="text-[hsl(var(--ink-60))]">
+                {actualChildrenCount} عنصر
+              </span>
+            )}
+          </div>
         </div>
       )}
       
-      {/* رسالة الإفلات */}
-      {isDropTarget && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-          <span className="px-3 py-1.5 bg-[hsl(var(--accent-green))] text-white rounded-full text-sm font-medium animate-pulse shadow-lg">
-            إفلات لإضافة {draggedElementIds.length > 1 ? `${draggedElementIds.length} عناصر` : 'العنصر'}
-          </span>
-        </div>
-      )}
-      
-      {/* عداد العناصر */}
-      {childrenCount > 0 && !isDropTarget && (
-        <div className="absolute bottom-2 left-2 px-2 py-1 bg-[hsl(var(--ink))]/90 backdrop-blur-sm text-white rounded-lg text-[10px] font-medium shadow-sm pointer-events-none">
-          {childrenCount} عنصر
-        </div>
-      )}
-      
-      {/* نص الإطار الفارغ */}
-      {childrenCount === 0 && !isDropTarget && (
-        <div className="absolute inset-0 flex items-center justify-center text-[hsl(var(--ink-30))] text-[11px] pointer-events-none">
-          إطار فارغ
-        </div>
-      )}
-    </div>
+      {/* ✅ الإطار نفسه - خلفية بيضاء وحد أسود خفيف */}
+      <div 
+        className={cn(
+          "relative w-full h-full transition-all duration-200 rounded-lg",
+          "bg-white border border-[hsl(var(--ink-30))]",
+          // ✅ تأثير وهج أسود ناعم عند السحب داخل الإطار
+          isDropTarget && "shadow-[0_0_20px_rgba(0,0,0,0.15)] border-[hsl(var(--ink))]"
+        )}
+        style={{
+          pointerEvents: 'auto'
+        }}
+      >
+        {/* ✅ رسالة الإفلات */}
+        {isDropTarget && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            <span className="px-4 py-2 bg-[hsl(var(--ink))] text-white rounded-full text-sm font-medium shadow-lg">
+              إفلات لإضافة {draggedElementIds.length > 1 ? `${draggedElementIds.length} عناصر` : 'العنصر'}
+            </span>
+          </div>
+        )}
+        
+        {/* ✅ نص الإطار الفارغ */}
+        {actualChildrenCount === 0 && !isDropTarget && (
+          <div className="absolute inset-0 flex items-center justify-center text-[hsl(var(--ink-30))] text-[11px] pointer-events-none">
+            إطار فارغ
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

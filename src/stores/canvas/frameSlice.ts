@@ -161,23 +161,13 @@ export const createFrameSlice: StateCreator<
     get().pushHistory();
   },
 
+  // ✅ تغيير حجم الإطار فقط بدون تغيير حجم أو موقع الأطفال
   resizeFrame: (frameId, newBounds) => {
     const state = get();
     const frame = state.elements.find((el: CanvasElement) => el.id === frameId);
     if (!frame || frame.type !== 'frame') return;
     
-    const oldBounds = {
-      x: frame.position.x,
-      y: frame.position.y,
-      width: frame.size.width,
-      height: frame.size.height
-    };
-    
-    const scaleX = newBounds.width / oldBounds.width;
-    const scaleY = newBounds.height / oldBounds.height;
-    
-    const childIds = (frame as any).children || [];
-    
+    // ✅ تغيير حجم الإطار فقط - الأطفال يبقون كما هم
     set((state: any) => ({
       elements: state.elements.map((el: CanvasElement) => {
         if (el.id === frameId) {
@@ -187,24 +177,6 @@ export const createFrameSlice: StateCreator<
             size: { width: newBounds.width, height: newBounds.height }
           };
         }
-        
-        if (childIds.includes(el.id)) {
-          const relativeX = el.position.x - oldBounds.x;
-          const relativeY = el.position.y - oldBounds.y;
-          
-          return {
-            ...el,
-            position: {
-              x: newBounds.x + relativeX * scaleX,
-              y: newBounds.y + relativeY * scaleY
-            },
-            size: {
-              width: el.size.width * scaleX,
-              height: el.size.height * scaleY
-            }
-          };
-        }
-        
         return el;
       })
     }));
