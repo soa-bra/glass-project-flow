@@ -35,7 +35,13 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     resizeElements, 
     duplicateElement, 
     resizeFrame, 
-    activeTool 
+    activeTool,
+    // ✅ حالة تتبع السحب والإفلات للإطارات
+    setHoveredFrame,
+    setDraggedElements,
+    findFrameAtPoint,
+    addChildToFrame,
+    removeChildFromFrame
   } = useCanvasStore();
   
   const [isDragging, setIsDragging] = useState(false);
@@ -217,6 +223,12 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         // ✅ Fix: تحديث آخر موقع مُطبَّق
         lastAppliedPos.current = { x: finalX, y: finalY };
       }
+      
+      // ✅ تتبع الإطار تحت المؤشر أثناء السحب
+      const centerX = finalX + bounds.width / 2;
+      const centerY = finalY + bounds.height / 2;
+      const frameUnderCursor = findFrameAtPoint(centerX, centerY, expandedSelectedIds);
+      setHoveredFrame(frameUnderCursor?.id || null);
     } else if (isResizing) {
       // ✅ استخدام Event Pipeline لتحويل الدلتا
       const resizeDelta = eventPipeline.screenDeltaToWorld(
@@ -258,7 +270,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         dragStart.current = { x: e.clientX, y: e.clientY };
       }
     }
-  }, [isDragging, isResizing, viewport, moveElements, resizeElements, selectedElementIds, bounds, getResizeOrigin, selectedElements, duplicateElement, resizeFrame, onGuidesChange, settings.snapToGrid]);
+  }, [isDragging, isResizing, viewport, moveElements, resizeElements, selectedElementIds, bounds, getResizeOrigin, selectedElements, duplicateElement, resizeFrame, onGuidesChange, settings.snapToGrid, expandedSelectedIds, findFrameAtPoint, setHoveredFrame]);
   
   // ✅ معالجة إنهاء السحب
   const handlePointerUp = useCallback((e: PointerEvent) => {
@@ -273,53 +285,37 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     // ✅ المرحلة 3: تحرير قفل Selection Coordinator
     selectionCoordinator.releaseEvent();
     
-    // التحقق من وجود العناصر داخل إطار عند الإفلات
+    // ✅ التحقق من وجود العناصر داخل إطار عند الإفلات (باستخدام hoveredFrameId)
     if (isDragging && selectedElements.length > 0) {
+      const { hoveredFrameId } = useCanvasStore.getState();
       const frames = elements.filter(el => el.type === 'frame');
-      const { addChildToFrame, removeChildFromFrame } = useCanvasStore.getState();
       
       selectedElements.forEach(selectedEl => {
-        let targetFrameId: string | null = null;
-        
-        for (const frame of frames) {
-          // ✅ استخدام Canvas Kernel للتحقق من الاحتواء
-          const isInside = canvasKernel.pointInBounds(
-            { 
-              x: selectedEl.position.x + selectedEl.size.width / 2, 
-              y: selectedEl.position.y + selectedEl.size.height / 2 
-            },
-            { 
-              x: frame.position.x, 
-              y: frame.position.y, 
-              width: frame.size.width, 
-              height: frame.size.height 
-            }
-          );
-          
-          if (isInside) {
-            targetFrameId = frame.id;
-            break;
-          }
-        }
+        // تجاوز الإطارات نفسها
+        if (selectedEl.type === 'frame') return;
         
         // إزالة من الإطارات القديمة
         frames.forEach(frame => {
           const children = (frame as any).children || [];
-          if (children.includes(selectedEl.id) && frame.id !== targetFrameId) {
+          if (children.includes(selectedEl.id) && frame.id !== hoveredFrameId) {
             removeChildFromFrame(frame.id, selectedEl.id);
           }
         });
         
-        // إضافة للإطار الجديد
-        if (targetFrameId) {
-          const frame = frames.find(f => f.id === targetFrameId);
+        // إضافة للإطار الجديد (إذا كان هناك إطار تحت العنصر)
+        if (hoveredFrameId) {
+          const frame = frames.find(f => f.id === hoveredFrameId);
           const children = (frame as any)?.children || [];
           if (!children.includes(selectedEl.id)) {
-            addChildToFrame(targetFrameId, selectedEl.id);
+            addChildToFrame(hoveredFrameId, selectedEl.id);
           }
         }
       });
     }
+    
+    // ✅ مسح حالة تتبع السحب
+    setDraggedElements([]);
+    setHoveredFrame(null);
     
     setIsDragging(false);
     setIsResizing(null);
@@ -329,7 +325,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     if (onGuidesChange) {
       onGuidesChange([]);
     }
-  }, [isDragging, selectedElements, elements, onGuidesChange]);
+  }, [isDragging, selectedElements, elements, onGuidesChange, addChildToFrame, removeChildFromFrame, setDraggedElements, setHoveredFrame]);
   
   // ✅ إضافة مستمعي Pointer Events على الـ window عند السحب
   useEffect(() => {
@@ -360,13 +356,16 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       activePointerIdRef.current = e.pointerId;
     }
     
+    // ✅ تسجيل العناصر المسحوبة لتتبع الإطارات
+    setDraggedElements(expandedSelectedIds);
+    
     setIsDragging(true);
     dragStart.current = { x: e.clientX, y: e.clientY };
     
     // ✅ Fix: استخدام bounds.x و bounds.y لأنها تمثل الموقع الفعلي للمجموعة
     elementStartPos.current = { x: bounds.x, y: bounds.y };
     lastAppliedPos.current = { x: bounds.x, y: bounds.y };
-  }, [bounds.x, bounds.y]);
+  }, [bounds.x, bounds.y, expandedSelectedIds, setDraggedElements]);
   
   const handleResizeStart = useCallback((e: React.PointerEvent, corner: string) => {
     e.stopPropagation();

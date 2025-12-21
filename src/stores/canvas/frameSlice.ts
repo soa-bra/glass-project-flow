@@ -15,6 +15,13 @@ export interface FrameSlice {
   resizeFrame: (frameId: string, newBounds: { x: number; y: number; width: number; height: number }) => void;
   ungroupFrame: (frameId: string) => void;
   updateFrameTitle: (frameId: string, newTitle: string) => void;
+  
+  // Drag & Drop Tracking
+  hoveredFrameId: string | null;
+  draggedElementIds: string[];
+  setHoveredFrame: (id: string | null) => void;
+  setDraggedElements: (ids: string[]) => void;
+  findFrameAtPoint: (x: number, y: number, excludeIds?: string[]) => CanvasElement | null;
 }
 
 export const createFrameSlice: StateCreator<
@@ -23,6 +30,42 @@ export const createFrameSlice: StateCreator<
   [],
   FrameSlice
 > = (set, get) => ({
+  // Drag & Drop Tracking State
+  hoveredFrameId: null,
+  draggedElementIds: [],
+  
+  setHoveredFrame: (id) => {
+    set({ hoveredFrameId: id });
+  },
+  
+  setDraggedElements: (ids) => {
+    set({ draggedElementIds: ids });
+  },
+  
+  findFrameAtPoint: (x, y, excludeIds = []) => {
+    const state = get();
+    const frames = state.elements.filter(
+      (el: CanvasElement) => el.type === 'frame' && !excludeIds.includes(el.id)
+    );
+    
+    // البحث من الأعلى للأسفل (العنصر الأعلى z-index أولاً)
+    for (let i = frames.length - 1; i >= 0; i--) {
+      const frame = frames[i];
+      const isInside = (
+        x >= frame.position.x &&
+        x <= frame.position.x + frame.size.width &&
+        y >= frame.position.y &&
+        y <= frame.position.y + frame.size.height
+      );
+      
+      if (isInside) {
+        return frame;
+      }
+    }
+    
+    return null;
+  },
+
   addChildToFrame: (frameId, childId) => {
     set((state: any) => ({
       elements: state.elements.map((el: CanvasElement) => {
