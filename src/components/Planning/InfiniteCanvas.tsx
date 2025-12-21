@@ -97,8 +97,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   // ✅ Sprint 5: Snap Guides State
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
   
-  // ✅ Mind Map Connection State
-  const [mindMapConnection, setMindMapConnection] = useState<{
+  // ✅ Mind Map Connection State - استخدام ref للأداء + state للـ UI
+  const mindMapConnectionRef = useRef<{
     isConnecting: boolean;
     sourceNodeId: string | null;
     sourceAnchor: 'top' | 'bottom' | 'left' | 'right' | null;
@@ -114,31 +114,62 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     nearestAnchor: null
   });
   
+  // State للـ UI فقط (للـ re-render عند الحاجة)
+  const [mindMapConnectionUI, setMindMapConnectionUI] = useState<{
+    isConnecting: boolean;
+    startPosition: { x: number; y: number } | null;
+    currentPosition: { x: number; y: number } | null;
+    nearestAnchor: NodeAnchorPoint | null;
+  }>({
+    isConnecting: false,
+    startPosition: null,
+    currentPosition: null,
+    nearestAnchor: null
+  });
+  
+  // تحديث الـ UI بشكل مُحسَّن (throttled)
+  const updateUIRef = useRef<number | null>(null);
+  const updateConnectionUI = useCallback(() => {
+    if (updateUIRef.current) return; // تجنب التحديثات المتكررة
+    updateUIRef.current = requestAnimationFrame(() => {
+      const conn = mindMapConnectionRef.current;
+      setMindMapConnectionUI({
+        isConnecting: conn.isConnecting,
+        startPosition: conn.startPosition,
+        currentPosition: conn.currentPosition,
+        nearestAnchor: conn.nearestAnchor
+      });
+      updateUIRef.current = null;
+    });
+  }, []);
+  
   // Mind Map: بدء التوصيل من عقدة
   const handleStartConnection = useCallback((
     nodeId: string, 
     anchor: 'top' | 'bottom' | 'left' | 'right', 
     position: { x: number; y: number }
   ) => {
-    setMindMapConnection({
+    mindMapConnectionRef.current = {
       isConnecting: true,
       sourceNodeId: nodeId,
       sourceAnchor: anchor,
       startPosition: position,
       currentPosition: position,
       nearestAnchor: null
-    });
-  }, []);
+    };
+    updateConnectionUI();
+  }, [updateConnectionUI]);
   
   // Mind Map: إنهاء التوصيل في عقدة
   const handleEndConnection = useCallback((
     nodeId: string, 
     anchor: 'top' | 'bottom' | 'left' | 'right'
   ) => {
-    if (!mindMapConnection.isConnecting || !mindMapConnection.sourceNodeId) return;
-    if (mindMapConnection.sourceNodeId === nodeId) return;
+    const conn = mindMapConnectionRef.current;
+    if (!conn.isConnecting || !conn.sourceNodeId) return;
+    if (conn.sourceNodeId === nodeId) return;
     
-    const sourceNode = elements.find(el => el.id === mindMapConnection.sourceNodeId);
+    const sourceNode = elements.find(el => el.id === conn.sourceNodeId);
     if (!sourceNode) return;
     
     const targetNode = elements.find(el => el.id === nodeId);
@@ -151,9 +182,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       position: connectorBounds.position,
       size: connectorBounds.size,
       data: {
-        startNodeId: mindMapConnection.sourceNodeId,
+        startNodeId: conn.sourceNodeId,
         endNodeId: nodeId,
-        startAnchor: { nodeId: mindMapConnection.sourceNodeId, anchor: mindMapConnection.sourceAnchor },
+        startAnchor: { nodeId: conn.sourceNodeId, anchor: conn.sourceAnchor },
         endAnchor: { nodeId, anchor },
         curveStyle: 'bezier',
         color: sourceNode.data?.color || '#3DA8F5',
@@ -161,19 +192,21 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       } as MindMapConnectorData
     });
     
-    setMindMapConnection({
+    mindMapConnectionRef.current = {
       isConnecting: false,
       sourceNodeId: null,
       sourceAnchor: null,
       startPosition: null,
       currentPosition: null,
       nearestAnchor: null
-    });
-  }, [mindMapConnection, elements]);
+    };
+    updateConnectionUI();
+  }, [elements, updateConnectionUI]);
   
-  // Mind Map: تحديث موقع السحب والبحث عن أقرب عقدة
+  // Mind Map: تحديث موقع السحب والبحث عن أقرب عقدة (محسّن للأداء)
   const updateConnectionPosition = useCallback((clientX: number, clientY: number) => {
-    if (!mindMapConnection.isConnecting) return;
+    const conn = mindMapConnectionRef.current;
+    if (!conn.isConnecting) return;
     
     const containerRect = getContainerRect(containerRef);
     if (!containerRect) return;
@@ -181,7 +214,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     const canvasPoint = canvasKernel.screenToWorld(clientX, clientY, viewport, containerRect);
     
     const connectableElements = elements.filter(el => {
-      if (el.id === mindMapConnection.sourceNodeId) return false;
+      if (el.id === conn.sourceNodeId) return false;
       if (el.type === 'mindmap_connector' || el.type === 'visual_connector') return false;
       return ['mindmap_node', 'visual_node', 'shape', 'text', 'image', 'sticky', 'frame', 'smart', 'file'].includes(el.type);
     });
@@ -202,26 +235,28 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       }
     }
     
-    setMindMapConnection(prev => ({
-      ...prev,
-      currentPosition: canvasPoint,
-      nearestAnchor: nearest
-    }));
-  }, [mindMapConnection.isConnecting, mindMapConnection.sourceNodeId, elements, viewport]);
+    // تحديث الـ ref مباشرة (بدون re-render)
+    mindMapConnectionRef.current.currentPosition = canvasPoint;
+    mindMapConnectionRef.current.nearestAnchor = nearest;
+    
+    // تحديث UI بشكل مُحسَّن
+    updateConnectionUI();
+  }, [elements, viewport, updateConnectionUI]);
   
   // إلغاء التوصيل عند النقر على الكانفس
   const cancelConnection = useCallback(() => {
-    if (mindMapConnection.isConnecting) {
-      setMindMapConnection({
+    if (mindMapConnectionRef.current.isConnecting) {
+      mindMapConnectionRef.current = {
         isConnecting: false,
         sourceNodeId: null,
         sourceAnchor: null,
         startPosition: null,
         currentPosition: null,
         nearestAnchor: null
-      });
+      };
+      updateConnectionUI();
     }
-  }, [mindMapConnection.isConnecting]);
+  }, [updateConnectionUI]);
 
   // ✅ استخدام Canvas Kernel لحساب حدود العرض
   const viewportBounds = useMemo(() => {
@@ -343,7 +378,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   // ✅ Handle Mouse Move - استخدام State Machine
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     // تحديث خط اتصال الخريطة الذهنية أثناء السحب
-    if (mindMapConnection.isConnecting) {
+    if (mindMapConnectionRef.current.isConnecting) {
       updateConnectionPosition(e.clientX, e.clientY);
     }
     
@@ -376,7 +411,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     viewport, 
     setPan, 
     handleCanvasMouseMove, 
-    mindMapConnection.isConnecting, 
     updateConnectionPosition,
     isMode,
     boxSelectData,
@@ -387,12 +421,13 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   const handleMouseUp = useCallback(() => {
     // ✅ إنشاء الموصل فقط عند وجود snap (السناب = اتصال مشروط بالإفلات)
     // عند وجود snap، الإفلات في أي مكان يُكمل التوصيل
-    if (mindMapConnection.isConnecting && mindMapConnection.sourceNodeId) {
-      if (mindMapConnection.nearestAnchor) {
+    const conn = mindMapConnectionRef.current;
+    if (conn.isConnecting && conn.sourceNodeId) {
+      if (conn.nearestAnchor) {
         // يوجد snap - إنشاء الموصل مباشرة بغض النظر عن موقع الإفلات
         handleEndConnection(
-          mindMapConnection.nearestAnchor.nodeId, 
-          mindMapConnection.nearestAnchor.anchor
+          conn.nearestAnchor.nodeId, 
+          conn.nearestAnchor.anchor
         );
       } else {
         // لا يوجد snap - إلغاء التوصيل
@@ -447,7 +482,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     handleCanvasMouseUp();
   }, [
     handleCanvasMouseUp, 
-    mindMapConnection.isConnecting, 
+    handleEndConnection,
     cancelConnection,
     isMode,
     boxSelectData,
@@ -616,19 +651,19 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
             activeTool={activeTool}
             onStartConnection={handleStartConnection}
             onEndConnection={handleEndConnection}
-            isConnecting={mindMapConnection.isConnecting}
-            nearestAnchor={mindMapConnection.nearestAnchor}
+            isConnecting={mindMapConnectionUI.isConnecting}
+            nearestAnchor={mindMapConnectionUI.nearestAnchor}
           />
         ))}
         
         {/* Mind Map Connection Line (during drag) */}
-        {mindMapConnection.isConnecting && mindMapConnection.startPosition && mindMapConnection.currentPosition && (
+        {mindMapConnectionUI.isConnecting && mindMapConnectionUI.startPosition && mindMapConnectionUI.currentPosition && (
           <MindMapConnectionLine
-            startPosition={mindMapConnection.startPosition}
-            endPosition={mindMapConnection.nearestAnchor?.position || mindMapConnection.currentPosition}
-            startAnchor={mindMapConnection.sourceAnchor || 'right'}
-            color={elements.find(el => el.id === mindMapConnection.sourceNodeId)?.data?.color}
-            isSnapped={!!mindMapConnection.nearestAnchor}
+            startPosition={mindMapConnectionUI.startPosition}
+            endPosition={mindMapConnectionUI.nearestAnchor?.position || mindMapConnectionUI.currentPosition}
+            startAnchor={mindMapConnectionRef.current.sourceAnchor || 'right'}
+            color={elements.find(el => el.id === mindMapConnectionRef.current.sourceNodeId)?.data?.color}
+            isSnapped={!!mindMapConnectionUI.nearestAnchor}
           />
         )}
         
