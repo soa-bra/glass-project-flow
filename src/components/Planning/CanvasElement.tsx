@@ -126,7 +126,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       />
     );
   }
-  const { updateElement, viewport, updateFrameTitle, editingTextId, startEditingText, stopEditingText, updateTextContent, elements, moveElements, findFrameAtPoint, addChildToFrame, removeChildFromFrame } = useCanvasStore();
+  const { updateElement, viewport, updateFrameTitle, editingTextId, startEditingText, stopEditingText, updateTextContent, elements, moveElements, moveFrame, findFrameAtPoint, addChildToFrame, removeChildFromFrame } = useCanvasStore();
   const elementRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
@@ -191,9 +191,19 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
         moveElements(groupIds, finalDeltaX, finalDeltaY);
       }
     } else {
-      updateElement(element.id, {
-        position: { x: newX, y: newY }
-      });
+      const finalDeltaX = newX - element.position.x;
+      const finalDeltaY = newY - element.position.y;
+
+      if (finalDeltaX !== 0 || finalDeltaY !== 0) {
+        // ✅ إذا كان العنصر إطاراً: حرّك الإطار + أطفاله فوراً (حتى من أول نقرة)
+        if (element.type === 'frame') {
+          moveFrame(element.id, finalDeltaX, finalDeltaY);
+        } else {
+          updateElement(element.id, {
+            position: { x: newX, y: newY }
+          });
+        }
+      }
     }
   };
   
