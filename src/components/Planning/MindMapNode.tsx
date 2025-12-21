@@ -470,7 +470,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
               {!nodeData.nodeStyle && <RectangleHorizontal size={16} />}
             </button>
 
-            {showStylePicker && <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-lg p-1.5 border border-[hsl(var(--border))] flex flex-col gap-0.5 min-w-[100px]">
+            {showStylePicker && <div className="absolute bottom-full left-0 mb-2 bg-white shadow-lg p-1.5 border border-[hsl(var(--border))] min-w-[100px] flex-row gap-px px-[5px] py-[5px] rounded-md flex items-start justify-end">
                 {[{
             type: 'rounded',
             icon: <RectangleHorizontal size={14} />,
