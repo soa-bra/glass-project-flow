@@ -2265,24 +2265,6 @@ const UnifiedFloatingToolbar: React.FC = () => {
         </motion.div>
       )}
       
-      {/* ✅ شريط العقدة (للخرائط الذهنية) */}
-      {selectionType === 'mindmap_tree' && mindMapInfo && mindMapInfo.selectedNodes.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          data-floating-toolbar
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5 pointer-events-auto">
-            <div className="flex items-center gap-1 pointer-events-auto" dir="rtl">
-              <MindMapNodeActions />
-            </div>
-          </div>
-        </motion.div>
-      )}
-      
       {/* الشريط العادي (لغير الخرائط الذهنية) */}
       {selectionType !== 'mindmap_tree' && (
         <motion.div

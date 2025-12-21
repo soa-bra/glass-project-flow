@@ -491,13 +491,17 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         </>
       )}
 
-      {/* شريط أدوات العقدة - يظهر عند التحديد (مخفي عند تحديد الشجرة بالكامل) */}
-      {isSelected && !isEditing && !isFullTreeSelected && (
-        <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-white rounded-lg shadow-lg p-1 border border-[hsl(var(--border))]">
+      {/* شريط أدوات العقدة - يظهر فقط عند التحديد بأداة العناصر الذكية */}
+      {isSelected && !isEditing && activeTool === 'smart_element_tool' && (
+        <div 
+          className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-white/95 backdrop-blur-md rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.12)] p-1.5 border border-[hsl(var(--border))] z-[100]"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* إضافة فرع */}
           <button
             onClick={handleAddBranch}
-            className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-green))] transition-colors"
+            className="p-2 rounded-lg hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-green))] transition-colors"
             title="إضافة فرع"
           >
             <Plus size={16} />
@@ -507,7 +511,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           {hasChildren && (
             <button
               onClick={handleToggleCollapse}
-              className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
+              className="p-2 rounded-lg hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
               title={nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع"}
             >
               {nodeData.isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
@@ -518,19 +522,27 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowColorPicker(!showColorPicker)}
-              className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
+              className="p-2 rounded-lg hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
               title="تغيير اللون"
             >
-              <Palette size={16} />
+              <div className="flex items-center gap-1">
+                <Palette size={16} />
+                <div 
+                  className="w-3 h-3 rounded-full border border-white shadow-sm"
+                  style={{ backgroundColor: nodeData.color || '#3DA8F5' }}
+                />
+              </div>
             </button>
 
             {showColorPicker && (
-              <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-lg p-2 border border-[hsl(var(--border))] grid grid-cols-4 gap-1">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white rounded-xl shadow-xl p-2 border border-[hsl(var(--border))] grid grid-cols-4 gap-1.5 min-w-[140px]">
                 {NODE_COLORS.map((color) => (
                   <button
                     key={color}
                     onClick={() => handleColorChange(color)}
-                    className="w-6 h-6 rounded-full border-2 border-white hover:scale-110 transition-transform"
+                    className={`w-7 h-7 rounded-full border-2 hover:scale-110 transition-transform ${
+                      nodeData.color === color ? 'border-[hsl(var(--ink))] scale-110' : 'border-white'
+                    }`}
                     style={{ backgroundColor: color }}
                   />
                 ))}
@@ -541,8 +553,8 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           {/* حذف */}
           <button
             onClick={() => deleteElement(element.id)}
-            className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-red))] transition-colors"
-            title="حذف"
+            className="p-2 rounded-lg hover:bg-red-50 text-[hsl(var(--ink-60))] hover:text-[#E5564D] transition-colors"
+            title="حذف العقدة"
           >
             <Trash2 size={16} />
           </button>
