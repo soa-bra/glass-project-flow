@@ -249,15 +249,43 @@ export const createElementsSlice: StateCreator<
   },
   
   deleteElement: (elementId) => {
+    const state = get();
+    const element = state.elements.find((el: CanvasElement) => el.id === elementId);
+    
+    // ✅ جمع الموصلات المرتبطة بهذه العقدة (للخريطة الذهنية والمخطط البصري)
+    const connectedConnectorIds: string[] = [];
+    if (element?.type === 'mindmap_node') {
+      state.elements.forEach((el: CanvasElement) => {
+        if (el.type === 'mindmap_connector') {
+          const data = el.data as any;
+          if (data?.startNodeId === elementId || data?.endNodeId === elementId) {
+            connectedConnectorIds.push(el.id);
+          }
+        }
+      });
+    } else if (element?.type === 'visual_node') {
+      state.elements.forEach((el: CanvasElement) => {
+        if (el.type === 'visual_connector') {
+          const data = el.data as any;
+          if (data?.startNodeId === elementId || data?.endNodeId === elementId) {
+            connectedConnectorIds.push(el.id);
+          }
+        }
+      });
+    }
+    
+    // ✅ حذف العنصر والموصلات المرتبطة
+    const idsToDelete = [elementId, ...connectedConnectorIds];
+    
     set((state: any) => {
       const updatedLayers = state.layers.map((layer: LayerInfo) => ({
         ...layer,
-        elements: layer.elements.filter((id: string) => id !== elementId)
+        elements: layer.elements.filter((id: string) => !idsToDelete.includes(id))
       }));
       
       return {
-        elements: state.elements.filter((el: CanvasElement) => el.id !== elementId),
-        selectedElementIds: state.selectedElementIds.filter((id: string) => id !== elementId),
+        elements: state.elements.filter((el: CanvasElement) => !idsToDelete.includes(el.id)),
+        selectedElementIds: state.selectedElementIds.filter((id: string) => !idsToDelete.includes(id)),
         layers: updatedLayers
       };
     });
