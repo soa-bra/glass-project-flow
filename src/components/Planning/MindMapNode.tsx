@@ -70,27 +70,29 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const handleDoubleClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+      e.preventDefault();
 
       if (clickTimeoutRef.current) {
         clearTimeout(clickTimeoutRef.current);
         clickTimeoutRef.current = null;
       }
 
-      // ✅ إذا كانت الشجرة محددة بأداة التحديد، حوّل إلى أداة العناصر الذكية وحدد هذه العقدة
-      if (activeTool === 'selection_tool' && selectedElementIds.length > 1) {
+      // ✅ إذا كانت أداة التحديد نشطة (سواء كانت شجرة كاملة أو حتى عقدة واحدة)
+      // حوّل إلى أداة العناصر الذكية وحدد هذه العقدة
+      if (activeTool === 'selection_tool') {
         setActiveTool('smart_element_tool');
         selectElement(element.id, false);
         setLastSmartSelectedMindMapNode(element.id);
         return;
       }
 
-      // السلوك العادي: بدء التحرير
+      // السلوك العادي: بدء التحرير (عند استخدام أداة العناصر الذكية)
       setIsSingleNodeMode(true);
       onSelect(false);
       setIsEditing(true);
       setEditText(nodeData.label || "");
     },
-    [nodeData.label, onSelect, activeTool, selectedElementIds, setActiveTool, selectElement, element.id, setLastSmartSelectedMindMapNode],
+    [nodeData.label, onSelect, activeTool, setActiveTool, selectElement, element.id, setLastSmartSelectedMindMapNode],
   );
 
   // حفظ التعديل
