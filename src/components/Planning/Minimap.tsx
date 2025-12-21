@@ -1,15 +1,15 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { selectViewport, selectSettings } from '@/stores/canvas/viewportSlice';
 
 const Minimap: React.FC = () => {
-  const { 
-    elements, 
-    viewport, 
-    showMinimap, 
-    toggleMinimap,
-    setPan 
-  } = useCanvasStore();
+  // استخدام selectors محددة لتجنب rerenders غير ضرورية
+  const elements = useCanvasStore(state => state.elements);
+  const viewport = useCanvasStore(selectViewport);
+  const { showMinimap } = useCanvasStore(selectSettings);
+  const toggleMinimap = useCanvasStore(state => state.toggleMinimap);
+  const setPan = useCanvasStore(state => state.setPan);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDragging, setIsDragging] = React.useState(false);
@@ -74,19 +74,23 @@ const Minimap: React.FC = () => {
     
   }, [elements, viewport, showMinimap, minimapScale]);
   
-  const handleMinimapClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMinimapClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
     
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
-    // Convert minimap coordinates to canvas coordinates
-    const canvasX = -(x / minimapScale - window.innerWidth / viewport.zoom / 2);
-    const canvasY = -(y / minimapScale - window.innerHeight / viewport.zoom / 2);
+    // تحويل إحداثيات الخريطة المصغرة إلى إحداثيات الكانفس
+    const targetX = x / minimapScale;
+    const targetY = y / minimapScale;
     
-    setPan(canvasX, canvasY);
-  };
+    // حساب pan الجديد ليكون المركز عند النقطة المحددة
+    const newPanX = -(targetX - window.innerWidth / viewport.zoom / 2);
+    const newPanY = -(targetY - window.innerHeight / viewport.zoom / 2);
+    
+    setPan(newPanX, newPanY);
+  }, [viewport.zoom, setPan, minimapScale]);
   
   if (!showMinimap) return null;
   
