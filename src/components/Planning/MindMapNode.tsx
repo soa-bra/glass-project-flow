@@ -482,9 +482,11 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
 
           {/* تغيير اللون */}
           <div className="relative">
-            <button onClick={() => setShowColorPicker(!showColorPicker)} className="w-4 h-4 rounded-sm hover:scale-110 transition-all border border-white shadow-sm" style={{
-          backgroundColor: nodeData.color || '#3DA8F5'
-        }} title="تغيير اللون" />
+            <button onClick={() => setShowColorPicker(!showColorPicker)} className="p-2 rounded-lg hover:bg-[hsl(var(--muted))] transition-colors flex items-center justify-center" title="تغيير اللون">
+              <span className="w-4 h-4 rounded-sm border border-white shadow-sm" style={{
+                backgroundColor: nodeData.color || '#3DA8F5'
+              }} />
+            </button>
 
             {showColorPicker && <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white rounded-xl shadow-xl p-2 border border-[hsl(var(--border))] grid grid-cols-4 gap-1.5 min-w-[140px]">
                 {NODE_COLORS.map(color => <button key={color} onClick={() => handleColorChange(color)} className={`w-7 h-7 rounded-full border-2 hover:scale-110 transition-transform ${nodeData.color === color ? 'border-[hsl(var(--ink))] scale-110' : 'border-white'}`} style={{
