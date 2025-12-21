@@ -1735,7 +1735,6 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   // ===== أزرار الخريطة الذهنية =====
   const MindmapActions = () => {
-    const [showLayoutMenu, setShowLayoutMenu] = useState(false);
     const [showColorPicker, setShowColorPicker] = useState(false);
     const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(DEFAULT_LAYOUT_SETTINGS);
     
@@ -1851,115 +1850,52 @@ const UnifiedFloatingToolbar: React.FC = () => {
         
         <Separator orientation="vertical" className="h-6 mx-1" />
         
-        {/* تخطيط */}
-        <div className="relative">
+        {/* تخطيط - أيقونات Toggle فقط */}
+        <div className="flex items-center gap-1 bg-[hsl(var(--muted))] rounded-lg p-1">
+          {/* التعامد Toggle */}
           <button
-            onClick={() => setShowLayoutMenu(!showLayoutMenu)}
-            className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors text-sm font-medium"
-            title="تخطيط تلقائي"
+            onClick={() => handleLayoutSettingChange({ 
+              orientation: layoutSettings.orientation === 'horizontal' ? 'vertical' : 'horizontal' 
+            })}
+            className={`w-8 h-8 rounded-md flex items-center justify-center transition-all ${
+              layoutSettings.orientation === 'horizontal' 
+                ? 'bg-white shadow-sm text-[hsl(var(--accent-blue))]' 
+                : 'text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))]'
+            }`}
+            title={layoutSettings.orientation === 'horizontal' ? 'التعامد: عرضي' : 'التعامد: طولي'}
           >
-            <LayoutGrid size={16} />
-            <ChevronDown size={12} className="text-[hsl(var(--ink-30))]" />
+            {layoutSettings.orientation === 'horizontal' ? <MoveHorizontal size={16} /> : <MoveVertical size={16} />}
           </button>
           
-          <AnimatePresence>
-            {showLayoutMenu && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl p-4 border border-[hsl(var(--border))] min-w-[280px] z-[10001]"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* التعامد */}
-                <div className="mb-4">
-                  <label className="text-xs font-semibold text-[hsl(var(--ink-60))] mb-2 block">التعامد</label>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleLayoutSettingChange({ orientation: 'horizontal' })}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                        layoutSettings.orientation === 'horizontal' 
-                          ? 'bg-[hsl(var(--accent-blue))] text-white shadow-sm' 
-                          : 'bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:bg-[hsl(var(--border))]'
-                      }`}
-                    >
-                      <MoveHorizontal size={14} />
-                      <span>عرضي</span>
-                    </button>
-                    <button
-                      onClick={() => handleLayoutSettingChange({ orientation: 'vertical' })}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                        layoutSettings.orientation === 'vertical' 
-                          ? 'bg-[hsl(var(--accent-blue))] text-white shadow-sm' 
-                          : 'bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:bg-[hsl(var(--border))]'
-                      }`}
-                    >
-                      <MoveVertical size={14} />
-                      <span>طولي</span>
-                    </button>
-                  </div>
-                </div>
-                
-                {/* التناظر */}
-                <div className="mb-4">
-                  <label className="text-xs font-semibold text-[hsl(var(--ink-60))] mb-2 block">التناظر</label>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleLayoutSettingChange({ symmetry: 'symmetric' })}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                        layoutSettings.symmetry === 'symmetric' 
-                          ? 'bg-[hsl(var(--accent-blue))] text-white shadow-sm' 
-                          : 'bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:bg-[hsl(var(--border))]'
-                      }`}
-                    >
-                      <ArrowRightLeft size={14} />
-                      <span>تناظري</span>
-                    </button>
-                    <button
-                      onClick={() => handleLayoutSettingChange({ symmetry: 'unilateral' })}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                        layoutSettings.symmetry === 'unilateral' 
-                          ? 'bg-[hsl(var(--accent-blue))] text-white shadow-sm' 
-                          : 'bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:bg-[hsl(var(--border))]'
-                      }`}
-                    >
-                      <Columns size={14} />
-                      <span>أحادي</span>
-                    </button>
-                  </div>
-                </div>
-                
-                {/* الاتجاه */}
-                <div>
-                  <label className="text-xs font-semibold text-[hsl(var(--ink-60))] mb-2 block">الاتجاه</label>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleLayoutSettingChange({ direction: 'rtl' })}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                        layoutSettings.direction === 'rtl' 
-                          ? 'bg-[hsl(var(--accent-blue))] text-white shadow-sm' 
-                          : 'bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:bg-[hsl(var(--border))]'
-                      }`}
-                    >
-                      <ArrowRightToLine size={14} />
-                      <span>{layoutSettings.orientation === 'horizontal' ? 'يمين ← يسار' : 'أعلى ← أسفل'}</span>
-                    </button>
-                    <button
-                      onClick={() => handleLayoutSettingChange({ direction: 'ltr' })}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                        layoutSettings.direction === 'ltr' 
-                          ? 'bg-[hsl(var(--accent-blue))] text-white shadow-sm' 
-                          : 'bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:bg-[hsl(var(--border))]'
-                      }`}
-                    >
-                      <ArrowLeftToLine size={14} />
-                      <span>{layoutSettings.orientation === 'horizontal' ? 'يسار ← يمين' : 'أسفل ← أعلى'}</span>
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* التناظر Toggle */}
+          <button
+            onClick={() => handleLayoutSettingChange({ 
+              symmetry: layoutSettings.symmetry === 'symmetric' ? 'unilateral' : 'symmetric' 
+            })}
+            className={`w-8 h-8 rounded-md flex items-center justify-center transition-all ${
+              layoutSettings.symmetry === 'symmetric' 
+                ? 'bg-white shadow-sm text-[hsl(var(--accent-blue))]' 
+                : 'text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))]'
+            }`}
+            title={layoutSettings.symmetry === 'symmetric' ? 'التناظر: تناظري' : 'التناظر: أحادي'}
+          >
+            {layoutSettings.symmetry === 'symmetric' ? <ArrowRightLeft size={16} /> : <Columns size={16} />}
+          </button>
+          
+          {/* الاتجاه Toggle */}
+          <button
+            onClick={() => handleLayoutSettingChange({ 
+              direction: layoutSettings.direction === 'rtl' ? 'ltr' : 'rtl' 
+            })}
+            className={`w-8 h-8 rounded-md flex items-center justify-center transition-all ${
+              layoutSettings.direction === 'rtl' 
+                ? 'bg-white shadow-sm text-[hsl(var(--accent-blue))]' 
+                : 'text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))]'
+            }`}
+            title={layoutSettings.direction === 'rtl' ? 'الاتجاه: يمين ← يسار' : 'الاتجاه: يسار ← يمين'}
+          >
+            {layoutSettings.direction === 'rtl' ? <ArrowRightToLine size={16} /> : <ArrowLeftToLine size={16} />}
+          </button>
         </div>
         
         <Separator orientation="vertical" className="h-6 mx-1" />
