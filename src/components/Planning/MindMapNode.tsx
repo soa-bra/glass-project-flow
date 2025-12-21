@@ -51,6 +51,11 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
 
   const nodeData = element.data as MindMapNodeData;
 
+  // ✅ حالة النقرة المطولة للـ anchor
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isLongPressRef = useRef(false);
+  const LONG_PRESS_DELAY = 200; // مللي ثانية
+
   // ✅ التحقق من وجود فروع
   const hasChildren = useCanvasStore((state) =>
     state.elements.some((el) => el.type === "mindmap_connector" && (el.data as any)?.startNodeId === element.id),
@@ -231,12 +236,50 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setIsDragging(false);
   }, []);
 
-  // نقاط الربط
+  // ✅ نقاط الربط - نقرة مطولة + سحب
   const handleAnchorMouseDown = useCallback(
     (e: React.MouseEvent, anchor: "top" | "bottom" | "left" | "right") => {
       e.stopPropagation();
-      const pos = getAnchorPosition(element.position, element.size, anchor);
-      onStartConnection(element.id, anchor, pos);
+      e.preventDefault();
+      
+      isLongPressRef.current = false;
+      
+      // بدء مؤقت النقرة المطولة
+      longPressTimerRef.current = setTimeout(() => {
+        isLongPressRef.current = true;
+        const pos = getAnchorPosition(element.position, element.size, anchor);
+        onStartConnection(element.id, anchor, pos);
+      }, LONG_PRESS_DELAY);
+      
+      // إضافة مستمع لـ mousemove لبدء السحب
+      const handleMouseMoveForDrag = (moveEvent: MouseEvent) => {
+        // إذا تحرك الماوس أكثر من 5px قبل انتهاء المؤقت، ابدأ التوصيل فوراً
+        const dx = Math.abs(moveEvent.clientX - e.clientX);
+        const dy = Math.abs(moveEvent.clientY - e.clientY);
+        
+        if ((dx > 5 || dy > 5) && !isLongPressRef.current) {
+          if (longPressTimerRef.current) {
+            clearTimeout(longPressTimerRef.current);
+            longPressTimerRef.current = null;
+          }
+          isLongPressRef.current = true;
+          const pos = getAnchorPosition(element.position, element.size, anchor);
+          onStartConnection(element.id, anchor, pos);
+          window.removeEventListener('mousemove', handleMouseMoveForDrag);
+        }
+      };
+      
+      const handleMouseUpForDrag = () => {
+        if (longPressTimerRef.current) {
+          clearTimeout(longPressTimerRef.current);
+          longPressTimerRef.current = null;
+        }
+        window.removeEventListener('mousemove', handleMouseMoveForDrag);
+        window.removeEventListener('mouseup', handleMouseUpForDrag);
+      };
+      
+      window.addEventListener('mousemove', handleMouseMoveForDrag);
+      window.addEventListener('mouseup', handleMouseUpForDrag);
     },
     [element, onStartConnection],
   );
@@ -244,12 +287,28 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const handleAnchorMouseUp = useCallback(
     (e: React.MouseEvent, anchor: "top" | "bottom" | "left" | "right") => {
       e.stopPropagation();
+      
+      // إلغاء المؤقت إذا كان نشطاً
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+      
       if (isConnecting) {
         onEndConnection(element.id, anchor);
       }
     },
     [element.id, isConnecting, onEndConnection],
   );
+  
+  // تنظيف المؤقت عند unmount
+  useEffect(() => {
+    return () => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+      }
+    };
+  }, []);
 
   // إضافة مستمعي الأحداث العامة
   useEffect(() => {

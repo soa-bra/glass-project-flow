@@ -385,9 +385,18 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   // ✅ Handle Mouse Up - استخدام State Machine
   const handleMouseUp = useCallback(() => {
-    // إلغاء اتصال الخريطة الذهنية عند الإفلات
-    if (mindMapConnection.isConnecting) {
-      cancelConnection();
+    // ✅ إنشاء الموصل فقط عند وجود snap (nearestAnchor)
+    if (mindMapConnection.isConnecting && mindMapConnection.sourceNodeId) {
+      if (mindMapConnection.nearestAnchor) {
+        // يوجد snap - إنشاء الموصل
+        handleEndConnection(
+          mindMapConnection.nearestAnchor.nodeId, 
+          mindMapConnection.nearestAnchor.anchor
+        );
+      } else {
+        // لا يوجد snap - إلغاء التوصيل
+        cancelConnection();
+      }
     }
     
     // ✅ إنهاء Panning
@@ -618,6 +627,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
             endPosition={mindMapConnection.nearestAnchor?.position || mindMapConnection.currentPosition}
             startAnchor={mindMapConnection.sourceAnchor || 'right'}
             color={elements.find(el => el.id === mindMapConnection.sourceNodeId)?.data?.color}
+            isSnapped={!!mindMapConnection.nearestAnchor}
           />
         )}
         
