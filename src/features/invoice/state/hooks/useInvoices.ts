@@ -12,6 +12,9 @@ import type {
 } from '../../domain/types/invoice.types';
 import { invoiceAPI } from '../../integration/api/invoiceAPI';
 
+// Re-export useInvoiceFilters for convenience
+export { useInvoiceFilters } from './useInvoiceFilters';
+
 interface UseInvoicesResult {
   invoices: Invoice[];
   stats: InvoiceStats | null;
