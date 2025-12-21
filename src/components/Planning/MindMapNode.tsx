@@ -395,6 +395,9 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   // هل هذه العقدة هي الأقرب للتوصيل
   const isNearestForConnection = nearestAnchor?.nodeId === element.id;
 
+  // ✅ التحقق من تحديد الشجرة بالكامل - إخفاء نقاط التوصيل وشريط الأدوات
+  const isFullTreeSelected = activeTool === 'selection_tool' && selectedElementIds.length > 1;
+
   return (
     <div
       ref={nodeRef}
@@ -461,8 +464,8 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         )}
       </div>
 
-      {/* نقاط الربط - تظهر عند التحديد أو التوصيل */}
-      {(isSelected || isConnecting) && (
+      {/* نقاط الربط - تظهر عند التحديد أو التوصيل (مخفية عند تحديد الشجرة بالكامل) */}
+      {(isSelected || isConnecting) && !isFullTreeSelected && (
         <>
           {(["top", "bottom", "left", "right"] as const).map((anchor) => {
             const pos = getAnchorPosition({ x: 0, y: 0 }, element.size, anchor);
@@ -487,8 +490,8 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         </>
       )}
 
-      {/* شريط أدوات العقدة - يظهر عند التحديد */}
-      {isSelected && !isEditing && (
+      {/* شريط أدوات العقدة - يظهر عند التحديد (مخفي عند تحديد الشجرة بالكامل) */}
+      {isSelected && !isEditing && !isFullTreeSelected && (
         <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-white rounded-lg shadow-lg p-1 border border-[hsl(var(--border))]">
           {/* إضافة فرع */}
           <button
