@@ -13,7 +13,7 @@
  */
 
 // UI Components
-export { InvoicesDashboard } from './ui';
+export { InvoicesDashboard, InvoiceCard, InvoiceStatsWidget } from './ui';
 
 // Hooks
 export { useInvoices } from './state';
