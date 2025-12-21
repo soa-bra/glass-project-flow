@@ -459,14 +459,12 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
             color: element.style?.color || '#0B0F12',
             textAlign: (element.style?.textAlign as any) || 'right',
             direction: (element.style?.direction as any) || 'rtl',
-            // ✅ RTL صحيح مع unicodeBidi
             unicodeBidi: 'plaintext',
             WebkitUserModify: 'read-write-plaintext-only',
             width: '100%',
             outline: 'none',
-            padding: '8px',
+            padding: '0',
             minHeight: '1em',
-            // ✅ السماح بأسطر متعددة عند وجود قوائم
             whiteSpace: hasLists || element.data?.textType === 'box' ? 'pre-wrap' : 'nowrap',
             wordWrap: hasLists || element.data?.textType === 'box' ? 'break-word' : 'normal',
             overflow: element.data?.textType === 'box' ? 'auto' : 'visible'
