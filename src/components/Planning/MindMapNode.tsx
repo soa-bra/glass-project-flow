@@ -431,17 +431,15 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         {/* ✅ زر الطي/أيقونة الجذر - أعلى يمين العقدة - مع أقصى أولوية للنقر */}
         {(nodeData.isRoot || hasChildren) && (
           <button
+            type="button"
             onPointerDown={(e) => {
               e.stopPropagation();
-              e.preventDefault();
             }}
             onMouseDown={(e) => {
               e.stopPropagation();
-              e.preventDefault();
             }}
             onClick={(e) => {
               e.stopPropagation();
-              e.preventDefault();
               if (hasChildren) handleToggleCollapse(e);
             }}
             className={`absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md border border-[hsl(var(--border))] transition-all z-[200] ${hasChildren ? "cursor-pointer hover:scale-110 text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))]" : "cursor-default"}`}
