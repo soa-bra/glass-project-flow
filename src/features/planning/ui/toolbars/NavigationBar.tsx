@@ -2,7 +2,7 @@ import React from 'react';
 import { ZoomIn, ZoomOut, Maximize, Hand, Map as MapIcon, Maximize2, Wifi, WifiOff, Users } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useCollaborationStore } from '@/stores/collaborationStore';
-import SnapSettingsDropdown from './SnapSettingsDropdown';
+import SnapSettingsDropdown from '../widgets/SnapSettingsDropdown';
 import {
   Tooltip,
   TooltipContent,

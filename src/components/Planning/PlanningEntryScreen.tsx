@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { FileUp, Layout, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { usePlanningStore } from '@/stores/planningStore';
-import BoardsGrid from './BoardsGrid';
-import TemplateSelector from './TemplateSelector';
+import BoardsGrid from '@/features/planning/ui/widgets/BoardsGrid';
+import TemplateSelector from '@/features/planning/ui/widgets/TemplateSelector';
 import FileUploadModal from './FileUploadModal';
 
 const PlanningEntryScreen = () => {
