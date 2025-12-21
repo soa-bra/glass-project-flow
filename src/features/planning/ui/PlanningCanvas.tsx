@@ -5,16 +5,16 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasBoard } from '@/types/planning';
 import InfiniteCanvas from '@/features/planning/canvas/viewport/InfiniteCanvas';
 import BottomToolbar from '@/features/planning/ui/toolbars/BottomToolbar';
-import RightSidePanel from './RightSidePanel';
+import RightSidePanel from './panels/RightSidePanel';
 import NavigationBar from '@/features/planning/ui/toolbars/NavigationBar';
 import UnifiedFloatingToolbar from '@/features/planning/ui/toolbars/UnifiedFloatingToolbar';
 import Minimap from '@/features/planning/ui/widgets/Minimap';
-import { HistoryPopover } from './popovers/HistoryPopover';
-import { SharePopover } from './popovers/SharePopover';
-import { FileMenuPopover } from './popovers/FileMenuPopover';
-import { LayersMenuPopover } from './popovers/LayersMenuPopover';
+import { HistoryPopover } from './overlays/HistoryPopover';
+import { SharePopover } from './overlays/SharePopover';
+import { FileMenuPopover } from './overlays/FileMenuPopover';
+import { LayersMenuPopover } from './overlays/LayersMenuPopover';
 import { AIAssistantPopover } from '@/features/planning/ui/widgets/AIAssistantPopover';
-import { SmartCommandBar, useSmartCommandBar } from './SmartElements/SmartCommandBar';
+import { SmartCommandBar, useSmartCommandBar } from '@/features/planning/elements/smart/SmartCommandBar';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;

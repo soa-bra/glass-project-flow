@@ -2,13 +2,13 @@ import React from 'react';
 import { X } from 'lucide-react';
 import type { ToolId } from '@/types/canvas';
 import { useCanvasStore } from '@/stores/canvasStore';
-import SelectionPanel from './panels/SelectionPanel';
-import SmartPenPanel from './panels/SmartPenPanel';
-import FramePanel from './panels/FramePanel';
-import FileUploadPanel from './panels/FileUploadPanel';
-import TextPanel from './panels/TextPanel';
-import ShapesPanel from './panels/ShapesPanel';
-import SmartElementsPanel from './panels/SmartElementsPanel';
+import SelectionPanel from './SelectionPanel';
+import SmartPenPanel from './SmartPenPanel';
+import FramePanel from './FramePanel';
+import FileUploadPanel from './FileUploadPanel';
+import TextPanel from './TextPanel';
+import ShapesPanel from './ShapesPanel';
+import SmartElementsPanel from './SmartElementsPanel';
 
 interface RightSidePanelProps {
   activeTool: ToolId;

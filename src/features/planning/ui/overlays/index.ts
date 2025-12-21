@@ -10,3 +10,4 @@ export { InviteLinkDialog } from './InviteLinkDialog';
 export { JoinRequestNotification } from './JoinRequestNotification';
 export { LayersMenuPopover } from './LayersMenuPopover';
 export { SharePopover } from './SharePopover';
+export { default as FileUploadModal } from './FileUploadModal';

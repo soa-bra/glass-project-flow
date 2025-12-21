@@ -1,6 +1,6 @@
 import React from 'react';
-import PlanningEntryScreen from './Planning/PlanningEntryScreen';
-import PlanningCanvas from './Planning/PlanningCanvas';
+import PlanningEntryScreen from '@/features/planning/ui/PlanningEntryScreen';
+import PlanningCanvas from '@/features/planning/ui/PlanningCanvas';
 import { usePlanningStore } from '@/stores/planningStore';
 
 interface PlanningWorkspaceProps {
