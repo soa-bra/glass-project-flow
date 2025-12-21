@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect, useState } from 'react';
+import React, { useRef, useCallback, useEffect, useState, useMemo } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useInteractionStore } from '@/stores/interactionStore';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
@@ -19,6 +19,7 @@ import { sanitizeHTMLForDisplay } from '@/utils/sanitize';
 import { eventPipeline } from '@/core/eventPipeline';
 import { canvasKernel } from '@/core/canvasKernel';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
+import type { MindMapNodeData } from '@/types/mindmap-canvas';
 
 // التحقق إذا كان العنصر سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -61,11 +62,19 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   isConnecting = false,
   nearestAnchor = null
 }) => {
+  // ✅ الاشتراك في تغييرات العناصر لإعادة الرسم عند تغيير حالة الطي
+  const elements = useCanvasStore((state) => state.elements);
+  
+  // ✅ التحقق من إخفاء العقدة بسبب طي الأب
+  const isHiddenByCollapse = useMemo(() => {
+    if (element.type !== 'mindmap_node') return false;
+    return isAncestorCollapsed(element.id, elements);
+  }, [element.type, element.id, elements]);
+
   // عرض عناصر الخريطة الذهنية بمكونات خاصة
   if (element.type === 'mindmap_node') {
-    const elements = useCanvasStore.getState().elements;
-    
-    if (isAncestorCollapsed(element.id, elements)) {
+    // ✅ إخفاء العقد الفرعية عندما يكون أي جد مطوياً
+    if (isHiddenByCollapse) {
       return null;
     }
     
@@ -95,7 +104,6 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   // عرض عناصر المخطط البصري
   if (element.type === 'visual_node') {
     const { isVisualAncestorCollapsed } = require('@/utils/visual-diagram-layout');
-    const elements = useCanvasStore.getState().elements;
     
     if (isVisualAncestorCollapsed(element.id, elements)) {
       return null;
@@ -126,7 +134,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       />
     );
   }
-  const { updateElement, viewport, updateFrameTitle, editingTextId, startEditingText, stopEditingText, updateTextContent, elements, moveElements, moveFrame, findFrameAtPoint, addChildToFrame, removeChildFromFrame } = useCanvasStore();
+  const { updateElement, viewport, updateFrameTitle, editingTextId, startEditingText, stopEditingText, updateTextContent, moveElements, moveFrame, findFrameAtPoint, addChildToFrame, removeChildFromFrame } = useCanvasStore();
   const elementRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
