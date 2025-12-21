@@ -555,7 +555,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowColorPicker(!showColorPicker)}
-              className="w-8 h-8 rounded-lg hover:scale-110 transition-all border-2 border-white shadow-sm"
+              className="w-4 h-4 rounded-sm hover:scale-110 transition-all border border-white shadow-sm"
               style={{ backgroundColor: nodeData.color || '#3DA8F5' }}
               title="تغيير اللون"
             />
