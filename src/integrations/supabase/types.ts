@@ -1037,6 +1037,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      validate_board_invite_token: {
+        Args: { token_input: string }
+        Returns: {
+          board_id: string
+          expires_at: string
+          invite_link_id: string
+          is_valid: boolean
+        }[]
+      }
     }
     Enums: {
       board_object_type:
