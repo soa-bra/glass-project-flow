@@ -91,8 +91,13 @@ export const createElementsSlice: StateCreator<
           : layer
       );
       
+      // ✅ الإطارات تُضاف في البداية (إرسال للخلف افتراضياً)
+      const newElements = element.type === 'frame'
+        ? [element, ...state.elements]
+        : [...state.elements, element];
+      
       return {
-        elements: [...state.elements, element],
+        elements: newElements,
         layers: updatedLayers
       };
     });

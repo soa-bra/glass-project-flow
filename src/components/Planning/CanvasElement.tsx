@@ -126,7 +126,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       />
     );
   }
-  const { updateElement, viewport, updateFrameTitle, editingTextId, startEditingText, stopEditingText, updateTextContent, elements, moveElements } = useCanvasStore();
+  const { updateElement, viewport, updateFrameTitle, editingTextId, startEditingText, stopEditingText, updateTextContent, elements, moveElements, findFrameAtPoint, addChildToFrame, removeChildFromFrame } = useCanvasStore();
   const elementRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
@@ -199,6 +199,30 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   
   handleMouseUpRef.current = () => {
     if (isDraggingRef.current) {
+      // ✅ التحقق من الإطارات عند انتهاء السحب
+      if (element.type !== 'frame') {
+        const elementCenterX = element.position.x + element.size.width / 2;
+        const elementCenterY = element.position.y + element.size.height / 2;
+        const frameUnderElement = findFrameAtPoint(elementCenterX, elementCenterY, [element.id]);
+        
+        // إزالة من الإطارات القديمة
+        const frames = elements.filter(el => el.type === 'frame');
+        frames.forEach(frame => {
+          const children = (frame as any).children || [];
+          if (children.includes(element.id) && frame.id !== frameUnderElement?.id) {
+            removeChildFromFrame(frame.id, element.id);
+          }
+        });
+        
+        // إضافة للإطار الجديد
+        if (frameUnderElement) {
+          const children = (frameUnderElement as any).children || [];
+          if (!children.includes(element.id)) {
+            addChildToFrame(frameUnderElement.id, element.id);
+          }
+        }
+      }
+      
       isDraggingRef.current = false;
     }
   };
