@@ -135,7 +135,7 @@ export const TextRenderer: React.FC<TextRendererProps> = ({
             textDecoration,
             color: isPlaceholder ? 'hsl(var(--ink-30))' : color,
             textAlign: textAlign as any,
-            padding: '8px',
+            padding: '0',
             boxSizing: 'border-box',
             userSelect: 'none',
             overflow: textType === 'box' ? 'hidden' : 'visible',
