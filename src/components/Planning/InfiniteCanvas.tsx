@@ -1,3 +1,4 @@
+// InfiniteCanvas - v2 optimized connection handling
 import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useInteractionStore, selectPanningData, selectBoxSelectData } from '@/stores/interactionStore';
