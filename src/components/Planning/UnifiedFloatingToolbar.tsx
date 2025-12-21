@@ -1,6 +1,6 @@
 /**
  * UnifiedFloatingToolbar - شريط أدوات طافي موحد وتفاعلي
- * يدعم: العناصر الفردية، النصوص، الصور، العناصر المتعددة، والخرائط الذهنية
+ * يدعم: العناصر الفردية، النصوص، الصور، والعناصر المتعددة
  */
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -12,9 +12,6 @@ import { useSmartElementAI } from '@/hooks/useSmartElementAI';
 import { toast } from 'sonner';
 import { Portal } from "@ark-ui/react/portal";
 import { ColorPicker, parseColor } from "@ark-ui/react/color-picker";
-import { applyLayoutWithSettings, DEFAULT_LAYOUT_SETTINGS, type LayoutSettings } from '@/utils/mindmap-layout';
-import { NODE_COLORS, calculateConnectorBounds } from '@/types/mindmap-canvas';
-import type { MindMapNodeData } from '@/types/mindmap-canvas';
 import {
   Copy,
   Scissors,
@@ -69,15 +66,6 @@ import {
   ArrowRightLeft,
   PipetteIcon,
   Blend,
-  MoveHorizontal,
-  MoveVertical,
-  Columns,
-  ArrowRightToLine,
-  ArrowLeftToLine,
-  Circle,
-  Square,
-  Pill,
-  RectangleHorizontal,
 } from 'lucide-react';
 import { SmartElementType } from '@/types/smart-elements';
 import {
@@ -109,15 +97,7 @@ const FONT_FAMILIES = [
 // أحجام الخطوط المتاحة
 const FONT_SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72];
 
-// أشكال العقد
-const NODE_STYLES: { type: string; icon: React.ReactNode; label: string }[] = [
-  { type: 'rounded', icon: <RectangleHorizontal size={16} />, label: 'مستدير' },
-  { type: 'pill', icon: <Pill size={16} />, label: 'كبسولة' },
-  { type: 'rectangle', icon: <Square size={16} />, label: 'مستطيل' },
-  { type: 'circle', icon: <Circle size={16} />, label: 'دائري' },
-];
-
-type SelectionType = 'element' | 'text' | 'image' | 'multiple' | 'mindmap_tree' | 'mindmap_node' | null;
+type SelectionType = 'element' | 'text' | 'image' | 'multiple' | null;
 
 // خيارات التحويل للعناصر الذكية
 const TRANSFORM_OPTIONS = [
@@ -333,55 +313,6 @@ const ColorButton: React.FC<ColorButtonProps> = ({ value, onChange, icon, title 
             className="text-nowrap font-medium absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-xs rounded-md px-2 py-1 shadow-lg z-[9999] pointer-events-none"
           >
             {title}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
-// ===== Compact Color Picker for MindMap Nodes =====
-const CompactColorPicker: React.FC<{
-  value: string;
-  onChange: (color: string) => void;
-}> = ({ value, onChange }) => {
-  const [showPicker, setShowPicker] = useState(false);
-  
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setShowPicker(!showPicker)}
-        className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[hsl(var(--muted))] transition-colors"
-        title="تغيير اللون"
-      >
-        <div 
-          className="w-5 h-5 rounded-full border-2 border-white shadow-sm"
-          style={{ backgroundColor: value }}
-        />
-        <ChevronDown size={14} className="text-[hsl(var(--ink-30))]" />
-      </button>
-      
-      <AnimatePresence>
-        {showPicker && (
-          <motion.div
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl p-3 border border-[hsl(var(--border))] grid grid-cols-4 gap-2 min-w-[160px] z-[10001]"
-          >
-            {NODE_COLORS.map((color) => (
-              <button
-                key={color}
-                onClick={() => {
-                  onChange(color);
-                  setShowPicker(false);
-                }}
-                className={`w-8 h-8 rounded-full border-2 transition-transform hover:scale-110 ${
-                  value === color ? 'border-[hsl(var(--ink))] scale-110' : 'border-white'
-                }`}
-                style={{ backgroundColor: color }}
-              />
-            ))}
           </motion.div>
         )}
       </AnimatePresence>
@@ -713,129 +644,12 @@ const AIMenuDropdown: React.FC<{
 
 AIMenuDropdown.displayName = 'AIMenuDropdown';
 
-// ===== Layout Settings Dropdown for MindMap =====
-const LayoutSettingsDropdown: React.FC<{
-  layoutSettings: LayoutSettings;
-  onLayoutChange: (settings: Partial<LayoutSettings>) => void;
-}> = ({ layoutSettings, onLayoutChange }) => {
-  const [showLayoutMenu, setShowLayoutMenu] = useState(false);
-  
-  const RadioOption: React.FC<{
-    selected: boolean;
-    onClick: () => void;
-    icon: React.ReactNode;
-    label: string;
-  }> = ({ selected, onClick, icon, label }) => (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-        selected 
-          ? 'bg-[hsl(var(--accent-blue))] text-white shadow-sm' 
-          : 'bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:bg-[hsl(var(--border))]'
-      }`}
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
-  );
-  
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setShowLayoutMenu(!showLayoutMenu)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors text-sm font-medium"
-        title="تخطيط تلقائي"
-      >
-        <LayoutGrid size={16} />
-        <span>تخطيط</span>
-        <ChevronDown size={14} className="text-[hsl(var(--ink-30))]" />
-      </button>
-      
-      <AnimatePresence>
-        {showLayoutMenu && (
-          <motion.div
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl p-4 border border-[hsl(var(--border))] min-w-[280px] z-[10001]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* التعامد */}
-            <div className="mb-4">
-              <label className="text-xs font-semibold text-[hsl(var(--ink-60))] mb-2 block">
-                التعامد
-              </label>
-              <div className="flex gap-2">
-                <RadioOption 
-                  selected={layoutSettings.orientation === 'horizontal'}
-                  onClick={() => onLayoutChange({ orientation: 'horizontal' })}
-                  icon={<MoveHorizontal size={14} />}
-                  label="عرضي"
-                />
-                <RadioOption 
-                  selected={layoutSettings.orientation === 'vertical'}
-                  onClick={() => onLayoutChange({ orientation: 'vertical' })}
-                  icon={<MoveVertical size={14} />}
-                  label="طولي"
-                />
-              </div>
-            </div>
-            
-            {/* التناظر */}
-            <div className="mb-4">
-              <label className="text-xs font-semibold text-[hsl(var(--ink-60))] mb-2 block">
-                التناظر
-              </label>
-              <div className="flex gap-2">
-                <RadioOption 
-                  selected={layoutSettings.symmetry === 'symmetric'}
-                  onClick={() => onLayoutChange({ symmetry: 'symmetric' })}
-                  icon={<ArrowRightLeft size={14} />}
-                  label="تناظري"
-                />
-                <RadioOption 
-                  selected={layoutSettings.symmetry === 'unilateral'}
-                  onClick={() => onLayoutChange({ symmetry: 'unilateral' })}
-                  icon={<Columns size={14} />}
-                  label="أحادي"
-                />
-              </div>
-            </div>
-            
-            {/* الاتجاه */}
-            <div>
-              <label className="text-xs font-semibold text-[hsl(var(--ink-60))] mb-2 block">
-                الاتجاه
-              </label>
-              <div className="flex gap-2">
-                <RadioOption 
-                  selected={layoutSettings.direction === 'rtl'}
-                  onClick={() => onLayoutChange({ direction: 'rtl' })}
-                  icon={<ArrowRightToLine size={14} />}
-                  label={layoutSettings.orientation === 'horizontal' ? 'يمين ← يسار' : 'أعلى ← أسفل'}
-                />
-                <RadioOption 
-                  selected={layoutSettings.direction === 'ltr'}
-                  onClick={() => onLayoutChange({ direction: 'ltr' })}
-                  icon={<ArrowLeftToLine size={14} />}
-                  label={layoutSettings.orientation === 'horizontal' ? 'يسار ← يمين' : 'أسفل ← أعلى'}
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
 const UnifiedFloatingToolbar: React.FC = () => {
   const {
     elements,
     selectedElementIds,
     updateElement,
     deleteElements,
-    deleteElement,
     copyElements,
     cutElements,
     pasteElements,
@@ -860,8 +674,6 @@ const UnifiedFloatingToolbar: React.FC = () => {
   const [imageName, setImageName] = useState('');
   const [activeFormats, setActiveFormats] = useState<Record<string, boolean>>({});
   const [isTransforming, setIsTransforming] = useState(false);
-  const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(DEFAULT_LAYOUT_SETTINGS);
-  const [showNodeStyleMenu, setShowNodeStyleMenu] = useState(false);
   
   // حساب العناصر المحددة + العنصر الذي يتم تحريره
   const selectedElements = useMemo(
@@ -889,40 +701,6 @@ const UnifiedFloatingToolbar: React.FC = () => {
   const firstElement = activeElements[0];
   const selectionCount = activeElements.length;
 
-  // ✅ التحقق من أن التحديد هو خريطة ذهنية
-  const mindMapInfo = useMemo(() => {
-    // فحص ما إذا كانت العناصر المحددة تنتمي لخريطة ذهنية
-    const selectedMindMapNodes = selectedElements.filter(el => el.type === 'mindmap_node');
-    
-    if (selectedMindMapNodes.length === 0) {
-      return null;
-    }
-    
-    // العثور على العقدة الجذرية
-    const rootNode = elements.find(el => 
-      el.type === 'mindmap_node' && (el.data as MindMapNodeData)?.isRoot === true
-    );
-    
-    if (!rootNode) {
-      return null;
-    }
-    
-    // جمع كل عناصر الشجرة
-    const allTreeNodes = elements.filter(el => el.type === 'mindmap_node');
-    const allTreeConnectors = elements.filter(el => el.type === 'mindmap_connector');
-    
-    const treeName = (rootNode.data as MindMapNodeData)?.label || 'خريطة ذهنية';
-    
-    return {
-      rootNode,
-      allTreeNodes,
-      allTreeConnectors,
-      treeName,
-      selectedNodes: selectedMindMapNodes,
-      allTreeElementIds: [...allTreeNodes.map(n => n.id), ...allTreeConnectors.map(c => c.id)]
-    };
-  }, [selectedElements, elements]);
-
   // تحديد نوع التحديد (أولوية لتحرير النص)
   const selectionType = useMemo((): SelectionType => {
     // إذا كان هناك نص قيد التحرير
@@ -934,19 +712,13 @@ const UnifiedFloatingToolbar: React.FC = () => {
     }
     
     if (!hasSelection) return null;
-    
-    // ✅ التحقق من الخريطة الذهنية أولاً
-    if (mindMapInfo) {
-      return 'mindmap_tree';
-    }
-    
     if (selectionCount > 1) return 'multiple';
     
     const type = firstElement?.type;
     if (type === 'text') return 'text';
     if (type === 'image') return 'image';
     return 'element';
-  }, [hasSelection, selectionCount, firstElement?.type, editingTextId, editingElement, mindMapInfo]);
+  }, [hasSelection, selectionCount, firstElement?.type, editingTextId, editingElement]);
 
   // حالات العناصر
   const groupId = useMemo(() => {
@@ -1058,118 +830,6 @@ const UnifiedFloatingToolbar: React.FC = () => {
     }
     return false;
   }, []);
-
-  // ===== إجراءات الخريطة الذهنية (يجب أن تكون قبل أي return) =====
-  const handleLayoutSettingChange = useCallback((newSettings: Partial<LayoutSettings>) => {
-    const updatedSettings = { ...layoutSettings, ...newSettings };
-    setLayoutSettings(updatedSettings);
-    applyLayoutWithSettings(updatedSettings, elements, updateElement);
-  }, [layoutSettings, elements, updateElement]);
-
-  // إضافة فرع جديد للعقدة المحددة
-  const handleAddBranch = useCallback(() => {
-    if (!mindMapInfo || mindMapInfo.selectedNodes.length === 0) return;
-    
-    const selectedNode = mindMapInfo.selectedNodes[0];
-    const nodeData = selectedNode.data as MindMapNodeData;
-    
-    const existingConnectors = elements.filter(el => 
-      el.type === 'mindmap_connector' && 
-      (el.data as any)?.startNodeId === selectedNode.id
-    );
-    const childCount = existingConnectors.length;
-    
-    const verticalSpacing = 80;
-    const direction = childCount % 2 === 0 ? 1 : -1;
-    const step = Math.ceil((childCount + 1) / 2);
-    const yOffset = direction * step * verticalSpacing;
-    
-    const offset = 220;
-    
-    const newNodeId = `mindmap-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    const newNodeData: MindMapNodeData = {
-      label: 'فرع جديد',
-      color: NODE_COLORS[Math.floor(Math.random() * NODE_COLORS.length)],
-      nodeStyle: 'rounded',
-      isRoot: false
-    };
-    
-    addElement({
-      id: newNodeId,
-      type: 'mindmap_node',
-      position: {
-        x: selectedNode.position.x + selectedNode.size.width + offset,
-        y: selectedNode.position.y + yOffset
-      },
-      size: { width: 160, height: 60 },
-      data: newNodeData
-    });
-    
-    const newNodePos = { x: selectedNode.position.x + selectedNode.size.width + offset, y: selectedNode.position.y + yOffset };
-    const newNodeSize = { width: 160, height: 60 };
-    const connectorBounds = calculateConnectorBounds(
-      { position: selectedNode.position, size: selectedNode.size },
-      { position: newNodePos, size: newNodeSize }
-    );
-    
-    addElement({
-      type: 'mindmap_connector',
-      position: connectorBounds.position,
-      size: connectorBounds.size,
-      data: {
-        startNodeId: selectedNode.id,
-        endNodeId: newNodeId,
-        startAnchor: { nodeId: selectedNode.id, anchor: 'right' },
-        endAnchor: { nodeId: newNodeId, anchor: 'left' },
-        curveStyle: 'bezier',
-        color: nodeData?.color || '#3DA8F5',
-        strokeWidth: 2
-      }
-    });
-    
-    toast.success('تمت إضافة فرع جديد');
-  }, [mindMapInfo, elements, addElement]);
-
-  // تغيير لون العقدة
-  const handleNodeColorChange = useCallback((color: string) => {
-    if (!mindMapInfo) return;
-    mindMapInfo.selectedNodes.forEach(node => {
-      updateElement(node.id, {
-        data: { ...node.data, color }
-      });
-    });
-  }, [mindMapInfo, updateElement]);
-
-  // تغيير شكل العقدة
-  const handleNodeStyleChange = useCallback((style: string) => {
-    if (!mindMapInfo) return;
-    mindMapInfo.selectedNodes.forEach(node => {
-      updateElement(node.id, {
-        data: { ...node.data, nodeStyle: style }
-      });
-    });
-    setShowNodeStyleMenu(false);
-  }, [mindMapInfo, updateElement]);
-
-  // حذف العقد المحددة
-  const handleDeleteSelectedNodes = useCallback(() => {
-    if (!mindMapInfo) return;
-    
-    const selectedNodeIds = mindMapInfo.selectedNodes.map(n => n.id);
-    
-    // حذف الموصلات المتصلة أيضاً
-    const connectorIds = elements
-      .filter(el => el.type === 'mindmap_connector')
-      .filter(el => {
-        const data = el.data as any;
-        return selectedNodeIds.includes(data.startNodeId) || selectedNodeIds.includes(data.endNodeId);
-      })
-      .map(el => el.id);
-    
-    [...selectedNodeIds, ...connectorIds].forEach(id => deleteElement(id));
-    toast.success('تم حذف العقد المحددة');
-  }, [mindMapInfo, elements, deleteElement]);
 
   if (!hasSelection) return null;
 
@@ -1382,8 +1042,12 @@ const UnifiedFloatingToolbar: React.FC = () => {
   };
 
   // ===== إجراءات النص =====
+
+  // ===== إجراءات النص =====
   const handleTextFormat = (format: string) => {
+    // أولاً: استعادة الـ focus للمحرر
     restoreEditorFocus();
+    // ثم تنفيذ الأمر
     requestAnimationFrame(() => {
       document.execCommand(format, false);
     });
@@ -1526,43 +1190,6 @@ const UnifiedFloatingToolbar: React.FC = () => {
       toast.success('تم تجميع العناصر');
     } else {
       toast.error('حدد عنصرين أو أكثر للتجميع');
-    }
-  };
-
-  const handleDuplicateTree = () => {
-    if (mindMapInfo) {
-      mindMapInfo.allTreeElementIds.forEach(id => duplicateElement(id));
-      toast.success('تم تكرار الخريطة الذهنية');
-    }
-  };
-
-  const handleToggleTreeVisibility = () => {
-    if (mindMapInfo) {
-      const allVisible = mindMapInfo.allTreeNodes.every(n => n.visible !== false);
-      mindMapInfo.allTreeElementIds.forEach(id => {
-        updateElement(id, { visible: !allVisible });
-      });
-      toast.success(allVisible ? 'تم إخفاء الخريطة الذهنية' : 'تم إظهار الخريطة الذهنية');
-    }
-  };
-
-  const handleToggleTreeLock = () => {
-    if (mindMapInfo) {
-      const anyLocked = mindMapInfo.allTreeNodes.some(n => n.locked === true);
-      if (anyLocked) {
-        unlockElements(mindMapInfo.allTreeElementIds);
-        toast.success('تم إلغاء قفل الخريطة الذهنية');
-      } else {
-        lockElements(mindMapInfo.allTreeElementIds);
-        toast.success('تم قفل الخريطة الذهنية');
-      }
-    }
-  };
-
-  const handleDeleteTree = () => {
-    if (mindMapInfo) {
-      mindMapInfo.allTreeElementIds.forEach(id => deleteElement(id));
-      toast.success('تم حذف الخريطة الذهنية');
     }
   };
 
@@ -2041,253 +1668,32 @@ const UnifiedFloatingToolbar: React.FC = () => {
     </>
   );
 
-  // ===== أزرار الخريطة الذهنية - شريط الشجرة =====
-  const MindMapTreeActions = () => {
-    const treeVisible = mindMapInfo?.allTreeNodes.every(n => n.visible !== false) ?? true;
-    const treeLocked = mindMapInfo?.allTreeNodes.some(n => n.locked === true) ?? false;
-    
-    return (
-      <>
-        {/* اسم الشجرة */}
-        <div className="flex items-center gap-1.5 px-3 py-1 bg-[hsl(var(--panel))] rounded-lg text-xs font-semibold text-[hsl(var(--ink))]">
-          <Network size={14} className="text-[hsl(var(--accent-blue))]" />
-          <span className="max-w-[120px] truncate">{mindMapInfo?.treeName || 'خريطة ذهنية'}</span>
-        </div>
-        
-        <Separator orientation="vertical" className="h-6 mx-1" />
-        
-        {/* تخطيط */}
-        <LayoutSettingsDropdown 
-          layoutSettings={layoutSettings}
-          onLayoutChange={handleLayoutSettingChange}
-        />
-        
-        <Separator orientation="vertical" className="h-6 mx-1" />
-        
-        {/* تكرار */}
-        <ToolbarButton icon={<Files size={16} />} onClick={handleDuplicateTree} title="تكرار الشجرة" />
-        
-        {/* إخفاء/إظهار */}
-        <ToolbarButton 
-          icon={treeVisible ? <Eye size={16} /> : <EyeOff size={16} />} 
-          onClick={handleToggleTreeVisibility} 
-          title={treeVisible ? 'إخفاء الشجرة' : 'إظهار الشجرة'}
-          isActive={!treeVisible}
-        />
-        
-        {/* قفل/فك القفل */}
-        <ToolbarButton 
-          icon={treeLocked ? <Lock size={16} /> : <Unlock size={16} />} 
-          onClick={handleToggleTreeLock} 
-          title={treeLocked ? 'فك قفل الشجرة' : 'قفل الشجرة'}
-          isActive={treeLocked}
-        />
-        
-        {/* تعليق */}
-        <ToolbarButton icon={<MessageSquare size={16} />} onClick={handleComment} title="ترك تعليق" />
-        
-        {/* حذف */}
-        <ToolbarButton icon={<Trash2 size={16} />} onClick={handleDeleteTree} title="حذف الشجرة" variant="destructive" />
-        
-        <Separator orientation="vertical" className="h-6 mx-1" />
-        
-        {/* AI */}
-        <AIMenuDropdown
-          isLoading={isAILoading || isTransforming}
-          onQuickGenerate={handleQuickGenerate}
-          onTransform={handleTransform}
-          onCustomTransform={handleCustomTransform}
-          selectedCount={mindMapInfo?.allTreeNodes.length || 0}
-        />
-        
-        <Separator orientation="vertical" className="h-6 mx-1" />
-        
-        {/* النقاط الثلاث */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button 
-              type="button" 
-              className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-[hsl(var(--ink)/0.1)] text-[hsl(var(--ink))] pointer-events-auto"
-              onMouseDown={(e) => e.stopPropagation()}
-            >
-              <MoreVertical size={16} />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-white z-[10001] pointer-events-auto" onMouseDown={(e) => e.stopPropagation()}>
-            <DropdownMenuItem onClick={handleCopy}>
-              <Copy size={14} className="ml-2" />
-              نسخ
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleCut}>
-              <Scissors size={14} className="ml-2" />
-              قص
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handlePaste} disabled={clipboard.length === 0}>
-              <ClipboardPaste size={14} className="ml-2" />
-              لصق
-            </DropdownMenuItem>
-            
-            <DropdownMenuSeparator />
-            
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <Layers size={14} className="ml-2" />
-                تغيير الطبقة
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="bg-white z-[10002]">
-                {layers.map((layer) => (
-                  <DropdownMenuItem key={layer.id} onClick={() => handleChangeLayer(layer.id)}>
-                    {layer.name}
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleChangeLayer('new')}>
-                  <Plus size={14} className="ml-2" />
-                  طبقة جديدة
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-            
-            <DropdownMenuSeparator />
-            
-            <DropdownMenuItem onClick={handleBringToFront}>
-              <ChevronsUp size={14} className="ml-2" />
-              إحضار إلى الأمام
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSendToBack}>
-              <ChevronsDown size={14} className="ml-2" />
-              إرسال إلى الخلف
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </>
-    );
-  };
-
-  // ===== أزرار الخريطة الذهنية - شريط العقدة =====
-  const MindMapNodeActions = () => {
-    const selectedNode = mindMapInfo?.selectedNodes[0];
-    const nodeData = selectedNode?.data as MindMapNodeData | undefined;
-    
-    return (
-      <>
-        {/* إضافة فرع */}
-        <button
-          onClick={handleAddBranch}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-green))] transition-colors text-sm font-medium"
-          title="إضافة فرع"
-        >
-          <Plus size={16} />
-          <span>فرع</span>
-        </button>
-        
-        <Separator orientation="vertical" className="h-6 mx-1" />
-        
-        {/* شكل العقدة */}
-        <div className="relative">
-          <button
-            onClick={() => setShowNodeStyleMenu(!showNodeStyleMenu)}
-            className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] transition-colors"
-            title="شكل العقدة"
-          >
-            <RectangleHorizontal size={16} />
-            <ChevronDown size={14} className="text-[hsl(var(--ink-30))]" />
-          </button>
-          
-          <AnimatePresence>
-            {showNodeStyleMenu && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl p-2 border border-[hsl(var(--border))] min-w-[140px] z-[10001]"
-              >
-                {NODE_STYLES.map((style) => (
-                  <button
-                    key={style.type}
-                    onClick={() => handleNodeStyleChange(style.type)}
-                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm ${
-                      nodeData?.nodeStyle === style.type 
-                        ? 'bg-[hsl(var(--accent-green)/0.1)] text-[hsl(var(--accent-green))]' 
-                        : 'hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))]'
-                    }`}
-                  >
-                    {style.icon}
-                    <span>{style.label}</span>
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-        
-        {/* لون العقدة */}
-        <CompactColorPicker 
-          value={nodeData?.color || '#3DA8F5'}
-          onChange={handleNodeColorChange}
-        />
-        
-        <Separator orientation="vertical" className="h-6 mx-1" />
-        
-        {/* حذف العقدة */}
-        <button
-          onClick={handleDeleteSelectedNodes}
-          className="p-1.5 rounded-lg text-[hsl(var(--ink-60))] hover:text-[#E5564D] hover:bg-red-50 transition-colors"
-          title="حذف العقدة"
-        >
-          <Trash2 size={16} />
-        </button>
-      </>
-    );
-  };
-
   return createPortal(
-    <div className="fixed z-[9999] pointer-events-auto flex flex-col items-center gap-2" style={{
-      left: `${position.x}px`,
-      top: `${position.y}px`,
-      transform: 'translateX(-50%)'
-    }}>
-      {/* ✅ شريط الشجرة (للخرائط الذهنية) */}
-      {selectionType === 'mindmap_tree' && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          data-floating-toolbar
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5 pointer-events-auto">
-            <div className="flex items-center gap-1 pointer-events-auto" dir="rtl">
-              <MindMapTreeActions />
-            </div>
-          </div>
-        </motion.div>
-      )}
-      
-      {/* الشريط العادي (لغير الخرائط الذهنية) */}
-      {selectionType !== 'mindmap_tree' && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          data-floating-toolbar
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5 pointer-events-auto">
-            <div className="flex items-center gap-1 pointer-events-auto">
-              {selectionType === 'element' && <ElementActions />}
-              {selectionType === 'text' && <TextActions />}
-              {selectionType === 'image' && <ImageActions />}
-              {selectionType === 'multiple' && <MultipleActions />}
-              
-              <CommonActions />
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </div>,
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="fixed z-[9999] pointer-events-auto"
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        transform: 'translateX(-50%)'
+      }}
+      data-floating-toolbar
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5 pointer-events-auto">
+        <div className="flex items-center gap-1 pointer-events-auto">
+          {selectionType === 'element' && <ElementActions />}
+          {selectionType === 'text' && <TextActions />}
+          {selectionType === 'image' && <ImageActions />}
+          {selectionType === 'multiple' && <MultipleActions />}
+          
+          <CommonActions />
+        </div>
+      </div>
+    </motion.div>,
     document.body
   );
 };

@@ -22,13 +22,10 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
   isSelected,
   onSelect
 }) => {
-  const { elements, deleteElement, updateElement, activeTool } = useCanvasStore();
+  const { elements, deleteElement, updateElement, selectedElementIds, activeTool } = useCanvasStore();
   const [isHovered, setIsHovered] = useState(false);
   const [isEditingLabel, setIsEditingLabel] = useState(false);
   const [labelText, setLabelText] = useState('');
-  
-  // ✅ الموصلات لا تُحدد بأداة التحديد العادية
-  const isSelectableByTool = activeTool === 'smart_element_tool';
   
   const connectorData = element.data as MindMapConnectorData;
   
@@ -212,11 +209,8 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
   
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    // ✅ فقط أداة العناصر الذكية يمكنها تحديد الموصلات
-    if (isSelectableByTool) {
-      onSelect(e.shiftKey || e.ctrlKey || e.metaKey);
-    }
-  }, [onSelect, isSelectableByTool]);
+    onSelect(e.shiftKey || e.ctrlKey || e.metaKey);
+  }, [onSelect]);
   
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -348,10 +342,28 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
         </div>
       )}
       
-      {/* ✅ تم إزالة الدائرة الوسطى - الوصول للأزرار عبر أداة العناصر الذكية فقط */}
+      {/* ✅ نقطة وسطى للتفاعل - تظهر دائماً للإشارة لقابلية النقر (مخفية عند تحديد الشجرة بالكامل) */}
+      {labelPosition && !connectorData.label && !isEditingLabel && !(activeTool === 'selection_tool' && selectedElementIds.length > 1) && (
+        <div
+          className={`absolute w-4 h-4 rounded-full border-2 cursor-pointer transition-all pointer-events-auto ${
+            isHovered || isSelected 
+              ? 'bg-[hsl(var(--accent-blue))] border-white scale-125 shadow-lg' 
+              : 'bg-white border-[hsl(var(--border))] hover:scale-110 hover:border-[hsl(var(--accent-blue))]'
+          }`}
+          style={{
+            left: labelPosition.x - 8,
+            top: labelPosition.y - 8,
+            zIndex: 10
+          }}
+          onClick={handleClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          title="انقر للتحديد أو أضف نصاً"
+        />
+      )}
       
-      {/* ✅ أزرار التحكم - تظهر فقط عند استخدام أداة العناصر الذكية */}
-      {isSelectableByTool && (isHovered || isSelected) && labelPosition && (
+      {/* ✅ أزرار التحكم - تظهر في منتصف الـ connector بشكل واضح (مخفية عند تحديد الشجرة بالكامل) */}
+      {(isHovered || isSelected) && labelPosition && !(activeTool === 'selection_tool' && selectedElementIds.length > 1) && (
         <div
           className="absolute flex items-center gap-3 pointer-events-auto bg-white rounded-xl shadow-xl p-2 border-2 border-[hsl(var(--border))]"
           style={{
