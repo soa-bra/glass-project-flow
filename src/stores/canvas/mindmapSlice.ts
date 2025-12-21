@@ -12,6 +12,7 @@ export interface MindmapSlice {
   moveElementWithChildren: (elementId: string, deltaX: number, deltaY: number) => void;
   selectMindMapTree: (nodeId: string) => void;
   autoResolveOverlapsForMindMap: () => void;
+  expandSelectionToFullMindMapTrees: (selectedIds: string[]) => void;
 }
 
 export const createMindmapSlice: StateCreator<
@@ -262,6 +263,75 @@ export const createMindmapSlice: StateCreator<
           return el;
         })
       }));
+    }
+  },
+
+  // ✅ توسيع التحديد ليشمل كامل أشجار الخريطة الذهنية
+  expandSelectionToFullMindMapTrees: (selectedIds: string[]) => {
+    const { elements } = get();
+    
+    // التحقق مما إذا كانت أي من العناصر المحددة من نوع mindmap
+    const hasMindMapElements = selectedIds.some(id => {
+      const el = elements.find((e: CanvasElement) => e.id === id);
+      return el && (el.type === 'mindmap_node' || el.type === 'mindmap_connector');
+    });
+    
+    if (!hasMindMapElements) return;
+    
+    // دالة للعثور على الجذر
+    const findRoot = (nodeId: string): string => {
+      const parentConnector = elements.find((el: CanvasElement) => {
+        if (el.type !== 'mindmap_connector') return false;
+        return (el.data as any)?.endNodeId === nodeId;
+      });
+      
+      if (!parentConnector) return nodeId;
+      return findRoot((parentConnector.data as any).startNodeId);
+    };
+    
+    // دالة لجمع كل عناصر الشجرة
+    const collectTree = (parentId: string): string[] => {
+      const ids: string[] = [parentId];
+      
+      const childConnectors = elements.filter((el: CanvasElement) => {
+        if (el.type !== 'mindmap_connector') return false;
+        return (el.data as any)?.startNodeId === parentId;
+      });
+      
+      childConnectors.forEach((conn: CanvasElement) => {
+        ids.push(conn.id);
+        const childId = (conn.data as any)?.endNodeId;
+        if (childId) {
+          ids.push(...collectTree(childId));
+        }
+      });
+      
+      return ids;
+    };
+    
+    // جمع كل الأشجار المرتبطة بالعناصر المحددة
+    const allTreeIds = new Set<string>();
+    
+    selectedIds.forEach(id => {
+      const el = elements.find((e: CanvasElement) => e.id === id);
+      if (!el) return;
+      
+      if (el.type === 'mindmap_node') {
+        const rootId = findRoot(id);
+        const treeIds = collectTree(rootId);
+        treeIds.forEach(treeId => allTreeIds.add(treeId));
+      } else if (el.type === 'mindmap_connector') {
+        const connectorData = el.data as any;
+        if (connectorData?.startNodeId) {
+          const rootId = findRoot(connectorData.startNodeId);
+          const treeIds = collectTree(rootId);
+          treeIds.forEach(treeId => allTreeIds.add(treeId));
+        }
+      }
+    });
+    
+    if (allTreeIds.size > 0) {
+      set({ selectedElementIds: Array.from(allTreeIds) });
     }
   }
 });

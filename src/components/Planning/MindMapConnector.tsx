@@ -22,7 +22,7 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
   isSelected,
   onSelect
 }) => {
-  const { elements, deleteElement, updateElement } = useCanvasStore();
+  const { elements, deleteElement, updateElement, selectedElementIds, activeTool } = useCanvasStore();
   const [isHovered, setIsHovered] = useState(false);
   const [isEditingLabel, setIsEditingLabel] = useState(false);
   const [labelText, setLabelText] = useState('');
@@ -342,8 +342,8 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
         </div>
       )}
       
-      {/* ✅ نقطة وسطى للتفاعل - تظهر دائماً للإشارة لقابلية النقر */}
-      {labelPosition && !connectorData.label && !isEditingLabel && (
+      {/* ✅ نقطة وسطى للتفاعل - تظهر دائماً للإشارة لقابلية النقر (مخفية عند تحديد الشجرة بالكامل) */}
+      {labelPosition && !connectorData.label && !isEditingLabel && !(activeTool === 'selection_tool' && selectedElementIds.length > 1) && (
         <div
           className={`absolute w-4 h-4 rounded-full border-2 cursor-pointer transition-all pointer-events-auto ${
             isHovered || isSelected 
@@ -362,8 +362,8 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({
         />
       )}
       
-      {/* ✅ أزرار التحكم - تظهر في منتصف الـ connector بشكل واضح */}
-      {(isHovered || isSelected) && labelPosition && (
+      {/* ✅ أزرار التحكم - تظهر في منتصف الـ connector بشكل واضح (مخفية عند تحديد الشجرة بالكامل) */}
+      {(isHovered || isSelected) && labelPosition && !(activeTool === 'selection_tool' && selectedElementIds.length > 1) && (
         <div
           className="absolute flex items-center gap-3 pointer-events-auto bg-white rounded-xl shadow-xl p-2 border-2 border-[hsl(var(--border))]"
           style={{

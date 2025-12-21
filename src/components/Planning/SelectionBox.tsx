@@ -162,9 +162,10 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
  * Hook مساعد لاستخدام SelectionBox مع تحديد تلقائي
  * ✅ محسّن باستخدام Layer Visibility Map
  * ✅ دعم التحديد العكسي
+ * ✅ توسيع التحديد ليشمل كامل أشجار الخريطة الذهنية
  */
 export function useSelectionBox() {
-  const { selectElements, viewport, layers } = useCanvasStore();
+  const { selectElements, viewport, layers, expandSelectionToFullMindMapTrees } = useCanvasStore();
   
   // ✅ Cache للـ visibility map
   const layerVisibilityMapRef = useRef<Map<string, boolean>>(new Map());
@@ -179,6 +180,7 @@ export function useSelectionBox() {
   /**
    * إنهاء التحديد وتحديد العناصر المتقاطعة
    * ✅ يدعم التحديد العكسي (من اليمين لليسار)
+   * ✅ يوسع التحديد ليشمل كامل أشجار الخريطة الذهنية
    */
   const finishSelection = useCallback((
     startX: number,
@@ -237,8 +239,15 @@ export function useSelectionBox() {
       selectElements(intersectingIds);
     }
 
+    // ✅ توسيع التحديد ليشمل كامل أشجار الخريطة الذهنية
+    // نستخدم setTimeout لتأخير التوسيع حتى يتم تحديث الـ store أولاً
+    setTimeout(() => {
+      const currentSelectedIds = useCanvasStore.getState().selectedElementIds;
+      expandSelectionToFullMindMapTrees(currentSelectedIds);
+    }, 0);
+
     return intersectingIds;
-  }, [selectElements, viewport]);
+  }, [selectElements, viewport, expandSelectionToFullMindMapTrees]);
 
   return { finishSelection };
 }
