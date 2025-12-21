@@ -6,6 +6,7 @@ interface TextRendererProps {
   element: CanvasElement;
   width: number;
   height: number;
+  onDoubleClick?: (e: React.MouseEvent) => void;
 }
 
 /**
@@ -17,7 +18,8 @@ interface TextRendererProps {
 export const TextRenderer: React.FC<TextRendererProps> = ({
   element,
   width,
-  height
+  height,
+  onDoubleClick
 }) => {
   const textType = element.data?.textType || 'line';
   const content = element.content || '';
@@ -83,8 +85,9 @@ export const TextRenderer: React.FC<TextRendererProps> = ({
       <svg
         width={width}
         height={height}
-        className="overflow-visible"
-        style={{ pointerEvents: 'none' }}
+        className="overflow-visible cursor-text"
+        style={{ pointerEvents: 'auto' }}
+        onDoubleClick={onDoubleClick}
       >
         <text
           x={xPosition}
@@ -114,8 +117,9 @@ export const TextRenderer: React.FC<TextRendererProps> = ({
     <svg
       width={width}
       height={height}
-      className="overflow-visible"
-      style={{ pointerEvents: 'none' }}
+      className="overflow-visible cursor-text"
+      style={{ pointerEvents: 'auto' }}
+      onDoubleClick={onDoubleClick}
     >
       <foreignObject x="0" y="0" width={width} height={height}>
         <div
