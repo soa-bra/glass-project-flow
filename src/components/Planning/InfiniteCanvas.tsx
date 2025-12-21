@@ -385,10 +385,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   // ✅ Handle Mouse Up - استخدام State Machine
   const handleMouseUp = useCallback(() => {
-    // ✅ إنشاء الموصل فقط عند وجود snap (nearestAnchor)
+    // ✅ إنشاء الموصل فقط عند وجود snap (السناب = اتصال مشروط بالإفلات)
+    // عند وجود snap، الإفلات في أي مكان يُكمل التوصيل
     if (mindMapConnection.isConnecting && mindMapConnection.sourceNodeId) {
       if (mindMapConnection.nearestAnchor) {
-        // يوجد snap - إنشاء الموصل
+        // يوجد snap - إنشاء الموصل مباشرة بغض النظر عن موقع الإفلات
         handleEndConnection(
           mindMapConnection.nearestAnchor.nodeId, 
           mindMapConnection.nearestAnchor.anchor
