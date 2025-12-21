@@ -9,6 +9,9 @@ export * from './collaboration';
 // Export/Import
 export * from './export';
 
+// Accessibility
+export * from './accessibility';
+
 // Persistence
 export * from './persistence';
 
