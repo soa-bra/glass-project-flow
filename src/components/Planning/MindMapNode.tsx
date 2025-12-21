@@ -3,7 +3,7 @@ import { useCanvasStore } from "@/stores/canvasStore";
 import type { CanvasElement } from "@/types/canvas";
 import type { MindMapNodeData, NodeAnchorPoint } from "@/types/mindmap-canvas";
 import { getAnchorPosition, NODE_COLORS, calculateConnectorBounds } from "@/types/mindmap-canvas";
-import { Plus, GripVertical, Trash2, Palette, ChevronDown, ChevronRight } from "lucide-react";
+import { Plus, GripVertical, Trash2, Palette, ChevronDown, ChevronRight, RectangleHorizontal, Circle, Square, Pill } from "lucide-react";
 import { redistributeUpwards } from "@/utils/mindmap-layout";
 interface MindMapNodeProps {
   element: CanvasElement;
@@ -46,6 +46,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState("");
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showStylePicker, setShowStylePicker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -79,8 +80,8 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
 
       // ✅ إذا كانت أداة التحديد نشطة (سواء كانت شجرة كاملة أو حتى عقدة واحدة)
       // حوّل إلى أداة العناصر الذكية وحدد هذه العقدة
-      if (activeTool === "selection_tool") {
-        setActiveTool("smart_element_tool");
+      if (activeTool === 'selection_tool') {
+        setActiveTool('smart_element_tool');
         selectElement(element.id, false);
         setLastSmartSelectedMindMapNode(element.id);
         return;
@@ -238,7 +239,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
 
       // ✅ أداة العناصر الذكية: تحريك العقدة فقط
       // ✅ أداة التحديد: تحريك كامل الشجرة (الأصول والفروع)
-      const shouldMoveOnlyNode = activeTool === "smart_element_tool" || isSingleNodeMode;
+      const shouldMoveOnlyNode = activeTool === 'smart_element_tool' || isSingleNodeMode;
 
       if (shouldMoveOnlyNode) {
         updateElement(element.id, {
@@ -265,22 +266,22 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     (e: React.MouseEvent, anchor: "top" | "bottom" | "left" | "right") => {
       e.stopPropagation();
       e.preventDefault();
-
+      
       isLongPressRef.current = false;
-
+      
       // بدء مؤقت النقرة المطولة
       longPressTimerRef.current = setTimeout(() => {
         isLongPressRef.current = true;
         const pos = getAnchorPosition(element.position, element.size, anchor);
         onStartConnection(element.id, anchor, pos);
       }, LONG_PRESS_DELAY);
-
+      
       // إضافة مستمع لـ mousemove لبدء السحب
       const handleMouseMoveForDrag = (moveEvent: MouseEvent) => {
         // إذا تحرك الماوس أكثر من 5px قبل انتهاء المؤقت، ابدأ التوصيل فوراً
         const dx = Math.abs(moveEvent.clientX - e.clientX);
         const dy = Math.abs(moveEvent.clientY - e.clientY);
-
+        
         if ((dx > 5 || dy > 5) && !isLongPressRef.current) {
           if (longPressTimerRef.current) {
             clearTimeout(longPressTimerRef.current);
@@ -289,27 +290,27 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           isLongPressRef.current = true;
           const pos = getAnchorPosition(element.position, element.size, anchor);
           onStartConnection(element.id, anchor, pos);
-          window.removeEventListener("mousemove", handleMouseMoveForDrag);
+          window.removeEventListener('mousemove', handleMouseMoveForDrag);
         }
       };
-
+      
       const handleMouseUpForDrag = () => {
         if (longPressTimerRef.current) {
           clearTimeout(longPressTimerRef.current);
           longPressTimerRef.current = null;
         }
-        window.removeEventListener("mousemove", handleMouseMoveForDrag);
-        window.removeEventListener("mouseup", handleMouseUpForDrag);
+        window.removeEventListener('mousemove', handleMouseMoveForDrag);
+        window.removeEventListener('mouseup', handleMouseUpForDrag);
       };
-
-      window.addEventListener("mousemove", handleMouseMoveForDrag);
-      window.addEventListener("mouseup", handleMouseUpForDrag);
+      
+      window.addEventListener('mousemove', handleMouseMoveForDrag);
+      window.addEventListener('mouseup', handleMouseUpForDrag);
     },
     [element, onStartConnection],
   );
 
   // تم إزالة handleAnchorMouseUp - التوصيل يتم فقط عبر handleMouseUp في InfiniteCanvas
-
+  
   // تنظيف المؤقت عند unmount
   useEffect(() => {
     return () => {
@@ -349,17 +350,16 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   // ✅ عند التحويل من أداة التحديد إلى أداة العناصر الذكية: حدد آخر عقدة محددة أو العقدة الحالية
   useEffect(() => {
     if (!isSelected) return;
-
-    if (activeTool === "selection_tool") {
+    
+    if (activeTool === 'selection_tool') {
       // تحويل إلى أداة التحديد → حدد كامل الشجرة
       selectMindMapTree(element.id);
-    } else if (activeTool === "smart_element_tool" && selectedElementIds.length > 1) {
+    } else if (activeTool === 'smart_element_tool' && selectedElementIds.length > 1) {
       // تحويل إلى أداة العناصر الذكية من شجرة محددة
       // حدد آخر عقدة تم تحديدها أو أول عقدة في التحديد
-      const nodeToSelect =
-        lastSmartSelectedMindMapNode && selectedElementIds.includes(lastSmartSelectedMindMapNode)
-          ? lastSmartSelectedMindMapNode
-          : element.id;
+      const nodeToSelect = lastSmartSelectedMindMapNode && selectedElementIds.includes(lastSmartSelectedMindMapNode)
+        ? lastSmartSelectedMindMapNode
+        : element.id;
       selectElement(nodeToSelect, false);
     }
   }, [activeTool]);
@@ -397,7 +397,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const isNearestForConnection = nearestAnchor?.nodeId === element.id;
 
   // ✅ التحقق من تحديد الشجرة بالكامل - إخفاء نقاط التوصيل وشريط الأدوات
-  const isFullTreeSelected = activeTool === "selection_tool" && selectedElementIds.length > 1;
+  const isFullTreeSelected = activeTool === 'selection_tool' && selectedElementIds.length > 1;
 
   return (
     <div
@@ -492,46 +492,83 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         </>
       )}
 
-      {/* شريط أدوات العقدة - يظهر عند التحديد (مخفي عند تحديد الشجرة بالكامل) */}
-      {isSelected && !isEditing && !isFullTreeSelected && (
-        <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-white rounded-lg shadow-lg p-1 border border-[hsl(var(--border))]">
+      {/* شريط أدوات العقدة - يظهر فقط عند التحديد بأداة العناصر الذكية */}
+      {isSelected && !isEditing && activeTool === 'smart_element_tool' && (
+        <div 
+          className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-white/95 backdrop-blur-md rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.12)] p-1.5 border border-[hsl(var(--border))] z-[100]"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* إضافة فرع */}
           <button
             onClick={handleAddBranch}
-            className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-green))] transition-colors"
+            className="p-2 rounded-lg hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-green))] transition-colors"
             title="إضافة فرع"
           >
             <Plus size={16} />
           </button>
 
-          {/* ✅ طي/توسيع */}
-          {hasChildren && (
+          {/* تبديل شكل العقدة */}
+          <div className="relative">
             <button
-              onClick={handleToggleCollapse}
-              className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
-              title={nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع"}
+              onClick={() => setShowStylePicker(!showStylePicker)}
+              className="p-2 rounded-lg hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
+              title="شكل العقدة"
             >
-              {nodeData.isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+              {nodeData.nodeStyle === 'circle' ? <Circle size={16} /> :
+               nodeData.nodeStyle === 'rectangle' ? <Square size={16} /> :
+               nodeData.nodeStyle === 'pill' ? <Pill size={16} /> :
+               <RectangleHorizontal size={16} />}
             </button>
-          )}
+
+            {showStylePicker && (
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white rounded-xl shadow-xl p-2 border border-[hsl(var(--border))] flex gap-1 min-w-[120px]">
+                {[
+                  { type: 'rounded', icon: <RectangleHorizontal size={16} />, label: 'مستدير' },
+                  { type: 'pill', icon: <Pill size={16} />, label: 'كبسولة' },
+                  { type: 'rectangle', icon: <Square size={16} />, label: 'مستطيل' },
+                  { type: 'circle', icon: <Circle size={16} />, label: 'دائري' },
+                ].map((style) => (
+                  <button
+                    key={style.type}
+                    onClick={() => {
+                      updateElement(element.id, {
+                        data: { ...nodeData, nodeStyle: style.type }
+                      });
+                      setShowStylePicker(false);
+                    }}
+                    className={`p-2 rounded-lg transition-all ${
+                      nodeData.nodeStyle === style.type 
+                        ? 'bg-[hsl(var(--accent-blue)/0.15)] text-[hsl(var(--accent-blue))]' 
+                        : 'hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))]'
+                    }`}
+                    title={style.label}
+                  >
+                    {style.icon}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* تغيير اللون */}
           <div className="relative">
             <button
               onClick={() => setShowColorPicker(!showColorPicker)}
-              className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
+              className="w-8 h-8 rounded-lg hover:scale-110 transition-all border-2 border-white shadow-sm"
+              style={{ backgroundColor: nodeData.color || '#3DA8F5' }}
               title="تغيير اللون"
-            >
-              <Palette size={16} />
-            </button>
+            />
 
             {showColorPicker && (
-              <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-lg p-2 border border-[hsl(var(--border))] grid grid-cols-4 gap-1">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white rounded-xl shadow-xl p-2 border border-[hsl(var(--border))] grid grid-cols-4 gap-1.5 min-w-[140px]">
                 {NODE_COLORS.map((color) => (
                   <button
                     key={color}
                     onClick={() => handleColorChange(color)}
-                    className="w-4 h-4 rounded-full border-2 border-white hover:scale-110 transition-transform"
+                    className={`w-7 h-7 rounded-full border-2 hover:scale-110 transition-transform ${
+                      nodeData.color === color ? 'border-[hsl(var(--ink))] scale-110' : 'border-white'
+                    }`}
                     style={{ backgroundColor: color }}
                   />
                 ))}
@@ -542,8 +579,8 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           {/* حذف */}
           <button
             onClick={() => deleteElement(element.id)}
-            className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-red))] transition-colors"
-            title="حذف"
+            className="p-2 rounded-lg hover:bg-red-50 text-[hsl(var(--ink-60))] hover:text-[#E5564D] transition-colors"
+            title="حذف العقدة"
           >
             <Trash2 size={16} />
           </button>
