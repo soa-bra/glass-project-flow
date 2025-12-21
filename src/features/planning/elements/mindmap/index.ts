@@ -1,8 +1,8 @@
 /**
- * MindMap Elements
- * عناصر الخرائط الذهنية
+ * MindMap Elements - Barrel Export
+ * @module features/planning/elements/mindmap
  */
 
-// سيتم نقل MindMapNode, MindMapConnector هنا
-// export { MindMapNode } from './MindMapNode';
-// export { MindMapConnector } from './MindMapConnector';
+export { default as MindMapNode } from './MindMapNode';
+export { default as MindMapConnector } from './MindMapConnector';
+export { default as MindMapConnectionLine } from './MindMapConnectionLine';

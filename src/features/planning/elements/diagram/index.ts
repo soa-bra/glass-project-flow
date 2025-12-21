@@ -1,7 +1,7 @@
 /**
- * Diagram Elements
- * عناصر المخططات البصرية
+ * Diagram Elements - Barrel Export
+ * @module features/planning/elements/diagram
  */
 
-// سيتم نقل VisualNode, Connector هنا
-// export { VisualNode } from './VisualNode';
+export { default as VisualNode } from './VisualNode';
+export { default as VisualConnector } from './VisualConnector';

@@ -1,8 +1,7 @@
 /**
- * Text Elements
- * عناصر النص والملاحظات
+ * Text Elements - Barrel Export
+ * @module features/planning/elements/text
  */
 
-// سيتم نقل TextEditor, StickyNote هنا
-// export { TextEditor } from './TextEditor';
-// export { StickyNote } from './StickyNote';
+export { TextEditor } from './TextEditor';
+export { StickyNoteEditor } from './StickyNoteEditor';
