@@ -3,7 +3,7 @@ import { useCanvasStore } from "@/stores/canvasStore";
 import type { CanvasElement } from "@/types/canvas";
 import type { MindMapNodeData, NodeAnchorPoint } from "@/types/mindmap-canvas";
 import { getAnchorPosition, NODE_COLORS, calculateConnectorBounds } from "@/types/mindmap-canvas";
-import { Plus, GripVertical, Trash2, Palette, ChevronDown, ChevronRight } from "lucide-react";
+import { Plus, GripVertical, Trash2, Palette, ChevronDown, ChevronRight, RectangleHorizontal, Circle, Square, Pill } from "lucide-react";
 import { redistributeUpwards } from "@/utils/mindmap-layout";
 interface MindMapNodeProps {
   element: CanvasElement;
@@ -46,6 +46,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState("");
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showStylePicker, setShowStylePicker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -507,16 +508,48 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
             <Plus size={16} />
           </button>
 
-          {/* ✅ طي/توسيع */}
-          {hasChildren && (
+          {/* تبديل شكل العقدة */}
+          <div className="relative">
             <button
-              onClick={handleToggleCollapse}
+              onClick={() => setShowStylePicker(!showStylePicker)}
               className="p-2 rounded-lg hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors"
-              title={nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع"}
+              title="شكل العقدة"
             >
-              {nodeData.isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+              {nodeData.nodeStyle === 'circle' ? <Circle size={16} /> :
+               nodeData.nodeStyle === 'rectangle' ? <Square size={16} /> :
+               nodeData.nodeStyle === 'pill' ? <Pill size={16} /> :
+               <RectangleHorizontal size={16} />}
             </button>
-          )}
+
+            {showStylePicker && (
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white rounded-xl shadow-xl p-2 border border-[hsl(var(--border))] flex gap-1 min-w-[120px]">
+                {[
+                  { type: 'rounded', icon: <RectangleHorizontal size={16} />, label: 'مستدير' },
+                  { type: 'pill', icon: <Pill size={16} />, label: 'كبسولة' },
+                  { type: 'rectangle', icon: <Square size={16} />, label: 'مستطيل' },
+                  { type: 'circle', icon: <Circle size={16} />, label: 'دائري' },
+                ].map((style) => (
+                  <button
+                    key={style.type}
+                    onClick={() => {
+                      updateElement(element.id, {
+                        data: { ...nodeData, nodeStyle: style.type }
+                      });
+                      setShowStylePicker(false);
+                    }}
+                    className={`p-2 rounded-lg transition-all ${
+                      nodeData.nodeStyle === style.type 
+                        ? 'bg-[hsl(var(--accent-blue)/0.15)] text-[hsl(var(--accent-blue))]' 
+                        : 'hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))]'
+                    }`}
+                    title={style.label}
+                  >
+                    {style.icon}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* تغيير اللون */}
           <div className="relative">
