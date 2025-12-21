@@ -56,7 +56,7 @@ export const FrameDropZone: React.FC<FrameDropZoneProps> = ({
         <div 
           className="absolute pointer-events-auto flex items-center gap-2"
           style={{
-            top: -28,
+            top: -36,
             right: 0,
             zIndex: 10
           }}

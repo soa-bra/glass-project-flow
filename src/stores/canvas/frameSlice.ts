@@ -141,11 +141,46 @@ export const createFrameSlice: StateCreator<
     const frame = state.elements.find((el: CanvasElement) => el.id === frameId);
     if (!frame || frame.type !== 'frame') return;
     
-    const childIds = (frame as any).children || [];
+    // ✅ أولاً: مزامنة الأطفال قبل التحريك (تحديث children بناءً على الموقع الحالي)
+    const frameRect = {
+      x: frame.position.x,
+      y: frame.position.y,
+      width: frame.size.width,
+      height: frame.size.height
+    };
     
+    const updatedChildIds: string[] = [];
+    state.elements.forEach((el: CanvasElement) => {
+      if (el.id === frameId || el.type === 'frame') return;
+      
+      const isFullyInside = (
+        el.position.x >= frameRect.x &&
+        el.position.y >= frameRect.y &&
+        el.position.x + el.size.width <= frameRect.x + frameRect.width &&
+        el.position.y + el.size.height <= frameRect.y + frameRect.height
+      );
+      
+      if (isFullyInside) {
+        updatedChildIds.push(el.id);
+      }
+    });
+    
+    // ✅ ثانياً: تحريك الإطار والأطفال المحدثين معاً
     set((state: any) => ({
       elements: state.elements.map((el: CanvasElement) => {
-        if (el.id === frameId || childIds.includes(el.id)) {
+        // تحديث children للإطار
+        if (el.id === frameId) {
+          return {
+            ...el,
+            children: updatedChildIds,
+            position: {
+              x: el.position.x + dx,
+              y: el.position.y + dy
+            }
+          };
+        }
+        // تحريك الأطفال
+        if (updatedChildIds.includes(el.id)) {
           return {
             ...el,
             position: {
