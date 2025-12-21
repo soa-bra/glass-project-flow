@@ -1,6 +1,6 @@
 /**
- * Shared Element Components
- * مكونات مشتركة بين العناصر
+ * Shared Elements - Barrel Export
+ * @module features/planning/elements/shared
  */
 
-// سيتم نقل المكونات المشتركة هنا
+export { ShapeRenderer } from './ShapeRenderer';
