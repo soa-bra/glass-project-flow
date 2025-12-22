@@ -1,10 +1,22 @@
 /**
- * Shared Module - Public API
- * الوحدة المشتركة
+ * Shared Layer
+ * المكونات والأدوات المشتركة
  */
 
-// Types
-export * from './types';
+// Config
+// export * from './config';
+
+// Constants
+// export * from './constants';
+
+// Errors
+// export * from './errors';
 
 // Utils
-export * from './utils/formatters';
+// export * from './utils';
+
+// Hooks
+// export * from './hooks';
+
+// Types
+// export * from './types';

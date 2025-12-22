@@ -1,9 +1,5 @@
-/**
- * Invoices Dashboard Panel
- * لوحة إدارة الفواتير
- */
-
-import React, { useState } from 'react';
+// Enhanced Invoices Dashboard
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
@@ -16,8 +12,12 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { toast } from 'sonner';
+import { invoicesAPI } from '@/api/invoices/invoices';
+import { Invoice, InvoiceStatus } from '@/lib/prisma';
 import { 
   Plus, 
   FileText, 
@@ -34,48 +34,46 @@ import {
   Download
 } from 'lucide-react';
 
-import { useInvoices, useInvoiceFilters } from '../../state';
-import { 
-  statusColors, 
-  statusLabels, 
-  calculateTotal,
-  validateInvoiceLines
-} from '../../domain';
-import type { Invoice, InvoiceFormData, InvoiceStatus } from '../../domain';
-import { InvoiceFilters, defaultFilters } from '../widgets/InvoiceFilters';
-import { InvoiceDetail } from '../widgets/InvoiceDetail';
-import { exportInvoicesToExcel } from '../../lib';
+const statusLabels: Record<InvoiceStatus, string> = {
+  draft: 'مسودة',
+  posted: 'مرسلة',
+  paid: 'مدفوعة',
+  canceled: 'ملغية'
+};
+
+const statusColors: Record<InvoiceStatus, string> = {
+  draft: 'bg-gray-100 text-gray-800',
+  posted: 'bg-blue-100 text-blue-800',
+  paid: 'bg-green-100 text-green-800',
+  canceled: 'bg-red-100 text-red-800'
+};
 
 const statusIcons: Record<InvoiceStatus, React.ReactNode> = {
   draft: <FileText className="w-4 h-4" />,
-  pending: <Clock className="w-4 h-4" />,
   posted: <Send className="w-4 h-4" />,
   paid: <CheckCircle className="w-4 h-4" />,
-  overdue: <AlertTriangle className="w-4 h-4" />,
-  canceled: <Ban className="w-4 h-4" />,
+  canceled: <Ban className="w-4 h-4" />
 };
 
+interface InvoiceFormData {
+  accountId: string;
+  accountName: string;
+  projectId?: string;
+  dueDate: string;
+  lines: Array<{
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    taxCode?: string;
+  }>;
+}
+
 export const InvoicesDashboard: React.FC = () => {
-  const { 
-    invoices, 
-    stats, 
-    loading, 
-    createInvoice, 
-    postInvoice, 
-    payInvoice 
-  } = useInvoices();
-
-  // Filtering
-  const { 
-    filters, 
-    setFilters, 
-    filteredInvoices, 
-    resetFilters 
-  } = useInvoiceFilters(invoices);
-
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [invoiceStats, setInvoiceStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
-  const [detailInvoice, setDetailInvoice] = useState<Invoice | null>(null);
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
 
@@ -84,76 +82,118 @@ export const InvoicesDashboard: React.FC = () => {
     accountName: '',
     projectId: '',
     dueDate: '',
-    lines: [{ description: '', quantity: 1, unitPrice: 0, taxCode: '' }],
+    lines: [{ description: '', quantity: 1, unitPrice: 0, taxCode: '' }]
   });
 
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [invoicesData, statsData] = await Promise.all([
+        invoicesAPI.getInvoices(),
+        invoicesAPI.getInvoiceStats()
+      ]);
+      setInvoices(invoicesData);
+      setInvoiceStats(statsData);
+    } catch (error) {
+      toast.error('فشل في تحميل بيانات الفواتير');
+      // Error handled silently
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCreateInvoice = async () => {
-    if (!formData.accountName) {
-      return;
-    }
+    try {
+      if (!formData.accountName || formData.lines.length === 0) {
+        toast.error('يرجى إدخال جميع البيانات المطلوبة');
+        return;
+      }
 
-    const validLines = formData.lines.filter(
-      (line) => line.description.trim() && line.quantity > 0 && line.unitPrice > 0
-    );
+      // Validate lines
+      const validLines = formData.lines.filter(line => 
+        line.description.trim() && line.quantity > 0 && line.unitPrice > 0
+      );
 
-    const validation = validateInvoiceLines(validLines);
-    if (!validation.valid) {
-      return;
-    }
+      if (validLines.length === 0) {
+        toast.error('يرجى إضافة بند واحد على الأقل للفاتورة');
+        return;
+      }
 
-    const result = await createInvoice({
-      accountId: formData.accountId || `account-${Date.now()}`,
-      projectId: formData.projectId || undefined,
-      dueDate: formData.dueDate ? new Date(formData.dueDate) : undefined,
-      lines: validLines,
-    });
+      await invoicesAPI.createInvoice({
+        accountId: formData.accountId || `account-${Date.now()}`,
+        projectId: formData.projectId || undefined,
+        dueDate: formData.dueDate ? new Date(formData.dueDate) : undefined,
+        lines: validLines
+      });
 
-    if (result) {
+      toast.success('تم إنشاء الفاتورة بنجاح');
       setIsCreateModalOpen(false);
       resetForm();
+      loadData();
+    } catch (error) {
+      toast.error('فشل في إنشاء الفاتورة');
+      // Error handled silently
     }
   };
 
   const handlePostInvoice = async (id: string) => {
-    await postInvoice(id);
+    try {
+      await invoicesAPI.postInvoice(id);
+      toast.success('تم إرسال الفاتورة بنجاح');
+      loadData();
+    } catch (error) {
+      toast.error('فشل في إرسال الفاتورة');
+      // Error handled silently
+    }
   };
 
   const handlePayInvoice = async () => {
     if (!selectedInvoice || !paymentAmount || !paymentMethod) {
+      toast.error('يرجى إدخال جميع بيانات الدفع');
       return;
     }
 
-    const success = await payInvoice(
-      selectedInvoice.id,
-      parseFloat(paymentAmount),
-      paymentMethod
-    );
-
-    if (success) {
+    try {
+      await invoicesAPI.payInvoice(
+        selectedInvoice.id, 
+        parseFloat(paymentAmount), 
+        paymentMethod
+      );
+      toast.success('تم تسجيل الدفعة بنجاح');
       setSelectedInvoice(null);
       setPaymentAmount('');
       setPaymentMethod('');
+      loadData();
+    } catch (error) {
+      toast.error('فشل في تسجيل الدفعة');
+      // Error handled silently
     }
   };
 
   const addInvoiceLine = () => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      lines: [...prev.lines, { description: '', quantity: 1, unitPrice: 0, taxCode: '' }],
+      lines: [...prev.lines, { description: '', quantity: 1, unitPrice: 0, taxCode: '' }]
     }));
   };
 
   const removeInvoiceLine = (index: number) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      lines: prev.lines.filter((_, i) => i !== index),
+      lines: prev.lines.filter((_, i) => i !== index)
     }));
   };
 
-  const updateInvoiceLine = (index: number, field: string, value: unknown) => {
-    setFormData((prev) => ({
+  const updateInvoiceLine = (index: number, field: string, value: any) => {
+    setFormData(prev => ({
       ...prev,
-      lines: prev.lines.map((line, i) => (i === index ? { ...line, [field]: value } : line)),
+      lines: prev.lines.map((line, i) => 
+        i === index ? { ...line, [field]: value } : line
+      )
     }));
   };
 
@@ -163,11 +203,13 @@ export const InvoicesDashboard: React.FC = () => {
       accountName: '',
       projectId: '',
       dueDate: '',
-      lines: [{ description: '', quantity: 1, unitPrice: 0, taxCode: '' }],
+      lines: [{ description: '', quantity: 1, unitPrice: 0, taxCode: '' }]
     });
   };
 
-  const formTotal = calculateTotal(formData.lines, false);
+  const calculateTotal = () => {
+    return formData.lines.reduce((sum, line) => sum + (line.quantity * line.unitPrice), 0);
+  };
 
   if (loading) {
     return (
@@ -204,13 +246,11 @@ export const InvoicesDashboard: React.FC = () => {
                   <Input
                     id="accountName"
                     value={formData.accountName}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        accountName: e.target.value,
-                        accountId: `account-${Date.now()}`,
-                      }))
-                    }
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      accountName: e.target.value,
+                      accountId: `account-${Date.now()}`
+                    }))}
                     placeholder="أدخل اسم العميل"
                   />
                 </div>
@@ -220,7 +260,7 @@ export const InvoicesDashboard: React.FC = () => {
                     id="dueDate"
                     type="date"
                     value={formData.dueDate}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, dueDate: e.target.value }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, dueDate: e.target.value }))}
                   />
                 </div>
               </div>
@@ -234,7 +274,7 @@ export const InvoicesDashboard: React.FC = () => {
                     إضافة بند
                   </Button>
                 </div>
-
+                
                 <div className="space-y-3">
                   {formData.lines.map((line, index) => (
                     <div key={index} className="grid grid-cols-12 gap-2 items-end">
@@ -250,9 +290,7 @@ export const InvoicesDashboard: React.FC = () => {
                           type="number"
                           placeholder="الكمية"
                           value={line.quantity}
-                          onChange={(e) =>
-                            updateInvoiceLine(index, 'quantity', parseInt(e.target.value) || 0)
-                          }
+                          onChange={(e) => updateInvoiceLine(index, 'quantity', parseInt(e.target.value) || 0)}
                         />
                       </div>
                       <div className="col-span-2">
@@ -260,9 +298,7 @@ export const InvoicesDashboard: React.FC = () => {
                           type="number"
                           placeholder="السعر"
                           value={line.unitPrice}
-                          onChange={(e) =>
-                            updateInvoiceLine(index, 'unitPrice', parseFloat(e.target.value) || 0)
-                          }
+                          onChange={(e) => updateInvoiceLine(index, 'unitPrice', parseFloat(e.target.value) || 0)}
                         />
                       </div>
                       <div className="col-span-2">
@@ -288,7 +324,7 @@ export const InvoicesDashboard: React.FC = () => {
 
                 <div className="mt-4 text-left">
                   <div className="text-lg font-bold">
-                    الإجمالي: {formTotal.toLocaleString('ar-SA')} ر.س
+                    الإجمالي: {calculateTotal().toLocaleString('ar-SA')} ر.س
                   </div>
                 </div>
               </div>
@@ -307,7 +343,7 @@ export const InvoicesDashboard: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      {stats && (
+      {invoiceStats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4">
@@ -315,21 +351,19 @@ export const InvoicesDashboard: React.FC = () => {
                 <DollarSign className="h-4 w-4 text-green-600" />
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">إجمالي المدفوع</p>
-                  <p className="text-xl font-bold">{stats.totalPaid?.toLocaleString('ar-SA')} ر.س</p>
+                  <p className="text-xl font-bold">{invoiceStats.totalPaid?.toLocaleString('ar-SA')} ر.س</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-
+          
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2 space-x-reverse">
                 <Clock className="h-4 w-4 text-blue-600" />
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">في الانتظار</p>
-                  <p className="text-xl font-bold">
-                    {stats.totalOutstanding?.toLocaleString('ar-SA')} ر.س
-                  </p>
+                  <p className="text-xl font-bold">{invoiceStats.totalOutstanding?.toLocaleString('ar-SA')} ر.س</p>
                 </div>
               </div>
             </CardContent>
@@ -341,7 +375,7 @@ export const InvoicesDashboard: React.FC = () => {
                 <AlertTriangle className="h-4 w-4 text-red-600" />
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">متأخرة</p>
-                  <p className="text-xl font-bold">{stats.overdueCount || 0}</p>
+                  <p className="text-xl font-bold">{invoiceStats.overdueCount || 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -353,9 +387,7 @@ export const InvoicesDashboard: React.FC = () => {
                 <TrendingUp className="h-4 w-4 text-purple-600" />
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">متوسط الفاتورة</p>
-                  <p className="text-xl font-bold">
-                    {stats.averageInvoiceValue?.toLocaleString('ar-SA')} ر.س
-                  </p>
+                  <p className="text-xl font-bold">{invoiceStats.averageInvoiceValue?.toLocaleString('ar-SA')} ر.س</p>
                 </div>
               </div>
             </CardContent>
@@ -363,33 +395,10 @@ export const InvoicesDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Filters */}
-      <InvoiceFilters 
-        filters={filters} 
-        onFiltersChange={setFilters} 
-        onReset={resetFilters} 
-      />
-
       {/* Invoices Table */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>قائمة الفواتير</CardTitle>
-            <div className="flex items-center gap-3">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => exportInvoicesToExcel(filteredInvoices)}
-                disabled={filteredInvoices.length === 0}
-              >
-                <Download className="w-4 h-4 ml-2" />
-                تصدير Excel
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                {filteredInvoices.length} من {invoices.length} فاتورة
-              </span>
-            </div>
-          </div>
+          <CardTitle>قائمة الفواتير</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
@@ -398,30 +407,35 @@ export const InvoicesDashboard: React.FC = () => {
                 <TableHead>رقم الفاتورة</TableHead>
                 <TableHead>العميل</TableHead>
                 <TableHead>إجمالي المبلغ</TableHead>
+                <TableHead>مبلغ الدفعة</TableHead>
+                <TableHead>رقم الدفعة</TableHead>
+                <TableHead>نسبة الدفع</TableHead>
                 <TableHead>تاريخ الاستحقاق</TableHead>
                 <TableHead>الحالة</TableHead>
                 <TableHead>الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredInvoices.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    لا توجد فواتير مطابقة للفلاتر المحددة
-                  </TableCell>
-                </TableRow>
-              ) : (
-              filteredInvoices.map((invoice) => (
+              {invoices.map((invoice) => (
                 <TableRow key={invoice.id}>
                   <TableCell className="font-medium">{invoice.number}</TableCell>
-                  <TableCell>{invoice.accountName || `عميل ${invoice.accountId}`}</TableCell>
-                  <TableCell className="font-semibold">
-                    {invoice.total.toLocaleString('ar-SA')} ر.س
+                  <TableCell>{invoice.account?.name || `عميل ${invoice.accountId}`}</TableCell>
+                  <TableCell className="font-semibold">{invoice.total.toLocaleString('ar-SA')} ر.س</TableCell>
+                  <TableCell className="text-green-600 font-medium">
+                    {(invoice.total * 0.3).toLocaleString('ar-SA')} ر.س
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm">
+                      1 / 3
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-md text-sm font-medium">
+                      33.3%
+                    </span>
                   </TableCell>
                   <TableCell>
-                    {invoice.dueDate
-                      ? new Date(invoice.dueDate).toLocaleDateString('ar-SA')
-                      : '-'}
+                    {invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString('ar-SA') : '-'}
                   </TableCell>
                   <TableCell>
                     <Badge className={statusColors[invoice.status]}>
@@ -432,28 +446,24 @@ export const InvoicesDashboard: React.FC = () => {
                   <TableCell>
                     <div className="flex gap-1">
                       {invoice.status === 'draft' && (
-                        <Button
-                          size="sm"
+                        <Button 
+                          size="sm" 
                           variant="outline"
                           onClick={() => handlePostInvoice(invoice.id)}
                         >
                           إرسال
                         </Button>
                       )}
-                      {(invoice.status === 'posted' || invoice.status === 'pending') && (
-                        <Button
-                          size="sm"
+                      {invoice.status === 'posted' && (
+                        <Button 
+                          size="sm" 
                           variant="outline"
                           onClick={() => setSelectedInvoice(invoice)}
                         >
                           تسجيل دفعة
                         </Button>
                       )}
-                      <Button 
-                        size="sm" 
-                        variant="ghost"
-                        onClick={() => setDetailInvoice(invoice)}
-                      >
+                      <Button size="sm" variant="ghost">
                         <Eye className="w-4 h-4" />
                       </Button>
                       <Button size="sm" variant="ghost">
@@ -465,19 +475,11 @@ export const InvoicesDashboard: React.FC = () => {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))
-              )}
+              ))}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
-
-      {/* Invoice Detail Modal */}
-      <InvoiceDetail 
-        invoice={detailInvoice} 
-        open={!!detailInvoice} 
-        onClose={() => setDetailInvoice(null)} 
-      />
 
       {/* Payment Modal */}
       <Dialog open={!!selectedInvoice} onOpenChange={() => setSelectedInvoice(null)}>

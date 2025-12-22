@@ -1,19 +1,19 @@
-/**
- * Invoice Repository
- * طبقة الوصول للبيانات
- */
-
-import { prisma, Invoice as PrismaInvoice, InvoiceLine as PrismaInvoiceLine, InvoiceStatus } from '@/lib/prisma';
+// Invoice Service
+import { prisma, Invoice, InvoiceLine, Payment, InvoiceStatus } from '@/lib/prisma';
 import { nextVal } from '@/core/sequence/sequence.service';
-import type { 
-  Invoice, 
-  InvoiceStats, 
-  InvoiceReport, 
-  CreateInvoiceInput 
-} from '../../domain/types/invoice.types';
 
-export class InvoiceRepository {
-  async create(input: CreateInvoiceInput): Promise<Invoice> {
+export class InvoiceService {
+  async createInvoice(input: {
+    accountId: string;
+    projectId?: string;
+    lines: Array<{ 
+      description: string; 
+      quantity: number; 
+      unitPrice: number; 
+      taxCode?: string 
+    }>;
+    dueDate?: Date;
+  }): Promise<Invoice> {
     return prisma.$transaction(async (tx) => {
       const number = await nextVal('INV');
 
@@ -41,15 +41,19 @@ export class InvoiceRepository {
         });
       }
 
-      return invoice as unknown as Invoice;
+      return invoice;
     });
   }
 
-  async updateStatus(id: string, status: InvoiceStatus): Promise<Invoice> {
-    return prisma.updateInvoice(id, { status }) as unknown as Promise<Invoice>;
+  async postInvoice(id: string): Promise<Invoice> {
+    return prisma.updateInvoice(id, { status: 'posted' });
   }
 
-  async recordPayment(id: string, amount: number, method: string): Promise<void> {
+  async cancelInvoice(id: string): Promise<Invoice> {
+    return prisma.updateInvoice(id, { status: 'canceled' });
+  }
+
+  async payInvoice(id: string, amount: number, method: string): Promise<void> {
     return prisma.$transaction(async (tx) => {
       const invoice = await tx.findInvoice(id);
       if (!invoice) throw new Error('Invoice not found');
@@ -68,56 +72,64 @@ export class InvoiceRepository {
       const totalPaid = paymentsTotal._sum.amount || 0;
 
       // Update invoice status if fully paid
-      if (totalPaid >= invoice.total) {
+      const fullyPaid = totalPaid >= invoice.total;
+      if (fullyPaid) {
         await tx.updateInvoice(id, { status: 'paid' });
       }
     });
   }
 
-  async findAll(): Promise<Invoice[]> {
-    return prisma.findManyInvoices() as unknown as Promise<Invoice[]>;
+  async getInvoices(): Promise<Invoice[]> {
+    return prisma.findManyInvoices();
   }
 
-  async findById(id: string): Promise<Invoice | null> {
-    return prisma.findInvoice(id) as unknown as Promise<Invoice | null>;
+  async getInvoice(id: string): Promise<Invoice | null> {
+    return prisma.findInvoice(id);
   }
 
-  async findByAccount(accountId: string): Promise<Invoice[]> {
-    const invoices = await this.findAll();
+  async getInvoicesByAccount(accountId: string): Promise<Invoice[]> {
+    const invoices = await this.getInvoices();
     return invoices.filter(invoice => invoice.accountId === accountId);
   }
 
-  async findByProject(projectId: string): Promise<Invoice[]> {
-    const invoices = await this.findAll();
+  async getInvoicesByProject(projectId: string): Promise<Invoice[]> {
+    const invoices = await this.getInvoices();
     return invoices.filter(invoice => invoice.projectId === projectId);
   }
 
-  async findByStatus(status: InvoiceStatus): Promise<Invoice[]> {
-    const invoices = await this.findAll();
+  async getInvoicesByStatus(status: InvoiceStatus): Promise<Invoice[]> {
+    const invoices = await this.getInvoices();
     return invoices.filter(invoice => invoice.status === status);
   }
 
-  async findOverdue(): Promise<Invoice[]> {
-    const invoices = await this.findAll();
+  async getOverdueInvoices(): Promise<Invoice[]> {
+    const invoices = await this.getInvoices();
     const now = new Date();
     
     return invoices.filter(invoice => 
       invoice.status === 'posted' && 
       invoice.dueDate && 
-      new Date(invoice.dueDate as string) < now
+      invoice.dueDate < now
     );
   }
 
-  async getStats(): Promise<InvoiceStats> {
-    const invoices = await this.findAll();
+  async getInvoiceStats(): Promise<{
+    totalOutstanding: number;
+    totalPaid: number;
+    totalDraft: number;
+    overdueCount: number;
+    averageInvoiceValue: number;
+    totalRevenue: number;
+  }> {
+    const invoices = await this.getInvoices();
     
-    const stats: InvoiceStats = {
+    const stats = {
       totalOutstanding: 0,
       totalPaid: 0,
       totalDraft: 0,
       overdueCount: 0,
       averageInvoiceValue: 0,
-      totalRevenue: 0,
+      totalRevenue: 0
     };
 
     const now = new Date();
@@ -126,7 +138,7 @@ export class InvoiceRepository {
       switch (invoice.status) {
         case 'posted':
           stats.totalOutstanding += invoice.total;
-          if (invoice.dueDate && new Date(invoice.dueDate as string) < now) {
+          if (invoice.dueDate && invoice.dueDate < now) {
             stats.overdueCount++;
           }
           break;
@@ -140,20 +152,23 @@ export class InvoiceRepository {
       }
     }
 
-    stats.averageInvoiceValue = invoices.length > 0 
-      ? (stats.totalOutstanding + stats.totalPaid + stats.totalDraft) / invoices.length 
-      : 0;
+    stats.averageInvoiceValue = invoices.length > 0 ? 
+      (stats.totalOutstanding + stats.totalPaid + stats.totalDraft) / invoices.length : 0;
 
     return stats;
   }
 
-  async generateReport(startDate: Date, endDate: Date): Promise<InvoiceReport> {
-    const invoices = await this.findAll();
+  async generateInvoiceReport(startDate: Date, endDate: Date): Promise<{
+    invoices: Invoice[];
+    totalRevenue: number;
+    totalOutstanding: number;
+    count: number;
+  }> {
+    const invoices = await this.getInvoices();
     
-    const filteredInvoices = invoices.filter(invoice => {
-      const createdAt = invoice.createdAt ? new Date(invoice.createdAt) : new Date();
-      return createdAt >= startDate && createdAt <= endDate;
-    });
+    const filteredInvoices = invoices.filter(invoice => 
+      invoice.createdAt >= startDate && invoice.createdAt <= endDate
+    );
 
     const totalRevenue = filteredInvoices
       .filter(inv => inv.status === 'paid')
@@ -167,9 +182,9 @@ export class InvoiceRepository {
       invoices: filteredInvoices,
       totalRevenue,
       totalOutstanding,
-      count: filteredInvoices.length,
+      count: filteredInvoices.length
     };
   }
 }
 
-export const invoiceRepository = new InvoiceRepository();
+export const invoiceService = new InvoiceService();
