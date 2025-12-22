@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/shared';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { TYPOGRAPHY, COLORS } from '@/components/shared/design-system/constants';
 
 interface ProjectDistribution {
@@ -17,7 +17,7 @@ export const ProjectDistribution: React.FC<ProjectDistributionProps> = ({ distri
   const maxMembers = Math.max(...sortedDistribution.map(item => item.members));
 
   return (
-    <BaseCard 
+    <BaseBox 
       title="توزيع الأعضاء على المشاريع"
     >
       <div className="space-y-4">
@@ -36,6 +36,6 @@ export const ProjectDistribution: React.FC<ProjectDistributionProps> = ({ distri
           </div>
         ))}
       </div>
-    </BaseCard>
+    </BaseBox>
   );
 };

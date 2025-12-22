@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { Award, Target, TrendingUp, Star, Calendar, User } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
@@ -60,7 +60,7 @@ export const PerformanceTab: React.FC = () => {
         </div>
 
         {/* معلومات التقييم الأساسية */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-800 font-arabic mb-2">
@@ -137,18 +137,18 @@ export const PerformanceTab: React.FC = () => {
               </div>
             </div>
           </div>
-        </BaseCard>
+        </BaseBox>
 
         {/* التعليقات وخطة التطوير */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <BaseCard variant="operations" className="p-6">
+          <BaseBox variant="operations" className="p-6">
             <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">التعليقات</h3>
             <div className="p-4 bg-gray-50 rounded-lg">
               <p className="text-gray-700 font-arabic leading-relaxed">{selectedReview.feedback}</p>
             </div>
-          </BaseCard>
+          </BaseBox>
 
-          <BaseCard variant="operations" className="p-6">
+          <BaseBox variant="operations" className="p-6">
             <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">خطة التطوير</h3>
             <div className="space-y-2">
               {selectedReview.developmentPlan.map((item, index) => (
@@ -158,7 +158,7 @@ export const PerformanceTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </BaseCard>
+          </BaseBox>
         </div>
       </div>
     );
@@ -168,7 +168,7 @@ export const PerformanceTab: React.FC = () => {
     <div className="space-y-6 bg-transparent">
       {/* إحصائيات الأداء */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">التقييمات المكتملة</p>
@@ -176,9 +176,9 @@ export const PerformanceTab: React.FC = () => {
             </div>
             <Award className="h-8 w-8 text-green-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">التقييمات المعلقة</p>
@@ -186,9 +186,9 @@ export const PerformanceTab: React.FC = () => {
             </div>
             <Calendar className="h-8 w-8 text-orange-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">متوسط التقييم</p>
@@ -196,9 +196,9 @@ export const PerformanceTab: React.FC = () => {
             </div>
             <Star className="h-8 w-8 text-blue-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">الأداء المتميز</p>
@@ -206,9 +206,9 @@ export const PerformanceTab: React.FC = () => {
             </div>
             <TrendingUp className="h-8 w-8 text-purple-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">يحتاج تحسين</p>
@@ -216,11 +216,11 @@ export const PerformanceTab: React.FC = () => {
             </div>
             <User className="h-8 w-8 text-red-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
       </div>
 
       {/* قائمة التقييمات */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <Award className="h-6 w-6 text-blue-600" />
@@ -283,7 +283,7 @@ export const PerformanceTab: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </BaseCard>
+      </BaseBox>
     </div>
   );
 };

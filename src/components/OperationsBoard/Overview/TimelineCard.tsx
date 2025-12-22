@@ -92,7 +92,7 @@ export const TimelineCard: React.FC = () => {
     setCustomLocation('');
   };
   return <>
-      <BaseCard variant="glass" size="sm" className="col-span-3 h-[320px] overflow-hidden border-[#DADCE0]" style={{
+      <BaseBox variant="glass" size="sm" className="col-span-3 h-[320px] overflow-hidden border-[#DADCE0]" style={{
       backgroundColor: '#ffffff'
   }} header={<div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-medium text-black font-arabic">الأحداث القادمة</h2>
@@ -134,7 +134,7 @@ export const TimelineCard: React.FC = () => {
             </div>
           </div>
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {/* نافذة إضافة حدث جديد */}
       <Dialog open={showAddEventModal} onOpenChange={setShowAddEventModal}>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { Project } from '@/types/project';
 
 interface AICardProps {
