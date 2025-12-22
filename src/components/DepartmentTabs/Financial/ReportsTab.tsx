@@ -1,7 +1,7 @@
 import React from 'react';
 import { FileText, BarChart, Eye, Download } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
-import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/shared/BaseCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
 import { Reveal, Stagger } from '@/components/shared/motion';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertTriangle, FileText, Scale, Shield, Calendar, TrendingUp, Bell, CheckCircle, Clock } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
-import { BaseBox, BaseStatsCard, BaseListItem } from '@/components/shared';
+import { BaseCard, BaseStatsCard, BaseListItem } from '@/components/shared';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { mockLegalMetrics, mockAlerts } from './data';
 import { getStatusColor, getStatusText, getPriorityColor } from './utils';
@@ -53,7 +53,7 @@ export const OverviewTab: React.FC = () => {
       
       <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
         {/* إحصائيات العقود */}
-        <BaseBox 
+        <BaseCard 
           title="توزيع العقود حسب الحالة"
           icon={<FileText className={LAYOUT.ICON_SIZE} />}
         >
@@ -66,10 +66,10 @@ export const OverviewTab: React.FC = () => {
             ]}
             columns={2}
           />
-        </BaseBox>
+        </BaseCard>
 
         {/* درجة الامتثال ومؤشرات المخاطر */}
-        <BaseBox 
+        <BaseCard 
           title="مؤشرات الامتثال والمخاطر"
           icon={<Shield className={LAYOUT.ICON_SIZE} />}
         >
@@ -89,12 +89,12 @@ export const OverviewTab: React.FC = () => {
               <div className="text-sm font-medium text-black font-arabic">درجة المخاطر الإجمالية</div>
             </div>
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
 
       <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
         {/* الإحصائيات الشهرية */}
-        <BaseBox 
+        <BaseCard 
           title="الإنجازات الشهرية"
           icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
         >
@@ -107,10 +107,10 @@ export const OverviewTab: React.FC = () => {
             ]}
             columns={2}
           />
-        </BaseBox>
+        </BaseCard>
 
         {/* التنبيهات القانونية */}
-        <BaseBox 
+        <BaseCard 
           title="تنبيهات قانونية عاجلة"
           icon={<Bell className={LAYOUT.ICON_SIZE} />}
         >
@@ -132,7 +132,7 @@ export const OverviewTab: React.FC = () => {
               </BaseListItem>
             ))}
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
     </div>;
 };

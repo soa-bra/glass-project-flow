@@ -1,8 +1,7 @@
 import React from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/shared/BaseCard';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Area, AreaChart } from 'recharts';
-
 interface CashFlowData {
   date: string;
   inflow: number;
@@ -10,11 +9,9 @@ interface CashFlowData {
   netFlow: number;
   cumulativeBalance: number;
 }
-
 interface CashFlowForecastProps {
   cashFlowData: CashFlowData[];
 }
-
 const chartConfig = {
   cumulativeBalance: {
     label: "الرصيد التراكمي",
@@ -25,12 +22,11 @@ const chartConfig = {
     color: "hsl(var(--chart-4))"
   }
 };
-
 export const CashFlowForecast: React.FC<CashFlowForecastProps> = ({
   cashFlowData
 }) => {
   return (
-    <BaseBox
+    <BaseCard
       className="w-full"
       title="التنبؤ بالتدفق النقدي"
     >
@@ -63,6 +59,6 @@ export const CashFlowForecast: React.FC<CashFlowForecastProps> = ({
           </AreaChart>
         </ResponsiveContainer>
       </ChartContainer>
-    </BaseBox>
+    </BaseCard>
   );
 };

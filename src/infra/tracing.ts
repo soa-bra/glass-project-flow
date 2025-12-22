@@ -1,10 +1,10 @@
 // Simplified tracing implementation without external dependencies
-import { trace, context, SpanKind, SpanStatusCode } from "@opentelemetry/api";
+import { trace, context, SpanKind, SpanStatusCode } from '@opentelemetry/api';
 
 // Configuration
-const serviceName = process.env.SERVICE_NAME || "SoaBra-system";
-const serviceVersion = process.env.SERVICE_VERSION || "1.0.0";
-const environment = process.env.NODE_ENV || "development";
+const serviceName = process.env.SERVICE_NAME || 'supra-system';
+const serviceVersion = process.env.SERVICE_VERSION || '1.0.0';
+const environment = process.env.NODE_ENV || 'development';
 
 let isInitialized = false;
 
@@ -37,7 +37,7 @@ export function createSpan(
     kind?: SpanKind;
     attributes?: Record<string, string | number | boolean>;
     parent?: any;
-  } = {},
+  } = {}
 ) {
   const spanOptions: any = {
     kind: options.kind || SpanKind.INTERNAL,
@@ -53,16 +53,16 @@ export function createSpan(
 
 // Decorator for automatic tracing
 export function traced(spanName?: string) {
-  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  return function(target: any, propertyName: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
     const name = spanName || `${target.constructor.name}.${propertyName}`;
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function(...args: any[]) {
       const span = createSpan(name, {
         attributes: {
-          "method.class": target.constructor.name,
-          "method.name": propertyName,
-          "method.args": JSON.stringify(args).slice(0, 1000), // Truncate long args
+          'method.class': target.constructor.name,
+          'method.name': propertyName,
+          'method.args': JSON.stringify(args).slice(0, 1000), // Truncate long args
         },
       });
 
@@ -73,7 +73,7 @@ export function traced(spanName?: string) {
       } catch (error) {
         span.setStatus({
           code: SpanStatusCode.ERROR,
-          message: error instanceof Error ? error.message : "Unknown error",
+          message: error instanceof Error ? error.message : 'Unknown error',
         });
         span.recordException(error instanceof Error ? error : new Error(String(error)));
         throw error;
@@ -93,7 +93,7 @@ export async function withTracing<T>(
   options: {
     attributes?: Record<string, string | number | boolean>;
     kind?: SpanKind;
-  } = {},
+  } = {}
 ): Promise<T> {
   const span = createSpan(operationName, {
     kind: options.kind || SpanKind.INTERNAL,
@@ -107,7 +107,7 @@ export async function withTracing<T>(
   } catch (error) {
     span.setStatus({
       code: SpanStatusCode.ERROR,
-      message: error instanceof Error ? error.message : "Unknown error",
+      message: error instanceof Error ? error.message : 'Unknown error',
     });
     span.recordException(error instanceof Error ? error : new Error(String(error)));
     throw error;
@@ -122,10 +122,10 @@ export const eventTracing = {
     return createSpan(`event.emit.${eventName}`, {
       kind: SpanKind.PRODUCER,
       attributes: {
-        "event.name": eventName,
-        "event.id": eventId,
-        "messaging.operation": "publish",
-        "messaging.destination.name": "event-outbox",
+        'event.name': eventName,
+        'event.id': eventId,
+        'messaging.operation': 'publish',
+        'messaging.destination.name': 'event-outbox',
       },
     });
   },
@@ -134,11 +134,11 @@ export const eventTracing = {
     return createSpan(`event.process.${eventName}`, {
       kind: SpanKind.CONSUMER,
       attributes: {
-        "event.name": eventName,
-        "event.id": eventId,
-        "event.handler": handlerName,
-        "messaging.operation": "process",
-        "messaging.source.name": "event-outbox",
+        'event.name': eventName,
+        'event.id': eventId,
+        'event.handler': handlerName,
+        'messaging.operation': 'process',
+        'messaging.source.name': 'event-outbox',
       },
     });
   },
@@ -150,10 +150,10 @@ export const dbTracing = {
     return createSpan(`db.${operation}`, {
       kind: SpanKind.CLIENT,
       attributes: {
-        "db.system": "postgresql",
-        "db.operation": operation,
-        "db.sql.table": table,
-        "db.statement": query ? query.slice(0, 500) : "", // Truncate long queries
+        'db.system': 'postgresql',
+        'db.operation': operation,
+        'db.sql.table': table,
+        'db.statement': query ? query.slice(0, 500) : '', // Truncate long queries
       },
     });
   },
@@ -165,10 +165,10 @@ export const httpTracing = {
     return createSpan(`http.client.${method.toLowerCase()}`, {
       kind: SpanKind.CLIENT,
       attributes: {
-        "http.method": method,
-        "http.url": url,
-        "http.scheme": new URL(url).protocol.slice(0, -1),
-        "http.host": new URL(url).host,
+        'http.method': method,
+        'http.url': url,
+        'http.scheme': new URL(url).protocol.slice(0, -1),
+        'http.host': new URL(url).host,
       },
     });
   },
@@ -177,8 +177,8 @@ export const httpTracing = {
     return createSpan(`http.server.${method.toLowerCase()}`, {
       kind: SpanKind.SERVER,
       attributes: {
-        "http.method": method,
-        "http.route": route,
+        'http.method': method,
+        'http.route': route,
       },
     });
   },
@@ -187,11 +187,11 @@ export const httpTracing = {
 // Business operation tracing
 export const businessTracing = {
   culturalImpact: (brandId: string, metricCode: string) => {
-    return createSpan("business.cultural_impact.measure", {
+    return createSpan('business.cultural_impact.measure', {
       attributes: {
-        "business.brand.id": brandId,
-        "business.metric.code": metricCode,
-        "business.operation": "cultural_impact_measurement",
+        'business.brand.id': brandId,
+        'business.metric.code': metricCode,
+        'business.operation': 'cultural_impact_measurement',
       },
     });
   },
@@ -199,8 +199,8 @@ export const businessTracing = {
   projectOperation: (projectId: string, operation: string) => {
     return createSpan(`business.project.${operation}`, {
       attributes: {
-        "business.project.id": projectId,
-        "business.operation": operation,
+        'business.project.id': projectId,
+        'business.operation': operation,
       },
     });
   },
@@ -208,8 +208,8 @@ export const businessTracing = {
   hrOperation: (employeeId: string, operation: string) => {
     return createSpan(`business.hr.${operation}`, {
       attributes: {
-        "business.employee.id": employeeId,
-        "business.operation": operation,
+        'business.employee.id': employeeId,
+        'business.operation': operation,
       },
     });
   },
@@ -221,7 +221,7 @@ export const getTraceId = (): string => {
   if (activeSpan) {
     return activeSpan.spanContext().traceId;
   }
-  return "";
+  return '';
 };
 
 export const getSpanId = (): string => {
@@ -229,25 +229,25 @@ export const getSpanId = (): string => {
   if (activeSpan) {
     return activeSpan.spanContext().spanId;
   }
-  return "";
+  return '';
 };
 
 // Middleware for Express
 export const tracingMiddleware = (req: any, res: any, next: any) => {
   const traceId = getTraceId();
   const spanId = getSpanId();
-
+  
   // Add trace context to request
   req.traceId = traceId;
   req.spanId = spanId;
-
+  
   // Add trace context to environment for logger
   process.env.TRACE_ID = traceId;
   process.env.SPAN_ID = spanId;
-
+  
   // Add trace headers to response
-  res.set("X-Trace-Id", traceId);
-
+  res.set('X-Trace-Id', traceId);
+  
   next();
 };
 

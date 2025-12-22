@@ -1,24 +1,24 @@
 /**
  * DraftStorage - Client-side storage utility for non-sensitive UI state
- *
+ * 
  * ⚠️ SECURITY WARNING: This utility is designed ONLY for non-sensitive data like:
  * - Draft form data
  * - UI preferences
  * - Temporary user settings
- *
+ * 
  * DO NOT USE FOR:
  * - API keys or tokens
  * - Passwords or credentials
  * - Personally identifiable information (PII)
  * - Any confidential data
- *
+ * 
  * For sensitive data, use:
  * - Server-side storage with proper encryption
  * - httpOnly cookies
  * - Supabase Edge Functions with secrets
  */
 class SecureStorage {
-  private static readonly PREFIX = "SoaBra_draft_";
+  private static readonly PREFIX = 'supra_draft_';
 
   /**
    * Store non-sensitive data in localStorage with expiration
@@ -31,22 +31,22 @@ class SecureStorage {
       const data = {
         value,
         timestamp: Date.now(),
-        expiresAt: Date.now() + expirationHours * 60 * 60 * 1000,
-        dataType: this.classifyData(value),
+        expiresAt: Date.now() + (expirationHours * 60 * 60 * 1000),
+        dataType: this.classifyData(value)
       };
-
+      
       // Warn if potentially sensitive data is being stored
-      if (data.dataType === "potentially_sensitive") {
+      if (data.dataType === 'potentially_sensitive') {
         console.warn(
-          "[SecureStorage] Warning: Storing potentially sensitive data client-side. " +
-            "Consider using server-side storage for sensitive information.",
+          '[SecureStorage] Warning: Storing potentially sensitive data client-side. ' +
+          'Consider using server-side storage for sensitive information.'
         );
       }
-
+      
       const serialized = JSON.stringify(data);
       localStorage.setItem(this.PREFIX + key, serialized);
     } catch (error) {
-      console.error("[SecureStorage] Failed to store data:", error);
+      console.error('[SecureStorage] Failed to store data:', error);
       throw error;
     }
   }
@@ -89,7 +89,7 @@ class SecureStorage {
    */
   static clear(): void {
     const keys = Object.keys(localStorage);
-    keys.forEach((key) => {
+    keys.forEach(key => {
       if (key.startsWith(this.PREFIX)) {
         localStorage.removeItem(key);
       }
@@ -100,15 +100,15 @@ class SecureStorage {
    * Classify data to detect potentially sensitive information
    * This is a safety check to warn developers
    */
-  private static classifyData(value: unknown): "safe" | "potentially_sensitive" {
-    const sensitiveKeywords = ["password", "token", "key", "secret", "api", "auth", "credential"];
+  private static classifyData(value: unknown): 'safe' | 'potentially_sensitive' {
+    const sensitiveKeywords = ['password', 'token', 'key', 'secret', 'api', 'auth', 'credential'];
     const dataString = JSON.stringify(value).toLowerCase();
-
-    if (sensitiveKeywords.some((keyword) => dataString.includes(keyword))) {
-      return "potentially_sensitive";
+    
+    if (sensitiveKeywords.some(keyword => dataString.includes(keyword))) {
+      return 'potentially_sensitive';
     }
-
-    return "safe";
+    
+    return 'safe';
   }
 
   /**
@@ -116,15 +116,15 @@ class SecureStorage {
    */
   static getStorageInfo(): { totalItems: number; classifications: Record<string, number> } {
     const keys = Object.keys(localStorage);
-    const draftKeys = keys.filter((key) => key.startsWith(this.PREFIX));
+    const draftKeys = keys.filter(key => key.startsWith(this.PREFIX));
     const classifications: Record<string, number> = { safe: 0, potentially_sensitive: 0 };
-
-    draftKeys.forEach((key) => {
+    
+    draftKeys.forEach(key => {
       try {
         const stored = localStorage.getItem(key);
         if (stored) {
           const data = JSON.parse(stored);
-          const dataType = data.dataType || "safe";
+          const dataType = data.dataType || 'safe';
           classifications[dataType] = (classifications[dataType] || 0) + 1;
         }
       } catch {
@@ -134,7 +134,7 @@ class SecureStorage {
 
     return {
       totalItems: draftKeys.length,
-      classifications,
+      classifications
     };
   }
 }

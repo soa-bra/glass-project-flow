@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // Base Event Schema
 export const BaseEventSchema = z.object({
@@ -7,17 +7,17 @@ export const BaseEventSchema = z.object({
   payload: z.record(z.any()),
   dedupKey: z.string().optional(),
   timestamp: z.date().default(() => new Date()),
-  source: z.string().default("SoaBra-system"),
+  source: z.string().default('supra-system'),
 });
 
 // Cultural Impact Events
 export const CulturalImpactMeasuredV1 = z.object({
   brand_id: z.string().uuid(),
-  metric_code: z.enum(["belonging_index", "meaning_shift", "cultural_resonance", "identity_strength"]),
+  metric_code: z.enum(['belonging_index', 'meaning_shift', 'cultural_resonance', 'identity_strength']),
   period_start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   period_end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   value: z.number().min(0).max(1),
-  method: z.enum(["survey-v1", "social-listening", "focus-group", "behavioral-analysis"]),
+  method: z.enum(['survey-v1', 'social-listening', 'focus-group', 'behavioral-analysis']),
   confidence: z.number().min(0).max(1).optional(),
   metadata: z.record(z.any()).optional(),
 });
@@ -36,7 +36,7 @@ export const ProjectCreatedV1 = z.object({
   project_id: z.string().uuid(),
   name: z.string(),
   client_id: z.string().uuid(),
-  project_type: z.enum(["cultural-strategy", "brand-identity", "research", "consultation"]),
+  project_type: z.enum(['cultural-strategy', 'brand-identity', 'research', 'consultation']),
   budget: z.number().positive(),
   start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -46,8 +46,8 @@ export const ProjectCreatedV1 = z.object({
 
 export const ProjectStatusChangedV1 = z.object({
   project_id: z.string().uuid(),
-  previous_status: z.enum(["draft", "active", "on-hold", "completed", "cancelled"]),
-  new_status: z.enum(["draft", "active", "on-hold", "completed", "cancelled"]),
+  previous_status: z.enum(['draft', 'active', 'on-hold', 'completed', 'cancelled']),
+  new_status: z.enum(['draft', 'active', 'on-hold', 'completed', 'cancelled']),
   changed_by: z.string().uuid(),
   reason: z.string().optional(),
   completion_percentage: z.number().min(0).max(100).optional(),
@@ -67,7 +67,7 @@ export const ExpenseApprovedV1 = z.object({
   expense_id: z.string().uuid(),
   project_id: z.string().uuid().optional(),
   amount: z.number().positive(),
-  category: z.enum(["travel", "equipment", "software", "research", "marketing", "other"]),
+  category: z.enum(['travel', 'equipment', 'software', 'research', 'marketing', 'other']),
   approved_by: z.string().uuid(),
   approval_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   budget_impact: z.number(),
@@ -75,7 +75,7 @@ export const ExpenseApprovedV1 = z.object({
 
 export const BudgetExceededV1 = z.object({
   project_id: z.string().uuid(),
-  budget_type: z.enum(["project", "department", "annual"]),
+  budget_type: z.enum(['project', 'department', 'annual']),
   allocated_amount: z.number().positive(),
   spent_amount: z.number().positive(),
   excess_amount: z.number().positive(),
@@ -88,7 +88,7 @@ export const EmployeeOnboardedV1 = z.object({
   employee_id: z.string().uuid(),
   email: z.string().email(),
   full_name: z.string(),
-  department: z.enum(["cultural-strategy", "research", "creative", "account-management", "operations"]),
+  department: z.enum(['cultural-strategy', 'research', 'creative', 'account-management', 'operations']),
   position: z.string(),
   start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   onboarded_by: z.string().uuid(),
@@ -111,7 +111,7 @@ export const PerformanceReviewCompletedV1 = z.object({
 // Client Events
 export const ClientEngagementScoredV1 = z.object({
   client_id: z.string().uuid(),
-  engagement_type: z.enum(["project-satisfaction", "retention-likelihood", "referral-potential"]),
+  engagement_type: z.enum(['project-satisfaction', 'retention-likelihood', 'referral-potential']),
   score: z.number().min(0).max(10),
   scoring_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   scored_by: z.string().uuid(),
@@ -124,21 +124,21 @@ export const ContractSignedV1 = z.object({
   contract_id: z.string().uuid(),
   client_id: z.string().uuid(),
   project_id: z.string().uuid().optional(),
-  contract_type: z.enum(["service-agreement", "nda", "partnership", "vendor"]),
+  contract_type: z.enum(['service-agreement', 'nda', 'partnership', 'vendor']),
   value: z.number().positive(),
   signed_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   signed_by_client: z.string(),
-  signed_by_SoaBra: z.string().uuid(),
+  signed_by_supra: z.string().uuid(),
 });
 
 export const ComplianceCheckCompletedV1 = z.object({
   check_id: z.string().uuid(),
-  compliance_type: z.enum(["data-protection", "financial", "contractual", "regulatory"]),
-  entity_type: z.enum(["project", "client", "employee", "contract"]),
+  compliance_type: z.enum(['data-protection', 'financial', 'contractual', 'regulatory']),
+  entity_type: z.enum(['project', 'client', 'employee', 'contract']),
   entity_id: z.string().uuid(),
-  status: z.enum(["compliant", "non-compliant", "requires-action"]),
+  status: z.enum(['compliant', 'non-compliant', 'requires-action']),
   checked_by: z.string().uuid(),
   check_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   findings: z.array(z.string()).optional(),

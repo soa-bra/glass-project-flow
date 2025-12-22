@@ -1,7 +1,7 @@
 import React from 'react';
 import { Upload, Download, FileText } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/shared/BaseCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
 import { Reveal, Stagger } from '@/components/shared/motion';
@@ -31,7 +31,7 @@ export const TemplatesTab: React.FC = () => {
       <Stagger gap={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((template, index) => (
           <Stagger.Item key={index}>
-            <BaseBox className="cursor-pointer hover:shadow-lg transition-shadow">
+            <BaseCard className="cursor-pointer hover:shadow-lg transition-shadow">
               <div className="flex items-center gap-3 mb-4">
                 <FileText className="h-8 w-8 text-blue-600" />
                 <div>
@@ -55,7 +55,7 @@ export const TemplatesTab: React.FC = () => {
                   تحميل
                 </BaseActionButton>
               </div>
-            </BaseBox>
+            </BaseCard>
           </Stagger.Item>
         ))}
       </Stagger>

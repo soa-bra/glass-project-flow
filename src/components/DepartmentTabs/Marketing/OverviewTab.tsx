@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { TrendingUp, DollarSign, Users, BarChart3, Target, Zap } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
@@ -123,7 +123,7 @@ export const OverviewTab: React.FC = () => {
       {/* KPIs Grid */}
       <div className="mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {kpis.map((kpi, index) => <BaseBox key={index} variant="operations" className="transition-all duration-300">
+          {kpis.map((kpi, index) => <BaseCard key={index} variant="operations" className="transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="mb-2">
@@ -138,13 +138,13 @@ export const OverviewTab: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </BaseBox>)}
+            </BaseCard>)}
         </div>
       </div>
 
       {/* Active Campaigns */}
       <div className="mb-6">
-        <BaseBox variant="operations">
+        <BaseCard variant="operations">
           <div className="mb-6">
             <h3 className="text-xl font-semibold text-black font-arabic mb-2">الحملات النشطة</h3>
             <p className="text-black font-arabic">نظرة عامة على الحملات التسويقية الجارية</p>
@@ -186,12 +186,12 @@ export const OverviewTab: React.FC = () => {
                 </div>
               </div>)}
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
 
       {/* Channel Performance */}
       <div className="mb-6">
-        <BaseBox variant="operations">
+        <BaseCard variant="operations">
           <div className="mb-6">
             <h3 className="text-xl font-semibold text-black font-arabic mb-2">أداء القنوات</h3>
             <p className="text-black font-arabic">مقارنة أداء القنوات التسويقية المختلفة</p>
@@ -223,7 +223,7 @@ export const OverviewTab: React.FC = () => {
               </tbody>
             </table>
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
 
     </div>;

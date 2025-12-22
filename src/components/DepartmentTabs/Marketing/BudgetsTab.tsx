@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { DollarSign, TrendingUp, AlertTriangle, PieChart } from 'lucide-react';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
@@ -79,7 +79,7 @@ export const BudgetsTab: React.FC = () => {
     <div className="mb-6">
       {/* نظرة عامة على الميزانية */}
       <div className="mb-6">
-        <BaseBox variant="operations">
+        <BaseCard variant="operations">
           <div className="flex items-center gap-2 mb-6">
             <DollarSign className="h-6 w-6 text-black" />
             <h3 className="text-xl font-bold text-black font-arabic">نظرة عامة على الميزانية</h3>
@@ -114,12 +114,12 @@ export const BudgetsTab: React.FC = () => {
               <p className="text-sm text-black font-arabic">معدل الاستخدام</p>
             </div>
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
 
       {/* ميزانيات القنوات */}
       <div className="mb-6">
-        <BaseBox variant="operations">
+        <BaseCard variant="operations">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <PieChart className="h-6 w-6 text-black" />
@@ -169,12 +169,12 @@ export const BudgetsTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
 
       {/* تنبيهات الميزانية */}
       <div className="mb-6">
-        <BaseBox variant="operations">
+        <BaseCard variant="operations">
           <div className="flex items-center gap-2 mb-6">
             <AlertTriangle className="h-6 w-6 text-black" />
             <h3 className="text-xl font-bold text-black font-arabic">تنبيهات الميزانية</h3>
@@ -203,7 +203,7 @@ export const BudgetsTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
     </div>
   );

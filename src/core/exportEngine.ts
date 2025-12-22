@@ -3,12 +3,12 @@
  * نظام التصدير متعدد الصيغ مع دعم RTL والخطوط العربية
  */
 
-import jsPDF from "jspdf";
-import { imageToBase64, getImageFormat, isValidBase64Image } from "@/utils/imageUtils";
-import { containsArabic, loadArabicFont, ARABIC_FONT_CONFIG } from "./fonts/arabicFonts";
+import jsPDF from 'jspdf';
+import { imageToBase64, getImageFormat, isValidBase64Image } from '@/utils/imageUtils';
+import { containsArabic, loadArabicFont, ARABIC_FONT_CONFIG } from './fonts/arabicFonts';
 
 // أنواع التصدير المدعومة
-export type ExportFormat = "pdf" | "png" | "svg" | "json";
+export type ExportFormat = 'pdf' | 'png' | 'svg' | 'json';
 
 // خيارات التصدير
 export interface ExportOptions {
@@ -23,7 +23,7 @@ export interface ExportOptions {
   embedImages?: boolean;
   rtlSupport?: boolean;
   multiPage?: boolean;
-  pageSize?: "A4" | "A3" | "Letter" | "Auto";
+  pageSize?: 'A4' | 'A3' | 'Letter' | 'Auto';
   margins?: { top: number; right: number; bottom: number; left: number };
 }
 
@@ -66,13 +66,13 @@ export class ExportEngine {
   private defaultOptions: Partial<ExportOptions> = {
     quality: 0.92,
     scale: 2,
-    background: "#FFFFFF",
+    background: '#FFFFFF',
     padding: 20,
     includeMetadata: true,
     embedImages: true,
     rtlSupport: true,
     multiPage: true,
-    pageSize: "A4",
+    pageSize: 'A4',
     margins: { top: 40, right: 40, bottom: 40, left: 40 },
   };
 
@@ -81,7 +81,10 @@ export class ExportEngine {
   /**
    * تصدير العناصر بالصيغة المحددة
    */
-  async export(elements: ExportableElement[], options: ExportOptions): Promise<ExportResult> {
+  async export(
+    elements: ExportableElement[],
+    options: ExportOptions
+  ): Promise<ExportResult> {
     const mergedOptions = { ...this.defaultOptions, ...options };
     const filename = mergedOptions.filename || `canvas-export-${Date.now()}`;
 
@@ -92,22 +95,22 @@ export class ExportEngine {
       }
 
       switch (mergedOptions.format) {
-        case "pdf":
+        case 'pdf':
           return await this.exportToPDF(elements, filename, mergedOptions);
-        case "png":
+        case 'png':
           return await this.exportToPNG(elements, filename, mergedOptions);
-        case "svg":
+        case 'svg':
           return await this.exportToSVG(elements, filename, mergedOptions);
-        case "json":
+        case 'json':
           return this.exportToJSON(elements, filename, mergedOptions);
         default:
-          return { success: false, error: "صيغة غير مدعومة" };
+          return { success: false, error: 'صيغة غير مدعومة' };
       }
     } catch (error) {
-      console.error("Export error:", error);
+      console.error('Export error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : "خطأ في التصدير",
+        error: error instanceof Error ? error.message : 'خطأ في التصدير',
       };
     }
   }
@@ -115,10 +118,7 @@ export class ExportEngine {
   /**
    * حساب حدود العناصر
    */
-  private calculateBounds(
-    elements: ExportableElement[],
-    padding: number = 0,
-  ): {
+  private calculateBounds(elements: ExportableElement[], padding: number = 0): {
     minX: number;
     minY: number;
     maxX: number;
@@ -158,11 +158,11 @@ export class ExportEngine {
   private async exportToPDF(
     elements: ExportableElement[],
     filename: string,
-    options: Partial<ExportOptions>,
+    options: Partial<ExportOptions>
   ): Promise<ExportResult> {
     const bounds = this.calculateBounds(elements, options.padding);
     const margins = options.margins || { top: 40, right: 40, bottom: 40, left: 40 };
-
+    
     let imagesEmbedded = 0;
     let pagesCount = 1;
 
@@ -170,30 +170,30 @@ export class ExportEngine {
     let pageWidth: number;
     let pageHeight: number;
 
-    if (options.pageSize === "Auto" || !options.multiPage) {
+    if (options.pageSize === 'Auto' || !options.multiPage) {
       pageWidth = bounds.width;
       pageHeight = bounds.height;
     } else {
-      const size = PAGE_SIZES[options.pageSize || "A4"];
+      const size = PAGE_SIZES[options.pageSize || 'A4'];
       pageWidth = size.width;
       pageHeight = size.height;
     }
 
     // حساب اتجاه الصفحة
-    const orientation = bounds.width > bounds.height ? "landscape" : "portrait";
+    const orientation = bounds.width > bounds.height ? 'landscape' : 'portrait';
 
     // إنشاء PDF
     const pdf = new jsPDF({
       orientation,
-      unit: "px",
-      format: options.pageSize === "Auto" ? [pageWidth, pageHeight] : options.pageSize?.toLowerCase(),
+      unit: 'px',
+      format: options.pageSize === 'Auto' ? [pageWidth, pageHeight] : options.pageSize?.toLowerCase(),
     });
 
     // حساب الصفحات المطلوبة
-    if (options.multiPage && options.pageSize !== "Auto") {
+    if (options.multiPage && options.pageSize !== 'Auto') {
       const contentWidth = pageWidth - margins.left - margins.right;
       const contentHeight = pageHeight - margins.top - margins.bottom;
-
+      
       const pagesX = Math.ceil(bounds.width / contentWidth);
       const pagesY = Math.ceil(bounds.height / contentHeight);
       pagesCount = pagesX * pagesY;
@@ -208,7 +208,7 @@ export class ExportEngine {
           // رسم الخلفية
           if (options.background) {
             pdf.setFillColor(options.background);
-            pdf.rect(0, 0, pageWidth, pageHeight, "F");
+            pdf.rect(0, 0, pageWidth, pageHeight, 'F');
           }
 
           const offsetX = bounds.minX + px * contentWidth;
@@ -236,7 +236,7 @@ export class ExportEngine {
       // صفحة واحدة
       if (options.background) {
         pdf.setFillColor(options.background);
-        pdf.rect(0, 0, pageWidth, pageHeight, "F");
+        pdf.rect(0, 0, pageWidth, pageHeight, 'F');
       }
 
       for (const element of elements) {
@@ -251,13 +251,13 @@ export class ExportEngine {
     if (options.includeMetadata) {
       pdf.setProperties({
         title: filename,
-        creator: "SoaBra Canvas",
-        subject: "Canvas Export",
+        creator: 'Supra Canvas',
+        subject: 'Canvas Export',
       });
     }
 
     // حفظ الملف
-    const pdfBlob = pdf.output("blob");
+    const pdfBlob = pdf.output('blob');
     this.downloadBlob(pdfBlob, `${filename}.pdf`);
 
     return {
@@ -280,65 +280,70 @@ export class ExportEngine {
     element: ExportableElement,
     x: number,
     y: number,
-    options: Partial<ExportOptions>,
+    options: Partial<ExportOptions>
   ): Promise<boolean> {
     const { width, height } = element.size;
     const style = element.style || {};
     let imageEmbedded = false;
 
     switch (element.type) {
-      case "text":
-        const text = element.content || "";
+      case 'text':
+        const text = element.content || '';
         const fontSize = Number(style.fontSize) || 14;
         const isArabic = containsArabic(text);
 
         pdf.setFontSize(fontSize);
-        pdf.setTextColor(String(style.color || "#000000"));
+        pdf.setTextColor(String(style.color || '#000000'));
 
         if (isArabic && options.rtlSupport) {
           // محاذاة من اليمين للنص العربي
           pdf.text(text, x + width, y + fontSize, {
-            align: "right",
+            align: 'right',
           });
         } else {
           pdf.text(text, x, y + fontSize);
         }
         break;
 
-      case "shape":
-        const shapeType = String(style.shapeType || "rectangle");
-        pdf.setFillColor(String(style.fillColor || "#3DBE8B"));
-
-        const strokeColor = String(style.strokeColor || "transparent");
-        if (strokeColor !== "transparent") {
+      case 'shape':
+        const shapeType = String(style.shapeType || 'rectangle');
+        pdf.setFillColor(String(style.fillColor || '#3DBE8B'));
+        
+        const strokeColor = String(style.strokeColor || 'transparent');
+        if (strokeColor !== 'transparent') {
           pdf.setDrawColor(strokeColor);
           pdf.setLineWidth(Number(style.strokeWidth) || 1);
         }
 
-        if (shapeType === "circle" || shapeType === "ellipse") {
-          pdf.ellipse(x + width / 2, y + height / 2, width / 2, height / 2, "F");
-        } else if (shapeType === "triangle") {
-          pdf.triangle(x + width / 2, y, x, y + height, x + width, y + height, "F");
+        if (shapeType === 'circle' || shapeType === 'ellipse') {
+          pdf.ellipse(x + width / 2, y + height / 2, width / 2, height / 2, 'F');
+        } else if (shapeType === 'triangle') {
+          pdf.triangle(
+            x + width / 2, y,
+            x, y + height,
+            x + width, y + height,
+            'F'
+          );
         } else {
-          pdf.rect(x, y, width, height, "F");
+          pdf.rect(x, y, width, height, 'F');
         }
         break;
 
-      case "sticky_note":
-        pdf.setFillColor(String(style.fillColor || "#F6C445"));
-        pdf.rect(x, y, width, height, "F");
-
+      case 'sticky_note':
+        pdf.setFillColor(String(style.fillColor || '#F6C445'));
+        pdf.rect(x, y, width, height, 'F');
+        
         if (element.content) {
           pdf.setFontSize(12);
-          pdf.setTextColor("#000000");
-
+          pdf.setTextColor('#000000');
+          
           const noteText = element.content;
           const isNoteArabic = containsArabic(noteText);
-
+          
           if (isNoteArabic && options.rtlSupport) {
-            pdf.text(noteText, x + width - 8, y + 20, {
+            pdf.text(noteText, x + width - 8, y + 20, { 
               maxWidth: width - 16,
-              align: "right",
+              align: 'right',
             });
           } else {
             pdf.text(noteText, x + 8, y + 20, { maxWidth: width - 16 });
@@ -346,14 +351,14 @@ export class ExportEngine {
         }
         break;
 
-      case "image":
+      case 'image':
         if (options.embedImages) {
-          const src = String(style.src || "");
+          const src = String(style.src || '');
           if (src) {
             try {
               // تحميل الصورة وتحويلها لـ Base64
               let base64 = this.imageCache.get(src);
-
+              
               if (!base64) {
                 base64 = await imageToBase64(src);
                 this.imageCache.set(src, base64);
@@ -365,7 +370,7 @@ export class ExportEngine {
                 imageEmbedded = true;
               }
             } catch (error) {
-              console.warn("فشل تضمين الصورة:", error);
+              console.warn('فشل تضمين الصورة:', error);
               // رسم placeholder
               this.drawImagePlaceholder(pdf, x, y, width, height);
             }
@@ -378,8 +383,8 @@ export class ExportEngine {
         break;
 
       default:
-        pdf.setFillColor("#CCCCCC");
-        pdf.rect(x, y, width, height, "F");
+        pdf.setFillColor('#CCCCCC');
+        pdf.rect(x, y, width, height, 'F');
     }
 
     return imageEmbedded;
@@ -389,11 +394,11 @@ export class ExportEngine {
    * رسم placeholder للصورة
    */
   private drawImagePlaceholder(pdf: jsPDF, x: number, y: number, width: number, height: number): void {
-    pdf.setFillColor("#E0E0E0");
-    pdf.rect(x, y, width, height, "F");
+    pdf.setFillColor('#E0E0E0');
+    pdf.rect(x, y, width, height, 'F');
     pdf.setFontSize(10);
-    pdf.setTextColor("#666666");
-    pdf.text("صورة", x + width / 2, y + height / 2, { align: "center" });
+    pdf.setTextColor('#666666');
+    pdf.text('صورة', x + width / 2, y + height / 2, { align: 'center' });
   }
 
   /**
@@ -402,24 +407,24 @@ export class ExportEngine {
   private async exportToPNG(
     elements: ExportableElement[],
     filename: string,
-    options: Partial<ExportOptions>,
+    options: Partial<ExportOptions>
   ): Promise<ExportResult> {
     const bounds = this.calculateBounds(elements, options.padding);
     const scale = options.scale || 2;
 
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
     canvas.width = bounds.width * scale;
     canvas.height = bounds.height * scale;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) {
-      return { success: false, error: "فشل إنشاء Canvas" };
+      return { success: false, error: 'فشل إنشاء Canvas' };
     }
 
     ctx.scale(scale, scale);
 
     // رسم الخلفية
-    ctx.fillStyle = options.background || "#FFFFFF";
+    ctx.fillStyle = options.background || '#FFFFFF';
     ctx.fillRect(0, 0, bounds.width, bounds.height);
 
     // رسم العناصر
@@ -441,11 +446,11 @@ export class ExportEngine {
               stats: { elementsCount: elements.length },
             });
           } else {
-            resolve({ success: false, error: "فشل إنشاء الصورة" });
+            resolve({ success: false, error: 'فشل إنشاء الصورة' });
           }
         },
-        "image/png",
-        options.quality,
+        'image/png',
+        options.quality
       );
     });
   }
@@ -458,7 +463,7 @@ export class ExportEngine {
     element: ExportableElement,
     x: number,
     y: number,
-    options: Partial<ExportOptions>,
+    options: Partial<ExportOptions>
   ): Promise<void> {
     const { width, height } = element.size;
     const style = element.style || {};
@@ -473,34 +478,34 @@ export class ExportEngine {
     }
 
     switch (element.type) {
-      case "text":
-        const text = element.content || "";
+      case 'text':
+        const text = element.content || '';
         const fontSize = Number(style.fontSize) || 14;
         const isArabic = containsArabic(text);
 
-        ctx.font = `${style.fontWeight || "normal"} ${fontSize}px ${ARABIC_FONT_CONFIG.fontFamily}`;
-        ctx.fillStyle = String(style.color || "#000000");
-        ctx.textBaseline = "top";
+        ctx.font = `${style.fontWeight || 'normal'} ${fontSize}px ${ARABIC_FONT_CONFIG.fontFamily}`;
+        ctx.fillStyle = String(style.color || '#000000');
+        ctx.textBaseline = 'top';
 
         if (isArabic && options.rtlSupport) {
-          ctx.direction = "rtl";
-          ctx.textAlign = "right";
+          ctx.direction = 'rtl';
+          ctx.textAlign = 'right';
           ctx.fillText(text, x + width, y);
         } else {
           ctx.fillText(text, x, y);
         }
         break;
 
-      case "shape":
-        const shapeType = String(style.shapeType || "rectangle");
-        ctx.fillStyle = String(style.fillColor || "#3DBE8B");
-        ctx.strokeStyle = String(style.strokeColor || "transparent");
+      case 'shape':
+        const shapeType = String(style.shapeType || 'rectangle');
+        ctx.fillStyle = String(style.fillColor || '#3DBE8B');
+        ctx.strokeStyle = String(style.strokeColor || 'transparent');
         ctx.lineWidth = Number(style.strokeWidth || 0);
 
         ctx.beginPath();
-        if (shapeType === "circle" || shapeType === "ellipse") {
+        if (shapeType === 'circle' || shapeType === 'ellipse') {
           ctx.ellipse(x + width / 2, y + height / 2, width / 2, height / 2, 0, 0, Math.PI * 2);
-        } else if (shapeType === "triangle") {
+        } else if (shapeType === 'triangle') {
           ctx.moveTo(x + width / 2, y);
           ctx.lineTo(x, y + height);
           ctx.lineTo(x + width, y + height);
@@ -514,24 +519,24 @@ export class ExportEngine {
         }
         break;
 
-      case "sticky_note":
-        ctx.fillStyle = String(style.fillColor || "#F6C445");
-        ctx.shadowColor = "rgba(0,0,0,0.1)";
+      case 'sticky_note':
+        ctx.fillStyle = String(style.fillColor || '#F6C445');
+        ctx.shadowColor = 'rgba(0,0,0,0.1)';
         ctx.shadowBlur = 4;
         ctx.shadowOffsetY = 2;
         ctx.fillRect(x, y, width, height);
-        ctx.shadowColor = "transparent";
+        ctx.shadowColor = 'transparent';
 
         if (element.content) {
           const noteText = element.content;
           const isNoteArabic = containsArabic(noteText);
 
-          ctx.fillStyle = "#000000";
+          ctx.fillStyle = '#000000';
           ctx.font = `12px ${ARABIC_FONT_CONFIG.fontFamily}`;
 
           if (isNoteArabic && options.rtlSupport) {
-            ctx.direction = "rtl";
-            ctx.textAlign = "right";
+            ctx.direction = 'rtl';
+            ctx.textAlign = 'right';
             ctx.fillText(noteText, x + width - 8, y + 20);
           } else {
             ctx.fillText(noteText, x + 8, y + 20);
@@ -539,12 +544,12 @@ export class ExportEngine {
         }
         break;
 
-      case "image":
+      case 'image':
         if (options.embedImages && style.src) {
           try {
             const img = new Image();
-            img.crossOrigin = "anonymous";
-
+            img.crossOrigin = 'anonymous';
+            
             await new Promise<void>((resolve, reject) => {
               img.onload = () => {
                 ctx.drawImage(img, x, y, width, height);
@@ -554,21 +559,21 @@ export class ExportEngine {
               img.src = String(style.src);
             });
           } catch {
-            ctx.fillStyle = "#E0E0E0";
+            ctx.fillStyle = '#E0E0E0';
             ctx.fillRect(x, y, width, height);
           }
         } else {
-          ctx.fillStyle = "#E0E0E0";
+          ctx.fillStyle = '#E0E0E0';
           ctx.fillRect(x, y, width, height);
         }
         break;
 
-      case "drawing":
+      case 'drawing':
         if (style.paths && Array.isArray(style.paths)) {
-          ctx.strokeStyle = String(style.strokeColor || "#000000");
+          ctx.strokeStyle = String(style.strokeColor || '#000000');
           ctx.lineWidth = Number(style.strokeWidth || 2);
-          ctx.lineCap = "round";
-          ctx.lineJoin = "round";
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
 
           (style.paths as Array<{ x: number; y: number }[]>).forEach((path) => {
             if (path.length > 0) {
@@ -584,7 +589,7 @@ export class ExportEngine {
         break;
 
       default:
-        ctx.fillStyle = "#CCCCCC";
+        ctx.fillStyle = '#CCCCCC';
         ctx.fillRect(x, y, width, height);
     }
 
@@ -597,7 +602,7 @@ export class ExportEngine {
   private async exportToSVG(
     elements: ExportableElement[],
     filename: string,
-    options: Partial<ExportOptions>,
+    options: Partial<ExportOptions>
   ): Promise<ExportResult> {
     const bounds = this.calculateBounds(elements, options.padding);
 
@@ -607,7 +612,7 @@ export class ExportEngine {
      width="${bounds.width}" 
      height="${bounds.height}" 
      viewBox="0 0 ${bounds.width} ${bounds.height}"
-     direction="${options.rtlSupport ? "rtl" : "ltr"}">
+     direction="${options.rtlSupport ? 'rtl' : 'ltr'}">
   <defs>
     <style>
       @import url('${ARABIC_FONT_CONFIG.googleFontUrl}');
@@ -616,7 +621,7 @@ export class ExportEngine {
     </style>
   </defs>
   
-  <rect width="100%" height="100%" fill="${options.background || "#FFFFFF"}"/>
+  <rect width="100%" height="100%" fill="${options.background || '#FFFFFF'}"/>
   
 `;
 
@@ -626,9 +631,9 @@ export class ExportEngine {
       svgContent += await this.elementToSVG(element, x, y, options);
     }
 
-    svgContent += "</svg>";
+    svgContent += '</svg>';
 
-    const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
+    const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
     this.downloadBlob(blob, `${filename}.svg`);
 
     return {
@@ -646,56 +651,56 @@ export class ExportEngine {
     element: ExportableElement,
     x: number,
     y: number,
-    options: Partial<ExportOptions>,
+    options: Partial<ExportOptions>
   ): Promise<string> {
     const { width, height } = element.size;
     const style = element.style || {};
     const transform = element.rotation
       ? ` transform="rotate(${element.rotation} ${x + width / 2} ${y + height / 2})"`
-      : "";
+      : '';
 
     switch (element.type) {
-      case "text":
-        const text = element.content || "";
-        const textColor = style.color || "#000000";
+      case 'text':
+        const text = element.content || '';
+        const textColor = style.color || '#000000';
         const fontSize = style.fontSize || 14;
         const isArabic = containsArabic(text);
         const rtlClass = isArabic && options.rtlSupport ? ' class="text rtl"' : ' class="text"';
-        const textAnchor = isArabic && options.rtlSupport ? ' text-anchor="end"' : "";
+        const textAnchor = isArabic && options.rtlSupport ? ' text-anchor="end"' : '';
         const textX = isArabic && options.rtlSupport ? x + width : x;
 
         return `  <text x="${textX}" y="${y + Number(fontSize)}"${rtlClass} fill="${textColor}" font-size="${fontSize}"${textAnchor}${transform}>${this.escapeXML(text)}</text>\n`;
 
-      case "shape":
-        const shapeType = String(style.shapeType || "rectangle");
-        const fillColor = style.fillColor || "#3DBE8B";
-        const strokeColor = style.strokeColor || "none";
+      case 'shape':
+        const shapeType = String(style.shapeType || 'rectangle');
+        const fillColor = style.fillColor || '#3DBE8B';
+        const strokeColor = style.strokeColor || 'none';
         const strokeWidth = style.strokeWidth || 0;
 
-        if (shapeType === "circle" || shapeType === "ellipse") {
+        if (shapeType === 'circle' || shapeType === 'ellipse') {
           return `  <ellipse cx="${x + width / 2}" cy="${y + height / 2}" rx="${width / 2}" ry="${height / 2}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}"${transform}/>\n`;
-        } else if (shapeType === "triangle") {
+        } else if (shapeType === 'triangle') {
           const points = `${x + width / 2},${y} ${x},${y + height} ${x + width},${y + height}`;
           return `  <polygon points="${points}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}"${transform}/>\n`;
         } else {
           return `  <rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}"${transform}/>\n`;
         }
 
-      case "sticky_note":
-        const noteColor = style.fillColor || "#F6C445";
-        const noteText = element.content || "";
+      case 'sticky_note':
+        const noteColor = style.fillColor || '#F6C445';
+        const noteText = element.content || '';
         const isNoteArabic = containsArabic(noteText);
         let svg = `  <g${transform}>\n`;
         svg += `    <rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${noteColor}"/>\n`;
         if (noteText) {
           const noteTextX = isNoteArabic && options.rtlSupport ? x + width - 8 : x + 8;
-          const noteAnchor = isNoteArabic && options.rtlSupport ? ' text-anchor="end"' : "";
+          const noteAnchor = isNoteArabic && options.rtlSupport ? ' text-anchor="end"' : '';
           svg += `    <text x="${noteTextX}" y="${y + 20}" class="text" fill="#000000" font-size="12"${noteAnchor}>${this.escapeXML(noteText)}</text>\n`;
         }
         svg += `  </g>\n`;
         return svg;
 
-      case "image":
+      case 'image':
         if (options.embedImages && style.src) {
           try {
             const base64 = await imageToBase64(String(style.src));
@@ -706,18 +711,18 @@ export class ExportEngine {
         }
         return `  <rect x="${x}" y="${y}" width="${width}" height="${height}" fill="#E0E0E0"${transform}/>\n`;
 
-      case "drawing":
+      case 'drawing':
         if (style.paths && Array.isArray(style.paths)) {
           const paths = (style.paths as Array<{ x: number; y: number }[]>)
             .map((path) => {
-              if (path.length === 0) return "";
-              const d = path.map((p, i) => `${i === 0 ? "M" : "L"} ${x + p.x} ${y + p.y}`).join(" ");
-              return `    <path d="${d}" fill="none" stroke="${style.strokeColor || "#000000"}" stroke-width="${style.strokeWidth || 2}" stroke-linecap="round" stroke-linejoin="round"/>`;
+              if (path.length === 0) return '';
+              const d = path.map((p, i) => `${i === 0 ? 'M' : 'L'} ${x + p.x} ${y + p.y}`).join(' ');
+              return `    <path d="${d}" fill="none" stroke="${style.strokeColor || '#000000'}" stroke-width="${style.strokeWidth || 2}" stroke-linecap="round" stroke-linejoin="round"/>`;
             })
-            .join("\n");
+            .join('\n');
           return `  <g${transform}>\n${paths}\n  </g>\n`;
         }
-        return "";
+        return '';
 
       default:
         return `  <rect x="${x}" y="${y}" width="${width}" height="${height}" fill="#CCCCCC"${transform}/>\n`;
@@ -727,11 +732,15 @@ export class ExportEngine {
   /**
    * التصدير إلى JSON
    */
-  private exportToJSON(elements: ExportableElement[], filename: string, options: Partial<ExportOptions>): ExportResult {
+  private exportToJSON(
+    elements: ExportableElement[],
+    filename: string,
+    options: Partial<ExportOptions>
+  ): ExportResult {
     const bounds = this.calculateBounds(elements, options.padding);
 
     const exportData = {
-      version: "2.0",
+      version: '2.0',
       exportedAt: new Date().toISOString(),
       metadata: options.includeMetadata
         ? {
@@ -744,7 +753,7 @@ export class ExportEngine {
     };
 
     const jsonString = JSON.stringify(exportData, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json;charset=utf-8" });
+    const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
     this.downloadBlob(blob, `${filename}.json`);
 
     return {
@@ -760,7 +769,7 @@ export class ExportEngine {
    */
   private downloadBlob(blob: Blob, filename: string): void {
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
     link.download = filename;
     document.body.appendChild(link);
@@ -774,11 +783,11 @@ export class ExportEngine {
    */
   private escapeXML(str: string): string {
     return str
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&apos;");
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
   }
 
   /**

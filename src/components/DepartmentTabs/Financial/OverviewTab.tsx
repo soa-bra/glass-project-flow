@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { AlertTriangle, CheckCircle, Clock, Bell, BarChart, TrendingUp } from 'lucide-react';
 import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
-import { BaseBox, BaseListItem } from '@/components/shared';
+import { BaseCard, BaseListItem } from '@/components/shared';
 import { mockBudgetData, mockCashFlowData } from './data';
 import { formatCurrency } from './utils';
 import { Alert } from './types';
@@ -74,7 +74,7 @@ export const OverviewTab: React.FC = () => {
       
       <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
         {/* Budget vs Actual Chart */}
-        <BaseBox
+        <BaseCard
           title="الميزانية مقابل الفعلي (شهري)"
           icon={<BarChart className={LAYOUT.ICON_SIZE} />}
           className="p-6"
@@ -100,10 +100,10 @@ export const OverviewTab: React.FC = () => {
               <Bar dataKey="actual" fill="#a4e2f6" name="الفعلي" />
             </RechartsBarChart>
           </ResponsiveContainer>
-        </BaseBox>
+        </BaseCard>
 
         {/* Cash Flow Forecast */}
-        <BaseBox
+        <BaseCard
           title="توقعات التدفق النقدي"
           icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
           className="p-6"
@@ -129,11 +129,11 @@ export const OverviewTab: React.FC = () => {
               <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} name="التدفق الخارج" />
             </LineChart>
           </ResponsiveContainer>
-        </BaseBox>
+        </BaseCard>
       </div>
 
       {/* AI Alerts */}
-      <BaseBox
+      <BaseCard
         title="تنبيهات الذكاء الاصطناعي"
         icon={<Bell className={LAYOUT.ICON_SIZE} />}
         className="p-6"
@@ -156,7 +156,7 @@ export const OverviewTab: React.FC = () => {
             </BaseListItem>
           ))}
         </div>
-      </BaseBox>
+      </BaseCard>
     </div>
   );
 };

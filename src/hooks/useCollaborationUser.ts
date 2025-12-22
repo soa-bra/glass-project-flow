@@ -1,20 +1,20 @@
-import { useState, useCallback } from "react";
-import { nanoid } from "nanoid";
+import { useState, useCallback } from 'react';
+import { nanoid } from 'nanoid';
 
-const USER_ID_KEY = "SoaBra_collab_user_id";
-const USER_NAME_KEY = "SoaBra_collab_user_name";
-const USER_COLOR_KEY = "SoaBra_collab_user_color";
+const USER_ID_KEY = 'supra_collab_user_id';
+const USER_NAME_KEY = 'supra_collab_user_name';
+const USER_COLOR_KEY = 'supra_collab_user_color';
 
 // ألوان محددة مسبقاً للمستخدمين
 const USER_COLORS = [
-  "#3DBE8B", // أخضر
-  "#3DA8F5", // أزرق
-  "#F6C445", // أصفر
-  "#E5564D", // أحمر
-  "#9B59B6", // بنفسجي
-  "#E67E22", // برتقالي
-  "#1ABC9C", // فيروزي
-  "#E91E63", // وردي
+  '#3DBE8B', // أخضر
+  '#3DA8F5', // أزرق
+  '#F6C445', // أصفر
+  '#E5564D', // أحمر
+  '#9B59B6', // بنفسجي
+  '#E67E22', // برتقالي
+  '#1ABC9C', // فيروزي
+  '#E91E63', // وردي
 ];
 
 interface CollaborationUser {
@@ -37,7 +37,7 @@ function getOrCreateUserData(): CollaborationUser {
       localStorage.setItem(USER_ID_KEY, id);
     }
     if (!name) {
-      name = "مستخدم سوبرا";
+      name = 'مستخدم سوبرا';
       localStorage.setItem(USER_NAME_KEY, name);
     }
     if (!color) {
@@ -50,7 +50,7 @@ function getOrCreateUserData(): CollaborationUser {
     // Fallback for SSR or localStorage errors
     return {
       id: `user-${nanoid(8)}`,
-      name: "مستخدم سوبرا",
+      name: 'مستخدم سوبرا',
       color: USER_COLORS[0],
     };
   }
@@ -70,19 +70,15 @@ export function useCollaborationUser(): CollaborationUser & {
   const updateName = useCallback((name: string) => {
     try {
       localStorage.setItem(USER_NAME_KEY, name);
-    } catch {
-      /* ignore */
-    }
-    setUser((prev) => ({ ...prev, name }));
+    } catch { /* ignore */ }
+    setUser(prev => ({ ...prev, name }));
   }, []);
 
   const updateColor = useCallback((color: string) => {
     try {
       localStorage.setItem(USER_COLOR_KEY, color);
-    } catch {
-      /* ignore */
-    }
-    setUser((prev) => ({ ...prev, color }));
+    } catch { /* ignore */ }
+    setUser(prev => ({ ...prev, color }));
   }, []);
 
   return {
@@ -109,7 +105,7 @@ export function getCollaborationUserId(): string {
  * دالة مساعدة للحصول على اسم المستخدم
  */
 export function getCollaborationUserName(): string {
-  return localStorage.getItem(USER_NAME_KEY) || "مستخدم سوبرا";
+  return localStorage.getItem(USER_NAME_KEY) || 'مستخدم سوبرا';
 }
 
 /**

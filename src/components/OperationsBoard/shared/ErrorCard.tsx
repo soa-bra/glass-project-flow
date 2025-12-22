@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/shared/BaseCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { COLORS, TYPOGRAPHY } from '@/components/shared/design-system/constants';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
@@ -16,7 +16,7 @@ export const ErrorCard: React.FC<ErrorCardProps> = ({
   onRetry
 }) => {
   return (
-    <BaseBox>
+    <BaseCard>
       <div className="h-32 flex flex-col items-center justify-center space-y-4">
         <div className="flex flex-col items-center space-y-2">
           <AlertTriangle className="w-6 h-6 text-red-500" />
@@ -40,6 +40,6 @@ export const ErrorCard: React.FC<ErrorCardProps> = ({
           </BaseActionButton>
         )}
       </div>
-    </BaseBox>
+    </BaseCard>
   );
 };

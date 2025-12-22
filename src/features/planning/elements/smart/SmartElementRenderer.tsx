@@ -12,7 +12,7 @@ import { GanttChart } from './GanttChart';
 import { MindMap } from './MindMap';
 import { VisualDiagram } from './VisualDiagram';
 import { InteractiveSheet } from './InteractiveSheet';
-import { ProjectCard as SmartProjectCard } from './SmartProjectCard';
+import { ProjectCard } from './ProjectCard';
 import { FinanceCard } from './FinanceCard';
 import { CsrCard } from './CsrCard';
 import { CrmCard } from './CrmCard';
@@ -162,7 +162,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   // Project Card
   if (smartType === 'project_card') {
     return (
-      <SmartProjectCard 
+      <ProjectCard 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
       />

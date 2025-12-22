@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, FileText, TrendingUp, TrendingDown, Receipt } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/shared/BaseCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { buildCardClasses, buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
@@ -46,7 +46,7 @@ export const TransactionsTab: React.FC = () => {
         </div>
       </Reveal>
 
-      <BaseBox title="دفتر القيود">
+      <BaseCard title="دفتر القيود">
         <div className="space-y-3">
           {mockTransactions.map(transaction => (
             <Reveal key={transaction.id} delay={0.1}>
@@ -86,7 +86,7 @@ export const TransactionsTab: React.FC = () => {
             </Reveal>
           ))}
         </div>
-      </BaseBox>
+      </BaseCard>
 
       <AccountingEntryModal
         isOpen={isAccountingEntryModalOpen}

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { TrendingUp, BarChart3, Users, Target, DollarSign, MousePointer } from 'lucide-react';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 
@@ -58,7 +58,7 @@ export const PerformanceAnalyticsTab: React.FC = () => {
     <div className="mb-6">
       {/* مؤشرات الأداء الرئيسية */}
       <div className="mb-6">
-        <BaseBox variant="operations">
+        <BaseCard variant="operations">
           <div className="flex items-center gap-2 mb-6">
             <BarChart3 className="h-6 w-6 text-black" />
             <h3 className="text-xl font-bold text-black font-arabic">مؤشرات الأداء الرئيسية</h3>
@@ -78,12 +78,12 @@ export const PerformanceAnalyticsTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
 
       {/* أداء الحملات */}
       <div className="mb-6">
-        <BaseBox variant="operations">
+        <BaseCard variant="operations">
           <div className="flex items-center gap-2 mb-6">
             <Target className="h-6 w-6 text-black" />
             <h3 className="text-xl font-bold text-black font-arabic">أداء الحملات</h3>
@@ -113,12 +113,12 @@ export const PerformanceAnalyticsTab: React.FC = () => {
               </tbody>
             </table>
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
 
       {/* رؤى الجمهور */}
       <div className="mb-6">
-        <BaseBox variant="operations">
+        <BaseCard variant="operations">
           <div className="flex items-center gap-2 mb-6">
             <Users className="h-6 w-6 text-black" />
             <h3 className="text-xl font-bold text-black font-arabic">رؤى الجمهور</h3>
@@ -143,7 +143,7 @@ export const PerformanceAnalyticsTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
     </div>
   );

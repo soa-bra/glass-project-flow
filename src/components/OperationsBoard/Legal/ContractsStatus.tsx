@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/ui/BaseCard';
 
 interface ContractCount {
   signed: number;
@@ -19,7 +19,7 @@ export const ContractsStatus: React.FC<ContractsStatusProps> = ({ contracts }) =
   const expiredPercentage = Math.round((contracts.expired / total) * 100);
 
   return (
-    <BaseBox 
+    <BaseCard 
       size="md"
       header={
         <h3 className="text-lg font-arabic font-bold text-gray-800">
@@ -64,6 +64,6 @@ export const ContractsStatus: React.FC<ContractsStatusProps> = ({ contracts }) =
         <span className="text-amber-500">{pendingPercentage}%</span>
         <span className="text-red-500">{expiredPercentage}%</span>
       </div>
-    </BaseBox>
+    </BaseCard>
   );
 };

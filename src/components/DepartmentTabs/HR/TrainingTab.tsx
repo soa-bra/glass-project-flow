@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { BookOpen, Users, Calendar, TrendingUp, Award, Clock, Play, CheckCircle } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
@@ -83,7 +83,7 @@ export const TrainingTab: React.FC = () => {
     <div className="space-y-6 bg-transparent">
       {/* إحصائيات التدريب */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <BaseBox variant="operations" className="p-4">
+        <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">البرامج النشطة</p>
@@ -91,9 +91,9 @@ export const TrainingTab: React.FC = () => {
             </div>
             <BookOpen className="h-8 w-8 text-blue-600" />
           </div>
-        </BaseBox>
+        </BaseCard>
 
-        <BaseBox variant="operations" className="p-4">
+        <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">إجمالي التسجيلات</p>
@@ -101,9 +101,9 @@ export const TrainingTab: React.FC = () => {
             </div>
             <Users className="h-8 w-8 text-green-600" />
           </div>
-        </BaseBox>
+        </BaseCard>
 
-        <BaseBox variant="operations" className="p-4">
+        <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">الدورات المكتملة</p>
@@ -111,9 +111,9 @@ export const TrainingTab: React.FC = () => {
             </div>
             <CheckCircle className="h-8 w-8 text-purple-600" />
           </div>
-        </BaseBox>
+        </BaseCard>
 
-        <BaseBox variant="operations" className="p-4">
+        <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">الشهادات الصادرة</p>
@@ -121,9 +121,9 @@ export const TrainingTab: React.FC = () => {
             </div>
             <Award className="h-8 w-8 text-orange-600" />
           </div>
-        </BaseBox>
+        </BaseCard>
 
-        <BaseBox variant="operations" className="p-4">
+        <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">متوسط التقييم</p>
@@ -131,9 +131,9 @@ export const TrainingTab: React.FC = () => {
             </div>
             <TrendingUp className="h-8 w-8 text-yellow-600" />
           </div>
-        </BaseBox>
+        </BaseCard>
 
-        <BaseBox variant="operations" className="p-4">
+        <BaseCard variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">البرامج القادمة</p>
@@ -141,11 +141,11 @@ export const TrainingTab: React.FC = () => {
             </div>
             <Calendar className="h-8 w-8 text-indigo-600" />
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
 
       {/* التبويبات */}
-      <BaseBox variant="operations" className="p-6">
+      <BaseCard variant="operations" className="p-6">
         <div className="flex items-center gap-4 mb-6">
           <div className="flex items-center gap-2">
             <BookOpen className="h-6 w-6 text-blue-600" />
@@ -283,10 +283,10 @@ export const TrainingTab: React.FC = () => {
             </table>
           </div>
         )}
-      </BaseBox>
+      </BaseCard>
 
       {/* تحليل الأداء التدريبي */}
-      <BaseBox variant="operations" className="p-6">
+      <BaseCard variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="h-6 w-6 text-green-600" />
           <h3 className="text-xl font-bold text-gray-800 font-arabic">تحليل الأداء التدريبي</h3>
@@ -294,7 +294,7 @@ export const TrainingTab: React.FC = () => {
         <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
           <p className="text-gray-500 font-arabic">سيتم إضافة تحليلات الأداء التدريبي هنا</p>
         </div>
-      </BaseBox>
+      </BaseCard>
     </div>
   );
 };

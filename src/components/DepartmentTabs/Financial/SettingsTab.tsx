@@ -1,7 +1,7 @@
 import React from 'react';
 import { Database, Calculator } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/shared/BaseCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
@@ -18,7 +18,7 @@ export const SettingsTab: React.FC = () => {
       </Reveal>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BaseBox 
+        <BaseCard 
           title="مخطط الحسابات" 
           icon={<Database className="h-5 w-5" />}
         >
@@ -84,9 +84,9 @@ export const SettingsTab: React.FC = () => {
             </div>
             <BaseActionButton variant="primary">إضافة حساب</BaseActionButton>
           </div>
-        </BaseBox>
+        </BaseCard>
 
-        <BaseBox 
+        <BaseCard 
           title="إعدادات الضرائب" 
           icon={<Calculator className="h-5 w-5" />}
         >
@@ -151,7 +151,7 @@ export const SettingsTab: React.FC = () => {
             </div>
             <BaseActionButton variant="primary">حفظ الإعدادات</BaseActionButton>
           </div>
-        </BaseBox>
+        </BaseCard>
       </div>
     </BaseTabContent>
   );

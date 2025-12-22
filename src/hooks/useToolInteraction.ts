@@ -222,14 +222,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         handleSmartElementClick(snappedPoint);
         break;
 
-      case 'sticky_tool':
-        handleStickyToolClick(snappedPoint);
-        break;
-
-      case 'mindmap_tool':
-        handleMindMapToolClick(snappedPoint);
-        break;
-
       case 'selection_tool':
         // يتم التعامل معها في InfiniteCanvas
         break;
@@ -536,56 +528,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     
     // إعادة تعيين العنصر المختار
     useCanvasStore.getState().setSelectedSmartElement(null);
-  };
-
-  /**
-   * أداة الستيكي: إنشاء sticky note مباشرة
-   */
-  const handleStickyToolClick = (point: { x: number; y: number }) => {
-    const STICKY_DEFAULT_SIZE = { width: 200, height: 200 };
-    const colors = ['#FEF9C3', '#DCFCE7', '#DBEAFE', '#FCE7F3', '#FED7AA'];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    
-    addElement({
-      type: 'shape',
-      shapeType: 'sticky',
-      position: {
-        x: point.x - STICKY_DEFAULT_SIZE.width / 2,
-        y: point.y - STICKY_DEFAULT_SIZE.height / 2
-      },
-      size: STICKY_DEFAULT_SIZE,
-      style: {
-        backgroundColor: randomColor
-      },
-      stickyText: '',
-      data: {
-        shapeType: 'sticky',
-        stickyText: ''
-      }
-    });
-    
-    toast.success('تم إضافة ستيكي نوت - انقر مرتين للكتابة');
-  };
-
-  /**
-   * أداة الخريطة الذهنية: إنشاء عقدة مباشرة
-   */
-  const handleMindMapToolClick = (point: { x: number; y: number }) => {
-    addElement({
-      type: 'mindmap_node',
-      position: { x: point.x - 90, y: point.y - 30 },
-      size: { width: 180, height: 60 },
-      data: {
-        label: 'فكرة جديدة',
-        color: '#3B82F6',
-        nodeStyle: 'rounded',
-        isRoot: false,
-        fontSize: 14,
-        textColor: '#FFFFFF'
-      }
-    });
-    
-    toast.success('تم إنشاء عقدة - اسحب من نقاط الربط لإضافة فروع');
   };
 
   return {

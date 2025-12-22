@@ -368,9 +368,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       activeTool === 'smart_pen' || 
       activeTool === 'shapes_tool' || 
       activeTool === 'text_tool' || 
-      activeTool === 'smart_element_tool' ||
-      activeTool === 'sticky_tool' ||
-      activeTool === 'mindmap_tool'
+      activeTool === 'smart_element_tool'
     )) {
       handleCanvasMouseDown(e);
       return;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { KanbanBox } from './TaskManagement/KanbanBox';
-import { TaskDetailsBox } from './TaskManagement/TaskDetailsBox';
+import { KanbanBoard } from './TaskManagement/KanbanBoard';
+import { TaskDetails } from './TaskManagement/TaskDetails';
 import { AITaskAssistant } from './TaskManagement/AITaskAssistant';
 import { Project } from '@/types/project';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
@@ -84,7 +84,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
 
       {/* Main Content Area */}
       <div className="flex-1 min-h-0">
-        {viewMode === 'kanban' ? <KanbanBox projectId={project.id} filters={filters} /> : <TaskDetailsBox projectId={project.id} filters={filters} />}
+        {viewMode === 'kanban' ? <KanbanBoard projectId={project.id} filters={filters} /> : <TaskDetails projectId={project.id} filters={filters} />}
       </div>
 
       {/* AI Assistant Panel */}

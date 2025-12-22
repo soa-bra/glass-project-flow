@@ -1,16 +1,14 @@
 import React from 'react';
 import { Stagger } from '@/components/shared/motion';
-import {
-  StatisticsBox,
-  FinancialOverviewBox,
-  ProjectSummaryBox,
-  AlertsBox,
-  HRBox,
-  MarketingBox,
-  ReportsBox,
-  CustomersBox
-} from './index';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { StatisticsCard } from './StatisticsCard';
+import { FinancialOverviewCard } from './FinancialOverviewCard';
+import { ProjectSummaryCard } from './ProjectSummaryCard';
+import { AlertsCard } from './AlertsCard';
+import { HRWidget } from './HRWidget';
+import { MarketingWidget } from './MarketingWidget';
+import { ReportsWidget } from './ReportsWidget';
+import { CustomersWidget } from './CustomersWidget';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Zap, Target, Layers, Cpu } from 'lucide-react';
 export const OverviewGrid: React.FC = () => {
@@ -39,54 +37,54 @@ export const OverviewGrid: React.FC = () => {
     <Stagger delay={0.3} gap={0.12} className="grid grid-cols-4 grid-rows-4 gap-[10px] h-[calc(53vh)] min-h-0 overflow-hidden py-px my-0">
       {/* الصف الأول */}
       <Stagger.Item className="row-span-3 h-full min-h-0">
-        <FinancialOverviewBox />
+        <FinancialOverviewCard />
       </Stagger.Item>
       
       <Stagger.Item>
-        <StatisticsBox title="بيانات" value="46" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="bar" />
+        <StatisticsCard title="بيانات" value="46" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="bar" />
       </Stagger.Item>
 
       <Stagger.Item>
-        <StatisticsBox title="بيانات" value="17" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="line" />
+        <StatisticsCard title="بيانات" value="17" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="line" />
       </Stagger.Item>
 
       <Stagger.Item className="row-span-2 h-full min-h-0">
-        <AlertsBox />
+        <AlertsCard />
       </Stagger.Item>
 
       {/* الصف الثاني */}
       <Stagger.Item>
-        <StatisticsBox title="نسبة" value="75" unit="مئوية" description="هذا النص مثال للشكل البياني" chartType="simple" />
+        <StatisticsCard title="نسبة" value="75" unit="مئوية" description="هذا النص مثال للشكل البياني" chartType="simple" />
       </Stagger.Item>
 
       <Stagger.Item>
-        <CustomersBox customers={mockCustomersData} />
+        <CustomersWidget customers={mockCustomersData} />
       </Stagger.Item>
 
       {/* الصف الثالث */}
       <Stagger.Item className="col-span-2 h-full min-h-0">
-        <ProjectSummaryBox />
+        <ProjectSummaryCard />
       </Stagger.Item>
 
       <Stagger.Item>
-        <StatisticsBox title="أداء" value="78" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
+        <StatisticsCard title="أداء" value="78" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
       </Stagger.Item>
 
       {/* الصف الرابع - الكاردات الجديدة */}
       <Stagger.Item>
-        <HRBox hr={mockHRData} />
+        <HRWidget hr={mockHRData} />
       </Stagger.Item>
       
       <Stagger.Item>
-        <MarketingBox marketing={mockMarketingData} />
+        <MarketingWidget marketing={mockMarketingData} />
       </Stagger.Item>
       
       <Stagger.Item>
-        <ReportsBox reports={mockReportsData} />
+        <ReportsWidget reports={mockReportsData} />
       </Stagger.Item>
 
       <Stagger.Item>
-        <StatisticsBox title="جودة" value="96" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
+        <StatisticsCard title="جودة" value="96" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
       </Stagger.Item>
 
     </Stagger>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
@@ -33,7 +33,7 @@ export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({
     if (utilization >= 60) return 'مثالي';
     return 'متاح';
   };
-  return <BaseBox
+  return <BaseCard
       variant="operations"
       size="md"
       className="w-full"
@@ -96,7 +96,7 @@ export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({
               </div>
             </div>)}
         </div>
-    </BaseBox>;
+    </BaseCard>;
 };
 interface SkillGap {
   skill: string;
@@ -145,7 +145,7 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({
         return priority;
     }
   };
-  return <BaseBox
+  return <BaseCard
       variant="operations"
       size="md"
       className="w-full"
@@ -193,7 +193,7 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({
               </div>
             </div>)}
         </div>
-    </BaseBox>;
+    </BaseCard>;
 };
 interface WorkloadData {
   department: string;
@@ -217,7 +217,7 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({
       color: "hsl(var(--secondary))"
     }
   };
-  return <BaseBox
+  return <BaseCard
       variant="operations"
       size="md"
       className="w-full"
@@ -277,5 +277,5 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({
               </div>;
         })}
         </div>
-    </BaseBox>;
+    </BaseCard>;
 };
