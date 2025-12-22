@@ -3,6 +3,7 @@ import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { Calendar, Plus, Settings, BarChart3, Target, DollarSign } from 'lucide-react';
+
 export const CampaignsChannelsTab: React.FC = () => {
   const [activeView, setActiveView] = useState<'campaigns' | 'channels' | 'calendar'>('campaigns');
   const campaigns = [{
@@ -189,7 +190,7 @@ export const CampaignsChannelsTab: React.FC = () => {
 
       {/* Campaigns View */}
       {activeView === 'campaigns' && <div className="space-y-4">
-          {campaigns.map(campaign => <BaseCard key={campaign.id} variant="operations" className="transition-all duration-300">
+          {campaigns.map(campaign => <BaseBox key={campaign.id} variant="operations" className="transition-all duration-300">
               <div className="space-y-4">
                 {/* Campaign Header */}
                 <div className="flex items-center justify-between">
@@ -252,12 +253,12 @@ export const CampaignsChannelsTab: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </BaseCard>)}
+            </BaseBox>)}
         </div>}
 
       {/* Channels View */}
       {activeView === 'channels' && <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {channels.map(channel => <BaseCard key={channel.id} variant="operations" className="transition-all duration-300">
+          {channels.map(channel => <BaseBox key={channel.id} variant="operations" className="transition-all duration-300">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -302,11 +303,11 @@ export const CampaignsChannelsTab: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </BaseCard>)}
+            </BaseBox>)}
         </div>}
 
       {/* Calendar View */}
-      {activeView === 'calendar' && <BaseCard variant="operations">
+      {activeView === 'calendar' && <BaseBox variant="operations">
           <div className="text-center py-12">
             <Calendar className="w-16 h-16 text-black/40 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-black font-arabic mb-2">تقويم الحملات</h3>
@@ -317,6 +318,6 @@ export const CampaignsChannelsTab: React.FC = () => {
               قريباً - تقويم تفاعلي متقدم
             </UnifiedButton>
           </div>
-        </BaseCard>}
+        </BaseBox>}
     </div>;
 };
