@@ -13,7 +13,7 @@ interface KanbanColumn {
   status: UnifiedTask['status'];
 }
 
-interface KanbanBoardBoxProps {
+interface KanbanBoardProps {
   projectId: string;
   filters: TaskFilters;
 }
@@ -27,7 +27,7 @@ const columns: KanbanColumn[] = [
   { name: "Done", color: COLORS.TASK_STATUS_COMPLETED, description: "المهام المكتملة", status: "completed" }
 ];
 
-export const KanbanBoardBox: React.FC<KanbanBoardBoxProps> = ({ projectId, filters }) => {
+export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) => {
   const { getTasksByStatus, updateTaskStatus } = useUnifiedTasks(projectId);
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [draggedTask, setDraggedTask] = useState<UnifiedTask | null>(null);

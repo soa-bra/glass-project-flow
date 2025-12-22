@@ -7,11 +7,11 @@ import { TaskDetailsPanel } from './TaskDetailsPanel';
 import TaskCardLayout from '@/components/TaskCard/TaskCardLayout';
 import TaskCardHeader from '@/components/TaskCard/TaskCardHeader';
 import TaskCardFooterSimple from '@/components/TaskCard/TaskCardFooterSimple';
-interface TaskDetailsBoxProps {
+interface TaskDetailsProps {
   projectId: string;
   filters: TaskFilters;
 }
-export const TaskDetailsBox: React.FC<TaskDetailsBoxProps> = ({
+export const TaskDetails: React.FC<TaskDetailsProps> = ({
   projectId,
   filters
 }) => {

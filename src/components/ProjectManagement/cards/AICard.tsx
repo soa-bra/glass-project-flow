@@ -3,11 +3,11 @@ import React from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { Project } from '@/types/project';
 
-interface AIBoxProps {
+interface AICardProps {
   project: Project;
 }
 
-export const AIBox: React.FC<AIBoxProps> = ({ project }) => {
+export const AICard: React.FC<AICardProps> = ({ project }) => {
   const suggestions = [
     {
       id: 1,

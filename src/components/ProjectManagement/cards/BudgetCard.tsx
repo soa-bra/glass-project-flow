@@ -1,10 +1,10 @@
 import React from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { Project } from '@/types/project';
-interface BudgetBoxProps {
+interface BudgetCardProps {
   project: Project;
 }
-export const BudgetBox: React.FC<BudgetBoxProps> = ({
+export const BudgetCard: React.FC<BudgetCardProps> = ({
   project
 }) => {
   const totalBudget = parseInt(project.value.replace(/[^\d]/g, ''));
