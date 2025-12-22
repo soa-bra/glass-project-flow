@@ -2,7 +2,7 @@ import React from 'react';
 import { Download, PieChart, Target } from 'lucide-react';
 import { ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Tooltip } from 'recharts';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
-import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
 import { Reveal, Stagger } from '@/components/shared/motion';
@@ -46,7 +46,7 @@ export const AnalysisTab: React.FC = () => {
       </Reveal>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BaseCard 
+        <BaseBox 
           title="توزيع المصروفات" 
           icon={<PieChart className="h-5 w-5" />}
         >
@@ -77,9 +77,9 @@ export const AnalysisTab: React.FC = () => {
               />
             </RechartsPieChart>
           </ResponsiveContainer>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard 
+        <BaseBox 
           title="التنبؤات المالية" 
           icon={<Target className="h-5 w-5" />}
         >
@@ -105,7 +105,7 @@ export const AnalysisTab: React.FC = () => {
               </Stagger.Item>
             ))}
           </Stagger>
-        </BaseCard>
+        </BaseBox>
       </div>
     </BaseTabContent>
   );

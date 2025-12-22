@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,7 +42,7 @@ export const FinancialOverviewCard: React.FC = () => {
   };
 
   return (
-    <BaseCard 
+    <BaseBox 
       variant="glass" 
       size="sm"
       className={`row-span-2 h-full min-h-0 ${isProfit ? 'bg-[#96D8D0]' : 'bg-[#F1B5B9]'}`}
@@ -144,6 +144,6 @@ export const FinancialOverviewCard: React.FC = () => {
           </div>
         </div>
       </div>
-    </BaseCard>
+    </BaseBox>
   );
 };

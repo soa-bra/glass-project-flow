@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Eye, Users, FileText, Clock, TrendingUp, AlertTriangle, Calendar, Award, Settings, BarChart, Globe, Shield, Database, Zap } from 'lucide-react';
-import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';

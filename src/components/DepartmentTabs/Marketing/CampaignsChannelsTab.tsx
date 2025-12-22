@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { Calendar, Plus, Settings, BarChart3, Target, DollarSign } from 'lucide-react';
