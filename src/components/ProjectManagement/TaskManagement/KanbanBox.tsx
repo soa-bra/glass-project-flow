@@ -27,7 +27,7 @@ const columns: KanbanColumn[] = [
   { name: "Done", color: COLORS.TASK_STATUS_COMPLETED, description: "المهام المكتملة", status: "completed" }
 ];
 
-export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, filters }) => {
+export const KanbanBox: React.FC<KanbanBoardProps> = ({ projectId, filters }) => {
   const { getTasksByStatus, updateTaskStatus } = useUnifiedTasks(projectId);
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [draggedTask, setDraggedTask] = useState<UnifiedTask | null>(null);

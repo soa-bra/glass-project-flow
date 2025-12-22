@@ -13,7 +13,7 @@ interface AISuggestedPerformanceCardProps {
   chartType: 'line' | 'bar' | 'pie' | 'donut';
 }
 
-export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProps> = ({
+export const AISuggestedPerformanceBox: React.FC<AISuggestedPerformanceCardProps> = ({
   type,
   title,
   metric,
