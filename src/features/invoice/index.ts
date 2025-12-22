@@ -48,3 +48,6 @@ export {
   statusColors,
   isOverdue,
 } from './domain';
+
+// Utils
+export { exportInvoicesToExcel } from './lib';
