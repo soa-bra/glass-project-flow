@@ -11,7 +11,7 @@ interface MarketingWidgetProps {
   className?: string;
 }
 
-export const MarketingWidget: React.FC<MarketingWidgetProps> = ({ 
+export const MarketingBox: React.FC<MarketingWidgetProps> = ({ 
   marketing, 
   className = '' 
 }) => {

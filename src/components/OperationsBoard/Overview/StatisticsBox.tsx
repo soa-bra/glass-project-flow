@@ -43,7 +43,7 @@ const sampleBarData = [{
   name: 'D',
   value: 15
 }];
-export const StatisticsCard: React.FC<StatisticsCardProps> = ({
+export const StatisticsBox: React.FC<StatisticsCardProps> = ({
   title,
   value,
   unit,

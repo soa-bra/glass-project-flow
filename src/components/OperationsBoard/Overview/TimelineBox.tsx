@@ -44,7 +44,7 @@ const events: TimelineEvent[] = [{
   title: "حفل الترحيب بالموظفين الجدد",
   location: "داخلي"
 }];
-export const TimelineCard: React.FC = () => {
+export const TimelineBox: React.FC = () => {
   const timelineRef = useRef<HTMLDivElement>(null);
   const [showAddEventModal, setShowAddEventModal] = useState(false);
   const [eventsList, setEventsList] = useState<TimelineEvent[]>(events);
