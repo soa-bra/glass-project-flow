@@ -1,7 +1,7 @@
 // FloatingEditBar - v2.0 - Updated grouping logic
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  ArrowUp, 
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  ArrowUp,
   ArrowDown,
   ChevronsUp,
   ChevronsDown,
@@ -33,23 +33,28 @@ import {
   Calendar,
   Table2,
   Zap,
-  Files
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useCanvasStore } from '@/stores/canvasStore';
-import { useSmartElementsStore } from '@/stores/smartElementsStore';
-import { useSmartElementAI } from '@/hooks/useSmartElementAI';
+  Files,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useCanvasStore } from "@/stores/canvasStore";
+import { useSmartElementsStore } from "@/stores/smartElementsStore";
+import { useSmartElementAI } from "@/hooks/useSmartElementAI";
 import { ColorPicker, parseColor } from "@ark-ui/react/color-picker";
-import { toast } from 'sonner';
-import type { SmartElementType } from '@/types/smart-elements';
+import { toast } from "sonner";
+import type { SmartElementType } from "@/types/smart-elements";
 
 // Smart element transform options
 const TRANSFORM_OPTIONS = [
-  { type: 'kanban' as SmartElementType, label: 'لوحة كانبان', icon: LayoutGrid, description: 'تحويل إلى أعمدة ومهام' },
-  { type: 'mind_map' as SmartElementType, label: 'خريطة ذهنية', icon: Network, description: 'تنظيم كخريطة مترابطة' },
-  { type: 'timeline' as SmartElementType, label: 'خط زمني', icon: Calendar, description: 'ترتيب على محور زمني' },
-  { type: 'decisions_matrix' as SmartElementType, label: 'مصفوفة قرارات', icon: Table2, description: 'تقييم ومقارنة الخيارات' },
-  { type: 'brainstorming' as SmartElementType, label: 'عصف ذهني', icon: Zap, description: 'تجميع كأفكار للنقاش' },
+  { type: "kanban" as SmartElementType, label: "لوحة كانبان", icon: LayoutGrid, description: "تحويل إلى أعمدة ومهام" },
+  { type: "mind_map" as SmartElementType, label: "خريطة ذهنية", icon: Network, description: "تنظيم كخريطة مترابطة" },
+  { type: "timeline" as SmartElementType, label: "خط زمني", icon: Calendar, description: "ترتيب على محور زمني" },
+  {
+    type: "decisions_matrix" as SmartElementType,
+    label: "مصفوفة قرارات",
+    icon: Table2,
+    description: "تقييم ومقارنة الخيارات",
+  },
+  { type: "brainstorming" as SmartElementType, label: "عصف ذهني", icon: Zap, description: "تجميع كأفكار للنقاش" },
 ];
 
 // Utility colors
@@ -60,15 +65,15 @@ const UTILITY_COLORS = [
   { color: "#808080", label: "رمادي" },
 ];
 
-// Supra brand colors
-const SUPRA_COLORS = [
+// SoaBra brand colors
+const SoaBra_COLORS = [
   { color: "#3DBE8B", label: "أخضر" },
   { color: "#F6C445", label: "أصفر" },
   { color: "#E5564D", label: "أحمر" },
   { color: "#3DA8F5", label: "أزرق" },
 ];
 
-const RECENT_COLORS_KEY = "supra-floating-bar-recent-colors";
+const RECENT_COLORS_KEY = "SoaBra-floating-bar-recent-colors";
 const MAX_RECENT_COLORS = 6;
 
 const getRecentColors = (): string[] => {
@@ -95,9 +100,9 @@ const addRecentColor = (color: string) => {
 };
 
 const FloatingEditBar: React.FC = () => {
-  const { 
-    elements, 
-    selectedElementIds, 
+  const {
+    elements,
+    selectedElementIds,
     updateElement,
     deleteElements,
     copyElements,
@@ -110,33 +115,33 @@ const FloatingEditBar: React.FC = () => {
     lockElements,
     duplicateElement,
     unlockElements,
-    viewport
+    viewport,
   } = useCanvasStore();
-  
+
   const { addSmartElement } = useSmartElementsStore();
   const { analyzeSelection, transformElements, isLoading: isAILoading } = useSmartElementAI();
-  
+
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
-  const [colorMode, setColorMode] = useState<'fill' | 'stroke'>('fill');
+  const [colorMode, setColorMode] = useState<"fill" | "stroke">("fill");
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [recentColors, setRecentColors] = useState<string[]>([]);
   const [isAIMenuOpen, setIsAIMenuOpen] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
   const [isVerticalAlignOpen, setIsVerticalAlignOpen] = useState(false);
   const [isHorizontalAlignOpen, setIsHorizontalAlignOpen] = useState(false);
-  
+
   useEffect(() => {
     setRecentColors(getRecentColors());
   }, []);
-  
+
   const selectedElements = useMemo(
-    () => elements.filter(el => selectedElementIds.includes(el.id)),
-    [elements, selectedElementIds]
+    () => elements.filter((el) => selectedElementIds.includes(el.id)),
+    [elements, selectedElementIds],
   );
   const hasSelection = selectedElements.length > 0;
   const firstElement = selectedElements[0];
-  
+
   // Check if any selected element has a groupId (is part of a group)
   const groupId = useMemo(() => {
     for (const el of selectedElements) {
@@ -146,87 +151,90 @@ const FloatingEditBar: React.FC = () => {
     }
     return null;
   }, [selectedElements]);
-  
+
   // Check if elements are grouped
   const areElementsGrouped = useMemo(() => {
     return !!groupId;
   }, [groupId]);
-  
+
   // Check if elements are visible
   const areElementsVisible = useMemo(() => {
-    return selectedElements.every(el => el.visible !== false);
+    return selectedElements.every((el) => el.visible !== false);
   }, [selectedElements]);
-  
+
   // Check if elements are locked
   const areElementsLocked = useMemo(() => {
-    return selectedElements.some(el => el.locked === true);
+    return selectedElements.some((el) => el.locked === true);
   }, [selectedElements]);
-  
+
   // Calculate selection bounds with useMemo for performance
   const selectionBounds = useMemo(() => {
     if (!hasSelection) return null;
-    
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    selectedElements.forEach(el => {
+
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity;
+    selectedElements.forEach((el) => {
       const x = el.position.x;
       const y = el.position.y;
       const width = el.size?.width || 200;
       const height = el.size?.height || 100;
-      
+
       if (x < minX) minX = x;
       if (y < minY) minY = y;
       if (x + width > maxX) maxX = x + width;
       if (y + height > maxY) maxY = y + height;
     });
-    
+
     return { minX, minY, maxX, maxY };
   }, [selectedElements, hasSelection]);
-  
+
   // Calculate position centered on selection - only update when significant change
   useEffect(() => {
     if (!selectionBounds) return;
-    
+
     // Calculate center of selection in canvas coordinates
     const selectionCenterX = (selectionBounds.minX + selectionBounds.maxX) / 2;
-    
+
     // Convert to screen coordinates
     const screenCenterX = selectionCenterX * viewport.zoom + viewport.pan.x;
     const screenTopY = selectionBounds.minY * viewport.zoom + viewport.pan.y - 60;
-    
+
     const newX = screenCenterX;
     const newY = Math.max(70, screenTopY);
-    
+
     // Only update if change is significant (> 2px) to prevent jitter
     if (Math.abs(newX - position.x) > 2 || Math.abs(newY - position.y) > 2) {
       setPosition({ x: newX, y: newY });
     }
   }, [selectionBounds, viewport.zoom, viewport.pan.x, viewport.pan.y]);
-  
+
   if (!hasSelection) return null;
 
-  const currentFillColor = firstElement?.style?.backgroundColor || '#FFFFFF';
-  const currentStrokeColor = firstElement?.style?.borderColor || '#000000';
-  const currentColor = colorMode === 'fill' ? currentFillColor : currentStrokeColor;
+  const currentFillColor = firstElement?.style?.backgroundColor || "#FFFFFF";
+  const currentStrokeColor = firstElement?.style?.borderColor || "#000000";
+  const currentColor = colorMode === "fill" ? currentFillColor : currentStrokeColor;
   const safeColor = currentColor && currentColor !== "transparent" ? currentColor : "#000000";
-  
+
   const handleColorChange = (details: { value: any; valueAsString: string }) => {
     const hex = details.valueAsString;
-    if (colorMode === 'fill') {
-      selectedElementIds.forEach(id => {
+    if (colorMode === "fill") {
+      selectedElementIds.forEach((id) => {
         updateElement(id, {
           style: {
-            ...elements.find(el => el.id === id)?.style,
-            backgroundColor: hex
-          }
+            ...elements.find((el) => el.id === id)?.style,
+            backgroundColor: hex,
+          },
         });
       });
     } else {
-      selectedElementIds.forEach(id => {
+      selectedElementIds.forEach((id) => {
         updateElement(id, {
           style: {
-            ...elements.find(el => el.id === id)?.style,
-            borderColor: hex
-          }
+            ...elements.find((el) => el.id === id)?.style,
+            borderColor: hex,
+          },
         });
       });
     }
@@ -235,22 +243,22 @@ const FloatingEditBar: React.FC = () => {
   };
 
   const handlePresetClick = (color: string) => {
-    if (colorMode === 'fill') {
-      selectedElementIds.forEach(id => {
+    if (colorMode === "fill") {
+      selectedElementIds.forEach((id) => {
         updateElement(id, {
           style: {
-            ...elements.find(el => el.id === id)?.style,
-            backgroundColor: color
-          }
+            ...elements.find((el) => el.id === id)?.style,
+            backgroundColor: color,
+          },
         });
       });
     } else {
-      selectedElementIds.forEach(id => {
+      selectedElementIds.forEach((id) => {
         updateElement(id, {
           style: {
-            ...elements.find(el => el.id === id)?.style,
-            borderColor: color
-          }
+            ...elements.find((el) => el.id === id)?.style,
+            borderColor: color,
+          },
         });
       });
     }
@@ -259,19 +267,19 @@ const FloatingEditBar: React.FC = () => {
       setRecentColors(getRecentColors());
     }
   };
-  
+
   // Copy action
   const handleCopy = () => {
     copyElements(selectedElementIds);
     setIsMoreMenuOpen(false);
-    toast.success('تم نسخ العناصر');
+    toast.success("تم نسخ العناصر");
   };
 
   // Cut action
   const handleCut = () => {
     cutElements(selectedElementIds);
     setIsMoreMenuOpen(false);
-    toast.success('تم قص العناصر');
+    toast.success("تم قص العناصر");
   };
 
   // Paste action
@@ -279,36 +287,36 @@ const FloatingEditBar: React.FC = () => {
     if (clipboard.length > 0) {
       pasteElements();
       setIsMoreMenuOpen(false);
-      toast.success('تم لصق العناصر');
+      toast.success("تم لصق العناصر");
     } else {
-      toast.error('الحافظة فارغة');
+      toast.error("الحافظة فارغة");
     }
   };
 
   // Delete action
   const handleDelete = () => {
     deleteElements(selectedElementIds);
-    toast.success('تم حذف العناصر');
+    toast.success("تم حذف العناصر");
   };
-  
+
   // Lock/Unlock action
   const handleToggleLock = () => {
     if (areElementsLocked) {
       unlockElements(selectedElementIds);
-      toast.success('تم إلغاء قفل العناصر');
+      toast.success("تم إلغاء قفل العناصر");
     } else {
       lockElements(selectedElementIds);
-      toast.success('تم قفل العناصر');
+      toast.success("تم قفل العناصر");
     }
   };
 
   // Visibility toggle
   const handleToggleVisibility = () => {
-    selectedElementIds.forEach(id => {
-      const current = elements.find(el => el.id === id);
+    selectedElementIds.forEach((id) => {
+      const current = elements.find((el) => el.id === id);
       updateElement(id, { visible: current?.visible === false ? true : false });
     });
-    toast.success(areElementsVisible ? 'تم إخفاء العناصر' : 'تم إظهار العناصر');
+    toast.success(areElementsVisible ? "تم إخفاء العناصر" : "تم إظهار العناصر");
   };
 
   // Group/Ungroup action
@@ -316,13 +324,13 @@ const FloatingEditBar: React.FC = () => {
     if (groupId) {
       // فك تجميع العناصر المجمّعة
       ungroupElements(groupId);
-      toast.success('تم فك التجميع');
+      toast.success("تم فك التجميع");
     } else if (selectedElementIds.length > 1) {
       // تجميع العناصر المحددة
       groupElements(selectedElementIds);
-      toast.success('تم تجميع العناصر');
+      toast.success("تم تجميع العناصر");
     } else {
-      toast.error('حدد عنصرين أو أكثر للتجميع');
+      toast.error("حدد عنصرين أو أكثر للتجميع");
     }
   };
 
@@ -331,100 +339,100 @@ const FloatingEditBar: React.FC = () => {
     const { elements: currentElements } = useCanvasStore.getState();
     const newElements = [...currentElements];
     // Process in reverse to handle multiple selections correctly
-    [...selectedElementIds].reverse().forEach(id => {
-      const idx = newElements.findIndex(el => el.id === id);
+    [...selectedElementIds].reverse().forEach((id) => {
+      const idx = newElements.findIndex((el) => el.id === id);
       if (idx >= 0 && idx < newElements.length - 1) {
         [newElements[idx], newElements[idx + 1]] = [newElements[idx + 1], newElements[idx]];
       }
     });
     useCanvasStore.setState({ elements: newElements });
     setIsMoreMenuOpen(false);
-    toast.success('تم رفع العنصر');
+    toast.success("تم رفع العنصر");
   };
 
   const handleSendBackward = () => {
     const { elements: currentElements } = useCanvasStore.getState();
     const newElements = [...currentElements];
     // Process in order to handle multiple selections correctly
-    selectedElementIds.forEach(id => {
-      const idx = newElements.findIndex(el => el.id === id);
+    selectedElementIds.forEach((id) => {
+      const idx = newElements.findIndex((el) => el.id === id);
       if (idx > 0) {
         [newElements[idx], newElements[idx - 1]] = [newElements[idx - 1], newElements[idx]];
       }
     });
     useCanvasStore.setState({ elements: newElements });
     setIsMoreMenuOpen(false);
-    toast.success('تم خفض العنصر');
+    toast.success("تم خفض العنصر");
   };
 
   const handleBringToFront = () => {
     const { elements: currentElements } = useCanvasStore.getState();
     const selectedSet = new Set(selectedElementIds);
-    const selected = currentElements.filter(el => selectedSet.has(el.id));
-    const others = currentElements.filter(el => !selectedSet.has(el.id));
+    const selected = currentElements.filter((el) => selectedSet.has(el.id));
+    const others = currentElements.filter((el) => !selectedSet.has(el.id));
     useCanvasStore.setState({ elements: [...others, ...selected] });
     setIsMoreMenuOpen(false);
-    toast.success('تم نقل العنصر للأمام');
+    toast.success("تم نقل العنصر للأمام");
   };
 
   const handleSendToBack = () => {
     const { elements: currentElements } = useCanvasStore.getState();
     const selectedSet = new Set(selectedElementIds);
-    const selected = currentElements.filter(el => selectedSet.has(el.id));
-    const others = currentElements.filter(el => !selectedSet.has(el.id));
+    const selected = currentElements.filter((el) => selectedSet.has(el.id));
+    const others = currentElements.filter((el) => !selectedSet.has(el.id));
     useCanvasStore.setState({ elements: [...selected, ...others] });
     setIsMoreMenuOpen(false);
-    toast.success('تم نقل العنصر للخلف');
+    toast.success("تم نقل العنصر للخلف");
   };
 
   // Alignment actions
   const handleAlignVerticalTop = () => {
-    alignElements(selectedElementIds, 'top');
+    alignElements(selectedElementIds, "top");
     setIsVerticalAlignOpen(false);
-    toast.success('تمت المحاذاة للأعلى');
+    toast.success("تمت المحاذاة للأعلى");
   };
 
   const handleAlignVerticalMiddle = () => {
-    alignElements(selectedElementIds, 'middle');
+    alignElements(selectedElementIds, "middle");
     setIsVerticalAlignOpen(false);
-    toast.success('تمت المحاذاة للوسط عمودياً');
+    toast.success("تمت المحاذاة للوسط عمودياً");
   };
 
   const handleAlignVerticalBottom = () => {
-    alignElements(selectedElementIds, 'bottom');
+    alignElements(selectedElementIds, "bottom");
     setIsVerticalAlignOpen(false);
-    toast.success('تمت المحاذاة للأسفل');
+    toast.success("تمت المحاذاة للأسفل");
   };
 
   const handleAlignHorizontalLeft = () => {
-    alignElements(selectedElementIds, 'left');
+    alignElements(selectedElementIds, "left");
     setIsHorizontalAlignOpen(false);
-    toast.success('تمت المحاذاة لليسار');
+    toast.success("تمت المحاذاة لليسار");
   };
 
   const handleAlignHorizontalCenter = () => {
-    alignElements(selectedElementIds, 'center');
+    alignElements(selectedElementIds, "center");
     setIsHorizontalAlignOpen(false);
-    toast.success('تمت المحاذاة للوسط أفقياً');
+    toast.success("تمت المحاذاة للوسط أفقياً");
   };
 
   const handleAlignHorizontalRight = () => {
-    alignElements(selectedElementIds, 'right');
+    alignElements(selectedElementIds, "right");
     setIsHorizontalAlignOpen(false);
-    toast.success('تمت المحاذاة لليمين');
+    toast.success("تمت المحاذاة لليمين");
   };
 
   // Duplicate action
   const handleDuplicate = () => {
-    selectedElementIds.forEach(id => duplicateElement(id));
-    toast.success('تم تكرار العناصر');
+    selectedElementIds.forEach((id) => duplicateElement(id));
+    toast.success("تم تكرار العناصر");
   };
 
   // AI Smart Element functions
   const getSelectionContent = () => {
-    return selectedElements.map(el => ({
+    return selectedElements.map((el) => ({
       type: el.type,
-      content: el.content || '',
+      content: el.content || "",
       smartType: el.smartType,
       position: el.position,
     }));
@@ -432,7 +440,10 @@ const FloatingEditBar: React.FC = () => {
 
   const handleQuickGenerate = async () => {
     const content = getSelectionContent();
-    const contentText = selectedElements.map(el => el.content || '').filter(Boolean).join('\n');
+    const contentText = selectedElements
+      .map((el) => el.content || "")
+      .filter(Boolean)
+      .join("\n");
 
     const result = await analyzeSelection(content, `حلل هذه العناصر وأنشئ عنصر ذكي مناسب: ${contentText}`);
 
@@ -446,10 +457,13 @@ const FloatingEditBar: React.FC = () => {
 
   const handleTransform = async (targetType: SmartElementType) => {
     setIsTransforming(true);
-    
+
     try {
       const content = getSelectionContent();
-      const contentText = selectedElements.map(el => el.content || '').filter(Boolean).join('\n');
+      const contentText = selectedElements
+        .map((el) => el.content || "")
+        .filter(Boolean)
+        .join("\n");
 
       const result = await transformElements(content, targetType, `حوّل هذه العناصر إلى ${targetType}: ${contentText}`);
 
@@ -458,14 +472,20 @@ const FloatingEditBar: React.FC = () => {
         const centerY = selectedElements.reduce((sum, el) => sum + (el.position?.y || 0), 0) / selectedElements.length;
 
         result.elements.forEach((element, index) => {
-          addSmartElement(element.type as SmartElementType, { x: centerX + index * 30, y: centerY + index * 30 }, element.data);
+          addSmartElement(
+            element.type as SmartElementType,
+            { x: centerX + index * 30, y: centerY + index * 30 },
+            element.data,
+          );
         });
 
-        toast.success(`تم تحويل ${selectedElements.length} عنصر إلى ${TRANSFORM_OPTIONS.find(o => o.type === targetType)?.label}`);
+        toast.success(
+          `تم تحويل ${selectedElements.length} عنصر إلى ${TRANSFORM_OPTIONS.find((o) => o.type === targetType)?.label}`,
+        );
         setIsAIMenuOpen(false);
       }
     } catch (error) {
-      toast.error('حدث خطأ أثناء التحويل');
+      toast.error("حدث خطأ أثناء التحويل");
     } finally {
       setIsTransforming(false);
     }
@@ -476,7 +496,7 @@ const FloatingEditBar: React.FC = () => {
     text-black hover:bg-[hsl(var(--panel))]
     focus:outline-none active:bg-transparent
   `;
-  
+
   // Button class without hover (for locked state)
   const btnClassNoHover = `
     flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200
@@ -484,48 +504,43 @@ const FloatingEditBar: React.FC = () => {
   `;
 
   const separatorClass = "w-px h-6 bg-[hsl(var(--border))]";
-  
+
   return (
-    <div 
+    <div
       className="fixed z-50 pointer-events-auto"
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
-        transform: 'translateX(-50%)'
+        transform: "translateX(-50%)",
       }}
     >
       <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] p-1.5">
         <div className="flex items-center gap-1">
-          
           {/* More Menu (3 dots) */}
           <div className="relative">
-            <button
-              onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-              className={btnClass}
-              title="المزيد"
-            >
+            <button onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)} className={btnClass} title="المزيد">
               <MoreHorizontal size={16} />
             </button>
-            
+
             {isMoreMenuOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setIsMoreMenuOpen(false)} />
                 <div className="absolute top-full right-0 mt-2 w-44 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] p-1.5 z-50">
-                  <button 
+                  <button
                     onClick={handleCopy}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
                     <Copy size={14} />
                     <span>نسخ</span>
                   </button>
-                  <button 
+                  <button
                     onClick={handleCut}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
                     <Scissors size={14} />
                     <span>قص</span>
                   </button>
-                  <button 
+                  <button
                     onClick={handlePaste}
                     disabled={clipboard.length === 0}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
@@ -533,32 +548,32 @@ const FloatingEditBar: React.FC = () => {
                     <ClipboardPaste size={14} />
                     <span>لصق</span>
                   </button>
-                  
+
                   <div className="w-full h-px bg-[hsl(var(--border))] my-1.5" />
-                  
+
                   {/* Layer controls in menu */}
-                  <button 
+                  <button
                     onClick={handleBringToFront}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
                     <ChevronsUp size={14} />
                     <span>نقل للأمام</span>
                   </button>
-                  <button 
+                  <button
                     onClick={handleBringForward}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
                     <ArrowUp size={14} />
                     <span>رفع طبقة</span>
                   </button>
-                  <button 
+                  <button
                     onClick={handleSendBackward}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
                     <ArrowDown size={14} />
                     <span>خفض طبقة</span>
                   </button>
-                  <button 
+                  <button
                     onClick={handleSendToBack}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
@@ -580,25 +595,25 @@ const FloatingEditBar: React.FC = () => {
               title="الألوان"
             >
               {/* Stroke color box (back) */}
-              <div 
+              <div
                 className="absolute w-4 h-4 rounded border-2 border-white"
-                style={{ 
+                style={{
                   backgroundColor: currentStrokeColor,
-                  top: '10px',
-                  right: '10px'
+                  top: "10px",
+                  right: "10px",
                 }}
               />
               {/* Fill color box (front) */}
-              <div 
+              <div
                 className="absolute w-4 h-4 rounded border border-[hsl(var(--border))]"
-                style={{ 
+                style={{
                   backgroundColor: currentFillColor,
-                  top: '6px',
-                  right: '14px'
+                  top: "6px",
+                  right: "14px",
                 }}
               />
             </button>
-            
+
             {isColorPickerOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setIsColorPickerOpen(false)} />
@@ -606,32 +621,28 @@ const FloatingEditBar: React.FC = () => {
                   {/* Fill/Stroke Toggle */}
                   <div className="flex gap-2 mb-3">
                     <button
-                      onClick={() => setColorMode('fill')}
+                      onClick={() => setColorMode("fill")}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] flex-1 justify-center ${
-                        colorMode === 'fill' 
-                          ? 'bg-[hsl(var(--ink))] text-white' 
-                          : 'bg-[hsl(var(--panel))] text-black'
+                        colorMode === "fill" ? "bg-[hsl(var(--ink))] text-white" : "bg-[hsl(var(--panel))] text-black"
                       }`}
                     >
-                      <div 
+                      <div
                         className="w-4 h-4 rounded border border-white/50"
                         style={{ backgroundColor: currentFillColor }}
                       />
                       <span>التعبئة</span>
                     </button>
                     <button
-                      onClick={() => setColorMode('stroke')}
+                      onClick={() => setColorMode("stroke")}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] flex-1 justify-center ${
-                        colorMode === 'stroke' 
-                          ? 'bg-[hsl(var(--ink))] text-white' 
-                          : 'bg-[hsl(var(--panel))] text-black'
+                        colorMode === "stroke" ? "bg-[hsl(var(--ink))] text-white" : "bg-[hsl(var(--panel))] text-black"
                       }`}
                     >
                       <Square size={14} style={{ color: currentStrokeColor }} />
                       <span>الحد</span>
                     </button>
                   </div>
-                  
+
                   {/* Ark UI Color Picker */}
                   <ColorPicker.Root value={parseColor(safeColor)} onValueChange={handleColorChange}>
                     <div className="space-y-3">
@@ -653,7 +664,8 @@ const FloatingEditBar: React.FC = () => {
                             <ColorPicker.ChannelSliderTrack
                               className="w-full h-2 rounded-full"
                               style={{
-                                background: "linear-gradient(to right, #FF0000, #FFFF00, #00FF00, #00FFFF, #0000FF, #FF00FF, #FF0000)",
+                                background:
+                                  "linear-gradient(to right, #FF0000, #FFFF00, #00FF00, #00FFFF, #0000FF, #FF00FF, #FF0000)",
                               }}
                             />
                             <ColorPicker.ChannelSliderThumb className="absolute top-1/2 w-3 h-4 bg-current rounded-full -translate-y-1/2 -translate-x-1/2 border-2 border-white shadow-md" />
@@ -707,17 +719,15 @@ const FloatingEditBar: React.FC = () => {
                                   }}
                                 />
                               )}
-                              {isSelected && (
-                                <div className="w-1.5 h-1.5 rounded-full z-10 bg-white" />
-                              )}
+                              {isSelected && <div className="w-1.5 h-1.5 rounded-full z-10 bg-white" />}
                             </button>
                           );
                         })}
                       </div>
 
-                      {/* Supra Brand Colors */}
+                      {/* SoaBra Brand Colors */}
                       <div className="flex justify-start gap-2">
-                        {SUPRA_COLORS.map(({ color, label }) => {
+                        {SoaBra_COLORS.map(({ color, label }) => {
                           const isSelected = currentColor?.toLowerCase() === color.toLowerCase();
                           return (
                             <button
@@ -731,9 +741,7 @@ const FloatingEditBar: React.FC = () => {
                                 border: "2px solid #E0E0E0",
                               }}
                             >
-                              {isSelected && (
-                                <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                              )}
+                              {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                             </button>
                           );
                         })}
@@ -755,9 +763,7 @@ const FloatingEditBar: React.FC = () => {
                                   border: "2px solid #E0E0E0",
                                 }}
                               >
-                                {isSelected && (
-                                  <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                                )}
+                                {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                               </button>
                             );
                           })}
@@ -774,11 +780,7 @@ const FloatingEditBar: React.FC = () => {
           <div className={separatorClass} />
 
           {/* Duplicate Button */}
-          <button
-            onClick={handleDuplicate}
-            className={btnClass}
-            title="تكرار"
-          >
+          <button onClick={handleDuplicate} className={btnClass} title="تكرار">
             <Files size={16} />
           </button>
 
@@ -786,36 +788,36 @@ const FloatingEditBar: React.FC = () => {
 
           {/* Vertical Alignment Dropdown */}
           <div className="relative">
-            <button 
+            <button
               onClick={() => {
                 setIsVerticalAlignOpen(!isVerticalAlignOpen);
                 setIsHorizontalAlignOpen(false);
               }}
-              className={`${btnClass} ${isVerticalAlignOpen ? 'bg-[hsl(var(--panel))]' : ''}`}
+              className={`${btnClass} ${isVerticalAlignOpen ? "bg-[hsl(var(--panel))]" : ""}`}
               title="محاذاة عمودية"
             >
               <AlignVerticalJustifyCenter size={16} />
             </button>
-            
+
             {isVerticalAlignOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setIsVerticalAlignOpen(false)} />
                 <div className="absolute top-full right-0 mt-2 w-36 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] p-1.5 z-50">
-                  <button 
+                  <button
                     onClick={handleAlignVerticalTop}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
                     <AlignVerticalJustifyStart size={14} />
                     <span>للأعلى</span>
                   </button>
-                  <button 
+                  <button
                     onClick={handleAlignVerticalMiddle}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
                     <AlignVerticalJustifyCenter size={14} />
                     <span>للوسط</span>
                   </button>
-                  <button 
+                  <button
                     onClick={handleAlignVerticalBottom}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
@@ -829,36 +831,36 @@ const FloatingEditBar: React.FC = () => {
 
           {/* Horizontal Alignment Dropdown */}
           <div className="relative">
-            <button 
+            <button
               onClick={() => {
                 setIsHorizontalAlignOpen(!isHorizontalAlignOpen);
                 setIsVerticalAlignOpen(false);
               }}
-              className={`${btnClass} ${isHorizontalAlignOpen ? 'bg-[hsl(var(--panel))]' : ''}`}
+              className={`${btnClass} ${isHorizontalAlignOpen ? "bg-[hsl(var(--panel))]" : ""}`}
               title="محاذاة أفقية"
             >
               <AlignHorizontalJustifyCenter size={16} />
             </button>
-            
+
             {isHorizontalAlignOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setIsHorizontalAlignOpen(false)} />
                 <div className="absolute top-full right-0 mt-2 w-36 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] p-1.5 z-50">
-                  <button 
+                  <button
                     onClick={handleAlignHorizontalRight}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
                     <AlignHorizontalJustifyEnd size={14} />
                     <span>لليمين</span>
                   </button>
-                  <button 
+                  <button
                     onClick={handleAlignHorizontalCenter}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
                     <AlignHorizontalJustifyCenter size={14} />
                     <span>للوسط</span>
                   </button>
-                  <button 
+                  <button
                     onClick={handleAlignHorizontalLeft}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
                   >
@@ -875,8 +877,8 @@ const FloatingEditBar: React.FC = () => {
           {/* Show/Hide - نفس نمط القفل */}
           <button
             onClick={handleToggleVisibility}
-            className={`${!areElementsVisible ? btnClassNoHover : btnClass} ${!areElementsVisible ? 'bg-[hsl(var(--ink))] text-white' : ''}`}
-            title={areElementsVisible ? 'إخفاء' : 'إظهار'}
+            className={`${!areElementsVisible ? btnClassNoHover : btnClass} ${!areElementsVisible ? "bg-[hsl(var(--ink))] text-white" : ""}`}
+            title={areElementsVisible ? "إخفاء" : "إظهار"}
           >
             {areElementsVisible ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
@@ -884,8 +886,8 @@ const FloatingEditBar: React.FC = () => {
           {/* Group/Ungroup - نفس نمط القفل */}
           <button
             onClick={handleToggleGroup}
-            className={`${areElementsGrouped ? btnClassNoHover : btnClass} ${areElementsGrouped ? 'bg-[hsl(var(--ink))] text-white' : ''}`}
-            title={areElementsGrouped ? 'فك التجميع' : 'تجميع'}
+            className={`${areElementsGrouped ? btnClassNoHover : btnClass} ${areElementsGrouped ? "bg-[hsl(var(--ink))] text-white" : ""}`}
+            title={areElementsGrouped ? "فك التجميع" : "تجميع"}
           >
             {areElementsGrouped ? <Ungroup size={16} /> : <Group size={16} />}
           </button>
@@ -893,25 +895,21 @@ const FloatingEditBar: React.FC = () => {
           <div className={separatorClass} />
 
           {/* Delete */}
-          <button 
-            onClick={handleDelete}
-            className={`${btnClass} hover:text-[#E5564D] hover:bg-red-50`} 
-            title="حذف"
-          >
+          <button onClick={handleDelete} className={`${btnClass} hover:text-[#E5564D] hover:bg-red-50`} title="حذف">
             <Trash2 size={16} />
           </button>
 
           {/* Lock */}
           <button
             onClick={handleToggleLock}
-            className={`${areElementsLocked ? btnClassNoHover : btnClass} ${areElementsLocked ? 'bg-[hsl(var(--ink))] text-white' : ''}`}
-            title={areElementsLocked ? 'إلغاء القفل' : 'قفل'}
+            className={`${areElementsLocked ? btnClassNoHover : btnClass} ${areElementsLocked ? "bg-[hsl(var(--ink))] text-white" : ""}`}
+            title={areElementsLocked ? "إلغاء القفل" : "قفل"}
           >
             {areElementsLocked ? <Lock size={16} /> : <Unlock size={16} />}
           </button>
 
           <div className={separatorClass} />
-          
+
           {/* AI Button with Smart Menu */}
           <div className="relative">
             <button
@@ -925,12 +923,12 @@ const FloatingEditBar: React.FC = () => {
                 <Sparkles size={16} className="text-white" />
               )}
             </button>
-            
+
             <AnimatePresence>
               {isAIMenuOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setIsAIMenuOpen(false)} />
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -952,12 +950,10 @@ const FloatingEditBar: React.FC = () => {
                         <span>إنشاء عنصر ذكي تلقائياً</span>
                       </button>
                     </div>
-                    
+
                     {/* Transform Options */}
                     <div className="p-2 space-y-1">
-                      <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1">
-                        تحويل إلى:
-                      </div>
+                      <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1">تحويل إلى:</div>
                       {TRANSFORM_OPTIONS.map((option) => (
                         <button
                           key={option.type}
@@ -969,17 +965,13 @@ const FloatingEditBar: React.FC = () => {
                             <option.icon size={16} />
                           </span>
                           <div className="flex-1">
-                            <div className="text-[12px] font-medium text-black">
-                              {option.label}
-                            </div>
-                            <div className="text-[10px] text-[hsl(var(--ink-60))]">
-                              {option.description}
-                            </div>
+                            <div className="text-[12px] font-medium text-black">{option.label}</div>
+                            <div className="text-[10px] text-[hsl(var(--ink-60))]">{option.description}</div>
                           </div>
                         </button>
                       ))}
                     </div>
-                    
+
                     {/* Selection Info */}
                     <div className="px-3 py-2 border-t border-[hsl(var(--border))] text-[10px] text-[hsl(var(--ink-60))] text-center">
                       {selectedElements.length} عنصر محدد

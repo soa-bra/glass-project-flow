@@ -44,7 +44,7 @@ const SoaBra_COLORS = [
     label: "أزرق",
   },
 ];
-const RECENT_COLORS_KEY = "supra-recent-colors";
+const RECENT_COLORS_KEY = "SoaBra-recent-colors";
 const MAX_RECENT_COLORS = 6;
 const getRecentColors = (): string[] => {
   if (typeof window === "undefined") return [];
@@ -229,9 +229,9 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
                   })}
                 </div>
 
-                {/* Row 2: Supra Brand Colors */}
+                {/* Row 2: SoaBra Brand Colors */}
                 <div className="flex justify-start gap-2">
-                  {SUPRA_COLORS.map(({ color, label }) => {
+                  {SoaBra_COLORS.map(({ color, label }) => {
                     const isSelected = value?.toLowerCase() === color.toLowerCase();
                     return (
                       <button
@@ -312,7 +312,7 @@ export function InlineColorPicker({ value, onChange, className }: ColorPickerInp
       setRecentColors(getRecentColors());
     }
   };
-  const allPresets = [...UTILITY_COLORS, ...SUPRA_COLORS];
+  const allPresets = [...UTILITY_COLORS, ...SoaBra_COLORS];
   return (
     <div className={className}>
       <div className="space-y-3">

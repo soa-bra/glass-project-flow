@@ -1,7 +1,7 @@
 import {
   KnowledgeDocument,
   KnowledgeMetrics,
-  SoaBraMetric,
+  SupraMetric,
   ResearchProject,
   AIRecommendation,
   DocumentClassification,
@@ -82,7 +82,7 @@ export const mockKnowledgeMetrics: KnowledgeMetrics = {
   ],
 };
 
-export const mockSoaBraMetrics: SoaBraMetric[] = [
+export const mockSupraMetrics: SoaBraMetric[] = [
   {
     id: "METRIC-001",
     name: "مؤشر مستوى تطابق الهوية والقيم",
