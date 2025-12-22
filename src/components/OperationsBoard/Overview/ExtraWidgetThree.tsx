@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 
 export const ExtraWidgetThree: React.FC = () => {
   return (
-    <BaseCard 
+    <BaseBox 
       size="sm"
       variant="glass"
       neonRing="info"
@@ -19,6 +19,6 @@ export const ExtraWidgetThree: React.FC = () => {
         <div className="text-lg font-bold text-purple-600">124</div>
         <div className="text-xs text-gray-600">إجمالي المهام</div>
       </div>
-    </BaseCard>
+    </BaseBox>
   );
 };

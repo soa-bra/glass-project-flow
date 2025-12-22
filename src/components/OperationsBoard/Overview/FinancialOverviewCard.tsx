@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
 import { TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 

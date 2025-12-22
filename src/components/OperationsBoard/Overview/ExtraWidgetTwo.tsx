@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 
 export const ExtraWidgetTwo: React.FC = () => {
   return (
-    <BaseCard 
+    <BaseBox 
       variant="glass" 
       size="md"
       header={
@@ -18,6 +18,6 @@ export const ExtraWidgetTwo: React.FC = () => {
         <div className="text-2xl font-bold text-green-600 mb-1">78%</div>
         <div className="text-xs text-gray-600 text-center">معدل الإنجاز</div>
       </div>
-    </BaseCard>
+    </BaseBox>
   );
 };
