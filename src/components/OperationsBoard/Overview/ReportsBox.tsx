@@ -1,17 +1,17 @@
 import React from 'react';
 
-interface ReportsData {
+export interface ReportsData {
   totalReports: number;
   pendingReports: number;
   completedReports: number;
 }
 
-interface ReportsWidgetProps {
+export interface ReportsBoxProps {
   reports: ReportsData;
   className?: string;
 }
 
-export const ReportsBox: React.FC<ReportsWidgetProps> = ({ 
+export const ReportsBox: React.FC<ReportsBoxProps> = ({ 
   reports, 
   className = '' 
 }) => {

@@ -2,17 +2,17 @@
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
 
-interface BudgetData {
+export interface BudgetData {
   total: number;
   spent: number;
 }
 
-interface BudgetWidgetProps {
+export interface BudgetBoxProps {
   budget: BudgetData;
   className?: string;
 }
 
-export const BudgetWidget: React.FC<BudgetWidgetProps> = ({
+export const BudgetBox: React.FC<BudgetBoxProps> = ({
   budget,
   className = ''
 }) => {

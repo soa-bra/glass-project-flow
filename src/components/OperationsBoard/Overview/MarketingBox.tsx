@@ -1,17 +1,17 @@
 import React from 'react';
 
-interface MarketingData {
+export interface MarketingData {
   roas: number;
   activeCampaigns: number;
   conversion: number;
 }
 
-interface MarketingWidgetProps {
+export interface MarketingBoxProps {
   marketing: MarketingData;
   className?: string;
 }
 
-export const MarketingBox: React.FC<MarketingWidgetProps> = ({ 
+export const MarketingBox: React.FC<MarketingBoxProps> = ({ 
   marketing, 
   className = '' 
 }) => {
