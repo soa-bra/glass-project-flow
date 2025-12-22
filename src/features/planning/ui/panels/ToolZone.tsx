@@ -94,18 +94,18 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose }) => {
   if (isCollapsed) {
     return (
       <div 
-        className="fixed top-24 right-4 z-40 bg-white/95 backdrop-blur-[12px] 
+        className="fixed top-24 left-4 z-40 bg-white/95 backdrop-blur-[12px] 
           border border-[hsl(var(--border))] rounded-[18px] shadow-[0_4px_24px_rgba(0,0,0,0.12)]
           p-2 cursor-pointer hover:bg-white transition-all"
         onClick={() => setIsCollapsed(false)}
       >
-        <ChevronLeft size={20} className="text-[hsl(var(--ink-60))]" />
+        <ChevronRight size={20} className="text-[hsl(var(--ink-60))]" />
       </div>
     );
   }
 
   return (
-    <div className="fixed top-24 right-4 z-40 w-[320px] max-h-[calc(100vh-120px)] 
+    <div className="fixed top-24 left-4 z-40 w-[320px] max-h-[calc(100vh-120px)] 
       bg-white/95 backdrop-blur-[12px] border border-[hsl(var(--border))] 
       rounded-[18px] shadow-[0_4px_24px_rgba(0,0,0,0.12)] flex flex-col overflow-hidden">
       {/* Header */}
@@ -120,7 +120,7 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose }) => {
             className="p-1.5 hover:bg-[hsl(var(--panel))] rounded-lg transition-colors"
             title="طي اللوحة"
           >
-            <ChevronRight size={18} className="text-[hsl(var(--ink-60))]" />
+            <ChevronLeft size={18} className="text-[hsl(var(--ink-60))]" />
           </button>
           {/* زر الإغلاق */}
           {onClose && (
