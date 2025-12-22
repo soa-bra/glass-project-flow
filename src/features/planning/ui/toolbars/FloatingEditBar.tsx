@@ -66,14 +66,14 @@ const UTILITY_COLORS = [
 ];
 
 // SoaBra brand colors
-const SoaBra_COLORS = [
+const SOABRA_COLORS = [
   { color: "#3DBE8B", label: "أخضر" },
   { color: "#F6C445", label: "أصفر" },
   { color: "#E5564D", label: "أحمر" },
   { color: "#3DA8F5", label: "أزرق" },
 ];
 
-const RECENT_COLORS_KEY = "SoaBra-floating-bar-recent-colors";
+const RECENT_COLORS_KEY = "«SoaBra-floating-bar-recent-colors";
 const MAX_RECENT_COLORS = 6;
 
 const getRecentColors = (): string[] => {
@@ -725,9 +725,9 @@ const FloatingEditBar: React.FC = () => {
                         })}
                       </div>
 
-                      {/* SoaBra Brand Colors */}
+                      {/* Supra Brand Colors */}
                       <div className="flex justify-start gap-2">
-                        {SoaBra_COLORS.map(({ color, label }) => {
+                        {SUPRA_COLORS.map(({ color, label }) => {
                           const isSelected = currentColor?.toLowerCase() === color.toLowerCase();
                           return (
                             <button
