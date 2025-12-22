@@ -5,4 +5,5 @@
 
 export { useTextCreation } from './useTextCreation';
 export { useTextDrag } from './useTextDrag';
-export { useTextResize, type ResizeHandle } from './useTextResize';
+export { useTextResize } from './useTextResize';
+export type { ResizeHandle } from './useTextResize';
