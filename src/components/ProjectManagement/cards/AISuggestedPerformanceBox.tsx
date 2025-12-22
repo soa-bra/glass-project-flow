@@ -4,7 +4,7 @@ import { BarChart3, Users, Target, FileText, TrendingUp, PieChart } from 'lucide
 import { BarChart, Bar, LineChart, Line, PieChart as RechartsPieChart, Cell, XAxis, YAxis } from 'recharts';
 import { ChartWrapper } from '@/components/shared/charts/ChartWrapper';
 
-interface AISuggestedPerformanceCardProps {
+interface AISuggestedPerformanceBoxProps {
   type: 'analytics' | 'team' | 'goals' | 'reports';
   title: string;
   metric: string;
@@ -13,7 +13,7 @@ interface AISuggestedPerformanceCardProps {
   chartType: 'line' | 'bar' | 'pie' | 'donut';
 }
 
-export const AISuggestedPerformanceCard: React.FC<AISuggestedPerformanceCardProps> = ({
+export const AISuggestedPerformanceBox: React.FC<AISuggestedPerformanceBoxProps> = ({
   type,
   title,
   metric,

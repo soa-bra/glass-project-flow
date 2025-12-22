@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import ProjectPanel from '@/components/ProjectPanel';
-import { ProjectManagementBoard } from '@/components/ProjectManagement';
+import { ProjectManagementBoardBox } from '@/components/ProjectManagement';
 import { mockProjects } from '@/data/mockProjects';
 import { useProjectPanelAnimation } from '@/hooks/useProjectPanelAnimation';
 import { ProjectTasksProvider } from '@/contexts/ProjectTasksContext';
@@ -171,7 +171,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
 
       {/* Project Management Board: slides in/out and crossfades content */}
       {shownProject && (
-        <ProjectManagementBoard
+        <ProjectManagementBoardBox
           key={shownProject.id} // إضافة key لإعادة التحديث عند تغيير المشروع
           project={shownProject}
           isVisible={panelStage === "open" || panelStage === "changing-content"}

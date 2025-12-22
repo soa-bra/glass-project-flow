@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { ProjectManagementBoard } from "@/components/ProjectManagement";
+import { ProjectManagementBoardBox } from "@/components/ProjectManagement";
 import { Project } from "@/types/project";
 
 interface ProjectPanelProps {
@@ -46,9 +46,9 @@ const ProjectPanel: React.FC<ProjectPanelProps> = ({
   // When fully closed, don't render panel at all unless animating out
   if (!project && !renderedProject) return null;
 
-  // Use ProjectManagementBoard instead of old content
+  // Use ProjectManagementBoardBox instead of old content
   return renderedProject ? (
-    <ProjectManagementBoard
+    <ProjectManagementBoardBox
       project={renderedProject}
       isVisible={showFull && fadeVisible}
       onClose={onClose}

@@ -3,12 +3,12 @@ import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { UnifiedTask, TaskFilters } from '@/types/task';
 import { COLORS } from '@/components/shared/design-system/constants';
 
-interface GanttChartProps {
+interface GanttChartBoxProps {
   projectId: string;
   filters?: TaskFilters;
 }
 
-export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) => {
+export const GanttChartBox: React.FC<GanttChartBoxProps> = ({ projectId, filters }) => {
   const { getProjectTasks } = useUnifiedTasks(projectId);
   const tasks = getProjectTasks(filters);
 
