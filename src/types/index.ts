@@ -1,9 +1,9 @@
 // Final Canvas Types Export - avoiding conflicts
-export type { CanvasElement } from './enhanced-canvas';
+export type { CanvasElement } from './canvas';
 export type { 
   AICommandResult, 
-  MindMapData, 
-  SmartConnection, 
+  AIToolsMindMapData as MindMapData, 
+  AIToolsSmartConnection as SmartConnection, 
   GeneratedNode,
-  AIAnalysisResult as AIResult
+  AIToolsAnalysisResult as AIAnalysisResult
 } from './canvas-ai-tools';

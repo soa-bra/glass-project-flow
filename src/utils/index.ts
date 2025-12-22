@@ -15,9 +15,9 @@ export { cn } from '../lib/utils';
 // Type Utilities
 export type { CanvasElement, ElementStyle } from '../types/canvas';
 export type { 
-  StylePreset, 
-  TextStyle, 
-  BorderStyle,
-  Point,
-  SelectedElement 
+  EnhancedStylePreset as StylePreset, 
+  EnhancedTextStyle as TextStyle, 
+  EnhancedBorderStyle as BorderStyle,
+  EnhancedPoint as Point,
+  EnhancedSelectedElement as SelectedElement 
 } from '../types/enhanced-canvas';

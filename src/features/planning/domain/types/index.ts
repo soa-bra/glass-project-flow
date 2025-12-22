@@ -22,16 +22,33 @@ export * from './planning.types';
 export * from './smart.types';
 
 // Event Types
-export type * from './event.types';
+export * from './event.types';
 
 // Hook Types
-export type * from './hook.types';
+export * from './hook.types';
 
 // Component Props Types
-export type * from './component-props.types';
+export * from './component-props.types';
 
 // AI Tools Types
-export type * from './ai-tools.types';
+export * from './ai-tools.types';
 
-// Enhanced Types
-export type * from './enhanced.types';
+// Enhanced Types (excluding duplicates)
+export type {
+  ToolConfig,
+  EnhancedCanvasState,
+  EnhancedLayerInfo,
+  CanvasElementActions,
+  CanvasHelpers,
+  ToolPanelProps,
+  AppearancePanelProps,
+  EnhancedStylePreset,
+  EnhancedTextStyle,
+  EnhancedBorderStyle,
+  CanvasError,
+  EnhancedCollaborationUser,
+  EnhancedAnalysisResult,
+  EnhancedSmartElementConfig,
+  EnhancedPoint,
+  EnhancedSelectedElement
+} from './enhanced.types';
