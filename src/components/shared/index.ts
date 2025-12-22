@@ -6,7 +6,7 @@
 // Core Layout Components
 export { DashboardLayout } from './DashboardLayout';
 export { BaseTabContent } from './BaseTabContent';
-export { BaseBox, BaseBox as BaseCard } from './BaseBox';
+export { BaseBox, BaseBox as BaseCard } from '@/components/ui/BaseBox';
 export { BaseStatsCard } from './BaseStatsCard';
 export { BaseListItem } from './BaseListItem';
 

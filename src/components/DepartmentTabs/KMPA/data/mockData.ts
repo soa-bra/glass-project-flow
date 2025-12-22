@@ -1,7 +1,7 @@
 import {
   KnowledgeDocument,
   KnowledgeMetrics,
-  SoabraMetric,
+  SoaBraMetric,
   ResearchProject,
   AIRecommendation,
   DocumentClassification,

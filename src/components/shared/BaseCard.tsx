@@ -1,2 +1,5 @@
-// Backward compatibility - re-export BaseBox as BaseCard
-export { BaseBox as BaseCard } from './BaseBox';
+/**
+ * @deprecated استخدم BaseBox بدلاً من BaseCard
+ * هذا الملف موجود للتوافق العكسي فقط
+ */
+export { BaseBox as BaseCard, type BaseBoxProps as BaseCardProps } from '@/components/ui/BaseBox';

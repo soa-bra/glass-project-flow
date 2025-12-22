@@ -231,7 +231,7 @@ export function ColorPickerInput({ value = "#000000", onChange, className }: Col
 
                 {/* Row 2: SoaBra Brand Colors */}
                 <div className="flex justify-start gap-2">
-                  {SOABRA_COLORS.map(({ color, label }) => {
+                  {SoaBra_COLORS.map(({ color, label }) => {
                     const isSelected = value?.toLowerCase() === color.toLowerCase();
                     return (
                       <button
@@ -312,7 +312,7 @@ export function InlineColorPicker({ value, onChange, className }: ColorPickerInp
       setRecentColors(getRecentColors());
     }
   };
-  const allPresets = [...UTILITY_COLORS, ...SOABRA_COLORS];
+  const allPresets = [...UTILITY_COLORS, ...SoaBra_COLORS];
   return (
     <div className={className}>
       <div className="space-y-3">
