@@ -4,10 +4,13 @@
  */
 
 // إعادة تصدير كل شيء من البنية الجديدة
-export * from './canvas';
-export { useCanvasStore } from './canvas';
+export * from '@/features/planning/state';
 
-// تصدير الأنواع للتوافقية
+// Backward compatibility aliases
+export { usePlanningStore as useCanvasStore } from '@/features/planning/state';
+export type { PlanningStore as CanvasStore } from '@/features/planning/state';
+
+// تصدير الأنواع للتوافقية من domain/types
 export type { 
   ToolId, 
   ShapeType, 

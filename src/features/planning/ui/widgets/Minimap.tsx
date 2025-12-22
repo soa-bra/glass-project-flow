@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { selectViewport, selectSettings } from '@/stores/canvas/viewportSlice';
+import { selectViewport, selectSettings } from '@/features/planning/state/slices/viewportSlice';
 
 const Minimap: React.FC = () => {
   // استخدام selectors محددة لتجنب rerenders غير ضرورية

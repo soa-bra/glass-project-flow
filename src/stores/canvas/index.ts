@@ -1,77 +1,11 @@
 /**
  * Canvas Store - التوافق الخلفي
- * يُعاد تصدير كل شيء من البنية الجديدة
+ * يُعاد تصدير كل شيء من البنية الجديدة في features/planning/state
  */
 
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+// Re-export everything from the new location
+export * from '@/features/planning/state';
 
-// إعادة استيراد من البنية الجديدة
-import {
-  createElementsSlice,
-  createViewportSlice,
-  createSelectionSlice,
-  createHistorySlice,
-  createToolsSlice,
-  createLayersSlice,
-  createPenSlice,
-  createFrameSlice,
-  createMindmapSlice,
-  type ElementsSlice,
-  type ViewportSlice,
-  type SelectionSlice,
-  type HistorySlice,
-  type ToolsSlice,
-  type LayersSlice,
-  type PenSlice,
-  type FrameSlice,
-  type MindmapSlice,
-} from '@/features/planning/state/slices';
-
-// النوع المُجمّع
-export type CanvasStore = 
-  ElementsSlice & 
-  ViewportSlice & 
-  SelectionSlice & 
-  HistorySlice & 
-  ToolsSlice & 
-  LayersSlice &
-  PenSlice &
-  FrameSlice &
-  MindmapSlice;
-
-// إنشاء الـ Store - التوافق الخلفي
-export const useCanvasStore = create<CanvasStore>()(
-  devtools(
-    (...args) => ({
-      ...createElementsSlice(...args),
-      ...createViewportSlice(...args),
-      ...createSelectionSlice(...args),
-      ...createHistorySlice(...args),
-      ...createToolsSlice(...args),
-      ...createLayersSlice(...args),
-      ...createPenSlice(...args),
-      ...createFrameSlice(...args),
-      ...createMindmapSlice(...args),
-    }),
-    { name: 'canvas-store' }
-  )
-);
-
-// إعادة تصدير الأنواع
-export * from '@/features/planning/state/types';
-export * from '@/features/planning/state/selectors';
-export * from '@/features/planning/state/helpers';
-
-// تصدير الـ slices للاستخدام الفردي
-export type {
-  ElementsSlice,
-  ViewportSlice,
-  SelectionSlice,
-  HistorySlice,
-  ToolsSlice,
-  LayersSlice,
-  PenSlice,
-  FrameSlice,
-  MindmapSlice
-};
+// Backward compatibility alias
+export { usePlanningStore as useCanvasStore } from '@/features/planning/state';
+export type { PlanningStore as CanvasStore } from '@/features/planning/state';
