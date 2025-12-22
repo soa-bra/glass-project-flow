@@ -1,13 +1,15 @@
 import React from 'react';
 import { Stagger } from '@/components/shared/motion';
-import { StatisticsBox } from './StatisticsBox';
-import { FinancialOverviewBox } from './FinancialOverviewBox';
-import { ProjectSummaryBox } from './ProjectSummaryBox';
-import { AlertsBox } from './AlertsBox';
-import { HRBox } from './HRBox';
-import { MarketingBox } from './MarketingBox';
-import { ReportsBox } from './ReportsBox';
-import { CustomersBox } from './CustomersBox';
+import {
+  StatisticsBox,
+  FinancialOverviewBox,
+  ProjectSummaryBox,
+  AlertsBox,
+  HRBox,
+  MarketingBox,
+  ReportsBox,
+  CustomersBox
+} from './index';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Zap, Target, Layers, Cpu } from 'lucide-react';

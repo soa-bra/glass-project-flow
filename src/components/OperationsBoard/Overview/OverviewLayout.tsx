@@ -1,7 +1,6 @@
 import React from 'react';
-import { OverviewGrid } from './OverviewGrid';
-import { TimelineBox } from './TimelineBox';
-import { OverviewData } from './OverviewData';
+import { OverviewGrid, TimelineBox } from './index';
+import type { OverviewData } from './index';
 import { Reveal } from '@/components/shared/motion';
 interface OverviewLayoutProps {
   data: OverviewData;
