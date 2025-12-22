@@ -1,15 +1,16 @@
 /**
- * Planning Feature - UI Panels
+ * Planning Feature - UI Panels (ToolZones)
  * لوحات الخصائص والأدوات الجانبية
  */
 
-export { ElementPropertiesPanel } from './ElementPropertiesPanel';
-export { default as FileUploadPanel } from './FileUploadPanel';
-export { default as FramePanel } from './FramePanel';
-export { default as SelectionPanel } from './SelectionPanel';
-export { default as ShapesPanel } from './ShapesPanel';
-export { default as SmartElementsPanel } from './SmartElementsPanel';
-export { default as SmartPenPanel } from './SmartPenPanel';
+export { ElementPropertiesToolZone } from './ElementPropertiesToolZone';
+export { default as FileUploadToolZone } from './FileUploadToolZone';
+export { default as ShapesToolZone } from './ShapesToolZone';
+export { default as SmartElementsToolZone } from './SmartElementsToolZone';
 export { default as TextPanel } from './TextPanel';
-export { default as LayersPanel } from './LayersPanel';
-export { default as RightSidePanel } from './RightSidePanel';
+export { default as RightSideToolZone } from './RightSideToolZone';
+export { default as ResearchToolZone } from './ResearchToolZone';
+
+// Backward compatibility aliases
+export { ElementPropertiesToolZone as ElementPropertiesPanel } from './ElementPropertiesToolZone';
+export { default as RightSidePanel } from './RightSideToolZone';

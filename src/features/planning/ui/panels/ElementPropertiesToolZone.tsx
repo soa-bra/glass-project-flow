@@ -6,7 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Lock, Unlock, Eye, EyeOff, Trash2 } from 'lucide-react';
 
-export const ElementPropertiesPanel: React.FC = () => {
+export const ElementPropertiesToolZone: React.FC = () => {
   const { elements, selectedElementIds, updateElement, deleteElements, lockElements, unlockElements } = useCanvasStore();
   
   const selectedElements = elements.filter(el => selectedElementIds.includes(el.id));

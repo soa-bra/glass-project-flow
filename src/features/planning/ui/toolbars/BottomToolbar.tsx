@@ -2,11 +2,13 @@ import React from 'react';
 import { 
   MousePointer2, 
   Pen, 
-  Square, 
+  StickyNote,
+  Type,
   Upload, 
-  Type, 
-  Star, 
-  Lightbulb 
+  Shapes,
+  Network,
+  Lightbulb,
+  Search
 } from 'lucide-react';
 import { useCanvasStore, type ToolId } from '@/stores/canvasStore';
 import Dock from '@/components/ui/dock';
@@ -35,18 +37,11 @@ const tools: Tool[] = [
     ariaLabel: 'القلم الذكي للرسم الحر - اضغط P للتفعيل'
   },
   { 
-    id: 'frame_tool', 
-    name: 'إطار', 
-    icon: Square, 
-    shortcut: 'F',
-    ariaLabel: 'أداة الإطار - اضغط F للتفعيل'
-  },
-  { 
-    id: 'file_uploader', 
-    name: 'رفع', 
-    icon: Upload, 
-    shortcut: 'U',
-    ariaLabel: 'رفع ملف أو صورة - اضغط U للتفعيل'
+    id: 'sticky_tool', 
+    name: 'ستيكي', 
+    icon: StickyNote, 
+    shortcut: 'N',
+    ariaLabel: 'ملاحظة لاصقة - اضغط N للتفعيل'
   },
   { 
     id: 'text_tool', 
@@ -56,11 +51,25 @@ const tools: Tool[] = [
     ariaLabel: 'أداة النص - اضغط T للتفعيل'
   },
   { 
+    id: 'file_uploader', 
+    name: 'رفع', 
+    icon: Upload, 
+    shortcut: 'U',
+    ariaLabel: 'رفع ملف أو صورة - اضغط U للتفعيل'
+  },
+  { 
     id: 'shapes_tool', 
-    name: 'أشكال', 
-    icon: Star, 
+    name: 'شكل', 
+    icon: Shapes, 
     shortcut: 'R',
     ariaLabel: 'أداة الأشكال الهندسية - اضغط R للتفعيل'
+  },
+  { 
+    id: 'mindmap_tool', 
+    name: 'مايندماب', 
+    icon: Network, 
+    shortcut: 'M',
+    ariaLabel: 'الخريطة الذهنية - اضغط M للتفعيل'
   },
   { 
     id: 'smart_element_tool', 
@@ -68,6 +77,13 @@ const tools: Tool[] = [
     icon: Lightbulb, 
     shortcut: 'S',
     ariaLabel: 'العناصر الذكية المتقدمة - اضغط S للتفعيل'
+  },
+  { 
+    id: 'research_tool', 
+    name: 'ريسيرش', 
+    icon: Search, 
+    shortcut: 'Q',
+    ariaLabel: 'أداة البحث والريسيرش - اضغط Q للتفعيل'
   },
 ];
 
