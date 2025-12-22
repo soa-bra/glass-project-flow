@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { Users, Search, Filter, Plus, Eye, Edit, Phone, Mail, MapPin } from 'lucide-react';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
@@ -60,7 +60,7 @@ export const EmployeesTab: React.FC = () => {
         </div>
 
         {/* معلومات الموظف الأساسية */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
           <div className="flex items-start gap-6">
             <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
               {selectedEmployee.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -96,10 +96,10 @@ export const EmployeesTab: React.FC = () => {
               تعديل
             </UnifiedButton>
           </div>
-        </BaseCard>
+        </BaseBox>
 
         {/* المهارات */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
           <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">المهارات والكفاءات</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {selectedEmployee.skills.map((skill, index) => (
@@ -117,10 +117,10 @@ export const EmployeesTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseCard>
+        </BaseBox>
 
         {/* جهة الاتصال في الطوارئ */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
           <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">جهة الاتصال في الطوارئ</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -142,10 +142,10 @@ export const EmployeesTab: React.FC = () => {
               </div>
             )}
           </div>
-        </BaseCard>
+        </BaseBox>
 
         {/* الوثائق */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold text-gray-800 font-arabic">الوثائق</h3>
             <UnifiedButton variant="outline" size="sm">
@@ -171,7 +171,7 @@ export const EmployeesTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseCard>
+        </BaseBox>
       </div>
     );
   }
@@ -179,7 +179,7 @@ export const EmployeesTab: React.FC = () => {
   return (
     <div className="space-y-6 bg-transparent">
       {/* أدوات البحث والتصفية */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <Users className="h-6 w-6 text-blue-600" />
           <h3 className="text-xl font-bold text-gray-800 font-arabic">ملفات الموظفين</h3>
@@ -218,10 +218,10 @@ export const EmployeesTab: React.FC = () => {
             </UnifiedButton>
           </div>
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {/* جدول الموظفين */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -271,7 +271,7 @@ export const EmployeesTab: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </BaseCard>
+      </BaseBox>
     </div>
   );
 };
