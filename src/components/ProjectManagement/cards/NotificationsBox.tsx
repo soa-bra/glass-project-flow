@@ -2,7 +2,7 @@
 import React from 'react';
 import { AlertCircle, Clock, CheckCircle, XCircle } from 'lucide-react';
 
-export const NotificationsCard: React.FC = () => {
+export const NotificationsBox: React.FC = () => {
   const notifications = [
     {
       id: 1,

@@ -7,7 +7,7 @@ interface AICardProps {
   project: Project;
 }
 
-export const AICard: React.FC<AICardProps> = ({ project }) => {
+export const AIBox: React.FC<AICardProps> = ({ project }) => {
   const suggestions = [
     {
       id: 1,

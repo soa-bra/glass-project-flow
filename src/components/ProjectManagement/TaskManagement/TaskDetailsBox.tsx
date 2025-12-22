@@ -11,7 +11,7 @@ interface TaskDetailsProps {
   projectId: string;
   filters: TaskFilters;
 }
-export const TaskDetails: React.FC<TaskDetailsProps> = ({
+export const TaskDetailsBox: React.FC<TaskDetailsProps> = ({
   projectId,
   filters
 }) => {

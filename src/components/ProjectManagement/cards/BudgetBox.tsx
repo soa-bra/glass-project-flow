@@ -4,7 +4,7 @@ import { Project } from '@/types/project';
 interface BudgetCardProps {
   project: Project;
 }
-export const BudgetCard: React.FC<BudgetCardProps> = ({
+export const BudgetBox: React.FC<BudgetCardProps> = ({
   project
 }) => {
   const totalBudget = parseInt(project.value.replace(/[^\d]/g, ''));

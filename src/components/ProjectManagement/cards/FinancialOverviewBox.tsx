@@ -16,7 +16,7 @@ const monthlyData = [
   { month: 'أبريل', revenue: 78, expenses: 32 }
 ];
 
-export const FinancialOverviewCard: React.FC = () => {
+export const FinancialOverviewBox: React.FC = () => {
   return (
     <div 
       className="h-full p-6 rounded-3xl border border-[#DADCE0] flex flex-col overflow-hidden bg-[#96D8D0]"

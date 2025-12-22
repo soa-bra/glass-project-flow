@@ -8,7 +8,7 @@ interface GanttChartProps {
   filters?: TaskFilters;
 }
 
-export const GanttChart: React.FC<GanttChartProps> = ({ projectId, filters }) => {
+export const GanttChartBox: React.FC<GanttChartProps> = ({ projectId, filters }) => {
   const { getProjectTasks } = useUnifiedTasks(projectId);
   const tasks = getProjectTasks(filters);
 
