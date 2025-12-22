@@ -11,14 +11,14 @@ import { ReportsTab } from './ReportsTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { Reveal, Stagger } from '@/components/shared/motion';
-interface ProjectManagementBoardProps {
+interface ProjectManagementBoardBoxProps {
   project: Project;
   isVisible: boolean;
   onClose: () => void;
   isSidebarCollapsed: boolean;
   onProjectUpdated?: (project: ProjectData) => void;
 }
-export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
+export const ProjectManagementBoardBox: React.FC<ProjectManagementBoardBoxProps> = ({
   project,
   isVisible,
   onClose,

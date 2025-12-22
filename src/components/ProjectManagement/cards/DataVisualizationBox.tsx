@@ -12,7 +12,7 @@ const chartData = [
   { name: 'Jun', value: 60 }
 ];
 
-export const DataVisualizationCard: React.FC = () => {
+export const DataVisualizationBox: React.FC = () => {
   return (
     <div 
       className="h-full p-6 rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] overflow-hidden"
