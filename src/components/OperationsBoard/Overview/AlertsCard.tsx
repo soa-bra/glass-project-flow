@@ -1,11 +1,13 @@
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
+
 interface Alert {
   id: string;
   type: 'critical' | 'warning' | 'info';
   message: string;
   time: string;
 }
+
 const alerts: Alert[] = [{
   id: '1',
   type: 'critical',
@@ -32,6 +34,7 @@ const alerts: Alert[] = [{
   message: 'انتهاء صلاحية العقد',
   time: 'منذ 3 ساعات'
 }];
+
 const getAlertColor = (type: Alert['type']) => {
   switch (type) {
     case 'critical':
@@ -44,8 +47,9 @@ const getAlertColor = (type: Alert['type']) => {
       return '##ffffff border-[#DADCE0]';
   }
 };
+
 export const AlertsCard: React.FC = () => {
-  return <BaseCard variant="glass" size="md" className="h-full min-h-0 border-[#DADCE0]" style={{
+  return <BaseBox variant="glass" size="md" className="h-full min-h-0 border-[#DADCE0]" style={{
     backgroundColor: '#ffffff'
   }}>
       <div className="flex items-center justify-between mb-6">
@@ -72,5 +76,5 @@ export const AlertsCard: React.FC = () => {
           </div>
         ))}
       </div>
-    </BaseCard>;
+    </BaseBox>;
 };

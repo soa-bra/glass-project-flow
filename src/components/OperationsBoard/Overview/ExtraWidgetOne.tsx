@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 
 export const ExtraWidgetOne: React.FC = () => {
   return (
-    <BaseCard 
+    <BaseBox 
       variant="glass" 
       size="md"
       header={
@@ -18,6 +18,6 @@ export const ExtraWidgetOne: React.FC = () => {
         <div className="text-2xl font-bold text-purple-600 mb-1">45</div>
         <div className="text-xs text-gray-600 text-center">مؤشر الأداء</div>
       </div>
-    </BaseCard>
+    </BaseBox>
   );
 };
