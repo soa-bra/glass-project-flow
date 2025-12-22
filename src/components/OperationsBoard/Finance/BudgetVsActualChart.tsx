@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseCard } from '@/components/shared/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Legend } from 'recharts';
 
@@ -27,7 +27,7 @@ const chartConfig = {
 
 export const BudgetVsActualChart: React.FC<BudgetVsActualChartProps> = ({ monthlyData }) => {
   return (
-    <BaseCard
+    <BaseBox
       className="w-full"
       title="الميزانية مقابل الإنفاق الفعلي (شهري)"
     >
@@ -72,6 +72,6 @@ export const BudgetVsActualChart: React.FC<BudgetVsActualChartProps> = ({ monthl
           </BarChart>
         </ResponsiveContainer>
       </ChartContainer>
-    </BaseCard>
+    </BaseBox>
   );
 };

@@ -1,8 +1,9 @@
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis } from 'recharts';
 import { ChartWrapper } from '@/components/shared/charts/ChartWrapper';
+
 const projectData = [{
   name: '1',
   value: 20
@@ -22,8 +23,9 @@ const projectData = [{
   name: '6',
   value: 15
 }];
+
 export const ProjectSummaryCard: React.FC = () => {
-  return <BaseCard variant="glass" size="sm" className="h-full min-h-0 w-full border-[#DADCE0]" style={{
+  return <BaseBox variant="glass" size="sm" className="h-full min-h-0 w-full border-[#DADCE0]" style={{
       backgroundColor: '#ffffff'
   }} header={<div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-black font-arabic">ملخص للمشاريع</h3>
@@ -87,5 +89,5 @@ export const ProjectSummaryCard: React.FC = () => {
           </div>
         </div>
       </div>
-    </BaseCard>;
+    </BaseBox>;
 };

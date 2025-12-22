@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 
 export const ExtraWidgetFive: React.FC = () => {
   return (
-    <BaseCard 
+    <BaseBox 
       variant="glass" 
       size="sm"
       neonRing="error"
@@ -19,6 +19,6 @@ export const ExtraWidgetFive: React.FC = () => {
         <div className="text-lg font-bold text-red-600">12</div>
         <div className="text-xs text-gray-600">المهام المتأخرة</div>
       </div>
-    </BaseCard>
+    </BaseBox>
   );
 };

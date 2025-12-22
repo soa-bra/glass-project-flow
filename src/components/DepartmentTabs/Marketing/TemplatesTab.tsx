@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { FileText, Download, Eye, Copy, Plus, Search } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
@@ -95,7 +95,7 @@ export const TemplatesTab: React.FC = () => {
   return (
     <div className="space-y-6 p-6 bg-transparent">
       {/* شريط البحث والفلترة */}
-      <BaseCard variant="operations" className="p-4">
+      <BaseBox variant="operations" className="p-4">
         <div className="flex items-center gap-4">
           <div className="flex-1 relative">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -113,10 +113,10 @@ export const TemplatesTab: React.FC = () => {
             إضافة قالب
           </BaseActionButton>
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {/* فئات النماذج */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-6">
           <FileText className="h-6 w-6 text-black" />
           <h3 className="text-xl font-bold text-black font-arabic">فئات النماذج والقوالب</h3>
@@ -135,11 +135,11 @@ export const TemplatesTab: React.FC = () => {
             </div>
           ))}
         </div>
-      </BaseCard>
+      </BaseBox>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* النماذج الأكثر استخداماً */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <Download className="h-5 w-5 text-black" />
@@ -184,10 +184,10 @@ export const TemplatesTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseCard>
+        </BaseBox>
 
         {/* النماذج الحديثة */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <Plus className="h-5 w-5 text-black" />
@@ -224,30 +224,30 @@ export const TemplatesTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseCard>
+        </BaseBox>
       </div>
 
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">41</h3>
           <p className="text-sm text-black font-arabic">إجمالي القوالب</p>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">312</h3>
           <p className="text-sm text-black font-arabic">إجمالي التحميلات</p>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">8</h3>
           <p className="text-sm text-black font-arabic">مضاف هذا الشهر</p>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">4.8</h3>
           <p className="text-sm text-black font-arabic">متوسط التقييم</p>
-        </BaseCard>
+        </BaseBox>
       </div>
     </div>
   );

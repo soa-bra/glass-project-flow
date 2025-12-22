@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 
 interface UpcomingContract {
   id: number;
@@ -15,7 +15,7 @@ interface UpcomingContractsProps {
 
 export const UpcomingContracts: React.FC<UpcomingContractsProps> = ({ upcoming }) => {
   return (
-    <BaseCard 
+    <BaseBox 
       size="lg"
       header={
         <h3 className="text-lg font-arabic font-bold text-gray-800">
@@ -28,7 +28,7 @@ export const UpcomingContracts: React.FC<UpcomingContractsProps> = ({ upcoming }
           const daysLeft = Math.ceil((new Date(contract.date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
           
           return (
-            <BaseCard
+            <BaseBox
               key={contract.id}
               size="sm"
               variant="glass"
@@ -36,7 +36,7 @@ export const UpcomingContracts: React.FC<UpcomingContractsProps> = ({ upcoming }
             >
               <div className="flex justify-between items-center">
                 <div className="text-center">
-                  <BaseCard 
+                  <BaseBox 
                     size="sm"
                     variant="flat"
                     color={daysLeft < 10 ? 'crimson' : 'info'}
@@ -45,7 +45,7 @@ export const UpcomingContracts: React.FC<UpcomingContractsProps> = ({ upcoming }
                     <span className="font-bold text-white text-sm">
                       {daysLeft} أيام
                     </span>
-                  </BaseCard>
+                  </BaseBox>
                 </div>
                 
                 <div className="text-right">
@@ -54,10 +54,10 @@ export const UpcomingContracts: React.FC<UpcomingContractsProps> = ({ upcoming }
                   <p className="text-xs text-gray-500 mt-1">{new Date(contract.date).toLocaleDateString('ar-SA')}</p>
                 </div>
               </div>
-            </BaseCard>
+            </BaseBox>
           );
         })}
       </div>
-    </BaseCard>
+    </BaseBox>
   );
 };
