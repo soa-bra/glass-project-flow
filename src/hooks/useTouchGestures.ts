@@ -16,7 +16,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import { useInteractionStore } from '@/stores/interactionStore';
 import { canvasKernel } from '@/core/canvasKernel';
 import { findElementAtPoint } from '@/core/spatialIndex';
-import { selectLayerVisibilityMap } from '@/stores/canvas/selectors';
+import { selectLayerVisibilityMap } from '@/features/planning/state/selectors';
 
 interface TouchPoint {
   x: number;
