@@ -1,6 +1,6 @@
 import React from 'react';
 import { OverviewGrid } from './OverviewGrid';
-import { TimelineCard } from './TimelineCard';
+import { TimelineBox } from './TimelineBox';
 import { OverviewData } from './OverviewData';
 import { Reveal } from '@/components/shared/motion';
 interface OverviewLayoutProps {
@@ -17,7 +17,7 @@ export const OverviewLayout: React.FC<OverviewLayoutProps> = ({
     <div className="space-y-6">
       {/* بطاقة الأحداث القادمة */}
       <Reveal delay={0}>
-        <TimelineCard />
+        <TimelineBox />
       </Reveal>
 
       {/* الشبكة التفاعلية 3x3 */}

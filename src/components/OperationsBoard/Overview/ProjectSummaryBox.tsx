@@ -24,7 +24,7 @@ const projectData = [{
   value: 15
 }];
 
-export const ProjectSummaryCard: React.FC = () => {
+export const ProjectSummaryBox: React.FC = () => {
   return <BaseBox variant="glass" size="sm" className="h-full min-h-0 w-full border-[#DADCE0]" style={{
       backgroundColor: '#ffffff'
   }} header={<div className="flex items-center justify-between">

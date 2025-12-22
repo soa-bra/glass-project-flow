@@ -34,7 +34,7 @@ const lossPercentage = 30; // نسبة الخسارة (0-100)
 const isProfit = lossPercentage < 50;
 const circularBars = createCircularBars(lossPercentage);
 
-export const FinancialOverviewCard: React.FC = () => {
+export const FinancialOverviewBox: React.FC = () => {
   const navigate = useNavigate();
 
   const handleFinancialClick = () => {

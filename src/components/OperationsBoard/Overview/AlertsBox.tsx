@@ -48,7 +48,7 @@ const getAlertColor = (type: Alert['type']) => {
   }
 };
 
-export const AlertsCard: React.FC = () => {
+export const AlertsBox: React.FC = () => {
   return <BaseBox variant="glass" size="md" className="h-full min-h-0 border-[#DADCE0]" style={{
     backgroundColor: '#ffffff'
   }}>

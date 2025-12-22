@@ -12,7 +12,7 @@ interface HRWidgetProps {
   className?: string;
 }
 
-export const HRWidget: React.FC<HRWidgetProps> = ({ 
+export const HRBox: React.FC<HRWidgetProps> = ({ 
   hr, 
   className = '' 
 }) => {

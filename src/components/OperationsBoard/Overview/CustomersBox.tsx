@@ -11,7 +11,7 @@ interface CustomersWidgetProps {
   className?: string;
 }
 
-export const CustomersWidget: React.FC<CustomersWidgetProps> = ({ 
+export const CustomersBox: React.FC<CustomersWidgetProps> = ({ 
   customers, 
   className = '' 
 }) => {

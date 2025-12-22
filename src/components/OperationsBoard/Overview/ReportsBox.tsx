@@ -11,7 +11,7 @@ interface ReportsWidgetProps {
   className?: string;
 }
 
-export const ReportsWidget: React.FC<ReportsWidgetProps> = ({ 
+export const ReportsBox: React.FC<ReportsWidgetProps> = ({ 
   reports, 
   className = '' 
 }) => {
