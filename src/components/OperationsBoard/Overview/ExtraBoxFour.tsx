@@ -2,7 +2,7 @@
 import React from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 
-export const ExtraWidgetFour: React.FC = () => {
+export const ExtraBoxFour: React.FC = () => {
   return (
     <BaseBox 
       size="sm"

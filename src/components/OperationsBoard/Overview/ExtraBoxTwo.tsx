@@ -2,7 +2,7 @@
 import React from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 
-export const ExtraWidgetTwo: React.FC = () => {
+export const ExtraBoxTwo: React.FC = () => {
   return (
     <BaseBox 
       variant="glass" 
