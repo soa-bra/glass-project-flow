@@ -3,8 +3,9 @@
 ## نظرة عامة
 
 يوفر هذا الدليل أمثلة عملية لاستخدام مكونات النظام الثلاثة الرئيسية:
+
 - **Event Bus**: نظام الأحداث والتكاملات
-- **Observability**: المراقبة والتتبع 
+- **Observability**: المراقبة والتتبع
 - **Feature Store**: مخزن الميزات
 
 ## Event Bus - نظام الأحداث
@@ -19,7 +20,7 @@ await culturalEvents.impactMeasured({
   brand_id: 'brand-uuid-123',
   metric_code: 'belonging_index',
   period_start: '2025-07-01',
-  period_end: '2025-07-31', 
+  period_end: '2025-07-31',
   value: 0.73,
   method: 'survey-v1',
   confidence: 0.85
@@ -50,12 +51,12 @@ handlerRegistry.register({
   version: 1,
   handler: async (payload, metadata) => {
     console.log(`قياس تأثير ثقافي: ${payload.metric_code} = ${payload.value}`);
-    
+
     // منطق العمل المخصص
     if (payload.value < 0.5) {
       await sendLowImpactAlert(payload.brand_id);
     }
-    
+
     await updateDashboard(payload);
   },
   options: {
@@ -126,10 +127,10 @@ import { withTracing, businessTracing, traced } from '@/infra/tracing';
 // تتبع عملية كاملة
 await withTracing('cultural-impact-analysis', async (span) => {
   span.setAttributes({ brandId, metricType: 'belonging_index' });
-  
+
   const data = await collectSurveyData(brandId);
   const analysis = await performAnalysis(data);
-  
+
   return analysis;
 });
 
@@ -209,7 +210,7 @@ const historicalFeatures = await readLatest('cultural', 'brand', 'brand-uuid-123
 // قراءة سلسلة زمنية
 const timeSeries = await readTimeSeries(
   'cultural',
-  'brand', 
+  'brand',
   'brand-uuid-123',
   new Date('2025-01-01'),
   new Date('2025-07-31')
@@ -233,10 +234,10 @@ import { logger } from '@/infra/logger';
 async function measureAndStoreCulturalImpact(brandId: string, surveyData: any) {
   return await withTracing('cultural-impact-full-cycle', async (span) => {
     span.setAttributes({ brandId, surveyCount: surveyData.responses.length });
-    
+
     // 1. تحليل البيانات
     const analysis = await analyzeSurveyData(surveyData);
-    
+
     // 2. تخزين الميزات
     await featureStore.writeCulturalFeatures(brandId, {
       belongingIndex: analysis.belongingIndex,
@@ -244,7 +245,7 @@ async function measureAndStoreCulturalImpact(brandId: string, surveyData: any) {
       culturalResonance: analysis.culturalResonance,
       identityStrength: analysis.identityStrength
     });
-    
+
     // 3. إرسال حدث
     await emitEvent({
       name: 'CulturalImpactMeasured',
@@ -260,14 +261,14 @@ async function measureAndStoreCulturalImpact(brandId: string, surveyData: any) {
       },
       dedupKey: `CIM:${brandId}:${analysis.periodStart}`
     });
-    
+
     logger.info({
       msg: 'Cultural impact measurement completed',
       brandId,
       belongingIndex: analysis.belongingIndex,
       confidence: analysis.confidence
     });
-    
+
     return analysis;
   });
 }
@@ -288,11 +289,11 @@ handlerRegistry.register({
     if (payload.new_status === 'completed') {
       // قراءة ميزات المشروع
       const projectFeatures = await readLatest('projects', 'project', payload.project_id);
-      
+
       if (projectFeatures) {
         const satisfaction = projectFeatures.clientSatisfaction || 0;
         const efficiency = projectFeatures.budgetEfficiency || 0;
-        
+
         // إرسال تنبيه إذا كان الأداء ممتاز
         if (satisfaction > 0.9 && efficiency > 0.85) {
           await emitEvent({
@@ -307,7 +308,7 @@ handlerRegistry.register({
           });
         }
       }
-      
+
       logger.info({
         msg: 'Project completion processed with feature analysis',
         projectId: payload.project_id,
@@ -322,7 +323,7 @@ handlerRegistry.register({
 
 ```bash
 # النظام الأساسي
-SERVICE_NAME=supra-system
+SERVICE_NAME=SoaBra-system
 SERVICE_VERSION=1.0.0
 NODE_ENV=production
 LOG_LEVEL=info
@@ -352,18 +353,21 @@ SLACK_WEBHOOK_URL=https://hooks.slack.com/...
 ## أفضل الممارسات
 
 ### للأحداث
+
 - استخدم `dedupKey` لتجنب الأحداث المكررة
 - اجعل أسماء الأحداث وصفية ومفهومة
 - احرص على تطبيق العقود (Contracts) بدقة
 - استخدم مستويات إعادة المحاولة المناسبة
 
 ### للمراقبة
+
 - أضف context مفيد للـ logs
 - استخدم structured logging
 - قس العمليات الحرجة فقط
 - تجنب إفراط في التتبع
 
 ### لمخزن الميزات
+
 - اختر TTL مناسب للبيانات
 - استخدم namespaces منظمة
 - فكر في أنماط الاستعلام مسبقاً
@@ -372,6 +376,7 @@ SLACK_WEBHOOK_URL=https://hooks.slack.com/...
 ## الاستكشاف والإصلاح
 
 ### مشاكل الأحداث الشائعة
+
 ```bash
 # فحص Outbox المعلقة
 SELECT * FROM event_outbox WHERE status = 'pending' ORDER BY created_at;
@@ -385,6 +390,7 @@ SELECT event_name, event_version, payload, 0 FROM event_dlq WHERE id = 'dlq-id';
 ```
 
 ### مراقبة الأداء
+
 ```bash
 # فحص المقاييس
 curl http://localhost:3000/metrics
