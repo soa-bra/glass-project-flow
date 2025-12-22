@@ -1243,6 +1243,18 @@ const UnifiedFloatingToolbar: React.FC = () => {
     });
   };
 
+  // ✅ تغيير لون الخريطة الذهنية
+  const handleMindmapColorChange = (color: string) => {
+    mindmapTreeElements.forEach((el) => {
+      if (el.type === 'mindmap' || el.smartType === 'mind-map') {
+        updateElement(el.id, {
+          data: { ...el.data, color }
+        });
+      }
+    });
+    toast.success('تم تغيير لون الخريطة الذهنية');
+  };
+
   const handleTextAlign = (align: string) => {
     const targetIds = editingTextId ? [editingTextId] : selectedElementIds;
     targetIds.forEach((id) => {
