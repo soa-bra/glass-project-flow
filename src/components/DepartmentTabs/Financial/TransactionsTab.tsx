@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, FileText, TrendingUp, TrendingDown, Receipt } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
-import { BaseCard } from '@/components/shared/BaseCard';
+import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { buildCardClasses, buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';

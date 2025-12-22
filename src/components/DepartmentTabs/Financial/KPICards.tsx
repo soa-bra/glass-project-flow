@@ -2,7 +2,7 @@
 import React from 'react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { DollarSign, TrendingUp, TrendingDown, Wallet, Target, BarChart } from 'lucide-react';
-import { BaseCard } from '@/components/shared/BaseCard';
+import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
 import { mockKPIData } from './data';
 import { formatCurrency } from './utils';
 

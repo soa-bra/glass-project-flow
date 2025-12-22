@@ -2,7 +2,7 @@ import React from 'react';
 import { Download, PieChart, Target } from 'lucide-react';
 import { ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Tooltip } from 'recharts';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
-import { BaseCard } from '@/components/shared/BaseCard';
+import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
 import { Reveal, Stagger } from '@/components/shared/motion';
