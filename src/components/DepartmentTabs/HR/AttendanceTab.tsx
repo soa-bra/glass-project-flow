@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { Clock, Calendar, Users, TrendingUp, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
