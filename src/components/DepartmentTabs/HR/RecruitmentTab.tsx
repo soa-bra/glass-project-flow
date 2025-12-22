@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
 import { UserPlus, Briefcase, Users, Calendar, Star, Phone, Mail, Eye, CheckCircle, XCircle } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';

@@ -725,9 +725,9 @@ const FloatingEditBar: React.FC = () => {
                         })}
                       </div>
 
-                      {/* Supra Brand Colors */}
+                      {/* SoaBra Brand Colors */}
                       <div className="flex justify-start gap-2">
-                        {SUPRA_COLORS.map(({ color, label }) => {
+                        {SOABRA_COLORS.map(({ color, label }) => {
                           const isSelected = currentColor?.toLowerCase() === color.toLowerCase();
                           return (
                             <button

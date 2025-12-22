@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
 import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { ChartWrapper } from '@/components/shared/charts/ChartWrapper';

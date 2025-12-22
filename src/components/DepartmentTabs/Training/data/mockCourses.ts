@@ -119,7 +119,7 @@ export const mockTrainingSessions: TrainingSession[] = [
     type: "live",
     scheduledAt: "2024-07-20T14:00:00Z",
     duration: 240,
-    location: "https://meet.supra.com/scrum-training",
+    location: "https://meet.soabra.com/scrum-training",
     maxAttendees: 20,
     registeredCount: 18,
     waitingList: [],
