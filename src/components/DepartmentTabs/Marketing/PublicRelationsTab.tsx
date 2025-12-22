@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { Megaphone, Users, Calendar, FileText, Award, TrendingUp } from 'lucide-react';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
@@ -104,7 +104,7 @@ export const PublicRelationsTab: React.FC = () => {
   return (
     <div className="space-y-6 p-6 bg-transparent">
       {/* حملات العلاقات العامة */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <Megaphone className="h-6 w-6 text-black" />
@@ -150,10 +150,10 @@ export const PublicRelationsTab: React.FC = () => {
             </div>
           ))}
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {/* جهات الاتصال الإعلامية */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <Users className="h-6 w-6 text-black" />
@@ -198,10 +198,10 @@ export const PublicRelationsTab: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {/* البيانات الصحفية */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <FileText className="h-6 w-6 text-black" />
@@ -236,33 +236,33 @@ export const PublicRelationsTab: React.FC = () => {
             </div>
           ))}
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <Award className="h-8 w-8 text-black mx-auto mb-2" />
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">12</h3>
           <p className="text-sm text-black font-arabic">حملة نشطة</p>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <Users className="h-8 w-8 text-black mx-auto mb-2" />
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">48</h3>
           <p className="text-sm text-black font-arabic">جهة اتصال إعلامية</p>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <FileText className="h-8 w-8 text-black mx-auto mb-2" />
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">24</h3>
           <p className="text-sm text-black font-arabic">بيان صحفي</p>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <TrendingUp className="h-8 w-8 text-black mx-auto mb-2" />
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">85%</h3>
           <p className="text-sm text-black font-arabic">معدل التفاعل</p>
-        </BaseCard>
+        </BaseBox>
       </div>
     </div>
   );

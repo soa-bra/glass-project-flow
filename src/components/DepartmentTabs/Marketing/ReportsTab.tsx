@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { FileText, Download, Calendar, Filter, BarChart3, TrendingUp, PieChart, Target } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
@@ -116,7 +116,7 @@ export const ReportsTab: React.FC = () => {
   return (
     <div className="space-y-6 p-6 bg-transparent">
       {/* أنواع التقارير */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <FileText className="h-6 w-6 text-black" />
@@ -160,11 +160,11 @@ export const ReportsTab: React.FC = () => {
             </div>
           ))}
         </div>
-      </BaseCard>
+      </BaseBox>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* التقارير الحديثة */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <Download className="h-5 w-5 text-black" />
@@ -197,10 +197,10 @@ export const ReportsTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseCard>
+        </BaseBox>
 
         {/* التقارير المجدولة */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-black" />
@@ -240,30 +240,30 @@ export const ReportsTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseCard>
+        </BaseBox>
       </div>
 
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">28</h3>
           <p className="text-sm text-black font-arabic">تقرير هذا الشهر</p>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">184</h3>
           <p className="text-sm text-black font-arabic">إجمالي التقارير</p>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">12</h3>
           <p className="text-sm text-black font-arabic">تقرير مجدول</p>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <h3 className="text-2xl font-bold text-black mb-1 font-arabic">156</h3>
           <p className="text-sm text-black font-arabic">إجمالي التحميلات</p>
-        </BaseCard>
+        </BaseBox>
       </div>
     </div>
   );

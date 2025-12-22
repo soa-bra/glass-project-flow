@@ -23,7 +23,7 @@ export { InteractiveSheet } from './InteractiveSheet';
 export { DecisionsMatrix } from './DecisionsMatrix';
 
 // Cards
-export { ProjectCard } from './ProjectCard';
+export { ProjectCard as SmartProjectCard } from './SmartProjectCard';
 export { FinanceCard } from './FinanceCard';
 export { CsrCard } from './CsrCard';
 export { CrmCard } from './CrmCard';

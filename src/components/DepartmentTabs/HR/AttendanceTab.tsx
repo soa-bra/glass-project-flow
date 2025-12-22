@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { Clock, Calendar, Users, TrendingUp, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
@@ -61,7 +61,7 @@ export const AttendanceTab: React.FC = () => {
     <div className="space-y-6 bg-transparent">
       {/* إحصائيات الحضور */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">الحاضرون اليوم</p>
@@ -69,9 +69,9 @@ export const AttendanceTab: React.FC = () => {
             </div>
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">الغائبون اليوم</p>
@@ -79,9 +79,9 @@ export const AttendanceTab: React.FC = () => {
             </div>
             <XCircle className="h-8 w-8 text-red-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">المتأخرون اليوم</p>
@@ -89,9 +89,9 @@ export const AttendanceTab: React.FC = () => {
             </div>
             <AlertTriangle className="h-8 w-8 text-yellow-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">متوسط ساعات العمل</p>
@@ -99,9 +99,9 @@ export const AttendanceTab: React.FC = () => {
             </div>
             <Clock className="h-8 w-8 text-blue-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">معدل الحضور</p>
@@ -109,9 +109,9 @@ export const AttendanceTab: React.FC = () => {
             </div>
             <TrendingUp className="h-8 w-8 text-purple-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">طلبات الإجازة</p>
@@ -119,11 +119,11 @@ export const AttendanceTab: React.FC = () => {
             </div>
             <Calendar className="h-8 w-8 text-orange-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
       </div>
 
       {/* التبويبات */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center gap-4 mb-6">
           <div className="flex items-center gap-2">
             <Clock className="h-6 w-6 text-blue-600" />
@@ -227,10 +227,10 @@ export const AttendanceTab: React.FC = () => {
             </div>
           </div>
         )}
-      </BaseCard>
+      </BaseBox>
 
       {/* رسم بياني للحضور */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="h-6 w-6 text-green-600" />
           <h3 className="text-xl font-bold text-gray-800 font-arabic">تحليل الحضور الشهري</h3>
@@ -238,7 +238,7 @@ export const AttendanceTab: React.FC = () => {
         <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
           <p className="text-gray-500 font-arabic">سيتم إضافة الرسم البياني للحضور هنا</p>
         </div>
-      </BaseCard>
+      </BaseBox>
     </div>
   );
 };

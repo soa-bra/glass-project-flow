@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Receipt, FileText, ExternalLink, CreditCard, Edit, Download } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
-import { BaseCard } from '@/components/shared/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
@@ -44,7 +44,7 @@ export const InvoicesTab: React.FC = () => {
         </div>
       </Reveal>
 
-      <BaseCard title="جدول الفواتير">
+      <BaseBox title="جدول الفواتير">
         <div className="grid grid-cols-2 gap-4">
           {mockInvoices.map(invoice => (
             <Reveal key={invoice.id} delay={0.1}>
@@ -136,7 +136,7 @@ export const InvoicesTab: React.FC = () => {
             </Reveal>
           ))}
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {selectedClient && (
         <Reveal>

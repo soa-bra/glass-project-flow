@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { FileText, Download, Calendar, Filter, BarChart3, TrendingUp } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 
@@ -65,7 +65,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ departmentTitle }) => {
   return (
     <div className="space-y-6 p-6 bg-transparent">
       {/* أنواع التقارير */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-6">
           <FileText className="h-6 w-6 text-blue-600" />
           <h3 className="text-xl font-bold text-gray-800 font-arabic">أنواع التقارير المتاحة</h3>
@@ -107,10 +107,10 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ departmentTitle }) => {
             </div>
           ))}
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {/* التقارير الحديثة */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <Download className="h-5 w-5 text-green-600" />
@@ -142,24 +142,24 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ departmentTitle }) => {
             </div>
           ))}
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <h3 className="text-2xl font-bold text-blue-600 mb-1 font-arabic">24</h3>
           <p className="text-sm text-gray-600 font-arabic">تقرير هذا الشهر</p>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <h3 className="text-2xl font-bold text-green-600 mb-1 font-arabic">156</h3>
           <p className="text-sm text-gray-600 font-arabic">إجمالي التقارير</p>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" size="sm" className="text-center">
+        <BaseBox variant="operations" size="sm" className="text-center">
           <h3 className="text-2xl font-bold text-purple-600 mb-1 font-arabic">8.2 GB</h3>
           <p className="text-sm text-gray-600 font-arabic">حجم البيانات</p>
-        </BaseCard>
+        </BaseBox>
       </div>
     </div>
   );

@@ -2,14 +2,14 @@
 import React from 'react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { DollarSign, TrendingUp, TrendingDown, Wallet, Target, BarChart } from 'lucide-react';
-import { BaseCard } from '@/components/shared/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { mockKPIData } from './data';
 import { formatCurrency } from './utils';
 
 export const KPICards: React.FC = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <BaseCard className="p-6">
+      <BaseBox className="p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">إجمالي الإيرادات</p>
@@ -23,9 +23,9 @@ export const KPICards: React.FC = () => {
           </div>
           <DollarSign className="h-8 w-8 text-green-600" />
         </div>
-      </BaseCard>
+      </BaseBox>
 
-      <BaseCard className="p-6">
+      <BaseBox className="p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">إجمالي المصروفات</p>
@@ -39,9 +39,9 @@ export const KPICards: React.FC = () => {
           </div>
           <Wallet className="h-8 w-8 text-red-600" />
         </div>
-      </BaseCard>
+      </BaseBox>
 
-      <BaseCard className="p-6">
+      <BaseBox className="p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">صافي الربح</p>
@@ -55,9 +55,9 @@ export const KPICards: React.FC = () => {
           </div>
           <Target className="h-8 w-8 text-blue-600" />
         </div>
-      </BaseCard>
+      </BaseBox>
 
-      <BaseCard className="p-6">
+      <BaseBox className="p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">التدفق النقدي</p>
@@ -71,7 +71,7 @@ export const KPICards: React.FC = () => {
           </div>
           <BarChart className="h-8 w-8 text-purple-600" />
         </div>
-      </BaseCard>
+      </BaseBox>
     </div>
   );
 };
