@@ -9,7 +9,7 @@ import {
   Target
 } from 'lucide-react';
 
-interface AISuggestedWidgetProps {
+export interface AISuggestedBoxProps {
   type: 'kpi' | 'reports' | 'alerts' | 'analytics' | 'team' | 'goals';
   title: string;
   className?: string;
@@ -66,7 +66,7 @@ const widgetConfig = {
   }
 };
 
-export const AISuggestedWidget: React.FC<AISuggestedWidgetProps> = ({
+export const AISuggestedBox: React.FC<AISuggestedBoxProps> = ({
   type,
   title,
   className = ''

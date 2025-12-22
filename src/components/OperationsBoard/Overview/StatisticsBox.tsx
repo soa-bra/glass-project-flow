@@ -1,9 +1,10 @@
 import React from 'react';
-import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { ChartWrapper } from '@/components/shared/charts/ChartWrapper';
-interface StatisticsCardProps {
+
+export interface StatisticsBoxProps {
   title: string;
   value: string;
   unit: string;
@@ -43,7 +44,7 @@ const sampleBarData = [{
   name: 'D',
   value: 15
 }];
-export const StatisticsBox: React.FC<StatisticsCardProps> = ({
+export const StatisticsBox: React.FC<StatisticsBoxProps> = ({
   title,
   value,
   unit,
@@ -129,7 +130,7 @@ export const StatisticsBox: React.FC<StatisticsCardProps> = ({
     return null;
   };
   if (chartType === 'simple') {
-    return <BaseCard variant="glass" size="md" className="h-full min-h-0 border-[#DADCE0]" style={{
+    return <BaseBox variant="glass" size="md" className="h-full min-h-0 border-[#DADCE0]" style={{
       backgroundColor: '#ffffff'
     }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
         <div className="flex-1 flex flex-col justify-center py-0 h-full overflow-hidden">
@@ -146,9 +147,9 @@ export const StatisticsBox: React.FC<StatisticsCardProps> = ({
             {description}
           </div>
         </div>
-      </BaseCard>;
+      </BaseBox>;
   }
-  return <BaseCard variant="glass" size="md" className="h-full min-h-0 border-[#DADCE0]" style={{
+  return <BaseBox variant="glass" size="md" className="h-full min-h-0 border-[#DADCE0]" style={{
     backgroundColor: '#ffffff'
   }} header={<h3 className="text-lg font-semibold text-black font-arabic">{title}</h3>}>
       <div className="flex gap-14 h-90 w-full overflow-hidden my-[25px] px-px mx-[10px] py-px">
@@ -175,5 +176,5 @@ export const StatisticsBox: React.FC<StatisticsCardProps> = ({
           </div>
         </div>
       </div>
-    </BaseCard>;
+    </BaseBox>;
 };

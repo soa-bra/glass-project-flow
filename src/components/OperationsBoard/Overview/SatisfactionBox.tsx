@@ -2,12 +2,12 @@
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
 
-interface SatisfactionWidgetProps {
+export interface SatisfactionBoxProps {
   satisfaction: number;
   className?: string;
 }
 
-export const SatisfactionWidget: React.FC<SatisfactionWidgetProps> = ({ 
+export const SatisfactionBox: React.FC<SatisfactionBoxProps> = ({ 
   satisfaction, 
   className = '' 
 }) => {

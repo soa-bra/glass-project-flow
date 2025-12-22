@@ -1,18 +1,18 @@
 
 import React from 'react';
 
-interface HRData {
+export interface HRData {
   members: number;
   vacancies: number;
   onLeave: number;
 }
 
-interface HRWidgetProps {
+export interface HRBoxProps {
   hr: HRData;
   className?: string;
 }
 
-export const HRBox: React.FC<HRWidgetProps> = ({ 
+export const HRBox: React.FC<HRBoxProps> = ({ 
   hr, 
   className = '' 
 }) => {

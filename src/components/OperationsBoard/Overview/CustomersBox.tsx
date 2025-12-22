@@ -1,17 +1,17 @@
 import React from 'react';
 
-interface CustomersData {
+export interface CustomersData {
   totalClients: number;
   newClients: number;
   satisfaction: number;
 }
 
-interface CustomersWidgetProps {
+export interface CustomersBoxProps {
   customers: CustomersData;
   className?: string;
 }
 
-export const CustomersBox: React.FC<CustomersWidgetProps> = ({ 
+export const CustomersBox: React.FC<CustomersBoxProps> = ({ 
   customers, 
   className = '' 
 }) => {

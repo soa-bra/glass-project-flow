@@ -2,17 +2,17 @@
 import React from 'react';
 import { FileText, Clock } from 'lucide-react';
 
-interface ContractsData {
+export interface ContractsData {
   signed: number;
   expired: number;
 }
 
-interface ContractsWidgetProps {
+export interface ContractsBoxProps {
   contracts: ContractsData;
   className?: string;
 }
 
-export const ContractsWidget: React.FC<ContractsWidgetProps> = ({ 
+export const ContractsBox: React.FC<ContractsBoxProps> = ({ 
   contracts, 
   className = '' 
 }) => {
