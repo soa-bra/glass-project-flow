@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   BarChart3, 
@@ -6,8 +5,10 @@ import {
   TrendingUp, 
   Users, 
   AlertCircle,
-  Target
+  Target,
+  LucideIcon
 } from 'lucide-react';
+import { BaseBox } from '@/components/ui/BaseBox';
 
 export interface AISuggestedBoxProps {
   type: 'kpi' | 'reports' | 'alerts' | 'analytics' | 'team' | 'goals';
@@ -15,7 +16,16 @@ export interface AISuggestedBoxProps {
   className?: string;
 }
 
-const widgetConfig = {
+interface WidgetConfigItem {
+  icon: LucideIcon;
+  content: {
+    main: string;
+    sub: string;
+    trend: string;
+  };
+}
+
+const widgetConfig: Record<AISuggestedBoxProps['type'], WidgetConfigItem> = {
   kpi: {
     icon: TrendingUp,
     content: {
@@ -75,43 +85,41 @@ export const AISuggestedBox: React.FC<AISuggestedBoxProps> = ({
   const Icon = config.icon;
 
   return (
-    <div className={`
-      ${className}
-      rounded-3xl p-5
-      bg-white/80 backdrop-blur-xl border border-white/30
-      shadow-lg hover:shadow-xl transition-all duration-300
-      flex flex-col justify-between
-    `}>
-      
-      {/* رأس البطاقة */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-arabic font-bold text-gray-800">
-          {title}
-        </h3>
-        <Icon size={20} className="text-gray-600" />
-      </div>
-
+    <BaseBox 
+      variant="glass"
+      size="sm"
+      rounded="lg"
+      className={`flex flex-col justify-between ${className}`}
+      header={
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-arabic font-bold text-[hsl(var(--ink))]">
+            {title}
+          </h3>
+          <Icon size={20} className="text-[hsl(var(--ink-60))]" />
+        </div>
+      }
+    >
       {/* المحتوى الرئيسي */}
       <div className="flex-1 flex flex-col justify-center">
-        <div className="text-2xl font-bold mb-2 text-gray-900">
+        <div className="text-2xl font-bold mb-2 text-[hsl(var(--ink))]">
           {config.content.main}
         </div>
         
-        <div className="text-sm text-gray-600 mb-3">
+        <div className="text-sm text-[hsl(var(--ink-60))] mb-3">
           {config.content.sub}
         </div>
         
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-[hsl(var(--ink-30))]">
           {config.content.trend}
         </div>
       </div>
 
       {/* مؤشر التفاعل */}
-      <div className="mt-4 pt-3 border-t border-gray-200/50">
-        <button className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
+      <div className="mt-4 pt-3 border-t border-[hsl(var(--ink))]/10">
+        <button className="text-xs text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))] transition-colors">
           عرض التفاصيل ←
         </button>
       </div>
-    </div>
+    </BaseBox>
   );
 };

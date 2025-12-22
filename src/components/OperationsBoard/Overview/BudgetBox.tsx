@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
+import { BaseBox } from '@/components/ui/BaseBox';
 
 export interface BudgetData {
   total: number;
@@ -25,18 +25,19 @@ export const BudgetBox: React.FC<BudgetBoxProps> = ({
   const isHealthy = remaining >= 0 && percentage <= 80;
 
   return (
-    <div className={`
-      ${className}
-      rounded-3xl p-6 text-white shadow-xl transition-all duration-300 hover:shadow-2xl
-      ${isHealthy ? 'bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600' : 'bg-gradient-to-br from-red-500 via-rose-500 to-red-600'}
-      backdrop-blur-xl border border-white/20
-    `}>
-      
-      {/* رأس البطاقة */}
-      <h3 className="text-lg font-arabic font-bold mb-5">
-        الميزانية والمصروفات
-      </h3>
-
+    <BaseBox 
+      title="الميزانية والمصروفات"
+      variant="flat"
+      size="md"
+      rounded="lg"
+      color={isHealthy ? 'success' : 'error'}
+      className={`text-white ${className}`}
+      style={{
+        background: isHealthy 
+          ? 'linear-gradient(to bottom right, #10b981, #22c55e, #059669)' 
+          : 'linear-gradient(to bottom right, #ef4444, #f43f5e, #dc2626)'
+      }}
+    >
       {/* الميزانية الإجمالية */}
       <div className="mb-6">
         <p className="text-3xl font-bold tracking-wide mb-1">
@@ -85,6 +86,6 @@ export const BudgetBox: React.FC<BudgetBoxProps> = ({
           </p>
         </div>
       )}
-    </div>
+    </BaseBox>
   );
 };

@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { BaseBox } from '@/components/ui/BaseBox';
 
 export interface HRData {
   members: number;
@@ -17,34 +17,29 @@ export const HRBox: React.FC<HRBoxProps> = ({
   className = '' 
 }) => {
   return (
-    <div className={`
-      ${className}
-      rounded-[40px] p-5 h-full min-h-0
-      bg-[#FFFFFF] border border-[#DADCE0] shadow-sm
-      hover:shadow-md transition-all duration-300
-      flex flex-col justify-between
-    `}>
-      
-      <h3 className="text-lg font-arabic font-bold text-black mb-4">
-        الموارد البشرية
-      </h3>
-
+    <BaseBox 
+      title="الموارد البشرية"
+      variant="unified"
+      size="sm"
+      rounded="xl"
+      className={`h-full min-h-0 flex flex-col justify-between ${className}`}
+    >
       <div className="space-y-4 flex-1">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-black font-arabic">الموظفين</span>
-          <span className="text-xl font-bold text-black">{hr.members}</span>
+          <span className="text-sm text-[hsl(var(--ink))] font-arabic">الموظفين</span>
+          <span className="text-xl font-bold text-[hsl(var(--ink))]">{hr.members}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm text-black font-arabic">الشواغر</span>
-          <span className="text-xl font-bold text-black">{hr.vacancies}</span>
+          <span className="text-sm text-[hsl(var(--ink))] font-arabic">الشواغر</span>
+          <span className="text-xl font-bold text-[hsl(var(--ink))]">{hr.vacancies}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm text-black font-arabic">في إجازة</span>
-          <span className="text-xl font-bold text-black">{hr.onLeave}</span>
+          <span className="text-sm text-[hsl(var(--ink))] font-arabic">في إجازة</span>
+          <span className="text-xl font-bold text-[hsl(var(--ink))]">{hr.onLeave}</span>
         </div>
       </div>
-    </div>
+    </BaseBox>
   );
 };

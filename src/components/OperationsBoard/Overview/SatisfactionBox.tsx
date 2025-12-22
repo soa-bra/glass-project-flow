@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
+import { BaseBox } from '@/components/ui/BaseBox';
 
 export interface SatisfactionBoxProps {
   satisfaction: number;
@@ -11,7 +11,7 @@ export const SatisfactionBox: React.FC<SatisfactionBoxProps> = ({
   satisfaction, 
   className = '' 
 }) => {
-  const getSatisfactionColor = (score: number) => {
+  const getSatisfactionColor = (score: number): 'success' | 'warning' | 'error' => {
     if (score >= 80) return 'success';
     if (score >= 60) return 'warning';
     return 'error';
@@ -23,44 +23,36 @@ export const SatisfactionBox: React.FC<SatisfactionBoxProps> = ({
     return 'يحتاج تحسين';
   };
 
-  const colorClasses = {
-    success: 'border-green-200/50',
-    warning: 'border-yellow-200/50', 
-    error: 'border-red-200/50'
-  }
+  const getProgressColor = (score: number) => {
+    if (score >= 80) return 'bg-[var(--visual-data-secondary-1)]';
+    if (score >= 60) return 'bg-[var(--visual-data-secondary-5)]';
+    return 'bg-[var(--visual-data-secondary-2)]';
+  };
 
   return (
-    <div className={`
-      ${className}
-      rounded-3xl p-5
-      bg-white/80 backdrop-blur-xl border ${colorClasses[getSatisfactionColor(satisfaction)]}
-      shadow-lg hover:shadow-xl transition-all duration-300
-      flex flex-col justify-between
-    `}>
-      
-      <h3 className="text-lg font-arabic font-bold text-gray-800 mb-4">
-        رضا العملاء
-      </h3>
-
+    <BaseBox 
+      title="رضا العملاء"
+      variant="glass"
+      size="sm"
+      rounded="lg"
+      neonRing={getSatisfactionColor(satisfaction)}
+      className={`flex flex-col justify-between ${className}`}
+    >
       <div className="flex-1 flex flex-col justify-center items-center text-center">
-        <div className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="text-3xl font-bold text-[hsl(var(--ink))] mb-2">
           {satisfaction}%
         </div>
         
-        <div className="text-sm text-gray-600 mb-5">
+        <div className="text-sm text-[hsl(var(--ink-60))] mb-5">
           {getSatisfactionText(satisfaction)}
         </div>
 
         <Progress 
           value={satisfaction} 
-          className="w-full h-2.5 bg-gray-200/50 rounded-full"
-          indicatorClassName={
-            satisfaction >= 80 ? 'bg-green-500 rounded-full' : 
-            satisfaction >= 60 ? 'bg-yellow-500 rounded-full' : 
-            'bg-red-500 rounded-full'
-          }
+          className="w-full h-2.5 bg-[hsl(var(--ink))]/10 rounded-full"
+          indicatorClassName={`${getProgressColor(satisfaction)} rounded-full`}
         />
       </div>
-    </div>
+    </BaseBox>
   );
 };

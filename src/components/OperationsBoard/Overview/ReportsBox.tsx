@@ -1,4 +1,5 @@
 import React from 'react';
+import { BaseBox } from '@/components/ui/BaseBox';
 
 export interface ReportsData {
   totalReports: number;
@@ -16,34 +17,29 @@ export const ReportsBox: React.FC<ReportsBoxProps> = ({
   className = '' 
 }) => {
   return (
-    <div className={`
-      ${className}
-      rounded-[40px] p-5 h-full min-h-0
-      bg-[#FFFFFF] border border-[#DADCE0] shadow-sm
-      hover:shadow-md transition-all duration-300
-      flex flex-col justify-between
-    `}>
-      
-      <h3 className="text-lg font-arabic font-bold text-black mb-4">
-        التقارير
-      </h3>
-
+    <BaseBox 
+      title="التقارير"
+      variant="unified"
+      size="sm"
+      rounded="xl"
+      className={`h-full min-h-0 flex flex-col justify-between ${className}`}
+    >
       <div className="space-y-4 flex-1">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-black">إجمالي التقارير</span>
-          <span className="text-xl font-bold text-black">{reports.totalReports}</span>
+          <span className="text-sm text-[hsl(var(--ink))]">إجمالي التقارير</span>
+          <span className="text-xl font-bold text-[hsl(var(--ink))]">{reports.totalReports}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm text-black">قيد المراجعة</span>
-          <span className="text-xl font-bold text-black">{reports.pendingReports}</span>
+          <span className="text-sm text-[hsl(var(--ink))]">قيد المراجعة</span>
+          <span className="text-xl font-bold text-[hsl(var(--ink))]">{reports.pendingReports}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm text-black">مكتملة</span>
-          <span className="text-xl font-bold text-black">{reports.completedReports}</span>
+          <span className="text-sm text-[hsl(var(--ink))]">مكتملة</span>
+          <span className="text-xl font-bold text-[hsl(var(--ink))]">{reports.completedReports}</span>
         </div>
       </div>
-    </div>
+    </BaseBox>
   );
 };
