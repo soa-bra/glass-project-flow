@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { FileText, Download, Calendar, Filter, BarChart3, TrendingUp } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 

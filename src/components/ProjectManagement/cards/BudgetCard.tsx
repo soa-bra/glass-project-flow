@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { Project } from '@/types/project';
 interface BudgetCardProps {
   project: Project;
@@ -30,7 +30,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
 
   // تحديد لون خلفية الكارد
   const cardBgColor = isOverBudget ? 'bg-[#f1b5b9]' : 'bg-[#96d8d0]';
-  return <BaseCard className={`h-full flex flex-col items-center justify-center relative ${cardBgColor} border-0`}>
+  return <BaseBox className={`h-full flex flex-col items-center justify-center relative ${cardBgColor} border-0`}>
       {/* أيقونة التوسيع */}
       <button className="w-8 h-8 rounded-full flex items-center justify-center text-black transition-all duration-300 border border-black/80 bg-transparent hover:bg-black/5 hover:scale-105 active:scale-95 font-extrabold text-xs">↖</button>
 
@@ -106,5 +106,5 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
           هذا النص مثال للشكل النهائي
         </div>
       </div>
-    </BaseCard>;
+    </BaseBox>;
 };

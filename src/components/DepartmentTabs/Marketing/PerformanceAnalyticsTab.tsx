@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox as BaseCard } from '@/components/ui/BaseBox';
 import { TrendingUp, BarChart3, Users, Target, DollarSign, MousePointer } from 'lucide-react';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 

@@ -1,13 +1,12 @@
-
-import ProjectsToolbar from './ProjectsToolbar';
-import ProjectCard from './ProjectCard';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import React, { useState } from 'react';
+import { ProjectsToolbar } from './ProjectsToolbar';
+import ProjectCard from '../ProjectCard';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
-import { AddProjectModal } from './ProjectsColumn/AddProjectModal';
-import { ProjectFilterOptions } from './custom/ProjectsFilterDialog';
-import { ProjectSortOptions } from './custom/ProjectsSortDialog';
+import { AddProjectModal } from './AddProjectModal';
+import { ProjectFilterOptions } from '../custom/ProjectsFilterDialog';
+import { ProjectSortOptions } from '../custom/ProjectsSortDialog';
 
 type ProjectsColumnProps = {
   projects: Project[];
@@ -18,7 +17,7 @@ type ProjectsColumnProps = {
   onApplySort?: (sortOptions: ProjectSortOptions) => void;
 };
 
-const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
+export const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
   projects,
   selectedProjectId,
   onProjectSelect,
