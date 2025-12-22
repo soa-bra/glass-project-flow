@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Plus, Users, Calendar, Clock, TrendingUp } from 'lucide-react';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { InnerCard } from '@/components/ui/InnerCard';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { useHRLite } from '@/hooks/useHRLite';
@@ -111,7 +111,7 @@ export const HRLiteMainPanel: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <BaseCard variant="unified" size="sm">
+        <BaseBox variant="unified" size="sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-arabic text-black/70">إجمالي الموظفين</p>
@@ -119,9 +119,9 @@ export const HRLiteMainPanel: React.FC = () => {
             </div>
             <Users className="h-8 w-8 text-black" />
           </div>
-        </BaseCard>
+        </BaseBox>
         
-        <BaseCard variant="unified" size="sm">
+        <BaseBox variant="unified" size="sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-arabic text-black/70">الموظفون النشطون</p>
@@ -129,9 +129,9 @@ export const HRLiteMainPanel: React.FC = () => {
             </div>
             <Clock className="h-8 w-8 text-black" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="unified" size="sm">
+        <BaseBox variant="unified" size="sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-arabic text-black/70">حضور اليوم</p>
@@ -139,9 +139,9 @@ export const HRLiteMainPanel: React.FC = () => {
             </div>
             <Calendar className="h-8 w-8 text-black" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="unified" size="sm">
+        <BaseBox variant="unified" size="sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-arabic text-black/70">الإجازات النشطة</p>
@@ -149,7 +149,7 @@ export const HRLiteMainPanel: React.FC = () => {
             </div>
             <TrendingUp className="h-8 w-8 text-black" />
           </div>
-        </BaseCard>
+        </BaseBox>
       </div>
 
       {/* Search */}
@@ -170,7 +170,7 @@ export const HRLiteMainPanel: React.FC = () => {
         {selectedView === 'employees' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredEmployees.map((employee) => (
-              <BaseCard key={employee.id} variant="unified" className="hover:shadow-md transition-shadow cursor-pointer">
+              <BaseBox key={employee.id} variant="unified" className="hover:shadow-md transition-shadow cursor-pointer">
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div>
@@ -207,7 +207,7 @@ export const HRLiteMainPanel: React.FC = () => {
                     </div>
                   </InnerCard>
                 </div>
-              </BaseCard>
+              </BaseBox>
             ))}
           </div>
         )}

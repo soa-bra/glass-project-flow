@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { Users, UserPlus, Calendar, TrendingUp, Award, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
@@ -57,71 +57,8 @@ export const OverviewTab: React.FC = () => {
       {/* مؤشرات الأداء الأساسية */}
       <KPIStatsSection stats={kpiStats} />
 
-      {/* باقي المحتوى */}
-      
-      {/* إحصائيات سريعة */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">إجمالي الموظفين</p>
-              <p className="text-2xl font-bold text-gray-800">{stats.totalEmployees}</p>
-            </div>
-            <Users className="h-8 w-8 text-blue-600" />
-          </div>
-          <div className="mt-2">
-            <Badge variant="default" className="text-xs">
-              +{stats.newHires} موظف جديد هذا الشهر
-            </Badge>
-          </div>
-        </BaseCard>
-
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">الموظفون النشطون</p>
-              <p className="text-2xl font-bold text-green-600">{stats.activeEmployees}</p>
-            </div>
-            <CheckCircle className="h-8 w-8 text-green-600" />
-          </div>
-          <div className="mt-2">
-            <Badge variant="secondary" className="text-xs">
-              {stats.onLeave} في إجازة
-            </Badge>
-          </div>
-        </BaseCard>
-
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">معدل الحضور</p>
-              <p className="text-2xl font-bold text-purple-600">{stats.attendanceRate}%</p>
-            </div>
-            <Clock className="h-8 w-8 text-purple-600" />
-          </div>
-          <div className="mt-2">
-            <Badge variant="default" className="text-xs">ممتاز</Badge>
-          </div>
-        </BaseCard>
-
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">الوظائف المفتوحة</p>
-              <p className="text-2xl font-bold text-orange-600">{stats.openPositions}</p>
-            </div>
-            <UserPlus className="h-8 w-8 text-orange-600" />
-          </div>
-          <div className="mt-2">
-            <Badge variant="secondary" className="text-xs">
-              {stats.pendingReviews} مراجعة معلقة
-            </Badge>
-          </div>
-        </BaseCard>
-      </div> */}
-
       {/* الإجراءات السريعة */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="h-6 w-6 text-blue-600" />
           <h3 className="text-xl font-bold text-gray-800 font-arabic">الإجراءات السريعة</h3>
@@ -138,11 +75,11 @@ export const OverviewTab: React.FC = () => {
             </Button>
           ))}
         </div>
-      </BaseCard>
+      </BaseBox>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* الأنشطة الأخيرة */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="h-6 w-6 text-green-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">الأنشطة الأخيرة</h3>
@@ -162,10 +99,10 @@ export const OverviewTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseCard>
+        </BaseBox>
 
         {/* الأحداث القادمة */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <Calendar className="h-6 w-6 text-purple-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">الأحداث القادمة</h3>
@@ -192,11 +129,11 @@ export const OverviewTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseCard>
+        </BaseBox>
       </div>
 
       {/* توزيع القوى العاملة */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <Users className="h-6 w-6 text-blue-600" />
           <h3 className="text-xl font-bold text-gray-800 font-arabic">توزيع القوى العاملة</h3>
@@ -241,7 +178,7 @@ export const OverviewTab: React.FC = () => {
             </div>
           </div>
         </div>
-      </BaseCard>
+      </BaseBox>
     </div>
   );
 };

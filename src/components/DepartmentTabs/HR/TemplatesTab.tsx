@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { FileText, Download, Eye, Edit, Plus, Search, Filter } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
@@ -59,7 +58,7 @@ export const TemplatesTab: React.FC = () => {
     <div className="space-y-6 bg-transparent">
       {/* إحصائيات النماذج */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">إجمالي النماذج</p>
@@ -67,9 +66,9 @@ export const TemplatesTab: React.FC = () => {
             </div>
             <FileText className="h-8 w-8 text-blue-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">الأكثر استخداماً</p>
@@ -78,9 +77,9 @@ export const TemplatesTab: React.FC = () => {
             </div>
             <Download className="h-8 w-8 text-green-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 font-arabic">محدثة حديثاً</p>
@@ -89,11 +88,11 @@ export const TemplatesTab: React.FC = () => {
             </div>
             <Edit className="h-8 w-8 text-purple-600" />
           </div>
-        </BaseCard>
+        </BaseBox>
       </div>
 
       {/* أدوات البحث والتصفية */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <FileText className="h-6 w-6 text-blue-600" />
           <h3 className="text-xl font-bold text-gray-800 font-arabic">النماذج والقوالب</h3>
@@ -134,10 +133,10 @@ export const TemplatesTab: React.FC = () => {
             </Button>
           </div>
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {/* قائمة النماذج */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="grid gap-4">
           {filteredTemplates.map((template, index) => (
             <div key={index} className="p-6 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
@@ -193,10 +192,10 @@ export const TemplatesTab: React.FC = () => {
             <p className="text-gray-600 font-arabic">لم يتم العثور على نماذج تطابق معايير البحث الخاصة بك</p>
           </div>
         )}
-      </BaseCard>
+      </BaseBox>
 
       {/* إحصائيات الاستخدام */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <Download className="h-6 w-6 text-green-600" />
           <h3 className="text-xl font-bold text-gray-800 font-arabic">إحصائيات الاستخدام</h3>
@@ -226,7 +225,7 @@ export const TemplatesTab: React.FC = () => {
               </div>
             ))}
         </div>
-      </BaseCard>
+      </BaseBox>
     </div>
   );
 };
