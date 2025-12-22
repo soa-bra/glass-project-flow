@@ -1,18 +1,6 @@
 /**
  * Planning Feature
  * ميزة التخطيط والتصميم البصري
- * 
- * @description
- * هذه الميزة تتضمن جميع مكونات لوحة التخطيط التفاعلية
- * بما في ذلك الخرائط الذهنية، المخططات، والعناصر الذكية
- * 
- * @architecture
- * - ui/       → مكونات واجهة المستخدم (panels, overlays, toolbars)
- * - canvas/   → مكونات اللوحة (viewport, selection, gestures)
- * - elements/ → عناصر اللوحة (mindmap, diagram, smart)
- * - domain/   → منطق الأعمال (commands, policies, selectors)
- * - state/    → إدارة الحالة (store, slices)
- * - integration/ → تكامل خارجي (collaboration, export, persistence)
  */
 
 // UI Layer
@@ -21,14 +9,24 @@ export * from './ui';
 // Canvas Layer
 export * from './canvas';
 
-// Elements Layer
-export * from './elements';
+// Elements Layer - explicit exports to avoid conflicts
+export { 
+  MindMapNode, 
+  MindMapConnector, 
+  MindMapConnectionLine 
+} from './elements/mindmap';
+export * from './elements/diagram';
+export * from './elements/text';
+export * from './elements/smart';
+export * from './elements/shared';
 
-// Domain Layer
-export * from './domain';
+// Domain Layer - only policies and selectors (commands not implemented yet)
+export * from './domain/policies';
+export * from './domain/selectors';
 
-// State Layer
-export * from './state';
+// State Layer - explicit exports to avoid conflicts
+export { usePlanningStore } from './state/store';
+export type { PlanningStore } from './state/store';
 
 // Integration Layer
 export * from './integration';
