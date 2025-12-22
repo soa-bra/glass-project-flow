@@ -7,7 +7,7 @@ import InfiniteCanvas from '@/features/planning/canvas/viewport/InfiniteCanvas';
 import BottomToolbar from '@/features/planning/ui/toolbars/BottomToolbar';
 import ToolZone from './panels/ToolZone';
 import NavigationBar from '@/features/planning/ui/toolbars/NavigationBar';
-import FloatingEditBar from '@/features/planning/ui/toolbars/FloatingEditBar';
+import FloatingBar from '@/features/planning/ui/toolbars/FloatingBar';
 import Minimap from '@/features/planning/ui/widgets/Minimap';
 import { HistoryPopover } from './overlays/HistoryPopover';
 import { SharePopover } from './overlays/SharePopover';
@@ -235,7 +235,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
       <NavigationBar />
       
       {/* Floating Edit Bar */}
-      <FloatingEditBar />
+      <FloatingBar />
       
       {/* Minimap */}
       <Minimap />

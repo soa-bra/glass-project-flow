@@ -8,7 +8,7 @@ export { TextEditor } from './TextEditor';
 export { TextRenderer } from './TextRenderer';
 export { StickyNoteEditor } from './StickyNoteEditor';
 export { TextLayer } from './TextLayer';
-export { TextFloatingToolbar } from './TextFloatingToolbar';
+
 export { ResizeHandles, calculateResizeDelta } from './ResizeHandles';
 export type { HandlePosition } from './ResizeHandles';
 
