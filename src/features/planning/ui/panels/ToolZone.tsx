@@ -8,7 +8,7 @@ import ShapesPanel from './ShapesToolZone';
 import SmartElementsPanel from './SmartElementsToolZone';
 import ResearchToolZone from './ResearchToolZone';
 
-interface RightSideToolZoneProps {
+interface ToolZoneProps {
   activeTool: ToolId;
   onClose?: () => void;
 }
@@ -35,7 +35,7 @@ const toolsWithoutPanel: ToolId[] = [
   'frame_tool',
 ];
 
-const RightSideToolZone: React.FC<RightSideToolZoneProps> = ({ activeTool, onClose }) => {
+const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   
   // الحصول على حالة التحرير
@@ -142,4 +142,4 @@ const RightSideToolZone: React.FC<RightSideToolZoneProps> = ({ activeTool, onClo
   );
 };
 
-export default RightSideToolZone;
+export default ToolZone;
