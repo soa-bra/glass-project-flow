@@ -34,7 +34,22 @@ import {
   Table2,
   Zap,
   Files,
+  Type,
+  Palette,
+  Bold,
+  Italic,
+  Underline,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Layers,
+  Pen,
+  Frame,
+  Image,
+  Minus,
+  Circle,
 } from "lucide-react";
+import { LayersMenuPopover } from "../overlays/LayersMenuPopover";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCanvasStore } from "@/stores/canvasStore";
 import { useSmartElementsStore } from "@/stores/smartElementsStore";
@@ -166,6 +181,25 @@ const FloatingEditBar: React.FC = () => {
   const areElementsLocked = useMemo(() => {
     return selectedElements.some((el) => el.locked === true);
   }, [selectedElements]);
+
+  // ✅ تحديد نوع العناصر المحددة للعرض السياقي
+  const selectionType = useMemo(() => {
+    if (selectedElements.length === 0) return null;
+    if (selectedElements.length > 1) return 'multiple';
+    
+    const el = selectedElements[0];
+    if (el.type === 'text') return 'text';
+    if (el.type === 'shape') return 'shape';
+    if (el.type === 'image' || el.type === 'file') return 'image';
+    if (el.type === 'mindmap_node') return 'mindmap';
+    if (el.type === 'frame') return 'frame';
+    if (el.type === 'smart') return 'smart';
+    if (el.type === 'drawing' || el.type === 'pen') return 'pen';
+    return 'generic';
+  }, [selectedElements]);
+
+  // ✅ State للتحكم في قائمة الطبقات
+  const [isLayersMenuOpen, setIsLayersMenuOpen] = useState(false);
 
   // Calculate selection bounds with useMemo for performance
   const selectionBounds = useMemo(() => {
@@ -580,6 +614,20 @@ const FloatingEditBar: React.FC = () => {
                     <ChevronsDown size={14} />
                     <span>نقل للخلف</span>
                   </button>
+                  
+                  <div className="w-full h-px bg-[hsl(var(--border))] my-1.5" />
+                  
+                  {/* Layers Menu Access */}
+                  <button
+                    onClick={() => {
+                      setIsLayersMenuOpen(true);
+                      setIsMoreMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-black hover:bg-[hsl(var(--panel))] rounded-lg"
+                  >
+                    <Layers size={14} />
+                    <span>إدارة الطبقات</span>
+                  </button>
                 </div>
               </>
             )}
@@ -778,6 +826,139 @@ const FloatingEditBar: React.FC = () => {
           </div>
 
           <div className={separatorClass} />
+
+          {/* ✅ Contextual Tools based on selection type */}
+          {selectionType === 'text' && (
+            <>
+              <button 
+                onClick={() => {
+                  selectedElementIds.forEach(id => {
+                    const el = elements.find(e => e.id === id);
+                    updateElement(id, { 
+                      fontWeight: el?.fontWeight === 'bold' ? 'normal' : 'bold' 
+                    });
+                  });
+                }}
+                className={`${btnClass} ${firstElement?.fontWeight === 'bold' ? 'bg-[hsl(var(--panel))]' : ''}`}
+                title="عريض"
+              >
+                <Bold size={16} />
+              </button>
+              <button 
+                onClick={() => {
+                  selectedElementIds.forEach(id => {
+                    const el = elements.find(e => e.id === id);
+                    updateElement(id, { 
+                      style: { ...el?.style, fontStyle: el?.style?.fontStyle === 'italic' ? 'normal' : 'italic' }
+                    });
+                  });
+                }}
+                className={`${btnClass} ${firstElement?.style?.fontStyle === 'italic' ? 'bg-[hsl(var(--panel))]' : ''}`}
+                title="مائل"
+              >
+                <Italic size={16} />
+              </button>
+              <div className={separatorClass} />
+              <button 
+                onClick={() => {
+                  selectedElementIds.forEach(id => updateElement(id, { alignment: 'right' }));
+                }}
+                className={`${btnClass} ${firstElement?.alignment === 'right' ? 'bg-[hsl(var(--panel))]' : ''}`}
+                title="محاذاة يمين"
+              >
+                <AlignRight size={16} />
+              </button>
+              <button 
+                onClick={() => {
+                  selectedElementIds.forEach(id => updateElement(id, { alignment: 'center' }));
+                }}
+                className={`${btnClass} ${firstElement?.alignment === 'center' ? 'bg-[hsl(var(--panel))]' : ''}`}
+                title="محاذاة وسط"
+              >
+                <AlignCenter size={16} />
+              </button>
+              <button 
+                onClick={() => {
+                  selectedElementIds.forEach(id => updateElement(id, { alignment: 'left' }));
+                }}
+                className={`${btnClass} ${firstElement?.alignment === 'left' ? 'bg-[hsl(var(--panel))]' : ''}`}
+                title="محاذاة يسار"
+              >
+                <AlignLeft size={16} />
+              </button>
+              <div className={separatorClass} />
+            </>
+          )}
+
+          {selectionType === 'shape' && (
+            <>
+              <button 
+                onClick={() => {
+                  const currentWidth = firstElement?.strokeWidth || 2;
+                  const newWidth = currentWidth === 0 ? 2 : currentWidth === 2 ? 4 : currentWidth === 4 ? 0 : 2;
+                  selectedElementIds.forEach(id => updateElement(id, { strokeWidth: newWidth }));
+                }}
+                className={btnClass}
+                title="سمك الحد"
+              >
+                <Minus size={16} />
+              </button>
+              <button 
+                onClick={() => {
+                  const currentRadius = firstElement?.style?.borderRadius || 0;
+                  const newRadius = currentRadius === 0 ? 8 : currentRadius === 8 ? 16 : currentRadius === 16 ? 9999 : 0;
+                  selectedElementIds.forEach(id => {
+                    const el = elements.find(e => e.id === id);
+                    updateElement(id, { style: { ...el?.style, borderRadius: newRadius } });
+                  });
+                }}
+                className={btnClass}
+                title="استدارة الزوايا"
+              >
+                <Circle size={16} />
+              </button>
+              <div className={separatorClass} />
+            </>
+          )}
+
+          {selectionType === 'pen' && (
+            <>
+              <button 
+                onClick={() => {
+                  const currentWidth = firstElement?.data?.strokeWidth || 2;
+                  const newWidth = currentWidth <= 2 ? 4 : currentWidth <= 4 ? 8 : 2;
+                  selectedElementIds.forEach(id => {
+                    const el = elements.find(e => e.id === id);
+                    updateElement(id, { data: { ...el?.data, strokeWidth: newWidth } });
+                  });
+                }}
+                className={btnClass}
+                title="سمك القلم"
+              >
+                <Pen size={16} />
+              </button>
+              <div className={separatorClass} />
+            </>
+          )}
+
+          {selectionType === 'frame' && (
+            <>
+              <button 
+                onClick={() => {
+                  // Toggle frame clip content
+                  selectedElementIds.forEach(id => {
+                    const el = elements.find(e => e.id === id);
+                    updateElement(id, { data: { ...el?.data, clipContent: !el?.data?.clipContent } });
+                  });
+                }}
+                className={`${btnClass} ${firstElement?.data?.clipContent ? 'bg-[hsl(var(--panel))]' : ''}`}
+                title="قص المحتوى"
+              >
+                <Frame size={16} />
+              </button>
+              <div className={separatorClass} />
+            </>
+          )}
 
           {/* Duplicate Button */}
           <button onClick={handleDuplicate} className={btnClass} title="تكرار">
@@ -982,6 +1163,14 @@ const FloatingEditBar: React.FC = () => {
             </AnimatePresence>
           </div>
         </div>
+      </div>
+      
+      {/* Layers Menu Popover */}
+      <div className="relative">
+        <LayersMenuPopover 
+          isOpen={isLayersMenuOpen} 
+          onClose={() => setIsLayersMenuOpen(false)} 
+        />
       </div>
     </div>
   );
