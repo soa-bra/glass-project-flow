@@ -5,7 +5,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasBoard } from '@/types/planning';
 import InfiniteCanvas from '@/features/planning/canvas/viewport/InfiniteCanvas';
 import BottomToolbar from '@/features/planning/ui/toolbars/BottomToolbar';
-import RightSideToolZone from './panels/RightSideToolZone';
+import ToolZone from './panels/ToolZone';
 import NavigationBar from '@/features/planning/ui/toolbars/NavigationBar';
 import FloatingEditBar from '@/features/planning/ui/toolbars/FloatingEditBar';
 import Minimap from '@/features/planning/ui/widgets/Minimap';
@@ -225,7 +225,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
         </div>
         
         {/* Tool Settings Panel (Right) */}
-        <RightSideToolZone activeTool={activeTool} />
+        <ToolZone activeTool={activeTool} />
       </div>
       
       {/* Bottom Toolbar */}
