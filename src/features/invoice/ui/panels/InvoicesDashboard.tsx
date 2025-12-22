@@ -44,6 +44,7 @@ import {
 import type { Invoice, InvoiceFormData, InvoiceStatus } from '../../domain';
 import { InvoiceFilters, defaultFilters } from '../widgets/InvoiceFilters';
 import { InvoiceDetail } from '../widgets/InvoiceDetail';
+import { exportInvoicesToExcel } from '../../lib';
 
 const statusIcons: Record<InvoiceStatus, React.ReactNode> = {
   draft: <FileText className="w-4 h-4" />,
@@ -374,9 +375,20 @@ export const InvoicesDashboard: React.FC = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>قائمة الفواتير</CardTitle>
-            <span className="text-sm text-muted-foreground">
-              {filteredInvoices.length} من {invoices.length} فاتورة
-            </span>
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => exportInvoicesToExcel(filteredInvoices)}
+                disabled={filteredInvoices.length === 0}
+              >
+                <Download className="w-4 h-4 ml-2" />
+                تصدير Excel
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                {filteredInvoices.length} من {invoices.length} فاتورة
+              </span>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
