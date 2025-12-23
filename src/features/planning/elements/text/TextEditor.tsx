@@ -4,6 +4,7 @@ import type { CanvasElement } from '@/stores/canvasStore';
 import { sanitizeHTML } from '@/utils/sanitize';
 import { Check } from 'lucide-react';
 import { useTextEditorRegistration } from './TextEditorContext';
+import { cleanDirectionalMarkers, isTextEmpty } from '@/utils/textDirection';
 
 interface TextEditorProps {
   element: CanvasElement;
@@ -15,10 +16,13 @@ interface TextEditorProps {
 export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClose, onDoubleClick }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const { updateTextStyle, startTyping, stopTyping, updateElement } = useCanvasStore();
+  const { updateTextStyle, startTyping, stopTyping, updateElement, deleteElement } = useCanvasStore();
   const [toolbarPosition, setToolbarPosition] = useState({ x: 0, y: 0 });
   const [showToolbar, setShowToolbar] = useState(false);
   const [isEmpty, setIsEmpty] = useState(!element.content || element.content.trim() === '');
+  
+  // ✅ تخزين المحتوى الأصلي للتراجع عند Escape
+  const originalContentRef = useRef<string>(element.content || '');
   
   // حساب موضع الـ toolbar - مع هامش كافٍ فوق النص
   const updateToolbarPosition = useCallback(() => {
@@ -265,9 +269,20 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       return;
     }
     
-    // Escape = إلغاء
+    // ✅ Escape = إلغاء التعديلات والرجوع للمحتوى الأصلي
     if (e.key === 'Escape') {
       e.preventDefault();
+      // استرجاع المحتوى الأصلي
+      if (editorRef.current) {
+        editorRef.current.innerHTML = sanitizeHTML(originalContentRef.current);
+        onUpdate(originalContentRef.current);
+      }
+      // ✅ إذا كان المحتوى الأصلي فارغاً، احذف العنصر
+      if (isTextEmpty(originalContentRef.current)) {
+        deleteElement(element.id);
+      }
+      setShowToolbar(false);
+      stopTyping();
       onClose();
       return;
     }
