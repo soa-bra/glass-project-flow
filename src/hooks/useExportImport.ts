@@ -4,8 +4,8 @@
  */
 
 import { useState, useCallback } from 'react';
-import { exportEngine, ExportFormat, ExportOptions, ExportableElement } from '@/core/exportEngine';
-import { importEngine, ImportOptions, ImportResult } from '@/core/importEngine';
+import { exportEngine, ExportFormat, ExportOptions, ExportableElement } from '@/engine/canvas/io/exportEngine';
+import { importEngine, ImportOptions, ImportResult } from '@/engine/canvas/io/importEngine';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { toast } from 'sonner';
 

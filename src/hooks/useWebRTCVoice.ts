@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { webrtcVoiceService } from '@/core/webrtcVoice';
+import { webrtcVoiceService } from '@/engine/canvas/voice/webrtcVoice';
 import { useCollaborationStore } from '@/stores/collaborationStore';
 import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 import { toast } from 'sonner';

@@ -1,10 +1,10 @@
 import React, { useCallback, useRef, useState, useEffect, useMemo } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useInteractionStore } from '@/stores/interactionStore';
-import { eventPipeline } from '@/core/eventPipeline';
-import { canvasKernel, type Bounds, type Point } from '@/core/canvasKernel';
-import { snapEngine, type SnapLine } from '@/core/snapEngine';
-import { selectionCoordinator } from '@/core/selectionCoordinator';
+import { eventPipeline } from '@/engine/canvas/events/eventPipeline';
+import { canvasKernel, type Bounds, type Point } from '@/engine/canvas/kernel/canvasKernel';
+import { snapEngine, type SnapLine } from '@/engine/canvas/interaction/snapEngine';
+import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
 
 // التحقق إذا كان الشكل سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {

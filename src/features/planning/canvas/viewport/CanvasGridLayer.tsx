@@ -7,8 +7,8 @@
 
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { canvasKernel } from '@/core/canvasKernel';
-import { gridRenderer, type GridConfig } from '@/core/gridRenderer';
+import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
+import { gridRenderer, type GridConfig } from '@/engine/canvas/rendering/gridRenderer';
 
 interface CanvasGridLayerProps {
   config?: Partial<GridConfig>;

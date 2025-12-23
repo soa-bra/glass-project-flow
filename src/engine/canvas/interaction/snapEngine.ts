@@ -11,7 +11,7 @@
  * جميع الحسابات تتم في World Space
  */
 
-import { canvasKernel, type Point, type Bounds } from './canvasKernel';
+import { canvasKernel, type Point, type Bounds } from '@/engine/canvas/kernel/canvasKernel';
 
 // =============================================================================
 // Types

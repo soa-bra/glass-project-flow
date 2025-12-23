@@ -17,7 +17,7 @@ import {
   type Point,
   type Camera,
   type Bounds
-} from '@/core/canvasKernel';
+} from '@/engine/canvas/kernel/canvasKernel';
 
 // Re-export everything from the kernel for backwards compatibility
 export {

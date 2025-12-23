@@ -7,8 +7,8 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { canvasKernel } from '@/core/canvasKernel';
-import type { SnapLine } from '@/core/snapEngine';
+import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
+import type { SnapLine } from '@/engine/canvas/interaction/snapEngine';
 
 interface SnapGuidesProps {
   guides: SnapLine[];

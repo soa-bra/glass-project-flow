@@ -15,9 +15,9 @@ import { SnapGuides } from '@/features/planning/canvas/transforms/SnapGuides';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useTouchGestures } from '@/hooks/useTouchGestures';
-import { canvasKernel, getContainerRect } from '@/core/canvasKernel';
-import { getCursorForMode } from '@/core/interactionStateMachine';
-import { selectionCoordinator } from '@/core/selectionCoordinator';
+import { canvasKernel, getContainerRect } from '@/engine/canvas/kernel/canvasKernel';
+import { getCursorForMode } from '@/engine/canvas/interaction/interactionStateMachine';
+import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
 import { toast } from 'sonner';
 import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
 import { CanvasGridLayer } from '@/features/planning/canvas/viewport/CanvasGridLayer';
@@ -26,7 +26,7 @@ import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 import MindMapConnectionLine from '@/features/planning/elements/mindmap/MindMapConnectionLine';
 
 import { findNearestAnchor, calculateConnectorBounds, type NodeAnchorPoint, type MindMapConnectorData } from '@/types/mindmap-canvas';
-import type { SnapLine } from '@/core/snapEngine';
+import type { SnapLine } from '@/engine/canvas/interaction/snapEngine';
 
 interface InfiniteCanvasProps {
   boardId: string;

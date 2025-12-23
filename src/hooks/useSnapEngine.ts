@@ -6,8 +6,8 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { snapEngine, type SnapConfig, type SnapLine, type SnapResult } from '@/core/snapEngine';
-import type { Point, Bounds } from '@/core/canvasKernel';
+import { snapEngine, type SnapConfig, type SnapLine, type SnapResult } from '@/engine/canvas/interaction/snapEngine';
+import type { Point, Bounds } from '@/engine/canvas/kernel/canvasKernel';
 
 interface UseSnapEngineOptions {
   /** معرفات العناصر المستثناة من المحاذاة */

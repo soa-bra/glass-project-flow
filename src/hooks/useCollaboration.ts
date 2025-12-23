@@ -9,7 +9,7 @@ import {
   CollaboratorPresence, 
   CollaborationEvent,
   CollaborationEventType 
-} from '@/core/collaborationEngine';
+} from '@/engine/canvas/collaboration/collaborationEngine';
 import { useCanvasStore } from '@/stores/canvasStore';
 
 interface UseCollaborationOptions {
