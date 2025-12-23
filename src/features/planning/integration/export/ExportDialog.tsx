@@ -26,7 +26,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useExportImport } from '@/hooks/useExportImport';
-import { ExportFormat } from '@/core/exportEngine';
+import { ExportFormat } from '@/engine/canvas/io/exportEngine';
 
 interface ExportDialogProps {
   open: boolean;

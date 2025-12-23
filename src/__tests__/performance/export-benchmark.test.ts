@@ -5,8 +5,8 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useCanvasStore } from '@/stores/canvas';
-import { ExportEngine, type ExportableElement } from '@/core/exportEngine';
-import { ImportEngine } from '@/core/importEngine';
+import { ExportEngine, type ExportableElement } from '@/engine/canvas/io/exportEngine';
+import { ImportEngine } from '@/engine/canvas/io/importEngine';
 
 // Helper to generate test elements
 const generateElements = (count: number): ExportableElement[] => {
