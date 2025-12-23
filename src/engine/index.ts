@@ -8,10 +8,4 @@
  */
 
 // Canvas Engine
-// export * from './canvas';
-
-// Interaction Engine
-// export * from './interaction';
-
-// Collaboration Engine
-// export * from './collaboration';
+export * from './canvas';
