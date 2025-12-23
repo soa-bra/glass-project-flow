@@ -456,9 +456,8 @@ class SnapEngineImpl {
     const guides: SnapLine[] = [];
     const target = this._targets.find(t => t.id === candidate.elementId);
 
-    // ✅ Fix: دعم Grid Guides (بدون elementId)
+    // دعم Grid Guides (بدون elementId)
     if (!target) {
-      // Grid snap - إنشاء خط إرشاد قصير حول العنصر
       if (type === 'vertical') {
         guides.push({
           type: 'vertical',
@@ -510,65 +509,18 @@ class SnapEngineImpl {
     return guides;
   }
 
-  // ===========================================================================
-  // Utility Methods
-  // ===========================================================================
-
   /**
-   * حساب خطوط التوزيع المتساوي
+   * مسح الأهداف
    */
-  calculateDistributionGuides(
-    movingBounds: Bounds,
-    excludeIds: string[]
-  ): SnapLine[] {
-    if (!this._config.distributionGuidesEnabled) return [];
-
-    const guides: SnapLine[] = [];
-    const targets = this._targets.filter(t => !excludeIds.includes(t.id));
-
-    if (targets.length < 2) return guides;
-
-    // ترتيب العناصر حسب X
-    const sortedByX = [...targets].sort((a, b) => a.bounds.x - b.bounds.x);
-    
-    // البحث عن تباعد متساوٍ أفقياً
-    for (let i = 0; i < sortedByX.length - 1; i++) {
-      const current = sortedByX[i];
-      const next = sortedByX[i + 1];
-      const gap = next.bounds.x - (current.bounds.x + current.bounds.width);
-
-      // البحث عن موضع يحقق نفس التباعد
-      const targetX1 = current.bounds.x + current.bounds.width + gap - movingBounds.width;
-      const targetX2 = next.bounds.x - gap;
-
-      if (Math.abs(movingBounds.x - targetX1) < this._config.snapThreshold ||
-          Math.abs(movingBounds.x - targetX2) < this._config.snapThreshold) {
-        guides.push({
-          type: 'vertical',
-          position: movingBounds.x,
-          start: { x: movingBounds.x, y: movingBounds.y - 20 },
-          end: { x: movingBounds.x, y: movingBounds.y + movingBounds.height + 20 },
-          snapType: 'distribution'
-        });
-      }
-    }
-
-    return guides;
-  }
-
-  /**
-   * إعادة تعيين المحرك
-   */
-  reset(): void {
-    this._config = { ...DEFAULT_SNAP_CONFIG };
+  clearTargets(): void {
     this._targets = [];
   }
 
   /**
-   * الحصول على العناصر المستهدفة
+   * إعادة تعيين الإعدادات
    */
-  get targets(): ElementSnapTarget[] {
-    return [...this._targets];
+  resetConfig(): void {
+    this._config = { ...DEFAULT_SNAP_CONFIG };
   }
 }
 
@@ -577,31 +529,3 @@ class SnapEngineImpl {
 // =============================================================================
 
 export const snapEngine = new SnapEngineImpl();
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-/**
- * تطبيق المحاذاة على موضع عنصر
- */
-export const applySnap = (
-  position: Point,
-  size: { width: number; height: number },
-  excludeIds: string[] = []
-): SnapResult & { snappedBounds: Bounds } => {
-  return snapEngine.snapBounds(
-    { x: position.x, y: position.y, width: size.width, height: size.height },
-    excludeIds
-  );
-};
-
-/**
- * تطبيق المحاذاة على نقطة بسيطة
- */
-export const applyPointSnap = (
-  point: Point,
-  excludeIds: string[] = []
-): SnapResult => {
-  return snapEngine.snapPoint(point, excludeIds);
-};

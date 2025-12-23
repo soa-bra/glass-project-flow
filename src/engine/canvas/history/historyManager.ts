@@ -1,7 +1,6 @@
 /**
- * History Manager - نظام إدارة التاريخ المتقدم
+ * History Manager - نظام إدارة التاريخ
  * @module engine/canvas/history
  */
 
-// Re-export from core for now (gradual migration)
 export * from '@/core/historyManager';
