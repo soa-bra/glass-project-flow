@@ -3,4 +3,10 @@
  * @deprecated استخدم @/engine/canvas/history/historyManager بدلاً من ذلك
  */
 
-export * from '@/engine/canvas/history/historyManager';
+export {
+  HistoryManager,
+  historyManager,
+  type HistoryState,
+  type HistoryBranch,
+  type HistoryListener,
+} from '@/engine/canvas/history/historyManager';

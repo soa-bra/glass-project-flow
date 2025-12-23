@@ -3,4 +3,8 @@
  * @deprecated استخدم @/engine/canvas/voice/webrtcVoice بدلاً من ذلك
  */
 
-export * from '@/engine/canvas/voice/webrtcVoice';
+export {
+  WebRTCVoiceService,
+  webrtcVoiceService,
+  type WebRTCVoiceCallbacks,
+} from '@/engine/canvas/voice/webrtcVoice';

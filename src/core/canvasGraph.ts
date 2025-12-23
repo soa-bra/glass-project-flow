@@ -322,6 +322,188 @@ class CanvasGraphImpl {
     return this._graph.nodes.get(node.parentId);
   }
 
+  /**
+   * استيراد رسم بياني
+   */
+  import(data: { nodes: GraphNode[]; edges: GraphEdge[] }): void {
+    this.clear();
+    
+    data.nodes.forEach(node => {
+      this._graph.nodes.set(node.id, node);
+      this._graph.nodeEdgeIndex.set(node.id, new Set());
+      
+      if (node.parentId) {
+        this.addChildToParent(node.parentId, node.id);
+      }
+    });
+    
+    data.edges.forEach(edge => {
+      this._graph.edges.set(edge.id, edge);
+      
+      if (edge.source.nodeId) {
+        this._graph.nodeEdgeIndex.get(edge.source.nodeId)?.add(edge.id);
+      }
+      if (edge.target.nodeId) {
+        this._graph.nodeEdgeIndex.get(edge.target.nodeId)?.add(edge.id);
+      }
+    });
+  }
+
+  /**
+   * نقل العناصر لأب جديد
+   */
+  reparent(nodeIds: string[], newParentId: string | null): void {
+    nodeIds.forEach(nodeId => {
+      const node = this._graph.nodes.get(nodeId);
+      if (!node) return;
+
+      // إزالة من الأب القديم
+      if (node.parentId) {
+        this.removeChildFromParent(node.parentId, nodeId);
+      }
+
+      // إضافة للأب الجديد
+      if (newParentId) {
+        this.addChildToParent(newParentId, nodeId);
+      }
+
+      // تحديث العنصر
+      this._graph.nodes.set(nodeId, {
+        ...node,
+        parentId: newParentId || undefined
+      });
+    });
+  }
+
+  /**
+   * إيجاد أقرب نقطة ربط
+   */
+  findNearestAnchor(
+    nodeId: string, 
+    point: Point, 
+    threshold: number = 20
+  ): { anchor: string; position: { x: number; y: number }; distance: number } | null {
+    const node = this._graph.nodes.get(nodeId);
+    if (!node) return null;
+
+    let nearestAnchor: string | null = null;
+    let nearestPosition: Point | null = null;
+    let minDistance = threshold;
+
+    node.anchors.forEach(anchor => {
+      const anchorPos = this.getAnchorPosition(node, anchor);
+      const distance = Math.sqrt(
+        Math.pow(point.x - anchorPos.x, 2) + 
+        Math.pow(point.y - anchorPos.y, 2)
+      );
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestAnchor = anchor.id;
+        nearestPosition = anchorPos;
+      }
+    });
+
+    if (nearestAnchor && nearestPosition) {
+      return { anchor: nearestAnchor, position: nearestPosition, distance: minDistance };
+    }
+
+    return null;
+  }
+
+  /**
+   * الحصول على موقع نقطة الربط
+   */
+  private getAnchorPosition(node: GraphNode, anchor: NodeAnchor): Point {
+    const { x, y } = node.position;
+    const { width, height } = node.size;
+
+    switch (anchor.position) {
+      case 'top': return { x: x + width / 2, y };
+      case 'bottom': return { x: x + width / 2, y: y + height };
+      case 'left': return { x, y: y + height / 2 };
+      case 'right': return { x: x + width, y: y + height / 2 };
+      case 'center': return { x: x + width / 2, y: y + height / 2 };
+      case 'top-left': return { x, y };
+      case 'top-right': return { x: x + width, y };
+      case 'bottom-left': return { x, y: y + height };
+      case 'bottom-right': return { x: x + width, y: y + height };
+      default: return { x: x + width / 2, y: y + height / 2 };
+    }
+  }
+
+  /**
+   * الحصول على الإحصائيات
+   */
+  getStats(): {
+    nodeCount: number;
+    edgeCount: number;
+    connectedNodes: number;
+    isolatedNodes: number;
+  } {
+    const nodes = this.getAllNodes();
+    const edges = this.getAllEdges();
+
+    let connectedNodes = 0;
+    let isolatedNodes = 0;
+
+    nodes.forEach(node => {
+      const connectedEdges = this._graph.nodeEdgeIndex.get(node.id);
+      if (!connectedEdges || connectedEdges.size === 0) {
+        isolatedNodes++;
+      } else {
+        connectedNodes++;
+      }
+    });
+
+    return {
+      nodeCount: nodes.length,
+      edgeCount: edges.length,
+      connectedNodes,
+      isolatedNodes
+    };
+  }
+
+  /**
+   * حساب المكونات المتصلة
+   */
+  private countConnectedComponents(): number {
+    const visited = new Set<string>();
+    let components = 0;
+
+    this._graph.nodes.forEach((_, nodeId) => {
+      if (!visited.has(nodeId)) {
+        this.dfs(nodeId, visited);
+        components++;
+      }
+    });
+
+    return components;
+  }
+
+  /**
+   * بحث العمق أولاً
+   */
+  private dfs(nodeId: string, visited: Set<string>): void {
+    visited.add(nodeId);
+
+    const edgeIds = this._graph.nodeEdgeIndex.get(nodeId);
+    if (!edgeIds) return;
+
+    edgeIds.forEach(edgeId => {
+      const edge = this._graph.edges.get(edgeId);
+      if (!edge) return;
+
+      const neighborId = edge.source.nodeId === nodeId 
+        ? edge.target.nodeId 
+        : edge.source.nodeId;
+
+      if (neighborId && !visited.has(neighborId)) {
+        this.dfs(neighborId, visited);
+      }
+    });
+  }
+
   clear(): void {
     this._graph.nodes.clear();
     this._graph.edges.clear();
