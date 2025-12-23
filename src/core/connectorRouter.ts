@@ -1,4 +1,2 @@
-/**
- * @deprecated استخدم @/engine/canvas/routing/connectorRouter بدلاً من هذا الملف
- */
+/** @deprecated استخدم @/engine/canvas/routing/connectorRouter */
 export * from '@/engine/canvas/routing/connectorRouter';

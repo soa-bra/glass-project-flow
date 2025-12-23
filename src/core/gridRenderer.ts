@@ -1,6 +1,2 @@
-/**
- * Grid Renderer - Re-export from Engine
- * @deprecated استخدم @/engine/canvas/rendering/gridRenderer بدلاً من ذلك
- */
-
+/** @deprecated استخدم @/engine/canvas/rendering/gridRenderer */
 export * from '@/engine/canvas/rendering/gridRenderer';

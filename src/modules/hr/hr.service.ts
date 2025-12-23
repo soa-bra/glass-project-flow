@@ -1,6 +1,6 @@
 // HR Lite Service - Complete employee lifecycle management
 import { prisma, Employee, TimeOffRequest, AppraisalCycle, AppraisalSubmission } from '@/lib/prisma';
-import { createApprovalRequest } from '@/core/approvals/approvals.service';
+import { createApprovalRequest } from '@/shared/services/approvals';
 
 export interface CreateEmployeeInput {
   userId: string;
