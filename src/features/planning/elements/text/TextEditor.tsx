@@ -329,7 +329,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     }
   };
 
-  // ✅ تحديث فوري للـ style عند تغييره من TextPanel
+  // ✅ تحديث فوري للـ style عند تغييره من FloatingBar
   useEffect(() => {
     if (editorRef.current && element.style) {
       const editor = editorRef.current;

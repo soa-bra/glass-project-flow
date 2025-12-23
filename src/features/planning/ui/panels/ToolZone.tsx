@@ -3,7 +3,6 @@ import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 import type { ToolId } from '@/types/canvas';
 import { useCanvasStore } from '@/stores/canvasStore';
 import FileUploadPanel from './FileUploadToolZone';
-import TextPanel from './TextPanel';
 import ShapesPanel from './ShapesToolZone';
 import SmartElementsPanel from './SmartElementsToolZone';
 import ResearchToolZone from './ResearchToolZone';
@@ -26,13 +25,14 @@ const panelTitles: Record<ToolId, string> = {
   frame_tool: 'الإطار',
 };
 
-// الأدوات التي لا تحتوي على لوحة خاصة
+// الأدوات التي لا تحتوي على لوحة خاصة (تستخدم FloatingBar بدلاً)
 const toolsWithoutPanel: ToolId[] = [
   'selection_tool',
   'smart_pen',
   'sticky_tool',
   'mindmap_tool',
   'frame_tool',
+  'text_tool', // تم نقل أدوات النص إلى FloatingBar
 ];
 
 const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose }) => {
@@ -45,39 +45,36 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose }) => {
   useEffect(() => {
     if (toolsWithoutPanel.includes(activeTool) && !editingTextId) {
       setIsCollapsed(true);
+    } else if (toolsWithoutPanel.includes(activeTool) && editingTextId) {
+      // عند تحرير نص، أيضاً نطوي لأن FloatingBar يتولى المهمة
+      setIsCollapsed(true);
     } else {
       setIsCollapsed(false);
     }
   }, [activeTool, editingTextId]);
   
   const renderPanel = () => {
-    // أولوية لعرض TextPanel إذا كان هناك نص قيد التحرير
-    if (editingTextId) {
-      return <TextPanel />;
-    }
-    
-    // الاستمرار بالمنطق الطبيعي
+    // لم يعد هناك حاجة لـ TextPanel - يتم التحكم في النص عبر FloatingBar
     switch (activeTool) {
       case 'file_uploader':
         return <FileUploadPanel />;
-      case 'text_tool':
-        return <TextPanel />;
       case 'shapes_tool':
         return <ShapesPanel />;
       case 'smart_element_tool':
         return <SmartElementsPanel />;
       case 'research_tool':
         return <ResearchToolZone />;
-      // الأدوات بدون panel
+      // الأدوات بدون panel (تستخدم FloatingBar)
       case 'selection_tool':
       case 'smart_pen':
       case 'sticky_tool':
       case 'mindmap_tool':
       case 'frame_tool':
+      case 'text_tool':
         return (
           <div className="p-4 text-center text-[hsl(var(--ink-60))] text-[13px]">
             <p>استخدم الأداة مباشرة على الكانفس</p>
-            <p className="text-[11px] mt-2">أو حدد عنصرًا لعرض خصائصه</p>
+            <p className="text-[11px] mt-2">أو حدد عنصرًا لعرض شريط الأدوات العائم</p>
           </div>
         );
       default:
@@ -86,9 +83,7 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose }) => {
   };
   
   // تحديث العنوان ديناميكياً
-  const panelTitle = editingTextId 
-    ? 'النص' 
-    : panelTitles[activeTool];
+  const panelTitle = panelTitles[activeTool];
 
   // إذا كان مطوياً بالكامل، عرض شريط صغير فقط
   if (isCollapsed) {
