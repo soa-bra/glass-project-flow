@@ -1,4 +1,2 @@
-/**
- * @deprecated استخدم @/engine/canvas/interaction/interactionStateMachine بدلاً من هذا الملف
- */
+/** @deprecated استخدم @/engine/canvas/interaction/interactionStateMachine */
 export * from '@/engine/canvas/interaction/interactionStateMachine';

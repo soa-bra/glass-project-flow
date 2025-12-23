@@ -1,6 +1,6 @@
 // Invoice Service
 import { prisma, Invoice, InvoiceLine, Payment, InvoiceStatus } from '@/lib/prisma';
-import { nextVal } from '@/core/sequence/sequence.service';
+import { nextVal } from '@/shared/services/sequence';
 
 export class InvoiceService {
   async createInvoice(input: {

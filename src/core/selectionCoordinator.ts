@@ -1,4 +1,2 @@
-/**
- * @deprecated استخدم @/engine/canvas/interaction/selectionCoordinator بدلاً من هذا الملف
- */
+/** @deprecated استخدم @/engine/canvas/interaction/selectionCoordinator */
 export * from '@/engine/canvas/interaction/selectionCoordinator';

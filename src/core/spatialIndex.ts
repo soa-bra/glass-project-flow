@@ -1,4 +1,2 @@
-/**
- * @deprecated استخدم @/engine/canvas/spatial/spatialIndex بدلاً من هذا الملف
- */
+/** @deprecated استخدم @/engine/canvas/spatial/spatialIndex */
 export * from '@/engine/canvas/spatial/spatialIndex';
