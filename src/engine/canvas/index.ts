@@ -1,31 +1,32 @@
 /**
  * Canvas Engine - محرك الكانفاس الموحد
  * @module engine/canvas
+ * 
+ * يستخدم barrel exports من المجلدات الفرعية لتبسيط الاستيراد
  */
 
-// Kernel
-export * from './kernel/canvasKernel';
+// Kernel - نواة المحرك
+export * from './kernel';
 
-// Rendering
-export * from './rendering/gridRenderer';
+// Rendering - وحدة العرض
+export * from './rendering';
 
-// Math
+// Math - المحرك الرياضي
 export * from './math/snapEngine';
 
-// Spatial
-export * from './spatial/spatialIndex';
+// Spatial - الفضاء المكاني
+export * from './spatial';
 
-// Interaction
-export * from './interaction/selectionCoordinator';
-export * from './interaction/interactionStateMachine';
+// Interaction - التفاعل
+export * from './interaction';
 
-// Routing
-export * from './routing/connectorRouter';
+// Routing - التوجيه
+export * from './routing';
 
-// History
-export * from './history/historyManager';
+// History - السجل
+export * from './history';
 
-// Graph (specific exports to avoid EdgeEndpoint conflict with connectorRouter)
+// Graph - الرسم البياني (تصديرات محددة لتجنب تعارض EdgeEndpoint)
 export { 
   type NodeType,
   type NodeAnchor,
@@ -36,19 +37,20 @@ export {
   type GraphEdge,
   type CanvasGraph,
   type GraphQuery
-} from './graph/canvasGraph';
+} from './graph';
 
-// Collaboration
-export { CollaborationEngine, collaborationEngine } from './collaboration/collaborationEngine';
-export type { CollaboratorPresence, CollaborationEvent, CollaborationEventType } from './collaboration/collaborationEngine';
-export * from './transform/operationalTransform';
+// Collaboration - التعاون
+export * from './collaboration';
 
-// IO (Import/Export)
+// Transform - التحويلات
+export * from './transform';
+
+// IO - الاستيراد والتصدير
 export * from './io/exportEngine';
 export * from './io/importEngine';
 
-// Events
-export * from './events/eventPipeline';
+// Events - الأحداث
+export * from './events';
 
-// Voice
-export * from './voice/webrtcVoice';
+// Voice - الصوت
+export * from './voice';
