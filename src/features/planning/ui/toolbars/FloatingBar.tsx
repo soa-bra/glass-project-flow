@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useActiveTextEditor } from "@/features/planning/elements/text/TextEditorContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { useCanvasStore } from "@/stores/canvasStore";
@@ -705,6 +706,9 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   const { addSmartElement } = useSmartElementsStore();
   const { analyzeSelection, transformElements, isLoading: isAILoading } = useSmartElementAI();
+  
+  // استخدام Context بدلاً من window.__currentTextEditor
+  const activeTextEditor = useActiveTextEditor();
 
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [imageName, setImageName] = useState("");
@@ -959,13 +963,18 @@ const UnifiedFloatingToolbar: React.FC = () => {
 
   // ===== دالة مساعدة لاستعادة الـ focus للمحرر =====
   const restoreEditorFocus = useCallback(() => {
-    const editor = (window as any).__currentTextEditor;
-    if (editor?.editorRef) {
-      editor.editorRef.focus();
+    // استخدام Context API بدلاً من window.__currentTextEditor
+    if (activeTextEditor?.restoreFocus) {
+      activeTextEditor.restoreFocus();
+      return true;
+    }
+    // Fallback: محاولة التركيز مباشرة على editorRef
+    if (activeTextEditor?.editorRef) {
+      activeTextEditor.editorRef.focus();
       return true;
     }
     return false;
-  }, []);
+  }, [activeTextEditor]);
 
   if (!hasSelection) return null;
 
