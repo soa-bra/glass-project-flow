@@ -3,4 +3,10 @@
  * @deprecated استخدم @/engine/canvas/transform/operationalTransform بدلاً من ذلك
  */
 
-export * from '@/engine/canvas/transform/operationalTransform';
+export {
+  OTEngine,
+  otEngine,
+  type Operation,
+  type OperationType,
+  type TransformResult,
+} from '@/engine/canvas/transform/operationalTransform';

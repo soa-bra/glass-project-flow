@@ -3,4 +3,10 @@
  * @deprecated استخدم @/engine/canvas/io/importEngine بدلاً من ذلك
  */
 
-export * from '@/engine/canvas/io/importEngine';
+export {
+  ImportEngine,
+  importEngine,
+  type ImportOptions,
+  type ImportResult,
+  type ValidationResult,
+} from '@/engine/canvas/io/importEngine';

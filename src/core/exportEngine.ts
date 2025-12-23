@@ -3,4 +3,11 @@
  * @deprecated استخدم @/engine/canvas/io/exportEngine بدلاً من ذلك
  */
 
-export * from '@/engine/canvas/io/exportEngine';
+export {
+  ExportEngine,
+  exportEngine,
+  type ExportFormat,
+  type ExportableElement,
+  type ExportOptions,
+  type ExportResult,
+} from '@/engine/canvas/io/exportEngine';
