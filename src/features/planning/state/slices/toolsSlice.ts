@@ -6,6 +6,7 @@ import { StateCreator } from 'zustand';
 import { nanoid } from 'nanoid';
 import type { CanvasElement } from '@/types/canvas';
 import { ToolId, ToolSettings, TextElement, DEFAULT_TOOL_SETTINGS } from '../types';
+import { isTextEmpty } from '@/utils/textDirection';
 
 export interface ToolsSlice {
   activeTool: ToolId;
@@ -123,8 +124,25 @@ export const createToolsSlice: StateCreator<
   },
   
   stopEditingText: (elementId) => {
-    set((state: any) => {
-      if (elementId && state.editingTextId !== elementId) return state;
+    const state = get();
+    const targetId = elementId || state.editingTextId;
+    
+    // ✅ التحقق من محتوى العنصر قبل الإغلاق
+    if (targetId) {
+      const element = state.elements?.find((el: any) => el.id === targetId);
+      
+      // إذا كان العنصر نصاً والمحتوى فارغاً، احذفه
+      if (element && element.type === 'text') {
+        const content = element.content || '';
+        if (isTextEmpty(content)) {
+          // حذف العنصر الفارغ
+          state.deleteElement?.(targetId);
+        }
+      }
+    }
+    
+    set((currentState: any) => {
+      if (targetId && currentState.editingTextId !== targetId) return currentState;
       return { editingTextId: null, typingMode: false };
     });
   },

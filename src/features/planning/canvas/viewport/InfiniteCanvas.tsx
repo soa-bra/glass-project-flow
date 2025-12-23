@@ -15,6 +15,7 @@ import { SnapGuides } from '@/features/planning/canvas/transforms/SnapGuides';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useTouchGestures } from '@/hooks/useTouchGestures';
+import { useCanvasPaste } from '@/hooks/useCanvasPaste';
 import { canvasKernel, getContainerRect } from '@/engine/canvas/kernel/canvasKernel';
 import { getCursorForMode } from '@/engine/canvas/interaction/interactionStateMachine';
 import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
@@ -95,6 +96,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   // ✅ Refs للـ Panning (للحفاظ على الموقع بين الأحداث)
   const lastPanPositionRef = useRef({ x: 0, y: 0 });
+  
+  // ✅ تتبع آخر موضع للمؤشر على الكانفس (للصق من الحافظة)
+  const lastPointerPositionRef = useRef<{ x: number; y: number } | null>(null);
   
   // ✅ Sprint 5: Snap Guides State
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
@@ -266,6 +270,13 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     const containerHeight = containerRef.current?.clientHeight || window.innerHeight;
     return canvasKernel.getVisibleBounds(viewport, containerWidth, containerHeight);
   }, [viewport]);
+  
+  // ✅ تفعيل الصق من الحافظة الخارجية
+  useCanvasPaste({
+    lastPointerPosition: lastPointerPositionRef,
+    viewportBounds,
+    enabled: true
+  });
 
   // ✅ تحسين: تحويل selectedElementIds إلى Set للبحث السريع O(1)
   const selectedIdsSet = useMemo(() => new Set(selectedElementIds), [selectedElementIds]);
@@ -384,6 +395,18 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   // ✅ Handle Mouse Move - استخدام State Machine
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    // ✅ تحديث آخر موضع للمؤشر على الكانفس (للصق من الحافظة)
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    if (containerRect) {
+      const worldPoint = canvasKernel.screenToWorld(
+        e.clientX, 
+        e.clientY, 
+        viewport, 
+        containerRect
+      );
+      lastPointerPositionRef.current = worldPoint;
+    }
+    
     // تحديث خط اتصال الخريطة الذهنية أثناء السحب
     if (mindMapConnectionRef.current.isConnecting) {
       updateConnectionPosition(e.clientX, e.clientY);
