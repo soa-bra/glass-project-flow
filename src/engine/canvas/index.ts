@@ -48,7 +48,7 @@ export * from './io/exportEngine';
 export * from './io/importEngine';
 
 // Events
-export * from './events';
+export * from './events/eventPipeline';
 
 // Voice
 export * from './voice/webrtcVoice';

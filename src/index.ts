@@ -1,7 +1,7 @@
 // Main Export Index for CRM & Invoicing Systems
 export * from './lib/prisma';
-export * from './shared/services/sequence';
-export * from './shared/services/approvals';
+export * from './core/sequence/sequence.service';
+export * from './core/approvals/approvals.service';
 
 // Services
 export * from './modules/crm/opportunity.service';

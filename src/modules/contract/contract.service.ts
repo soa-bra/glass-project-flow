@@ -1,6 +1,6 @@
 // Contract Service
 import { prisma, Contract } from '@/lib/prisma';
-import { nextVal } from '@/shared/services/sequence';
+import { nextVal } from '@/core/sequence/sequence.service';
 
 export class ContractService {
   async createContract(input: {
