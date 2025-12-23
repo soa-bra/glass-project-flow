@@ -90,41 +90,41 @@ export const ReportsTab: React.FC = () => {
     <div className="space-y-6 bg-transparent">
       {/* لوحة المعلومات التحليلية */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" size="sm">
           <div className="text-center">
             <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
             <p className="text-2xl font-bold text-gray-800">{analytics.totalEmployees}</p>
             <p className="text-sm text-gray-600 font-arabic">إجمالي الموظفين</p>
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" size="sm">
           <div className="text-center">
             <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
             <p className="text-2xl font-bold text-gray-800">{analytics.turnoverRate}%</p>
             <p className="text-sm text-gray-600 font-arabic">معدل الدوران</p>
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" size="sm">
           <div className="text-center">
             <Calendar className="h-8 w-8 text-purple-600 mx-auto mb-2" />
             <p className="text-2xl font-bold text-gray-800">{analytics.averageAge}</p>
             <p className="text-sm text-gray-600 font-arabic">متوسط العمر</p>
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-4">
+        <BaseBox variant="operations" size="sm">
           <div className="text-center">
             <BarChart3 className="h-8 w-8 text-orange-600 mx-auto mb-2" />
             <p className="text-2xl font-bold text-gray-800">{stats.attendanceRate}%</p>
             <p className="text-sm text-gray-600 font-arabic">معدل الحضور</p>
           </div>
-        </BaseCard>
+        </BaseBox>
       </div>
 
       {/* الرؤى السريعة */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" size="md">
         <div className="flex items-center gap-2 mb-4">
           <Eye className="h-6 w-6 text-blue-600" />
           <h3 className="text-xl font-bold text-gray-800 font-arabic">الرؤى السريعة</h3>
@@ -142,10 +142,10 @@ export const ReportsTab: React.FC = () => {
             </div>
           ))}
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {/* أنواع التقارير */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" size="md">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <BarChart3 className="h-6 w-6 text-blue-600" />
@@ -212,11 +212,11 @@ export const ReportsTab: React.FC = () => {
             </div>
           ))}
         </div>
-      </BaseCard>
+      </BaseBox>
 
       {/* توزيع القوى العاملة */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" size="md">
           <div className="flex items-center gap-2 mb-4">
             <PieChart className="h-6 w-6 text-purple-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">التوزيع حسب القسم</h3>
@@ -238,9 +238,9 @@ export const ReportsTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </BaseCard>
+        </BaseBox>
 
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" size="md">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="h-6 w-6 text-green-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">توزيع الأداء</h3>
@@ -284,7 +284,7 @@ export const ReportsTab: React.FC = () => {
               </div>
             </div>
           </div>
-        </BaseCard>
+        </BaseBox>
       </div>
     </div>
   );
