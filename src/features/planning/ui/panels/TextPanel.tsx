@@ -3,6 +3,7 @@ import { Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline, Arro
 import { useCanvasStore } from '@/stores/canvasStore';
 import { toast } from 'sonner';
 import { sanitizeHTML } from '@/utils/sanitize';
+import { useActiveTextEditor } from '@/features/planning/elements/text';
 
 const TextPanel: React.FC = () => {
   const { 
@@ -73,20 +74,22 @@ const TextPanel: React.FC = () => {
     };
   }, [editingTextId]);
   
+  // ✅ استخدام Context بدلاً من window.__currentTextEditor
+  const activeEditor = useActiveTextEditor();
+  
   const handleSettingChange = (setting: string, value: any) => {
     // أولاً: التحقق من وجود نص مظلل داخل محرر نص نشط
-    const currentEditor = (window as any).__currentTextEditor;
     const selection = window.getSelection();
     const selectedText = selection?.toString();
     
     // تحسين: التحقق المتقدم من أن التحديد موجود داخل المحرر النشط
     const isSelectionInEditor = !!(
-      currentEditor &&
+      activeEditor &&
       selectedText &&
       selectedText.length > 0 &&
       selection?.anchorNode &&
-      currentEditor.editorRef &&
-      currentEditor.editorRef.contains(selection.anchorNode)
+      activeEditor.editorRef &&
+      activeEditor.editorRef.contains(selection.anchorNode)
     );
     
     // console.log للتشخيص في بيئة التطوير
@@ -94,7 +97,7 @@ const TextPanel: React.FC = () => {
       console.log('🎨 Text formatting:', {
         setting,
         value,
-        hasEditor: !!currentEditor,
+        hasEditor: !!activeEditor,
         hasSelection: !!selectedText,
         isInEditor: isSelectionInEditor,
         editingElement: !!editingElement
@@ -142,10 +145,10 @@ const TextPanel: React.FC = () => {
       return;
     }
     
-    if (isSelectionInEditor) {
+    if (isSelectionInEditor && activeEditor) {
       // تطبيق التنسيق على النص المظلل فقط
       if (setting === 'fontFamily') {
-        currentEditor.applyFormat('fontName', value);
+        activeEditor.applyFormat('fontName', value);
       } else if (setting === 'fontSize') {
         // تطبيق حجم الخط باستخدام span
         if (selection && selection.rangeCount > 0) {
@@ -155,16 +158,16 @@ const TextPanel: React.FC = () => {
           try {
             range.surroundContents(span);
             // تحديث المحتوى (مع تعقيم)
-            const newContent = sanitizeHTML(currentEditor.editorRef.innerHTML);
-            currentEditor.applyFormat('insertHTML', newContent);
+            const newContent = sanitizeHTML(activeEditor.editorRef.innerHTML);
+            activeEditor.applyFormat('insertHTML', newContent);
           } catch (e) {
             console.warn('Failed to apply fontSize with surroundContents', e);
           }
         }
       } else if (setting === 'fontWeight') {
-        currentEditor.applyFormat('bold');
+        activeEditor.applyFormat('bold');
       } else if (setting === 'color') {
-        currentEditor.applyFormat('foreColor', value);
+        activeEditor.applyFormat('foreColor', value);
       }
       return;
     }
