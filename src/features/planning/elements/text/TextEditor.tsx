@@ -3,6 +3,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/stores/canvasStore';
 import { sanitizeHTML } from '@/utils/sanitize';
 import { Check } from 'lucide-react';
+import { useTextEditorRegistration } from './TextEditorContext';
 
 interface TextEditorProps {
   element: CanvasElement;
@@ -146,6 +147,15 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     
     onUpdate(sanitizeHTML(editorRef.current.innerHTML));
   }, [onUpdate]);
+  
+  // ✅ تسجيل المحرر تلقائياً باستخدام Context
+  const { preventClose, allowClose, canClose } = useTextEditorRegistration({
+    elementId: element.id,
+    editorRef: editorRef as React.RefObject<HTMLDivElement>,
+    applyFormat,
+    toggleList,
+    removeFormatting,
+  });
 
   const handleAlignChange = useCallback((align: 'left' | 'center' | 'right') => {
     if (editorRef.current) {
@@ -346,20 +356,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       element.style?.color, element.style?.textAlign, element.style?.direction, 
       element.style?.alignItems]);
   
-  // تصدير دالة applyFormat للوصول إليها من TextPanel
-  useEffect(() => {
-    if (editorRef.current) {
-      (window as any).__currentTextEditor = {
-        applyFormat,
-        toggleList,
-        removeFormatting,
-        editorRef: editorRef.current
-      };
-    }
-    return () => {
-      (window as any).__currentTextEditor = null;
-    };
-  }); // ✅ بدون [] ليتم تحديثه في كل render
+  // ✅ تم استبدال window.__currentTextEditor بـ TextEditorContext
+  // التسجيل يتم تلقائياً عبر useTextEditorRegistration hook
   
   // ✅ التحقق من وجود قوائم في المحتوى
   const hasLists = element.content?.includes('<ul>') || element.content?.includes('<ol>');
@@ -435,20 +433,24 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
           }}
           onKeyDown={handleKeyDown}
           onBlur={(e) => {
-            // ✅ تحسين: فقط أغلق إذا كان blur خارج TextPanel أو FloatingToolbar أو Done button
+            // ✅ تحسين: استخدام canClose من Context للتحكم في الإغلاق
             const relatedTarget = e.relatedTarget as HTMLElement;
             const isClickingPanel = relatedTarget?.closest('[data-text-panel]');
             const isClickingToolbar = relatedTarget?.closest('[data-floating-toolbar]');
             const isClickingDone = relatedTarget?.closest('[data-done-button]');
+            const isClickingFormatButton = relatedTarget?.closest('[data-format-button]');
             
-            if (!isClickingPanel && !isClickingToolbar && !isClickingDone) {
-              if (editorRef.current) {
-                onUpdate(sanitizeHTML(editorRef.current.innerHTML));
-              }
-              setShowToolbar(false);
-              stopTyping();
-              onClose();
+            // ✅ منع الإغلاق إذا كان canClose = false أو النقر على عناصر التنسيق
+            if (!canClose || isClickingPanel || isClickingToolbar || isClickingDone || isClickingFormatButton) {
+              return;
             }
+            
+            if (editorRef.current) {
+              onUpdate(sanitizeHTML(editorRef.current.innerHTML));
+            }
+            setShowToolbar(false);
+            stopTyping();
+            onClose();
           }}
           className={`${isEmpty ? 'empty-editor' : ''}`}
           style={{
