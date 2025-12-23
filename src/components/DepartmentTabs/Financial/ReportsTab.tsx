@@ -31,7 +31,7 @@ export const ReportsTab: React.FC = () => {
       <Stagger gap={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {reports.map((report, index) => (
           <Stagger.Item key={index}>
-            <BaseCard>
+            <BaseBox variant="unified" size="md">
               <div className="flex items-center gap-3 mb-4">
                 <BarChart className="h-8 w-8 text-blue-600" />
                 <div>
@@ -64,7 +64,7 @@ export const ReportsTab: React.FC = () => {
                   </BaseActionButton>
                 </div>
               </div>
-            </BaseCard>
+            </BaseBox>
           </Stagger.Item>
         ))}
       </Stagger>
