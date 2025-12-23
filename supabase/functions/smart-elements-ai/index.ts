@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -342,6 +343,49 @@ serve(async (req) => {
   }
 
   try {
+    // ✅ 1. Validate JWT authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error('[smart-elements-ai] No authorization header');
+      return new Response(JSON.stringify({ 
+        error: 'يجب تسجيل الدخول لاستخدام الذكاء الاصطناعي',
+        code: 'UNAUTHORIZED'
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    // ✅ 2. Verify JWT with Supabase
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.error('[smart-elements-ai] Missing Supabase configuration');
+      throw new Error('Server configuration error');
+    }
+
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: { Authorization: authHeader },
+      },
+    });
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    
+    if (authError || !user) {
+      console.error('[smart-elements-ai] Auth error:', authError?.message || 'No user');
+      return new Response(JSON.stringify({ 
+        error: 'جلسة غير صالحة، يرجى تسجيل الدخول مرة أخرى',
+        code: 'INVALID_TOKEN'
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    console.log(`[smart-elements-ai] Authenticated user: ${user.id}`);
+
     const { prompt, action, selectedElements, context } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
