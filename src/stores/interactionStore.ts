@@ -14,7 +14,7 @@
  */
 
 import { create } from 'zustand';
-import type { Point } from '@/core/canvasKernel';
+import type { Point } from '@/engine/canvas/kernel/canvasKernel';
 import {
   type InteractionMode,
   type PanningMode,
@@ -41,7 +41,7 @@ import {
   shouldBlockToolShortcuts,
   shouldBlockSelection,
   requiresPointerCapture
-} from '@/core/interactionStateMachine';
+} from '@/engine/canvas/interaction/interactionStateMachine';
 import type { ToolId } from '@/stores/canvasStore';
 
 interface Bounds {

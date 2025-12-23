@@ -13,7 +13,7 @@ import {
   type NodeType,
   type EdgeType,
   type GraphQuery 
-} from '@/core/canvasGraph';
+} from '@/engine/canvas/graph/canvasGraph';
 import type { CanvasElement } from '@/types/canvas';
 
 interface UseCanvasGraphReturn {

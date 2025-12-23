@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useCallback } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { canvasKernel, type Bounds } from '@/core/canvasKernel';
+import { canvasKernel, type Bounds } from '@/engine/canvas/kernel/canvasKernel';
 import { selectLayerVisibilityMap } from '@/features/planning/state/selectors';
 
 interface SelectionBoxProps {

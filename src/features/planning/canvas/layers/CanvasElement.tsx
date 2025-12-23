@@ -16,8 +16,8 @@ import MindMapConnector from '@/features/planning/elements/mindmap/MindMapConnec
 
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { sanitizeHTMLForDisplay } from '@/utils/sanitize';
-import { eventPipeline } from '@/core/eventPipeline';
-import { canvasKernel } from '@/core/canvasKernel';
+import { eventPipeline } from '@/engine/canvas/events/eventPipeline';
+import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 import type { MindMapNodeData } from '@/types/mindmap-canvas';
 

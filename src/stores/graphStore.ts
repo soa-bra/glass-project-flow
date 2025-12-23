@@ -13,15 +13,15 @@
 
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import type { Point, Bounds, Camera } from '@/core/canvasKernel';
-import { canvasKernel } from '@/core/canvasKernel';
+import type { Point, Bounds, Camera } from '@/engine/canvas/kernel/canvasKernel';
+import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import type { 
   InteractionMode, 
   InteractionEvent,
   TypingMode,
   DraggingMode,
   BoxSelectMode
-} from '@/core/interactionStateMachine';
+} from '@/engine/canvas/interaction/interactionStateMachine';
 import {
   createIdleMode,
   createTypingMode,
@@ -29,7 +29,7 @@ import {
   createBoxSelectMode,
   shouldBlockToolShortcuts,
   getCursorForMode
-} from '@/core/interactionStateMachine';
+} from '@/engine/canvas/interaction/interactionStateMachine';
 
 // =============================================================================
 // Types

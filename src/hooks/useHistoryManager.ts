@@ -3,8 +3,8 @@
  */
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { historyManager, HistoryBranch, HistoryState } from '@/core/historyManager';
-import { Operation, OperationType, otEngine } from '@/core/operationalTransform';
+import { historyManager, HistoryBranch, HistoryState } from '@/engine/canvas/history/historyManager';
+import { Operation, OperationType, otEngine } from '@/engine/canvas/transform/operationalTransform';
 import { useCanvasStore } from '@/stores/canvasStore';
 
 interface UseHistoryManagerResult {

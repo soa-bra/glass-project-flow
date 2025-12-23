@@ -5,7 +5,7 @@
  */
 
 import type { CanvasElement, LayerInfo } from '@/types/canvas';
-import { spatialIndex, queryIntersectingElements } from '@/core/spatialIndex';
+import { spatialIndex, queryIntersectingElements } from '@/engine/canvas/spatial/spatialIndex';
 
 export interface CanvasState {
   elements: CanvasElement[];

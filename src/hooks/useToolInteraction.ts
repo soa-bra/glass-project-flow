@@ -1,8 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
 import { useCanvasStore, type ToolId, type ShapeType } from '@/stores/canvasStore';
 import { useSmartElementsStore } from '@/stores/smartElementsStore';
-import { eventPipeline } from '@/core/eventPipeline';
-import { canvasKernel } from '@/core/canvasKernel';
+import { eventPipeline } from '@/engine/canvas/events/eventPipeline';
+import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { recognizeShape, pointsToSVGPath, simplifyPath, type Point } from '@/utils/shapeRecognition';
 import { toast } from 'sonner';
 import { createStraightArrowData, type ArrowData } from '@/types/arrow-connections';

@@ -14,8 +14,8 @@
 import { useRef, useCallback, useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useInteractionStore } from '@/stores/interactionStore';
-import { canvasKernel } from '@/core/canvasKernel';
-import { findElementAtPoint } from '@/core/spatialIndex';
+import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
+import { findElementAtPoint } from '@/engine/canvas/spatial/spatialIndex';
 import { selectLayerVisibilityMap } from '@/features/planning/state/selectors';
 
 interface TouchPoint {

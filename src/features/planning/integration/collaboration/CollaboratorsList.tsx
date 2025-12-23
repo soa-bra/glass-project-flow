@@ -6,7 +6,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Circle } from 'lucide-react';
-import { CollaboratorPresence } from '@/core/collaborationEngine';
+import { CollaboratorPresence } from '@/engine/canvas/collaboration/collaborationEngine';
 import {
   Tooltip,
   TooltipContent,

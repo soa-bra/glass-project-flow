@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { eventPipeline } from '@/core/eventPipeline';
-import { getContainerRect } from '@/core/canvasKernel';
+import { eventPipeline } from '@/engine/canvas/events/eventPipeline';
+import { getContainerRect } from '@/engine/canvas/kernel/canvasKernel';
 
 interface Props {
   containerRef: React.RefObject<HTMLDivElement>;
